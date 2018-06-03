@@ -5658,7 +5658,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local t1 = service.New("HopperBin") 
+				--[[local t1 = service.New("HopperBin") 
 				t1.Name = "Move" 
 				t1.BinType = "GameTool"
 				local t2 = service.New("HopperBin") 
@@ -5666,7 +5666,7 @@ return function()
 				t2.BinType = "Clone"
 				local t3 = service.New("HopperBin") 
 				t3.Name = "Delete"
-				t3.BinType = "Hammer"
+				t3.BinType = "Hammer"--]]
 				local f3x = service.New("Tool")
 				f3x.CanBeDropped = false
 				f3x.ManualActivationOnly = false
@@ -5687,18 +5687,18 @@ return function()
 				--local cl=deps.ResizeScript:clone()
 				--cl.Parent=t4
 				--cl.Disabled=false --F3X Kinda replaces the need for this
-				service.New("StringValue",t1).Name = server.Variables.CodeName
+				--[[service.New("StringValue",t1).Name = server.Variables.CodeName
 				service.New("StringValue",t2).Name = server.Variables.CodeName
-				service.New("StringValue",t3).Name = server.Variables.CodeName
+				service.New("StringValue",t3).Name = server.Variables.CodeName--]]
 				--service.New("StringValue",t4).Name = server.Variables.CodeName
 				service.New("StringValue",f3x).Name = server.Variables.CodeName
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					--server.Send.Remote(v,"Function","setEffectVal","AntiDeleteTool",false)
 					if v:findFirstChild("Backpack") then 
-						t1:Clone().Parent = v.Backpack
+						--[[t1:Clone().Parent = v.Backpack
 						t2:Clone().Parent = v.Backpack
-						t3:Clone().Parent = v.Backpack
+						t3:Clone().Parent = v.Backpack--]]
 						f3x:Clone().Parent = v.Backpack
 						--t4.Parent=v.Backpack
 					end
