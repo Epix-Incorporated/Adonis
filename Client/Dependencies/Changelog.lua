@@ -1,6 +1,9 @@
 return {
-	"Version: 131";
+	"Version: 132";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.19b [6/3/2018]";
+	"*Removed HopperBin building tools from :btools; Roblox killed/removed them";
 	"";
 	"1.2.18b [5/12/2018]";
 	"*Updated the Base64 encoded encrypted message";
