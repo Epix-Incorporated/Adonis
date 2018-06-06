@@ -1,22 +1,21 @@
-while true do
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945467"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945486"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945493"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945515"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945527"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945553"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945573"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945588"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945612"
-  wait(0.1)
-  script.Parent.Texture = "http://www.roblox.com/asset/?id=185945634"
-  wait(0.1)
+while wait(.1)do
+	script.Parent.Texture='rbxassetid://185945467'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945486'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945493'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945515'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945527'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945553'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945573'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945586'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945612'
+	wait(.1)
+	script.Parent.Texture='rbxassetid://185945634'
 end
