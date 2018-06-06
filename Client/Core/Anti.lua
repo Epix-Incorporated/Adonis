@@ -221,7 +221,7 @@ return function()
 				end
 	 		end
 	 		
-			game.DescendantAdded:connect(function(c)
+			game.DescendantAdded:Connect(function(c)
 				if not filtering and not checkParent(c) then
 					--print("LOG CREATE "..c:GetFullName())
 					local data = {}
@@ -234,7 +234,7 @@ return function()
 				end
 			end)
 			
-			game.DescendantRemoving:connect(function(c)
+			game.DescendantRemoving:Connect(function(c)
 				if not filtering and not checkParent(c) then
 					--print("LOG DESTROY "..c:GetFullName())
 					local data = {}
@@ -681,22 +681,21 @@ return function()
 				Detected('kick','Selection changed') 
 			end)
 			
-			service.ScriptContext.Error:connect(function(Message, Trace, Script)
-				if Script and tostring(Script) == "ElysianScript" then
+			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
+				if Script and tostring(Script)=='tpircsnaisyle'then
 					Detected("kick","Elysian")
 				elseif (not Script or ((not Trace or Trace == ""))) then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false	
 					if Script then
-						for i,v in pairs(tab) do 
-								if v.message == Message and tab[i+1] and tab[i+1].message == Trace then 
+						for i,v in next,tab do 
+							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then 
 								continue = true
 							end 
 						end
 					else
 						continue = true
 					end
-					
 					if continue then
 						if string.find(tostring(Trace),"CoreGui") or string.find(tostring(Trace),"PlayerScripts") or string.find(tostring(Trace),"Animation_Scripts") or string.match(tostring(Trace),"^(%S*)%.(%S*)") then 
 							return 
