@@ -741,16 +741,18 @@ return function()
 		Get = function(p,com,...)
 			local keys = server.Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
-				local returns
+				local returns, finished
 				local key = server.Functions:GetRandom()
-				local event = service.Events[key]:connect(function(...) returns = {...} end)
+				local event = service.Events[key]:Connect(function(...) finished = true returns = {...} end)
 				
 				server.Remote.PendingReturns[key] = true
 				server.Remote.Send(p,"GetReturn",com,key,...)
 				
-				if not returns then
-					delay(120, function() event:Fire() warn("GetData Request to "..tostring(p).." Timed Out") end)
+				if not returns and p.Parent then
+					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
+					delay(600, function() if not finished then event:Fire() end end)
 					returns = {event:Wait()}
+					pEvent:Disconnect()
 				end
 				
 				event:Disconnect()

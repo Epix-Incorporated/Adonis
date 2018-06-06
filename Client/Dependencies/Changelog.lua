@@ -1,6 +1,10 @@
 return {
-	"Version: 132";
+	"Version: 133";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.20b [6/6/2018]";
+	"*Fixed an issue where the script would spam the console with GetData timeouts";
+	"*Server to client GetData requests will now end if the player leaves, instead of waiting for the timeout";
 	"";
 	"1.2.19b [6/3/2018]";
 	"*Removed HopperBin building tools from :btools; Roblox killed/removed them";
