@@ -10,6 +10,7 @@ logError = nil
 return function()
 	server.Core = {
 		DataQueue = {};
+		DataCache = {};
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
@@ -567,6 +568,7 @@ return function()
 			local saveCache = {}
 			local updateCache = {}
 			local ran,store = pcall(function() return service.DataStoreService:GetDataStore(server.Settings.DataStore:sub(1,50),"Adonis") end)
+			
 			--[[
 			
 			--// Todo:
@@ -633,6 +635,7 @@ return function()
 				
 				service.StartLoop("DataUpdate",30,store.Update,true)
 			end--]]
+			
 			return ran and store
 		end;
 		
@@ -644,21 +647,39 @@ return function()
 			return server.Core.SetData(...)
 		end;
 		
-		SetData = function(key,value)
+		SetData = function(key, value)
 			if server.Core.DataStore then
-				return server.Core.DataStore:SetAsync(server.Core.DataStoreEncode(key), value)
+				local ran, ret = pcall(server.Core.DataStore.SetAsync, server.Core.DataStore, server.Core.DataStoreEncode(key), value)
+				if ran then
+					server.Core.DataCache[key] = value
+					return ret
+				else
+					logError("DataStore SetAsync Failed: ".. tostring(ret))
+				end
 			end
 		end;
 		
 		UpdateData = function(key, func)
 			if server.Core.DataStore then
-				return server.Core.DataStore:UpdateAsync(server.Core.DataStoreEncode(key), func)
+				local ran, ret = pcall(server.Core.DataStore.UpdateAsync, server.Core.DataStore, server.Core.DataStoreEncode(key), func)
+				if ran then
+					return ret
+				else
+					logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+				end
 			end
 		end;
 		
 		GetData = function(key)
 			if server.Core.DataStore then
-				return server.Core.DataStore:GetAsync(server.Core.DataStoreEncode(key))
+				local ran, ret = pcall(server.Core.DataStore.GetAsync, server.Core.DataStore, server.Core.DataStoreEncode(key))
+				if ran then
+					server.Core.DataCache[key] = ret
+					return ret
+				else
+					logError("DataStore GetAsync Failed: ".. tostring(ret))
+					return server.Core.DataCache[key]
+				end
 			end
 		end;
 		

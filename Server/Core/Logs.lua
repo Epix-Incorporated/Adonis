@@ -317,7 +317,7 @@ return function()
 				local temp = {"Player is currently unreachable"}
 				
 				if player then
-					temp = server.Remote.Get(player, "ClientLog") or temp
+					temp = (player.Parent and server.Remote.Get(player, "ClientLog")) or temp
 				end
 				
 				return temp

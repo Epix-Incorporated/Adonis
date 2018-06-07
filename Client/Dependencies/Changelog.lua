@@ -2,6 +2,12 @@ return {
 	"Version: 134";
 	"*Click and drag edges to expand*";
 	"";
+	"1.2.22b [6/7/2018]";
+	"*Killed some datastore error spam";
+	"*Fixed a method call issue";
+	"*Possibly fixed a locallog refresh issue";
+	"*Possibly fixed an infinite wait for a torso";
+	"";
 	"1.2.21b [6/7/2018]";
 	"*Fixed an issue where the script wasn't accepting blank command prefixes";
 	"";

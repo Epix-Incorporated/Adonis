@@ -357,7 +357,7 @@ return function()
 		Paranoid = function(data)
 			wait(1)
 			local char = service.Player.Character
-			local torso = char:WaitForChild("Torso")
+			local torso = char:WaitForChild("Head")
 			local humPart = char:WaitForChild("HumanoidRootPart")
 			local hum = char:WaitForChild("Humanoid")
 			while torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do

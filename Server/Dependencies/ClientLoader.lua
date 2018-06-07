@@ -69,7 +69,7 @@ local function warn(str)
 end
 
 local function Kill(info)
-	pcall(function() Kick(info) end) 
+	pcall(function() Kick(player, info) end) 
 	wait(1)
 	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
 end
@@ -188,7 +188,7 @@ local function scan()
 		for i,child in next,player:GetChildren() do
 			doPcall(checkChild, child)
 		end
-	end) then warn("Scan failed?") Kick("ACLI: Loading Error [Scan failed]"); end
+	end) then warn("Scan failed?") Kick(player, "ACLI: Loading Error [Scan failed]"); end
 end
 
 --// Load client
@@ -229,7 +229,7 @@ end
 warn("Checking if client found...")
 if not foundClient then
 	warn("Loading took too long")
-	Kick("ACLI: Loading Error [Took Too Long]")
+	Kick(player, "ACLI: Loading Error [Took Too Long]")
 else
 	print("Debug: Adonis loaded?")
 	warn("Client found")
