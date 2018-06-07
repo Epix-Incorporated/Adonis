@@ -1,6 +1,9 @@
 return {
-	"Version: 133";
+	"Version: 134";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.21b [6/7/2018]";
+	"*Fixed an issue where the script wasn't accepting blank command prefixes";
 	"";
 	"1.2.20b [6/6/2018]";
 	"*Fixed an issue where the script would spam the console with GetData timeouts";

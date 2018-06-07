@@ -14,6 +14,7 @@ return function()
 		SpecialLevels = {};
 		GroupRanks = {};
 		TempAdmins = {};
+		BlankPrefix = false;
 		
 		GetTrueRank = function(p, group)
 			local localRank = server.Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)
@@ -554,16 +555,18 @@ return function()
 			local tempPrefix = {}
 			for ind,data in next,server.Commands do
 				for i,cmd in next,data.Commands do
+					if data.Prefix == "" then server.Variables.BlankPrefix = true end
 					tempPrefix[data.Prefix] = true
 					tempTable[(data.Prefix..cmd):lower()] = ind
 				end
 			end
+			
 			server.Admin.PrefixCache = tempPrefix
 			server.Admin.CommandCache = tempTable
 		end;
 		
 		GetCommand = function(Command)
-			if server.Admin.PrefixCache[Command:sub(1,1)] then
+			if server.Admin.PrefixCache[Command:sub(1,1)] or server.Variables.BlankPrefix then
 				local matched
 				if Command:find(server.Settings.SplitKey) then
 					matched = Command:match("^(%S+)"..server.Settings.SplitKey)
