@@ -216,6 +216,7 @@ local descs = {}
 	
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools 	
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
+	settings.BackupMapStartup = not workspace.FilteringEnabled -- Set this related to the FilteringEnabled setting, users mostly wont need this enabled if FE is on.
 	
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist

@@ -216,6 +216,7 @@ local descs = {}
 	
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools 	
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
+	settings.BackupMapStartup = true	-- Make a copy of the map when the server starts, usually set this to false if server is Filtering Enabled as restoremap may never be necessary.
 	
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist
