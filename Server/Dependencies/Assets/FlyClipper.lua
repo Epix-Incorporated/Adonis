@@ -1,5 +1,6 @@
 wait()
-local localplayer = game.Players.LocalPlayer
+local players = game:GetService("Players")
+local localplayer = players.LocalPlayer
 local torso = localplayer.Character.HumanoidRootPart 
 local hum = localplayer.Character.Humanoid
 local mouse = localplayer:GetMouse()
@@ -23,6 +24,7 @@ local moos = mouse.KeyDown:connect(function(key)
 		spd = spd - 1 
 	end 
 end) 
+
 local moos1 = mouse.KeyUp:connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 0 

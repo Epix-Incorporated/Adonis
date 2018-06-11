@@ -5156,9 +5156,9 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+				for i, v in next,service.GetPlayers(plr,args[1]) do
 					if v.Character then 
-						for a, obj in pairs(v.Character:children()) do 
+						for a, obj in next,v.Character:GetChildren() do 
 							if obj:IsA("BasePart") then 
 								obj.Transparency = 1 
 								if obj:findFirstChild("face") then 
@@ -5166,6 +5166,13 @@ return function()
 								end 
 							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then 
 								obj.Handle.Transparency = 1 
+							elseif obj:IsA("ForceField") then
+								obj.Visible = false
+							elseif obj.Name == "Head" then
+								local face = obj:FindFirstChildOfClass("Decal")
+								if face then 
+									face.Transparency = 1
+								end
 							end
 						end
 					end
@@ -5182,9 +5189,9 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+				for i, v in next,service.GetPlayers(plr,args[1]) do
 					if v.Character then 
-						for a, obj in pairs(v.Character:children()) do 
+						for a, obj in next,v.Character:GetChildren() do 
 							if obj:IsA("BasePart") and obj.Name~='HumanoidRootPart' then 
 								obj.Transparency = 0 
 								if obj:findFirstChild("face") then 
@@ -5192,6 +5199,13 @@ return function()
 								end 
 							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then 
 								obj.Handle.Transparency = 0 
+							elseif obj:IsA("ForceField") then
+								obj.Visible = true
+							elseif obj.Name == "Head" then
+								local face = obj:FindFirstChildOfClass("Decal")
+								if face then 
+									face.Transparency = 0
+								end
 							end
 						end
 					end
@@ -6159,8 +6173,9 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]]..args[2])
+				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid")
+				for i,v in next,service.GetPlayers(plr, args[1]) do
+					server.Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
 				end
 			end
 		};
