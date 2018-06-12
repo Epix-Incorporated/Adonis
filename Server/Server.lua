@@ -519,7 +519,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end)
 	
 	--// Backup Map
-	service.TrackTask("Thread: Initial Map Backup", server.Admin.RunCommand, server.Settings.Prefix.."backupmap")
+	if server.Settings.AutoBackup then
+		service.TrackTask("Thread: Initial Map Backup", server.Admin.RunCommand, server.Settings.Prefix.."backupmap")
+	end 
 	--service.Threads.RunTask("Initial Map Backup",server.Admin.RunCommand,server.Settings.Prefix.."backupmap")
 	
 	--// AutoClean
