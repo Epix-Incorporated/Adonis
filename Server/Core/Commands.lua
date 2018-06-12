@@ -9491,6 +9491,10 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
+				if not server.Variables.MapBackup then
+					error("Backup map wasn't enabled")
+					return
+				end 
 				server.Functions.Hint('Restoring Map...',service.Players:children())
 				
 				for i,v in pairs(service.Workspace:children()) do
