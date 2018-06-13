@@ -123,13 +123,11 @@ local CleanUp = function()
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
 	service.Threads.StopAll()
-	
 	for i,v in next,RbxEvents do 
 		print("Disconnecting event") 
 		v:Disconnect() 
 		table.remove(RbxEvents, i) 
 	end
-	
 	loader.Archivable = false
 	loader.Disabled = true
 	loader:Destroy()
@@ -138,11 +136,11 @@ local CleanUp = function()
 		server.Core.RemoteEvent.Event:Disconnect()
 		server.Core.RemoteEvent.DecoySecurity1:Disconnect()
 		server.Core.RemoteEvent.DecoySecurity2:Disconnect()
-		pcall(function() service.Delete(server.Core.RemoteEvent.Object) end)
-		pcall(function() service.Delete(server.Core.RemoteEvent.Decoy1) end)
-		pcall(function() service.Delete(server.Core.RemoteEvent.Decoy2) end)
+		pcall(service.Delete,server.Core.RemoteEvent.Object)
+		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
+		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
 	end
-	warn("Unloading complete")
+	warn'Unloading complete'
 end;
 
 server = {
