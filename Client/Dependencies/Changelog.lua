@@ -1,12 +1,16 @@
 return {
-	"Version: 135";
+	"Version: 136";
 	"*Click and drag edges to expand*";
 	"";
-	"1,2,23b [6/10/2018]";
+	"1.2.24b [6/13/2018]";
+	"*Updated team commands";
+	"";
+	"1.2.23b [6/10/2018]";
 	"*Fixed an issue where messages wouldn't go away if spammed";
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
+	"*Also Adonis is now on Github https://github.com/Sceleratis/Adonis";
 	"";
 	"1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";

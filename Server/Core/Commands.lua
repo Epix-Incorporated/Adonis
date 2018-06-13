@@ -6064,7 +6064,7 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					for a, tm in pairs(service.Teams:children()) do
 						if tm.Name:lower():sub(1,#args[2]) == args[2]:lower() then 
-							v.TeamColor = tm.TeamColor 
+							v.Team = tm
 						end
 					end
 				end
@@ -6096,7 +6096,7 @@ return function()
 					end
 					
 					if player and player.Parent then
-						player.TeamColor = team.TeamColor
+						player.Team = team
 					end
 					
 					table.remove(players,pIndex)
@@ -6140,10 +6140,10 @@ return function()
 			Function = function(plr,args)
 			 	local color = BrickColor.new(math.random(1,227))
 				if BrickColor.new(args[2])~=nil then color=BrickColor.new(args[2]) end
-				local team=service.New("Team",service.Teams)
-				team.Name=args[1]
-				team.AutoAssignable=false
-				team.TeamColor=color
+				local team = service.New("Team", service.Teams)
+				team.Name = args[1]
+				team.AutoAssignable = false
+				team.TeamColor = color
 			end
 		};
 		
