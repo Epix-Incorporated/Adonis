@@ -138,7 +138,7 @@ local descs = {}
 	
 	settings.HideScript = true						 -- Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
-	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encode all datastore entries; Changing this will lose any saved data
+	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 	settings.Storage = game:service("ServerStorage") -- Where things like tools are stored
 	

@@ -51,16 +51,17 @@ else
 		ModuleID = 359948692;
 		LoaderID = 360052698;
 		
-		DebugMode = true
+		DebugMode = false
 	}
+	
 	--// Init
 	script:Destroy()
 	model.Name = math.random()
 	local moduleId = data.ModuleID
-	local a,setTab=pcall(require,settings)
+	local a,setTab = pcall(require,settings)
 	if not a then
 		warn'::Adonis:: Settings module errored while loading; Using defaults;'
-		setTab={}
+		setTab = {}
 	end
 	data.Settings, data.Descriptions, data.Order = setTab.Settings,setTab.Descriptions,setTab.Order
 	for _,Plugin in next,plugins:GetChildren()do if Plugin.Name:sub(1,8)=="Client: " then table.insert(data.ClientPlugins,Plugin) elseif Plugin.Name:sub(1,8)=="Server: " then table.insert(data.ServerPlugins,Plugin) else warn("Unknown Plugin Type for "..tostring(Plugin)) end end

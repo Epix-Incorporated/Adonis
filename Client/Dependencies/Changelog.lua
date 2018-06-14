@@ -4,6 +4,8 @@ return {
 	"";
 	"1.2.24b [6/13/2018]";
 	"*Updated team commands";
+	"*Updated Rerubi";
+	"*Merged some changes from GitHub";
 	"";
 	"1.2.23b [6/10/2018]";
 	"*Fixed an issue where messages wouldn't go away if spammed";
