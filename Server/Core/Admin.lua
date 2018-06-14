@@ -621,7 +621,7 @@ return function()
 				return true
 			elseif isFun and not funAllowed and adminLevel < 4 then
 				return false
-			elseif server.Core.EmergencyMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
+			elseif server.Core.PanicMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
 				return true
 			elseif comLevel=="Players" and (server.Settings.PlayerCommands or adminLevel >= 1) then
 				return true
