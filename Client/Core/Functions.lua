@@ -196,7 +196,7 @@ return function()
 				if not client.Anti.ObjRLocked(child) then
 					local good = false
 					
-					for i,v in pairs(classes) do
+					for i,v in next,classes do
 						if child:IsA(v) then
 							good = true
 						end
@@ -208,13 +208,13 @@ return function()
 							Children = {};
 						}
 						
-						for i,v in pairs(props) do
+						for i,v in next,props do
 							pcall(function()
 								new.Properties[v] = child[v]
 							end)
 						end
 						
-						for i,v in pairs(child:GetChildren()) do
+						for i,v in next,child:GetChildren()do
 							add(new,v)
 						end
 						table.insert(tab.Children, new)
@@ -223,13 +223,9 @@ return function()
 					rLockedFound = true
 				end
 			end
-			
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
-				pcall(function()
-					add(guis,v)
-				end)
+			for i,v in next,service.PlayerGui:GetChildren()do
+				pcall(add,guis,v)
 			end
-			
 			return guis
 		end;
 		
@@ -239,13 +235,13 @@ return function()
 				local children = dat.Children
 				local gui = service.New(props.ClassName)
 				
-				for i,v in pairs(props) do
+				for i,v in next,props do
 					pcall(function() 
 						gui[i] = v
 					end)
 				end
 				
-				for i,v in pairs(children) do
+				for i,v in next,children do
 					pcall(function()
 						local g = make(v)
 						if g then
@@ -257,18 +253,14 @@ return function()
 			end
 			
 			local temp = Instance.new("Folder")
-			
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
+			for i,v in next,service.PlayerGui:GetChildren()do
 				if not client.UI.Get(v) then
 					v.Parent = temp
 				end
 			end
-			
 			client.Variables.GuiViewFolder = temp
-			
 			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			
-			for i,v in pairs(data.Children) do
+			for i,v in next,data.Children do
 				pcall(function()
 					local g = make(v)
 					if g then
@@ -279,14 +271,14 @@ return function()
 		end;
 		
 		UnLoadGuiData = function()
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
+			for i,v in next,service.PlayerGui:GetChildren()do
 				if v.Name == "LoadedGuis" then
 					v:Destroy()
 				end
 			end
 			
 			if client.Variables.GuiViewFolder then
-				for i,v in pairs(client.Variables.GuiViewFolder:GetChildren()) do
+				for i,v in next,client.Variables.GuiViewFolder:GetChildren()do
 					v.Parent = service.PlayerGui
 				end
 				client.Variables.GuiViewFolder:Destroy()
@@ -296,7 +288,7 @@ return function()
 		
 		GetParticleContainer = function(target)
 			if target then
-				for i,v in pairs(service.LocalContainer():GetChildren()) do
+				for i,v in next,service.LocalContainer():GetChildren()do
 					if v.Name == target:GetFullName().."PARTICLES" then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
@@ -330,7 +322,7 @@ return function()
 				weld.Part1 = target
 				weld.C0 = CFrame.new(0,0,0)
 				
-				weld.Changed:connect(function()
+				weld.Changed:Connect(function()
 					if not weld or not weld.Parent or weld.Parent ~= part or not target or not target.Parent then
 						part:Destroy()
 					end
@@ -339,7 +331,7 @@ return function()
 			
 			local effect = service.New(class, part)
 			
-			for prop,value in pairs(properties) do
+			for prop,value in next,properties do
 				effect[prop] = value
 			end
 			
@@ -350,7 +342,7 @@ return function()
 			
 			client.Variables.Particles[index] = effect
 			
-			effect.Changed:connect(function()
+			effect.Changed:Connect(function()
 				if not effect or not effect.Parent or effect.Parent ~= part then
 					client.Variables.Particles[index] = nil
 				end
@@ -369,7 +361,7 @@ return function()
 		end;
 		
 		EnableParticles = function(enabled)
-			for i,effect in pairs(client.Variables.Particles) do
+			for i,effect in next,client.Variables.Particles do
 				if enabled then
 					effect.Enabled = true
 				else
@@ -416,7 +408,7 @@ return function()
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
-			for ind,obj in pairs(par:GetChildren()) do
+			for ind,obj in next,par:GetChildren()do
 				if obj.Name == object or obj == obj then
 					obj.Parent = newParent
 				end
@@ -517,18 +509,16 @@ return function()
 				end
 			end
 		end;
-		
 		RemoveCape = function(parent)
-			for i,v in pairs(client.Variables.Capes) do
+			for i,v in next,client.Variables.Capes do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
-					pcall(function() v.Part:Destroy() end)
+					pcall(v.Part.Destroy,v.Part)
 					client.Variables.Capes[i] = nil
 				end
 			end
 		end;
-		
 		HideCapes = function(hide)
-			for i,v in pairs(client.Variables.Capes) do
+			for i,v in next,client.Variables.Capes do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -553,7 +543,7 @@ return function()
 						v.Enabled = false
 					end
 				else
-					pcall(function() part:Destroy() end)
+					pcall(part.Destroy,part)
 					client.Variables.Capes[i] = nil
 				end
 			end
@@ -565,7 +555,7 @@ return function()
 				if client.Functions.CountTable(client.Variables.Capes) == 0 or not client.Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i,v in pairs(client.Variables.Capes) do
+					for i,v in next,client.Variables.Capes do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -609,7 +599,7 @@ return function()
 								end
 							end
 						else
-							pcall(function() part:Destroy() end)
+							pcall(part.Destroy,part)
 							client.Variables.Capes[i] = nil
 						end
 					end
@@ -619,7 +609,7 @@ return function()
 		
 		CountTable = function(tab)
 			local count = 0
-			for i,v in pairs(tab) do
+			for i,v in next,tab do
 				count = count+1
 			end
 			return count
@@ -634,7 +624,9 @@ return function()
 		end;
 		
 		PlayAnimation = function(animId)
-			for i,v in pairs(service.Player.Character.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
+			for i,v in next,service.Player.Character.Humanoid:GetPlayingAnimationTracks()do
+				v:Stop()
+			end
 			if animId == 0 then return end
 			local anim = service.New('Animation')
 			anim.AnimationId = 'http://www.roblox.com/Asset?ID='..animId
@@ -653,7 +645,7 @@ return function()
 		LocalLighting = function(on)
 			if on then
 				service.StartLoop("LocalLighting","RenderStepped",function()
-					for prop,value in pairs(client.Variables.LightingSettings) do
+					for prop,value in next,client.Variables.LightingSettings do
 						if service.Lighting[prop]~=nil then
 							service.Lighting[prop] = value
 						end
@@ -823,7 +815,7 @@ return function()
 			local timer = 0
 			client.Variables.KeyBinds = client.Remote.Get("PlayerData").Keybinds or {}
 				
-			service.UserInputService.InputBegan:connect(function(input)
+			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
 				local textbox = service.UserInputService:GetFocusedTextBox()
 				
@@ -879,7 +871,7 @@ return function()
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
-				for i,v in pairs(workspace.CurrentCamera:children()) do
+				for i,v in next,workspace.CurrentCamera:GetChildren()do
 					if v.Name == "ADONIS_WINDOW_FUNC_BLUR" then
 						v:Destroy() 
 					end
@@ -936,7 +928,7 @@ return function()
 		end;
 		
 		KillAllLocalAudio = function()
-			for i,v in pairs(client.Variables.localSounds) do
+			for i,v in next,client.Variables.localSounds do
 				v:Stop()
 				v:Destroy()
 				table.remove(client.Variables.localSounds,i)
@@ -944,7 +936,7 @@ return function()
 		end;
 		
 		RemoveGuis = function()
-			for i,v in pairs(service.PlayerGui:children()) do
+			for i,v in next,service.PlayerGui:GetChildren()do
 				if not client.UI.Get(v) then
 					v:Destroy()
 				end
