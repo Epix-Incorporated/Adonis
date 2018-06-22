@@ -47,8 +47,8 @@ return function()
 		
 		GetEvent = function()
 			if client.Core.RemoteEvent then
-				client.Core.RemoteEvent.Event:disconnect()
-				client.Core.RemoteEvent.Security:disconnect()
+				client.Core.RemoteEvent.Event:Disconnect()
+				client.Core.RemoteEvent.Security:Disconnect()
 				client.Core.RemoteEvent = nil
 			end
 			
@@ -66,8 +66,8 @@ return function()
 				if event then
 					client.Core.RemoteEvent.Object = event
 					client.Core.RemoteEvent.FireServer = event.FireServer
-					client.Core.RemoteEvent.Event = event.OnClientEvent:connect(client.Process.Remote)--]]
-					client.Core.RemoteEvent.Security = event.Changed:connect(function(p)
+					client.Core.RemoteEvent.Event = event.OnClientEvent:Connect(client.Process.Remote)--]]
+					client.Core.RemoteEvent.Security = event.Changed:Connect(function(p)
 						if p == "RobloxLocked" and client.Anti.RLocked(event) then
 							client.Kill("RemoteEvent Locked")
 						elseif not event or not event.Parent then
@@ -94,7 +94,7 @@ return function()
 				end
 				
 				for ind,e in next,events do 
-					e.Event:disconnect() events[ind] = nil
+					e.Event:Disconnect() events[ind] = nil
 				end
 				
 				for i,child in next,children do
@@ -103,14 +103,14 @@ return function()
 						rindex = index
 						if not events[child] then
 							local eventTab; eventTab = {
-								Event = child.OnClientEvent:connect(function(com, ...)
+								Event = child.OnClientEvent:Connect(function(com, ...)
 									if com == "TrustCheck" and select(1,...) == client.Core.Special and not found then
 										found = child
 										client.Core.RemoteEvent.Event = eventTab.Event
 										finishEvent(child)
 										for ind,e in next,events do 
 											if ind ~= child then
-												e.Event:disconnect() events[ind] = nil
+												e.Event:Disconnect() events[ind] = nil
 											end
 										end
 									elseif found and found == child then
