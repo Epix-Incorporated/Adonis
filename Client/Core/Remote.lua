@@ -93,7 +93,7 @@ return function()
 			
 			UIKeepAlive = function(args)
 				if client.Variables.UIKeepAlive then
-					for ind,g in pairs(client.GUIs) do
+					for ind,g in next,client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
 								g.Object.Parent = service.PlayerGui
@@ -138,7 +138,7 @@ return function()
 					end
 				end
 				
-				for i,v in next,service.LogService:GetLogHistory() do
+				for i,v in next,service.LogService:GetLogHistory()do
 					if v.messageType==Enum.MessageType.MessageOutput then
 						toTab(v.message, "Output: ")
 						--table.insert(temp,{Text=v.message,Desc='Output: '..v.message})
@@ -155,24 +155,22 @@ return function()
 				end
 				
 				return temp
-			end;
+			end
 		};
 		
 		UnEncrypted = {
 			LightingChange = function(prop,val)
-				print(prop)
-				print("TICKLE ME!?")
+				print(prop,"TICKLE ME!?")
 				client.Variables.LightingChanged = true
 				service.Lighting[prop] = val
 				client.Anti.LastChanges.Lighting = prop
-				wait(0.1)
+				wait(.1)
 				client.Variables.LightingChanged = false
-				print("TICKLED :)")
-				print(client.Variables.LightingChanged)
+				print("TICKLED :)",client.Variables.LightingChanged)
 				if client.Anti.LastChanges.Lighting == prop then
 					client.Anti.LastChanges.Lighting = nil
 				end
-			end;
+			end
 		};
 		
 		Commands = {
@@ -181,7 +179,7 @@ return function()
 				local key = args[2]
 				local parms = {unpack(args,3)}
 				local retfunc = client.Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
+				local retable = (retfunc and {pcall(retfunc,parms)})or{}
 				if retable[1] ~= true then
 					logError(retable[2])
 				else
@@ -198,7 +196,7 @@ return function()
 			
 			SetVariables = function(args)
 				local vars = args[1]
-				for var,val in pairs(vars) do
+				for var,val in next,vars do
 					client.Variables[var] = val
 				end
 			end;
