@@ -19,7 +19,7 @@ local methods = setmetatable({},{
 					RealMethods[class][index] = obj[index]
 				end
 				
-				if RealMethods[class][index] ~= obj[index] or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] or pcall(function()return coroutine.create(obj[index])end)then
 					if ErrorHandler then
 						ErrorHandler("MethodError", "Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
@@ -145,7 +145,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					if #v == 0 then
 						HookedEvents[i] = nil
 					else
-						for ind,waiter in pairs(WaitingEvents) do
+						for ind,waiter in next,WaitingEvents do
 							if waiter.Waiting and waiter.Timeout ~= 0 and tick() - waiter.Last > waiter.Timeout then 
 								waiter:Remove()
 							end
@@ -335,7 +335,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				R_Status = "Idle";
 				Finished = {};
 				Function = function(...) newTask.R_Status = "Running" newTask.Running = true local ret = {func(...)} newTask.R_Status = "Finished" newTask.Running = false newTask.Remove() return unpack(ret) end;
-				Remove = function() newTask.R_Status = "Removed" newTask.Running = false for i,v in pairs(service.Threads.Tasks) do if v == newTask then table.remove(service.Threads.Tasks,i) end end newTask.Changed:fire("Removed") newTask.Finished:fire() service.RemoveEvents(index.."_TASKCHANGED") service.RemoveEvents(index.."_TASKFINISHED") newTask.Thread = nil end;
+				Remove = function() newTask.R_Status = "Removed" newTask.Running = false for i,v in next,service.Threads.Tasks do if v == newTask then table.remove(service.Threads.Tasks,i) end end newTask.Changed:fire("Removed") newTask.Finished:fire() service.RemoveEvents(index.."_TASKCHANGED") service.RemoveEvents(index.."_TASKFINISHED") newTask.Thread = nil end;
 				Thread = service.Threads.Create(function(...) return newTask.Function(...) end);
 				Resume = function(...) newTask.R_Status = "Resumed" newTask.Running = true newTask.Changed:fire("Resumed") local rets = {service.Threads.Resume(newTask.Thread,...)} if not rets[1] then ErrorHandler("TaskError", rets[2]) newTask.Changed:fire("Errored",rets[2]) newTask.Remove() end return unpack(rets) end;
 				Status = function() if newTask.Timeout ~= 0 and ((os.time() - newTask.Created) > newTask.Timeout) then newTask:Stop() return "timeout" else return service.Threads.Status(newTask.Thread) end end;
@@ -416,8 +416,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		End = function(thread) repeat if thread and service.Threads.Status(thread) ~= "dead" then service.Threads.Stop(thread) service.Threads.Resume(thread) else thread = false break end until not thread or service.Threads.Status(thread) == "dead" end;
 		Wrap = function(func,...) local new = service.Threads.New(func) service.Threads.Resume(func,...) return new end;
 		Resume = function(thread,...) if thread and coroutine.status(thread) == "suspended" then return coroutine.resume(thread,...) end end;
-		Remove = function(thread) service.Threads.Stop(thread) for ind,th in pairs(service.Threads.Threads) do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
-		StopAll = function() for ind,th in pairs(service.Threads.Threads) do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in pairs(service.Threads.Threads) do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
+		Remove = function(thread) service.Threads.Stop(thread) for ind,th in next,service.Threads.Threads do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
+		StopAll = function() for ind,th in next,service.Threads.Threads do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in next,service.Threads.Threads do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
 	},{
 		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = "Ignore"}) end;
 		CheckWrappers = function()
@@ -505,7 +505,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					
 					wait = function(ignore,...)
 						return Wrap(object.wait)(object, ...)
-					end;
+					end
 				}
 				
 				custom.Connect = custom.connect
@@ -557,7 +557,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
 		Timer = function(t,func,check)
 			local start = tick()
-			local event; event = service.RunService.RenderStepped:connect(function()
+			local event; event = service.RunService.RenderStepped:Connect(function()
 				if tick()-start>t or (check and check()) then
 					func()
 					event:disconnect()
@@ -594,8 +594,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.Chat:FilterStringAsync(lines[i],from,to) end)
-				newl = (ran and newl) or lines[i] or ""
+				local ran,newl=pcall(service.Chat.FilterStringAsync,service.Chat,lines[i],from,to)
+				newl=(ran and newl)or lines[i]or''
 				if i > 1 then
 					new = new.."\n"..newl
 				else
@@ -621,8 +621,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.Chat:FilterStringForBroadcast(lines[i],from) end)
-				newl = (ran and newl) or lines[i] or ""
+				local ran,newl=pcall(service.Chat.FilterStringForBroadcast,service.Chat,lines[i],from)
+				newl=(ran and newl)or lines[i]or''
 				if i > 1 then
 					new = new.."\n"..newl
 				else
@@ -635,8 +635,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return service.NewProxy {
 				__call = function(tab,...) 
 					return func(...) 
-				end
-			} 
+				end}
 		end;
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
@@ -646,7 +645,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return newProxy
 		end;
 		GetUserType = function(obj)
-			local ran,err = pcall(function() local temp = obj[math.random()] end)
+			local ran,err=pcall(function()local temp=obj[math.random()]end)
 			if ran then
 				return "Unknown"
 			else
@@ -666,8 +665,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			table.insert(queue,{
 				Function = func;
 				Running = false;
-				Time = tick();
-			})
+				Time = tick()})
 			service.ProcessQueue(queue)
 		end;
 		Debounce = function(key,func)
@@ -682,7 +680,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return false
 			else
 				Debounces[key] = true
-				local ran,err = pcall(func)
+				local ran,err=pcall(func)
 				Debounces[key] = false
 				if not ran then
 					error(err)
@@ -698,7 +696,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					while wait() and service.CountTable(queue) > 0 do 
 						for i,v in next,queue do
 							if v.Running then
-								repeat wait() until not v.Running or not queue[i]
+								repeat wait()until not v.Running or not queue[i]
 							else
 								v.Running = true
 								pcall(v.Function)
@@ -743,7 +741,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					if service.Wrapped(parent) then parent = parent:GetObject() end
 					data.Parent = nil
 					
-					for val,prop in pairs(data) do 
+					for val,prop in next,data do 
 						new[val] = prop 
 					end 
 					
@@ -814,8 +812,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				Name = name;
 				Delay = delay;
 				Function = func;
-				Running = true;
-			}
+				Running = true}
 			
 			local index = tostring(name).." - "..main.Functions:GetRandom()
 			
@@ -882,14 +879,14 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return tab
 		end;
 		StopLoop = function(name)
-			for ind,loop in pairs(RunningLoops) do
+			for ind,loop in next,RunningLoops do
 				if name == loop.Function or name == loop.Name then
 					loop.Running = false
 				end
 			end
 		end;
 		FindClass = function(parent, class)
-			for ind, child in next,parent:GetChildren() do
+			for ind, child in next,parent:GetChildren()do
 				if child:IsA(class) then
 					return child
 				end
@@ -913,9 +910,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				full_access = true; 
 				elysianexecute = true; 
 				decompile = true; 
-				make_writable = true;
-			}	
-			
+				make_writable = true
+			}
 			return service.NewProxy {
 				__index = function(tab, ind)
 					local topEnv = doChecks and get and get(2)
@@ -942,8 +938,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						if killOnError then
 							ErrorHandler("ReadError", "Tampering with Client [write wt0005]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 						end
-						
-						error("Read-only")
+						error'Read-only'
 					else
 						rawset(tabl, ind, new)
 					end
@@ -954,21 +949,21 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 		Wait = function(mode)
 			if not mode or mode == "Stepped" then
-				service.RunService.Stepped:wait()
+				service.RunService.Stepped:Wait()
 			elseif mode == "Heartbeat" then
-				service.RunService.Heartbeat:wait()
+				service.RunService.Heartbeat:Wait()
 			elseif mode and tonumber(mode) then
 				wait(tonumber(mode))
 			end
 		end;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
+		ForEach = function(tab, func)for i,v in next,tab do func(tab,i,v)end return tab end;
 		OrigRawEqual = rawequal;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
-		HasItem = function(obj, prop) return pcall(function() return obj[prop] end) end;
+		ForEach = function(tab, func)for i,v in next,tab do func(tab,i,v)end return tab end;
+		HasItem = function(obj, prop)return pcall(function()return obj[prop]end)end;
 		IsDestroyed = function(object) 
 			if type(object) == "userdata" and service.HasItem(object, "Parent") then 
 				if object.Parent == nil then
-					local ran,err = pcall(function() object.Parent = game object.Parent = nil end)
+					local ran,err=pcall(function()object.Parent=game object.Parent=nil end)
 					if not ran then
 						if err and string.match(err, "^The Parent property of (.*) is locked, current parent: NULL,") then
 							return true
@@ -986,8 +981,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 		GetPlayers = function() return service.Players:GetPlayers() end;
 		IsAdonisObject = function(obj) for i,v in next,CreatedItems do if v == obj then return true end end end;
-		GetAdonisObjects = function() return CreatedItems end;
-	}
+		GetAdonisObjects = function() return CreatedItems end}
 	
 	service = setmetatable({
 		Variables = function() return ServiceVariables end;
@@ -1005,32 +999,30 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		GamepassService = game:service("GamePassService");
 		ChatService = game:service("Chat");
 		Gamepasses = game:service("GamePassService");
-		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0)) pcall(obj.Delete, obj) end;
-		RbxEvent = function(signal, func) local event = signal:connect(func) table.insert(RbxEvents, event) return event end;
-		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
-		SanitizeString = function(str) str = service.Trim(str) local new = "" for i = 1,#str do if str:sub(i,i) ~= "\n" and str:sub(i,i) ~= "\0" then new = new..str:sub(i,i) end end return new end;
-		Trim = function(str) return str:match("^%s*(.-)%s*$") end; 
-		Round = function(num) return math.floor(num + 0.5) end;
-		Localize = function(obj, readOnly) if type(obj) == "table" then local newTab = {} for i in next,obj do newTab[i] = service.Localize(obj[i], readOnly) end return (readOnly and service.ReadOnly(newTab)) or newTab else return obj end end;
+		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0))pcall(obj.Delete,obj)end;
+		RbxEvent = function(signal, func) local event = signal:connect(func)table.insert(RbxEvents,event) return event end;
+		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v==signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
+		SanitizeString = function(str)str=service.Trim(str)local new=''for i = 1,#str do if str:sub(i,i) ~= "\n" and str:sub(i,i) ~= "\0" then new = new..str:sub(i,i) end end return new end;
+		Trim = function(str)if not str then str=''end return str:match'^%s*(.-)%s*$'end; 
+		Round = function(num)return math.floor(num+0.5)end;
+		Localize = function(obj, readOnly)if type(obj)=='table'then local newTab={}for i in next,obj do newTab[i] = service.Localize(obj[i], readOnly) end return (readOnly and service.ReadOnly(newTab)) or newTab else return obj end end;
 		RawEqual = function(obj1, obj2) return service.UnWrap(obj1) == service.UnWrap(obj2) end;
-		CheckProperty = function(obj,prop) return pcall(function() return obj[prop] end) end;
-		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end;
-	},{
+		CheckProperty = function(obj,prop) return pcall(function()return obj[prop]end)end;
+		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end;},{
 		__index = function(tab,index)
 			local found = (fenceSpecific and fenceSpecific[index]) or Wrapper[index] or Events[index] or Helpers[index]
 			if found ~= nil then
 				return found 
 			else
-				local ran,serv = ypcall(function() return service.Wrap(game:GetService(index)) end)
+				local ran,serv=pcall(service.Wrap,game:GetService(index))
 				if ran and serv then
-					service[tostring(serv)] = serv
+					service[tostring(serv)]=serv
 					return serv
 				end
 			end
 		end;
 		__tostring = "Service";
-		__metatable = "Service";
-	})
+		__metatable = "Service"})
 	
 	WrapService = Wrapper.Wrap(WrapService)
 	HelperService = Wrapper.Wrap(HelperService)
