@@ -99,9 +99,7 @@ return function()
 							g.KeepParent = g.Object.Parent
 							g.Object.Parent = nil
 						elseif service.StarterGui.ResetPlayerGuiOnSpawn then
-							pcall(function() 
-								g:Destroy()
-							end)
+							pcall(g.Destroy,g)
 						end
 					end
 				end
@@ -126,6 +124,6 @@ return function()
 			end
 			
 			service.Events.CharacterRemoving:fire()
-		end;
-	};
+		end
+	}
 end
