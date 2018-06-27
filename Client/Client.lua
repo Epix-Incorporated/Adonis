@@ -46,19 +46,19 @@ local HookedEvents = {}
 local WaitingEvents = {}
 local ServiceSpecific = {}
 local ServiceVariables = {}
-local function isModule(module) for ind,modu in pairs(client.Modules) do if rawequal(module, modu) then return true end end end
+local function isModule(module) for ind,modu in next,client.Modules do if rawequal(module, modu) then return true end end end
 local function logError(err) warn("ERROR:"..tostring(err)) if client and client.Remote then client.Remote.Send("LogError",err) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
-local print = function(...) for i,v in pairs({...}) do print(':: Adonis :: '..tostring(v)) end  end
-local warn = function(...) for i,v in pairs({...}) do warn(tostring(v)) end end
+local print = function(...) for i,v in next,{...}do print(':: Adonis :: '..tostring(v)) end  end
+local warn = function(...) for i,v in next,{...}do warn(tostring(v)) end end
 local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=ypcall(cour,...) if error then print(error) logError(error) warn('ERROR :: '..error) end end
 local Pcall = function(func,...) local ran,error=ypcall(func,...) if error then logError(error) end end
 local Routine = function(func,...) coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in pairs(t) do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local player = game:GetService("Players").LocalPlayer
 local Fire, Detected
 local wrap = coroutine.wrap
-local Kill; Kill = function(info)
+local Kill = function(info)
 	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
 	wrap(function() pcall(function()
 		if Detected then
@@ -303,7 +303,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	script:Destroy()
 	
 	--// Intial setup
-	for ind, serv in pairs({
+	for ind, serv in next,{
 		"Workspace";
 		"Players";
 		"Lighting";
@@ -319,9 +319,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"StarterPlayers";
 		"TestService";	
 		"NetworkClient";	
-	}) do local temp = service[serv] end
+	}do local temp = service[serv] end
 	
-	for ind,load in pairs({
+	for ind,load in next,{
 		"Variables";
 		"UI";
 		"Core";
@@ -329,7 +329,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"Functions";
 		"Process";
 		"Anti";
-	}) do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
+	}do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
 	
 	for ind,obj in next,Folder.Dependencies:GetChildren() do client.Deps[obj.Name] = obj end
 	
@@ -375,14 +375,14 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.Finish_Loading = function()
 		if client.Core.Key then
 			--// Events
-			service.NetworkClient.ChildRemoved:connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
-			service.NetworkClient.ChildAdded:connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
-			service.Player.Changed:connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick","Parent not players") elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
-			service.Player.Chatted:connect(service.EventTask("Event: ProcessChat", client.Process.Chat))
-			service.Player.CharacterRemoving:connect(service.EventTask("Event: CharacterRemoving", client.Process.CharacterRemoving))
-			service.Player.CharacterAdded:connect(service.Threads.NewEventTask("Event: CharacterAdded", client.Process.CharacterAdded))
-			service.LogService.MessageOut:connect(client.Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
-			service.ScriptContext.Error:connect(client.Process.ErrorMessage) --service.Threads.NewEventTask("EVENT:ErrorMessage",client.Process.ErrorMessage,60))
+			service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
+			service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
+			service.Player.Changed:Connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick","Parent not players") elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
+			service.Player.Chatted:Connect(service.EventTask("Event: ProcessChat", client.Process.Chat))
+			service.Player.CharacterRemoving:Connect(service.EventTask("Event: CharacterRemoving", client.Process.CharacterRemoving))
+			service.Player.CharacterAdded:Connect(service.Threads.NewEventTask("Event: CharacterAdded", client.Process.CharacterAdded))
+			service.LogService.MessageOut:Connect(client.Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
+			service.ScriptContext.Error:Connect(client.Process.ErrorMessage) --service.Threads.NewEventTask("EVENT:ErrorMessage",client.Process.ErrorMessage,60))
 			
 			--// Get CodeName
 			client.Variables.CodeName = client.Remote.Get("Variable", "CodeName")
@@ -446,6 +446,5 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.Functions = service.ReadOnly(client.Functions, true)
 	client.Processing = service.ReadOnly(client.Processing, true)--]]
 	client.Core.GetEvent()
-	
 	return "SUCCESS"
 end})
