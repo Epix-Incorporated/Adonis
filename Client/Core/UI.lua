@@ -42,9 +42,10 @@ return function()
 			if client.UI.Holder and client.UI.Holder.Parent == service.PlayerGui then
 				return client.UI.Holder
 			else
-				pcall(function() if client.UI.Holder then client.UI.Holder:Destroy() end end)
-				local new = Instance.new("ScreenGui",service.PlayerGui)
+				pcall(function()if client.UI.Holder then client.UI.Holder:Destroy()end end)
+				local new=Instance.new'ScreenGui'
 				new.Name = client.Functions.GetRandom()
+				new.Parent=service.PlayerGui
 				client.UI.Holder = new
 				return client.UI.Holder
 			end
@@ -62,7 +63,7 @@ return function()
 				new.Active = true
 				new.Text = ""
 				
-				for ind,child in pairs(gui:GetChildren()) do
+				for ind,child in next,gui:GetChildren()do
 					child.Parent = new
 				end
 				
@@ -81,7 +82,7 @@ return function()
 		LoadModule = function(module, data, env)
 			local ran,func = pcall(require, module)
 			local newEnv = GetEnv(env)
-			local data = data or {}
+			local data = data or{}
 			
 			newEnv.script = module
 			newEnv.client = service.CloneTable(client)
@@ -100,13 +101,11 @@ return function()
 				if ran then
 					return unpack(rets,2)
 				else
-					warn("Error while running module "..module.Name)
-					warn(tostring(rets[2]))
+					warn("Error while running module "..module.Name,tostring(rets[2]))
 					client.LogError("Error loading "..tostring(module).." - "..tostring(rets[2]))
 				end
 			else
-				warn("Error while loading module "..module.Name)
-				warn(tostring(func))
+				warn("Error while loading module "..module.Name,tostring(func))
 			end
 		end;
 		
@@ -183,7 +182,7 @@ return function()
 				
 				--// Get rid of an old Config folder and throw the new combination Config folder in
 				local new = found[1].Found:Clone()
-				local oldFolder = new:FindFirstChild("Config")
+				local oldFolder = new:FindFirstChild'Config'
 				
 				if oldFolder then oldFolder:Destroy() end
 				
@@ -287,11 +286,10 @@ return function()
 					end
 				end
 			end
-			
 			if num<1 then 
 				return false
 			else
-				return found, num 
+				return found,num
 			end
 		end;
 		
@@ -306,12 +304,12 @@ return function()
 		
 		Register = function(gui, data)
 			local gIndex = client.Functions.GetRandom()
-			local gTable; gTable = {
+			local gTable;gTable = {
 				Object = gui,
-				Config = gui:FindFirstChild("Config");
+				Config = gui:FindFirstChild'Config';
 				Name = gui.Name,
 				Events = {},
-				Class = gui.ClassName, 
+				Class = gui.ClassName,
 				Index = gIndex,
 				Active = true,
 				Ready = function()
@@ -326,7 +324,7 @@ return function()
 						gTable.Active = true
 					else
 						warn("Something happened while trying to set the parent of "..tostring(gTable.Name))
-						warn("Maybe it was locked (Destroyed)?")
+						warn'Maybe it was locked (Destroyed)?'
 						gTable:Destroy()
 					end
 				end,
@@ -345,13 +343,13 @@ return function()
 					
 					table.insert(Events, {
 						Signal = signal;
-						Remove = disc;
+						Remove = disc
 					}) 
 					
 					return {
 						Disconnect = disc;
 						disconnect = disc;
-						wait = service.CheckProperty(signal, "wait") and signal.wait;
+						wait = service.CheckProperty(signal, "wait") and signal.wait
 					}, signal
 				end,
 				ClearEvents = function()
@@ -374,22 +372,22 @@ return function()
 				end,
 				UnRegister = function()
 					client.GUIs[gIndex] = nil
-					if gTable.AncestryEvent then 
-						gTable.AncestryEvent:Disconnect() 
+					if gTable.AncestryEvent then
+						gTable.AncestryEvent:Disconnect()
 					end
 				end,
-				Register = function(tab, new)
-					if not new then new = tab end 
+				Register = function(tab,new)
+					if not new then new=tab end
 					
 					new:SetSpecial("Destroy", gTable.Destroy)
 					gTable.Object = service.Wrap(new)
 					gTable.Class = new.ClassName
 					
 					if gTable.AncestryEvent then 
-						gTable.AncestryEvent:Disconnect() 
+						gTable.AncestryEvent:Disconnect()
 					end
 					
-					gTable.AncestryEvent = new.AncestryChanged:connect(function(c, parent)
+					gTable.AncestryEvent = new.AncestryChanged:Connect(function(c, parent)
 						if client.GUIs[gIndex] then
 							if rawequal(c, gTable.Object) and gTable.Class == "TextLabel" and parent == service.PlayerGui then
 								wait()
@@ -398,11 +396,10 @@ return function()
 								gTable:Destroy()
 							elseif rawequal(c, gTable.Object) and parent ~= nil then
 								gTable.Active = true
-								client.GUIs[gIndex] = gTable					
+								client.GUIs[gIndex] = gTable
 							end
 						end
 					end)
-					
 					client.GUIs[gIndex] = gTable
 				end
 			}
@@ -417,7 +414,7 @@ return function()
 			gTable:Register(gui)
 			
 			return gTable,gIndex
-		end;
+		end
 	}
 	
 	client.UI.RegisterGui 	= client.UI.Register
