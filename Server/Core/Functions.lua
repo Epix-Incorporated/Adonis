@@ -4,8 +4,24 @@ cPcall = nil
 
 --// Function stuff
 return function()
-	server.Functions = {
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
 		
+		Logs:AddLog("Script", "Functions Module Initialized")
+	end;
+	
+	server.Functions = {
+		Init = Init;
 		PlayerFinders = {
 			["me"] = {
 				Match = "me";
@@ -50,7 +66,7 @@ return function()
 				Match = "@everyone";
 				Absolute = true;
 				Function = function(...)
-					return server.Functions.PlayerMatchers.all.Function(...)
+					return Functions.PlayerMatchers.all.Function(...)
 				end
 			};
 			
@@ -80,7 +96,7 @@ return function()
 					
 					for i,v in pairs(players) do
 						if(v.Name == p.Name)then
-							server.Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
+							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
 							return;
 						end
 					end
@@ -97,7 +113,7 @@ return function()
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in next,parent:children() do
 						local p = getplr(v)
-						if server.Admin.CheckAdmin(p,false) then
+						if Admin.CheckAdmin(p,false) then
 							table.insert(players, p)
 							plus()
 						end
@@ -112,7 +128,7 @@ return function()
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in next,parent:children() do
 						local p = getplr(v)
-						if not server.Admin.CheckAdmin(p,false) then
+						if not Admin.CheckAdmin(p,false) then
 							table.insert(players,p)
 							plus()
 						end
@@ -189,7 +205,7 @@ return function()
 						if foundNum == 0 then
 							local ran,name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
 							if ran and name then
-								local fakePlayer = service.New("Folder")
+								local fakePlayer = service.Wrap(service.New("Folder"))
 								local data = {
 									Name = name;
 									ToString = name;
@@ -277,11 +293,11 @@ return function()
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							server.Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
 						end
 						
 						for i = 1,num do
-							server.Functions.PlayerFinders.random.Function(msg, plr, ...)
+							Functions.PlayerFinders.random.Function(msg, plr, ...)
 						end
 					end
 				end;
@@ -294,7 +310,7 @@ return function()
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							server.Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
 						end
 						
 						for i,v in next,parent:GetChildren() do
@@ -333,7 +349,7 @@ return function()
 		
 		GetPlayers = function(plr, names, dontError, isServer, isKicking, noID)
 			local players = {} 
-			local prefix = server.Settings.SpecialPrefix
+			local prefix = Settings.SpecialPrefix
 			if isServer then prefix = "" end
 			local parent = service.NetworkServer or service.Players
 			
@@ -348,9 +364,9 @@ return function()
 			end
 			
 			local function checkMatch(msg)
-				for ind, data in next, server.Functions.PlayerFinders do
-					if not data.Level or (data.Level and server.Admin.GetLevel(plr) >= data.Level) then
-						local check = ((data.Prefix and server.Settings.SpecialPrefix) or "")..data.Match
+				for ind, data in next, Functions.PlayerFinders do
+					if not data.Level or (data.Level and Admin.GetLevel(plr) >= data.Level) then
+						local check = ((data.Prefix and Settings.SpecialPrefix) or "")..data.Match
 						if (data.Absolute and msg:lower() == check) or (not data.Absolute and msg:lower():sub(1,#check) == check:lower()) then
 							return data
 						end
@@ -392,7 +408,7 @@ return function()
 							if plrs == 0 then
 								local ran,userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
 								if ran and tonumber(userid) then
-									local fakePlayer = service.New("Folder")
+									local fakePlayer = service.Wrap(service.New("Folder"))
 									local data = {
 										Name = s;
 										ToString = s;
@@ -417,7 +433,7 @@ return function()
 						end
 						
 						if plrs == 0 and not dontError then 
-							server.Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No players matching '..s..' were found!'}) 
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No players matching '..s..' were found!'}) 
 						end
 					end
 				end
@@ -469,7 +485,7 @@ return function()
 		
 		Hint = function(message,players,time)
 			for i,v in pairs(players) do
-				server.Remote.MakeGui(v,"Hint",{
+				Remote.MakeGui(v,"Hint",{
 					Message = message;
 					Time = time;
 				})
@@ -478,8 +494,8 @@ return function()
 		
 		Message = function(title,message,players,scroll,tim)
 			for i,v in pairs(players) do
-				server.Remote.RemoveGui(v,"Message")
-				server.Remote.MakeGui(v,"Message",{
+				Remote.RemoveGui(v,"Message")
+				Remote.MakeGui(v,"Message",{
 					Title = title;
 					Message = message;
 					Scroll = scroll;
@@ -490,8 +506,8 @@ return function()
 		
 		Notify = function(title,message,players,tim)
 			for i,v in pairs(players) do
-				server.Remote.RemoveGui(v,"Notify")
-				server.Remote.MakeGui(v,"Notify",{
+				Remote.RemoveGui(v,"Notify")
+				Remote.MakeGui(v,"Notify",{
 					Title = title;
 					Message = message;
 					Time = tim;
@@ -520,64 +536,64 @@ return function()
 		SetLighting = function(prop,value)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
-				server.Variables.LightingSettings[prop] = value
+				Variables.LightingSettings[prop] = value
 				for ind,p in pairs(service.GetPlayers()) do
-					server.Remote.SetLighting(p,prop,value)
+					Remote.SetLighting(p,prop,value)
 				end
 			end
 		end;
 		
 		LoadEffects = function(plr)
-			for i,v in pairs(server.Variables.LocalEffects) do
+			for i,v in pairs(Variables.LocalEffects) do
 				if (v.Part and v.Part.Parent) or v.NoPart then
 					if v.Type == "Cape" then
-						server.Remote.Send(plr,"Function","NewCape",v.Data)
+						Remote.Send(plr,"Function","NewCape",v.Data)
 					elseif v.Type == "Particle" then
-						server.Remote.NewParticle(plr,v.Part,v.Class,v.Props)
+						Remote.NewParticle(plr,v.Part,v.Class,v.Props)
 					end
 				else
-					server.Variables.LocalEffects[i] = nil
+					Variables.LocalEffects[i] = nil
 				end
 			end
 		end;
 		
 		NewParticle = function(target,type,props)
-			local ind = server.Functions.GetRandom()
-			server.Variables.LocalEffects[ind] = {
+			local ind = Functions.GetRandom()
+			Variables.LocalEffects[ind] = {
 				Part = target;
 				Class = type;
 				Props = props;
 				Type = "Particle";
 			}
 			for i,v in next,service.Players:GetPlayers() do
-				server.Remote.NewParticle(v,target,type,props)
+				Remote.NewParticle(v,target,type,props)
 			end
 		end;
 		
 		RemoveParticle = function(target,name)
-			for i,v in next,server.Variables.LocalEffects do
+			for i,v in next,Variables.LocalEffects do
 				if v.Type == "Particle" and v.Part == target and (v.Props.Name == name or v.Class == name) then
-					server.Variables.LocalEffects[i] = nil
+					Variables.LocalEffects[i] = nil
 				end
 			end
 			for i,v in next,service.Players:GetPlayers() do
-				server.Remote.RemoveParticle(v,target,name)
+				Remote.RemoveParticle(v,target,name)
 			end
 		end;
 		
 		UnCape = function(plr)
-			for i,v in pairs(server.Variables.LocalEffects) do
+			for i,v in pairs(Variables.LocalEffects) do
 				if v.Type == "Cape" and v.Player == plr then
-					server.Variables.LocalEffects[i] = nil
+					Variables.LocalEffects[i] = nil
 				end
 			end
 			for i,v in pairs(service.GetPlayers()) do
-				server.Remote.Send(v,"Function","RemoveCape",plr.Character)
+				Remote.Send(v,"Function","RemoveCape",plr.Character)
 			end
 		end;
 
 		Cape = function(player,isdon,material,color,decal,reflect)
-			server.Functions.UnCape(player)
+			Functions.UnCape(player)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
 				if type(color) == "table" then 
@@ -592,18 +608,18 @@ return function()
 					Decal = decal;
 				}
 				
-				if (isdon and server.Settings.DonorCapes and server.Settings.LocalCapes) then
-					server.Remote.Send(player,"Function","NewCape",data)
+				if (isdon and Settings.DonorCapes and Settings.LocalCapes) then
+					Remote.Send(player,"Function","NewCape",data)
 				else
-					local ind = server.Functions.GetRandom()
-					server.Variables.LocalEffects[ind] = {
+					local ind = Functions.GetRandom()
+					Variables.LocalEffects[ind] = {
 						Player = player;
 						Part = player.Character.HumanoidRootPart;
 						Data = data;
 						Type = "Cape";
 					}
 					for i,v in pairs(service.GetPlayers()) do
-						server.Remote.Send(v,"Function","NewCape",data)
+						Remote.Send(v,"Function","NewCape",data)
 					end
 				end
 			end
@@ -612,12 +628,12 @@ return function()
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
 				local parent = player:FindFirstChild('PlayerGui') or player:WaitForChild('Backpack')
-				local cl = server.Core.NewScript('LocalScript',source)
-				cl.Name = name or server.Functions.GetRandom()
+				local cl = Core.NewScript('LocalScript',source)
+				cl.Name = name or Functions.GetRandom()
 				cl.Parent = parent
 				cl.Disabled = false
 				if object then
-					table.insert(server.Variables.Objects,cl)
+					table.insert(Variables.Objects,cl)
 				end
 			end
 		end;
@@ -660,7 +676,7 @@ return function()
 		end;
 		
 		GetTexture = function(ID)
-			ID = server.Functions.Trim(tostring(ID))
+			ID = Functions.Trim(tostring(ID))
 			local created
 			
 			if not tonumber(ID) then 
@@ -706,7 +722,7 @@ return function()
 					table.insert(temp,{Name=name,Id=tostring(id),Cape=tostring(cape),Color=color,Material='Plastic',List=ins.Name})
 				end
 			end
-			server.Variables.OldDonorList = temp
+			Variables.OldDonorList = temp
 		end;
 		
 		CleanWorkspace = function()
@@ -737,8 +753,8 @@ return function()
 		end;
 		
 		Shutdown = function(reason)
-			if not server.Core.PanicMode then
-				server.Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetChildren(), false, 5) 
+			if not Core.PanicMode then
+				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetChildren(), false, 5) 
 				wait(1)
 			end
 			
@@ -752,7 +768,7 @@ return function()
 						v:GetPlayer():Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
 						wait(30)
 						if v.Parent and v:GetPlayer() then
-							server.Remote.Send(v:GetPlayer(),'Function','KillClient')
+							Remote.Send(v:GetPlayer(),'Function','KillClient')
 						end
 					end
 				end)
@@ -760,8 +776,8 @@ return function()
 		end;
 		
 		Donor = function(plr)
-			if (server.Admin.CheckDonor(plr) and server.Settings.DonorCapes) then
-				local PlayerData = server.Core.GetPlayer(plr) or {Donor = {}}
+			if (Admin.CheckDonor(plr) and Settings.DonorCapes) then
+				local PlayerData = Core.GetPlayer(plr) or {Donor = {}}
 				local donor = PlayerData.Donor or {}
 				if donor and donor.Enabled then
 					local img,color,material
@@ -771,10 +787,10 @@ return function()
 						img,color,material='0','White','Neon'
 					end 
 					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-						server.Functions.Cape(plr,true,material,color,img)
+						Functions.Cape(plr,true,material,color,img)
 					end
 					--[[
-					if server.Admin.CheckDonor(plr) and (server.Settings.DonorPerks or server.Admin.GetLevel(plr)>=4) then
+					if Admin.CheckDonor(plr) and (Settings.DonorPerks or Admin.GetLevel(plr)>=4) then
 						local gear=service.InsertService:LoadAsset(57902997):children()[1]
 						if not plr.Backpack:FindFirstChild(gear.Name..'DonorTool') then
 							gear.Name=gear.Name..'DonorTool'
@@ -802,7 +818,7 @@ return function()
 					end
 					num = num+1
 				end
-				if good and num==server.Functions.CountTable(check) then 
+				if good and num==Functions.CountTable(check) then 
 					return true
 				end
 			end

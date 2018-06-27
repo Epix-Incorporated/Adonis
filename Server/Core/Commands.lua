@@ -10,31 +10,49 @@ sortedPairs = nil
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...
 return function() 
+	local Settings = server.Settings
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Deps = server.Deps
+		
+		Logs:AddLog("Script", "Commands Module Initialized")
+	end;
+	
 	server.Commands = {
+		Init = Init;
 		Sudo = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sudo"};
 			Arguments = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil");
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
-					server.Process.Command(v, args[2], {isSystem = true});
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					Process.Command(v, args[2], {isSystem = true});
 				end
 			end;
 		};
 		
 		ClearPlayerData = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clearplayerdata"};
 			Arguments = {"userId"};
 			Description = "Clears player data for target";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				local id = tonumber(args[1]) or plr.UserId
-				server.Remote.PlayerData[id] = server.Core.DefaultData()
-				server.Remote.MakeGui(plr,"Notification",{
+				Remote.PlayerData[id] = Core.DefaultData()
+				Remote.MakeGui(plr,"Notification",{
 					Title = "Notification";
 					Message = "Cleared data";
 					Time = 10;
@@ -51,7 +69,7 @@ return function()
 			AdminLevel = "Creators";
 			Function = function(plr,args)
 				--assert(args[1] and args[2],"Argument missing or nil")
-				server.Remote.Send(plr, "TestError")
+				Remote.Send(plr, "TestError")
 				Routine(function() plr.Bobobobobobobo.Hi = 1 end)
 				if not args[1] then
 					error("This is an intentional test error")
@@ -73,7 +91,7 @@ return function()
 			Function = function(plr,args)
 				local tack = tick()
 				print(tack)
-				print(server.Remote.Get(plr,"Test"))
+				print(Remote.Get(plr,"Test"))
 				local tab = {
 					{
 						Children = {
@@ -83,7 +101,7 @@ return function()
 					}
 				}
 				
-				local m, ret = server.Remote.Get(plr, "Test", tab)
+				local m, ret = Remote.Get(plr, "Test", tab)
 				if ret then
 					print(ret)
 					for i,v in next, ret do
@@ -102,14 +120,14 @@ return function()
 				
 				print(tick()-tack)
 				print("TESTING EVENT")
-				server.Remote.MakeGui(plr,"Settings",{
+				Remote.MakeGui(plr,"Settings",{
 					IsOwner = true
 				})
-				local testColor = server.Remote.GetGui(plr,"ColorPicker",{Color = Color3.new(1,1,1)})
+				local testColor = Remote.GetGui(plr,"ColorPicker",{Color = Color3.new(1,1,1)})
 				print(testColor)
-				local ans,event = server.Remote.GetGui(plr,"YesNoPrompt",{
+				local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Is this a test question?";
-				}), server.Remote.NewPlayerEvent(plr,"TestEvent",function(...)
+				}), Remote.NewPlayerEvent(plr,"TestEvent",function(...)
 					print("EVENT WAS FIRED; WE GOT:")
 					print(...)
 					print("THAT'D BE ALL")
@@ -117,7 +135,7 @@ return function()
 				print("PLAYER ANSWER: "..tostring(ans))
 				wait(0.5)
 				print("SENDING REMOTE EVENT TEST")
-				server.Remote.Send(plr,"TestEvent","TestEvent","hi mom I went thru the interwebs")
+				Remote.Send(plr,"TestEvent","TestEvent","hi mom I went thru the interwebs")
 				print("SENT")
 			end;
 		};
@@ -133,12 +151,12 @@ return function()
 			AdminLevel = "Creators";
 			Function = function(plr,args)
 				error("Disabled", 0)
-				local func,err = server.Core.Loadstring(args[1],GetEnv())
+				local func,err = Core.Loadstring(args[1],GetEnv())
 				if func then 
 					func()
 				else
 					logError("DEBUG",err)
-					server.Functions.Hint(err,{plr})
+					Functions.Hint(err,{plr})
 				end
 			end
 		};
@@ -151,7 +169,7 @@ return function()
 			Description = "Opens the the terminal";
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"Terminal")
+				Remote.MakeGui(plr,"Terminal")
 			end
 		};
 		
@@ -164,9 +182,9 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1] then
-					for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+					for i,v in next,Functions.GetPlayers(plr, args[1]) do
 						local temp = {}
-						local cTasks = server.Remote.Get(v, "TaskManager", "GetTasks") or {}
+						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						
 						table.insert(temp,{
 							Text = "Client Tasks",
@@ -179,7 +197,7 @@ return function()
 							})
 						end
 						
-						server.Remote.MakeGui(plr,"List",{
+						Remote.MakeGui(plr,"List",{
 							Title = v.Name.."'s Tasks",
 							Table = temp,
 							Font = "Code",
@@ -192,7 +210,7 @@ return function()
 				else
 					local temp = {}
 					local tasks = service.GetTasks()
-					local cTasks = server.Remote.Get(plr,"TaskManager","GetTasks") or {}
+					local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
 					
 					table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
 					
@@ -216,7 +234,7 @@ return function()
 						})
 					end
 					
-					server.Remote.MakeGui(plr,"List",{
+					Remote.MakeGui(plr,"List",{
 						Title = "Tasks",
 						Table = temp,
 						Font = "Code",
@@ -229,25 +247,25 @@ return function()
 		};
 		--[[
 		TaskManager = { --// Unfinished
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"taskmgr","taskmanager"};
 			Args = {};
 			Description = "Task manager";
 			Hidden = true;
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"TaskManager",{})
+				Remote.MakeGui(plr,"TaskManager",{})
 			end
 		};
 		--]]
 		CommandBox = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cmdbox", "commandbox"};
 			Args = {};
 			Description = "Command Box";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr, "Window", {
+				Remote.MakeGui(plr, "Window", {
 					Title = "Command Box";
 					Name = "CommandBox";
 					Size  = {300,250};
@@ -263,7 +281,7 @@ return function()
 							TextYAlignment = "Top";
 							MultiLine = true;
 							ClearTextOnFocus = false;
-							TextChanged = server.Core.Bytecode[[
+							TextChanged = Core.Bytecode[[
 								if not Object.TextFits then
 									Object.TextYAlignment = "Bottom" 
 								else
@@ -277,7 +295,7 @@ return function()
 							Size = UDim2.new(1, -10, 0, 35);
 							Position = UDim2.new(0, 5, 1, -40);
 							Text = "Execute";
-							OnClick = server.Core.Bytecode[[
+							OnClick = Core.Bytecode[[
 								local textBox = Object.Parent:FindFirstChild("ComText")
 								if textBox then
 									client.Remote.Send("ProcessCommand", textBox.Text)
@@ -290,24 +308,24 @@ return function()
 		};
 		
 		ViewCommands = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cmds","commands","cmdlist"};
 			Args = {};
 			Description = "Shows you a list of commands";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local commands = server.Admin.SearchCommands(plr,"all")
+				local commands = Admin.SearchCommands(plr,"all")
 				local tab = {}
 				
 				for i,v in next,commands do
 					table.insert(tab, {
-						Text = server.Admin.FormatCommand(v),
+						Text = Admin.FormatCommand(v),
 						Desc = "["..v.AdminLevel.."] "..v.Description,
 						Filter = v.AdminLevel
 					})
 				end
 				
-				server.Remote.MakeGui(plr,"List",
+				Remote.MakeGui(plr,"List",
 					{
 						Title = "Commands";
 						Table = tab;
@@ -323,12 +341,12 @@ return function()
 			Description = "Shows you the command prefix using the :cmds command";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Functions.Hint('"'..server.Settings.Prefix..'cmds"',{plr})
+				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
 			end
 		};
 		
 		Repeat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"repeat";"loop";};
 			Args = {"amount";"interval";"command";};
 			Description = "Repeats <command> for <amount> of times every <interval> seconds; Amount cannot exceed 50";
@@ -340,19 +358,19 @@ return function()
 				if amount>50 then amount=50 end
 				local command = args[3]
 				local name = plr.Name:lower()
-				server.Variables.CommandLoops[name..command] = true
-				server.Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
+				Variables.CommandLoops[name..command] = true
+				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
 				for i = 1,amount do
-					if not server.Variables.CommandLoops[name..command] then break end
-					server.Process.Command(plr,command,{Check = false;})
+					if not Variables.CommandLoops[name..command] then break end
+					Process.Command(plr,command,{Check = false;})
 					wait(timer)
 				end
-				server.Variables.CommandLoops[name..command] = nil
+				Variables.CommandLoops[name..command] = nil
 			end
 		};
 		
 		Abort = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"abort";"stoploop";"unloop";"unrepeat";};
 			Args = {"username";"command";};
 			Description = "Aborts a looped command. Must supply name of player who started the loop or \"me\" if it was you, or \"all\" for all loops. :abort sceleratis :kill bob or :abort all";
@@ -360,19 +378,19 @@ return function()
 			Function = function(plr,args)
 				local name = args[1]:lower()
 				if name=="me" then
-					server.Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
+					Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
 				elseif name=="all" then
 					for i,v in pairs(server.CommandLoops) do
-						server.Variables.CommandLoops[i] = nil
+						Variables.CommandLoops[i] = nil
 					end
 				elseif args[2] then
-					server.Variables.CommandLoops[name..args[2]] = nil
+					Variables.CommandLoops[name..args[2]] = nil
 				end
 			end
 		};
 		
 		TempModerator = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"admin","tempadmin","ta","temp","helper";};
 			Args = {"player";};
 			Hidden = false;
@@ -380,27 +398,27 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local sendLevel = server.Admin.GetLevel(plr)	
+				local sendLevel = Admin.GetLevel(plr)	
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						server.Admin.AddAdmin(v,1,true)
-						server.Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v,1,true)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
-							OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						server.Functions.Hint(v.Name..' is now a temp moderator',{plr})
+						Functions.Hint(v.Name..' is now a temp moderator',{plr})
 					else
-						server.Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
 		};
 				
 		Moderator = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"mod";"moderator"};
 			Args = {"player";};
 			Hidden = false;
@@ -408,27 +426,27 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local sendLevel = server.Admin.GetLevel(plr)	
+				local sendLevel = Admin.GetLevel(plr)	
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						server.Admin.AddAdmin(v,1)
-						server.Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v,1)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
-							OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						server.Functions.Hint(v.Name..' is now a moderator',{plr})
+						Functions.Hint(v.Name..' is now a moderator',{plr})
 					else
-						server.Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
 		};
 		
 		Admin = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"permadmin","pa","padmin","fulladmin","realadmin"};
 			Args = {"player";};
 			Hidden = false;
@@ -436,27 +454,27 @@ return function()
 			Fun = false;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				local sendLevel = server.Admin.GetLevel(plr)	
+				local sendLevel = Admin.GetLevel(plr)	
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						server.Admin.AddAdmin(v,2)
-						server.Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v,2)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
-							OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						server.Functions.Hint(v.Name..' is now an admin',{plr})
+						Functions.Hint(v.Name..' is now an admin',{plr})
 					else
-						server.Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
 		};
 		
 		Owner = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"owner","oa","headadmin"};
 			Args = {"player";};
 			Hidden = false;
@@ -464,27 +482,27 @@ return function()
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				local sendLevel = server.Admin.GetLevel(plr)	
+				local sendLevel = Admin.GetLevel(plr)	
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						server.Admin.AddAdmin(v,3)
-						server.Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v,3)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
-							OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						server.Functions.Hint(v.Name..' is now an owner',{plr})
+						Functions.Hint(v.Name..' is now an owner',{plr})
 					else
-						server.Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
 		};
 		
 		UnAdmin = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
 			Args = {"player";};
 			Hidden = false;
@@ -494,45 +512,45 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				
-				local sendLevel = server.Admin.GetLevel(plr)
+				local sendLevel = Admin.GetLevel(plr)
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in next,plrs do
-						local targLevel = server.Admin.GetLevel(v)
+						local targLevel = Admin.GetLevel(v)
 						if targLevel>0 then
 							if sendLevel>targLevel then
-								server.Admin.RemoveAdmin(v,false,true)
-								server.Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
+								Admin.RemoveAdmin(v,false,true)
+								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
 							else
-								server.Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
+								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
 							end
 						else
-							server.Functions.Hint(v.Name..' is not an admin',{plr})
+							Functions.Hint(v.Name..' is not an admin',{plr})
 						end
 					end
 				else
-					local targLevel = server.Admin.GetUpdatedLevel(args[1])
+					local targLevel = Admin.GetUpdatedLevel(args[1])
 					if targLevel then
 						if sendLevel > targLevel then
-							local ans = server.Remote.GetGui(plr,"YesNoPrompt",{
+							local ans = Remote.GetGui(plr,"YesNoPrompt",{
 								Question = "Unadmin all saved admins matching '"..tostring(args[1]).."'?";
 							})
 							if ans == "Yes" then
-								server.Admin.RemoveAdmin(args[1])
-								server.Functions.Hint("Removed "..args[1].."'s admin powers",{plr})
+								Admin.RemoveAdmin(args[1])
+								Functions.Hint("Removed "..args[1].."'s admin powers",{plr})
 							end
 						else
-							server.Functions.Hint("You do not have permission to remove "..args[1].."'s admin powers",{plr})
+							Functions.Hint("You do not have permission to remove "..args[1].."'s admin powers",{plr})
 						end
 					else
-						server.Functions.Hint("No level returned for "..args[1])
+						Functions.Hint("No level returned for "..args[1])
 					end
 				end
 			end
 		};
 		
 		TempUnAdmin = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tempunadmin","untempadmin","tunadmin","untadmin"};
 			Args = {"player";};
 			Hidden = false;
@@ -542,20 +560,20 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				
-				local sendLevel = server.Admin.GetLevel(plr)
+				local sendLevel = Admin.GetLevel(plr)
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in pairs(plrs) do
-						local targLevel = server.Admin.GetLevel(v)
+						local targLevel = Admin.GetLevel(v)
 						if targLevel>0 then
 							if sendLevel>targLevel then
-								server.Admin.RemoveAdmin(v,true)
-								server.Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
+								Admin.RemoveAdmin(v,true)
+								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
 							else
-								server.Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
+								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
 							end
 						else
-							server.Functions.Hint(v.Name..' is not an admin',{plr})
+							Functions.Hint(v.Name..' is not an admin',{plr})
 						end
 					end
 				end
@@ -563,7 +581,7 @@ return function()
 		};
 		
 		CustomRank = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"customrank","ca","crank"};
 			Args = {"player";"rankName"};
 			Hidden = false;
@@ -574,19 +592,19 @@ return function()
 				assert(args[1] and args[2],"Argument missing or nil")
 				
 				local rank = args[2]
-				local customRank = server.Settings.CustomRanks[rank]
+				local customRank = Settings.CustomRanks[rank]
 				
 				assert(customRank,"Rank not found!")
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Functions.Hint("Added "..v.Name.." to "..rank,{plr})
+					Functions.Hint("Added "..v.Name.." to "..rank,{plr})
 					table.insert(customRank,v.Name..":"..v.userId)
 				end
 			end
 		};
 		
 		UnCustomRank = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uncustomrank","unca","uncrank"};
 			Args = {"player";"rankName"};
 			Hidden = false;
@@ -597,21 +615,21 @@ return function()
 				assert(args[1] and args[2],"Argument missing or nil")
 				
 				local rank = args[2]
-				local customRank = server.Settings.CustomRanks[rank]
+				local customRank = Settings.CustomRanks[rank]
 				
 				assert(customRank,"Rank not found!")
 				
 				service.Iterate(customRank,function(i,v) 
 					if v:lower():sub(1,#args[1]) == args[1]:lower() then
 						table.remove(customRank,i)
-						server.Functions.Hint("Removed "..v.Name.." from "..rank,{plr})
+						Functions.Hint("Removed "..v.Name.." from "..rank,{plr})
 					end
 				end)
 			end
 		};
 		
 		CustomRanks = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"customranks","cranks"};
 			Args = {};
 			Hidden = false;
@@ -620,38 +638,38 @@ return function()
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				local tab = {}
-				service.Iterate(server.Settings.CustomRanks,function(rank,tab)
+				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					table.insert(tab,{Text = rank, Desc = rank})
 				end)
-				server.Remote.MakeGui(plr,"List",{Title = "Custom Ranks";Table = tab})
+				Remote.MakeGui(plr,"List",{Title = "Custom Ranks";Table = tab})
 			end
 		};
 		
 		Kick = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"kick";};
 			Args = {"player";"optional reason";};
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local plrLevel = server.Admin.GetLevel(plr)
+				local plrLevel = Admin.GetLevel(plr)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then 
 						if not service.Players:FindFirstChild(v.Name) then
-							server.Remote.Send(v,'Function','Kill')
+							Remote.Send(v,'Function','Kill')
 						else
 							v:Kick(args[2])
 						end
-						server.Functions.Hint("Kicked "..tostring(v),{plr})
+						Functions.Hint("Kicked "..tostring(v),{plr})
 					end
 				end
 			end
 		};
 		--[[
 		DataBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"databan";"permban";"gameban"};
 			Args = {"player";};
 			Hidden = false;
@@ -660,16 +678,16 @@ return function()
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if not server.Admin.CheckAdmin(v) then
-						local ans = server.Remote.GetGui(plr,"YesNoPrompt",{
+					if not Admin.CheckAdmin(v) then
+						local ans = Remote.GetGui(plr,"YesNoPrompt",{
 							Question = "Are you sure you want to ban "..v.Name
 						})
 						
 						if ans == "Yes" then
-							local PlayerData = server.Core.GetPlayer(v)
+							local PlayerData = Core.GetPlayer(v)
 							PlayerData.Banned = true
 							v:Kick("You have been banned")
-							server.Functions.Hint("Data Banned "..tostring(v),{plr})
+							Functions.Hint("Data Banned "..tostring(v),{plr})
 						end
 					else
 						error(v.Name.." is currently an admin. Unadmin them before trying to perm ban them (this is so you don't accidentally ban an admin)")
@@ -680,7 +698,7 @@ return function()
 		--]]
 		--[[
 		UnDataBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"undataban";"undban";"untban";"unpermban";};
 			Args = {"userid";};
 			Hidden = false;
@@ -692,17 +710,17 @@ return function()
 				
 				local userId = tonumber(args[1])
 				assert(userId,tostring(userId).." is not a valid user ID")
-				local PlayerData = server.Core.GetData(tostring(userId))
+				local PlayerData = Core.GetData(tostring(userId))
 				assert(PlayerData,"No saved data found for "..userId)
 				PlayerData.TimeBan = false
 				PlayerData.Banned = false
-				server.Core.SaveData(tostring(userId),PlayerData)
-				server.Functions.Hint("Removed data ban for "..userId,{plr})
+				Core.SaveData(tostring(userId),PlayerData)
+				Functions.Hint("Removed data ban for "..userId,{plr})
 			end
 		};
 		--]]
 		TimeBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tban";"timedban";"timeban";};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
@@ -727,7 +745,7 @@ return function()
 				
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
 					local endTime = tonumber(os.time())+tonumber(time)
-					local timebans = server.Core.Variables.TimeBans
+					local timebans = Core.Variables.TimeBans
 					local data = {
 						Name = v.Name;
 						UserId = v.UserId;
@@ -735,7 +753,7 @@ return function()
 					}
 					
 					table.insert(timebans, data)
-					server.Core.DoSave({
+					Core.DoSave({
 						Type = "TableAdd";
 						Table = "TimeBans";
 						Parent = "Variables";
@@ -743,13 +761,13 @@ return function()
 					})
 					
 					v:Kick("Banned until "..endTime)
-					server.Functions.Hint("Banned "..v.Name.." for "..time,{plr})
+					Functions.Hint("Banned "..v.Name.." for "..time,{plr})
 				end
 			end
 		};
 		
 		UnTimeBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"untimeban";};
 			Args = {"player";};
 			Hidden = false;
@@ -758,109 +776,109 @@ return function()
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				assert(args[1], "Argument missing or nil")
-				local timebans = server.Core.Variables.TimeBans or {}
+				local timebans = Core.Variables.TimeBans or {}
 				for i, data in next, timebans do
 					if data.Name:lower():sub(1,#args[1]) == args[1]:lower() then
 						table.remove(timebans, i)
-						server.Core.DoSave({
+						Core.DoSave({
 							Type = "TableRemove";
 							Table = "TimeBans";
 							Parent = "Variables";
 							Value = data;
 						})
-						server.Functions.Hint(tostring(data.Name)..' has been Unbanned',{plr})
+						Functions.Hint(tostring(data.Name)..' has been Unbanned',{plr})
 					end
 				end
 			end
 		};
 		
 		TimeBanList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
 			Args = {};
 			Description = "Shows you the list of time banned users";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
-				local variables = server.Core.Variables
-				local timeBans = server.Core.Variables.TimeBans or {}
+				local variables = Core.Variables
+				local timeBans = Core.Variables.TimeBans or {}
 				for i,v in next,timeBans do
 					local timeLeft = v.EndTime-os.time()
-					local minutes = server.Functions.RoundToPlace(timeLeft/60, 2)
+					local minutes = Functions.RoundToPlace(timeLeft/60, 2)
 					if timeLeft <= 0 then
-						table.remove(server.Core.Variables.TimeBans, i)
+						table.remove(Core.Variables.TimeBans, i)
 					else
 						table.insert(tab,{Text = tostring(v.Name)..":"..tostring(v.UserId),Desc = "Minutes Left: "..tostring(minutes)})
 					end
 				end
-				server.Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
+				Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
 			end
 		};
 		
 		Ban = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ban";};
 			Args = {"player";};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local level = server.Admin.GetLevel(plr)
+				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
-					if level > server.Admin.GetLevel(v) then 
-						server.Admin.AddBan(v)
-						server.Functions.Hint("Server banned "..tostring(v),{plr})
+					if level > Admin.GetLevel(v) then 
+						Admin.AddBan(v)
+						Functions.Hint("Server banned "..tostring(v),{plr})
 					end
 				end
 			end
 		};
 		
 		UnBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unban";};
 			Args = {"player";};
 			Description = "UnBan";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local ret = server.Admin.RemoveBan(args[1]) 
+				local ret = Admin.RemoveBan(args[1]) 
 				if ret then
-					server.Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
+					Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
 				end
 			end
 		};
 		
 		GameBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"gameban", "saveban", "databan"};
 			Args = {"player";};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				local level = server.Admin.GetLevel(plr)
+				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
-					if level > server.Admin.GetLevel(v) then 
-						server.Admin.AddBan(v, true)
-						server.Functions.Hint("Server banned "..tostring(v),{plr})
+					if level > Admin.GetLevel(v) then 
+						Admin.AddBan(v, true)
+						Functions.Hint("Server banned "..tostring(v),{plr})
 					end
 				end
 			end
 		};
 		
 		UnGameBan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				local ret = server.Admin.RemoveBan(args[1], true) 
+				local ret = Admin.RemoveBan(args[1], true) 
 				if ret then
-					server.Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
+					Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
 				end
 			end
 		};
 		
 		Dizzy = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"dizzy";};
 			Args = {"player","speed"};
 			Description = "Causes motion sickness";
@@ -871,26 +889,26 @@ return function()
 					speed = 1000
 				end
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					server.Remote.Send(v,"Function","Dizzy",tonumber(speed))
+					Remote.Send(v,"Function","Dizzy",tonumber(speed))
 				end
 			end
 		};
 		
 		UnDizzy = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"undizzy";};
 			Args = {"player"};
 			Description = "UnDizzy";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","Dizzy",false)
+					Remote.Send(v,"Function","Dizzy",false)
 				end
 			end
 		};
 		
 		SetFPS = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setfps";};
 			Args = {"player";"fps";};
 			Hidden = false;
@@ -901,13 +919,13 @@ return function()
 				assert(args[1] and args[2],"Argument missing or nil")
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid number") 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","SetFPS",tonumber(args[2]))
+					Remote.Send(v,"Function","SetFPS",tonumber(args[2]))
 				end
 			end
 		};
 		
 		RestoreFPS = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"restorefps";"revertfps";"unsetfps";};
 			Args = {"player";};
 			Hidden = false;
@@ -916,13 +934,13 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","RestoreFPS")
+					Remote.Send(v,"Function","RestoreFPS")
 				end
 			end
 		};
 		
 		Crash = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"crash";};
 			Args = {"player";};
 			Hidden = false;
@@ -931,15 +949,15 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
-						server.Remote.Send(v,'Function','Crash')
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+						Remote.Send(v,'Function','Crash')
 					end
 				end
 			end
 		};
 		
 		HardCrash = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"hardcrash";};
 			Args = {"player";};
 			Hidden = false;
@@ -948,15 +966,15 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
-						server.Remote.Send(v,'Function','HardCrash')
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+						Remote.Send(v,'Function','HardCrash')
 					end
 				end
 			end
 		};
 		
 		RAMCrash = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ramcrash";"memcrash"};
 			Args = {"player";};
 			Hidden = false;
@@ -965,15 +983,15 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
-						server.Remote.Send(v,'Function','RAMCrash')
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+						Remote.Send(v,'Function','RAMCrash')
 					end
 				end
 			end
 		};
 		
 		GPUCrash = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"gpucrash";};
 			Args = {"player";};
 			Hidden = false;
@@ -982,23 +1000,23 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
-						server.Remote.Send(v,'Function','GPUCrash')
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+						Remote.Send(v,'Function','GPUCrash')
 					end
 				end
 			end
 		};
 		
 		Shutdown = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shutdown"};
 			Args = {"reason"};
 			Description = "Shuts the server down";
 			PanicMode = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Core.PanicMode then
-					local logs = server.Core.GetData("ShutdownLogs") or {}
+				if not Core.PanicMode then
+					local logs = Core.GetData("ShutdownLogs") or {}
 					if plr then
 						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[2] or "N/A"})
 					else
@@ -1007,22 +1025,22 @@ return function()
 					if #logs>1000 then
 						table.remove(logs,#logs)
 					end
-					server.Core.SaveData("ShutdownLogs",logs)
+					Core.SaveData("ShutdownLogs",logs)
 				end
-				server.Functions.Shutdown(args[2])
+				Functions.Shutdown(args[2])
 			end
 		};
 		
 		--[[FullShutdown = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				if not server.Core.PanicMode then
-					local logs = server.Core.GetData("ShutdownLogs") or {}
+				if not Core.PanicMode then
+					local logs = Core.GetData("ShutdownLogs") or {}
 					if plr then
 						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[2] or "N/A"})
 					else
@@ -1031,15 +1049,15 @@ return function()
 					if #logs>1000 then
 						table.remove(logs,#logs)
 					end
-					server.Core.SaveData("ShutdownLogs",logs)
+					Core.SaveData("ShutdownLogs",logs)
 				end
 				
-				server.Core.SaveData("FullShutdown", {ID = game.PlaceId; User = tostring(plr or "Server"); Reason = args[2]})
+				Core.SaveData("FullShutdown", {ID = game.PlaceId; User = tostring(plr or "Server"); Reason = args[2]})
 			end
 		};--]]
 		
 		ShutdownLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
 			Args = {};
 			Hidden = false;
@@ -1047,17 +1065,17 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local logs = server.Core.GetData("ShutdownLogs") or {}
+				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab={}
 				for i,v in pairs(logs) do
 					table.insert(tab,1,{Text=v.Time..": "..v.User,Desc="Reason: "..v.Reason})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
+				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
 			end
 		};
 		
 		ServerLock = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"slock","serverlock"};
 			Args = {"on/off"};
 			Hidden = false;
@@ -1066,17 +1084,17 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if not args[1] or (args[1] and (args[1]:lower() == "on" or args[1]:lower() == "true")) then
-					server.Variables.ServerLock = true
-					server.Functions.Hint("Server Locked",{plr})
+					Variables.ServerLock = true
+					Functions.Hint("Server Locked",{plr})
 				elseif args[1]:lower() == "off" or args[1]:lower() == "false" then
-					server.Variables.ServerLock = false
-					server.Functions.Hint("Server Unlocked",{plr})
+					Variables.ServerLock = false
+					Functions.Hint("Server Unlocked",{plr})
 				end
 			end
 		};
 		
 		Whitelist = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"wl","enablewhitelist","whitelist"};
 			Args = {"on/off or add/remove","optional player"};
 			Hidden = false;
@@ -1085,31 +1103,31 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if args[1]:lower()=='on' or args[1]:lower()=='enable' then
-					server.Variables.Whitelist.Enabled = true
-					server.Functions.Hint("Server Whitelisted", service.Players:GetChildren()) 
+					Variables.Whitelist.Enabled = true
+					Functions.Hint("Server Whitelisted", service.Players:GetChildren()) 
 				elseif args[1]:lower()=='off' or args[1]:lower()=='disable' then
-					server.Variables.Whitelist.Enabled = false
-					server.Functions.Hint("Server Unwhitelisted", service.Players:GetChildren()) 
+					Variables.Whitelist.Enabled = false
+					Functions.Hint("Server Unwhitelisted", service.Players:GetChildren()) 
 				elseif args[1]:lower()=="add" then
 					if args[2] then
 						local plrs = service.GetPlayers(plr,args[2],true)
 						if #plrs>0 then
 							for i,v in pairs(plrs) do
-								table.insert(server.Variables.Whitelist.List,v.Name..":"..v.userId)
-								server.Functions.Hint("Whitelisted "..v.Name,{plr})
+								table.insert(Variables.Whitelist.List,v.Name..":"..v.userId)
+								Functions.Hint("Whitelisted "..v.Name,{plr})
 							end
 						else
-							table.insert(server.Variables.Whitelist.List,args[2])
+							table.insert(Variables.Whitelist.List,args[2])
 						end
 					else
 						error('Missing name to whitelist')
 					end
 				elseif args[1]:lower()=="remove" then
 					if args[2] then
-						for i,v in pairs(server.Variables.Whitelist.List) do
+						for i,v in pairs(Variables.Whitelist.List) do
 							if v:lower():sub(1,#args[2]) == args[2]:lower() then
-								table.remove(server.Variables.Whitelist.List,i)
-								server.Functions.Hint("Removed "..tostring(v).." from the whitelist",{plr})
+								table.remove(Variables.Whitelist.List,i)
+								Functions.Hint("Removed "..tostring(v).." from the whitelist",{plr})
 							end
 						end
 					else
@@ -1122,7 +1140,7 @@ return function()
 		};
 		
 		Notif = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setmessage";"notif";"setmsg";};
 			Args = {"message OR off";};
 			Filter = true;
@@ -1132,15 +1150,15 @@ return function()
 				assert(args[1],"Argument missing or nil")
 				
 				if args[1] == "off" or args[1] == "false" then	
-					server.Variables.NotifMessage = nil
+					Variables.NotifMessage = nil
 					for i,v in pairs(service.GetPlayers()) do
-						server.Remote.RemoveGui(v,"Notif")
+						Remote.RemoveGui(v,"Notif")
 					end
 				else
-					server.Variables.NotifMessage = args[1] --service.LaxFilter(args[1],plr) --// Command processor handles arg filtering
+					Variables.NotifMessage = args[1] --service.LaxFilter(args[1],plr) --// Command processor handles arg filtering
 					for i,v in pairs(service.GetPlayers()) do
-						server.Remote.MakeGui(v,"Notif",{
-							Message = server.Variables.NotifMessage;
+						Remote.MakeGui(v,"Notif",{
+							Message = Variables.NotifMessage;
 						})
 					end
 				end
@@ -1148,7 +1166,7 @@ return function()
 		};
 		
 		SetBanMessage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setbanmessage";"setbmsg"};
 			Args = {"message";};
 			Filter = true;
@@ -1156,12 +1174,12 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				server.Variables.BanMessage = args[1]
+				Variables.BanMessage = args[1]
 			end
 		};
 		
 		SetLockMessage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setlockmessage";"setlmsg"};
 			Args = {"message";};
 			Filter = true;
@@ -1169,18 +1187,18 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				server.Variables.LockMessage = args[1]
+				Variables.LockMessage = args[1]
 			end
 		};
 		
 		Notepad = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad","stickynote"};
 			Args = {};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"Window",{
+				Remote.MakeGui(plr,"Window",{
 					Name = "Notepad";
 					Title = "Notepad";
 					CanvasSize = UDim2.new(0,0,10,0);
@@ -1217,7 +1235,7 @@ return function()
 		};
 		
 		Notification = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"notify","notification"};
 			Args = {"player","message"};
 			Description = "Sends the player a notification";
@@ -1226,7 +1244,7 @@ return function()
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Notification",{
+					Remote.MakeGui(v,"Notification",{
 						Title = "Notification";
 						Message = service.Filter(args[2],plr,v);
 					})
@@ -1235,7 +1253,7 @@ return function()
 		};
 		
 		Countdown = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"countdown", "timer"};
 			Args = {"time";};
 			Description = "Countdown";
@@ -1244,20 +1262,20 @@ return function()
 				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
 				if not args[1] then error("Argument 1 missing") end
 				for i,v in next,service.GetPlayers() do
-					server.Remote.MakeGui(v, "Countdown", {
+					Remote.MakeGui(v, "Countdown", {
 						Time = num;
 					})
 				end
 				--for i = num, 1, -1 do
-					--server.Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
-					--server.Functions.Message(" ", i, false, service.Players:children(), 0.8) 
+					--Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
+					--Functions.Message(" ", i, false, service.Players:children(), 0.8) 
 					--wait(1)
 				--end
 			end
 		};
 		
 		HintCountdown = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"hcountdown";"hc";};
 			Args = {"time";};
 			Description = "Hint Countdown";
@@ -1265,14 +1283,14 @@ return function()
 			Function = function(plr,args)
 				local num = math.min(tonumber(args[1]),120)
 				for i = num, 1, -1 do
-					server.Functions.Hint(i, service.Players:children(),2.5) 
+					Functions.Hint(i, service.Players:children(),2.5) 
 					wait(1)
 				end
 			end
 		};
 		
 		TimeMessage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tm";"timem";"timedmessage";};
 			Args = {"time";"message";};
 			Filter = true;
@@ -1281,8 +1299,8 @@ return function()
 			Function = function(plr,args) 
 				assert(args[1] and args[2] and tonumber(args[1]),"Argument missing or invalid")
 				for i,v in pairs(service.Players:GetChildren()) do
-					server.Remote.RemoveGui(v,"Message")
-					server.Remote.MakeGui(v,"Message",{
+					Remote.RemoveGui(v,"Message")
+					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
 						Message = args[2];
 						Time = tonumber(args[1]);
@@ -1292,7 +1310,7 @@ return function()
 		};
 		
 		Message = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"m";"message";};
 			Args = {"message";};
 			Filter = true;
@@ -1301,8 +1319,8 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in next,service.Players:GetChildren() do
-					server.Remote.RemoveGui(v,"Message")
-					server.Remote.MakeGui(v,"Message",{
+					Remote.RemoveGui(v,"Message")
+					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
 						Message = args[1];--service.Filter(args[1],plr,v);
 						Scroll = true;
@@ -1313,7 +1331,7 @@ return function()
 		};
 		
 		SystemMessage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sm";"systemmessage";};
 			Args = {"message";};
 			Filter = true;
@@ -1322,9 +1340,9 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.Players:GetChildren()) do
-					server.Remote.RemoveGui(v,"Message")
-					server.Remote.MakeGui(v,"Message",{
-						Title = server.Settings.SystemTitle;
+					Remote.RemoveGui(v,"Message")
+					Remote.MakeGui(v,"Message",{
+						Title = Settings.SystemTitle;
 						Message = args[1]; --service.Filter(args[1],plr,v);
 					})
 				end
@@ -1332,7 +1350,7 @@ return function()
 		};
 		
 		MessagePM = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
 			Args = {"player";"message";};
 			Filter = true;
@@ -1341,13 +1359,13 @@ return function()
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Functions.Message("Message from "..plr.Name,service.Filter(args[2],plr,v),{v})
+					Functions.Message("Message from "..plr.Name,service.Filter(args[2],plr,v),{v})
 				end
 			end
 		};
 		
 		Notify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"n","smallmessage","nmessage","nmsg","smsg","smessage"};
 			Args = {"message";};
 			Filter = true;
@@ -1356,8 +1374,8 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.Players:GetChildren()) do
-					server.Remote.RemoveGui(v,"Notify")
-					server.Remote.MakeGui(v,"Notify",{
+					Remote.RemoveGui(v,"Notify")
+					Remote.MakeGui(v,"Notify",{
 						Title = "Message from " .. plr.Name;
 						Message = service.Filter(args[1],plr,v);
 					})
@@ -1366,7 +1384,7 @@ return function()
 		};
 		
 		Hint = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"h";"hint";};
 			Args = {"message";};
 			Filter = true;
@@ -1375,7 +1393,7 @@ return function()
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.Players:GetChildren()) do
-					server.Remote.MakeGui(v,"Hint",{
+					Remote.MakeGui(v,"Hint",{
 						Message = tostring(plr or "")..": "..service.Filter(args[1],plr,v);
 					})
 				end
@@ -1383,7 +1401,7 @@ return function()
 		};
 		
 		Warn = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"warn","warning"};
 			Args = {"player","message";};
 			Filter = true;
@@ -1391,20 +1409,20 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = server.Admin.GetLevel(plr)
+				local plrLevel = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then 
-						local data = server.Core.GetPlayer(v)
+						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						server.Remote.RemoveGui(v,"Notify")
-						server.Remote.MakeGui(v,"Notify",{
+						Remote.RemoveGui(v,"Notify")
+						Remote.MakeGui(v,"Notify",{
 							Title = "Warning from "..tostring(plr);
 							Message = args[2];
 						})
 						
 						if plr and type(plr) == "userdata" then
-							server.Remote.MakeGui(plr,"Hint",{
+							Remote.MakeGui(plr,"Hint",{
 								Message = "Warned "..tostring(v);
 							})
 						end
@@ -1414,7 +1432,7 @@ return function()
 		};
 		
 		KickWarn = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"kickwarn","kwarn","kickwarning"};
 			Args = {"player","message";};
 			Filter = true;
@@ -1422,21 +1440,21 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = server.Admin.GetLevel(plr)
+				local plrLevel = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local targLevel = server.Admin.GetLevel(v)
+					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then 
-						local data = server.Core.GetPlayer(v)
+						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
 						v:Kick(tostring("[Warning from "..tostring(plr).."]\n"..args[2]))
-						server.Remote.RemoveGui(v,"Notify")
-						server.Remote.MakeGui(v,"Notify",{
+						Remote.RemoveGui(v,"Notify")
+						Remote.MakeGui(v,"Notify",{
 							Title = "Warning from "..tostring(plr);
 							Message = args[2];
 						})
 						
 						if plr and type(plr) == "userdata" then
-							server.Remote.MakeGui(plr,"Hint",{
+							Remote.MakeGui(plr,"Hint",{
 								Message = "Warned "..tostring(v);
 							})
 						end
@@ -1446,7 +1464,7 @@ return function()
 		};
 		
 		ShowWarnings = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"warnings","showwarnings"};
 			Args = {"player"};
 			Description = "Shows warnings a player has";
@@ -1454,7 +1472,7 @@ return function()
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local data = server.Core.GetPlayer(v)
+					local data = Core.GetPlayer(v)
 					local tab = {}
 					
 					if data.Warnings then
@@ -1463,7 +1481,7 @@ return function()
 						end
 					end
 					
-					server.Remote.MakeGui(plr, "List", {
+					Remote.MakeGui(plr, "List", {
 						Title = v.Name;
 						Table = tab;
 					})
@@ -1472,7 +1490,7 @@ return function()
 		};
 		
 		ClearWarnings = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clearwarnings"};
 			Args = {"player"};
 			Description = "Clears any warnings on a player";
@@ -1480,10 +1498,10 @@ return function()
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local data = server.Core.GetPlayer(v)
+					local data = Core.GetPlayer(v)
 					data.Warnings = {}
 					if plr and type(plr) == "userdata" then
-						server.Remote.MakeGui(plr,"Hint",{
+						Remote.MakeGui(plr,"Hint",{
 							Message = "Cleared warnings for "..tostring(v);
 						})
 					end
@@ -1492,7 +1510,7 @@ return function()
 		};
 		
 		NumPlayers = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"pnum","numplayers","howmanyplayers"};
 			Args = {};
 			Description = "Tells you how many players are in the server";
@@ -1509,15 +1527,15 @@ return function()
 				end
 				
 				if nilNum > 0 then
-					server.Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading",{plr})
+					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading",{plr})
 				else
-					server.Functions.Hint("There are "..tostring(num).." players",{plr})
+					Functions.Hint("There are "..tostring(num).." players",{plr})
 				end
 			end
 		};
 		
 		ClientTab = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"client";"clientsettings","playersettings"};
 			Args = {};
 			Hidden = false;
@@ -1525,12 +1543,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"UserPanel",{Tab = "Client"})
+				Remote.MakeGui(plr,"UserPanel",{Tab = "Client"})
 			end
 		};
 			
 		Donate = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"donate";"change";"changecape";"donorperks";};
 			Args = {};
 			Hidden = false;
@@ -1538,12 +1556,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"UserPanel",{Tab = "Donate"})
+				Remote.MakeGui(plr,"UserPanel",{Tab = "Donate"})
 			end
 		};
 		
 		DonorUncape = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"uncape";"removedonorcape";};
 			Args = {};
 			Hidden = false;
@@ -1552,12 +1570,12 @@ return function()
 			AllowDonors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				server.Functions.UnCape(plr)
+				Functions.UnCape(plr)
 			end
 		};
 		
 		DonorCape = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"cape";"donorcape";};
 			Args = {};
 			Hidden = false;
@@ -1566,12 +1584,12 @@ return function()
 			AllowDonors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				server.Functions.Donor(plr)
+				Functions.Donor(plr)
 			end
 		};
 		
 		DonorShirt = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"shirt";"giveshirt";};
 			Args = {"ID";};
 			Hidden = false;
@@ -1579,7 +1597,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = server.Functions.GetTexture(args[1])
+				local image = Functions.GetTexture(args[1])
 				if image then
 					if plr.Character and image then
 						for g,k in pairs(plr.Character:children()) do
@@ -1596,7 +1614,7 @@ return function()
 		};
 		
 		DonorPants = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"pants";"givepants";};
 			Args = {"id";};
 			Hidden = false;
@@ -1604,7 +1622,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = server.Functions.GetTexture(args[1])
+				local image = Functions.GetTexture(args[1])
 				if image then
 					if plr.Character and image then 
 						for g,k in pairs(plr.Character:children()) do
@@ -1621,7 +1639,7 @@ return function()
 		};
 		
 		DonorFace = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"face";"giveface";};
 			Args = {"id";};
 			Hidden = false;
@@ -1645,7 +1663,7 @@ return function()
 		};
 		
 		DonorNeon = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"neon";};
 			Args = {"color";};
 			Hidden = false;
@@ -1670,7 +1688,7 @@ return function()
 		};
 		
 		DonorFire = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"fire";"donorfire";};
 			Args = {"color (optional)";};
 			Hidden = false;
@@ -1694,14 +1712,14 @@ return function()
 						secondary = str
 					end
 					
-					server.Functions.RemoveParticle(torso,"DONOR_FIRE")
-					server.Functions.NewParticle(torso,"Fire",{
+					Functions.RemoveParticle(torso,"DONOR_FIRE")
+					Functions.NewParticle(torso,"Fire",{
 						Name = "DONOR_FIRE";
 						Color = color;
 						SecondaryColor = secondary;
 					})
-					server.Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
-					server.Functions.NewParticle(torso,"PointLight",{
+					Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
+					Functions.NewParticle(torso,"PointLight",{
 						Name = "DONOR_FIRE_LIGHT";
 						Color = color;
 						Range = 15;
@@ -1712,7 +1730,7 @@ return function()
 		};
 		
 		DonorSparkles = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"sparkles";"donorsparkles";};
 			Args = {"color (optional)";};
 			Hidden = false;
@@ -1734,14 +1752,14 @@ return function()
 						color = str
 					end
 					
-					server.Functions.RemoveParticle(torso,"DONOR_SPARKLES")
-					server.Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
-					server.Functions.NewParticle(torso,"Sparkles",{
+					Functions.RemoveParticle(torso,"DONOR_SPARKLES")
+					Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
+					Functions.NewParticle(torso,"Sparkles",{
 						Name = "DONOR_SPARKLES";
 						SparkleColor = color;
 					})
 					
-					server.Functions.NewParticle(torso,"PointLight",{
+					Functions.NewParticle(torso,"PointLight",{
 						Name = "DONOR_SPARKLES_LIGHT";
 						Color = color;
 						Range = 15;
@@ -1752,7 +1770,7 @@ return function()
 		};
 		
 		DonorLight = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"light";"donorlight";};
 			Args = {"color (optional)";};
 			Hidden = false;
@@ -1774,8 +1792,8 @@ return function()
 						color = str
 					end
 					
-					server.Functions.RemoveParticle(torso,"DONOR_LIGHT")
-					server.Functions.NewParticle(torso,"PointLight",{
+					Functions.RemoveParticle(torso,"DONOR_LIGHT")
+					Functions.NewParticle(torso,"PointLight",{
 						Name = "DONOR_LIGHT";
 						Color = color;
 						Range = 15;
@@ -1786,7 +1804,7 @@ return function()
 		};
 		
 		DonorParticle = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"particle";};
 			Args = {"textureid";"startColor3";"endColor3";};
 			Hidden = false;
@@ -1821,10 +1839,10 @@ return function()
 						endc = Color3.new(endColor[1],endColor[2],endColor[3])
 					end
 					
-					server.Functions.RemoveParticle(torso,"DONOR_PARTICLE")
-					server.Functions.NewParticle(torso,"ParticleEmitter",{
+					Functions.RemoveParticle(torso,"DONOR_PARTICLE")
+					Functions.NewParticle(torso,"ParticleEmitter",{
 						Name = "DONOR_PARTICLE";
-						Texture = 'rbxassetid://'..args[1]; --server.Functions.GetTexture(args[1]); 
+						Texture = 'rbxassetid://'..args[1]; --Functions.GetTexture(args[1]); 
 						Size = NumberSequence.new({
 							NumberSequenceKeypoint.new(0,0);
 							NumberSequenceKeypoint.new(.1,.25,.25);
@@ -1849,7 +1867,7 @@ return function()
 		};
 		
 		DonorUnparticle = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"unparticle";"removeparticles";};
 			Args = {};
 			Hidden = false;
@@ -1858,12 +1876,12 @@ return function()
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				server.Functions.RemoveParticle(torso,"DONOR_PARTICLE")
+				Functions.RemoveParticle(torso,"DONOR_PARTICLE")
 			end
 		};
 		
 		DonorUnfire = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"unfire";"undonorfire";};
 			Args = {};
 			Hidden = false;
@@ -1872,13 +1890,13 @@ return function()
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				server.Functions.RemoveParticle(torso,"DONOR_FIRE")
-				server.Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
+				Functions.RemoveParticle(torso,"DONOR_FIRE")
+				Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
 			end
 		};
 		
 		DonorUnsparkles = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"unsparkles";"undonorsparkles";};
 			Args = {};
 			Hidden = false;
@@ -1887,13 +1905,13 @@ return function()
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				server.Functions.RemoveParticle(torso,"DONOR_SPARKLES")
-				server.Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
+				Functions.RemoveParticle(torso,"DONOR_SPARKLES")
+				Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
 			end
 		};
 		
 		DonorUnlight = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"unlight";"undonorlight";};
 			Args = {};
 			Hidden = false;
@@ -1902,12 +1920,12 @@ return function()
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				server.Functions.RemoveParticle(torso,"DONOR_LIGHT")
+				Functions.RemoveParticle(torso,"DONOR_LIGHT")
 			end
 		};
 		
 		DonorHat = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"hat";"gethat";};
 			Args = {"ID";};
 			Hidden = false;
@@ -1962,7 +1980,7 @@ return function()
 		};
 		
 		DonorRemoveHats = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"removehats";"nohats";};
 			Args = {};
 			Hidden = false;
@@ -1979,7 +1997,7 @@ return function()
 		};
 		
 		Keybinds = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
 			Args = {};
 			Hidden = false;
@@ -1987,12 +2005,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
+				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
 		
 		MakeTalk = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"talk";"maketalk";};
 			Args = {"player";"message";};
 			Filter = true;
@@ -2007,7 +2025,7 @@ return function()
 		};
 		
 		ChatNotify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"chatnotify";"chatmsg";};
 			Args = {"player";"message";};
 			Filter = true;
@@ -2015,13 +2033,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					server.Remote.Send(v,"Function","ChatMessage",service.Filter(args[2],plr,v),Color3.new(1,64/255,77/255))
+					Remote.Send(v,"Function","ChatMessage",service.Filter(args[2],plr,v),Color3.new(1,64/255,77/255))
 				end
 			end
 		};
 		
 		ForceField = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ff";"forcefield";};
 			Args = {"player";};
 			Description = "Gives a force field to the target player(s)";
@@ -2034,7 +2052,7 @@ return function()
 		};
 		
 		UnForcefield = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unff";"unforcefield";};
 			Args = {"player";};
 			Description = "Removes force fields on the target player(s)";
@@ -2051,7 +2069,7 @@ return function()
 		};
 		
 		Punish = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"punish";};
 			Args = {"player";};
 			Description = "Removes the target player(s)'s character";
@@ -2059,14 +2077,14 @@ return function()
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then 
-						v.Character.Parent = server.Settings.Storage
+						v.Character.Parent = Settings.Storage
 					end
 				end
 			end
 		};
 		
 		UnPunish = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unpunish";};
 			Args = {"player";};
 			Description = "UnPunishes the target player(s)";
@@ -2079,7 +2097,7 @@ return function()
 		};
 		
 		IceFreeze = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ice";"iceage","icefreeze","funfreeze"};
 			Args = {"player";};
 			Description = "Freezes the target player(s) in a block of ice";
@@ -2111,7 +2129,7 @@ return function()
 		};
 		
 		Freeze = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"freeze"};
 			Args = {"player";};
 			Description = "Freezes the target player(s)";
@@ -2130,7 +2148,7 @@ return function()
 		};
 		
 		Thaw = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"thaw";"unfreeze";"unice"};
 			Args = {"player";};
 			Description = "UnFreezes the target players, thaws them out";
@@ -2176,7 +2194,7 @@ return function()
 		};
 		
 		Fire = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fire";"makefire";"givefire";};
 			Args = {"player";"color";};
 			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
@@ -2201,12 +2219,12 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.NewParticle(torso,"Fire",{
+						Functions.NewParticle(torso,"Fire",{
 							Name = "FIRE";
 							Color = color;
 							SecondaryColor = secondary;
 						})
-						server.Functions.NewParticle(torso,"PointLight",{
+						Functions.NewParticle(torso,"PointLight",{
 							Name = "FIRE_LIGHT";
 							Color = color;
 							Range = 15;
@@ -2218,7 +2236,7 @@ return function()
 		};
 		
 		UnFire = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unfire";"removefire";"extinguish";};
 			Args = {"player";};
 			Description = "Puts out the flames on the target player(s)";
@@ -2228,15 +2246,15 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.RemoveParticle(torso,"FIRE")
-						server.Functions.RemoveParticle(torso,"FIRE_LIGHT")
+						Functions.RemoveParticle(torso,"FIRE")
+						Functions.RemoveParticle(torso,"FIRE_LIGHT")
 					end
 				end
 			end
 		};
 		
 		Smoke = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"smoke";"givesmoke";};
 			Args = {"player";"color";};
 			Description = "Makes smoke come from the target player(s) with the desired color";
@@ -2259,7 +2277,7 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.NewParticle(torso,"Smoke",{
+						Functions.NewParticle(torso,"Smoke",{
 							Name = "SMOKE";
 							Color = color;
 						})
@@ -2269,7 +2287,7 @@ return function()
 		};
 		
 		UnSmoke = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unsmoke";};
 			Args = {"player";};
 			Description = "Removes smoke from the target player(s)";
@@ -2279,14 +2297,14 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.RemoveParticle(torso,"SMOKE")
+						Functions.RemoveParticle(torso,"SMOKE")
 					end
 				end
 			end
 		};
 		
 		Sparkles = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sparkles";};
 			Args = {"player";"color";};
 			Description = "Puts sparkles on the target player(s) with the desired color";
@@ -2309,11 +2327,11 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.NewParticle(torso,"Sparkles",{
+						Functions.NewParticle(torso,"Sparkles",{
 							Name = "SPARKLES";
 							SparkleColor = color;
 						})
-						server.Functions.NewParticle(torso,"PointLight",{
+						Functions.NewParticle(torso,"PointLight",{
 							Name = "SPARKLES_LIGHT";
 							Color = color;
 							Range = 15;
@@ -2325,7 +2343,7 @@ return function()
 		};
 		
 		UnSparkles = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unsparkles";};
 			Args = {"player";};
 			Description = "Removes sparkles from the target player(s)";
@@ -2335,15 +2353,15 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.RemoveParticle(torso,"SPARKLES")
-						server.Functions.RemoveParticle(torso,"SPARKLES_LIGHT")
+						Functions.RemoveParticle(torso,"SPARKLES")
+						Functions.RemoveParticle(torso,"SPARKLES_LIGHT")
 					end
 				end
 			end
 		};
 		
 		Animation = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"animation";"loadanim";"animate";};
 			Args = {"player";"animationID";};
 			Description = "Load the animation onto the target";
@@ -2355,13 +2373,13 @@ return function()
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid ID")
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","PlayAnimation",args[2])
+					Remote.Send(v,"Function","PlayAnimation",args[2])
 				end
 			end
 		};
 		
 		AFK = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"afk";};
 			Args = {"player";};
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
@@ -2379,7 +2397,7 @@ return function()
 						for k,t in pairs(v.Backpack:children()) do
 							t.Parent=tools
 						end
-						server.Admin.RunCommand(server.Settings.Prefix.."name",v.Name,"-AFK-_"..v.Name.."_-AFK-")
+						Admin.RunCommand(Settings.Prefix.."name",v.Name,"-AFK-_"..v.Name.."_-AFK-")
 						local torso=v.Character.HumanoidRootPart
 						local pos=torso.CFrame
 						local running=true
@@ -2392,7 +2410,7 @@ return function()
 							for k,t in pairs(tools:children()) do
 								t.Parent = v.Backpack
 							end
-							server.Admin.RunCommand(server.Settings.Prefix.."unname",v.Name)
+							Admin.RunCommand(Settings.Prefix.."unname",v.Name)
 							event:Disconnect()
 						end)
 						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
@@ -2402,7 +2420,7 @@ return function()
 		};
 		
 		Heal = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"heal";};
 			Args = {"player";};
 			Hidden = false;
@@ -2419,7 +2437,7 @@ return function()
 		};
 		
 		God = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"god";"immortal";};
 			Args = {"player";};
 			Hidden = false;
@@ -2437,7 +2455,7 @@ return function()
 		};
 		
 		UnGod = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ungod";"mortal";};
 			Args = {"player";};
 			Hidden = false;
@@ -2455,7 +2473,7 @@ return function()
 		};
 		
 		RemoveHats = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removehats";"nohats";};
 			Args = {"player";};
 			Hidden = false;
@@ -2483,12 +2501,12 @@ return function()
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local wot = {227499602,153622804,196917825,217714490,130872377,142633540,130936426,130783238,151758509,259702986}
-				server.Remote.Send(plr,"Function","PlayAudio",wot[math.random(1,#wot)])
+				Remote.Send(plr,"Function","PlayAudio",wot[math.random(1,#wot)])
 			end
 		};
 		
 		ScriptInfo = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"info";"about";"userpanel";};
 			Args = {};
 			Hidden = false;
@@ -2496,12 +2514,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"UserPanel",{Tab = "Info"})
+				Remote.MakeGui(plr,"UserPanel",{Tab = "Info"})
 			end
 		};
 		
 		SetCoreGuiEnabled = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcge";"setcore"};
 			Args = {"player";"element";"true/false";};
 			Hidden = false;
@@ -2511,16 +2529,16 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if args[3]:lower()=='on' or args[3]:lower()=='true' then
-						server.Remote.Send(v,'Function','SetCoreGuiEnabled',args[2],true)
+						Remote.Send(v,'Function','SetCoreGuiEnabled',args[2],true)
 					elseif args[3]:lower()=='off' or args[3]:lower()=='false' then
-						server.Remote.Send(v,'Function','SetCoreGuiEnabled',args[2],false)
+						Remote.Send(v,'Function','SetCoreGuiEnabled',args[2],false)
 					end
 				end
 			end
 		};
 		
 		PrivateMessage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
 			Args = {"player";"message";};
 			Filter = true;
@@ -2528,9 +2546,9 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing")
-				if server.Admin.CheckAdmin(plr) then
+				if Admin.CheckAdmin(plr) then
 					for i,p in pairs(service.GetPlayers(plr, args[1])) do
-						server.Remote.MakeGui(p,"PrivateMessage",{
+						Remote.MakeGui(p,"PrivateMessage",{
 							Title = "Message from "..plr.Name;
 							Player = plr;
 							Message = service.Filter(args[2],plr,p);
@@ -2541,33 +2559,33 @@ return function()
 		};
 		
 		ShowChat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"chat","customchat"};
 			Args = {"player"};
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Chat",{KeepChat = true})
+					Remote.MakeGui(v,"Chat",{KeepChat = true})
 				end
 			end
 		};
 		
 		RemoveChat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unchat","uncustomchat"};
 			Args = {"player"};
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.RemoveGui(v,"Chat")
+					Remote.RemoveGui(v,"Chat")
 				end
 			end
 		};
 		
 		BlurEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"blur";"screenblur";"blureffect"};
 			Args = {"player";"blur size";};
 			Description = "Blur the target player's screen";
@@ -2577,7 +2595,7 @@ return function()
 				local moder = tonumber(args[2]) or 0.5
 				if moder>5 then moder=5 end
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.NewLocal(p,"BlurEffect",{
+					Remote.NewLocal(p,"BlurEffect",{
 						Name = "WINDOW_BLUR", 
 						Size = tonumber(args[2]) or 24, 
 						Enabled = true,
@@ -2587,7 +2605,7 @@ return function()
 		};
 		
 		BloomEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bloom";"screenbloom";"bloomeffect"};
 			Args = {"player";"intensity";"size";"threshold"};
 			Description = "Give the player's screen the bloom lighting effect";
@@ -2595,7 +2613,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.NewLocal(p,"BloomEffect",{
+					Remote.NewLocal(p,"BloomEffect",{
 						Name = "WINDOW_BLOOM",
 						Intensity = tonumber(args[2]) or 0.4, 
 						Size = tonumber(args[3]) or 24, 
@@ -2607,7 +2625,7 @@ return function()
 		};
 		
 		SunRaysEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sunrays";"screensunrays";"sunrayseffect"};
 			Args = {"player";"intensity";"spread"};
 			Description = "Give the player's screen the sunrays lighting effect";
@@ -2615,7 +2633,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.NewLocal(p,"SunRaysEffect",{
+					Remote.NewLocal(p,"SunRaysEffect",{
 						Name = "WINDOW_SUNRAYS",
 						Intensity = tonumber(args[2]) or 0.25, 
 						Spread = tonumber(args[3]) or 1, 
@@ -2626,7 +2644,7 @@ return function()
 		};
 		
 		ColorCorrectionEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"colorcorrect";"colorcorrection";"correctioneffect";"correction";"cce"};
 			Args = {"player";"brightness","contrast","saturation","tint"};
 			Description = "Give the player's screen the sunrays lighting effect";
@@ -2640,7 +2658,7 @@ return function()
 				r,g,b = tonumber(r),tonumber(g),tonumber(b)
 				if not r or not g or not b then error("Invalid Input") end
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.NewLocal(p,"ColorCorrectionEffect",{
+					Remote.NewLocal(p,"ColorCorrectionEffect",{
 						Name = "WINDOW_COLORCORRECTION",
 						Brightness = tonumber(args[2]) or 0,
 						Contrast = tonumber(args[3]) or 0,
@@ -2653,7 +2671,7 @@ return function()
 		};
 		
 		UnColorCorrection = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uncolorcorrection";"uncorrection";"uncolorcorrectioneffect"};
 			Args = {"player";};
 			Hidden = false;
@@ -2662,13 +2680,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
+					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
 				end
 			end
 		};
 		
 		UnSunRays = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unsunrays"};
 			Args = {"player";};
 			Hidden = false;
@@ -2677,13 +2695,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
+					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
 				end
 			end
 		};
 		
 		UnBloom = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unbloom";"unscreenbloom";};
 			Args = {"player";};
 			Hidden = false;
@@ -2692,13 +2710,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
+					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
 				end
 			end
 		};
 		
 		UnBlur = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unblur";"unscreenblur";};
 			Args = {"player";};
 			Hidden = false;
@@ -2707,13 +2725,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
+					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
 				end
 			end
 		};
 		
 		UnLightingEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unlightingeffect";"unscreeneffect";};
 			Args = {"player";};
 			Hidden = false;
@@ -2722,17 +2740,17 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
-					server.Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
-					server.Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
-					server.Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
-					server.Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
+					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
+					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
+					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
+					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
+					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
 				end
 			end
 		};
 		
 		ThermalVision = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"thermal","thermalvision","heatvision"};
 			Args = {"player"};
 			Hidden = false;
@@ -2741,7 +2759,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.NewLocal(p,"ColorCorrectionEffect",{
+					Remote.NewLocal(p,"ColorCorrectionEffect",{
 						Name = "WINDOW_THERMAL",
 						Brightness = 1,
 						Contrast = 20,
@@ -2749,7 +2767,7 @@ return function()
 						TintColor = Color3.new(0.5,0.2,1);
 						Enabled = true,
 					},"Camera")
-					server.Remote.NewLocal(p,"BlurEffect",{
+					Remote.NewLocal(p,"BlurEffect",{
 						Name = "WINDOW_THERMAL", 
 						Size = 24, 
 						Enabled = true,
@@ -2759,7 +2777,7 @@ return function()
 		};
 		
 		UnThermalVision = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unthermal";"unthermalvision";};
 			Args = {"player";};
 			Hidden = false;
@@ -2768,13 +2786,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
+					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
 				end
 			end
 		};
 		
 		ZaWarudo = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"zawarudo","stoptime"};
 			Args = {};
 			Fun = true;
@@ -2784,7 +2802,7 @@ return function()
 				local doPause; doPause = function(obj)
 					if obj:IsA("BasePart") and not obj.Anchored and not obj:IsDescendantOf(plr.Character) then
 						obj.Anchored = true
-						table.insert(server.Variables.FrozenObjects, obj)
+						table.insert(Variables.FrozenObjects, obj)
 					end
 					
 					for i,v in next,obj:GetChildren() do
@@ -2792,13 +2810,13 @@ return function()
 					end
 				end
 				
-				if server.Variables.ZaWarudo then
+				if Variables.ZaWarudo then
 					local audio = service.New("Sound",workspace)
 					audio.SoundId = "rbxassetid://676242549"
 					audio.Volume = 0.5
 					audio:Play()
 					wait(2)
-					for i,part in next,server.Variables.FrozenObjects do
+					for i,part in next,Variables.FrozenObjects do
 						part.Anchored = false
 					end
 					
@@ -2817,9 +2835,9 @@ return function()
 						audio:Destroy()
 					end
 					
-					server.Variables.ZaWarudo:Disconnect()
-					server.Variables.FrozenObjects = {}
-					server.Variables.ZaWarudo = false
+					Variables.ZaWarudo:Disconnect()
+					Variables.FrozenObjects = {}
+					Variables.ZaWarudo = false
 					audio:Destroy()
 				else
 					local audio = service.New("Sound",workspace)
@@ -2828,10 +2846,10 @@ return function()
 					audio:Play()
 					wait(2.25)
 					doPause(workspace)
-					server.Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
+					Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
 						if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
 							c.Anchored = true
-							table.insert(server.Variables.FrozenObjects,c)
+							table.insert(Variables.FrozenObjects,c)
 						end
 					end)
 					
@@ -2854,7 +2872,7 @@ return function()
 		};
 		
 		ShowSBL = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sbl";"syncedbanlist";"globalbanlist";"trellobans";"trellobanlist";};
 			Args = {};
 			Hidden = false;
@@ -2862,53 +2880,53 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Syned Ban List";
-					Tab = server.HTTP.Trello.Bans;
+					Tab = HTTP.Trello.Bans;
 				})
 			end
 		};
 		
 		MakeList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"makelist";"newlist";"newtrellolist";"maketrellolist";};
 			Args = {"name";};
 			Hidden = false;
-			Description = "Adds a list to the Trello board set in server.Settings. AppKey and Token MUST be set and have write perms for this to work.";
+			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end		
-				local trello = server.HTTP.Trello.API(server.Settings.Trello_AppKey,server.Settings.Trello_Token)
-				local list = trello.makeList(server.Settings.Trello_Primary,args[1])
-				server.Functions.Hint("Made list "..list.name,{plr})
+				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+				local list = trello.makeList(Settings.Trello_Primary,args[1])
+				Functions.Hint("Made list "..list.name,{plr})
 			end
 		};
 		
 		ViewList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"viewlist";"viewtrellolist";};
 			Args = {"name";};
 			Hidden = false;
-			Description = "Views the specified Trello list from the board set in server.Settings.";
+			Description = "Views the specified Trello list from the board set in Settings.";
 			Fun = false;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end		
-				local trello = server.HTTP.Trello.API(server.Settings.Trello_AppKey,server.Settings.Trello_Token)
-				local list = trello.getList(server.Settings.Trello_Primary,args[1])
+				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+				local list = trello.getList(Settings.Trello_Primary,args[1])
 				if not list then error("List not found.") end
 				local cards = trello.getCards(list.id)
 				local temp = {}
 				for i,v in pairs(cards) do
 					table.insert(temp,{Text=v.name,Desc=v.desc})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = list.name; Tab = temp})
+				Remote.MakeGui(plr,"List",{Title = list.name; Tab = temp})
 			end
 		};
 		
 		MakeCard = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"makecard", "maketrellocard", "createcard"};
 			Args = {};
 			Hidden = false;
@@ -2916,12 +2934,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"CreateCard")
+				Remote.MakeGui(plr,"CreateCard")
 			end
 		};
 		
 		GetScript = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"getscript";"getadonis"};
 			Args = {};
 			Hidden = false;
@@ -2929,12 +2947,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				service.MarketPlace:PromptPurchase(plr, server.Core.LoaderID)
+				service.MarketPlace:PromptPurchase(plr, Core.LoaderID)
 			end
 		};
 		
 		Ping = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
@@ -2942,12 +2960,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,'Ping')
+				Remote.MakeGui(plr,'Ping')
 			end
 		};
 		
 		GetPing = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"getping";};
 			Args = {"player";};
 			Hidden = false;
@@ -2956,13 +2974,13 @@ return function()
 			AdminLevel = "Helpers";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Functions.Hint(v.Name.."'s Ping is "..server.Remote.Get(v,"Ping").."ms",{plr})
+					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
 				end
 			end
 		};
 		
 		Donors = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors";"donorlist";"donatorlist";};
 			Args = {};
 			Hidden = false;
@@ -2972,16 +2990,16 @@ return function()
 			Function = function(plr,args)
 				local temptable = {}
 				for i,v in pairs(service.Players:children()) do
-					if server.Admin.CheckDonor(v) then
+					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end
 				end
-				server.Remote.MakeGui(plr,'List',{Title = 'Donors In-Game'; Tab = temptable; Update = 'DonorList'})
+				Remote.MakeGui(plr,'List',{Title = 'Donors In-Game'; Tab = temptable; Update = 'DonorList'})
 			end
 		};
 		
 		RequestHelp = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"help";"requesthelp";"gethelp";"lifealert";};
 			Args = {};
 			Hidden = false;
@@ -2989,34 +3007,34 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				if server.Settings.HelpSystem == true then
+				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
 					
-					if server.Variables.HelpRequests[plr.Name] ~= nil then 
+					if Variables.HelpRequests[plr.Name] ~= nil then 
 						error("You already have a pending request")
 					else
-						server.Functions.Hint("Request sent",{plr})
-						server.Variables.HelpRequests[plr.Name] = true
+						Functions.Hint("Request sent",{plr})
+						Variables.HelpRequests[plr.Name] = true
 					end
 					
 					for ind,p in pairs(service.Players:GetChildren()) do 
 						Routine(function()
-							if server.Admin.CheckAdmin(p) then
-								local ret = server.Remote.MakeGuiGet(p,"Notification",{
+							if Admin.CheckAdmin(p) then
+								local ret = Remote.MakeGuiGet(p,"Notification",{
 									Title = "Help Request";
 									Message = plr.Name.." needs help!";
 									Time = 30;
-									OnClick = server.Core.Bytecode("return true");
-									OnClose = server.Core.Bytecode("return false");
-									OnIgnore = server.Core.Bytecode("return false");
+									OnClick = Core.Bytecode("return true");
+									OnClose = Core.Bytecode("return false");
+									OnIgnore = Core.Bytecode("return false");
 								})
 								
 								num = num+1
 								if ret then 
 									if not answered then 
 										answered = true
-										server.Admin.RunCommand(server.Settings.Prefix.."tp",p.Name,plr.Name)
+										Admin.RunCommand(Settings.Prefix.."tp",p.Name,plr.Name)
 									end
 								end
 							end
@@ -3026,19 +3044,19 @@ return function()
 					local w = tick()
 					repeat wait(0.5) until tick()-w>30 or answered
 					
-					server.Variables.HelpRequests[plr.Name] = nil
+					Variables.HelpRequests[plr.Name] = nil
 					
 					if not answered then 
-						server.Functions.Message("Help System","Sorry but no one is available to help you right now",{plr})
+						Functions.Message("Help System","Sorry but no one is available to help you right now",{plr})
 					end
 				else
-					server.Functions.Message("Help System","Help System Disabled by Place Owner",{plr})
+					Functions.Message("Help System","Help System Disabled by Place Owner",{plr})
 				end
 			end
 		};
 		
 		Rejoin = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"rejoin";};
 			Args = {};
 			Hidden = false;
@@ -3050,13 +3068,13 @@ return function()
 				if succeeded then
 					service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 				else
-					server.Functions.Hint("Could not rejoin.")
+					Functions.Hint("Could not rejoin.")
 				end
 			end
 		};
 		
 		Join = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"join";"follow";"followplayer";};
 			Args = {"username";};
 			Hidden = false;
@@ -3070,16 +3088,16 @@ return function()
 					if succeeded then
 						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 					else
-						server.Functions.Hint("Could not follow "..args[1]..". "..errorMsg,{plr})
+						Functions.Hint("Could not follow "..args[1]..". "..errorMsg,{plr})
 					end
 				else 
-					server.Functions.Hint(args[1].." is not a valid ROBLOX user",{plr})
+					Functions.Hint(args[1].." is not a valid ROBLOX user",{plr})
 				end
 			end
 		};
 		
 		ShowBackpack = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"showtools";"viewtools";"seebackpack";"viewbackpack";"showbackpack";"displaybackpack";"displaytools";};
 			Args = {"player";};
 			Hidden = false;
@@ -3101,14 +3119,14 @@ return function()
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | Name: "..t.Name})
 							end
 						end
-						server.Remote.MakeGui(plr,"List",{Title = v.Name,Tab = tools})
+						Remote.MakeGui(plr,"List",{Title = v.Name,Tab = tools})
 					end)
 				end
 			end
 		};
 		
 		PlayerList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"players","playerlist"};
 			Args = {};
 			Hidden = false;
@@ -3118,8 +3136,8 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local plrs = {}
-				local playz = server.Functions.GrabNilPlayers('all')
-				server.Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{plr})
+				local playz = Functions.GrabNilPlayers('all')
+				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{plr})
 				for i,v in pairs(playz) do
 					Routine(function()
 						if type(v)=="String" and v=="NoPlayer" then
@@ -3127,7 +3145,7 @@ return function()
 						else	
 							local ping
 							Routine(function()	
-								ping = server.Remote.Ping(v).."ms"
+								ping = Remote.Ping(v).."ms"
 							end)
 							for i=0.1,5,0.1 do
 								if ping then break end
@@ -3159,15 +3177,15 @@ return function()
 				end
 				
 				for i=0.1,5,0.1 do
-					if server.Functions.CountTable(plrs)>=server.Functions.CountTable(playz) then break end
+					if Functions.CountTable(plrs)>=Functions.CountTable(playz) then break end
 					wait(0.1)
 				end
-				server.Remote.MakeGui(plr,'List',{Title = 'Players', Tab = plrs, Update = "PlayerList"})
+				Remote.MakeGui(plr,'List',{Title = 'Players', Tab = plrs, Update = "PlayerList"})
 			end
 		};
 		
 		Agents = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"agents";"trelloagents";"showagents";};
 			Args = {};
 			Hidden = false;
@@ -3176,15 +3194,15 @@ return function()
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temp={}
-				for i,v in pairs(server.HTTP.Trello.Agents) do
+				for i,v in pairs(HTTP.Trello.Agents) do
 					table.insert(temp,{Text = v,Desc = "A Trello agent"})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Agents", Tab = temp})
+				Remote.MakeGui(plr,"List",{Title = "Agents", Tab = temp})
 			end
 		};
 
 		Credits = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"credit";"credits";};
 			Args = {};
 			Hidden = false;
@@ -3192,7 +3210,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = 'Credits', 
 					Tab = server.Credits
 				})
@@ -3200,7 +3218,7 @@ return function()
 		};	
 		
 		Alert = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"alert";"alarm";"annoy";};
 			Args = {"player";"message";};
 			Filter = true;
@@ -3208,13 +3226,13 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1]:lower())) do
-					server.Remote.MakeGui(v,"Alert",{Message = (service.Filter(args[2],plr,v) or "Wake up")})
+					Remote.MakeGui(v,"Alert",{Message = (service.Filter(args[2],plr,v) or "Wake up")})
 				end
 			end
 		};	
 		
 		Usage = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"usage";};
 			Args = {};
 			Hidden = false;
@@ -3225,51 +3243,51 @@ return function()
 				local usage={
 					'Mouse over things in lists to expand them';
 					'Special Functions: ';
-					'Ex: '..server.Settings.Prefix..'kill FUNCTION, so like '..server.Settings.Prefix..'kill '..server.Settings.SpecialPrefix..'all';
-					'Put /e in front to make it silent (/e '..server.Settings.Prefix..'kill scel)';
-					server.Settings.SpecialPrefix..'me - Runs a command on you';
-					server.Settings.SpecialPrefix..'all - Runs a command on everyone';
-					server.Settings.SpecialPrefix..'admins - Runs a command on all admins in the game';
-					server.Settings.SpecialPrefix..'nonadmins - Same as !admins but for people who are not an admin';
-					server.Settings.SpecialPrefix..'others - Runs command on everyone BUT you';
-					server.Settings.SpecialPrefix..'random - Runs command on a random person';
-					server.Settings.SpecialPrefix..'friends - Runs command on anyone on your friends list';
-					server.Settings.SpecialPrefix..'besties - Runs command on anyone on your best friends list';
-					'%TEAMNAME - Runs command on everyone in the team TEAMNAME Ex: '..server.Settings.Prefix..'kill %raiders';
+					'Ex: '..Settings.Prefix..'kill FUNCTION, so like '..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all';
+					'Put /e in front to make it silent (/e '..Settings.Prefix..'kill scel)';
+					Settings.SpecialPrefix..'me - Runs a command on you';
+					Settings.SpecialPrefix..'all - Runs a command on everyone';
+					Settings.SpecialPrefix..'admins - Runs a command on all admins in the game';
+					Settings.SpecialPrefix..'nonadmins - Same as !admins but for people who are not an admin';
+					Settings.SpecialPrefix..'others - Runs command on everyone BUT you';
+					Settings.SpecialPrefix..'random - Runs command on a random person';
+					Settings.SpecialPrefix..'friends - Runs command on anyone on your friends list';
+					Settings.SpecialPrefix..'besties - Runs command on anyone on your best friends list';
+					'%TEAMNAME - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
 					'$GROUPID - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
-					'-PLAYERNAME - Will remove PLAYERNAME from list of players to run command on. '..server.Settings.Prefix..'kill all,-scel will kill everyone except scel';
-					'#NUMBER - Will run command on NUMBER of random players. '..server.Settings.Prefix..'ff #5 will ff 5 random players.';
-					'radius-NUMBER -- Lets you run a command on anyone within a NUMBER stud radius of you. '..server.Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
-					'Certain commands can be used by anyone, these commands have '..server.Settings.PlayerPrefix..' infront, such as '..server.Settings.PlayerPrefix..'clean and '..server.Settings.PlayerPrefix..'rejoin';
-					''..server.Settings.Prefix..'kill me,noob1,noob2,'..server.Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel';
-					'Multiple Commands at a time - '..server.Settings.Prefix..'ff me '..server.Settings.BatchKey..' '..server.Settings.Prefix..'sparkles me '..server.Settings.BatchKey..' '..server.Settings.Prefix..'rocket jim';
-					'You can add a wait if you want; '..server.Settings.Prefix..'ff me '..server.Settings.BatchKey..' !wait 10 '..server.Settings.BatchKey..' '..server.Settings.Prefix..'m hi we waited 10 seconds';
-					''..server.Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..server.Settings.Prefix..'respawn jim';
-					'Place owners can edit some settings in-game via the '..server.Settings.Prefix..'settings command';
+					'-PLAYERNAME - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
+					'#NUMBER - Will run command on NUMBER of random players. '..Settings.Prefix..'ff #5 will ff 5 random players.';
+					'radius-NUMBER -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
+					'Certain commands can be used by anyone, these commands have '..Settings.PlayerPrefix..' infront, such as '..Settings.PlayerPrefix..'clean and '..Settings.PlayerPrefix..'rejoin';
+					''..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel';
+					'Multiple Commands at a time - '..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim';
+					'You can add a wait if you want; '..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds';
+					''..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim';
+					'Place owners can edit some settings in-game via the '..Settings.Prefix..'settings command';
 					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
 				}
-				server.Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage})
+				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage})
 			end
 		};
 		
 		Waypoint = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"waypoint";"wp";"checkpoint";};
 			Args = {"name";};
 			Filter = true;
 			Description = "Makes a new waypoint/sets an exiting one to your current position with the name <name> that you can teleport to using :tp me waypoint-<name>";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local name=args[1] or tostring(#server.Waypoints+1)
+				local name=args[1] or tostring(#Variables.Waypoints+1)
 				if plr.Character:FindFirstChild('HumanoidRootPart') then
-					server.Variables.Waypoints[name] = plr.Character.HumanoidRootPart.Position
-					server.Functions.Hint('Made waypoint '..name..' | '..tostring(server.Variables.Waypoints[name]),{plr})
+					Variables.Waypoints[name] = plr.Character.HumanoidRootPart.Position
+					Functions.Hint('Made waypoint '..name..' | '..tostring(Variables.Waypoints[name]),{plr})
 				end
 			end
 		};
 		
 		DeleteWaypoint = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"delwaypoint";"delwp";"delcheckpoint";"deletewaypoint";"deletewp";"deletecheckpoint";};
 			Args = {"name";};
 			Hidden = false;
@@ -3277,17 +3295,17 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(server.Variables.Waypoints) do
+				for i,v in pairs(Variables.Waypoints) do
 					if i:lower():sub(1,#args[1])==args[1]:lower() or args[1]:lower()=='all' then
-						server.Variables.Waypoints[i]=nil
-						server.Functions.Hint('Deleted waypoint '..i,{plr})
+						Variables.Waypoints[i]=nil
+						Functions.Hint('Deleted waypoint '..i,{plr})
 					end
 				end
 			end
 		};
 		
 		Waypoints = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"waypoints";};
 			Args = {};
 			Hidden = false;
@@ -3296,16 +3314,16 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local temp={}
-				for i,v in pairs(server.Variables.Waypoints) do
+				for i,v in pairs(Variables.Waypoints) do
 					local x,y,z=tostring(v):match('(.*),(.*),(.*)')
 					table.insert(temp,{Text=i,Desc='X:'..x..' Y:'..y..' Z:'..z})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = 'Waypoints', Tab = temp})
+				Remote.MakeGui(plr,"List",{Title = 'Waypoints', Tab = temp})
 			end
 		};
 		
 		Cameras = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cameras";"cams";};
 			Args = {};
 			Hidden = false;
@@ -3314,15 +3332,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
-				for i,v in pairs(server.Variables.Cameras) do
+				for i,v in pairs(Variables.Cameras) do
 					table.insert(tab,{Text = v.Name,Desc = "Pos: "..v.Object.Position})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Cameras", Tab = tab})
+				Remote.MakeGui(plr,"List",{Title = "Cameras", Tab = tab})
 			end
 		};
 		
 		MakeCamera = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"makecam";"makecamera";"camera";};
 			Args = {"name";};
 			Filter = true;
@@ -3331,7 +3349,7 @@ return function()
 			Function = function(plr,args)
 				if plr and plr.Character and plr.Character:FindFirstChild('Head') then
 					if service.Workspace:FindFirstChild('Camera: '..args[1]) then
-						server.Functions.Hint(args[1].." Already Exists!",{plr})
+						Functions.Hint(args[1].." Already Exists!",{plr})
 					else
 						local cam = service.New('Part',service.Workspace)
 						cam.Position = plr.Character.Head.Position
@@ -3349,29 +3367,29 @@ return function()
 						local mesh=service.New('SpecialMesh',cam)
 						mesh.Scale=Vector3.new(1,1,1)
 						mesh.MeshType='Sphere'
-						table.insert(server.Variables.Cameras,{Brick = cam, Name = args[1]})
+						table.insert(Variables.Cameras,{Brick = cam, Name = args[1]})
 					end
 				end
 			end
 		};
 		
 		ViewCamera = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"viewcam","viewc","camview","watchcam","cam"};
 			Args = {"camera";};
 			Description = "Makes you view the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(server.Variables.Cameras) do
+				for i,v in pairs(Variables.Cameras) do
 					if v.Name:sub(1,#args[1]) == args[1] then
-						server.Remote.Send(plr,'Function','SetView',v.Brick)
+						Remote.Send(plr,'Function','SetView',v.Brick)
 					end
 				end
 			end
 		};
 		
 		ForceView = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fview";"forceview";"forceviewplayer";"fv";};
 			Args = {"player1";"player2";};
 			Description = "Forces one player to view another";
@@ -3380,7 +3398,7 @@ return function()
 				for k,p in pairs(service.GetPlayers(plr, args[1])) do
 					for i,v in pairs(service.GetPlayers(plr, args[2])) do
 						if v and v.Character:FindFirstChild('Humanoid') then
-							server.Remote.Send(p,'Function','SetView',v.Character.Humanoid)
+							Remote.Send(p,'Function','SetView',v.Character.Humanoid)
 						end
 					end
 				end
@@ -3388,7 +3406,7 @@ return function()
 		};
 		
 		View = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"view";"watch";"nsa";"viewplayer";};
 			Args = {"player";};
 			Description = "Makes you view the target player";
@@ -3397,14 +3415,14 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					if v and v.Character:FindFirstChild('Humanoid') then
-						server.Remote.Send(plr,'Function','SetView',v.Character.Humanoid)
+						Remote.Send(plr,'Function','SetView',v.Character.Humanoid)
 					end
 				end
 			end
 		};
 		
 		ResetView = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"resetview";"rv";"fixview";"fixcam";"unwatch";"unview"};
 			Args = {"optional player"};
 			Description = "Resets your view";
@@ -3415,13 +3433,13 @@ return function()
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					end
 				else
-					server.Remote.Send(plr,'Function','SetView','reset')
+					Remote.Send(plr,'Function','SetView','reset')
 				end
 			end
 		};
 		
 		GuiView = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"guiview";"showguis";"viewguis"};
 			Args = {"player"};
 			Description = "Shows you the player's character and any guis in their PlayerGui folder [May take a minute]";
@@ -3432,31 +3450,31 @@ return function()
 					p = v
 				end
 				if p then
-					server.Functions.Hint("Loading GUIs",{plr})
-					local guis,rlocked = server.Remote.Get(p,"Function","GetGuiData") 
+					Functions.Hint("Loading GUIs",{plr})
+					local guis,rlocked = Remote.Get(p,"Function","GetGuiData") 
 					if rlocked then
-						server.Functions.Hint("ROBLOXLOCKED GUI FOUND! CANNOT DISPLAY!",{plr})
+						Functions.Hint("ROBLOXLOCKED GUI FOUND! CANNOT DISPLAY!",{plr})
 					end
 					if guis then
-						server.Remote.Send(plr,"Function","LoadGuiData",guis)
+						Remote.Send(plr,"Function","LoadGuiData",guis)
 					end
 				end
 			end;
 		};
 		
 		UnGuiView = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unguiview","unshowguis","unviewguis"};
 			Args = {};
 			Description = "Removes the viewed player's GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				server.Remote.Send(plr,"Function","UnLoadGuiData")
+				Remote.Send(plr,"Function","UnLoadGuiData")
 			end;
 		};
 		
 		ServerDetails = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"details";"meters";"gameinfo";"serverinfo";};
 			Args = {};
 			Hidden = false;
@@ -3471,7 +3489,7 @@ return function()
 						nilplayers=nilplayers+1
 					end
 				end
-				if server.HTTP.CheckHttp() then
+				if HTTP.CheckHttp() then
 					det.Http='Enabled'
 				else
 					det.Http='Disabled'
@@ -3495,44 +3513,44 @@ return function()
 				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
 				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
 				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
-				--det.AdminVersion = server.version
+				--det.AdminVersion = version
 				det.ServerStartTime = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and not server.Admin.CheckAdmin(v:GetPlayer(),false) then
+					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
 				det.NonAdmins=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(),false) then
+					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
 				det.CurrentTime=service.GetTime()
-				det.ServerAge=service.GetTime(os.time()-server.Variables.ServerStartTime)
+				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
 				det.Admins=adminnumber
-				det.Objects=#server.Variables.Objects
-				det.Cameras=#server.Variables.Cameras
+				det.Objects=#Variables.Objects
+				det.Cameras=#Variables.Cameras
 				
 				local tab = {}
 				for i,v in pairs(det) do
 					table.insert(tab,{Text = i..": "..tostring(v),Desc = tostring(v)})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Server Details", Tab = tab, Update = "ServerDetails"})
-				--server.Remote.Send(plr,'Function','ServerDetails',det)
+				Remote.MakeGui(plr,"List",{Title = "Server Details", Tab = tab, Update = "ServerDetails"})
+				--Remote.Send(plr,'Function','ServerDetails',det)
 			end
 		};
 		
 		ChangeLog = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"changelog";"changes";};
 			Args = {};
 			Description = "Shows you the script's changelog";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = 'Change Log',
 					Table = server.Changelog,
 					Size = {500,400}
@@ -3541,7 +3559,7 @@ return function()
 		};
 				
 		AdminList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"admins";"adminlist";"owners";"Moderators";};
 			Args = {};
 			Hidden = false;
@@ -3551,39 +3569,39 @@ return function()
 			Function = function(plr,args)
 				local temptable = {}
 				
-				for i,v in pairs(server.Settings.Creators) do 
+				for i,v in pairs(Settings.Creators) do 
 					table.insert(temptable,v .. " - Creator") 
 				end
 				
-				for i,v in pairs(server.Settings.Owners) do 
+				for i,v in pairs(Settings.Owners) do 
 					table.insert(temptable,v .. " - Owner") 
 				end
 				
-				for i,v in pairs(server.Settings.Admins) do 
+				for i,v in pairs(Settings.Admins) do 
 					table.insert(temptable,v .. " - Admin") 
 				end
 				
-				for i,v in pairs(server.Settings.Moderators) do 
+				for i,v in pairs(Settings.Moderators) do 
 					table.insert(temptable,v .. " - Mod") 
 				end 
 				
-				for i,v in pairs(server.HTTP.Trello.Creators) do 
+				for i,v in pairs(HTTP.Trello.Creators) do 
 					table.insert(temptable,v .. " - Creator [Trello]") 
 				end 
 				
-				for i,v in pairs(server.HTTP.Trello.Moderators) do 
+				for i,v in pairs(HTTP.Trello.Moderators) do 
 					table.insert(temptable,v .. " - Mod [Trello]") 
 				end 
 				
-				for i,v in pairs(server.HTTP.Trello.Admins) do 
+				for i,v in pairs(HTTP.Trello.Admins) do 
 					table.insert(temptable,v .. " - Admin [Trello]") 
 				end 
 				
-				for i,v in pairs(server.HTTP.Trello.Owners) do 
+				for i,v in pairs(HTTP.Trello.Owners) do 
 					table.insert(temptable,v .. " - Owner [Trello]") 
 				end
 				
-				service.Iterate(server.Settings.CustomRanks,function(rank,tab)
+				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
 						table.insert(temptable,admin.." - "..rank) 
 					end)
@@ -3591,7 +3609,7 @@ return function()
 				
 				table.insert(temptable,'==== Admins In-Game ====')
 				for i,v in pairs(service.GetPlayers()) do 
-					local level = server.Admin.GetLevel(v)
+					local level = Admin.GetLevel(v)
 					if level>=4 then
 						table.insert(temptable,v.Name..' - Creator')
 					elseif level>=3 then 
@@ -3602,19 +3620,19 @@ return function()
 						table.insert(temptable,v.Name..' - Mod')
 					end 
 					
-					service.Iterate(server.Settings.CustomRanks,function(rank,tab)
-						if server.Admin.CheckTable(v,tab) then
+					service.Iterate(Settings.CustomRanks,function(rank,tab)
+						if Admin.CheckTable(v,tab) then
 							table.insert(temptable,v.Name.." - "..rank) 
 						end
 					end)
 				end
 				
-				server.Remote.MakeGui(plr,"List",{Title = 'Admin List',Table = temptable})
+				Remote.MakeGui(plr,"List",{Title = 'Admin List',Table = temptable})
 			end
 		};
 		
 		BanList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"banlist";"banned";"bans";};
 			Args = {};
 			Hidden = false;
@@ -3623,15 +3641,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
-				for i,v in pairs(server.Settings.Banned) do
+				for i,v in pairs(Settings.Banned) do
 					table.insert(tab,{Text = tostring(v),Desc = tostring(v)})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = 'Ban List', Tab = tab})
+				Remote.MakeGui(plr,"List",{Title = 'Ban List', Tab = tab})
 			end
 		};
 		
 		Vote = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"vote";"makevote";"startvote";"question";"survey";};
 			Args = {"player";"anwser1,answer2,etc (NO SPACES)";"question";};
 			Filter = true;
@@ -3654,7 +3672,7 @@ return function()
 				
 				for i,v in pairs(players) do
 					Routine(function()
-						local response = server.Remote.GetGui(v,"Vote",{Question = question,Answers = anstab})
+						local response = Remote.GetGui(v,"Vote",{Question = question,Answers = anstab})
 						if response then
 							table.insert(responses,response)
 						end
@@ -3690,12 +3708,12 @@ return function()
 					
 					table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = 'Results', Tab = tab})
+				Remote.MakeGui(plr,"List",{Title = 'Results', Tab = tab})
 			end
 		};
 		
 		ToolList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tools";"toollist";};
 			Args = {};
 			Hidden = false;
@@ -3703,14 +3721,14 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local prefix = server.Settings.Prefix
-				local split = server.Settings.SplitKey
+				local prefix = Settings.Prefix
+				local split = Settings.SplitKey
 				local num = 0
 				local children = {
-					server.Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
 				}
 				
-				for i, v in next,server.Settings.Storage:GetChildren() do 
+				for i, v in next,Settings.Storage:GetChildren() do 
 					if v:IsA("Tool") or v:IsA("HopperBin") then
 						table.insert(children, {
 							Class = "TextLabel";
@@ -3726,7 +3744,7 @@ return function()
 									Size = UDim2.new(0, 80, 1, -4);
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
-									OnClick = server.Core.Bytecode([[
+									OnClick = Core.Bytecode([[
 										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..[[me]]..split..v.Name..[[");
 									]]);
 								}
@@ -3737,7 +3755,7 @@ return function()
 					end 
 				end
 				
-				server.Remote.MakeGui(plr, "Window", {
+				Remote.MakeGui(plr, "Window", {
 					Name = "ToolList";
 					Title = "Tools";
 					Size  = {300, 300};
@@ -3749,7 +3767,7 @@ return function()
 		};
 		
 		Piano = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"piano";};
 			Args = {"player"};
 			Hidden = false;
@@ -3758,7 +3776,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr, args[1]) do
-					local piano = server.Deps.Assets.Piano:clone()
+					local piano = Deps.Assets.Piano:clone()
 					piano.Parent = v:FindFirstChild("PlayerGui") or v.Backpack
 					piano.Disabled = false
 				end
@@ -3766,7 +3784,7 @@ return function()
 		};
 		
 		Insert = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"insert";"ins";};
 			Args = {"id";};
 			Hidden = false;
@@ -3776,7 +3794,7 @@ return function()
 			Function = function(plr,args)
 				local obj = service.Insert(tonumber(args[1]))
 				if obj and plr.Character then
-					table.insert(server.Variables.InsertedObjects, obj) 
+					table.insert(Variables.InsertedObjects, obj) 
 					obj.Parent = service.Workspace 
 					pcall(function() obj:MakeJoints() end)
 					obj:MoveTo(plr.Character:GetModelCFrame().p)
@@ -3785,7 +3803,7 @@ return function()
 		};
 		
 		InsertClear = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"insclear";"clearinserted";"clrins";"insclr";};
 			Args = {};
 			Hidden = false;
@@ -3793,15 +3811,15 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(server.Variables.InsertedObjects) do 
+				for i,v in pairs(Variables.InsertedObjects) do 
 					v:Destroy() 
-					table.remove(server.Variables.InsertedObjects,i)
+					table.remove(Variables.InsertedObjects,i)
 				end
 			end
 		};
 		
 		Clean = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"clean";};
 			Args = {};
 			Hidden = false;
@@ -3809,12 +3827,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args) 
-				server.Functions.CleanWorkspace()
+				Functions.CleanWorkspace()
 			end
 		};
 		
 		Chik3n = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"chik3n","zelith","z3lith"};
 			Args = {};
 			Hidden = false;
@@ -3827,7 +3845,7 @@ return function()
 				local run = true
 				local hat = service.Insert(24112667):children()[1]
 				--
-				local scr = server.Deps.Assets.Quacker:Clone()
+				local scr = Deps.Assets.Quacker:Clone()
 				scr.Name = "Quacker"
 				scr.Parent = hat
 				--]]
@@ -3835,7 +3853,7 @@ return function()
 				hat.CanCollide = false
 				hat.ChickenSounds.Disabled = true
 				table.insert(hats,hat)
-				table.insert(server.Variables.Objects,hat)
+				table.insert(Variables.Objects,hat)
 				hat.Parent = workspace
 				hat.CFrame = plr.Character.Head.CFrame
 				service.StopLoop("ChickenSpam")
@@ -3849,7 +3867,7 @@ return function()
 						local nhat = hat:Clone()
 						table.insert(tempHats, v)
 						table.insert(tempHats,nhat)
-						table.insert(server.Variables.Objects,nhat)
+						table.insert(Variables.Objects,nhat)
 						nhat.Parent = workspace
 						nhat.Quacker.Disabled = false
 						nhat.CFrame = v.CFrame*CFrame.new(math.random(-100,100),math.random(-100,100),math.random(-100,100))*CFrame.Angles(math.random(-360,360),math.random(-360,360),math.random(-360,360))
@@ -3868,7 +3886,7 @@ return function()
 		};
 		
 		Clear = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clear";"cleargame";"clr";};
 			Args = {};
 			Hidden = false;
@@ -3877,26 +3895,26 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				service.StopLoop("ChickenSpam")
-				for i,v in pairs(server.Variables.Objects) do 
+				for i,v in pairs(Variables.Objects) do 
 					if v:IsA("Script") or v:IsA("LocalScript") then 
 						v.Disabled = true 
 					end 
 					v:Destroy() 
 				end
 				
-				for i,v in pairs(server.Variables.Cameras) do 
+				for i,v in pairs(Variables.Cameras) do 
 					if v then 
-						table.remove(server.Variables.Cameras,i) 
+						table.remove(Variables.Cameras,i) 
 						v:Destroy() 
 					end 
 				end
 				
-				for i,v in pairs(server.Variables.Jails) do
+				for i,v in pairs(Variables.Jails) do
 					if not v.Player or not v.Player.Parent then
 						local ind = v.Index
 						service.StopLoop(ind.."JAIL")
 						Pcall(function() v.Jail:Destroy() end)
-						server.Variables.Jails[ind] = nil
+						Variables.Jails[ind] = nil
 					end
 				end
 				
@@ -3910,13 +3928,13 @@ return function()
 					end 
 				end
 				
-				server.Variables.Objects = {}
-				--server.RemoveMessage()
+				Variables.Objects = {}
+				--RemoveMessage()
 			end
 		};
 		
 		FullClear = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fullclear";"clearinstances";"fullclr";};
 			Args = {};
 			Description = "Removes any instance created server-side by Adonis; May break things";
@@ -3929,14 +3947,14 @@ return function()
 					table.remove(objects, i)
 				end
 				
-				--for i,v in next,server.Functions.GetPlayers() do
-				--	server.Remote.Send(v, "Function", "ClearAllInstances")
+				--for i,v in next,Functions.GetPlayers() do
+				--	Remote.Send(v, "Function", "ClearAllInstances")
 				--end
 			end
 		};
 		
 		ShowServerInstances = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"serverinstances";};
 			Args = {};
 			Description = "Shows all instances created server-side by Adonis";
@@ -3952,7 +3970,7 @@ return function()
 					})
 				end
 				
-				server.Remote.MakeGui(plr, "List", {
+				Remote.MakeGui(plr, "List", {
 					Title = "Adonis Instances";
 					Table = temp;
 					Stacking = false;
@@ -3962,16 +3980,16 @@ return function()
 		};
 		
 		ShowClientInstances = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clientinstances";};
 			Args = {"player"};
 			Description = "Shows all instances created client-side by Adonis";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
-					local instList = server.Remote.Get(v, "InstanceList")
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					local instList = Remote.Get(v, "InstanceList")
 					if instList then
-						server.Remote.MakeGui(plr, "List", {
+						Remote.MakeGui(plr, "List", {
 							Title = v.Name .." Instances";
 							Table = instList;
 							Stacking = false;
@@ -3984,7 +4002,7 @@ return function()
 		};
 		
 		ClearGUIs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clearguis";"clearmessages";"clearhints";"clrguis";"clrgui";"clearscriptguis";"removescriptguis"};
 			Args = {"player","deleteAll?"};
 			Hidden = false;
@@ -3994,22 +4012,22 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
 					if tostring(args[2]):lower() == "yes" or tostring(args[2]):lower() == "true" then
-						server.Remote.RemoveGui(v,true)
+						Remote.RemoveGui(v,true)
 					else
-						server.Remote.RemoveGui(v,"Message")
-						server.Remote.RemoveGui(v,"Hint")
-						server.Remote.RemoveGui(v,"Notification")
-						server.Remote.RemoveGui(v,"PM")
-						server.Remote.RemoveGui(v,"Output")
-						server.Remote.RemoveGui(v,"Effect")
-						server.Remote.RemoveGui(v,"Alert")
+						Remote.RemoveGui(v,"Message")
+						Remote.RemoveGui(v,"Hint")
+						Remote.RemoveGui(v,"Notification")
+						Remote.RemoveGui(v,"PM")
+						Remote.RemoveGui(v,"Output")
+						Remote.RemoveGui(v,"Effect")
+						Remote.RemoveGui(v,"Alert")
 					end
 				end
 			end
 		};
 		
 		ResetLighting = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
 			Args = {};
 			Hidden = false;
@@ -4018,9 +4036,9 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				service.StopLoop("LightingTask")
-				for i,v in pairs(server.Variables.OriginalLightingSettings) do
+				for i,v in pairs(Variables.OriginalLightingSettings) do
 					if i~="Sky" and service.Lighting[i]~=nil then
-						server.Functions.SetLighting(i,v)
+						Functions.SetLighting(i,v)
 					end
 				end
 				for i,v in pairs(service.Lighting:GetChildren()) do
@@ -4028,14 +4046,14 @@ return function()
 						service.Delete(v)
 					end
 				end
-				if server.Variables.OriginalLightingSettings.Sky then
-					server.Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
+				if Variables.OriginalLightingSettings.Sky then
+					Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
 				end
 			end
 		};
 		
 		ClearLighting = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fixplayerlighting","rplighting","clearlighting","serverlighting"};
 			Args = {"player"};
 			Hidden = false;
@@ -4044,15 +4062,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for prop,val in pairs(server.Variables.LightingSettings) do
-						server.Remote.SetLighting(v,prop,val)
+					for prop,val in pairs(Variables.LightingSettings) do
+						Remote.SetLighting(v,prop,val)
 					end
 				end
 			end
 		};
 		
 		Freaky = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"freaky";};
 			Args = {"0-600,0-600,0-600";"optional player"};
 			Hidden = false;
@@ -4072,18 +4090,18 @@ return function()
 				num3="-"..num3.."00000"
 				if args[2] then
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						server.Remote.SetLighting(v,"FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-						server.Remote.SetLighting(v,"FogEnd", 9e9)
+						Remote.SetLighting(v,"FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
+						Remote.SetLighting(v,"FogEnd", 9e9)
 					end
 				else
-					server.Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-					server.Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
+					Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
+					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
 				end
 			end
 		};
 		
 		Info = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"info";"age";};
 			Args = {"player";"groupid";};
 			Hidden = false;
@@ -4095,16 +4113,16 @@ return function()
 				for i,v in pairs(plz) do
 					if args[2] and tonumber(args[2]) then
 						local role = v:GetRoleInGroup(tonumber(args[2]))
-						server.Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Rank: "..tostring(role),{plr})
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Rank: "..tostring(role),{plr})
 					else
-						server.Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge,{plr})
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge,{plr})
 					end
 				end
 			end
 		};
 		
 		ResetStats = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"resetstats","rs"};
 			Args = {"player";};
 			Hidden = false;
@@ -4125,7 +4143,7 @@ return function()
 		};
 		
 		Gear = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"gear";"givegear";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -4135,7 +4153,7 @@ return function()
 			Function = function(plr,args)
 				local gear = service.Insert(tonumber(args[2]))
 				if gear:IsA("Tool") or gear:IsA("HopperBin") then 
-					service.New("StringValue",gear).Name = server.Variables.CodeName..gear.Name 
+					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name 
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
 						if v:findFirstChild("Backpack") then
 							gear:Clone().Parent = v.Backpack 
@@ -4146,7 +4164,7 @@ return function()
 		};
 		
 		Sell = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sell";};
 			Args = {"player";"id";"currency";};
 			Hidden = false;
@@ -4170,7 +4188,7 @@ return function()
 		};
 		
 		Hat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"hat";"givehat";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -4201,7 +4219,7 @@ return function()
 		};
 		
 		Capes = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"capes";"capelist";};
 			Args = {};
 			Hidden = false;
@@ -4210,19 +4228,19 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local list={}
-				for i,v in pairs(server.Variables.Capes) do
+				for i,v in pairs(Variables.Capes) do
 					table.insert(list,v.Name)
 				end
-				server.Remote.MakeGui(plr,'List',{Title = 'Cape List',Tab = list})
+				Remote.MakeGui(plr,'List',{Title = 'Cape List',Tab = list})
 			end
 		};
 		
 		Cape = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cape";"givecape";};
 			Args = {"player";"name/color";"material";"reflectance";"id";};
 			Hidden = false;
-			Description = "Gives the target player(s) the cape specified, do server.Settings.Prefixcapes to view a list of available capes ";
+			Description = "Gives the target player(s) the cape specified, do Settings.Prefixcapes to view a list of available capes ";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -4232,7 +4250,7 @@ return function()
 				local ref = args[4]
 				local id = args[5]
 				if args[2] and not args[3] then
-					for k,cape in pairs(server.Variables.Capes) do
+					for k,cape in pairs(Variables.Capes) do
 						if args[2]:lower()==cape.Name:lower() then
 							color = cape.Color
 							mat = cape.Material
@@ -4242,13 +4260,13 @@ return function()
 					end
 				end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do	
-					server.Functions.Cape(v,false,mat,color,id,ref) 
+					Functions.Cape(v,false,mat,color,id,ref) 
 				end 
 			end
 		};
 		
 		UnCape = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uncape";"removecape";};
 			Args = {"player";};
 			Hidden = false;
@@ -4257,13 +4275,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					server.Functions.UnCape(v)
+					Functions.UnCape(v)
 				end
 			end
 		};
 		
 		Slippery = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"slippery";"iceskate";"icewalk";"slide";};
 			Args = {"player";};
 			Hidden = false;
@@ -4274,7 +4292,7 @@ return function()
 				local vel = service.New('BodyVelocity')
 				vel.Name = 'ADONIS_IceVelocity'
 				vel.maxForce = Vector3.new(5000,0,5000)
-				local scr = server.Deps.Assets.Slippery:Clone()
+				local scr = Deps.Assets.Slippery:Clone()
 				
 				scr.Name = "ADONIS_IceSkates"
 				
@@ -4293,7 +4311,7 @@ return function()
 		};
 		
 		UnSlippery = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unslippery","uniceskate","unslide"};
 			Args = {"player";};
 			Hidden = false;
@@ -4313,7 +4331,7 @@ return function()
 		};
 		
 		NoClip = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"noclip";};
 			Args = {"player";};
 			Hidden = false;
@@ -4321,11 +4339,11 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local clipper = server.Deps.Assets.Clipper:Clone()
+				local clipper = Deps.Assets.Clipper:Clone()
 				clipper.Name = "ADONIS_NoClip"
 				
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."clip",p.Name)
+					Admin.RunCommand(Settings.Prefix.."clip",p.Name)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
@@ -4334,7 +4352,7 @@ return function()
 		};
 		
 		FlyNoClip = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"flynoclip";"oldnoclip";};
 			Args = {"player";};
 			Hidden = false;
@@ -4342,7 +4360,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local scr = server.Deps.Assets.FlyClipper:Clone()
+				local scr = Deps.Assets.FlyClipper:Clone()
 				scr.Name = "ADONIS_NoClip"
 				
 				local enabled = service.New("BoolValue",{
@@ -4352,7 +4370,7 @@ return function()
 				})
 					
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."clip",p.Name)
+					Admin.RunCommand(Settings.Prefix.."clip",p.Name)
 					local new = scr:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
@@ -4361,7 +4379,7 @@ return function()
 		};
 		
 		Clip = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clip";"unnoclip";};
 			Args = {"player";};
 			Hidden = false;
@@ -4386,7 +4404,7 @@ return function()
 		};
 		
 		Jail = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"jail";"imprison";};
 			Args = {"player";};
 			Hidden = false;
@@ -4454,7 +4472,7 @@ return function()
 						brick.Transparency = 1
 						brick.Size = Vector3.new(5,7,5) 
 						brick.CFrame = cf
-						--table.insert(server.Variables.Objects, mod) 
+						--table.insert(Variables.Objects, mod) 
 						
 						local value = service.New('StringValue',mod) 
 						value.Name = 'Player' 
@@ -4471,7 +4489,7 @@ return function()
 								Tools = {};
 							}
 						
-						server.Variables.Jails[ind] = jail
+						Variables.Jails[ind] = jail
 						
 						for l,k in pairs(v.Backpack:GetChildren()) do 
 							if k:IsA("Tool") or k:IsA("HopperBin") then 
@@ -4481,8 +4499,8 @@ return function()
 						end
 						
 						service.TrackTask("Thread: JailLoop"..tostring(ind), function()
-							while wait() and server.Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
-								if server.Variables.Jails[ind] == jail and v.Parent == service.Players then
+							while wait() and Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
+								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if v.Character then
 										local torso = v.Character:FindFirstChild('HumanoidRootPart')
 										if torso then
@@ -4497,7 +4515,7 @@ return function()
 											end
 										end
 									end
-								elseif server.Variables.Jails[ind] ~= jail then
+								elseif Variables.Jails[ind] ~= jail then
 									mod:Destroy()
 									break;
 								end
@@ -4511,7 +4529,7 @@ return function()
 		};
 		
 		UnJail = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unjail";"free";"release";};
 			Args = {"player";};
 			Hidden = false;
@@ -4523,7 +4541,7 @@ return function()
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local ind = tostring(v.userId) 
-					local jail = server.Variables.Jails[ind]
+					local jail = Variables.Jails[ind]
 					if jail then
 						--service.StopLoop(ind.."JAIL")
 						Pcall(function()
@@ -4532,18 +4550,18 @@ return function()
 							end
 						end)
 						Pcall(function() jail.Jail:Destroy() end)
-						server.Variables.Jails[ind] = nil
+						Variables.Jails[ind] = nil
 						found = true
 					end
 				end
 				
 				if not found then 
-					for i,v in next,server.Variables.Jails do
+					for i,v in next,Variables.Jails do
 						if v.Name:lower():sub(1,#args[1]) == args[1]:lower() then
 							local ind = v.Index
 							service.StopLoop(ind.."JAIL")
 							Pcall(function() v.Jail:Destroy() end)
-							server.Variables.Jails[ind] = nil
+							Variables.Jails[ind] = nil
 						end
 					end
 				end
@@ -4551,7 +4569,7 @@ return function()
 		};
 		
 		BubbleChat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bchat";"dchat";"bubblechat";"dialogchat";};
 			Args = {"player";"color(red/green/blue/off)";};
 			Description = "Gives the target player(s) a little chat gui, when used will let them chat using dialog bubbles";
@@ -4570,13 +4588,13 @@ return function()
 					color = "off"
 				end
 				for i,v in next,service.GetPlayers(plr,(args[1] or plr.Name)) do
-					server.Remote.MakeGui(v,"BubbleChat",{Color = color})
+					Remote.MakeGui(v,"BubbleChat",{Color = color})
 				end
 			end
 		};
 		
 		Track = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"track";"trace";"find";};
 			Args = {"player";};
 			Hidden = false;
@@ -4615,16 +4633,16 @@ return function()
 						arrow.Parent = f
 						arrow.Position = UDim2.new(0,0,0,20)
 						arrow.Text = 'v'
-						server.Remote.MakeLocal(plr,bb,false,true)
-						local event;event = v.CharacterRemoving:connect(function() server.Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-						local event2;event2 = plr.CharacterRemoving:connect(function() server.Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+						Remote.MakeLocal(plr,bb,false,true)
+						local event;event = v.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
+						local event2;event2 = plr.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
 					end
 				end
 			end
 		};
 		
 		UnTrack = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"untrack";"untrace";"unfind";};
 			Args = {"player";};
 			Hidden = false;
@@ -4633,18 +4651,18 @@ return function()
 			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if args[1]:lower() == server.Settings.SpecialPrefix.."all" then
-					server.Remote.RemoveLocal(plr,'Tracker',false,true)
+				if args[1]:lower() == Settings.SpecialPrefix.."all" then
+					Remote.RemoveLocal(plr,'Tracker',false,true)
 				else
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						server.Remote.RemoveLocal(plr,v.Name..'Tracker')
+						Remote.RemoveLocal(plr,v.Name..'Tracker')
 					end
 				end
 			end
 		};
 		
 		Glitch = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"glitch";"glitchdisorient";"glitch1";"glitchy";"gd";};
 			Args = {"player";"intensity";};
 			Hidden = false;
@@ -4653,7 +4671,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = tostring(args[2] or 15)
-				local scr = server.Deps.Assets.Glitcher:Clone()
+				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -4671,7 +4689,7 @@ return function()
 		};
 		
 		Glitch2 = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ghostglitch";"glitch2";"glitchghost";"gg";};
 			Args = {"player";"intensity";};
 			Hidden = false;
@@ -4680,7 +4698,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = tostring(args[2] or 150)
-				local scr = server.Deps.Assets.Glitcher:Clone()
+				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -4698,7 +4716,7 @@ return function()
 		};
 		
 		Vibrate = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"vibrate";"glitchvibrate";"gv";};
 			Args = {"player";"intensity";};
 			Hidden = false;
@@ -4707,7 +4725,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = tostring(args[2] or 0.1)
-				local scr = server.Deps.Assets.Glitcher:Clone()
+				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -4727,7 +4745,7 @@ return function()
 		};
 		
 		UnGlitch = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unglitch";"unglitchghost";"ungd";"ungg";"ungv";"unvibrate";};
 			Args = {"player";};
 			Hidden = false;
@@ -4748,7 +4766,7 @@ return function()
 		};
 		
 		Phase = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"phase";};
 			Args = {"player";};
 			Hidden = false;
@@ -4757,13 +4775,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.MakeLocal(v,v.Character)
+					Remote.MakeLocal(v,v.Character)
 				end
 			end
 		};
 		
 		UnPhase = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unphase";};
 			Args = {"player";};
 			Hidden = false;
@@ -4772,14 +4790,14 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.MoveLocal(v,v.Character.Name,false,service.Workspace)
+					Remote.MoveLocal(v,v.Character.Name,false,service.Workspace)
 					v.Character.Parent = service.Workspace
 				end
 			end
 		};
 		
 		GiveStarterPack = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"startertools";"starttools";};
 			Args = {"player";};
 			Hidden = false;
@@ -4791,8 +4809,8 @@ return function()
 					if v and v:findFirstChild("Backpack") then
 						for a,q in pairs(game.StarterPack:children()) do 
 							local q = q:Clone() 
-							if not q:FindFirstChild(server.Variables.CodeName) then 
-								service.New("StringValue", q).Name = server.Variables.CodeName 
+							if not q:FindFirstChild(Variables.CodeName) then 
+								service.New("StringValue", q).Name = Variables.CodeName 
 							end 
 							q.Parent = v.Backpack  
 						end
@@ -4802,7 +4820,7 @@ return function()
 		};
 		
 		Sword = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sword";"givesword";};
 			Args = {"player";};
 			Hidden = false;
@@ -4824,7 +4842,7 @@ return function()
 		};
 		
 		Clone = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clone";"cloneplayer";};
 			Args = {"player";};
 			Hidden = false;
@@ -4837,7 +4855,7 @@ return function()
 						if v and v.Character and v.Character:FindFirstChild("Humanoid") then 
 							v.Character.Archivable = true 
 							local cl = v.Character:Clone() 
-							table.insert(server.Variables.Objects,cl) 
+							table.insert(Variables.Objects,cl) 
 							cl.Parent = game.Workspace 
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
@@ -4853,7 +4871,7 @@ return function()
 		};
 		
 		ClickTeleport = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clickteleport";"teleporttoclick";"ct";"clicktp";"forceteleport";"ctp";"ctt";};
 			Args = {"player";};
 			Hidden = false;
@@ -4862,11 +4880,11 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local scr = server.Deps.Assets.ClickTeleport:Clone()
+					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
 					local tool = service.New('HopperBin')
-					service.New("StringValue",tool).Name = server.Variables.CodeName
+					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
 					tool.Parent = plr.Backpack
@@ -4875,7 +4893,7 @@ return function()
 		};
 		
 		ClickWalk = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clickwalk";"cw";"ctw";"forcewalk";"walktool";"walktoclick";"clickcontrol";"forcewalk";};
 			Args = {"player";};
 			Hidden = false;
@@ -4884,11 +4902,11 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local scr = server.Deps.Assets.ClickTeleport:Clone()
+					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
 					local tool = service.New('HopperBin')
-					service.New("StringValue",tool).Name = server.Variables.CodeName
+					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
 					tool.Parent = plr.Backpack
@@ -4897,7 +4915,7 @@ return function()
 		};
 		
 		BodySwap = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bodyswap";"bodysteal";"bswap";};
 			Args = {"player1";"player2";};
 			Hidden = false;
@@ -4949,7 +4967,7 @@ return function()
 		};
 		
 		Control = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"control";"takeover";};
 			Args = {"player";};
 			Hidden = false;
@@ -4999,7 +5017,7 @@ return function()
 		};
 	
 		Refresh = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"refresh";"reset";};
 			Args = {"player";};
 			Hidden = false;
@@ -5031,7 +5049,7 @@ return function()
 		};
 		
 		Kill = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"kill";};
 			Args = {"player";};
 			Hidden = false;
@@ -5046,7 +5064,7 @@ return function()
 		};
 		
 		Respawn = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"respawn";"re"};
 			Args = {"player";};
 			Hidden = false;
@@ -5056,13 +5074,13 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					v:LoadCharacter()
-					server.Remote.Send(v,'Function','SetView','reset')
+					Remote.Send(v,'Function','SetView','reset')
 				end
 			end
 		};
 		
 		Trip = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"trip";};
 			Args = {"player";"angle";};
 			Hidden = false;
@@ -5080,7 +5098,7 @@ return function()
 		};
 		
 		Stun = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"stun";};
 			Args = {"player";};
 			Hidden = false;
@@ -5097,7 +5115,7 @@ return function()
 		};
 		
 		UnStun = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unstun";};
 			Args = {"player";};
 			Hidden = false;
@@ -5114,7 +5132,7 @@ return function()
 		};
 		
 		Jump = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"jump";};
 			Args = {"player";};
 			Hidden = false;
@@ -5131,7 +5149,7 @@ return function()
 		};
 		
 		Sit = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sit";"seat";};
 			Args = {"player";};
 			Hidden = false;
@@ -5148,7 +5166,7 @@ return function()
 		};
 		
 		Invisible = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"invisible";};
 			Args = {"player";};
 			Hidden = false;
@@ -5181,7 +5199,7 @@ return function()
 		};
 		
 		Visible = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"visible";};
 			Args = {"player";};
 			Hidden = false;
@@ -5214,7 +5232,7 @@ return function()
 		};
 		
 		Lock = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"lock";};
 			Args = {"player";};
 			Hidden = false;
@@ -5237,7 +5255,7 @@ return function()
 		};
 		
 		UnLock = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unlock";};
 			Args = {"player";};
 			Hidden = false;
@@ -5260,7 +5278,7 @@ return function()
 		};
 		
 		Explode = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"explode";"boom";"boomboom";};
 			Args = {"player";"radius"};
 			Hidden = false;
@@ -5279,7 +5297,7 @@ return function()
 		};
 		
 		Light = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"light";};
 			Args = {"player";"color";};
 			Hidden = false;
@@ -5296,7 +5314,7 @@ return function()
 						
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						server.Functions.NewParticle(v.Character.HumanoidRootPart,"PointLight",{
+						Functions.NewParticle(v.Character.HumanoidRootPart,"PointLight",{
 							Name = "ADONIS_LIGHT";
 							Color = str;
 							Brightness = 5;
@@ -5308,7 +5326,7 @@ return function()
 		};
 		
 		UnLight = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unlight";};
 			Args = {"player";};
 			Hidden = false;
@@ -5318,14 +5336,14 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then 
-						server.Functions.RemoveParticle(v.Character.HumanoidRootPart,"ADONIS_LIGHT")
+						Functions.RemoveParticle(v.Character.HumanoidRootPart,"ADONIS_LIGHT")
 					end
 				end
 			end
 		};
 		
 		Oddliest = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"oddliest";};
 			Args = {"player";};
 			Hidden = false;
@@ -5334,13 +5352,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."char",v.Name,"51310503")
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"51310503")
 				end
 			end
 		};
 		
 		Sceleratis = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sceleratis";};
 			Args = {"player";};
 			Hidden = false;
@@ -5349,13 +5367,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."char",v.Name,"1237666")
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"1237666")
 				end
 			end
 		};
 		
 		HatPets = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"hatpets";};
 			Args = {"player";"number[50 MAX]/destroy";};
 			Hidden = false;
@@ -5378,7 +5396,7 @@ return function()
 							if not m then
 								m = service.New('Model',v.Character)
 								m.Name = 'ADONIS_HAT_PETS'
-								table.insert(server.Variables.Objects,m)
+								table.insert(Variables.Objects,m)
 								mode = service.New('StringValue',m)
 								mode.Name = 'Mode'
 								mode.Value = 'Follow'
@@ -5386,7 +5404,7 @@ return function()
 								obj.Name = 'Target'
 								obj.Value = v.Character.HumanoidRootPart
 								
-								local scr = server.Deps.Assets.HatPets:Clone()
+								local scr = Deps.Assets.HatPets:Clone()
 								scr.Parent = m
 								scr.Disabled = false
 							else
@@ -5424,7 +5442,7 @@ return function()
 		};
 		
 		Pets = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"pets";};
 			Args = {"follow/float/swarm/attack";"player";};
 			Hidden = false;
@@ -5452,13 +5470,13 @@ return function()
 						end
 					end
 				else
-					server.Functions.Hint("You don't have any hat pets! If you are an admin use the :hatpets command to get some",{plr})
+					Functions.Hint("You don't have any hat pets! If you are an admin use the :hatpets command to get some",{plr})
 				end
 			end
 		};
 		
 		Ambient = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ambient";};
 			Args = {"num,num,num";"optional player"};
 			Hidden = false;
@@ -5474,16 +5492,16 @@ return function()
 				if not r or not g or not b then error("Invalid Input") end
 				if args[2] then
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						server.Remote.SetLighting(v,"Ambient",Color3.new(r,g,b))
+						Remote.SetLighting(v,"Ambient",Color3.new(r,g,b))
 					end
 				else
-					server.Functions.SetLighting("Ambient",Color3.new(r,g,b))
+					Functions.SetLighting("Ambient",Color3.new(r,g,b))
 				end
 			end
 		};
 		
 		OutdoorAmbient = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"oambient";"outdoorambient";};
 			Args = {"num,num,num";"optional player"};
 			Hidden = false;
@@ -5499,16 +5517,16 @@ return function()
 				if not r or not g or not b then error("Invalid Input") end
 				if args[2] then
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						server.Remote.SetLighting(v,"OutdoorAmbient",Color3.new(r,g,g))
+						Remote.SetLighting(v,"OutdoorAmbient",Color3.new(r,g,g))
 					end
 				else
-					server.Functions.SetLighting("OutdoorAmbient",Color3.new(r,g,b))
+					Functions.SetLighting("OutdoorAmbient",Color3.new(r,g,b))
 				end
 			end
 		};
 		
 		RemoveFog = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"nofog";"fogoff";};
 			Args = {"optional player"};
 			Hidden = false;
@@ -5518,16 +5536,16 @@ return function()
 			Function = function(plr,args)
 				if args[1] then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						server.Remote.SetLighting(v,"FogEnd",1000000000000)
+						Remote.SetLighting(v,"FogEnd",1000000000000)
 					end
 				else
-					server.Functions.SetLighting("FogEnd",1000000000000)
+					Functions.SetLighting("FogEnd",1000000000000)
 				end
 			end
 		};
 		
 		Shadows = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shadows";};
 			Args = {"on/off";"optional player"};
 			Hidden = false;
@@ -5538,25 +5556,25 @@ return function()
 				if args[1]:lower()=='on' or args[1]:lower()=="true" then
 					if args[2] then
 						for i,v in pairs(service.GetPlayers(plr,args[2])) do
-							server.Remote.SetLighting(v,"GlobalShadows",true)
+							Remote.SetLighting(v,"GlobalShadows",true)
 						end
 					else
-						server.Functions.SetLighting("GlobalShadows",true)
+						Functions.SetLighting("GlobalShadows",true)
 					end
 				elseif args[1]:lower()=='off' or args[1]:lower()=="false" then
 					if args[2] then
 						for i,v in pairs(service.GetPlayers(plr,args[2])) do
-							server.Remote.SetLighting(v,"GlobalShadows",false)
+							Remote.SetLighting(v,"GlobalShadows",false)
 						end
 					else
-						server.Functions.SetLighting("GlobalShadows",false)
+						Functions.SetLighting("GlobalShadows",false)
 					end
 				end
 			end
 		};
 		
 		Outlines = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"outlines";};
 			Args = {"on/off";"optional player"};
 			Hidden = false;
@@ -5567,25 +5585,25 @@ return function()
 				if args[1]:lower()=='on' or args[1]:lower()=="true" then
 					if args[2] then
 						for i,v in pairs(service.GetPlayers(plr,args[2])) do
-							server.Remote.SetLighting(v,"Outlines",true)
+							Remote.SetLighting(v,"Outlines",true)
 						end
 					else
-						server.Functions.SetLighting("Outlines",true)
+						Functions.SetLighting("Outlines",true)
 					end
 				elseif args[1]:lower()=='off' or args[1]:lower()=="false" then
 					if args[2] then
 						for i,v in pairs(service.GetPlayers(plr,args[2])) do
-							server.Remote.SetLighting(v,"Outlines",false)
+							Remote.SetLighting(v,"Outlines",false)
 						end
 					else
-						server.Functions.SetLighting("Outlines",false)
+						Functions.SetLighting("Outlines",false)
 					end
 				end
 			end
 		};
 		
 		Brightness = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"brightness";};
 			Args = {"number";"optional player"};
 			Hidden = false;
@@ -5595,16 +5613,16 @@ return function()
 			Function = function(plr,args)
 				if args[2] then
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						server.Remote.SetLighting(v,"Brightness",args[1])
+						Remote.SetLighting(v,"Brightness",args[1])
 					end
 				else
-					server.Functions.SetLighting("Brightness",args[1])
+					Functions.SetLighting("Brightness",args[1])
 				end
 			end
 		};
 		
 		Time = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"time";"timeofday";};
 			Args = {"time";"optional player"};
 			Hidden = false;
@@ -5614,17 +5632,17 @@ return function()
 			Function = function(plr,args)
 				if args[2] then
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						server.Remote.SetLighting(v,"TimeOfDay",args[1])
+						Remote.SetLighting(v,"TimeOfDay",args[1])
 					end
 				else
-					server.Functions.SetLighting("TimeOfDay",args[1])
+					Functions.SetLighting("TimeOfDay",args[1])
 				end
 			end
 		};
 		
 		
 		FogColor = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fogcolor";};
 			Args = {"num";"num";"num";"optional player"};
 			Hidden = false;
@@ -5634,16 +5652,16 @@ return function()
 			Function = function(plr,args)
 				if args[4] then
 					for i,v in pairs(service.GetPlayers(plr,args[4])) do
-						server.Remote.SetLighting(v,"FogColor",Color3.new(args[1],args[2],args[3]))
+						Remote.SetLighting(v,"FogColor",Color3.new(args[1],args[2],args[3]))
 					end
 				else
-					server.Functions.SetLighting("FogColor",Color3.new(args[1],args[2],args[3]))
+					Functions.SetLighting("FogColor",Color3.new(args[1],args[2],args[3]))
 				end
 			end
 		};
 		
 		FogStartEnd = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fog";};
 			Args = {"start";"end";"optional player"};
 			Hidden = false;
@@ -5653,18 +5671,18 @@ return function()
 			Function = function(plr,args)
 				if args[3] then
 					for i,v in pairs(service.GetPlayers(plr,args[3])) do
-						server.Remote.SetLighting(v,"FogEnd",args[2])
-						server.Remote.SetLighting(v,"FogStart",args[1])
+						Remote.SetLighting(v,"FogEnd",args[2])
+						Remote.SetLighting(v,"FogStart",args[1])
 					end
 				else
-					server.Functions.SetLighting("FogEnd",args[2])
-					server.Functions.SetLighting("FogStart",args[1])
+					Functions.SetLighting("FogEnd",args[2])
+					Functions.SetLighting("FogStart",args[1])
 				end
 			end
 		};
 		
 		BuildingTools = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"btools";"buildtools";"buildingtools";"buildertools";};
 			Args = {"player";};
 			Hidden = false;
@@ -5692,7 +5710,7 @@ return function()
 				handle.BrickColor = BrickColor.new("Really black")
 				local mesh = service.New("BlockMesh",handle) --#Lazy
 				mesh.Scale = Vector3.new(1.1,1.1,1.1)
-				for k,m in pairs(server.Deps.Assets['F3X Deps']:children()) do
+				for k,m in pairs(Deps.Assets['F3X Deps']:children()) do
 					m:Clone().Parent = f3x
 				end
 				f3x.Name='F3X'
@@ -5701,14 +5719,14 @@ return function()
 				--local cl=deps.ResizeScript:clone()
 				--cl.Parent=t4
 				--cl.Disabled=false --F3X Kinda replaces the need for this
-				--[[service.New("StringValue",t1).Name = server.Variables.CodeName
-				service.New("StringValue",t2).Name = server.Variables.CodeName
-				service.New("StringValue",t3).Name = server.Variables.CodeName--]]
-				--service.New("StringValue",t4).Name = server.Variables.CodeName
-				service.New("StringValue",f3x).Name = server.Variables.CodeName
+				--[[service.New("StringValue",t1).Name = Variables.CodeName
+				service.New("StringValue",t2).Name = Variables.CodeName
+				service.New("StringValue",t3).Name = Variables.CodeName--]]
+				--service.New("StringValue",t4).Name = Variables.CodeName
+				service.New("StringValue",f3x).Name = Variables.CodeName
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					--server.Send.Remote(v,"Function","setEffectVal","AntiDeleteTool",false)
+					--Send.Remote(v,"Function","setEffectVal","AntiDeleteTool",false)
 					if v:findFirstChild("Backpack") then 
 						--[[t1:Clone().Parent = v.Backpack
 						t2:Clone().Parent = v.Backpack
@@ -5721,7 +5739,7 @@ return function()
 		};
 		
 		StarterGive = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"startergive";};
 			Args = {"player";"toolname";};
 			Hidden = false;
@@ -5731,7 +5749,7 @@ return function()
 			Function = function(plr,args)
 				local found = {}
 				local temp = service.New("Folder")
-				for a, tool in pairs(server.Settings.Storage:GetChildren()) do
+				for a, tool in pairs(Settings.Storage:GetChildren()) do
 					if tool:IsA("Tool") or tool:IsA("HopperBin") then
 						if args[2]:lower() == "all" or tool.Name:lower():sub(1,#args[2])==args[2]:lower() then 
 							tool.Archivable = true
@@ -5760,7 +5778,7 @@ return function()
 		};
 		
 		StarterRemove = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"starterremove";};
 			Args = {"player";"toolname";};
 			Hidden = false;
@@ -5783,7 +5801,7 @@ return function()
 		};
 		
 		Give = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"give";"tool";};
 			Args = {"player";"tool";};
 			Hidden = false;
@@ -5793,7 +5811,7 @@ return function()
 			Function = function(plr,args)
 				local found = {}
 				local temp = service.New("Folder")
-				for a, tool in pairs(server.Settings.Storage:GetChildren()) do
+				for a, tool in pairs(Settings.Storage:GetChildren()) do
 					if tool:IsA("Tool") or tool:IsA("HopperBin") then
 						if args[2]:lower() == "all" or tool.Name:lower():sub(1,#args[2])==args[2]:lower() then 
 							tool.Archivable = true
@@ -5822,7 +5840,7 @@ return function()
 		};
 		
 		Steal = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"steal";"stealtools";};
 			Args = {"player1";"player2";};
 			Hidden = false;
@@ -5845,7 +5863,7 @@ return function()
 		};
 		
 		RemoveGuis = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removeguis";"noguis";};
 			Args = {"player";};
 			Hidden = false;
@@ -5854,13 +5872,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.LoadCode(v,[[for i,v in pairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then v:Destroy() end end]])
+					Remote.LoadCode(v,[[for i,v in pairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then v:Destroy() end end]])
 				end
 			end
 		};
 		
 		RemoveTools = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removetools";"notools";};
 			Args = {"player";};
 			Hidden = false;
@@ -5878,7 +5896,7 @@ return function()
 		};
 		
 		Rank = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rank";"getrank";};
 			Args = {"player";"groupID";};
 			Hidden = false;
@@ -5888,16 +5906,16 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if  v:IsInGroup(args[2]) then 
-						server.Functions.Hint("[" .. v:GetRankInGroup(args[2]) .. "] " .. v:GetRoleInGroup(args[2]), {plr})
+						Functions.Hint("[" .. v:GetRankInGroup(args[2]) .. "] " .. v:GetRoleInGroup(args[2]), {plr})
 					elseif not v:IsInGroup(args[2])then
-						server.Functions.Hint(v.Name .. " is not in the group " .. args[2], {plr})
+						Functions.Hint(v.Name .. " is not in the group " .. args[2], {plr})
 					end
 				end
 			end
 		};
 		
 		Damage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"damage";"hurt";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -5914,7 +5932,7 @@ return function()
 		};
 		
 		RestoreGravity = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"grav";"bringtoearth";};
 			Args = {"player";};
 			Hidden = false;
@@ -5934,7 +5952,7 @@ return function()
 		};
 		
 		SetGravity = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"setgrav";"gravity";"setgravity";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -5966,7 +5984,7 @@ return function()
 		};
 		
 		NoGravity = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"nograv";"nogravity";"superjump";};
 			Args = {"player";};
 			Hidden = false;
@@ -5998,7 +6016,7 @@ return function()
 		};
 		
 		SetHealth = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"health";"sethealth";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -6016,7 +6034,7 @@ return function()
 		};
 		
 		JumpPower = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"jpower";"jpow";"jumppower";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -6034,7 +6052,7 @@ return function()
 		};
 		
 		Speed = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"speed";"setspeed";"walkspeed";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -6052,7 +6070,7 @@ return function()
 		};
 		
 		SetTeam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"team";"setteam";"changeteam";};
 			Args = {"player";"team";};
 			Hidden = false;
@@ -6072,7 +6090,7 @@ return function()
 		};
 		
 		RandomTeam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rteams","rteam","randomizeteams","randomteams","randomteam"};
 			Args = {"players","teams"};
 			Hidden = false;
@@ -6130,7 +6148,7 @@ return function()
 		};
 		
 		NewTeam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"newteam","createteam","maketeam"};
 			Args = {"name";"BrickColor";};
 			Hidden = false;
@@ -6148,7 +6166,7 @@ return function()
 		};
 		
 		RemoveTeam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removeteam";};
 			Args = {"name";};
 			Hidden = false;
@@ -6165,7 +6183,7 @@ return function()
 		};
 		
 		SetFOV = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fov";"fieldofview";"setfov"};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -6175,13 +6193,13 @@ return function()
 			Function = function(plr,args)
 				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid")
 				for i,v in next,service.GetPlayers(plr, args[1]) do
-					server.Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
+					Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
 				end
 			end
 		};
 		
 		ForcePlace = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"forceplace";};
 			Args = {"player";"placeid/serverName";};
 			Hidden = false;
@@ -6191,7 +6209,7 @@ return function()
 			Function = function(plr,args)
 				local id = tonumber(args[2])
 				local players = service.GetPlayers(plr,args[1])
-				local servers = server.Core.GetData("PrivateServers") or {}
+				local servers = Core.GetData("PrivateServers") or {}
 				local code = servers[args[2]]	
 				if code then
 					for i,v in pairs(players) do
@@ -6208,7 +6226,7 @@ return function()
 		};
 		
 		Place = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"place";};
 			Args = {"player";"placeID/serverName";};
 			Hidden = false;
@@ -6218,16 +6236,16 @@ return function()
 			Function = function(plr,args)
 				local id = tonumber(args[2])
 				local players = service.GetPlayers(plr,args[1])
-				local servers = server.Core.GetData("PrivateServers") or {}
+				local servers = Core.GetData("PrivateServers") or {}
 				local code = servers[args[2]]	
 				if code then
 					for i,v in pairs(players) do
 						Routine(function()
-							local tp = server.Remote.MakeGuiGet(v,"Notification",{
+							local tp = Remote.MakeGuiGet(v,"Notification",{
 								Title = "Teleport",
 								Text = "Click to teleport to server "..args[2]..".",
 								Time = 30,
-								OnClick = server.Core.Bytecode("return true")
+								OnClick = Core.Bytecode("return true")
 							})	
 							if tp then 
 								service.TeleportService:TeleportToPrivateServer(code.ID,code.Code,{v})
@@ -6236,21 +6254,21 @@ return function()
 					end
 				elseif id then		
 					for i,v in pairs(players) do
-						server.Remote.MakeGui(v,"Notification",{
+						Remote.MakeGui(v,"Notification",{
 							Title = "Teleport",
 							Text = "Click to teleport to place "..args[2]..".",
 							Time = 30,
-							OnClick = server.Core.Bytecode("service.TeleportService:Teleport("..args[2]..")")
+							OnClick = Core.Bytecode("service.TeleportService:Teleport("..args[2]..")")
 						})		
 					end
 				else
-					server.Functions.Hint("Invalid place ID/server name",{plr})
+					Functions.Hint("Invalid place ID/server name",{plr})
 				end
 			end
 		};
 		
 		MakeServer = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"makeserver";"reserveserver";"privateserver";};
 			Args = {"serverName";"(optional) placeId";};
 			Filter = true;
@@ -6259,15 +6277,15 @@ return function()
 			Function = function(plr,args)
 				local place = tonumber(args[2]) or game.PlaceId		
 				local code = service.TeleportService:ReserveServer(place)
-				local servers = server.Core.GetData("PrivateServers") or {}	
+				local servers = Core.GetData("PrivateServers") or {}	
 				servers[args[1]] = {Code = code,ID = place}
-				server.Core.SetData("PrivateServers",servers)
-				server.Functions.Hint("Made server "..args[1].." | Place: "..place,{plr})
+				Core.SetData("PrivateServers",servers)
+				Functions.Hint("Made server "..args[1].." | Place: "..place,{plr})
 			end
 		};
 		
 		DeleteServer = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"delserver";"deleteserver"};
 			Args = {"serverName";};
 			Hidden = false;
@@ -6275,19 +6293,19 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local servers = server.Core.GetData("PrivateServers") or {}
+				local servers = Core.GetData("PrivateServers") or {}
 				if servers[args[1]] then	
 					servers[args[1]] = nil
-					server.Core.SetData("PrivateServers",servers)	
-					server.Functions.Hint("Removed server "..args[1],{plr})
+					Core.SetData("PrivateServers",servers)	
+					Functions.Hint("Removed server "..args[1],{plr})
 				else
-					server.Functions.Hint("Server "..args[1].." was not found!",{plr})
+					Functions.Hint("Server "..args[1].." was not found!",{plr})
 				end	
 			end
 		};
 		
 		ListServers = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"servers";"privateservers";};
 			Args = {};
 			Hidden = false;
@@ -6295,17 +6313,17 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local servers = server.Core.GetData("PrivateServers") or {}
+				local servers = Core.GetData("PrivateServers") or {}
 				local tab = {}
 				for i,v in pairs(servers) do
 					table.insert(tab,{Text = i,Desc = "Place: "..v.ID.." | Code: "..v.Code})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Servers",Table = tab})
+				Remote.MakeGui(plr,"List",{Title = "Servers",Table = tab})
 			end
 		};
 		
 		GRPlaza = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"grplaza";"grouprecruitingplaza";"groupplaza";};
 			Args = {"player";};
 			Hidden = false;
@@ -6314,18 +6332,18 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Notification",{
+					Remote.MakeGui(v,"Notification",{
 						Title = "Teleport",
 						Text = "Click to teleport to GRP",
 						Time = 30,
-						OnClick = server.Core.Bytecode("service.TeleportService:Teleport(6194809)")
+						OnClick = Core.Bytecode("service.TeleportService:Teleport(6194809)")
 					})	
 				end
 			end
 		};
 		
 		BunnyHop = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bunnyhop";"bhop"};
 			Args = {"player";};
 			Hidden = false;
@@ -6333,7 +6351,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local bunnyScript = server.Deps.Assets.BunnyHop
+				local bunnyScript = Deps.Assets.BunnyHop
 				bunnyScript.Name = "HippityHopitus"
 				local hat = service.Insert(110891941)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -6346,7 +6364,7 @@ return function()
 		};
 		
 		UnBunnyHop = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unbunnyhop";};
 			Args = {"player";};
 			Hidden = false;
@@ -6365,7 +6383,7 @@ return function()
 		};
 		
 		Teleport = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tp";"teleport";"transport";};
 			Args = {"player1";"player2";};
 			Hidden = false;
@@ -6377,7 +6395,7 @@ return function()
 					local m = args[2]:match('^waypoint%-(.*)') or args[2]:match('wp%-(.*)')
 					local point
 					
-					for i,v in pairs(server.Variables.Waypoints) do
+					for i,v in pairs(Variables.Waypoints) do
 						if i:lower():sub(1,#m)==m:lower() then
 							point=v
 						end
@@ -6389,7 +6407,7 @@ return function()
 						end
 					end
 					
-					if not point then server.Functions.Hint('Waypoint '..m..' was not found.',{plr}) end
+					if not point then Functions.Hint('Waypoint '..m..' was not found.',{plr}) end
 				elseif args[2]:find(',') then
 					local x,y,z = args[2]:match('(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do 
@@ -6425,7 +6443,7 @@ return function()
 		};
 		
 		Bring = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bring";"tptome";};
 			Args = {"player";};
 			Hidden = false;
@@ -6434,13 +6452,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."tp",v.Name,plr.Name)
+					Admin.RunCommand(Settings.Prefix.."tp",v.Name,plr.Name)
 				end
 			end
 		};
 		
 		To = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"to";"tpmeto";};
 			Args = {"player";};
 			Hidden = false;
@@ -6449,13 +6467,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Admin.RunCommand(server.Settings.Prefix.."tp",plr.Name,v.Name)
+					Admin.RunCommand(Settings.Prefix.."tp",plr.Name,v.Name)
 				end
 			end
 		};
 		
 		FreeFall = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"freefall";"skydive";};
 			Args = {"player";"height";};
 			Hidden = false;
@@ -6472,7 +6490,7 @@ return function()
 		};
 		
 		Change = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"change";"leaderstat";"stat";};
 			Args = {"player";"stat";"value";};
 			Filter = true;
@@ -6492,7 +6510,7 @@ return function()
 		};
 		
 		AddToStat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"add";"addtostat";"addstat";};
 			Args = {"player";"stat";"value";};
 			Hidden = false;
@@ -6513,7 +6531,7 @@ return function()
 		};
 		
 		SubtractFromStat = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"subtract";"minusfromstat";"minusstat";"subtractstat";};
 			Args = {"player";"stat";"value";};
 			Hidden = false;
@@ -6534,7 +6552,7 @@ return function()
 		};
 		
 		Shirt = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shirt";"giveshirt";};
 			Args = {"player";"ID";};
 			Hidden = false;
@@ -6542,7 +6560,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = server.Functions.GetTexture(args[2])
+				local image = Functions.GetTexture(args[2])
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if image then
 						if v.Character and image then
@@ -6561,7 +6579,7 @@ return function()
 		};
 		
 		Pants = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"pants";"givepants";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -6569,7 +6587,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = server.Functions.GetTexture(args[2])
+				local image = Functions.GetTexture(args[2])
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if image then
 						if v.Character and image then 
@@ -6588,7 +6606,7 @@ return function()
 		};
 		
 		Face = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"face";"giveface";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -6597,7 +6615,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					--local image=server.GetTexture(args[2])
+					--local image=GetTexture(args[2])
 					if not v.Character:FindFirstChild("Head") then 
 						return 
 					end
@@ -6612,7 +6630,7 @@ return function()
 		};
 		
 		Swagify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"swagify";"swagger";};
 			Args = {"player";};
 			Hidden = false;
@@ -6626,14 +6644,14 @@ return function()
 							if v.Name == "Shirt" then local cl = v:Clone() cl.Parent = v.Parent cl.ShirtTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 							if v.Name == "Pants" then local cl = v:Clone() cl.Parent = v.Parent cl.PantsTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 						end
-						server.Functions.Cape(v,false,'Fabric','Pink',109301474)
+						Functions.Cape(v,false,'Fabric','Pink',109301474)
 					end
 				end
 			end
 		};
 		
 		Shrek = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shrek";"shrekify";"shrekislife";"swamp";};
 			Args = {"player";};
 			Hidden = false;
@@ -6644,8 +6662,8 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							server.Admin.RunCommand(server.Settings.Prefix.."pants",v.Name,"233373970")
-							server.Admin.RunCommand(server.Settings.Prefix.."shirt",v.Name,"133078195")
+							Admin.RunCommand(Settings.Prefix.."pants",v.Name,"233373970")
+							Admin.RunCommand(Settings.Prefix.."shirt",v.Name,"133078195")
 							
 							for i,v in pairs(v.Character:children()) do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
@@ -6653,7 +6671,7 @@ return function()
 								end
 							end
 							
-							server.Admin.RunCommand(server.Settings.Prefix.."hat",v.Name,"20011951")
+							Admin.RunCommand(Settings.Prefix.."hat",v.Name,"20011951")
 							
 							local sound = service.New("Sound",v.Character.HumanoidRootPart)
 							sound.SoundId = "http://www.roblox.com/asset/?id="..130767645
@@ -6666,7 +6684,7 @@ return function()
 		};
 		
 		Rocket = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rocket";"firework";};
 			Args = {"player";};
 			Hidden = false;
@@ -6717,7 +6735,7 @@ return function()
 		};
 		
 		Dance = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"dance";};
 			Args = {"player";};
 			Hidden = false;
@@ -6726,13 +6744,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,'Function','PlayAnimation',27789359)
+					Remote.Send(v,'Function','PlayAnimation',27789359)
 				end
 			end
 		};
 		
 		BreakDance = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"breakdance";"fundance";"lolwut";};
 			Args = {"player";};
 			Hidden = false;
@@ -6761,12 +6779,12 @@ return function()
 						end
 						local hum=v.Character:FindFirstChild('Humanoid')
 						if not hum then return end
-						--server.Remote.Send(v,'Function','Effect','dance')
-						server.Admin.RunCommand(server.Settings.Prefix.."sparkles",v.Name,color)
-						server.Admin.RunCommand(server.Settings.Prefix.."fire",v.Name,color)
-						server.Admin.RunCommand(server.Settings.Prefix.."nograv",v.Name)	
-						server.Admin.RunCommand(server.Settings.Prefix.."smoke",v.Name,color)
-						server.Admin.RunCommand(server.Settings.Prefix.."spin",v.Name)
+						--Remote.Send(v,'Function','Effect','dance')
+						Admin.RunCommand(Settings.Prefix.."sparkles",v.Name,color)
+						Admin.RunCommand(Settings.Prefix.."fire",v.Name,color)
+						Admin.RunCommand(Settings.Prefix.."nograv",v.Name)	
+						Admin.RunCommand(Settings.Prefix.."smoke",v.Name,color)
+						Admin.RunCommand(Settings.Prefix.."spin",v.Name)
 						repeat hum.PlatformStand=true wait() until not hum or hum==nil or hum.Parent==nil
 					end)
 				end
@@ -6774,7 +6792,7 @@ return function()
 		};
 		
 		Puke = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"puke";"barf";"throwup";"vomit";};
 			Args = {"player";};
 			Hidden = false;
@@ -6846,7 +6864,7 @@ return function()
 		};
 		
 		Cut = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cut";"stab";"shank";"bleed";};
 			Args = {"player";};
 			Hidden = false;
@@ -6919,7 +6937,7 @@ return function()
 		};
 		
 		PlayerPoints = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ppoints";"playerpoints";"getpoints";};
 			Args = {};
 			Hidden = false;
@@ -6927,12 +6945,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				server.Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(),{plr})
+				Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(),{plr})
 			end
 		};
 		
 		GivePlayerPoints = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"giveppoints";"giveplayerpoints";"sendplayerpoints";};
 			Args = {"player";"amount";};
 			Hidden = false;
@@ -6943,19 +6961,19 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local ran,failed = ypcall(function() service.PointsService:AwardPoints(v.userId,tonumber(args[2])) end)
 					if ran and service.PointsService:GetAwardablePoints()>=tonumber(args[2]) then
-						server.Functions.Hint('Gave '..args[2]..' points to '..v.Name,{plr})
+						Functions.Hint('Gave '..args[2]..' points to '..v.Name,{plr})
 					elseif service.PointsService:GetAwardablePoints()<tonumber(args[2]) then
-						server.Functions.Hint("You don't have "..args[2]..' points to give to '..v.Name,{plr})
+						Functions.Hint("You don't have "..args[2]..' points to give to '..v.Name,{plr})
 					else
-						server.Functions.Hint("(Unknown Error) Failed to give "..args[2]..' points to '..v.Name,{plr})
+						Functions.Hint("(Unknown Error) Failed to give "..args[2]..' points to '..v.Name,{plr})
 					end
-					server.Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(),{plr})
+					Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(),{plr})
 				end
 			end
 		};
 		
 		Poison = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"poison";};
 			Args = {"player";};
 			Hidden = false;
@@ -7009,7 +7027,7 @@ return function()
 		};
 		
 		TargetAudio = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"taudio";"localsound";"localaudio";"lsound";"laudio";};
 			Args = {"player";"audioId";};
 			Description = "Lets you play an audio on the player's client";
@@ -7017,13 +7035,13 @@ return function()
 			Function = function(plr,args)
 				if not tonumber(args[2]) then error(args[1].." is not a valid ID") return end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","PlayAudio",args[2])
+					Remote.Send(v,"Function","PlayAudio",args[2])
 				end
 			end
 		};
 		
 		CharacterAudio = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"charaudio", "charactermusic", "charmusic"};
 			Args = {"player", "audioId"};
 			Description = "Lets you place an audio in the target's character";
@@ -7035,7 +7053,7 @@ return function()
 					SoundId = "rbxassetid://"..args[2];
 				})
 				
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -7048,13 +7066,13 @@ return function()
 		};
 		
 		UnCharacterAudio = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uncharaudio", "uncharactermusic", "uncharmusic"};
 			Args = {"player"};
 			Description = "Removes audio placed into character via :charaudio command";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -7069,7 +7087,7 @@ return function()
 		};
 		
 		Pitch = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"pitch";};
 			Args = {"number";};
 			Description = "Change the pitch of the currently playing song";
@@ -7085,7 +7103,7 @@ return function()
 		};
 		
 		Volume = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"volume"};
 			Args = {"number"};
 			Description = "Change the volume of the currently playing song";
@@ -7102,7 +7120,7 @@ return function()
 		};
 		
 		Shuffle = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shuffle"};
 			Args = {"songID1,songID2,songID3,etc"};
 			Hidden = false;
@@ -7111,7 +7129,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				service.StopLoop("MusicShuffle")
-				server.Admin.RunCommand(server.Settings.Prefix.."stopmusic")
+				Admin.RunCommand(Settings.Prefix.."stopmusic")
 				if not args[1] then error("Missing argument") end
 				if args[1]:lower()~="off" then
 					local idList = {}
@@ -7158,7 +7176,7 @@ return function()
 		};
 		
 		Music = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"music";"song";"playsong";};
 			Args = {"id";"noloop(true/false)";"pitch";"volume"};
 			Hidden = false;
@@ -7190,7 +7208,7 @@ return function()
 						looped = true
 					end
 					
-					for i,v in pairs(server.Variables.MusicList) do 
+					for i,v in pairs(Variables.MusicList) do 
 						if id==v.Name:lower() then 
 							id = v.ID
 							if v.Pitch then 
@@ -7202,7 +7220,7 @@ return function()
 						end 
 					end
 					
-					for i,v in pairs(server.HTTP.Trello.Music) do 
+					for i,v in pairs(HTTP.Trello.Music) do 
 						if id==v.Name:lower() then 
 							id = v.ID
 							if v.Pitch then 
@@ -7230,15 +7248,15 @@ return function()
 					s.Archivable = false
 					wait(0.5)
 					s:Play()
-					if server.Settings.SongHint then
-						server.Functions.Hint(name..' ('..id..')',service.Players:GetChildren())
+					if Settings.SongHint then
+						Functions.Hint(name..' ('..id..')',service.Players:GetChildren())
 					end
 				end
 			end
 		};
 		
 		StopMusic = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"stopmusic";"musicoff";};
 			Args = {};
 			Hidden = false;
@@ -7255,7 +7273,7 @@ return function()
 		};
 		
 		MusicList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"musiclist";"listmusic";"songs";};
 			Args = {};
 			Hidden = false;
@@ -7264,18 +7282,18 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local listforclient={}
-				for i, v in pairs(server.Variables.MusicList) do 
+				for i, v in pairs(Variables.MusicList) do 
 					table.insert(listforclient,{Text=v.Name,Desc=v.ID})
 				end
-				for i, v in pairs(server.HTTP.Trello.Music) do 
+				for i, v in pairs(HTTP.Trello.Music) do 
 					table.insert(listforclient,{Text=v.Name,Desc=v.ID})
 				end
-				server.Remote.MakeGui(plr,"List",{Title = "Music List", Table = listforclient})
+				Remote.MakeGui(plr,"List",{Title = "Music List", Table = listforclient})
 			end
 		};
 		
 		Stickify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"stickify";"stick";"stickman";};
 			Args = {"player";};
 			Hidden = false;
@@ -7307,7 +7325,7 @@ return function()
 		};
 		
 		Hole = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"hole";"sparta";};
 			Args = {"player";};
 			Hidden = false;
@@ -7345,7 +7363,7 @@ return function()
 		};
 		
 		Lightning = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"lightning";"smite";};
 			Args = {"player";};
 			Hidden = false;
@@ -7355,7 +7373,7 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
-						server.Admin.RunCommand(server.Settings.Prefix.."freeze",v.Name)
+						Admin.RunCommand(Settings.Prefix.."freeze",v.Name)
 						local char = v.Character
 						local zeus = service.New("Model",char)
 						local cloud = service.New("Part",zeus)
@@ -7434,7 +7452,7 @@ return function()
 		};
 		
 		Fly = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fly";"flight";};
 			Args = {"player", "speed"};
 			Hidden = false;
@@ -7443,7 +7461,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local speed = tonumber(args[2]) or 2
-				local scr = server.Deps.Assets.Fly:Clone()
+				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
 					Name = "Speed";
 					Value = speed;
@@ -7452,7 +7470,7 @@ return function()
 				
 				scr.Name = "ADONIS_FLIGHT"
 				
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local new = scr:Clone()
@@ -7471,7 +7489,7 @@ return function()
 		};
 		
 		UnFly = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unfly";"ground";};
 			Args = {"player";};
 			Hidden = false;
@@ -7492,7 +7510,7 @@ return function()
 		};
 		
 		Disco = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"disco";};
 			Args = {};
 			Hidden = false;
@@ -7503,15 +7521,15 @@ return function()
 				service.StopLoop("LightingTask")
 				service.StartLoop("LightingTask",0.5,function()
 					local color = Color3.new(math.random(255)/255,math.random(255)/255,math.random(255)/255)
-					server.Functions.SetLighting("Ambient",color)
-					server.Functions.SetLighting("OutdoorAmbient",color)
-					server.Functions.SetLighting("FogColor",color)
+					Functions.SetLighting("Ambient",color)
+					Functions.SetLighting("OutdoorAmbient",color)
+					Functions.SetLighting("FogColor",color)
 				end)
 			end
 		};
 		
 		Spin = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"spin";};
 			Args = {"player";};
 			Hidden = false;
@@ -7519,7 +7537,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local scr = server.Deps.Assets.Spinner:Clone()
+				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
@@ -7537,7 +7555,7 @@ return function()
 		};
 		
 		UnSpin = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unspin";};
 			Args = {"player";};
 			Hidden = false;
@@ -7558,7 +7576,7 @@ return function()
 		};
 		
 		Dog = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"dog";"dogify";};
 			Args = {"player";};
 			Hidden = false;
@@ -7608,7 +7626,7 @@ return function()
 		};
 		
 		Dogg = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"dogg";"snoop";"snoopify";"dodoubleg";};
 			Args = {"player";};
 			Hidden = false;
@@ -7616,7 +7634,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Dogg:Clone()
+				local cl = Deps.Assets.Dogg:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2,3,0.1)
@@ -7645,8 +7663,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7668,7 +7686,7 @@ return function()
 		};
 		
 		Sp00ky = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sp00ky";"spooky";"spookyscaryskeleton";};
 			Args = {"player";};
 			Hidden = false;
@@ -7676,7 +7694,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Sp00ks:Clone()
+				local cl = Deps.Assets.Sp00ks:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2,3,0.1)
@@ -7705,8 +7723,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7728,7 +7746,7 @@ return function()
 		};
 		
 		K1tty = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"k1tty";"cut3";};
 			Args = {"player";};
 			Hidden = false;
@@ -7736,7 +7754,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Kitty:Clone()
+				local cl = Deps.Assets.Kitty:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2,3,0.1)
@@ -7765,8 +7783,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7788,7 +7806,7 @@ return function()
 		};
 		
 		Nyan = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"nyan";"p0ptart"};
 			Args = {"player";};
 			Hidden = false;
@@ -7796,8 +7814,8 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Nyan1:Clone()
-				local c2 = server.Deps.Assets.Nyan2:Clone()
+				local cl = Deps.Assets.Nyan1:Clone()
+				local c2 = Deps.Assets.Nyan2:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(0.1,4.8,20)
@@ -7829,8 +7847,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7852,7 +7870,7 @@ return function()
 		};
 		
 		Fr0g = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fr0g";"fr0ggy";"mlgfr0g";"mlgfrog";};
 			Args = {"player";};
 			Hidden = false;
@@ -7860,7 +7878,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Fr0g:Clone()
+				local cl = Deps.Assets.Fr0g:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2,3,0.1)
@@ -7890,8 +7908,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7913,7 +7931,7 @@ return function()
 		};
 		
 		Sh1a = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sh1a";"lab00f";"sh1alab00f";"shia"};
 			Args = {"player";};
 			Hidden = false;
@@ -7921,7 +7939,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local cl = server.Deps.Assets.Shia:Clone()
+				local cl = Deps.Assets.Shia:Clone()
 				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2,3,0.1)
@@ -7952,8 +7970,8 @@ return function()
 					local decal2 = decal2:Clone()
 					local mesh = mesh:Clone()
 					
-					server.Admin.RunCommand(server.Settings.Prefix.."removehats",v.Name)
-					server.Admin.RunCommand(server.Settings.Prefix.."invisible",v.Name)
+					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
+					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
 					
 					v.Character.Head.Transparency = 0.9
 					v.Character.Head.Mesh.Scale = Vector3.new(0.01,0.01,0.01)
@@ -7975,7 +7993,7 @@ return function()
 		};
 		
 		--[[Trail = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"trail", "trails"};
 			Args = {"player", "textureid"};
 			Description = "Adds trails to the target's character's parts";
@@ -7991,12 +8009,12 @@ return function()
 					Name = "ADONIS_TRAIL";
 				})
 				
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					for k,p in next,char:GetChildren() do
 						if p:IsA("BasePart") then
-							server.Functions.RemoveParticle(p,"ADONIS_CMD_TRAIL")
-							server.Functions.NewParticle(p,"Trail",{
+							Functions.RemoveParticle(p,"ADONIS_CMD_TRAIL")
+							Functions.NewParticle(p,"Trail",{
 								Color = (args[2] and (args[2]:lower() == "truecolors" or args[2]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
@@ -8010,7 +8028,7 @@ return function()
 		};--]]
 		
 		UnParticle = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unparticle";"removeparticles";};
 			Args = {"player";};
 			Hidden = false;
@@ -8021,14 +8039,14 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						server.Functions.RemoveParticle(torso, "PARTICLE")
+						Functions.RemoveParticle(torso, "PARTICLE")
 					end
 				end
 			end
 		};
 		
 		Particle = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"particle";};
 			Args = {"player";"textureid";"startColor3";"endColor3";};
 			Hidden = false;
@@ -8065,9 +8083,9 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then	
-						server.Functions.NewParticle(torso,"ParticleEmitter",{
+						Functions.NewParticle(torso,"ParticleEmitter",{
 							Name = "PARTICLE";
-							Texture = 'rbxassetid://'..args[2]; --server.Functions.GetTexture(args[1]); 
+							Texture = 'rbxassetid://'..args[2]; --Functions.GetTexture(args[1]); 
 							Size = NumberSequence.new({
 								NumberSequenceKeypoint.new(0,0);
 								NumberSequenceKeypoint.new(.1,.25,.25);
@@ -8093,7 +8111,7 @@ return function()
 		};
 		
 		Flatten = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"flatten";"2d";"flat";};
 			Args = {"player";"optional num";};
 			Hidden = false;
@@ -8214,7 +8232,7 @@ return function()
 		};
 		
 		OldFlatten = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"oldflatten";"o2d";"oflat";};
 			Args = {"player";"optional num";};
 			Hidden = false;
@@ -8244,7 +8262,7 @@ return function()
 		};
 		
 		Sticky = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sticky";};
 			Args = {"player";};
 			Hidden = false;
@@ -8257,7 +8275,7 @@ return function()
 					local torso = v.Character.HumanoidRootPart
 					event = v.Character.HumanoidRootPart.Touched:connect(function(p)
 						if torso and torso.Parent and not p:IsDescendantOf(v.Character) then
-							server.Functions.MakeWeld(torso,p)
+							Functions.MakeWeld(torso,p)
 						elseif not torso or not torso.Parent then 
 							event:disconnect()
 						end
@@ -8267,7 +8285,7 @@ return function()
 		};
 		
 		Break = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"break";};
 			Args = {"player";"optional num";};
 			Hidden = false;
@@ -8328,7 +8346,7 @@ return function()
 		};
 		
 		Skeleton = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"skeleton";};
 			Args = {"player";};
 			Hidden = false;
@@ -8353,7 +8371,7 @@ return function()
 		};
 		
 		Creeper = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"creeper";"creeperify";};
 			Args = {"player";};
 			Hidden = false;
@@ -8378,7 +8396,7 @@ return function()
 		};
 		
 		BigHead = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bighead";};
 			Args = {"player";};
 			Hidden = false;
@@ -8396,7 +8414,7 @@ return function()
 		};
 		
 		Resize = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"resize";"size";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -8523,7 +8541,7 @@ return function()
 		};
 		
 		SmallHead = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"smallhead";"minihead";};
 			Args = {"player";};
 			Hidden = false;
@@ -8541,7 +8559,7 @@ return function()
 		};
 		
 		Fling = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"fling";};
 			Args = {"player";};
 			Hidden = false;
@@ -8568,7 +8586,7 @@ return function()
 		};
 		
 		SuperFling = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sfling";"tothemoon";"superfling";};
 			Args = {"player";"optional strength";};
 			Hidden = false;
@@ -8577,7 +8595,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local strength = tonumber(args[2]) or 5e6
-				local scr = server.Deps.Assets.Sfling:Clone()
+				local scr = Deps.Assets.Sfling:Clone()
 				scr.Strength.Value = strength
 				scr.Name = "SUPER_FLING"
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -8589,7 +8607,7 @@ return function()
 		};
 		
 		Seizure = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"seizure";};
 			Args = {"player";};
 			Hidden = false;
@@ -8597,7 +8615,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local scr = server.Deps.Assets.Seize
+				local scr = Deps.Assets.Seize
 				scr.Name = "Seize"
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character:FindFirstChild('HumanoidRootPart') then 
@@ -8611,7 +8629,7 @@ return function()
 		};
 		
 		UnSeizure = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unseizure";};
 			Args = {"player";};
 			Hidden = false;
@@ -8630,7 +8648,7 @@ return function()
 		};
 		
 		RemoveLimbs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removelimbs";"delimb";};
 			Args = {"player";};
 			Hidden = false;
@@ -8651,7 +8669,7 @@ return function()
 		};
 		
 		Name = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"name";"rename";};
 			Args = {"player";"name/hide";};
 			Filter = true;
@@ -8700,7 +8718,7 @@ return function()
 		};
 		
 		UnName = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unname";"fixname";};
 			Args = {"player";};
 			Hidden = false;
@@ -8722,7 +8740,7 @@ return function()
 		};
 		
 		RightLeg = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rleg";"rightleg";"rightlegpackage";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -8750,7 +8768,7 @@ return function()
 		};
 		
 		LeftLeg = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"lleg";"leftleg";"leftlegpackage";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -8778,7 +8796,7 @@ return function()
 		};
 		
 		RightArm = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rarm";"rightarm";"rightarmpackage";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -8806,7 +8824,7 @@ return function()
 		};
 		
 		LeftArm = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"larm";"leftarm";"leftarmpackage";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -8834,7 +8852,7 @@ return function()
 		};
 		
 		TorsoPackage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"torso";"torsopackage";};
 			Args = {"player";"id";};
 			Hidden = false;
@@ -8862,7 +8880,7 @@ return function()
 		};
 		
 		RemovePackage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removepackage";"nopackage";"rpackage"};
 			Args = {"player";};
 			Hidden = false;
@@ -8881,7 +8899,7 @@ return function()
 		};
 		
 		GivePackage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage"};
 			Args = {"player", "id"};
 			Hidden = false;
@@ -8935,7 +8953,7 @@ return function()
 		};
 		
 		Char = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"char";"character";"appearance";};
 			Args = {"player";"ID or player";};
 			Hidden = false;
@@ -8946,17 +8964,17 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if tonumber(args[2]) then
 						v.CharacterAppearanceId = tonumber(args[2])
-						server.Admin.RunCommand(server.Settings.Prefix.."refresh",v.Name)
+						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
 					else
 						if not service.Players:FindFirstChild(args[2]) then
 							local userid=args[2]
 							Pcall(function() userid=service.Players:GetUserIdFromNameAsync(args[2]) end)
 							v.CharacterAppearanceId = userid
-							server.Admin.RunCommand(server.Settings.Prefix.."refresh",v.Name)
+							Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
 						else
 							for k,m in pairs(service.GetPlayers(plr,args[2])) do
 								v.CharacterAppearanceId = m.userId
-								server.Admin.RunCommand(server.Settings.Prefix.."refresh",v.Name)
+								Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
 							end
 						end
 					end
@@ -8965,7 +8983,7 @@ return function()
 		};
 		
 		UnChar = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unchar";"uncharacter";"fixappearance";};
 			Args = {"player";};
 			Hidden = false;
@@ -8983,7 +9001,7 @@ return function()
 		};
 		
 		Infect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"infect";"zombify";};
 			Args = {"player";};
 			Hidden = false;
@@ -9035,7 +9053,7 @@ return function()
 		};
 		
 		Rainbowify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rainbowify";"rainbow";};
 			Args = {"player";};
 			Hidden = false;
@@ -9043,7 +9061,7 @@ return function()
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local scr = server.Core.NewScript("LocalScript",[[
+				local scr = Core.NewScript("LocalScript",[[
 					repeat 
 						wait(0.1) 
 						local char = script.Parent.Parent
@@ -9082,7 +9100,7 @@ return function()
 		};
 		
 		Noobify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"noobify";"noob";};
 			Args = {"player";};
 			Hidden = false;
@@ -9109,7 +9127,7 @@ return function()
 		};
 		
 		Color = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"color";"bodycolor";};
 			Args = {"player";"color";};
 			Hidden = false;
@@ -9135,7 +9153,7 @@ return function()
 		};
 		
 		Material = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"mat";"material";};
 			Args = {"player";"material";};
 			Hidden = false;
@@ -9168,7 +9186,7 @@ return function()
 		};
 		
 		Neon = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"neon";"neonify";};
 			Args = {"player";"(optional)color";};
 			Hidden = false;
@@ -9201,7 +9219,7 @@ return function()
 		};
 		
 		Ghostify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ghostify";"ghost";};
 			Args = {"player";};
 			Hidden = false;
@@ -9211,7 +9229,7 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then 
-						server.Admin.RunCommand(server.Settings.Prefix.."noclip",v.Name)
+						Admin.RunCommand(Settings.Prefix.."noclip",v.Name)
 						
 						if v.Character:findFirstChild("Shirt") then 
 							v.Character.Shirt:Destroy()
@@ -9241,7 +9259,7 @@ return function()
 		};
 		
 		Goldify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"goldify";"gold";};
 			Args = {"player";};
 			Hidden = false;
@@ -9276,7 +9294,7 @@ return function()
 		};
 		
 		Shiney = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"shiney";"shineify";"shine";};
 			Args = {"player";};
 			Hidden = false;
@@ -9310,7 +9328,7 @@ return function()
 		};
 		
 		LowRes = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"lowres","pixelrender","pixel","pixelize"};
 			Args = {"player","pixelSize","renderDist"};
 			Hidden = false;
@@ -9321,7 +9339,7 @@ return function()
 				local size = tonumber(args[2]) or 19
 				local dist = tonumber(args[3]) or 100
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Effect",{
+					Remote.MakeGui(v,"Effect",{
 						Mode = "Pixelize";
 						Resolution = size;
 						Distance = dist;
@@ -9331,7 +9349,7 @@ return function()
 		};
 		
 		Spook = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"spook";};
 			Args = {"player";};
 			Hidden = false;
@@ -9340,7 +9358,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Effect",{Mode = "Spooky"})
+					Remote.MakeGui(v,"Effect",{Mode = "Spooky"})
 				end
 			end
 		};
@@ -9354,12 +9372,12 @@ return function()
 			Description = "I love you. You are mine. Do not fear; I will always be near.";
 			AdminLevel = "Players";
 			Function = function(plr,args) 
-				server.Remote.MakeGui(plr,"Effect",{Mode = "lifeoftheparty"})
+				Remote.MakeGui(plr,"Effect",{Mode = "lifeoftheparty"})
 			end
 		};
 		
 		Blind = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"blind";};
 			Args = {"player";};
 			Hidden = false;
@@ -9368,13 +9386,13 @@ return function()
 			AdminLevel = "FunMod";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Effect",{Mode = "Blind"})
+					Remote.MakeGui(v,"Effect",{Mode = "Blind"})
 				end
 			end
 		};
 		
 		ScreenImage = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"screenimage";"scrimage";"image";};
 			Args = {"player";"textureid";};
 			Hidden = false;
@@ -9385,13 +9403,13 @@ return function()
 				local img = tostring(args[2])		
 				if not img then error(args[2].." is not a valid ID") end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Effect",{Mode = "ScreenImage",Image = args[2]})
+					Remote.MakeGui(v,"Effect",{Mode = "ScreenImage",Image = args[2]})
 				end
 			end
 		};
 		
 		UnEffect = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uneffect";"unimage";"uneffectgui";"unspook";"unblind";"unstrobe";"untrippy";"unpixelize","unlowres","unpixel","undance";"unflashify";"unrainbowify";"guifix";"fixgui";};
 			Args = {"player";};
 			Hidden = false;
@@ -9400,13 +9418,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(v,"Effect",{Mode = "Off"})
+					Remote.MakeGui(v,"Effect",{Mode = "Off"})
 				end
 			end
 		};
 		
 		LoopHeal = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"loopheal";};
 			Args = {"player";};
 			Hidden = false;
@@ -9416,14 +9434,14 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					service.StartLoop(v.userId.."LOOPHEAL",1,function()
-						server.Admin.RunCommand(server.Settings.Prefix.."heal",v.Name)
+						Admin.RunCommand(Settings.Prefix.."heal",v.Name)
 					end)
 				end
 			end
 		};
 		
 		UnLoopHeal = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unloopheal";};
 			Args = {"player";};
 			Hidden = false;
@@ -9438,7 +9456,7 @@ return function()
 		};
 		
 		LoopFling = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"loopfling";};
 			Args = {"player";};
 			Hidden = false;
@@ -9448,14 +9466,14 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					service.StartLoop(v.userId.."LOOPFLING",2,function()
-						server.Admin.RunCommand(server.Settings.Prefix.."fling",v.Name)
+						Admin.RunCommand(Settings.Prefix.."fling",v.Name)
 					end)
 				end
 			end
 		};
 		
 		UnLoopFling = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unloopfling";};
 			Args = {"player";};
 			Hidden = false;
@@ -9478,12 +9496,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"UserPanel",{Tab = "Settings"})
+				Remote.MakeGui(plr,"UserPanel",{Tab = "Settings"})
 			end
 		};
 		
 		RestoreMap = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"restoremap";"maprestore";"rmap";};
 			Args = {};
 			Hidden = false;
@@ -9491,7 +9509,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				server.Functions.Hint('Restoring Map...',service.Players:children())
+				Functions.Hint('Restoring Map...',service.Players:children())
 				
 				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
@@ -9500,7 +9518,7 @@ return function()
 					end
 				end
 				
-				local new = server.Variables.MapBackup:Clone()
+				local new = Variables.MapBackup:Clone()
 				new:MakeJoints()
 				new.Parent = service.Workspace
 				new:MakeJoints()
@@ -9512,13 +9530,13 @@ return function()
 				
 				new:Destroy()
 				
-				server.Admin.RunCommand(server.Settings.Prefix.."respawn","@everyone")
-				server.Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
+				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
+				Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
 			end
 		};
 		
 		BackupMap = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"backupmap";"mapbackup";"bmap";};
 			Args = {};
 			Hidden = false;
@@ -9527,7 +9545,7 @@ return function()
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				if plr then
-					server.Functions.Hint('Updating Map Backup...',{plr})
+					Functions.Hint('Updating Map Backup...',{plr})
 				else
 					--warn("Performing Map Backup...")
 				end
@@ -9546,16 +9564,16 @@ return function()
 					end
 				end
 				
-				server.Variables.MapBackup = tempmodel:Clone()
+				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
 				
 				if plr then
-					server.Functions.Hint('Backup Complete',{plr})
+					Functions.Hint('Backup Complete',{plr})
 				else
 					--warn("Backup Complete")
 				end
 				
-				server.Logs.AddLog(server.Logs.Script,{
+				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
 					Desc = "Map was successfully backed up";
 				})
@@ -9563,7 +9581,7 @@ return function()
 		};
 		
 		Explore = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"explore";"explorer";};
 			Args = {};
 			Hidden = false;
@@ -9571,24 +9589,24 @@ return function()
 			Fun = false;
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				server.Remote.MakeGui(plr,"Explorer")
+				Remote.MakeGui(plr,"Explorer")
 				--error("Disabled until I get around to finishing the explorer revamp; Use :dex for now")
 			end
 		};
 		
 		DexExplore = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"dex";"dexexplorer";"dexexplorer"};
 			Args = {};
 			Description = "Lets you explore the game using Dex [Credit to Raspberry Pi/Raspy_Pi/raspymgx/OpenOffset(?)][Useless buttons disabled]";
 			AdminLevel = "Owners";
 			Function = function(plr,args)
-				server.Remote.MakeLocal(plr,server.Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
+				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
 			end
 		};
 		
 		Tornado = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tornado";"twister";};
 			Args = {"player";"optional time";};
 			Description = "Makes a tornado on the target player(s)";
@@ -9597,7 +9615,7 @@ return function()
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					local p=service.New('Part',service.Workspace)
-					table.insert(server.Variables.Objects,p)
+					table.insert(Variables.Objects,p)
 					p.Transparency=1
 					p.CFrame=v.Character.HumanoidRootPart.CFrame+Vector3.new(0,-3,0)
 					p.Size=Vector3.new(0.2,0.2,0.2)
@@ -9607,7 +9625,7 @@ return function()
 					--local tornado=deps.Tornado:clone()
 					--tornado.Parent=p
 					--tornado.Disabled=false
-					local cl=server.Core.NewScript('Script',[[
+					local cl=Core.NewScript('Script',[[
 						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=ypcall(cour,...) if error then print('Error: '..error) end end
 						local parts = {}
 						local main=script.Parent
@@ -9687,7 +9705,7 @@ return function()
 		};
 		
 		Nuke = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"nuke";};
 			Args = {"player";};
 			Description = "Nuke the target player(s)";
@@ -9697,7 +9715,7 @@ return function()
 				local nukes = {}
 				local partsHit = {}
 				
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -9731,7 +9749,7 @@ return function()
 							end
 						end)
 						
-						table.insert(server.Variables.Objects, p)
+						table.insert(Variables.Objects, p)
 						table.insert(nukes, p)
 					end
 				end
@@ -9755,19 +9773,19 @@ return function()
 		};
 		
 		UnWildFire = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"stopwildfire", "removewildfire", "unwildfire";};
 			Args = {};
 			Description = "Stops :wildfire from spreading further";
 			AdminLevel = "Owners";
 			Fun = true;
 			Function = function(plr,args)
-				server.Variables.WildFire = nil
+				Variables.WildFire = nil
 			end
 		};
 		
 		WildFire = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"wildfire";};
 			Args = {"player";};
 			Description = "Starts a fire at the target player(s); Ignores locked parts and parts named 'BasePlate'";
@@ -9778,14 +9796,14 @@ return function()
 				local partsHit = {}
 				local objs = {}
 				
-				server.Variables.WildFire = partsHit
+				Variables.WildFire = partsHit
 				
 				function fire(part)
 					if finished or not partsHit or not objs then
 						objs = nil
 						partsHit = nil
 						finished = true
-					elseif partsHit and objs and server.Variables.WildFire ~= partsHit then
+					elseif partsHit and objs and Variables.WildFire ~= partsHit then
 						for i,v in next,objs do
 							v:Destroy()
 						end
@@ -9836,7 +9854,7 @@ return function()
 					end
 				end
 				
-				for i,v in next,server.Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -9887,7 +9905,7 @@ return function()
 					end
 				end
 				
-				server.Remote.MakeGui(plr,'List',{
+				Remote.MakeGui(plr,'List',{
 					Title = 'Server Log',
 					Table = temp,
 					Update = 'ServerLog',
@@ -9913,8 +9931,8 @@ return function()
 				end
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local temp = server.Remote.Get(v,"ClientLog") or {}
-					server.Remote.MakeGui(plr,'List',{
+					local temp = Remote.Get(v,"ClientLog") or {}
+					Remote.MakeGui(plr,'List',{
 						Title = v.Name..' Local Log',
 						Table = temp,
 						Update = "ClientLog";
@@ -9928,7 +9946,7 @@ return function()
 		};
 		
 		ReplicationLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"replications";"replicators";"replicationlogs";};
 			Args = {"autoupdate"};
 			Hidden = false;
@@ -9937,7 +9955,7 @@ return function()
 			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(server.Settings.ReplicationLogs,"Replication logs are disabled; Enable them in Settings")
+				assert(Settings.ReplicationLogs,"Replication logs are disabled; Enable them in Settings")
 				assert(server.FilteringEnabled == false,"Filtering Enabled; Replication logs disabled (not usable)")
 				
 				local tab = {}
@@ -9947,11 +9965,11 @@ return function()
 					auto = 1
 				end
 				
-				for i,v in pairs(server.Logs.Replications) do
+				for i,v in pairs(Logs.Replications) do
 					table.insert(tab,{Text = v.Player.." "..v.Action.." "..v.ClassName,Desc = v.Path})
 				end
 				
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Replications";
 					Tab = tab;
 					Dots = true;
@@ -9964,7 +9982,7 @@ return function()
 		};
 		
 		NetworkOwners = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"createdparts","networkowners","playerparts"};
 			Args = {"autoupdate"};
 			Hidden = false;
@@ -9973,7 +9991,7 @@ return function()
 			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(server.Settings.NetworkOwners,"NetworkOwner logging is disabled; Enable them in Settings")
+				assert(Settings.NetworkOwners,"NetworkOwner logging is disabled; Enable them in Settings")
 				assert(server.FilteringEnabled == false,"Filtering Enabled; NetworkOwner logs disabled (not usable)")
 				
 				local tab = {}
@@ -9983,11 +10001,11 @@ return function()
 					auto = 1
 				end
 				
-				for i,v in pairs(server.Logs.NetworkOwners) do
+				for i,v in pairs(Logs.NetworkOwners) do
 					table.insert(tab,{Text = tostring(v.Player).." made "..tostring(v.Part),Desc = v.Path})
 				end
 				
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "NetworkOwners", 
 					Tab = tab, 
 					Dots = true;
@@ -10013,10 +10031,10 @@ return function()
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 					auto = 1
 				end
-				for i,v in pairs(server.Logs.Errors) do
+				for i,v in pairs(Logs.Errors) do
 					table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
 				end
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Errors",
 					Table = tab,
 					Dots = true,
@@ -10029,7 +10047,7 @@ return function()
 		};
 		
 		ExploitLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"exploitlogs"};
 			Args = {"autoupdate"};
 			Hidden = false;
@@ -10042,9 +10060,9 @@ return function()
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 					auto = 1
 				end
-				server.Remote.MakeGui(plr,'List',{
+				Remote.MakeGui(plr,'List',{
 					Title = 'Exploit Logs', 
-					Tab = server.Logs.Exploit,
+					Tab = Logs.Exploit,
 					Dots = true; 
 					Update = "ExploitLogs",
 					AutoUpdate = auto,
@@ -10055,7 +10073,7 @@ return function()
 		};
 		
 		JoinLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"joinlogs","joins","joinhistory"};
 			Args = {"autoupdate"};
 			Hidden = false;
@@ -10068,9 +10086,9 @@ return function()
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 					auto = 1
 				end
-				server.Remote.MakeGui(plr,'List',{
+				Remote.MakeGui(plr,'List',{
 					Title = 'Join Logs';
-					Tab = server.Logs.Joins;
+					Tab = Logs.Joins;
 					Dots = true; 
 					Update = "JoinLogs";
 					AutoUpdate = auto;
@@ -10079,7 +10097,7 @@ return function()
 		};
 		
 		ChatLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"chatlogs","chats","chathistory"};
 			Args = {"autoupdate"};
 			Description = "Displays the current chat logs for the server";
@@ -10092,9 +10110,9 @@ return function()
 					auto = 1
 				end
 				
-				server.Remote.MakeGui(plr,'List',{
+				Remote.MakeGui(plr,'List',{
 					Title = 'Chat Logs';
-					Tab = server.Logs.Chats; 
+					Tab = Logs.Chats; 
 					Dots = true;
 					Update = "ChatLogs";
 					AutoUpdate = auto;
@@ -10105,7 +10123,7 @@ return function()
 		};
 		
 		RemoteLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"remotelogs","rlogs","remotefires","remoterequests"};
 			Args = {"autoupdate"};
 			Description = "View the admin logs for the server";
@@ -10116,9 +10134,9 @@ return function()
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 					auto = 1
 				end
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Remote Logs";
-					Table = server.Logs.RemoteFires;
+					Table = Logs.RemoteFires;
 					Dots = true;
 					Update = "RemoteLogs";
 					AutoUpdate = auto;
@@ -10129,7 +10147,7 @@ return function()
 		};
 		
 		ScriptLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"scriptlogs","scriptlog","adminlogs";"adminlog";"scriptlogs";};
 			Args = {"autoupdate"};
 			Description = "View the admin logs for the server";
@@ -10139,9 +10157,9 @@ return function()
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 					auto = 1
 				end
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Script Logs";
-					Table = server.Logs.Script;
+					Table = Logs.Script;
 					Dots = true;
 					Update = "ScriptLogs";
 					AutoUpdate = auto;
@@ -10152,7 +10170,7 @@ return function()
 		};
 		
 		Logs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"logs";"log";"commandlogs";};
 			Args = {"autoupdate"};
 			Description = "View the command logs for the server";
@@ -10165,11 +10183,11 @@ return function()
 					auto = 1
 				end
 				
-				for i,m in pairs(server.Logs.Commands) do
+				for i,m in pairs(Logs.Commands) do
 					table.insert(temp,{Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
 				end
 				
-				server.Remote.MakeGui(plr,"List",{
+				Remote.MakeGui(plr,"List",{
 					Title = "Admin Logs";
 					Table = temp;
 					Dots = true;
@@ -10182,38 +10200,38 @@ return function()
 		};
 		
 		ShowLogs = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"showlogs";"showcommandlogs";};
 			Args = {"player"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local temp = {}
-				for i,m in pairs(server.Logs.Commands) do
+				for i,m in pairs(Logs.Commands) do
 					table.insert(temp,{Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
 				end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do 
-					server.Remote.MakeGui(plr,"List",{Title = "Admin Logs", Table = temp, Dots = true, Update = "CommandLogs"; Sanitize = true})
+					Remote.MakeGui(plr,"List",{Title = "Admin Logs", Table = temp, Dots = true, Update = "CommandLogs"; Sanitize = true})
 				end
 			end
 		};
 		
 		ScriptBuilder = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list","localscript/script","scriptName","data"};
 			Description = "Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				local sb = server.Variables.ScriptBuilder[tostring(plr.userId)]
+				local sb = Variables.ScriptBuilder[tostring(plr.userId)]
 				if not sb then 
 					sb = {
 						Script = {};
 						LocalScript = {};
 						Events = {};
 					}
-					server.Variables.ScriptBuilder[tostring(plr.userId)] = sb
+					Variables.ScriptBuilder[tostring(plr.userId)] = sb
 				end
 				
 				local action = args[1]:lower()
@@ -10242,7 +10260,7 @@ return function()
 						end
 					end
 					
-					local wrapped,scr = server.Core.NewScript(class,code,false,true)
+					local wrapped,scr = Core.NewScript(class,code,false,true)
 					
 					sb[class][name] = {
 						Wrapped = wrapped;
@@ -10250,25 +10268,25 @@ return function()
 					}
 					
 					if args[4] then
-						server.Functions.Hint("Created "..class.." "..name.." and appended text",{plr})
+						Functions.Hint("Created "..class.." "..name.." and appended text",{plr})
 					else
-						server.Functions.Hint("Created "..class.." "..name,{plr})
+						Functions.Hint("Created "..class.." "..name,{plr})
 					end
 				elseif action == "edit" then
 					assert(args[1] and args[2] and args[3],"Argument missing or nil")
 					if sb[class][name] then
 						local scr = sb[class][name].Script
-						local tab = server.Core.GetScript(scr)
+						local tab = Core.GetScript(scr)
 						if scr and tab then
 							sb[class][name].Event = plr.Chatted:connect(function(msg)
-								if msg:sub(1,#(server.Settings.Prefix.."sb")) == server.Settings.Prefix.."sb" then
+								if msg:sub(1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
 								
 								else
 									tab.Source = tab.Source.."\n"..msg
-									server.Functions.Hint("Appended message to "..class.." "..name,{plr})
+									Functions.Hint("Appended message to "..class.." "..name,{plr})
 								end
 							end)
-							server.Functions.Hint("Now editing "..class.." "..name.."; Chats will be appended",{plr})
+							Functions.Hint("Now editing "..class.." "..name.."; Chats will be appended",{plr})
 						end
 					else
 						error(class.." "..name.." not found!")
@@ -10276,11 +10294,11 @@ return function()
 				elseif action == "close" then
 					assert(args[1] and args[2] and args[3],"Argument missing or nil")
 					local scr = sb[class][name].Script
-					local tab = server.Core.GetScript(scr)
+					local tab = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
 							sb[class][name].Event:disconnect()
-							server.Functions.Hint("No longer editing "..class.." "..name,{plr})
+							Functions.Hint("No longer editing "..class.." "..name,{plr})
 						end
 					else
 						error(class.." "..name.." not found!")
@@ -10288,10 +10306,10 @@ return function()
 				elseif action == "clear" then
 					assert(args[1] and args[2] and args[3],"Argument missing or nil")
 					local scr = sb[class][name].Script
-					local tab = server.Core.GetScript(scr)
+					local tab = Core.GetScript(scr)
 					if scr and tab then
 						tab.Source = " "
-						server.Functions.Hint("Cleared "..class.." "..name,{plr})
+						Functions.Hint("Cleared "..class.." "..name,{plr})
 					else
 						error(class.." "..name.." not found!")
 					end
@@ -10313,10 +10331,10 @@ return function()
 					assert(args[1] and args[2] and args[3] and args[4],"Argument missing or nil")
 					if sb[class][name] then
 						local scr = sb[class][name].Script
-						local tab = server.Core.GetScript(scr)
+						local tab = Core.GetScript(scr)
 						if scr and tab then
 							tab.Source = tab.Source.."\n"..args[4]
-							server.Functions.Hint("Appended message to "..class.." "..name,{plr})
+							Functions.Hint("Appended message to "..class.." "..name,{plr})
 						end
 					else
 						error(class.." "..name.." not found!")
@@ -10332,7 +10350,7 @@ return function()
 						sb[class][name].Script.Disabled = true
 						wait()
 						sb[class][name].Script.Disabled = false
-						server.Functions.Hint("Running "..class.." "..name,{plr})
+						Functions.Hint("Running "..class.." "..name,{plr})
 					else
 						error(class.." "..name.." not found!")
 					end
@@ -10340,7 +10358,7 @@ return function()
 					assert(args[1] and args[2] and args[3],"Argument missing or nil")
 					if sb[class][name] then
 						sb[class][name].Script.Disabled = true
-						server.Functions.Hint("Stopped "..class.." "..name,{plr})
+						Functions.Hint("Stopped "..class.." "..name,{plr})
 					else
 						error(class.." "..name.." not found!")
 					end
@@ -10354,61 +10372,61 @@ return function()
 						table.insert(tab,{Text = "LocalScript: "..tostring(i),Desc = "Running: "..tostring(v.Script.Disabled)})
 					end
 					
-					server.Remote.MakeGui(plr,"List",{Title = "SB Scripts",Table = tab})
+					Remote.MakeGui(plr,"List",{Title = "SB Scripts",Table = tab})
 				end
 			end
 		};
 		
 		MakeScript = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"s";"scr";"script";"makescript"};
 			Args = {"code";};
 			Description = "Lets you run code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				local cl = server.Core.NewScript('Script',args[1])
+				local cl = Core.NewScript('Script',args[1])
 				cl.Parent = service.ServerScriptService
 				cl.Disabled = false	
-				server.Functions.Hint("Ran Script",{plr})
+				Functions.Hint("Ran Script",{plr})
 			end
 		};
 		
 		MakeLocalScript = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ls";"lscr";"localscript";};
 			Args = {"code";};
 			Description = "Lets you run code as a local script";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				local cl = server.Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1])
+				local cl = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1])
 				cl.Parent = plr.Backpack
 				cl.Disabled = false	
-				server.Functions.Hint("Ran LocalScript",{plr})
+				Functions.Hint("Ran LocalScript",{plr})
 			end
 		};
 		
 		LoadLocalScript = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cs";"cscr";"clientscript";};
 			Args = {"player";"code";};
 			Description = "Lets you run a localscript on the target player(s)";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				local new = server.Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2])
+				local new = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2])
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local cl = new:Clone()
 					cl.Parent = v.Backpack
 					cl.Disabled = false	
-					server.Functions.Hint("Ran LocalScript on "..v.Name,{plr})
+					Functions.Hint("Ran LocalScript on "..v.Name,{plr})
 				end
 			end
 		};
 		
 		Mute = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"mute";"silence";};
 			Args = {"player";};
 			Hidden = false;
@@ -10417,17 +10435,17 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then  
-						server.Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then  
+						Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true 
-						for k,m in pairs(server.Settings.Muted) do 
-							if server.Admin.DoCheck(v,m) then 
+						for k,m in pairs(Settings.Muted) do 
+							if Admin.DoCheck(v,m) then 
 								check = false 
 							end 
 						end
 						
 						if check then 
-							table.insert(server.Settings.Muted,v.Name..':'..v.userId) 
+							table.insert(Settings.Muted,v.Name..':'..v.userId) 
 						end
 					end
 				end
@@ -10435,7 +10453,7 @@ return function()
 		};
 		
 		UnMute = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unmute";};
 			Args = {"player";};
 			Hidden = false;
@@ -10444,10 +10462,10 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(server.Settings.Muted) do
-						if server.Admin.DoCheck(v,m) then
-							table.remove(server.Settings.Muted,k) 
-							server.Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat",true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
+					for k,m in pairs(Settings.Muted) do
+						if Admin.DoCheck(v,m) then
+							table.remove(Settings.Muted,k) 
+							Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat",true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
 				end
@@ -10455,7 +10473,7 @@ return function()
 		};
 		
 		MuteList = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"mutelist";"mutes";"muted";};
 			Args = {};
 			Hidden = false;
@@ -10464,15 +10482,15 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local list = {}
-				for i,v in pairs(server.Settings.Muted) do
+				for i,v in pairs(Settings.Muted) do
 					table.insert(list,v)
 				end
-				server.Remote.MakeGui(plr,"Lis",{Title = "Mute List",Table = list})
+				Remote.MakeGui(plr,"Lis",{Title = "Mute List",Table = list})
 			end
 		};
 		
 		Note = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"note";"writenote";"makenote";};
 			Args = {"player";"note";};
 			Filter = true;
@@ -10480,62 +10498,62 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local PlayerData = server.Core.GetPlayer(v)
+					local PlayerData = Core.GetPlayer(v)
 					if not PlayerData.AdminNotes then PlayerData.AdminNotes={} end
 					table.insert(PlayerData.AdminNotes,args[2])
-					server.Functions.Hint('Added '..v.Name..' Note '..args[2],{plr})
-					server.Core.SavePlayer(v,PlayerData)
+					Functions.Hint('Added '..v.Name..' Note '..args[2],{plr})
+					Core.SavePlayer(v,PlayerData)
 				end
 			end
 		};
 		
 		DeleteNote = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"removenote";"remnote","deletenote"};
 			Args = {"player";"note";};
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local PlayerData = server.Core.GetPlayer(v)
+					local PlayerData = Core.GetPlayer(v)
 					if PlayerData.AdminNotes then
 						if args[2]:lower() == "all" then
 							PlayerData.AdminNotes={}
 						else
 							for k,m in pairs(PlayerData.AdminNotes) do
 								if m:lower():sub(1,#args[2]) == args[2]:lower() then
-									server.Functions.Hint('Removed '..v.Name..' Note '..m,{plr})
+									Functions.Hint('Removed '..v.Name..' Note '..m,{plr})
 									table.remove(PlayerData.AdminNotes,k)
 								end
 							end
 						end
-						server.Core.SavePlayer(v,PlayerData)--v:SaveInstance("Admin Notes", notes)
+						Core.SavePlayer(v,PlayerData)--v:SaveInstance("Admin Notes", notes)
 					end
 				end
 			end
 		};
 		
 		ShowNotes = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"notes";"viewnotes";};
 			Args = {"player";};
 			Description = "Views notes on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local PlayerData = server.Core.GetPlayer(v)
+					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then 
-						server.Functions.Hint('No notes on '..v.Name,{plr}) 
+						Functions.Hint('No notes on '..v.Name,{plr}) 
 						return 
 					end
-					server.Remote.MakeGui(plr,'List',{Title = v.Name,Table = notes})
+					Remote.MakeGui(plr,'List',{Title = v.Name,Table = notes})
 				end
 			end
 		};
 		
 		LoopKill = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"loopkill";};
 			Args = {"player";"num(optional)";};
 			Description = "Loop kills the target player(s)";
@@ -10553,7 +10571,7 @@ return function()
 		};
 		
 		UnLoopKill = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unloopkill";};
 			Args = {"player";};
 			Hidden = false;
@@ -10568,7 +10586,7 @@ return function()
 		};
 		
 		Lag = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"lag";"fpslag";};
 			Args = {"player";};
 			Hidden = false;
@@ -10577,15 +10595,15 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
-						server.Remote.Send(v,"Function","SetFPS",5)
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+						Remote.Send(v,"Function","SetFPS",5)
 					end
 				end
 			end
 		};
 		
 		UnLag = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unlag";"unfpslag";};
 			Args = {"player";};
 			Hidden = false;
@@ -10594,13 +10612,13 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","RestoreFPS")
+					Remote.Send(v,"Function","RestoreFPS")
 				end
 			end
 		};
 		
 		--[[FunBox = { -- Never forget :(((
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"funbox";"trollbox";"trololo";};
 			Args = {"player";};
 			Hidden = false;
@@ -10613,7 +10631,7 @@ return function()
 					266815338,
 				}--168920853 RIP
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(funid[math.random(1,#funid)],v)
 					end
 				end
@@ -10621,7 +10639,7 @@ return function()
 		};--]]
 		
 		Forest = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"forest";"sendtotheforest";"intothewoods";};
 			Args = {"player";};
 			Hidden = false;
@@ -10630,7 +10648,7 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(209424751,v)
 					end
 				end
@@ -10638,7 +10656,7 @@ return function()
 		};
 		
 		Maze = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"maze";"sendtothemaze";"mazerunner";};
 			Args = {"player";};
 			Hidden = false;
@@ -10647,7 +10665,7 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if server.Admin.GetLevel(plr)>server.Admin.GetLevel(v) then
+					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(280846668,v)
 					end
 				end
@@ -10656,7 +10674,7 @@ return function()
 		
 		
 		Freecam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"freecam";};
 			Args = {"player";};
 			Hidden = false;
@@ -10667,17 +10685,17 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					--[[v.Character.Archivable=true
 					local newchar=v.Character:clone()
-					newchar.Parent=server.Storage
+					newchar.Parent=Storage
 					v.Character=nil--]]
-					server.Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					server.Remote.Send(v,'Function','setCamProperty','CameraSubject',service.Workspace)
+					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
+					Remote.Send(v,'Function','setCamProperty','CameraSubject',service.Workspace)
 					v.Character.HumanoidRootPart.Anchored=true
 				end
 			end
 		};
 		
 		UnFreecam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unfreecam";};
 			Args = {"player";};
 			Hidden = false;
@@ -10686,15 +10704,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					server.Remote.Send(v,'Function','setCamProperty','CameraSubject',v.Character.Humanoid)
+					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
+					Remote.Send(v,'Function','setCamProperty','CameraSubject',v.Character.Humanoid)
 					v.Character.HumanoidRootPart.Anchored=false
 				end
 			end
 		};
 		
 		Nil = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"nil";};
 			Args = {"player";};
 			Hidden = false;
@@ -10710,7 +10728,7 @@ return function()
 		};	
 		
 		GameGravity = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ggrav","gamegrav","workspacegrav"};
 			Args = {"number or fix"};
 			Hidden = false;
@@ -10728,7 +10746,7 @@ return function()
 		};
 		
 		Bots = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bot";"trainingbot"};
 			Args = {"plr";"num";"walk";"attack","friendly","health","speed","damage"};
 			Hidden = false;
@@ -10774,11 +10792,11 @@ return function()
 					for i = 1, num do
 						local new = clone:Clone()
 						local hum = new:FindFirstChildOfClass("Humanoid")
-						local brain = server.Deps.Assets.BotBrain:Clone()
+						local brain = Deps.Assets.BotBrain:Clone()
 						local event = brain.Event
 						local oldAnim = new:FindFirstChild("Animate")
 						local isR15 = (hum.RigType == "R15")
-						local anim = (isR15 and server.Deps.Assets.R15Animate:Clone()) or server.Deps.Assets.R6Animate:Clone()
+						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
 						
 						new.Parent = service.Workspace
 						new.Name = player.Name
@@ -10817,7 +10835,7 @@ return function()
 							event:Fire("Init")
 						end
 						
-						table.insert(server.Variables.Objects,new)
+						table.insert(Variables.Objects,new)
 					end
 				end
 				
@@ -10829,7 +10847,7 @@ return function()
 		
 		--[[
 		Bots = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"bot";"tbot";"trainingbot";"bots";"robot";"robots";"dummy";"dummys";"testdummy";"testdummys";"dolls";"doll";};
 			Args = {"plr";"num";"walk";"attk";"swarm";"speed";"dmg";"hp";"dist";};
 			Hidden = false;
@@ -10856,9 +10874,9 @@ return function()
 						player.Character.Archivable = true
 						local cl = player.Character:Clone() 
 						player.Character.Archivable = false
-						table.insert(server.Variables.Objects,cl)
-						local anim = server.Deps.Assets.Animate:Clone()
-						local brain = server.Deps.Assets.BotBrain:Clone()
+						table.insert(Variables.Objects,cl)
+						local anim = Deps.Assets.Animate:Clone()
+						local brain = Deps.Assets.BotBrain:Clone()
 						anim.Parent = cl 
 						brain.Parent = cl
 						brain.Damage.Value = damage
@@ -10890,19 +10908,19 @@ return function()
 		--]]
 		
 		Quote = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"quote";"inspiration";"randomquote";};
 			Args = {};
 			Description = "Shows you a random quote";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local quotes = require(server.Deps.Assets.Quotes)
-				server.Functions.Message('Random Quote',quotes[math.random(1,#quotes)],{plr})
+				local quotes = require(Deps.Assets.Quotes)
+				Functions.Message('Random Quote',quotes[math.random(1,#quotes)],{plr})
 			end
 		};
 		
 		TextToSpeech = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"tell";"tts";"texttospeech"};
 			Args = {"player";"message";};
 			Filter = true;
@@ -10910,13 +10928,13 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.Send(v,"Function","TextToSpeech",args[2])
+					Remote.Send(v,"Function","TextToSpeech",args[2])
 				end
 			end
 		};	
 		
 		Deadlands = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"deadlands","farlands","renderingcyanide"};
 			Args = {"player","mult"};
 			Description = "The edge of ROBLOX math; WARNING CAPES CAN CAUSE LAG";
@@ -10928,9 +10946,9 @@ return function()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						if torso then
-							server.Functions.UnCape(v)
+							Functions.UnCape(v)
 							torso.CFrame = CFrame.new(dist, dist+10, dist)
-							server.Admin.RunCommand(server.Settings.Prefix.."noclip",v.Name)
+							Admin.RunCommand(Settings.Prefix.."noclip",v.Name)
 						end
 					end
 				end
@@ -10938,7 +10956,7 @@ return function()
 		};
 		
 		UnDeadlands = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"undeadlands","unfarlands","unrenderingcyanide"};
 			Args = {"player"};
 			Description = "Clips the player and teleports them to you";
@@ -10950,7 +10968,7 @@ return function()
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						local pTorso = plr.Character:FindFirstChild("HumanoidRootPart")
 						if torso and pTorso and plr ~= v then
-							server.Admin.RunCommand(server.Settings.Prefix.."clip",v.Name)
+							Admin.RunCommand(Settings.Prefix.."clip",v.Name)
 							wait(0.3)
 							torso.CFrame = pTorso.CFrame*CFrame.new(0,0,5)
 						else
@@ -10962,7 +10980,7 @@ return function()
 		};
 		
 		RopeConstraint = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"rope","chain"};
 			Args = {"player1","player2","length"};
 			Description = "Connects players using a rope constraint";
@@ -10994,7 +11012,7 @@ return function()
 		};
 		
 		UnRopeConstraint = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unrope","unchain"};
 			Args = {"player"};
 			Description = "UnRope";
@@ -11015,7 +11033,7 @@ return function()
 		};
 		
 		Headlian = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"headlian","beautiful"};
 			Args = {"player"};
 			Description = "hot";
@@ -11193,9 +11211,9 @@ return function()
 		--[[
 		
 		Perms = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"perms";"permissions";"comperms";};
-			Args = {"server.Settings.Prefixcmd";"all/donor/temp/admin/owner/creator";};
+			Args = {"Settings.Prefixcmd";"all/donor/temp/admin/owner/creator";};
 			Hidden = false;
 			Description = "Change command permissions";
 			Fun = false;
@@ -11222,20 +11240,20 @@ return function()
 					level="FunOwner"
 				end
 				if level~=nil then
-					for i=1,#server.Commands do
-						if args[1]:lower()==server.Commands[i].Prefix..server.Commands[i].Cmds[1]:lower() then 	
-							server.Commands[i].AdminLevel=level
-							server.Functions.Hint("server "..server.Commands[i].Prefix..server.Commands[i].Cmds[1].." permission level to "..level,{plr})
+					for i=1,#Commands do
+						if args[1]:lower()==Commands[i].Prefix..Commands[i].Cmds[1]:lower() then 	
+							Commands[i].AdminLevel=level
+							Functions.Hint("server "..Commands[i].Prefix..Commands[i].Cmds[1].." permission level to "..level,{plr})
 						end
 					end
 				else
-					server.OutputGui(plr,'Command Error:','Invalid Permission')
+					OutputGui(plr,'Command Error:','Invalid Permission')
 				end
 			end
 		};
 		
 		sh = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"sh";"systemhint";};
 			Args = {"message";};
 			Hidden = false;
@@ -11243,12 +11261,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				server.Functions.Hint(args[1],service.Players:children())
+				Functions.Hint(args[1],service.Players:children())
 			end
 		};
 		
 		flock = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"flock";"flocklock";};
 			Args = {"on/off";};
 			Hidden = false;
@@ -11257,17 +11275,17 @@ return function()
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if args[1]:lower()=='on' then
-					server.flock=true 
-					server.Functions.Hint("Server is now friends only", service.Players:children()) 
+					flock=true 
+					Functions.Hint("Server is now friends only", service.Players:children()) 
 				elseif args[1]:lower()=='off' then
-					server.flock = false 
-					server.Functions.Hint("Server is no longer friends only", service.Players:children()) 
+					flock = false 
+					Functions.Hint("Server is no longer friends only", service.Players:children()) 
 				end
 			end
 		};
 		
 		glock = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"glock";"grouplock";"grouponlyjoin";};
 			Args = {"on/off";};
 			Hidden = false;
@@ -11277,16 +11295,16 @@ return function()
 			Function = function(plr,args)
 				if args[1]:lower()=='on' then
 					server['GroupOnlyJoin'] = true 
-					server.Functions.Hint("Server is now Group Only.", service.Players:children())
+					Functions.Hint("Server is now Group Only.", service.Players:children())
 				elseif args[1]:lower()=='off' then 
 					server['GroupOnlyJoin'] = false 
-					server.Functions.Hint("Server is no longer Group Only", service.Players:children()) 
+					Functions.Hint("Server is no longer Group Only", service.Players:children()) 
 				end
 			end
 		};
 		
 		points = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"points";"viewpoints";};
 			Args = {"player";};
 			Hidden = false;
@@ -11298,16 +11316,16 @@ return function()
 					local PlayerData = DataStore:GetAsync(tostring(v.userId))
 					local points=PlayerData.AdminPoints
 					if not points then 
-						server.Functions.Hint(v.Name..' has 0 points.',{plr})
+						Functions.Hint(v.Name..' has 0 points.',{plr})
 					else
-						server.Functions.Hint(v.Name..' has '..points..' points.',{plr})
+						Functions.Hint(v.Name..' has '..points..' points.',{plr})
 					end
 				end
 			end
 		};
 		
 		givepoints = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"givepoints";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -11315,7 +11333,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not tonumber(args[2]) then server.Functions.Hint(args[2]..' is not a valid number.',{plr}) return end	
+				if not tonumber(args[2]) then Functions.Hint(args[2]..' is not a valid number.',{plr}) return end	
 				local num=tonumber(args[2])
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					local PlayerData = DataStore:GetAsync(tostring(v.userId))
@@ -11325,13 +11343,13 @@ return function()
 						PlayerData.AdminPoints=PlayerData.AdminPoints+num
 					end
 					DataStore:SetAsync(tostring(v.userId),PlayerData)
-					server.Functions.Hint('Gave '..v.Name..' '..num..' points.',{plr})
+					Functions.Hint('Gave '..v.Name..' '..num..' points.',{plr})
 				end
 			end
 		};
 		
 		takepoints = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"takepoints";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -11339,7 +11357,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not tonumber(args[2]) then server.Functions.Hint(args[2]..' is not a valid number.',{plr}) return end	
+				if not tonumber(args[2]) then Functions.Hint(args[2]..' is not a valid number.',{plr}) return end	
 				local num=tonumber(args[2])
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					local PlayerData = DataStore:GetAsync(tostring(v.userId))
@@ -11349,13 +11367,13 @@ return function()
 						PlayerData.AdminPoints=PlayerData.AdminPoints-num
 					end
 					DataStore:SetAsync(tostring(v.userId),PlayerData)
-					server.Functions.Hint('Took '..num..' points from '..v.Name..'.',{plr})
+					Functions.Hint('Took '..num..' points from '..v.Name..'.',{plr})
 				end
 			end
 		};
 		
 		notalk = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"notalk";};
 			Args = {"player";};
 			Hidden = false;
@@ -11365,7 +11383,7 @@ return function()
 			Function = function(plr,args)
 			for i,v in pairs(service.GetPlayers(plr,args[1])) do
 			cPcall(function()
-			if not v:FindFirstChild('NoTalk') and not server.Admin.CheckAdmin(v,false) then
+			if not v:FindFirstChild('NoTalk') and not Admin.CheckAdmin(v,false) then
 				local talky=service.New('IntValue',v)
 				talky.Name='NoTalk'
 				talky.Value=0
@@ -11376,7 +11394,7 @@ return function()
 		};
 		
 		unnotalk = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unnotalk";};
 			Args = {"player";};
 			Hidden = false;
@@ -11395,7 +11413,7 @@ return function()
 		};
 		
 		normal = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"normal";"normalify";};
 			Args = {"player";};
 			Hidden = false;
@@ -11416,7 +11434,7 @@ return function()
 			v.Character.HumanoidRootPart["Right Hip"].C0 = CFrame.new(1,-1,0) * CFrame.Angles(0,math.rad(90),0)
 			v.Character.HumanoidRootPart["Left Hip"].C0 = CFrame.new(-1,-1,0) * CFrame.Angles(0,math.rad(-90),0)
 			local parent=v:FindFirstChild('PlayerGui') or v:FindFirstChild('Backpack')
-			for a, sc in pairs(parent:children()) do if sc.Name == server.CodeName.."ify" or sc.Name==server.CodeName..'Glitch' or sc.Name == server.CodeName.."EpixPoison" then sc:Destroy() end end
+			for a, sc in pairs(parent:children()) do if sc.Name == CodeName.."ify" or sc.Name==CodeName..'Glitch' or sc.Name == CodeName.."EpixPoison" then sc:Destroy() end end
 			for a, prt in pairs(v.Character:children()) do
 			if prt:IsA("BasePart") and (prt.Name ~= "Head" or not prt.Parent:findFirstChild("NameTag", true)) then 
 			prt.Transparency = 0 prt.Reflectance = 0 prt.BrickColor = BrickColor.new("White")
@@ -11427,7 +11445,7 @@ return function()
 			elseif prt.Name=='Epix Puke' or prt.Name=='Epix Bleed' then
 				prt:Destroy()
 			elseif prt.Name==v.Name..'epixcrusify' then
-				server.Admin.RunCommand(server.Settings.Prefix..'refresh',v.Name)
+				Admin.RunCommand(Settings.Prefix..'refresh',v.Name)
 			end 
 			end
 			end
@@ -11437,7 +11455,7 @@ return function()
 		};
 		
 		ko = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ko";};
 			Args = {"player";"number";};
 			Hidden = false;
@@ -11447,8 +11465,8 @@ return function()
 			Function = function(plr,args)
 			local num = 500 if num > tonumber(args[2]) then num = tonumber(args[2]) end
 			for i, v in pairs(service.GetPlayers(plr,args[1])) do
-			if server.CheckTrueOwner(plr) or not server.Admin.CheckAdmin(v, false) then
-			local cl=server.LoadScript("Script",[=[
+			if CheckTrueOwner(plr) or not Admin.CheckAdmin(v, false) then
+			local cl=LoadScript("Script",[=[
 			v=service.Players:FindFirstChild(']=]..v.Name..[=[')
 			for n = 1, ]=]..num..[=[]=] do
 			wait()
@@ -11460,8 +11478,8 @@ return function()
 			v:LoadCharacter()
 			end
 			end)
-			end]=],server.AssignName(),true,service.ServerScriptService)
-			cl.Name=server.AssignName()
+			end]=],AssignName(),true,service.ServerScriptService)
+			cl.Name=AssignName()
 			cl.Parent=service.ServerScriptService
 			cl.Disabled=false
 			end
@@ -11470,7 +11488,7 @@ return function()
 		};
 		
 		Flashify = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"flashify";};
 			Args = {"player";};
 			Hidden = false;
@@ -11484,14 +11502,14 @@ return function()
 					if v.Character:findFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
 					if v.Character:findFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
 					for a, sc in pairs(v.Character:children()) do if sc.Name == "ify" then sc:Destroy() end end
-						server.Remote.Send(v,'Function','Effect','flashify')
+						Remote.Send(v,'Function','Effect','flashify')
 					end
 				end
 			end
 		};
 		
 		uncreeper = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"uncreeper";"uncreeperify";};
 			Args = {"player";};
 			Hidden = false;
@@ -11518,7 +11536,7 @@ return function()
 		};
 		
 		undog = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"undog";"undogify";};
 			Args = {"player";};
 			Hidden = false;
@@ -11546,7 +11564,7 @@ return function()
 		
 			
 		motd = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"motd";"messageoftheday";"daymessage";};
 			Args = {};
 			Hidden = false;
@@ -11554,12 +11572,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				server.PM('Message of the Day',plr,service.MarketPlace:GetProductInfo(server.Functions.MessageOfTheDayID).Description)
+				PM('Message of the Day',plr,service.MarketPlace:GetProductInfo(Functions.MessageOfTheDayID).Description)
 			end
 		};
 			
 		version = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"version";"ver";};
 			Args = {};
 			Hidden = false;
@@ -11567,12 +11585,12 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				server.Functions.Message("Epix Inc. Server Suite", tostring(server.version), true, {plr}) 
+				Functions.Message("Epix Inc. Server Suite", tostring(version), true, {plr}) 
 			end
 		};
 		
 		ranks = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"ranks";"adminranks";};
 			Args = {};
 			Hidden = false;
@@ -11581,15 +11599,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local temptable={}
-				for i,v in pairs(server.Ranks) do
+				for i,v in pairs(Ranks) do
 					table.insert(temptable,{Text=v.Group..":"..v.Rank.." - "..v.Type,Desc='Rank: '..v.Rank..' - Type: '..v.Type..' - Group: '..v.Group})
 				end
-				server.Remote.Send(plr,'Function','ListGui','Ranks',temptable)
+				Remote.Send(plr,'Function','ListGui','Ranks',temptable)
 			end
 		};
 		
 		votekick = {
-			Prefix = server.Settings.PlayerPrefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"votekick";"kick";};
 			Args = {"player";};
 			Hidden = false;
@@ -11597,30 +11615,30 @@ return function()
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				if server.VoteKick then
+				if VoteKick then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						if server.Admin.CheckAdmin(v,false) then return end
-						if not server.VoteKickVotes[v.Name] then
-							server.VoteKickVotes[v.Name]={}
-							server.VoteKickVotes[v.Name].Votes=0
-							server.VoteKickVotes[v.Name].Players={}
+						if Admin.CheckAdmin(v,false) then return end
+						if not VoteKickVotes[v.Name] then
+							VoteKickVotes[v.Name]={}
+							VoteKickVotes[v.Name].Votes=0
+							VoteKickVotes[v.Name].Players={}
 						end
-						for k,m in pairs(server.VoteKickVotes[v.Name].Players) do if m==plr.userId then return end end
-						server.VoteKickVotes[v.Name].Votes=server.VoteKickVotes[v.Name].Votes+1
-						table.insert(server.VoteKickVotes[v.Name].Players,plr.userId)
-						if server.VoteKickVotes[v.Name].Votes>=((#service.Players:children()*server.VoteKickPercentage)/100) then
-							v:Kick("Players voted to kick you from the game. You have been disconnected by the server.")
-							server.VoteKickVotes[v.Name]=nil
+						for k,m in pairs(VoteKickVotes[v.Name].Players) do if m==plr.userId then return end end
+						VoteKickVotes[v.Name].Votes=VoteKickVotes[v.Name].Votes+1
+						table.insert(VoteKickVotes[v.Name].Players,plr.userId)
+						if VoteKickVotes[v.Name].Votes>=((#service.Players:children()*VoteKickPercentage)/100) then
+							v:Kick("Players voted to kick you from the game. You have been disconnected by the ")
+							VoteKickVotes[v.Name]=nil
 						end
 					end
 				else
-					server.Functions.Message("SYSTEM","VoteKick is disabled.",false,{plr})
+					Functions.Message("SYSTEM","VoteKick is disabled.",false,{plr})
 				end
 			end
 		};
 		
 		votekicks = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"votekicks";};
 			Args = {};
 			Hidden = false;
@@ -11629,12 +11647,12 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local temp={}
-				for i,v in pairs(server.VoteKickVotes) do
-					if not service.Players:FindFirstChild(i) then server.VoteKickVotes[i]=nil return end
-					if server.Admin.CheckAdmin(service.Players:FindFirstChild(i),false) then server.VoteKickVotes[i]=nil return end
-					table.insert(temp,{Text=i..' - '..server.VoteKickVotes[v.Name].Votes,Desc='Player: '..i..' has '..server.VoteKickVotes[v.Name].Votes..' kick vote(s)'})
+				for i,v in pairs(VoteKickVotes) do
+					if not service.Players:FindFirstChild(i) then VoteKickVotes[i]=nil return end
+					if Admin.CheckAdmin(service.Players:FindFirstChild(i),false) then VoteKickVotes[i]=nil return end
+					table.insert(temp,{Text=i..' - '..VoteKickVotes[v.Name].Votes,Desc='Player: '..i..' has '..VoteKickVotes[v.Name].Votes..' kick vote(s)'})
 				end
-				server.Remote.Send(plr,'Function','ListGui','Vote Kicks',temp)
+				Remote.Send(plr,'Function','ListGui','Vote Kicks',temp)
 			end
 		};
 	--]]

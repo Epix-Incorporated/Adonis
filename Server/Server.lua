@@ -40,6 +40,8 @@ local _G, game, script, getfenv, setfenv, workspace,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray
+	
+
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local locals = {}
@@ -83,6 +85,7 @@ local GetEnv; GetEnv = function(env, repl)
 	end
 	return scriptEnv
 end;
+
 local LoadModule = function(plugin, yield, envVars)
 	local plug = require(plugin)
 	
@@ -93,10 +96,18 @@ local LoadModule = function(plugin, yield, envVars)
 	if type(plug) == "function" then
 		if yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		end
 	else
 		server[plugin.Name] = plug
@@ -149,6 +160,7 @@ server = {
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	FilteringEnabled = workspace.FilteringEnabled;
+	ServerStartTime = os.time();
 	CommandCache = {};
 };
 
@@ -218,15 +230,18 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
-for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
+--[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
 script = service.Wrap(script)
 Enum = service.Wrap(Enum)
 game = service.Wrap(game)
-rawequal = service.RawEqual
 workspace = service.Wrap(workspace)
 Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end
-Folder = service.Wrap(Folder)
+require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
+require = function(obj) return oldReq(service.UnWrap(obj)) end
+rawequal = service.RawEqual
+--service.Players = service.Wrap(service.Players)
+--Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
 server.Client = Folder.Parent.Client;
@@ -314,16 +329,27 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		warn("WARNING: MainModule loaded without using the loader;")
 	end
 	
-	--// Begin script loading
+	--// Begin Script Loading
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	data = service.Wrap(data or {})
 	
-	--// Check Settings/Descs
+	--// Server Variables
 	local setTab = require(server.Deps.DefaultSettings)
 	server.Defaults = setTab
 	server.Settings = data.Settings or setTab.Settings or {}
 	server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 	server.Order = data.Order or setTab.Order or {}
+	server.Data = data or {}
+	server.Model = data.Model or service.New("Model")
+	server.Dropper = data.Dropper or service.New("Script")
+	server.Loader = data.Loader or service.New("Script")
+	server.Runner = data.Runner or service.New("Script")
+	server.ServerPlugins = data.ServerPlugins
+	server.ClientPlugins = data.ClientPlugins
+	server.Threading = require(server.Deps.ThreadHandler)
+	server.Changelog = require(server.Client.Dependencies.Changelog)
+	server.Credits = require(server.Client.Dependencies.Credits)
+	server.Parser = require(server.Deps.Parser)
 	
 	if server.Settings.HideScript and data.Model then
 		data.Model.Parent = nil
@@ -365,8 +391,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"NetworkServer"		
 	}do local temp = service[serv] end
 	
-	--// Load core modules		
-	for ind,load in next,{
+	--// Module LoadOrder List
+	local LoadingOrder = {
 		"Logs";
 		"Variables";
 		"Core";
@@ -377,17 +403,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"HTTP";
 		"Anti";
 		"Commands";
-	}do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
+	}
 	
-	--// Set stuff
-	server.Data = data or {}
-	server.Model = data.Model or service.New("Model")
-	server.Dropper = data.Dropper or service.New("Script")
-	server.Loader = data.Loader or service.New("Script")
-	server.Runner = data.Runner or service.New("Script")
+	--// Load core modules
+	for ind,load in next,LoadingOrder do 
+		local modu = Folder.Core:FindFirstChild(load) 
+		if modu then 
+			LoadModule(modu,true,{script = script}) 
+		end 
+	end
+
+	--// Initialize Cores
+	for i,name in next,LoadingOrder do
+		local core = server[name]
+		if core and type(core) == "table" and core.Init then
+			core.Init()
+			core.Init = nil
+		elseif type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table" and core.Init then
+			core.Init()
+		end
+	end
+	
+	--// More Variable Initialization
 	server.Variables.CodeName = server.Functions:GetRandom()
-	server.ServerPlugins = data.ServerPlugins
-	server.ClientPlugins = data.ClientPlugins
 	server.Remote.MaxLen = 0
 	server.Logs.Errors = ErrorLogs
 	server.Client = Folder.Parent.Client
@@ -400,10 +438,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
-	server.Threading = require(server.Deps.ThreadHandler)
-	server.Changelog = require(server.Client.Dependencies.Changelog)
-	server.Credits = require(server.Client.Dependencies.Credits)
-	server.Parser = require(server.Deps.Parser)
 	
 	--// Server Specific Service Functions
 	ServiceSpecific.GetPlayers = server.Functions.GetPlayers

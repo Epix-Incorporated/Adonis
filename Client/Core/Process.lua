@@ -33,25 +33,37 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
 	
 	client.Process = {
+		Init = Init;
 		Remote = function(data,com,...)
 			local args = {...}
-			client.Remote.Received = client.Remote.Received+1
+			Remote.Received = Remote.Received+1
 			if type(com) == "string" then
 				if com == client.DepsName.."GIVE_KEY" then
-					if not client.Core.Key then
-						client.Core.Key = args[1]
+					if not Core.Key then
+						Core.Key = args[1]
 						client.Finish_Loading()
 					end
-				elseif client.Remote.UnEncrypted[com] then
-					client.Remote.UnEncrypted[com](...)
-				elseif client.Core.Key then
-					local comString = client.Remote.Decrypt(com,client.Core.Key)
-					local command = client.Remote.Commands[comString]
+				elseif Remote.UnEncrypted[com] then
+					Remote.UnEncrypted[com](...)
+				elseif Core.Key then
+					local comString = Remote.Decrypt(com,Core.Key)
+					local command = Remote.Commands[comString]
 					if command then 
 						--local ran,err = pcall(command, args) --task service.Threads.RunTask("REMOTE:"..comString,command,args)
 						local ran,err = service.TrackTask("Remote: ".. comString, command, args)
@@ -74,24 +86,24 @@ return function()
 			end
 			
 			if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
-				--client.Anti.Detected("log","Scriptless/Traceless error found. Script: "..tostring(Script).." - Trace: "..tostring(Trace))
+				--Anti.Detected("log","Scriptless/Traceless error found. Script: "..tostring(Script).." - Trace: "..tostring(Trace))
 			end
 		end;
 		
 		Chat = function(msg)
 			--service.FireEvent("Chat",msg)
 			if not service.Player or service.Player.Parent ~= service.Players then
-				client.Remote.Fire("ProcessChat",msg)
+				Remote.Fire("ProcessChat",msg)
 			end
 		end;
 		
 		CharacterAdded = function()
-			client.UI.GetHolder()
+			UI.GetHolder()
 			service.Events.CharacterAdded:fire()
 		end;
 		
 		CharacterRemoving = function()
-			if client.Variables.UIKeepAlive then
+			if Variables.UIKeepAlive then
 				for ind,g in next,client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
 						if g.CanKeepAlive then
@@ -105,16 +117,16 @@ return function()
 				end
 			end
 			
-			if client.Variables.GuiViewFolder then
-				client.Variables.GuiViewFolder:Destroy()
-				client.Variables.GuiViewFolder = nil
+			if Variables.GuiViewFolder then
+				Variables.GuiViewFolder:Destroy()
+				Variables.GuiViewFolder = nil
 			end
 			
-			if client.Variables.ChatEnabled then 
+			if Variables.ChatEnabled then 
 				service.StarterGui:SetCoreGuiEnabled("Chat",true) 
 			end
 			
-			if client.Variables.PlayerListEnabled then 
+			if Variables.PlayerListEnabled then 
 				service.StarterGui:SetCoreGuiEnabled('PlayerList',true) 
 			end
 			

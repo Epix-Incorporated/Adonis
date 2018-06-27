@@ -33,11 +33,23 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
 	
 	client.Core = {
+		Init = Init;
 		Name = script.Name;
 		Special = script.Name;
 		MakeGui = client.UI.Make;
@@ -46,13 +58,13 @@ return function()
 		ScriptCache = {};
 		
 		GetEvent = function()
-			if client.Core.RemoteEvent then
-				client.Core.RemoteEvent.Event:Disconnect()
-				client.Core.RemoteEvent.Security:Disconnect()
-				client.Core.RemoteEvent = nil
+			if Core.RemoteEvent then
+				Core.RemoteEvent.Event:Disconnect()
+				Core.RemoteEvent.Security:Disconnect()
+				Core.RemoteEvent = nil
 			end
 			
-			client.Core.RemoteEvent = {}
+			Core.RemoteEvent = {}
 			
 			local rindex = 0
 			local firstSearch
@@ -64,21 +76,21 @@ return function()
 			
 			local function finishEvent(event)
 				if event then
-					client.Core.RemoteEvent.Object = event
-					client.Core.RemoteEvent.FireServer = event.FireServer
-					client.Core.RemoteEvent.Event = event.OnClientEvent:Connect(client.Process.Remote)--]]
-					client.Core.RemoteEvent.Security = event.Changed:Connect(function(p)
-						if p == "RobloxLocked" and client.Anti.RLocked(event) then
+					Core.RemoteEvent.Object = event
+					Core.RemoteEvent.FireServer = event.FireServer
+					Core.RemoteEvent.Event = event.OnClientEvent:Connect(Process.Remote)--]]
+					Core.RemoteEvent.Security = event.Changed:Connect(function(p)
+						if p == "RobloxLocked" and Anti.RLocked(event) then
 							client.Kill("RemoteEvent Locked")
 						elseif not event or not event.Parent then
-							client.Core.GetEvent()
+							Core.GetEvent()
 						end
 					end)
 					
-					--client.SetFireServer(service.MetaFunc(event.FireServer))
+					--SetFireServer(service.MetaFunc(event.FireServer))
 					
-					if not client.Core.Key then
-						client.Remote.Fire(client.DepsName.."GET_KEY")
+					if not Core.Key then
+						Remote.Fire(client.DepsName.."GET_KEY")
 					end
 				else
 					client.Kill("RemoteEvent not found")
@@ -98,15 +110,15 @@ return function()
 				end
 				
 				for i,child in next,children do
-					if not client.Anti.ObjRLocked(child) and child:IsA("RemoteEvent") then
+					if not Anti.ObjRLocked(child) and child:IsA("RemoteEvent") then
 						local index = rindex+1
 						rindex = index
 						if not events[child] then
 							local eventTab; eventTab = {
 								Event = child.OnClientEvent:Connect(function(com, ...)
-									if com == "TrustCheck" and select(1,...) == client.Core.Special and not found then
+									if com == "TrustCheck" and select(1,...) == Core.Special and not found then
 										found = child
-										client.Core.RemoteEvent.Event = eventTab.Event
+										Core.RemoteEvent.Event = eventTab.Event
 										finishEvent(child)
 										for ind,e in next,events do 
 											if ind ~= child then
@@ -114,7 +126,7 @@ return function()
 											end
 										end
 									elseif found and found == child then
-										--client.Process.Remote(com, ...)
+										--Process.Remote(com, ...)
 									end
 								end);
 								Object = child;
@@ -156,16 +168,16 @@ return function()
 		end;
 		
 		LoadCode = function(str, env)
-			return client.Core.LoadBytecode(str, env)
+			return Core.LoadBytecode(str, env)
 		end;
 		
 		CheckClient = function()
-			if tick() - client.Core.LastUpdate >= 55 then
+			if tick() - Core.LastUpdate >= 55 then
 				wait(math.random()) --// De-sync everyone's client checks
 				local returner = math.random()
-				local ret = client.Remote.Send("ClientCheck", {Sent = 0;--[[client.Remote.Sent]] Received = client.Remote.Received}, client.DepsName, returner)
+				local ret = Remote.Send("ClientCheck", {Sent = 0;--[[Remote.Sent]] Received = Remote.Received}, client.DepsName, returner)
 				--[[if ret and ret == returner then
-					client.Core.LastUpdate = tick()
+					Core.LastUpdate = tick()
 				else
 					client.Kill("Client check failed")
 				end--]]
@@ -173,9 +185,9 @@ return function()
 		end;
 		
 		StartAPI = function()
-			local ScriptCache = client.Core.ScriptCache
+			local ScriptCache = Core.ScriptCache
 			local Rerubi = client.Deps.Rerubi
-			local Get = client.Remote.Get
+			local Get = Remote.Get
 			local G_API = client.G_API
 			local Allowed_API_Calls = client.Allowed_API_Calls
 			local NewProxy = service.NewProxy

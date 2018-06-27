@@ -33,6 +33,17 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
@@ -40,6 +51,7 @@ return function()
 	client.GUIs = {}
 	client.GUIHolder = service.New("Folder")
 	client.Variables = {
+		Init = Init;
 		CodeName = "";
 		UIKeepAlive = true;
 		KeybindsEnabled = true;

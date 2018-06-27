@@ -8,13 +8,29 @@ logError = nil
 
 --// Special Variables
 return function()
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		
+		Logs:AddLog("Script", "Variables Module Initialized")
+	end;
+	
 	server.Variables = {
+		Init = Init;
 		ZaWarudo = false;
 		CodeName = math.random();
 		FrozenObjects = {};
 		ScriptBuilder = {};
 		CachedDonors = {};
-		ServerStartTime = os.time();
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
 		DonorPass = {497917601,442800581,418722590,159549976,157092510};
@@ -50,13 +66,7 @@ return function()
 			ColorShift_Top = service.Lighting.ColorShift_Top;
 			GeographicLatitude = service.Lighting.GeographicLatitude;
 			Name = service.Lighting.Name;
-			Sky = (function() 
-				for i,v in pairs(service.Lighting:GetChildren()) do 
-					if v:IsA("Sky") then 
-						return v:Clone() 
-					end 
-				end 
-			end)()
+			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
 		
 		HelpRequests = {};

@@ -107,10 +107,18 @@ local LoadModule = function(plugin, yield, envVars)
 	if type(plug) == "function" then
 		if yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		end
 	else
 		client[plugin.Name] = plug
@@ -206,17 +214,17 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
-for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
+for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val, true) end end
 pcall(function() return service.Player.Kick end)
-script = service.Wrap(script)
-Enum = service.Wrap(Enum)
-game = service.Wrap(game)
+script = service.Wrap(script, true)
+Enum = service.Wrap(Enum, true)
+game = service.Wrap(game, true)
 rawequal = service.RawEqual
-workspace = service.Wrap(workspace)
-Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end
+workspace = service.Wrap(workspace, true)
+Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent)), true) end}
+require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj)), true) end
 client.Service = service
-client.Module = service.Wrap(client.Module)
+client.Module = service.Wrap(client.Module, true)
 
 --// Setting things up
 for ind,loc in next,{
@@ -321,7 +329,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"NetworkClient";	
 	}do local temp = service[serv] end
 	
-	for ind,load in next,{
+	--// Load Order List
+	local LoadOrder = {
 		"Variables";
 		"UI";
 		"Core";
@@ -329,7 +338,26 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"Functions";
 		"Process";
 		"Anti";
-	}do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
+	}
+	
+	--// Load Core Modules
+	for ind,load in next,LoadOrder do 
+		local modu = Folder.Core:FindFirstChild(load) 
+		if modu then 
+			LoadModule(modu,true,{script = script}) 
+		end 
+	end
+	
+	--// Initialize Cores
+	for i, name in next,LoadOrder do
+		local core = client[name]
+		if core and type(core) == "table" and core.Init then
+			core.Init()
+			core.Init = nil
+		elseif type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table" and core.Init then
+			core.Init()
+		end
+	end
 	
 	for ind,obj in next,Folder.Dependencies:GetChildren() do client.Deps[obj.Name] = obj end
 	

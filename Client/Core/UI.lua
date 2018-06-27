@@ -33,28 +33,41 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+		Deps = client.Deps;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
 	
 	client.UI = {
+		Init = Init;
 		GetHolder = function()
-			if client.UI.Holder and client.UI.Holder.Parent == service.PlayerGui then
-				return client.UI.Holder
+			if UI.Holder and UI.Holder.Parent == service.PlayerGui then
+				return UI.Holder
 			else
-				pcall(function()if client.UI.Holder then client.UI.Holder:Destroy()end end)
+				pcall(function()if UI.Holder then UI.Holder:Destroy()end end)
 				local new=Instance.new'ScreenGui'
-				new.Name = client.Functions.GetRandom()
+				new.Name = Functions.GetRandom()
 				new.Parent=service.PlayerGui
-				client.UI.Holder = new
-				return client.UI.Holder
+				UI.Holder = new
+				return UI.Holder
 			end
 		end;
 		
 		Prepare = function(gui)
 			if true then return gui end	--// Disabled
 			
-			local gTable = client.UI.Get(gui,false,true)
+			local gTable = UI.Get(gui,false,true)
 			if gui:IsA("ScreenGui") or gui:IsA("GuiMain") then
 				local new = Instance.new("TextLabel")
 				new.BackgroundTransparency = 1
@@ -96,7 +109,7 @@ return function()
 			end
 			
 			if ran then
-				local rets = {pcall(setfenv(func,newEnv),data)}
+				local rets = {service.TrackTask("UI: ".. module:GetFullName(), setfenv(func,newEnv), data)}
 				local ran = rets[1]
 				if ran then
 					return unpack(rets,2)
@@ -118,11 +131,11 @@ return function()
 			
 			function func(theme, name, depth)
 				local depth = (depth or 11) - 1
-				local folder = client.Deps.UI:FindFirstChild(theme) or client.Deps.UI.Default
+				local folder = Deps.UI:FindFirstChild(theme) or Deps.UI.Default
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = (baseValue and folder:FindFirstChild(name)) or client.Deps.UI.Default:FindFirstChild(name)
+					local foundGUI = (baseValue and folder:FindFirstChild(name)) or Deps.UI.Default:FindFirstChild(name)
 					
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
@@ -195,17 +208,17 @@ return function()
 		Make = function(name, data, themeData)
 			local data = data or {}
 			local defaults = {Desktop = "Default"; Mobile = "Mobilius"}
-			local themeData = themeData or client.Core.Theme or defaults
-			local theme = client.Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
-			local folder = client.Deps.UI:FindFirstChild(theme) or client.Deps.UI.Default
-			local newGui, folder2, foundConf = client.UI.GetNew(theme, name)
+			local themeData = themeData or Core.Theme or defaults
+			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
+			local folder = Deps.UI:FindFirstChild(theme) or Deps.UI.Default
+			local newGui, folder2, foundConf = UI.GetNew(theme, name)
 			
 			if newGui then
 				local isModule = newGui:IsA("ModuleScript")
 				local conf = newGui:FindFirstChild("Config")
 				
 				if isModule then
-					return client.UI.LoadModule(newGui, data, {
+					return UI.LoadModule(newGui, data, {
 						script = newGui;
 					})
 				elseif conf and foundConf and foundConf ~= true then
@@ -214,10 +227,10 @@ return function()
 					local keep = foundConf.CanKeepAlive
 					
 					local allowMult = mult and mult.Value or true
-					local found, num = client.UI.Get(name)
+					local found, num = UI.Get(name)
 						
 					if not found or ((num and num>0) and allowMult) then
-						local gTable,gIndex = client.UI.Register(newGui)
+						local gTable,gIndex = UI.Register(newGui)
 						local newEnv = {}
 						
 						if folder:IsA("ModuleScript") then
@@ -230,7 +243,7 @@ return function()
 							local ret = rets[2]
 							
 							if ret ~= nil then
-								if type(ret) == "userdata" and client.Anti.GetClassName(ret) == "ScreenGui" then
+								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and ret.Config:FindFirstChild("Code")) or code
 								else
 									return ret
@@ -238,8 +251,8 @@ return function()
 							end
 						end
 						
-						newGui.Parent = client.Variables.GUIHolder
-						newGui.Name = client.Functions.GetRandom()
+						newGui.Parent = Variables.GUIHolder
+						newGui.Name = Functions.GetRandom()
 						
 						data.gIndex = gIndex
 						data.gTable = gTable
@@ -247,7 +260,7 @@ return function()
 						code.Parent = conf
 						code.Name = name
 						
-						return client.UI.LoadModule(code, data, {
+						return UI.LoadModule(code, data, {
 							script = code;
 							gTable = gTable;
 							Data = data;
@@ -294,7 +307,7 @@ return function()
 		end;
 		
 		Remove = function(name, ignore)
-			local gui = client.UI.Get(name, ignore)
+			local gui = UI.Get(name, ignore)
 			if gui then
 				for i,v in next,gui do
 					v.Destroy()
@@ -303,7 +316,7 @@ return function()
 		end;
 		
 		Register = function(gui, data)
-			local gIndex = client.Functions.GetRandom()
+			local gIndex = Functions.GetRandom()
 			local gTable;gTable = {
 				Object = gui,
 				Config = gui:FindFirstChild'Config';
@@ -318,7 +331,7 @@ return function()
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
 							gTable.Object.Parent = service.PlayerGui
 						else
-							gTable.Object.Parent = client.UI.GetHolder()
+							gTable.Object.Parent = UI.GetHolder()
 						end
 					end) then
 						gTable.Active = true
@@ -391,7 +404,7 @@ return function()
 						if client.GUIs[gIndex] then
 							if rawequal(c, gTable.Object) and gTable.Class == "TextLabel" and parent == service.PlayerGui then
 								wait()
-								gTable.Object.Parent = client.UI.GetHolder()
+								gTable.Object.Parent = UI.GetHolder()
 							elseif rawequal(c, gTable.Object) and parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()
 							elseif rawequal(c, gTable.Object) and parent ~= nil then
@@ -410,7 +423,7 @@ return function()
 				end
 			end
 			
-			gui.Name = client.Functions.GetRandom()
+			gui.Name = Functions.GetRandom()
 			gTable:Register(gui)
 			
 			return gTable,gIndex

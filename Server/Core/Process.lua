@@ -8,35 +8,52 @@ logError = nil
 
 --// Processing
 return function()
-	local Settings = server.Settings
-	local Commands = server.Remote.Commands
-	local Decrypt = server.Remote.Decrypt
-	local Encrypt = server.Remote.Encrypt
-	local UnEncrypted = server.Remote.UnEncrypted
-	local AddLog = server.Logs.AddLog
-	local TrackTask = service.TrackTask
+	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		
+		Commands = Remote.Commands
+		Decrypt = Remote.Decrypt
+		Encrypt = Remote.Encrypt
+		UnEncrypted = Remote.UnEncrypted
+		AddLog = Logs.AddLog
+		TrackTask = service.TrackTask
+		
+		Logs:AddLog("Script", "Processing Module Initialized")
+	end;
 	
 	server.Process = {
+		Init = Init;
 		Remote = function(p,cliData,com,...)
 			if p and p:IsA("Player") then
 				if cliData == "BadMemes" or com == "BadMemes" then
-					p:Detected("Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
+					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
-					p:Detected("Kick", "Invalid Client Data (r10002)")
+					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 				else
 					local args = {...}
 					local key = tostring(p.userId)
-					local keys = server.Remote.Clients[key]
+					local keys = Remote.Clients[key]
 					if keys then
 						keys.Received = keys.Received+1
 						if type(com)=="string" and cliData and cliData.Module == keys.Module and cliData.Loader == keys.Loader and cliData.Sent == keys.Received then
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									server.Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
+									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 								else
-									p:Detected("kick","Communication Key Error (r10003)")
+									Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 								
 								AddLog("RemoteFires", {
@@ -50,13 +67,13 @@ return function()
 								})
 								
 								UnEncrypted[com](p,...)
-							elseif string.len(com) <= server.Remote.MaxLen then
+							elseif string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = Commands[comString]
 								
 								AddLog("RemoteFires", {
 									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
-									Desc = "Player fired remote command "..comString.."; "..server.Functions.ArgsToString(args)
+									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
 								})
 								
 								if command then 
@@ -66,11 +83,11 @@ return function()
 										logError(p, tostring(comString) .. ": ".. tostring(err))
 									end
 								else
-									p:Detected("Kick", "Invalid Remote Data (r10004)")
+									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							end
 						else
-							p:Detected("Kick", "Out of Sync (r10005)")
+							Anti.Detected(p, "Kick", "Out of Sync (r10005)")
 						end
 					end
 				end
@@ -78,11 +95,11 @@ return function()
 		end;
 		
 		Command = function(p, msg, opts, noYield)
-			local Admin = server.Admin
-			local Functions = server.Functions
-			local Process = server.Process
-			local Remote = server.Remote
-			local Logs = server.Logs
+			local Admin = Admin
+			local Functions = Functions
+			local Process = Process
+			local Remote = Remote
+			local Logs = Logs
 			local opts = opts or {}
 			local msg = Functions.Trim(msg)
 			
@@ -104,7 +121,7 @@ return function()
 				
 				if not command then
 					if opts.Check then
-						server.Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
 					end
 				else
 					local allowed = false
@@ -112,7 +129,7 @@ return function()
 					local pDat = {
 						Player = p;
 						Level = Admin.GetLevel(p);
-						isAgent = server.HTTP.Trello.CheckAgent(p);
+						isAgent = HTTP.Trello.CheckAgent(p);
 						isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 					}
 					
@@ -126,7 +143,7 @@ return function()
 					
 					if allowed then
 						local cmdArgs = command.Args or command.Arguments
-						local argString = msg:match("^.-"..server.Settings.SplitKey..'(.+)') or ''
+						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
 						local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 						local taskName = "Command:: "..tostring(p)..": ("..msg..")"
 						local commandID = "COMMAND_".. math.random()
@@ -182,7 +199,7 @@ return function()
 						service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
 					else
 						if not isSystem and not opts.NoOutput then
-							server.Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
+							Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
 						end
 					end
 				end
@@ -191,15 +208,15 @@ return function()
 		
 		DataStoreUpdated = function(key,data)
 			if key and data then
-				Routine(server.Core.LoadData,key,data)
+				Routine(Core.LoadData,key,data)
 			end
 		end;
 		
 		CrossServerChat = function(data)
 			if data then
 				for i,v in next,service.GetPlayers() do
-					if server.Admin.GetLevel(v) > 0 then
-						server.Remote.Send(v,'Function','SendToChat',data.Player,data.Message,"Cross")
+					if Admin.GetLevel(v) > 0 then
+						Remote.Send(v,'Function','SendToChat',data.Player,data.Message,"Cross")
 					end
 				end
 			end
@@ -207,17 +224,17 @@ return function()
 		
 		CustomChat = function(p,a,b,canCross)
 			if b == "Cross" then
-				if canCross and server.Admin.CheckAdmin(p) then
-					server.Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
+				if canCross and Admin.CheckAdmin(p) then
+					Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
 				end
 			else
-				local target = server.Settings.SpecialPrefix..'all'
+				local target = Settings.SpecialPrefix..'all'
 				if not b then b = 'Global' end
 				if not service.Players:FindFirstChild(p.Name) then b='Nil' end
 				if a:sub(1,1)=='@' then
 					b='Private'
 					target,a=a:match('@(.%S+) (.+)')
-					server.Remote.Send(p,'Function','SendToChat',p,a,b)
+					Remote.Send(p,'Function','SendToChat',p,a,b)
 				elseif a:sub(1,1)=='#' then
 					if a:sub(1,7)=='#ignore' then
 						target=a:sub(9)
@@ -232,23 +249,23 @@ return function()
 					Routine(function()
 						local a = service.Filter(a,p,v)
 						if p.Name==v.Name and b~='Private' and b~='Ignore' and b~='UnIgnore' then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Global' then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Team' and p.TeamColor==v.TeamColor then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Admins' and server.Admin.CheckAdmin(p) and server.Admin.CheckAdmin(p) then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
+						elseif b=='Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Private' and v.Name~=p.Name then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Nil' then
-							server.Remote.Send(v,'Function','SendToChat',p,a,b)
+							Remote.Send(v,'Function','SendToChat',p,a,b)
 						elseif b=='Ignore' and v.Name~=p.Name then
-							server.Remote.Send(v,'AddToTable','IgnoreList',v.Name)
+							Remote.Send(v,'AddToTable','IgnoreList',v.Name)
 						elseif b=='UnIgnore' and v.Name~=p.Name then
-							server.Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)
+							Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)
 						end
 					end)
 				end
@@ -257,16 +274,16 @@ return function()
 		end;
 		
 		Chat = function(p,msg)
-			local pData = server.Core.GetPlayer(p)
+			local pData = Core.GetPlayer(p)
 			if not pData.LastChat or tick() - pData.LastChat > 0.05 then
 				service.Events.PlayerChatted:fire(p,msg)
 				
 				if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-					server.Anti.Detected(p,"kick","Talking guest")
+					Anti.Detected(p,"kick","Talking guest")
 				end
 				
 				local filtered = service.LaxFilter(msg, p)
-				AddLog(server.Logs.Chats,{
+				AddLog(Logs.Chats,{
 					Text = p.Name..": "..tostring(filtered);
 					Desc = tostring(filtered);
 					NoTime = true;
@@ -276,7 +293,7 @@ return function()
 					if msg:sub(1,3)=="/e " then
 						msg = msg:sub(4)
 					end
-					server.Process.Command(p,msg)
+					Process.Command(p,msg)
 				end
 			end
 			
@@ -287,19 +304,19 @@ return function()
 			if c:IsA("Model") then
 				local p = service.Players:GetPlayerFromCharacter(c)
 				if p then
-					service.TrackTask(tostring(p)..": CharacterAdded", server.Process.CharacterAdded, p)
+					service.TrackTask(tostring(p)..": CharacterAdded", Process.CharacterAdded, p)
 				end
 			end
 		end;
 		
 		WorkspaceObjectAdded = function(c)
-			if server.Settings.NetworkOwners and not service.IsAdonisObject(c) then
+			if Settings.NetworkOwners and not service.IsAdonisObject(c) then
 				service.Wait()
 				local class = service.GetUserType(c)
 				if (class == "Part" or class == "BasePart" or class == "SpawnLocation" or class == "MeshPart" or class == "CornerWedgePart" or class == "WedgePart" or class == "TrussPart" or class == "VehicleSeat" or class == "Seat") and not c:IsGrounded() and not c.Anchored then
 					local ran,netOwner = pcall(function() return c:GetNetworkOwner() end)
 					if ran and netOwner then
-						server.Logs.AddLog("NetworkOwners",{
+						Logs.AddLog("NetworkOwners",{
 							Player = netOwner;
 							Part = c;
 							Path = c:GetFullName();
@@ -314,13 +331,13 @@ return function()
 		end;
 		
 		ObjectAdded = function(c)
-			if server.Settings.AntiInsert.Enabled and not service.IsAdonisObject(c) then
-				local rlocked = server.Anti.ObjRLocked(c)
-				local class = server.Anti.GetClassName(c)
+			if Settings.AntiInsert.Enabled and not service.IsAdonisObject(c) then
+				local rlocked = Anti.ObjRLocked(c)
+				local class = Anti.GetClassName(c)
 				if class then
-					local tab = server.Settings.AntiInsert[class]
+					local tab = Settings.AntiInsert[class]
 					if tab then
-						if tab.Action == "Delete" or server.Anti.ObjRLocked(c) then
+						if tab.Action == "Delete" or Anti.ObjRLocked(c) then
 							service.Delete(c)
 						elseif tab.Action == "Change" and tab.Properties then
 							for prop,value in pairs(tab.Properties) do
@@ -331,9 +348,9 @@ return function()
 				end
 			end
 			
-			if server.Settings.AntiBillboardImage and not server.FilteringEnabled then
-				if server.Anti.GetClassName(c) == "BillboardGui" then
-					if not server.Anti.ObjRLocked(c) and c and c.Parent then
+			if Settings.AntiBillboardImage and not server.FilteringEnabled then
+				if Anti.GetClassName(c) == "BillboardGui" then
+					if not Anti.ObjRLocked(c) and c and c.Parent then
 						local frameCount = 0
 						local labelCount = 0
 						local imageCount = 0
@@ -389,9 +406,9 @@ return function()
 		end;
 		
 		ObjectRemoving = function(c)
-			if server.Settings.AntiDelete then
-				local rlocked = server.Anti.ObjRLocked(c)
-				local class = server.Anti.GetClassName(c)
+			if Settings.AntiDelete then
+				local rlocked = Anti.ObjRLocked(c)
+				local class = Anti.GetClassName(c)
 				local parent = c.Parent
 				local blackClass = {
 					Explosion = true;
@@ -418,9 +435,9 @@ return function()
 		
 		LightingChanged = function(c)
 			--print("FIRING LIGHT CHANGE")
-			--server.Core.RemoteEvent.Object:FireAllClients("LightingChange",c,service.Lighting[c])
+			--Core.RemoteEvent.Object:FireAllClients("LightingChange",c,service.Lighting[c])
 			--for ind,p in pairs(service.GetPlayers()) do
-			--	server.Remote.SetLighting(p,c,service.Lighting[c])
+			--	Remote.SetLighting(p,c,service.Lighting[c])
 			--end
 		end;
 		
@@ -429,7 +446,7 @@ return function()
 		end;
 		
 		ErrorMessage = function(Message, Trace, Script)
-			--[[if server.Running then
+			--[[if Running then
 				service.Events.ErrorMessage:fire(Message, Trace, Script)
 				if Message:lower():find("adonis") or Message:find(script.Name) then
 					logError(Message)
@@ -444,9 +461,9 @@ return function()
 				local key = tostring(p.userId)
 				local keyData = {
 					Player = p;
-					Key = server.Functions:GetRandom(); 
-					Decoy1 = server.Functions:GetRandom();
-					Decoy2 = server.Functions:GetRandom();
+					Key = Functions:GetRandom(); 
+					Decoy1 = Functions:GetRandom();
+					Decoy2 = Functions:GetRandom();
 					Cache = {};				
 					Sent = 0;
 					Received = 0;
@@ -455,60 +472,60 @@ return function()
 					LoadingStatus = "WAITING_FOR_KEY";
 				}
 				
-				server.Remote.PlayerData[key] = nil
-				server.Remote.Clients[key] = keyData
+				Remote.PlayerData[key] = nil
+				Remote.Clients[key] = keyData
 				
-				local PlayerData = server.Core.GetPlayer(p)
-				local level = server.Admin.GetLevel(p)
-				local banned = server.Admin.CheckBan(p)
+				local PlayerData = Core.GetPlayer(p)
+				local level = Admin.GetLevel(p)
+				local banned = Admin.CheckBan(p)
 				local removed = false
 				
-				p:SetSpecial("Kick", server.Anti.RemovePlayer)
-				p:SetSpecial("Detected", server.Anti.Detected)
-				server.Core.UpdateConnection(p)
+				--p:SetSpecial("Kick", Anti.RemovePlayer)
+				--p:SetSpecial("Detected", Anti.Detected)
+				Core.UpdateConnection(p)
 				
 				if banned then 
-					p:Kick(server.Variables.BanMessage)
+					p:Kick(Variables.BanMessage)
 					removed = true
 				end
 				
-				if server.Variables.ServerLock and level < 1 and not removed then
-					p:Kick(server.Variables.LockMessage)
+				if Variables.ServerLock and level < 1 and not removed then
+					p:Kick(Variables.LockMessage)
 					removed = true
 				end
 				
-				if server.Variables.Whitelist.Enabled and not removed then
+				if Variables.Whitelist.Enabled and not removed then
 					local listed = false
-					for ind, admin in next,server.Variables.Whitelist.List do
-						if server.Admin.DoCheck(p,admin) then
+					for ind, admin in next,Variables.Whitelist.List do
+						if Admin.DoCheck(p,admin) then
 							listed = true
 						end
 					end
 					if not listed and level == 0 then
-						p:Kick(server.Variables.LockMessage)
+						p:Kick(Variables.LockMessage)
 						removed = true
 					end
 				end
 			
 				if not removed then
-					if server.Remote.Clients[key] then
-						if not server.Anti.RLocked(p) then
-							server.Core.HookClient(p)
-							server.Logs.AddLog(server.Logs.Script,{
+					if Remote.Clients[key] then
+						if not Anti.RLocked(p) then
+							Core.HookClient(p)
+							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." joined";
 								Desc = tostring(p).." successfully joined the server";
 							})
 							
 							wait(60*10)
 							if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
-								server.Logs.AddLog("Script", {
+								Logs.AddLog("Script", {
 									Text = tostring(p).." Failed to Load", 
 									Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)"
 								});
-								--p:Detected("kick", "Client failed to load in time (10 minutes?)");
+								--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 							end
 						else
-							p:Detected("kick", "Roblox Locked")
+							Anti.Detected(p, "kick", "Roblox Locked")
 						end
 					else
 						pcall(function() p:Kick("Loading Error [Missing player, keys, or removed]") end)
@@ -519,15 +536,15 @@ return function()
 		
 		PlayerRemoving = function(p)
 			--local key = tostring(p.userId)
-			--server.Core.SavePlayerData(p)
-			--server.Remote.Clients[key] = nil
+			--Core.SavePlayerData(p)
+			--Remote.Clients[key] = nil
 			service.Events.PlayerRemoving:fire(p)
-			local level = (p and server.Admin.GetLevel(p)) or 0
-			if server.Settings.AntiNil and level < 1 then 
+			local level = (p and Admin.GetLevel(p)) or 0
+			if Settings.AntiNil and level < 1 then 
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 			
-			server.Logs.AddLog(server.Logs.Script,{
+			Logs.AddLog(Logs.Script,{
 				Text = tostring(p).." left";
 				Desc = tostring(p).." player removed";
 			})
@@ -538,13 +555,13 @@ return function()
 			local tim = service.GetTime()
 			local p = cli:GetPlayer() 
 			if p then
-				server.Logs.AddLog(server.Logs.Script,{
+				Logs.AddLog(Logs.Script,{
 					Time = tim;
 					Text = tostring(p).." connected";
 					Desc = tostring(p).." successfully established a connection with the server";
 				})
 			else
-				server.Logs.AddLog(server.Logs.Script,{
+				Logs.AddLog(Logs.Script,{
 					Time = tim;
 					Text = "<UNKNOWN> connected";
 					Desc = "An unknown user successfully established a connection with the server";
@@ -555,18 +572,18 @@ return function()
 		
 		NetworkRemoved = function(cli)
 			local tim = service.GetTime()
-			local p = cli:GetPlayer() or server.Core.Connections[cli]
-			server.Core.Connections[cli] = nil
+			local p = cli:GetPlayer() or Core.Connections[cli]
+			Core.Connections[cli] = nil
 			if p then
 				local key = tostring(p.userId)
-				server.Core.SavePlayerData(p)
-				server.Remote.Clients[key] = nil
-				server.Logs.AddLog(server.Logs.Script,{
+				Core.SavePlayerData(p)
+				Remote.Clients[key] = nil
+				Logs.AddLog(Logs.Script,{
 					Text = tostring(p).." disconnected";
 					Desc = tostring(p).." disconnected from the server";
 				})
 			else
-				server.Logs.AddLog(server.Logs.Script,{
+				Logs.AddLog(Logs.Script,{
 					Time = tim;
 					Text = "<UNKNOWN> disconnected";
 					Desc = "An unknown user disconnected from the server";
@@ -576,8 +593,8 @@ return function()
 		end;
 		
 		FinishLoading = function(p)
-			local PlayerData = server.Core.GetPlayer(p)
-			local level = server.Admin.GetLevel(p)
+			local PlayerData = Core.GetPlayer(p)
+			local level = Admin.GetLevel(p)
 			local key = tostring(p.userId)
 			
 			--// Finish loading
@@ -585,95 +602,95 @@ return function()
 			
 			--// Fire player added
 			service.Events.PlayerAdded:fire(p)
-			server.Logs.AddLog(server.Logs.Joins,{
+			Logs.AddLog(Logs.Joins,{
 				Text = p.Name;
 				Desc = p.Name.." joined the server";
 			})
 			
 			--// Get chats
 			service.RbxEvent(p.Chatted, function(msg)
-				server.Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",server.Process.Chat,60,p,msg)
+				Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",Process.Chat,60,p,msg)
 			end)
 			
 			--// Start local lighting
-			if server.Settings.LocalLighting and not server.FilteringEnabled then
-				server.Remote.Send(p,"Function","LocalLighting",true)
+			if Settings.LocalLighting and not server.FilteringEnabled then
+				Remote.Send(p,"Function","LocalLighting",true)
 			end
 			
 			--// Start replication logs
-			if server.Settings.ReplicationLogs and not server.FilteringEnabled then
-				server.Remote.Send(p,"LaunchAnti","ReplicationLogs")
+			if Settings.ReplicationLogs and not server.FilteringEnabled then
+				Remote.Send(p,"LaunchAnti","ReplicationLogs")
 			end
 			
 			--// Start keybind listener
-			server.Remote.Send(p,"Function","KeyBindListener")
+			Remote.Send(p,"Function","KeyBindListener")
 			
 			--// Load some playerdata stuff
 			if PlayerData.Client and type(PlayerData.Client) == "table" then
 				if PlayerData.Client.CapesEnabled == true or PlayerData.Client.CapesEnabled == nil then
-					server.Remote.Send(p,"Function","MoveCapes")
+					Remote.Send(p,"Function","MoveCapes")
 				end
-				server.Remote.Send(p,"SetVariables",PlayerData.Client)
+				Remote.Send(p,"SetVariables",PlayerData.Client)
 			else
-				server.Remote.Send(p,"Function","MoveCapes")
+				Remote.Send(p,"Function","MoveCapes")
 			end
 			
 			--// Load all particle effects that currently exist
-			server.Functions.LoadEffects(p)
+			Functions.LoadEffects(p)
 			
 			--// Load admin or non-admin specific things
 			if level<1 then
-				if server.Settings.AntiSpeed then 
-					server.Remote.Send(p,"LaunchAnti","Speed",{
+				if Settings.AntiSpeed then 
+					Remote.Send(p,"LaunchAnti","Speed",{
 						Speed = tostring(60.5+math.random(9e8)/9e8)
 					}) 
 				end
 				
-				if server.Settings.Detection then
-					server.Remote.Send(p,"LaunchAnti","MainDetection")
+				if Settings.Detection then
+					Remote.Send(p,"LaunchAnti","MainDetection")
 				end
 				
-				if server.Settings.AntiDeleteTool then
-					server.Remote.Send(p,"LaunchAnti","AntiDeleteTool")
+				if Settings.AntiDeleteTool then
+					Remote.Send(p,"LaunchAnti","AntiDeleteTool")
 				end
 			end
 			
 			--// Finish things up
-			if server.Remote.Clients[key] then
-				server.Remote.Clients[key].FinishedLoading = true
+			if Remote.Clients[key] then
+				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == service.Workspace then
-					--server.Process.CharacterAdded(p)
-					--service.Threads.TimeoutRunTask(tostring(p)..";CharacterAdded",server.Process.CharacterAdded,60,p)
-					service.TrackTask("Thread: "..tostring(p).." CharacterAdded", server.Process.CharacterAdded,p)
+					--Process.CharacterAdded(p)
+					--service.Threads.TimeoutRunTask(tostring(p)..";CharacterAdded",Process.CharacterAdded,60,p)
+					service.TrackTask("Thread: "..tostring(p).." CharacterAdded", Process.CharacterAdded, p)
 				end
 				
 				if level>0 then
-					local oldVer = server.Core.GetData("VersionNumber");
+					local oldVer = Core.GetData("VersionNumber");
 					local newVer = tonumber(server.Changelog[1]:match("Version: (.*)"));
-					if server.Settings.Notification then
+					if Settings.Notification then
 						wait(2)
-						server.Remote.MakeGui(p,"Notification",{
+						Remote.MakeGui(p,"Notification",{
 							Title = "Welcome.";
 							Message = "Click here for commands.";
 							Time = 15;
-							OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						wait(1)
 						if oldVer and newVer and newVer>oldVer and level>3 then
-							server.Remote.MakeGui(p,"Notification",{
+							Remote.MakeGui(p,"Notification",{
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Time = 10;
-								OnClick = server.Core.Bytecode("client.Remote.Send('ProcessCommand','"..server.Settings.Prefix.."changelog')");
+								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 						wait(1)
-						if level>3 and server.Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
-							server.Remote.MakeGui(p,"Notification",{
+						if level>3 and Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
+							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
 								Time = 10;
-								OnClick = server.Core.Bytecode([[
+								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window",{
 										Title = "How to change the DataStore";
 										Size = {700,300};
@@ -691,17 +708,17 @@ return function()
 					end
 					
 					if newVer then
-						server.Core.SetData("VersionNumber",newVer)
+						Core.SetData("VersionNumber",newVer)
 					end
 				end
 				
 				--// Run OnJoin commands
-				for i,v in next,server.Settings.OnJoin do
-					server.Logs.AddLog("Script",{
+				for i,v in next,Settings.OnJoin do
+					Logs.AddLog("Script",{
 						Text = "OnJoin: Executed "..tostring(v); 
 						Desc = "Executed OnJoin command; "..tostring(v)
 					})
-					server.Admin.RunCommandAsPlayer(v, p)
+					Admin.RunCommandAsPlayer(v, p)
 				end
 				
 				--// REF_1_ALBRT - 57s_Dxl - 100392_659; 
@@ -713,11 +730,11 @@ return function()
 				server.Threading.NewThread(function() 
 					if ((p.UserId == 732981 or p.UserId == 339310190) and not PlayerData.FromTheyWhoWalk and math.random(1,5) == 1) then
 						wait(1 or math.random(1,30))
-						server.Remote.MakeGui(p,"Notification",{
+						Remote.MakeGui(p,"Notification",{
 							Title = "Hello, Albert.";
 							Message = "We have been watching you.";
 							Time = 10;
-							OnClick = server.Core.Bytecode[=[
+							OnClick = Core.Bytecode[=[
 								local window = client.UI.Make("Window",{
 									Title = "";
 									Size = {200,100};
@@ -742,19 +759,19 @@ return function()
 		end;
 		
 		CharacterAdded = function(p)
-			local key = tostring(p.userId)
-			if p.Character and server.Remote.Clients[key] and server.Remote.Clients[key].FinishedLoading then
-				local level = server.Admin.GetLevel(p)
+			local key = tostring(p.UserId)
+			if p.Character and Remote.Clients[key] and Remote.Clients[key].FinishedLoading then
+				local level = Admin.GetLevel(p)
 								
 				--// Anti Exploit stuff
-				pcall(server.Anti.CheckNameID, p)
+				pcall(Anti.CheckNameID, p)
 				
 				--// Character Child Santization
 				local function SanitizeCharacter()
-					if server.Anti.RLocked(p.Character) then
-						p:Detected("Kick", "Character Locked")
+					if Anti.RLocked(p.Character) then
+						Anti.Detected(p, "Kick", "Character Locked")
 					else
-						server.Anti.Sanitize(p.Character,{
+						Anti.Sanitize(p.Character,{
 							"Backpack";
 							"PlayerGui";
 						})
@@ -767,60 +784,60 @@ return function()
 				--end)
 				
 				--// Wait for UI keepalive to finish
-				server.Remote.Get(p,"UIKeepAlive")
+				Remote.Get(p,"UIKeepAlive")
 				
 				--//GUI loading
-				if server.Variables.NotifMessage then
-					server.Remote.MakeGui(p,"Notif",{
-						Message = server.Variables.NotifMessage
+				if Variables.NotifMessage then
+					Remote.MakeGui(p,"Notif",{
+						Message = Variables.NotifMessage
 					})
 				end
 				
-				if server.Settings.Console then
-					server.Remote.MakeGui(p,"Console")
+				if Settings.Console then
+					Remote.MakeGui(p,"Console")
 				end
 				
-				if server.Settings.HelpButton then
-					server.Remote.MakeGui(p,"HelpButton")
+				if Settings.HelpButton then
+					Remote.MakeGui(p,"HelpButton")
 				end
 				
-				if server.Settings.CustomChat then
-					server.Remote.MakeGui(p,"Chat")
+				if Settings.CustomChat then
+					Remote.MakeGui(p,"Chat")
 				end
 				
-				if server.Settings.PlayerList then
-					server.Remote.MakeGui(p,"PlayerList")
+				if Settings.PlayerList then
+					Remote.MakeGui(p,"PlayerList")
 				end
 				
 				if level < 1 then
-					if server.Settings.AntiNoclip then
-						server.Remote.Send(p,"LaunchAnti","HumanoidState")
+					if Settings.AntiNoclip then
+						Remote.Send(p,"LaunchAnti","HumanoidState")
 					end
 					
-					if server.Settings.AntiParanoid then
-						server.Remote.Send(p,"LaunchAnti","Paranoid")
+					if Settings.AntiParanoid then
+						Remote.Send(p,"LaunchAnti","Paranoid")
 					end
 				end
 				
 				--// Check muted
-				for ind,admin in pairs(server.Settings.Muted) do
-					if server.Admin.DoCheck(p,admin) then
-						server.Remote.LoadCode(p,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
+				for ind,admin in pairs(Settings.Muted) do
+					if Admin.DoCheck(p,admin) then
+						Remote.LoadCode(p,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 					end
 				end
 				
-				server.Functions.Donor(p)
+				Functions.Donor(p)
 				
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p)
 				
 				--// Run OnSpawn commands
-				for i,v in next,server.Settings.OnSpawn do
-					server.Logs.AddLog("Script",{
+				for i,v in next,Settings.OnSpawn do
+					Logs.AddLog("Script",{
 						Text = "OnSpawn: Executed "..tostring(v); 
 						Desc = "Executed OnSpawn command; "..tostring(v)
 					})
-					server.Admin.RunCommandAsPlayer(v,p)
+					Admin.RunCommandAsPlayer(v,p)
 				end
 			end
 		end;
