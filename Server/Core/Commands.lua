@@ -2548,7 +2548,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.MakeGui(plr,"Chat",{KeepChat = true})
+					server.Remote.MakeGui(v,"Chat",{KeepChat = true})
 				end
 			end
 		};
@@ -2561,7 +2561,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					server.Remote.RemoveGui(plr,"Chat")
+					server.Remote.RemoveGui(v,"Chat")
 				end
 			end
 		};
