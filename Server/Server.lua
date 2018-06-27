@@ -59,15 +59,15 @@ local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
-local isModule = function(module) for ind,modu in pairs(server.Modules) do if module == modu then return true end end end
+local isModule = function(module)for ind,modu in next,server.Modules do if module == modu then return true end end end
 local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err}) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
-local print = function(...) for i,v in pairs({...}) do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
-local warn = function(...) for i,v in pairs({...}) do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
+local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
+local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
 local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = ypcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Pcall = function(func,...) local ran,error = ypcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Routine = function(func,...)  coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in pairs(t) do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({},{
 		__index = function(tab,ind)
@@ -76,16 +76,13 @@ local GetEnv; GetEnv = function(env, repl)
 		
 		__metatable = unique;
 	})
-	
 	if repl and type(repl)=="table" then
 		for ind, val in next,repl do 
 			scriptEnv[ind] = val
 		end
 	end
-	
 	return scriptEnv
 end;
-
 local LoadModule = function(plugin, yield, envVars)
 	local plug = require(plugin)
 	
@@ -222,7 +219,6 @@ Axes = service.Localize(Axes)
 
 --// Wrap
 for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-pcall(function() return service.Player.Kick end)
 script = service.Wrap(script)
 Enum = service.Wrap(Enum)
 game = service.Wrap(game)
@@ -299,8 +295,8 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
-	service = service;
-} do locals[ind] = loc end
+	service = service
+}do locals[ind] = loc end
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
@@ -334,13 +330,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		script:Destroy()
 	end
 	
-	for setting,value in pairs(setTab.Settings) do 
+	for setting,value in next,setTab.Settings do 
 		if server.Settings[setting] == nil then 
 			server.Settings[setting] = value 
 		end 
 	end
 	
-	for desc,value in pairs(setTab.Descriptions) do 
+	for desc,value in next,setTab.Descriptions do 
 		if server.Descriptions[desc] == nil then 
 			server.Descriptions[desc] = value 
 		end 
@@ -366,8 +362,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"TestService";
 		"HttpService";
 		"InsertService";
-		"NetworkServer";		
-	} do local temp = service[serv] end
+		"NetworkServer"		
+	}do local temp = service[serv] end
 	
 	--// Load core modules		
 	for ind,load in next,{
@@ -381,7 +377,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"HTTP";
 		"Anti";
 		"Commands";
-	} do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
+	}do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
 	
 	--// Set stuff
 	server.Data = data or {}
@@ -442,15 +438,15 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	--// RemoteEvent Handling
 	server.Core.MakeEvent()	
 	server.Core.PrepareClient()	
-	service.JointsService.Changed:connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-	service.JointsService.ChildRemoved:connect(function(c) 
+	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
+	service.JointsService.ChildRemoved:Connect(function(c) 
 		if server.Core.RemoteEvent and (c == server.Core.RemoteEvent.Object or c == server.Core.RemoteEvent.Decoy1 or c == c == server.Core.RemoteEvent.Decoy2) then 
 			server.Core.MakeEvent() 
 		end 
 	end)
 
 	--// Do some things
-	for com in pairs(server.Remote.Commands) do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
+	for com in next,server.Remote.Commands do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
 	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
 	if not service.NetworkServer then wait(1) end 
