@@ -30,6 +30,14 @@ return function()
 		Vector3int16, elapsedTime, require, table, type, wait, 
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 		
+	local Anti, Process, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Variables = client.Variables;
+		Process = client.Process;
+	end
+		
 	local script = script
 	local service = service
 	local client = client
@@ -82,13 +90,13 @@ return function()
 		
 		LockLighting = function(data) --// Replaced by LocalLighting 
 			--[[
-			local lightSets = client.Remote.Get("Variable","LightingSettings")
+			local lightSets = Remote.Get("Variable","LightingSettings")
 			service.Lighting.Changed:connect(function(c) 
 				if lightSets[c] ~= nil then 
 					service.Lighting[c] = lightSets[c] 
 					local data = {}
 					data.Property = c
-					client.Remote.Send("AddReplication","LChanged",data)
+					Remote.Send("AddReplication","LChanged",data)
 				end 
 			end)--]]
 			local settings = {
@@ -124,17 +132,17 @@ return function()
 				end
 			end)
 			
-			client.Variables.LightingChanged = false
+			Variables.LightingChanged = false
 			local tempIgnore = false
 			local function check(c)
-				if client.Variables.LightingChanged then return true end
+				if Variables.LightingChanged then return true end
 				local temp = service.Lighting[c]
 				if service.Lighting[c] ~= nil and settings[c] ~= nil then
 					tempIgnore = true
 					service.Lighting[c] = settings[c]
 					tempIgnore = false
 					wait(0.01)
-					if c == client.Anti.LastChanges.Lighting then
+					if c == Anti.LastChanges.Lighting then
 						tempIgnore = true
 						service.Lighting[c] = temp
 						tempIgnore = false
@@ -216,7 +224,7 @@ return function()
 					
 		 			return false
 	  			else
-	 				--warn(client.Anti.GetClassName(obj))
+	 				--warn(Anti.GetClassName(obj))
 	 				return true
 				end
 	 		end
@@ -230,7 +238,7 @@ return function()
 					data.class = c.ClassName
 					data.parent = c.Parent
 					data.path = c:GetFullName()
-					client.Remote.Fire("AddReplication","Created",c,data)
+					Remote.Fire("AddReplication","Created",c,data)
 				end
 			end)
 			
@@ -247,7 +255,7 @@ return function()
 						local event;
 						event = c.Parent.ChildRemoved:connect(function(n)
 							if rawequal(c, n) then
-								client.Remote.Fire("AddReplication","Destroyed",c,data)
+								Remote.Fire("AddReplication","Destroyed",c,data)
 								event:disconnect()
 							end
 						end)
@@ -256,7 +264,7 @@ return function()
 							event:disconnect()
 						end
 					else
-						client.Remote.Fire("AddReplication","Destroyed",c,data)
+						Remote.Fire("AddReplication","Destroyed",c,data)
 					end
 				end
 			end)
@@ -279,7 +287,7 @@ return function()
 		
 		AntiGui = function(data) --// Future
 			service.Player.DescendantAdded:connect(function(c)
-				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not client.UI.Get(c) then
+				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
 					c:Destroy()
 					Detected("log","Unknown GUI detected and destroyed")
 				end
@@ -288,11 +296,11 @@ return function()
 		 
 		AntiTools = function(data)
 			service.Player:WaitForChild("Backpack")
-			local btools = data.BTools --client.Remote.Get("Setting","AntiBuildingTools")
-			local tools = data.AntiTools --client.Remote.Get("Setting","AntiTools")
-			local allowed = data.AllowedList --client.Remote.Get("Setting","AllowedToolsList")
+			local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
+			local tools = data.AntiTools --Remote.Get("Setting","AntiTools")
+			local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")
 			local function check(t)
-				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(client.Variables.CodeName) then
+				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) then
 					if client.AntiBuildingTools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 						t.Active = false
 						t:Destroy()
@@ -459,7 +467,7 @@ return function()
 			local function chkObj(item)
 				local coreNav = service.GuiService.CoreGuiNavigationEnabled
 				service.GuiService.CoreGuiNavigationEnabled = false
-				if client.Anti.ObjRLocked(item) and not service.GuiService:IsTenFootInterface() then
+				if Anti.ObjRLocked(item) and not service.GuiService:IsTenFootInterface() then
 					local cont = true
 					local ran,err = ypcall(function()
 						local checks = {
@@ -486,7 +494,7 @@ return function()
 					
 					if cont then
 						local cont = false
-						local class = client.Anti.GetClassName(item)
+						local class = Anti.GetClassName(item)
 						local name = tostring(item)
 						local checks = {
 							"Script";
@@ -622,7 +630,7 @@ return function()
 			end
 			
 			local function checkTool(t)
-				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(client.Variables.CodeName) and service.Player.Backpack and t:IsDescendantOf(service.Player.Backpack) then
+				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) and service.Player.Backpack and t:IsDescendantOf(service.Player.Backpack) then
 					if t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 						Detected("log","Building tools detected; "..tostring(t.BinType))
 					end
@@ -660,13 +668,13 @@ return function()
 			end)
 			
 			service.ScriptContext.ChildAdded:connect(function(child)
-				if client.Anti.GetClassName(child) == "LocalScript" then
+				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
 				end
 			end)
 			
 			service.ReplicatedFirst.ChildAdded:connect(function(child)
-				if client.Anti.GetClassName(child) == "LocalScript" then
+				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
 				end
 			end)
@@ -829,16 +837,17 @@ return function()
 	}, false, true)
 			
 	local Launch = function(mode,data)
-		if client.Anti.Detectors[mode] and service.NetworkClient then
-			client.Anti.Detectors[mode](data)
+		if Anti.Detectors[mode] and service.NetworkClient then
+			Anti.Detectors[mode](data)
 		end
 	end;
 	
-	local Anti = service.ReadOnly({
+	Anti = service.ReadOnly({
 		LastChanges = {
 			Lighting = {};
 		};
 		
+		Init = Init;
 		Launch = Launch;
 		Detected = Detected;
 		Detectors = Detectors;

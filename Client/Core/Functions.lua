@@ -32,11 +32,23 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
 	
 	client.Functions = {
+		Init = Init;
 		Kill = client.Kill;
 		
 		GetRandom = function(pLen)
@@ -193,10 +205,10 @@ return function()
 			local rLockedFound = false
 			
 			local add; add = function(tab,child)
-				if not client.Anti.ObjRLocked(child) then
+				if not Anti.ObjRLocked(child) then
 					local good = false
 					
-					for i,v in pairs(classes) do
+					for i,v in next,classes do
 						if child:IsA(v) then
 							good = true
 						end
@@ -208,13 +220,13 @@ return function()
 							Children = {};
 						}
 						
-						for i,v in pairs(props) do
+						for i,v in next,props do
 							pcall(function()
 								new.Properties[v] = child[v]
 							end)
 						end
 						
-						for i,v in pairs(child:GetChildren()) do
+						for i,v in next,child:GetChildren()do
 							add(new,v)
 						end
 						table.insert(tab.Children, new)
@@ -223,13 +235,9 @@ return function()
 					rLockedFound = true
 				end
 			end
-			
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
-				pcall(function()
-					add(guis,v)
-				end)
+			for i,v in next,service.PlayerGui:GetChildren()do
+				pcall(add,guis,v)
 			end
-			
 			return guis
 		end;
 		
@@ -239,13 +247,13 @@ return function()
 				local children = dat.Children
 				local gui = service.New(props.ClassName)
 				
-				for i,v in pairs(props) do
+				for i,v in next,props do
 					pcall(function() 
 						gui[i] = v
 					end)
 				end
 				
-				for i,v in pairs(children) do
+				for i,v in next,children do
 					pcall(function()
 						local g = make(v)
 						if g then
@@ -257,18 +265,14 @@ return function()
 			end
 			
 			local temp = Instance.new("Folder")
-			
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
-				if not client.UI.Get(v) then
+			for i,v in next,service.PlayerGui:GetChildren()do
+				if not UI.Get(v) then
 					v.Parent = temp
 				end
 			end
-			
-			client.Variables.GuiViewFolder = temp
-			
+			Variables.GuiViewFolder = temp
 			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			
-			for i,v in pairs(data.Children) do
+			for i,v in next,data.Children do
 				pcall(function()
 					local g = make(v)
 					if g then
@@ -279,24 +283,24 @@ return function()
 		end;
 		
 		UnLoadGuiData = function()
-			for i,v in pairs(service.PlayerGui:GetChildren()) do
+			for i,v in next,service.PlayerGui:GetChildren()do
 				if v.Name == "LoadedGuis" then
 					v:Destroy()
 				end
 			end
 			
-			if client.Variables.GuiViewFolder then
-				for i,v in pairs(client.Variables.GuiViewFolder:GetChildren()) do
+			if Variables.GuiViewFolder then
+				for i,v in next,Variables.GuiViewFolder:GetChildren()do
 					v.Parent = service.PlayerGui
 				end
-				client.Variables.GuiViewFolder:Destroy()
-				client.Variables.GuiViewFolder = nil
+				Variables.GuiViewFolder:Destroy()
+				Variables.GuiViewFolder = nil
 			end
 		end;
 		
 		GetParticleContainer = function(target)
 			if target then
-				for i,v in pairs(service.LocalContainer():GetChildren()) do
+				for i,v in next,service.LocalContainer():GetChildren()do
 					if v.Name == target:GetFullName().."PARTICLES" then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
@@ -308,7 +312,7 @@ return function()
 		end;
 		
 		NewParticle = function(target, class, properties)
-			local part = client.Functions.GetParticleContainer(target)
+			local part = Functions.GetParticleContainer(target)
 			if target and not part then
 				part = service.New("Part")
 				part.Name = target:GetFullName().."PARTICLES"
@@ -330,7 +334,7 @@ return function()
 				weld.Part1 = target
 				weld.C0 = CFrame.new(0,0,0)
 				
-				weld.Changed:connect(function()
+				weld.Changed:Connect(function()
 					if not weld or not weld.Parent or weld.Parent ~= part or not target or not target.Parent then
 						part:Destroy()
 					end
@@ -339,26 +343,26 @@ return function()
 			
 			local effect = service.New(class, part)
 			
-			for prop,value in pairs(properties) do
+			for prop,value in next,properties do
 				effect[prop] = value
 			end
 			
-			effect.Enabled = client.Variables.ParticlesEnabled
+			effect.Enabled = Variables.ParticlesEnabled
 			effect.Parent = part
 			
-			local index = client.Functions.GetRandom()
+			local index = Functions.GetRandom()
 			
-			client.Variables.Particles[index] = effect
+			Variables.Particles[index] = effect
 			
-			effect.Changed:connect(function()
+			effect.Changed:Connect(function()
 				if not effect or not effect.Parent or effect.Parent ~= part then
-					client.Variables.Particles[index] = nil
+					Variables.Particles[index] = nil
 				end
 			end)
 		end;
 		
 		RemoveParticle = function(target, name)
-			local part = client.Functions.GetParticleContainer(target)
+			local part = Functions.GetParticleContainer(target)
 			if part then
 				for ind,effect in next,part:GetChildren() do
 					if effect.Name == name then
@@ -369,7 +373,7 @@ return function()
 		end;
 		
 		EnableParticles = function(enabled)
-			for i,effect in pairs(client.Variables.Particles) do
+			for i,effect in next,Variables.Particles do
 				if enabled then
 					effect.Enabled = true
 				else
@@ -416,7 +420,7 @@ return function()
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
-			for ind,obj in pairs(par:GetChildren()) do
+			for ind,obj in next,par:GetChildren()do
 				if obj.Name == object or obj == obj then
 					obj.Parent = newParent
 				end
@@ -447,7 +451,7 @@ return function()
 			local reflect = data.Reflectance or 0
 			local decal = tonumber(data.Decal or "")
 			if char then
-				client.Functions.RemoveCape(char)
+				Functions.RemoveCape(char)
 				local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
 				local isR15 = (torso.Name == "UpperTorso")
 				if torso then
@@ -487,8 +491,8 @@ return function()
 						dec.Transparency = 0 
 					end
 					
-					local index = client.Functions.GetRandom()
-					client.Variables.Capes[index] = {
+					local index = Functions.GetRandom()
+					Variables.Capes[index] = {
 						Part = p;
 						Motor = motor1;
 						Enabled = true;
@@ -502,33 +506,31 @@ return function()
 					
 					local p = service.Players:GetPlayerFromCharacter(data.Parent)
 					if p and p == service.Player then
-						client.Variables.Capes[index].isPlayer = true
+						Variables.Capes[index].isPlayer = true
 					end
 					
-					if not client.Variables.CapesEnabled then
+					if not Variables.CapesEnabled then
 						p.Transparency = 1
 						if dec then
 							dec.Transparency = 1
 						end
-						client.Variables.Capes[index].Enabled = false
+						Variables.Capes[index].Enabled = false
 					end
 					
-					client.Functions.MoveCapes()
+					Functions.MoveCapes()
 				end
 			end
 		end;
-		
 		RemoveCape = function(parent)
-			for i,v in pairs(client.Variables.Capes) do
+			for i,v in next,Variables.Capes do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
-					pcall(function() v.Part:Destroy() end)
-					client.Variables.Capes[i] = nil
+					pcall(v.Part.Destroy,v.Part)
+					Variables.Capes[i] = nil
 				end
 			end
 		end;
-		
 		HideCapes = function(hide)
-			for i,v in pairs(client.Variables.Capes) do
+			for i,v in next,Variables.Capes do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -553,8 +555,8 @@ return function()
 						v.Enabled = false
 					end
 				else
-					pcall(function() part:Destroy() end)
-					client.Variables.Capes[i] = nil
+					pcall(part.Destroy,part)
+					Variables.Capes[i] = nil
 				end
 			end
 		end;
@@ -562,10 +564,10 @@ return function()
 		MoveCapes = function()
 			service.StopLoop("CapeMover")
 			service.StartLoop("CapeMover",0.1,function()
-				if client.Functions.CountTable(client.Variables.Capes) == 0 or not client.Variables.CapesEnabled then
+				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i,v in pairs(client.Variables.Capes) do
+					for i,v in next,Variables.Capes do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -576,7 +578,7 @@ return function()
 						local decal = v.Decal
 						
 						if parent and parent.Parent and torso and torso.Parent and part and part.Parent then
-							if v.Enabled and client.Variables.CapesEnabled then
+							if v.Enabled and Variables.CapesEnabled then
 								part.Transparency = 0
 								
 								if decal then
@@ -609,8 +611,8 @@ return function()
 								end
 							end
 						else
-							pcall(function() part:Destroy() end)
-							client.Variables.Capes[i] = nil
+							pcall(part.Destroy,part)
+							Variables.Capes[i] = nil
 						end
 					end
 				end
@@ -619,7 +621,7 @@ return function()
 		
 		CountTable = function(tab)
 			local count = 0
-			for i,v in pairs(tab) do
+			for i,v in next,tab do
 				count = count+1
 			end
 			return count
@@ -634,7 +636,9 @@ return function()
 		end;
 		
 		PlayAnimation = function(animId)
-			for i,v in pairs(service.Player.Character.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
+			for i,v in next,service.Player.Character.Humanoid:GetPlayingAnimationTracks()do
+				v:Stop()
+			end
 			if animId == 0 then return end
 			local anim = service.New('Animation')
 			anim.AnimationId = 'http://www.roblox.com/Asset?ID='..animId
@@ -646,14 +650,14 @@ return function()
 		SetLighting = function(prop,value)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
-				client.Variables.LightingSettings[prop] = value
+				Variables.LightingSettings[prop] = value
 			end
 		end;
 		
 		LocalLighting = function(on)
 			if on then
 				service.StartLoop("LocalLighting","RenderStepped",function()
-					for prop,value in pairs(client.Variables.LightingSettings) do
+					for prop,value in next,Variables.LightingSettings do
 						if service.Lighting[prop]~=nil then
 							service.Lighting[prop] = value
 						end
@@ -683,8 +687,8 @@ return function()
 			
 			service.StarterGui:SetCore("ChatMakeSystemMessage",tab)
 			
-			if client.Functions.SendToChat then
-				client.Functions.SendToChat({Name = "::Adonis::"},msg,"Private")
+			if Functions.SendToChat then
+				Functions.SendToChat({Name = "::Adonis::"},msg,"Private")
 			end
 		end;
 		
@@ -821,18 +825,18 @@ return function()
 		
 		KeyBindListener = function()
 			local timer = 0
-			client.Variables.KeyBinds = client.Remote.Get("PlayerData").Keybinds or {}
+			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
 				
-			service.UserInputService.InputBegan:connect(function(input)
+			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
 				local textbox = service.UserInputService:GetFocusedTextBox()
 				
-				if client.Variables.KeybindsEnabled and not (textbox) and key and client.Variables.KeyBinds[key] and not client.Variables.WaitingForBind then 
-					local isAdmin = client.Remote.Get("CheckAdmin")
+				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then 
+					local isAdmin = Remote.Get("CheckAdmin")
 					if tick() - timer>5 or isAdmin then
-						client.Remote.Send('ProcessCommand',client.Variables.KeyBinds[key],false,true)
-						client.UI.Make("Hint",{
-							Message = "[Ran] Key: "..string.char(key).." | Command: "..client.Variables.KeyBinds[key]
+						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
+						UI.Make("Hint",{
+							Message = "[Ran] Key: "..string.char(key).." | Command: "..Variables.KeyBinds[key]
 						})
 					end
 					timer = tick()
@@ -841,21 +845,21 @@ return function()
 		end;
 		
 		AddKeyBind = function(key,command)
-			client.Variables.KeyBinds[tostring(key)] = command
-			client.Remote.Get("UpdateKeybinds",client.Variables.KeyBinds)
+			Variables.KeyBinds[tostring(key)] = command
+			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			Routine(function()
-				client.UI.Make("Hint",{
+				UI.Make("Hint",{
 					Message = 'Bound "'..string.char(key)..'" to '..command
 				})
 			end)
 		end;
 		
 		RemoveKeyBind = function(key)
-			if client.Variables.KeyBinds[tostring(key)] ~= nil then
-				client.Variables.KeyBinds[tostring(key)] = nil
-				client.Remote.Get("UpdateKeybinds",client.Variables.KeyBinds)
+			if Variables.KeyBinds[tostring(key)] ~= nil then
+				Variables.KeyBinds[tostring(key)] = nil
+				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
-					client.UI.Make("Hint",{
+					UI.Make("Hint",{
 						Message = 'Removed "'..string.char(key)..'" from key binds'
 					})
 				end)
@@ -879,7 +883,7 @@ return function()
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
-				for i,v in pairs(workspace.CurrentCamera:children()) do
+				for i,v in next,workspace.CurrentCamera:GetChildren()do
 					if v.Name == "ADONIS_WINDOW_FUNC_BLUR" then
 						v:Destroy() 
 					end
@@ -888,7 +892,7 @@ return function()
 		end;
 		
 		PlayAudio = function(audioId, volume, pitch, looped)
-			if client.Variables.localSounds[tostring(audioId)] then client.Variables.localSounds[tostring(audioId)]:Stop() client.Variables.localSounds[tostring(audioId)]:Destroy() client.Variables.localSounds[tostring(audioId)]=nil end
+			if Variables.localSounds[tostring(audioId)] then Variables.localSounds[tostring(audioId)]:Stop() Variables.localSounds[tostring(audioId)]:Destroy() Variables.localSounds[tostring(audioId)]=nil end
 			local sound = service.New("Sound")
 			sound.SoundId = "rbxassetid://"..audioId
 			if looped then sound.Looped = true end
@@ -896,36 +900,36 @@ return function()
 			if pitch then sound.Pitch = pitch end
 			sound.Name = "ADONI_LOCAL_SOUND "..audioId
 			sound.Parent = service.LocalContainer()	
-			client.Variables.localSounds[tostring(audioId)] = sound
+			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
 			wait(1)
 			repeat wait(0.1) until not sound.IsPlaying
 			sound:Destroy()
-			client.Variables.localSounds[tostring(audioId)] = nil
+			Variables.localSounds[tostring(audioId)] = nil
 		end;
 		
 		StopAudio = function(audioId)
-			if client.Variables.localSounds[tostring(audioId)] then 
-				client.Variables.localSounds[tostring(audioId)]:Stop() 
-				client.Variables.localSounds[tostring(audioId)]:Destroy() 
-				client.Variables.localSounds[tostring(audioId)] = nil 
+			if Variables.localSounds[tostring(audioId)] then 
+				Variables.localSounds[tostring(audioId)]:Stop() 
+				Variables.localSounds[tostring(audioId)]:Destroy() 
+				Variables.localSounds[tostring(audioId)] = nil 
 			end
 		end;
 		
 		FadeAudio = function(audioId,inVol,pitch,looped,incWait)
 			if not inVol then
-				local sound = client.Variables.localSounds[tostring(audioId)]
+				local sound = Variables.localSounds[tostring(audioId)]
 				if sound then
 					for i = sound.Volume,0,-0.01 do
 						sound.Volume = i
 						wait(incWait or 0.1)
 					end
-					client.Functions.StopAudio(audioId)
+					Functions.StopAudio(audioId)
 				end
 			else
-				client.Functions.StopAudio(audioId)
-				client.Functions.PlayAudio(audioId,0,pitch,looped)
-				local sound = client.Variables.localSounds[tostring(audioId)]
+				Functions.StopAudio(audioId)
+				Functions.PlayAudio(audioId,0,pitch,looped)
+				local sound = Variables.localSounds[tostring(audioId)]
 				if sound then
 					for i = 0,inVol,0.01 do
 						sound.Volume = i
@@ -936,16 +940,16 @@ return function()
 		end;
 		
 		KillAllLocalAudio = function()
-			for i,v in pairs(client.Variables.localSounds) do
+			for i,v in next,Variables.localSounds do
 				v:Stop()
 				v:Destroy()
-				table.remove(client.Variables.localSounds,i)
+				table.remove(Variables.localSounds,i)
 			end
 		end;
 		
 		RemoveGuis = function()
-			for i,v in pairs(service.PlayerGui:children()) do
-				if not client.UI.Get(v) then
+			for i,v in next,service.PlayerGui:GetChildren()do
+				if not UI.Get(v) then
 					v:Destroy()
 				end
 			end

@@ -8,7 +8,24 @@ logError = nil
 
 --// HTTP
 return function()
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		
+		Logs:AddLog("Script", "HTTP Module Initialized")
+	end;
+	
 	server.HTTP = {
+		Init = Init;
 		Service = service.HttpService;
 		CheckHttp = function()
 			local y,n = pcall(function()
@@ -33,10 +50,10 @@ return function()
 			PerformedCommands = {};
 			
 			Update = function()
-				if not server.HTTP.CheckHttp() then 
-					--server.HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
+				if not HTTP.CheckHttp() then 
+					--HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
 					warn('Http is not enabled! Cannot connect to Trello!')
-				elseif not server.Settings.Trello_Enabled then
+				elseif not Settings.Trello_Enabled then
 					-- Do something else?
 				else
 					local boards = {}
@@ -54,7 +71,7 @@ return function()
 					local whitelist = {}
 					
 					local function grabData(board)
-						local trello = server.HTTP.Trello.API(server.Settings.Trello_AppKey,server.Settings.Trello_Token)
+						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 						local lists = trello.getLists(board)
 						local banList = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 						local commandList = trello.getListObj(lists,{"Commands","Command List"})
@@ -147,7 +164,7 @@ return function()
 							for l,k in pairs(cards) do
 								local com,level = k.name:match("^(.*):(.*)") 
 								if com and level then 
-									server.Admin.SetPermission(com,level) 
+									Admin.SetPermission(com,level) 
 								end
 							end
 						end
@@ -155,7 +172,7 @@ return function()
 						if commandList then
 							local cards = trello.getCards(commandList.id)
 							for l,k in pairs(cards) do
-								if not server.HTTP.Trello.PerformedCommands[tostring(k.id)] then
+								if not HTTP.Trello.PerformedCommands[tostring(k.id)] then
 									local cmd = k.name
 									local placeid
 									if cmd:sub(1,1)=="$" then
@@ -164,13 +181,13 @@ return function()
 										placeid = tonumber(placeid)
 									end
 									if placeid and game.PlaceId~=placeid then return end
-									server.Admin.RunCommand(cmd)
-									server.HTTP.Trello.PerformedCommands[tostring(k.id)] = true 
-									server.Logs.AddLog(server.Logs.Script,{
+									Admin.RunCommand(cmd)
+									HTTP.Trello.PerformedCommands[tostring(k.id)] = true 
+									Logs.AddLog(Logs.Script,{
 										Text = "Trello command executed";
 										Desc = cmd;
 									})
-									if server.Settings.Trello_Token ~= "" then
+									if Settings.Trello_Token ~= "" then
 										pcall(trello.makeComment,k.id,"Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.GetTime())
 									end
 								end
@@ -178,38 +195,38 @@ return function()
 						end
 					end
 					
-					for i,v in pairs(server.Settings.Trello_Secondary) do table.insert(boards,v) end
-					if server.Settings.Trello_Primary~="" then table.insert(boards,server.Settings.Trello_Primary) end
+					for i,v in pairs(Settings.Trello_Secondary) do table.insert(boards,v) end
+					if Settings.Trello_Primary~="" then table.insert(boards,Settings.Trello_Primary) end
 					for i,v in pairs(boards) do pcall(grabData,v) end
 					
-					if #bans>0 then server.HTTP.Trello.Bans = bans end
-					if #creators>0 then server.HTTP.Trello.Creators = creators end
-					if #admins>0 then server.HTTP.Trello.Admins = admins end
-					if #mods>0 then server.HTTP.Trello.Moderators = mods end
-					if #owners>0 then server.HTTP.Trello.Owners = owners end
-					if #music>0 then server.HTTP.Trello.Music = music end
-					if #mutes>0 then server.HTTP.Trello.Mutes = mutes end
-					if #agents>0 then server.HTTP.Trello.Agents = agents end
-					if #blacklist>0 then server.HTTP.Trello.Blacklist = blacklist end
-					if #whitelist>0 then server.HTTP.Trello.Whitelist = whitelist end
+					if #bans>0 then HTTP.Trello.Bans = bans end
+					if #creators>0 then HTTP.Trello.Creators = creators end
+					if #admins>0 then HTTP.Trello.Admins = admins end
+					if #mods>0 then HTTP.Trello.Moderators = mods end
+					if #owners>0 then HTTP.Trello.Owners = owners end
+					if #music>0 then HTTP.Trello.Music = music end
+					if #mutes>0 then HTTP.Trello.Mutes = mutes end
+					if #agents>0 then HTTP.Trello.Agents = agents end
+					if #blacklist>0 then HTTP.Trello.Blacklist = blacklist end
+					if #whitelist>0 then HTTP.Trello.Whitelist = whitelist end
 					
 					for i,v in pairs(service.GetPlayers()) do
-						if server.Admin.CheckBan(v) then
-							v:Kick(server.Variables.BanMessage)
+						if Admin.CheckBan(v) then
+							v:Kick(Variables.BanMessage)
 						end 
 						
 						if v and v.Parent then
-							for ind,admin in pairs(server.HTTP.Trello.Mutes) do
-								if server.Admin.DoCheck(v,admin) then
-									server.Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
+							for ind,admin in pairs(HTTP.Trello.Mutes) do
+								if Admin.DoCheck(v,admin) then
+									Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 								end
 							end
 						end
 						
-						server.Admin.UpdateCachedLevel(v)
+						Admin.UpdateCachedLevel(v)
 					end
 					
-					server.Logs.AddLog(server.Logs.Script,{
+					Logs.AddLog(Logs.Script,{
 						Text = "Updated Trello Data";
 						Desc = "Data was retreived from Trello";
 					}) 
@@ -217,8 +234,8 @@ return function()
 			end;
 			
 			CheckAgent = function(p)
-				for ind,v in pairs(server.HTTP.Trello.Agents) do
-					if server.Admin.DoCheck(p,v) then
+				for ind,v in pairs(HTTP.Trello.Agents) do
+					if Admin.DoCheck(p,v) then
 						return true
 					end
 				end

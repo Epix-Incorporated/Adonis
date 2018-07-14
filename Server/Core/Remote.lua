@@ -8,7 +8,25 @@ logError = nil
 
 --// Remote
 return function()
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		Commands = server.Commands
+		
+		Logs:AddLog("Script", "Remote Module Initialized")
+	end;
+	
 	server.Remote = {
+		Init = Init;
 		Clients = {};
 		Returns = {};
 		Sessions = {};
@@ -39,7 +57,7 @@ return function()
 				local data = args[1]
 				local special = args[2]
 				local returner = args[3]
-				local keys = server.Remote.Clients[key]
+				local keys = Remote.Clients[key]
 				
 				--print("Sent: "..(data.Sent+1).." : "..keys.Received)
 				--print("Received: "..data.Received.." : "..keys.Sent)
@@ -56,7 +74,7 @@ return function()
 			end;
 			
 			TaskManager = function(p,args)
-				if server.Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 4 then
 					local action = args[1]
 					if action == "GetTasks" then
 						local tab = {}
@@ -75,16 +93,16 @@ return function()
 			end;
 			
 			ExecutePermission = function(p,args)
-				return server.Core.ExecutePermission(args[1],args[2],true)
+				return Core.ExecutePermission(args[1],args[2],true)
 			end;
 			
 			Variable = function(p,args)
-				return server.Variables[args[1]]
+				return Variables[args[1]]
 			end;
 			
 			Setting = function(p,args)
 				local setting = args[1]
-				local level = server.Admin.GetLevel(p)
+				local level = Admin.GetLevel(p)
 				local ret = nil
 				local blocked = {
 					DataStore = true;
@@ -105,13 +123,13 @@ return function()
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if server.Settings[set] and not (blocked[set] and not level>=5) then 
-							ret[set] = server.Settings[set]
+						if Settings[set] and not (blocked[set] and not level>=5) then 
+							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if server.Settings[setting] and not (blocked[setting] and not level>=5) then 
-						ret = server.Settings[setting]
+					if Settings[setting] and not (blocked[setting] and not level>=5) then 
+						ret = Settings[setting]
 					end
 				end
 				return ret
@@ -119,21 +137,21 @@ return function()
 			
 			UpdateList = function(p, args)
 				local list = args[1]
-				local update = server.Logs.ListUpdaters[list]
+				local update = Logs.ListUpdaters[list]
 				if update then
 					return update(p, unpack(args,2))
 				end
 			end;
 			
 			AllSettings = function(p,args)
-				if server.Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 4 then
 					local sets = {}
 					
 					sets.Settings = {}
 					sets.Descs = server.Descriptions
 					sets.Order = server.Order
 					
-					for i,v in pairs(server.Settings) do
+					for i,v in pairs(Settings) do
 						sets.Settings[i] = v
 					end
 					
@@ -174,21 +192,21 @@ return function()
 			end;
 			
 			AdminLevel = function(p,args)
-				return server.Admin.GetLevel(p)
+				return Admin.GetLevel(p)
 			end;
 			
 			Keybinds = function(p,args)
-				local playerData = server.Core.GetPlayer(p)
+				local playerData = Core.GetPlayer(p)
 				return playerData.Keybinds or {}
 			end;
 			
 			UpdateKeybinds = function(p,args)
-				local playerData = server.Core.GetPlayer(p)
+				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
 				local resp = "OK"
 				if type(binds)=="table" then
 					playerData.Keybinds = binds
-					server.Core.SavePlayer(p,playerData)
+					Core.SavePlayer(p,playerData)
 					resp = "Updated"
 				else
 					resp = "Error"
@@ -197,27 +215,27 @@ return function()
 			end;
 			
 			UpdateClient = function(p,args)
-				local playerData = server.Core.GetPlayer(p)
+				local playerData = Core.GetPlayer(p)
 				local setting = args[1]
 				local value = args[2]
 				local data = playerData.Client or {}
 				data[setting] = value
 				playerData.Client = data
-				server.Core.SavePlayer(p,playerData)
+				Core.SavePlayer(p,playerData)
 				return "Updated"
 			end;
 			
 			UpdateDonor = function(p,args)
-				local playerData = server.Core.GetPlayer(p)
+				local playerData = Core.GetPlayer(p)
 				local donor = args[1]
 				local resp = "OK"
 				if type(donor)=="table" and donor.Cape and type(donor.Cape)=="table" then
 					playerData.Donor = donor
-					server.Core.SavePlayer(p,playerData)
+					Core.SavePlayer(p,playerData)
 					if donor.Enabled then
-						server.Functions.Donor(p)
+						Functions.Donor(p)
 					else
-						server.Functions.UnCape(p)
+						Functions.UnCape(p)
 					end
 					resp = "Updated"
 				else
@@ -227,33 +245,33 @@ return function()
 			end;
 			
 			PlayerData = function(p,args)
-				local data = server.Core.GetPlayer(p)
-				data.isDonor = server.Admin.CheckDonor(p)
+				local data = Core.GetPlayer(p)
+				data.isDonor = Admin.CheckDonor(p)
 				return data
 			end;
 			
 			CheckAdmin = function(p,args)
-				return server.Admin.CheckAdmin(p)
+				return Admin.CheckAdmin(p)
 			end;
 			
 			SearchCommands = function(p,args)
-				return server.Admin.SearchCommands(p,args[1] or "all")
+				return Admin.SearchCommands(p,args[1] or "all")
 			end;
 			
 			FormattedCommands = function(p,args)
-				local commands = server.Admin.SearchCommands(p,args[1] or "all")
+				local commands = Admin.SearchCommands(p,args[1] or "all")
 				local tab = {}
 				for i,v in pairs(commands) do
-					table.insert(tab,server.Admin.FormatCommand(v))
+					table.insert(tab,Admin.FormatCommand(v))
 				end
 				return tab
 			end;
 			
 			TerminalData = function(p,args)
-				if server.Admin.GetLevel(p) >= 4 then
-					local entry = server.Remote.Terminal.Data[tostring(p.UserId)]
+				if Admin.GetLevel(p) >= 4 then
+					local entry = Remote.Terminal.Data[tostring(p.UserId)]
 					if not entry then
-						server.Remote.Terminal.Data[tostring(p.UserId)] = {
+						Remote.Terminal.Data[tostring(p.UserId)] = {
 							Player = p;
 							Output = {};
 						}
@@ -262,26 +280,26 @@ return function()
 					return {
 						ServerLogs = service.LogService:GetLogHistory();
 						ClientLogs = {};
-						ScriptLogs = server.Logs.Script;
-						AdminLogs = server.Logs.Commands;
-						ErrorLogs = server.Logs.Errors;
-						ChatLogs = server.Logs.Chats;
-						JoinLogs = server.Logs.Joins;
-						Replications = server.Logs.Replications;
-						Exploit = server.Logs.Exploit;
+						ScriptLogs = Logs.Script;
+						AdminLogs = Logs.Commands;
+						ErrorLogs = Logs.Errors;
+						ChatLogs = Logs.Chats;
+						JoinLogs = Logs.Joins;
+						Replications = Logs.Replications;
+						Exploit = Logs.Exploit;
 					}
 				end
 			end;
 			
 			Terminal = function(p,args)
-				if server.Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 4 then
 					local data = args[2]
 					local message = args[1]
 					local command = message:match("(.-) ") or message
 					local argString = message:match("^.- (.+)") or ""
-					local comTable = server.Remote.Terminal.GetCommand(command)
+					local comTable = Remote.Terminal.GetCommand(command)
 					if comTable then
-						local cArgs = server.Functions.Split(argString, " ", comTable.Arguments)
+						local cArgs = Functions.Split(argString, " ", comTable.Arguments)
 						local ran,ret = pcall(comTable.Function,p,cArgs,data)
 						if ran then
 							return ret
@@ -302,9 +320,9 @@ return function()
 		Terminal = {
 			Data = {};
 			Format = function(msg,data) (data or {}).Text = msg end;
-			Output = function(tab,msg,mata) table.insert(tab,server.Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in next,server.Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			LiveOutput = function(p,data,type) server.Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
+			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
+			GetCommand = function(cmd) for i,com in next,Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
 					Usage = "help";
@@ -313,7 +331,7 @@ return function()
 					Description = "Shows a list of available commands and their usage";
 					Function = function(p,args,data)
 						local output = {}
-						for i,v in next,server.Remote.Terminal.Commands do
+						for i,v in next,Remote.Terminal.Commands do
 							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
 							table.insert(output, "- ".. tostring(v.Description))
 							table.insert(output, " ")
@@ -329,7 +347,7 @@ return function()
 					Description = "Sends a message in the ROBLOX chat";
 					Function = function(p, args, data)
 						for i,v in next,service.GetPlayers() do
-							server.Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))
+							Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))
 						end
 					end
 				};
@@ -340,7 +358,7 @@ return function()
 					Arguments = 1;
 					Description = "Used to test the connection to the server and it's ability to return data";
 					Function = function(p,args,data)
-						server.Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
+						Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
 					end
 				};
 				
@@ -351,15 +369,15 @@ return function()
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for i,v in pairs(nums) do server.Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
-							warn = function(...) local nums = {...} for i,v in pairs(nums) do server.Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
+							print = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
+							warn = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
 						})
 						
-						local func,err = server.Core.Loadstring(args[1], newenv)
+						local func,err = Core.Loadstring(args[1], newenv)
 						if func then 
 							func()
 						else
-							server.Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(err:match(":(.*)") or err))
+							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(err:match(":(.*)") or err))
 						end
 					end
 				};
@@ -370,7 +388,7 @@ return function()
 					Arguments = 1;
 					Description = "Runs the specified command as the server";
 					Function = function(p,args,data)
-						server.Process.Command(p, args[1], {DontLog = true, Check = true}, true)
+						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
 						return {
 							"Command ran: "..args[1]
 						}
@@ -383,9 +401,9 @@ return function()
 					Arguments = 1;
 					Description = "Runs the specified command on the specified player as the server";
 					Function = function(p,args,data)
-						server.Process.Command(p, server.Settings.Prefix.."sudo ".. tostring(args[1]), {DontLog = true, Check = true}, true)
+						Process.Command(p, Settings.Prefix.."sudo ".. tostring(args[1]), {DontLog = true, Check = true}, true)
 						return {
-							"Command ran: ".. server.Settings.Prefix.."sudo ".. tostring(args[1])
+							"Command ran: ".. Settings.Prefix.."sudo ".. tostring(args[1])
 						}
 					end
 				};
@@ -493,17 +511,17 @@ return function()
 				end
 				
 				if datat then
-					server.Logs.AddLog(server.Logs.Replications,datat)
+					Logs.AddLog(Logs.Replications,datat)
 				end
 			end;
 			
 			TrustCheck = function(p)
-				local keys = server.Remote.Clients[tostring(p.userId)]
-				server.Remote.Fire(p, "TrustCheck", keys.Special)
+				local keys = Remote.Clients[tostring(p.userId)]
+				Remote.Fire(p, "TrustCheck", keys.Special)
 			end;
 			
 			ProcessChat = function(p,msg)
-				server.Process.Chat(p,msg)
+				Process.Chat(p,msg)
 			end;
 		};
 		
@@ -512,18 +530,18 @@ return function()
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
-				local retfunc = server.Remote.Returnables[com]
+				local retfunc = Remote.Returnables[com]
 				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
 				if retable[1] ~= true then
 					logError(p,retable[2])
 				else
-					server.Remote.Send(p,"GiveReturn",key,unpack(retable,2))
+					Remote.Send(p,"GiveReturn",key,unpack(retable,2))
 				end
 			end;
 			
 			GiveReturn = function(p,args)
-				if server.Remote.PendingReturns[args[1]] then
-					server.Remote.PendingReturns[args[1]] = nil
+				if Remote.PendingReturns[args[1]] then
+					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
 			end;
@@ -531,14 +549,14 @@ return function()
 			Session = function(p,args)
 				local type = args[1]
 				local data = args[2]
-				local handler = server.Remote.SessionHandlers[type]
+				local handler = Remote.SessionHandlers[type]
 				if handler then
 					handler(p,data)
 				end
 			end;
 			
 			HandleExplore = function(p, args)
-				if server.Admin.CheckAdmin(p) then
+				if Admin.CheckAdmin(p) then
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
@@ -556,13 +574,13 @@ return function()
 			end;
 			
 			SaveTableAdd = function(p,args) 
-				if server.Admin.GetLevel(p)>=4 then
+				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
 					
-					table.insert(server.Settings[tab],value)
+					table.insert(Settings[tab],value)
 					
-					server.Core.DoSave({
+					Core.DoSave({
 						Type = "TableAdd";
 						Table = tab;
 						Value = value;
@@ -572,14 +590,14 @@ return function()
 			end;
 			
 			SaveTableRemove = function(p,args) 
-				if server.Admin.GetLevel(p)>=4 then
+				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
-					local ind = server.Functions.GetIndex(server.Settings[tab],value)
+					local ind = Functions.GetIndex(Settings[tab],value)
 					
-					if ind then table.remove(server.Settings[tab],ind) end
+					if ind then table.remove(Settings[tab],ind) end
 					
-					server.Core.DoSave({
+					Core.DoSave({
 						Type = "TableRemove";
 						Table = tab;
 						Value = value;
@@ -588,22 +606,22 @@ return function()
 			end;
 			
 			SaveSetSetting = function(p,args) 
-				if server.Admin.GetLevel(p)>=4 then
+				if Admin.GetLevel(p)>=4 then
 					local setting = args[1]
 					local value = args[2]
 					
-					server.Settings[setting] = value
+					Settings[setting] = value
 					
 					if setting=='Prefix' or setting=='AnyPrefix' or setting=='SpecialPrefix' then
-						local orig=server.Settings[setting]
-						for i,v in pairs(server.Commands) do
+						local orig=Settings[setting]
+						for i,v in pairs(Commands) do
 							if v.Prefix==orig then
-								v.Prefix = server.Settings[setting]
+								v.Prefix = Settings[setting]
 							end
 						end
 					end
 				
-					server.Core.DoSave({
+					Core.DoSave({
 						Type = "SetSetting";
 						Setting = setting;
 						Value = value;
@@ -612,20 +630,20 @@ return function()
 			end;
 			
 			ClearSavedSettings = function(p,args) 
-				if server.Admin.GetLevel(p)>=4 then
-					server.Core.DoSave({Type = "ClearSettings"})
-					server.Functions.Hint("Cleared saved settings",{p})
+				if Admin.GetLevel(p)>=4 then
+					Core.DoSave({Type = "ClearSettings"})
+					Functions.Hint("Cleared saved settings",{p})
 				end
 			end;
 			
 			SetSetting = function(p,args) 
-				if server.Admin.GetLevel(p)>=4 then
-					server.Settings[args[1]]=args[2]
+				if Admin.GetLevel(p)>=4 then
+					Settings[args[1]]=args[2]
 					if args[1]=='Prefix' or args[1]=='AnyPrefix' or args[1]=='SpecialPrefix' then
 						local orig = server[args[1]]
-						for i,v in pairs(server.Commands) do
+						for i,v in pairs(Commands) do
 							if v.Prefix == orig then
-								v.Prefix = server.Settings[args[1]]
+								v.Prefix = Settings[args[1]]
 							end
 						end
 					end
@@ -633,23 +651,23 @@ return function()
 			end;
 			
 			Detected = function(p,args)
-				server.Anti.Detected(p,args[1],args[2])
+				Anti.Detected(p,args[1],args[2])
 			end;
 			
 			TrelloOperation = function(p,args)
-				if server.Admin.GetLevel(p) > 2 then
+				if Admin.GetLevel(p) > 2 then
 					local data = args[1]
 					if data.Action == "MakeCard" then
 						local list = data.List
 						local name = data.Name
 						local desc = data.Desc
-						local trello = server.HTTP.Trello.API(server.Settings.Trello_AppKey,server.Settings.Trello_Token)
-						local lists = trello.getLists(server.Settings.Trello_Primary)
+						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+						local lists = trello.getLists(Settings.Trello_Primary)
 						local list = trello.getListObj(lists,list)
 						if list then
 							local card = trello.makeCard(list.id,name,desc)
-							server.Hint("Made card \""..card.name.."\"",{p})
-							server.Logs.AddLog(server.Logs.Script,{
+							Functions.Hint("Made card \""..card.name.."\"",{p})
+							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." performed Trello operation";
 								Desc = "Player created a Trello card";
 							})
@@ -660,12 +678,12 @@ return function()
 			
 			ClientLoaded = function(p,args)
 				local key = tostring(p.userId)
-				local client = server.Remote.Clients[key]
+				local client = Remote.Clients[key]
 				if client and client.LoadingStatus == "LOADING" then
 					client.LastUpdate = tick()
 					client.RemoteReady = true
 					client.LoadingStatus = "READY"
-					server.Process.FinishLoading(p)
+					Process.FinishLoading(p)
 				else
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
@@ -675,7 +693,7 @@ return function()
 				--// LastUpdate should be auto updated upon command finding
 				--[[local key = tostring(p.userId)
 				local special = args[1]
-				local client = server.Remote.Clients[key]
+				local client = Remote.Clients[key]
 				if client then--and special and special == client.Special then
 					client.LastUpdate = tick()
 				end--]]
@@ -690,17 +708,17 @@ return function()
 			end;
 			
 			ProcessCommand = function(p,args)
-				server.Process.Command(p,args[1],{Check=true})	
+				Process.Command(p,args[1],{Check=true})	
 			end;
 			
 			ProcessChat = function(p,args)
-				server.Process.Chat(p,args[1])
-				--server.Process.CustomChat(p,args[1])
+				Process.Chat(p,args[1])
+				--Process.CustomChat(p,args[1])
 			end;
 			
 			ProcessCustomChat = function(p,args)
-				server.Process.Chat(p,args[1],"CustomChat")
-				server.Process.CustomChat(p,args[1],args[2],true)
+				Process.Chat(p,args[1],"CustomChat")
+				Process.CustomChat(p,args[1],args[2],true)
 			end;
 			
 			PrivateMessage = function(p,args)
@@ -709,13 +727,13 @@ return function()
 				local target = args[2]
 				local from = args[3]
 				local message = args[4]
-				server.Remote.MakeGui(target,"PrivateMessage",{
+				Remote.MakeGui(target,"PrivateMessage",{
 					Title = "Reply from ".. p.Name;--title;
 					Player = p;
 					Message = service.Filter(message, p, target);
 				})
 				
-				server.Logs.AddLog(server.Logs.Script,{
+				Logs.AddLog(Logs.Script,{
 					Text = p.Name.." replied to "..tostring(target),
 					Desc = message
 				})
@@ -723,8 +741,8 @@ return function()
 		};
 		
 		Fire = function(p, ...)
-			local keys = server.Remote.Clients[tostring(p.userId)]
-			local RemoteEvent = server.Core.RemoteEvent
+			local keys = Remote.Clients[tostring(p.userId)]
+			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
 				keys.Sent = keys.Sent+1
 				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Sent = 0},...)
@@ -732,21 +750,21 @@ return function()
 		end;
 		
 		Send = function(p,com,...)
-			local keys = server.Remote.Clients[tostring(p.userId)]
+			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
-				server.Remote.Fire(p, server.Remote.Encrypt(com, keys.Key, keys.Cache),...)
+				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 			end
 		end;
 		
 		Get = function(p,com,...)
-			local keys = server.Remote.Clients[tostring(p.userId)]
+			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
 				local returns, finished
-				local key = server.Functions:GetRandom()
+				local key = Functions:GetRandom()
 				local event = service.Events[key]:Connect(function(...) finished = true returns = {...} end)
 				
-				server.Remote.PendingReturns[key] = true
-				server.Remote.Send(p,"GetReturn",com,key,...)
+				Remote.PendingReturns[key] = true
+				Remote.Send(p,"GetReturn",com,key,...)
 				
 				if not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
@@ -766,8 +784,8 @@ return function()
 		end;
 		
 		CheckClient = function(p)
-			local ran,ret = pcall(function() return server.Remote.Get(p,"ClientHooked") end)
-			if ran and ret == server.Remote.Clients[tostring(p.userId)].Special then
+			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
+			if ran and ret == Remote.Clients[tostring(p.userId)].Special then
 				return true 
 			else
 				return false
@@ -775,61 +793,61 @@ return function()
 		end;
 		
 		Ping = function(p)
-			return server.Remote.Get(p,"Ping")
+			return Remote.Get(p,"Ping")
 		end;
 		
 		MakeGui = function(p,GUI,data,themeData)
-			local theme = {Desktop = server.Settings.Theme; Mobile = server.Settings.MobileTheme}
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			server.Remote.Send(p,"UI",GUI,theme,data  or {})
+			Remote.Send(p,"UI",GUI,theme,data  or {})
 		end;
 		
 		MakeGuiGet = function(p,GUI,data,themeData)
-			local theme = {Desktop = server.Settings.Theme; Mobile = server.Settings.MobileTheme}
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			return server.Remote.Get(p,"UI",GUI,theme,data or {})
+			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
 		
 		GetGui = function(p,GUI,data,themeData)
-			return server.Remote.MakeGuiGet(p,GUI,data,themeData)
+			return Remote.MakeGuiGet(p,GUI,data,themeData)
 		end;
 		
 		RemoveGui = function(p,name,ignore)
-			server.Remote.Send(p,"RemoveUI",name,ignore)
+			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
 		
 		NewParticle = function(p,target,type,properties)
-			server.Remote.Send(p,"Function","NewParticle",target,type,properties)
+			Remote.Send(p,"Function","NewParticle",target,type,properties)
 		end;
 		
 		RemoveParticle = function(p,target,name)
-			server.Remote.Send(p,"Function","RemoveParticle",target,name)
+			Remote.Send(p,"Function","RemoveParticle",target,name)
 		end;
 		
 		NewLocal = function(p, type, props, parent)
-			server.Remote.Send(p,"Function","NewLocal",type,props,parent)
+			Remote.Send(p,"Function","NewLocal",type,props,parent)
 		end;
 		
 		MakeLocal = function(p,object,parent,clone)
 			object.Parent = p
 			wait(0.5)
-			server.Remote.Send(p,"Function","MakeLocal",object,parent,clone)
+			Remote.Send(p,"Function","MakeLocal",object,parent,clone)
 		end;
 		
 		MoveLocal = function(p,object,parent,newParent)
-			server.Remote.Send(p,"Function","MoveLocal",object,false,newParent)
+			Remote.Send(p,"Function","MoveLocal",object,false,newParent)
 		end;
 		
 		RemoveLocal = function(p,object,parent,match)
-			server.Remote.Send(p,"Function","RemoveLocal",object,parent,match)
+			Remote.Send(p,"Function","RemoveLocal",object,parent,match)
 		end;
 		
 		SetLighting = function(p,prop,value)
-			server.Remote.Send(p,"Function","SetLighting",prop,value)
+			Remote.Send(p,"Function","SetLighting",prop,value)
 		end;
 		
 		FireEvent = function(p,...)
-			server.Remote.Send(p,"FireEvent",...)
+			Remote.Send(p,"FireEvent",...)
 		end;
 		
 		NewPlayerEvent = function(p,type,func)
@@ -837,47 +855,47 @@ return function()
 		end;
 		
 		StartLoop = function(p,name,delay,funcCode)
-			server.Remote.Send(p,"StartLoop",name,delay,server.Core.ByteCode(funcCode))
+			Remote.Send(p,"StartLoop",name,delay,Core.ByteCode(funcCode))
 		end;
 		
 		StopLoop = function(p,name)
-			server.Remote.Send(p,"StopLoop",name)
+			Remote.Send(p,"StopLoop",name)
 		end;
 		
 		PlayAudio = function(p,audioId,volume,pitch,looped)
-			server.Remote.Send(p,"Function","PlayAudio",audioId,volume,pitch,looped)
+			Remote.Send(p,"Function","PlayAudio",audioId,volume,pitch,looped)
 		end;
 		
 		StopAudio = function(p,id)
-			server.Remote.Send(p,"Function","StopAudio",id)
+			Remote.Send(p,"Function","StopAudio",id)
 		end;
 		
 		FadeAudio = function(p,id,inVol,pitch,looped,incWait)
-			server.Remote.Send(p,"Function","FadeAudio",id,inVol,pitch,looped,incWait)
+			Remote.Send(p,"Function","FadeAudio",id,inVol,pitch,looped,incWait)
 		end;
 		
 		StopAllAudio = function(p)
-			server.Remote.Send(p,"Function","KillAllLocalAudio")
+			Remote.Send(p,"Function","KillAllLocalAudio")
 		end;
 		--[[
 		StartSession = function(p,type,data)
-			local index = server.Functions.GetRandom()
+			local index = Functions.GetRandom()
 			local data = data or {}
 			local custKill = data.Kill
 			data.Type = type
 			data.Player = p
 			data.Index = index
 			data.Kill = function()
-				server.Remote.Sessions[index] = nil
+				Remote.Sessions[index] = nil
 				if custKill then return custKill() end
 				return true
 			end
-			server.Remote.KillSession(p,type)
-			server.Remote.Sessions[index] = data
+			Remote.KillSession(p,type)
+			Remote.Sessions[index] = data
 		end;
 		
 		GetSession = function(p,type)
-			for i,v in pairs(server.Remote.Sessions) do
+			for i,v in pairs(Remote.Sessions) do
 				if v.Type == type and v.Player == p then
 					return v,i
 				end
@@ -885,7 +903,7 @@ return function()
 		end;
 		
 		KillSession = function(p,type)
-			for i,v in pairs(server.Remote.Sessions) do
+			for i,v in pairs(Remote.Sessions) do
 				if v.Type == type and v.Player == p then
 					v.Kill()
 				end
@@ -894,14 +912,14 @@ return function()
 		--]]
 		LoadCode = function(p,code,getResult)
 			if getResult then
-				return server.Remote.Get(p,"LoadCode",server.Core.Bytecode(code))
+				return Remote.Get(p,"LoadCode",Core.Bytecode(code))
 			else
-				server.Remote.Send(p,"LoadCode",server.Core.Bytecode(code))
+				Remote.Send(p,"LoadCode",Core.Bytecode(code))
 			end
 		end;
 		
 		Encrypt = function(str, key, cache)
-			local cache = cache or server.Remote.EncodeCache or {}
+			local cache = cache or Remote.EncodeCache or {}
 			if not key or not str then 
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -942,7 +960,7 @@ return function()
 		end;
 		
 		Decrypt = function(str, key, cache)
-			local cache = cache or server.Remote.DecodeCache or {}
+			local cache = cache or Remote.DecodeCache or {}
 			if not key or not str then 
 				return str 
 			elseif cache[key] and cache[key][str] then

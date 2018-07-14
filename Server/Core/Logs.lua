@@ -8,11 +8,27 @@ logError = nil
 
 --// Special Variables
 return function()
-	local Settings = server.Settings
-	local MaxLogs = Settings.MaxLogs
-	local Logs
+	local MaxLogs = 1000
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local function Init()
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		
+		MaxLogs = Settings.MaxLogs
+		
+		Logs:AddLog("Script", "Logging Module Initialized")
+	end;
 	
 	server.Logs = {
+		Init = Init;
 		Chats = {};
 		Joins = {};
 		Script = {};
@@ -41,16 +57,20 @@ return function()
 			end
 		end;
 		
-		AddLog = function(tab, dat)
-			local log = dat
-			
+		AddLog = function(tab, log, misc)
+			if misc then tab = log log = misc end
 			if type(tab) == "string" then
 				tab = Logs[tab]
 			end
 			
-			if dat.Time then 
-				log.Time = dat.Time 
-			elseif not dat.NoTime then
+			if type(log) == "string" then
+				log = {
+					Text = log;
+					Desc = log;
+				}
+			end
+			
+			if not log.Time and not log.NoTime then
 				log.Time = service.GetTime() 
 			end
 			
@@ -59,15 +79,15 @@ return function()
 				table.remove(tab,#tab)
 			end
 			
-			service.Events.LogAdded:Fire(tab, log) --server.Logs.TabToType(tab))
+			service.Events.LogAdded:Fire(tab, log) --Logs.TabToType(tab))
 		end;
 		
 		ListUpdaters = {
 			ShowTasks = function(plr,arg)
 				if arg then
-					for i,v in next,server.Functions.GetPlayers(plr, arg) do
+					for i,v in next,Functions.GetPlayers(plr, arg) do
 						local temp = {}
-						local cTasks = server.Remote.Get(v, "TaskManager", "GetTasks") or {}
+						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						
 						table.insert(temp,{
 							Text = "Client Tasks",
@@ -85,7 +105,7 @@ return function()
 				else
 					local tasks = service.GetTasks()
 					local temp = {}
-					local cTasks = server.Remote.Get(plr,"TaskManager","GetTasks") or {}
+					local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
 					
 					table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
 					
@@ -116,7 +136,7 @@ return function()
 			DonorList = function()
 				local temptable={}
 				for i,v in pairs(service.Players:children()) do
-					if server.Admin.CheckDonor(v) then
+					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end
 				end
@@ -125,7 +145,7 @@ return function()
 			
 			Errors = function()
 				local tab = {}
-				for i,v in pairs(server.Logs.Errors) do
+				for i,v in pairs(Logs.Errors) do
 					table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
 				end
 				return tab
@@ -133,7 +153,7 @@ return function()
 			
 			ReplicationLogs = function()
 				local tab = {}
-				for i,v in pairs(server.Logs.Replications) do
+				for i,v in pairs(Logs.Replications) do
 					table.insert(tab,{Text=v.Player.." "..v.Action.." "..v.ClassName;Desc = v.Path})
 				end
 				return tab
@@ -141,7 +161,7 @@ return function()
 			
 			NetworkOwners = function()
 				local tab = {}
-				for i,v in pairs(server.Logs.NetworkOwners) do
+				for i,v in pairs(Logs.NetworkOwners) do
 					table.insert(tab,{Text = tostring(v.Player).." made "..tostring(v.Part),Desc = v.Path})
 				end
 				return tab
@@ -149,24 +169,24 @@ return function()
 			
 			ExploitLogs = function()
 				--local temp={}
-				--for i,v in pairs(server.Logs.Errors) do
+				--for i,v in pairs(Logs.Errors) do
 				--	table.insert(tab,{Time = v.Time;Text = v.Text..": "..tostring(v.Desc):sub(1,20),Desc = v.Desc})
 				--end
-				return server.Logs.Exploit
+				return Logs.Exploit
 			end;
 			
 			ChatLogs = function()
-				return server.Logs.Chats
+				return Logs.Chats
 			end;
 			
 			JoinLogs = function()
-				return server.Logs.Joins
+				return Logs.Joins
 			end;
 			
 			PlayerList = function(p)
 				local plrs={}
-				local playz=server.Functions.GrabNilPlayers('all')
-				server.Function.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{p})
+				local playz=Functions.GrabNilPlayers('all')
+				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{p})
 				for i,v in pairs(playz) do
 					cPcall(function()
 						if type(v)=="String" and v=="NoPlayer" then
@@ -174,7 +194,7 @@ return function()
 						else	
 							local ping
 							Routine(function()	
-								ping = server.Ping(v).."ms"
+								ping = Remote.Ping(v).."ms"
 							end)
 							for i=0.1,5,0.1 do
 								if ping then break end
@@ -186,7 +206,7 @@ return function()
 								local ws = ""
 								local jp = ""
 								local hn = ""
-								local hum = server.Functions.FindClass(v.Character,"Humanoid")
+								local hum = Functions.FindClass(v.Character,"Humanoid")
 								if v.Character and hum then
 									h = hum.Health
 									mh = hum.MaxHealth
@@ -206,7 +226,7 @@ return function()
 				end
 				
 				for i=0.1,5,0.1 do
-					if server.Functions.CountTable(plrs)>=server.Functions.CountTable(playz) then break end
+					if Functions.CountTable(plrs)>=Functions.CountTable(playz) then break end
 					wait(0.1)
 				end
 				return plrs
@@ -220,7 +240,7 @@ return function()
 						nilplayers=nilplayers+1
 					end
 				end
-				if server.HTTP.CheckHttp() then
+				if HTTP.CheckHttp() then
 					det.Http='Enabled'
 				else
 					det.Http='Disabled'
@@ -244,26 +264,26 @@ return function()
 				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
 				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
 				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
-				--det.AdminVersion = server.version
+				--det.AdminVersion = version
 				det.ServerStartTime = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and not server.Admin.CheckAdmin(v:GetPlayer(),false) then
+					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
 				det.NonAdmins=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(),false) then
+					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
 				det.CurrentTime=service.GetTime()
-				det.ServerAge=service.GetTime(os.time()-server.Variables.ServerStartTime)
+				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
 				det.Admins=adminnumber
-				det.Objects=#server.Variables.Objects
-				det.Cameras=#server.Variables.Cameras
+				det.Objects=#Variables.Objects
+				det.Cameras=#Variables.Cameras
 				
 				local tab = {}
 				for i,v in pairs(det) do
@@ -274,19 +294,19 @@ return function()
 			
 			CommandLogs = function()
 				local temp={}
-				for i,m in pairs(server.Logs.Commands) do
+				for i,m in pairs(Logs.Commands) do
 					table.insert(temp,{Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
 				end
 		 		return temp
 			end;
 			
 			ScriptLogs = function()
-				return server.Logs.Script
+				return Logs.Script
 			end;
 			
 			RemoteLogs = function(p)
-				if server.Admin.CheckAdmin(p) or server.HTTP.Trello.CheckAgent(p) then
-					return server.Logs.RemoteFires
+				if Admin.CheckAdmin(p) or HTTP.Trello.CheckAgent(p) then
+					return Logs.RemoteFires
 				end
 			end;
 				
@@ -317,7 +337,7 @@ return function()
 				local temp = {"Player is currently unreachable"}
 				
 				if player then
-					temp = (player.Parent and server.Remote.Get(player, "ClientLog")) or temp
+					temp = (player.Parent and Remote.Get(player, "ClientLog")) or temp
 				end
 				
 				return temp
@@ -328,7 +348,7 @@ return function()
 					local temp = {"Player is currently unreachable"}
 					
 					if player then
-						temp = server.Remote.Get(player, "InstanceList") or temp
+						temp = Remote.Get(player, "InstanceList") or temp
 					end
 					
 					return temp
@@ -349,5 +369,5 @@ return function()
 		};
 	};
 	
-	Logs = server.Logs
+	Logs = Logs
 end

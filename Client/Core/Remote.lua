@@ -33,11 +33,23 @@ return function()
 	local script = script
 	local service = service
 	local client = client
+	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Core = client.Core;
+		Variables = client.Variables
+		Functions = client.Functions;
+		Process = client.Process;
+		Remote = client.Remote;
+	end
+	
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
 	
 	client.Remote = {
+		Init = Init;
 		Returns = {};
 		PendingReturns = {};
 		EncodeCache = {};
@@ -51,11 +63,11 @@ return function()
 			end;
 			
 			Ping = function(args)
-				return client.Remote.Ping()
+				return Remote.Ping()
 			end;
 			
 			ClientHooked = function(args)
-				return client.Core.Special
+				return Core.Special
 			end;
 			
 			TaskManager = function(args)
@@ -78,27 +90,27 @@ return function()
 			
 			LoadCode = function(args)
 				local code = args[1]
-				local func = client.Core.LoadCode(code, GetEnv())
+				local func = Core.LoadCode(code, GetEnv())
 				if func then
 					return func()
 				end
 			end;
 			
 			Function = function(args)
-				local func = client.Functions[args[1]]
+				local func = Functions[args[1]]
 				if func and type(func)=="function" then
 					return func(unpack(args,2))
 				end
 			end;
 			
 			UIKeepAlive = function(args)
-				if client.Variables.UIKeepAlive then
-					for ind,g in pairs(client.GUIs) do
+				if Variables.UIKeepAlive then
+					for ind,g in next,client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
 								g.Object.Parent = service.PlayerGui
 							elseif g.Class == "TextLabel" then
-								g.Object.Parent = client.UI.GetHolder()
+								g.Object.Parent = UI.GetHolder()
 							end
 							g.KeepAlive = false
 						else
@@ -114,8 +126,8 @@ return function()
 				local themeData = args[2]
 				local guiData = args[3]
 				
-				--client.Core.Theme = themeData
-				return client.UI.Make(guiName,guiData,themeData)
+				--Core.Theme = themeData
+				return UI.Make(guiName,guiData,themeData)
 			end;
 			
 			InstanceList = function(args)
@@ -138,7 +150,7 @@ return function()
 					end
 				end
 				
-				for i,v in next,service.LogService:GetLogHistory() do
+				for i,v in next,service.LogService:GetLogHistory()do
 					if v.messageType==Enum.MessageType.MessageOutput then
 						toTab(v.message, "Output: ")
 						--table.insert(temp,{Text=v.message,Desc='Output: '..v.message})
@@ -155,24 +167,22 @@ return function()
 				end
 				
 				return temp
-			end;
+			end
 		};
 		
 		UnEncrypted = {
 			LightingChange = function(prop,val)
-				print(prop)
-				print("TICKLE ME!?")
-				client.Variables.LightingChanged = true
+				print(prop,"TICKLE ME!?")
+				Variables.LightingChanged = true
 				service.Lighting[prop] = val
-				client.Anti.LastChanges.Lighting = prop
-				wait(0.1)
-				client.Variables.LightingChanged = false
-				print("TICKLED :)")
-				print(client.Variables.LightingChanged)
-				if client.Anti.LastChanges.Lighting == prop then
-					client.Anti.LastChanges.Lighting = nil
+				Anti.LastChanges.Lighting = prop
+				wait(.1)
+				Variables.LightingChanged = false
+				print("TICKLED :)",Variables.LightingChanged)
+				if Anti.LastChanges.Lighting == prop then
+					Anti.LastChanges.Lighting = nil
 				end
-			end;
+			end
 		};
 		
 		Commands = {
@@ -180,26 +190,26 @@ return function()
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
-				local retfunc = client.Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
+				local retfunc = Remote.Returnables[com]
+				local retable = (retfunc and {pcall(retfunc,parms)})or{}
 				if retable[1] ~= true then
 					logError(retable[2])
 				else
-					client.Remote.Send("GiveReturn",key,unpack(retable,2))
+					Remote.Send("GiveReturn",key,unpack(retable,2))
 				end
 			end;
 			
 			GiveReturn = function(args)
-				if client.Remote.PendingReturns[args[1]] then
-					client.Remote.PendingReturns[args[1]] = nil
+				if Remote.PendingReturns[args[1]] then
+					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
 			end;
 			
 			SetVariables = function(args)
 				local vars = args[1]
-				for var,val in pairs(vars) do
-					client.Variables[var] = val
+				for var,val in next,vars do
+					Variables[var] = val
 				end
 			end;
 			
@@ -220,19 +230,19 @@ return function()
 			end;
 			
 			TestEvent = function(args)
-				client.Remote.PlayerEvent(args[1],unpack(args,2))
+				Remote.PlayerEvent(args[1],unpack(args,2))
 			end;
 			
 			LoadCode = function(args)
 				local code = args[1]
-				local func = client.Core.LoadCode(code, GetEnv())
+				local func = Core.LoadCode(code, GetEnv())
 				if func then
 					return func()
 				end
 			end;
 			
 			LaunchAnti = function(args)
-				client.Anti.Launch(args[1],args[2])
+				Anti.Launch(args[1],args[2])
 			end;
 			
 			UI = function(args)
@@ -240,19 +250,19 @@ return function()
 				local themeData = args[2]
 				local guiData = args[3]
 				
-				--client.Core.Theme = themeData
-				client.UI.Make(guiName,guiData,themeData)
+				--Core.Theme = themeData
+				UI.Make(guiName,guiData,themeData)
 			end;
 			
 			RemoveUI = function(args)
-				client.UI.Remove(args[1],args[2])
+				UI.Remove(args[1],args[2])
 			end;
 			
 			StartLoop = function(args)
 				local name = args[1]
 				local delay = args[2]
 				local code = args[3]
-				local func = client.Core.LoadCode(code, GetEnv())
+				local func = Core.LoadCode(code, GetEnv())
 				if name and delay and code and func then
 					service.StartLoop(name,delay,func)
 				end
@@ -263,7 +273,7 @@ return function()
 			end;
 			
 			Function = function(args)
-				local func = client.Functions[args[1]]
+				local func = Functions[args[1]]
 				if func and type(func)=="function" then
 					Pcall(func,unpack(args,2))
 				end
@@ -271,25 +281,25 @@ return function()
 		};
 		
 		Fire = function(...)
-			local RemoteEvent = client.Core.RemoteEvent
+			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
-				client.Remote.Sent = client.Remote.Sent+1
-				RemoteEvent.Object:FireServer({Module = client.Module, Loader = client.Loader, Sent = client.Remote.Sent, Received = client.Remote.Received},...)
+				Remote.Sent = Remote.Sent+1
+				RemoteEvent.Object:FireServer({Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
 			end
 		end;
 		
 		Send = function(com,...)
-			client.Core.LastUpdate = tick()
-			client.Remote.Fire(client.Remote.Encrypt(com,client.Core.Key),...)
+			Core.LastUpdate = tick()
+			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
 		end;
 		
 		Get = function(com,...)
 			local returns
-			local key = client.Functions:GetRandom()
+			local key = Functions:GetRandom()
 			local event = service.Events[key]:Connect(function(...) returns = {...} end)
 			
-			client.Remote.PendingReturns[key] = true
-			client.Remote.Send("GetReturn",com,key,...)
+			Remote.PendingReturns[key] = true
+			Remote.Send("GetReturn",com,key,...)
 			
 			if not returns then
 				returns = {event:Wait()}
@@ -306,7 +316,7 @@ return function()
 		
 		Ping = function()
 			local t = tick()
-			local ping = client.Remote.Get("Ping")
+			local ping = Remote.Get("Ping")
 			if not ping then return false end
 			local t2 = tick()
 			local mult = 10^3
@@ -315,11 +325,11 @@ return function()
 		end;
 		
 		PlayerEvent = function(event,...)
-			client.Remote.Send("PlayerEvent",event,...)
+			Remote.Send("PlayerEvent",event,...)
 		end;
 		
 		Encrypt = function(str, key, cache)
-			local cache = cache or client.Remote.EncodeCache or {}
+			local cache = cache or Remote.EncodeCache or {}
 			if not key or not str then 
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -361,7 +371,7 @@ return function()
 		end;
 		
 		Decrypt = function(str, key, cache)
-			local cache = cache or client.Remote.DecodeCache or {}
+			local cache = cache or Remote.DecodeCache or {}
 			if not key or not str then 
 				return str 
 			elseif cache[key] and cache[key][str] then

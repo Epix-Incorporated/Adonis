@@ -40,6 +40,8 @@ local _G, game, script, getfenv, setfenv, workspace,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray
+	
+
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local locals = {}
@@ -59,15 +61,15 @@ local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
-local isModule = function(module) for ind,modu in pairs(server.Modules) do if module == modu then return true end end end
+local isModule = function(module)for ind,modu in next,server.Modules do if module == modu then return true end end end
 local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err}) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
-local print = function(...) for i,v in pairs({...}) do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
-local warn = function(...) for i,v in pairs({...}) do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
+local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
+local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
 local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = ypcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Pcall = function(func,...) local ran,error = ypcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Routine = function(func,...)  coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in pairs(t) do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({},{
 		__index = function(tab,ind)
@@ -76,13 +78,11 @@ local GetEnv; GetEnv = function(env, repl)
 		
 		__metatable = unique;
 	})
-	
 	if repl and type(repl)=="table" then
 		for ind, val in next,repl do 
 			scriptEnv[ind] = val
 		end
 	end
-	
 	return scriptEnv
 end;
 
@@ -96,10 +96,18 @@ local LoadModule = function(plugin, yield, envVars)
 	if type(plug) == "function" then
 		if yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			if not ran then
+				warn("Module encountered an error while loading: "..tostring(plugin))
+				warn(tostring(err))
+			end
 		end
 	else
 		server[plugin.Name] = plug
@@ -123,13 +131,11 @@ local CleanUp = function()
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
 	service.Threads.StopAll()
-	
 	for i,v in next,RbxEvents do 
 		print("Disconnecting event") 
 		v:Disconnect() 
 		table.remove(RbxEvents, i) 
 	end
-	
 	loader.Archivable = false
 	loader.Disabled = true
 	loader:Destroy()
@@ -138,11 +144,11 @@ local CleanUp = function()
 		server.Core.RemoteEvent.Event:Disconnect()
 		server.Core.RemoteEvent.DecoySecurity1:Disconnect()
 		server.Core.RemoteEvent.DecoySecurity2:Disconnect()
-		pcall(function() service.Delete(server.Core.RemoteEvent.Object) end)
-		pcall(function() service.Delete(server.Core.RemoteEvent.Decoy1) end)
-		pcall(function() service.Delete(server.Core.RemoteEvent.Decoy2) end)
+		pcall(service.Delete,server.Core.RemoteEvent.Object)
+		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
+		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
 	end
-	warn("Unloading complete")
+	warn'Unloading complete'
 end;
 
 server = {
@@ -154,6 +160,7 @@ server = {
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
 	FilteringEnabled = workspace.FilteringEnabled;
+	ServerStartTime = os.time();
 	CommandCache = {};
 };
 
@@ -223,16 +230,18 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
-for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-pcall(function() return service.Player.Kick end)
+--[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
 script = service.Wrap(script)
 Enum = service.Wrap(Enum)
 game = service.Wrap(game)
-rawequal = service.RawEqual
 workspace = service.Wrap(workspace)
 Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end
-Folder = service.Wrap(Folder)
+require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
+require = function(obj) return oldReq(service.UnWrap(obj)) end
+rawequal = service.RawEqual
+--service.Players = service.Wrap(service.Players)
+--Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
 server.Client = Folder.Parent.Client;
@@ -301,8 +310,8 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
-	service = service;
-} do locals[ind] = loc end
+	service = service
+}do locals[ind] = loc end
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
@@ -320,29 +329,40 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		warn("WARNING: MainModule loaded without using the loader;")
 	end
 	
-	--// Begin script loading
+	--// Begin Script Loading
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	data = service.Wrap(data or {})
 	
-	--// Check Settings/Descs
+	--// Server Variables
 	local setTab = require(server.Deps.DefaultSettings)
 	server.Defaults = setTab
 	server.Settings = data.Settings or setTab.Settings or {}
 	server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 	server.Order = data.Order or setTab.Order or {}
+	server.Data = data or {}
+	server.Model = data.Model or service.New("Model")
+	server.Dropper = data.Dropper or service.New("Script")
+	server.Loader = data.Loader or service.New("Script")
+	server.Runner = data.Runner or service.New("Script")
+	server.ServerPlugins = data.ServerPlugins
+	server.ClientPlugins = data.ClientPlugins
+	server.Threading = require(server.Deps.ThreadHandler)
+	server.Changelog = require(server.Client.Dependencies.Changelog)
+	server.Credits = require(server.Client.Dependencies.Credits)
+	server.Parser = require(server.Deps.Parser)
 	
 	if server.Settings.HideScript and data.Model then
 		data.Model.Parent = nil
 		script:Destroy()
 	end
 	
-	for setting,value in pairs(setTab.Settings) do 
+	for setting,value in next,setTab.Settings do 
 		if server.Settings[setting] == nil then 
 			server.Settings[setting] = value 
 		end 
 	end
 	
-	for desc,value in pairs(setTab.Descriptions) do 
+	for desc,value in next,setTab.Descriptions do 
 		if server.Descriptions[desc] == nil then 
 			server.Descriptions[desc] = value 
 		end 
@@ -368,11 +388,11 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"TestService";
 		"HttpService";
 		"InsertService";
-		"NetworkServer";		
-	} do local temp = service[serv] end
+		"NetworkServer"		
+	}do local temp = service[serv] end
 	
-	--// Load core modules		
-	for ind,load in next,{
+	--// Module LoadOrder List
+	local LoadingOrder = {
 		"Logs";
 		"Variables";
 		"Core";
@@ -383,17 +403,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"HTTP";
 		"Anti";
 		"Commands";
-	} do local modu = Folder.Core:FindFirstChild(load) if modu then LoadModule(modu,true,{script = script}) end end
+	}
 	
-	--// Set stuff
-	server.Data = data or {}
-	server.Model = data.Model or service.New("Model")
-	server.Dropper = data.Dropper or service.New("Script")
-	server.Loader = data.Loader or service.New("Script")
-	server.Runner = data.Runner or service.New("Script")
+	--// Load core modules
+	for ind,load in next,LoadingOrder do 
+		local modu = Folder.Core:FindFirstChild(load) 
+		if modu then 
+			LoadModule(modu,true,{script = script}) 
+		end 
+	end
+
+	--// Initialize Cores
+	for i,name in next,LoadingOrder do
+		local core = server[name]
+		if core and type(core) == "table" and core.Init then
+			core.Init()
+			core.Init = nil
+		elseif type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table" and core.Init then
+			core.Init()
+		end
+	end
+	
+	--// More Variable Initialization
 	server.Variables.CodeName = server.Functions:GetRandom()
-	server.ServerPlugins = data.ServerPlugins
-	server.ClientPlugins = data.ClientPlugins
 	server.Remote.MaxLen = 0
 	server.Logs.Errors = ErrorLogs
 	server.Client = Folder.Parent.Client
@@ -406,10 +438,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
-	server.Threading = require(server.Deps.ThreadHandler)
-	server.Changelog = require(server.Client.Dependencies.Changelog)
-	server.Credits = require(server.Client.Dependencies.Credits)
-	server.Parser = require(server.Deps.Parser)
 	
 	--// Server Specific Service Functions
 	ServiceSpecific.GetPlayers = server.Functions.GetPlayers
@@ -444,15 +472,15 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	--// RemoteEvent Handling
 	server.Core.MakeEvent()	
 	server.Core.PrepareClient()	
-	service.JointsService.Changed:connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-	service.JointsService.ChildRemoved:connect(function(c) 
+	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
+	service.JointsService.ChildRemoved:Connect(function(c) 
 		if server.Core.RemoteEvent and (c == server.Core.RemoteEvent.Object or c == server.Core.RemoteEvent.Decoy1 or c == c == server.Core.RemoteEvent.Decoy2) then 
 			server.Core.MakeEvent() 
 		end 
 	end)
 
 	--// Do some things
-	for com in pairs(server.Remote.Commands) do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
+	for com in next,server.Remote.Commands do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
 	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
 	if not service.NetworkServer then wait(1) end 

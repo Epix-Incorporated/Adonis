@@ -78,7 +78,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	local ThreadService = Instance.new("Folder")
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
-	local Instance = {new = function(obj, parent) return service and service.Wrap(oldInstNew(obj, service.UnWrap(parent))) or oldInstNew(obj, parent) end}
+	local Instance = {new = function(obj, parent) return service and client and service.Wrap(oldInstNew(obj, service.UnWrap(parent)), true) or oldInstNew(obj, parent) end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
 			local index = math.random()
@@ -195,7 +195,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				local Wrapped = service.Wrapped
 				local WrapArgs = service.WrapEventArgs
 				local UnWrapArgs = service.UnWrapEventArgs
-				local event = service.New("BindableEvent")
+				local event = Wrap(service.New("BindableEvent"), client)
 				local hooks = {}
 				
 				event.Event:Connect(function(...)
@@ -251,7 +251,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						if con == 2 or con == special then
 							func(unpack(WrapArgs({...})))
 						end 
-					end))
+					end), client)
 					
 					event2:SetSpecial("Fire", function(i, ...)
 						UnWrap(event):Fire(special, unpack(UnWrapArgs({...})))
@@ -277,6 +277,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				event:SetSpecial("wait", event.Wait)
 				event:SetSpecial("connect", event.Connect)
 				event:SetSpecial("connectOnce", event.ConnectOnce)
+				event:SetSpecial("Event", service.Wrap(event.Event, client))
 				event.Event:SetSpecial("Wait", event.Wait)
 				event.Event:SetSpecial("wait", event.Wait)
 				event.Event:SetSpecial("Connect", event.Connect)
@@ -445,14 +446,15 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return object
 			end
 		end;
-		Wrap = function(object)
+		Wrap = function(object, fullWrap)
+			fullWrap = fullWrap or (fullWrap == nil and client ~= nil) --// Everything clientside should be getting wrapped anyway
 			if getmetatable(object) == "Ignore" or getmetatable(object) == "ReadOnly_Table" then
 				return object
 			elseif Wrappers[object] then
 				return Wrappers[object]
 			elseif type(object) == "table" then
 				local tab = setmetatable({},{__eq = function(tab,val) return object end})
-				for i,v in next,object do tab[i] = service.Wrap(v) end
+				for i,v in next,object do tab[i] = service.Wrap(v, fullWrap) end
 				return tab
 			--[[elseif type(object) == "function" then
 				return function(...)
@@ -460,7 +462,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					return unpack(service.Wrap({object(...)}))
 				end--]]
 			elseif (typeof(object) == "Instance" or typeof(object) == "RBXScriptSignal" or typeof(object) == "RBXScriptConnection") and not service.Wrapped(object) then
-				local Wrap = service.Wrap
+				local Wrap = (not fullWrap and function(...) return ... end) or function(obj) return service.Wrap(obj, fullWrap) end 
 				local UnWrap = service.UnWrap
 				local newObj = newproxy(true)
 				local newMeta = getmetatable(newObj)
@@ -948,7 +950,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						rawset(tabl, ind, new)
 					end
 				end;
-				__metatable = {};
+				
+				__metatable = "ReadOnly_Table";
 				__gc = function()end;
 			}
 		end;
@@ -1021,7 +1024,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if found ~= nil then
 				return found 
 			else
-				local ran,serv = ypcall(function() return service.Wrap(game:GetService(index)) end)
+				local ran,serv = ypcall(function() return (client ~= nil and service.Wrap(game:GetService(index), true)) or game:GetService(index) end)
 				if ran and serv then
 					service[tostring(serv)] = serv
 					return serv
@@ -1042,10 +1045,12 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	service.ThreadService = ThreadService
 	service.EventService = EventService
 	
-	for i,val in next,service do 
-		if type(val) == "userdata" then 
-			service[i] = service.Wrap(val) 
-		end 
+	if client ~= nil then
+		for i,val in next,service do 
+			if type(val) == "userdata" then 
+				service[i] = service.Wrap(val, true) 
+			end 
+		end
 	end
 	
 	for i,v in next,Wrapper do
