@@ -52,7 +52,7 @@ return function()
 				Errors = "Error";
 			}
 			
-			for ind,t in next,Logs do
+			for ind,t in next,server.Logs do
 				if t == tab then
 					return indToName[ind] or ind
 				end
@@ -81,7 +81,7 @@ return function()
 				table.remove(tab,#tab)
 			end
 			
-			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
+			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
 		end;
 		
 		ListUpdaters = {
