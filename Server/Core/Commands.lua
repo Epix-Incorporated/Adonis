@@ -2810,63 +2810,68 @@ return function()
 					end
 				end
 				
-				if Variables.ZaWarudo then
-					local audio = service.New("Sound",workspace)
-					audio.SoundId = "rbxassetid://676242549"
-					audio.Volume = 0.5
-					audio:Play()
-					wait(2)
-					for i,part in next,Variables.FrozenObjects do
-						part.Anchored = false
-					end
-					
-					local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
-					if old then
-						for i = -2,0,0.1 do
-							old.Saturation = i
+				if not Variables.ZaWarudoDebounce then
+					Variables.ZaWarudoDebounce = true
+					delay(10, function() Variables.ZaWarudoDebounce = false end)
+					if Variables.ZaWarudo then
+						local audio = service.New("Sound",workspace)
+						audio.SoundId = "rbxassetid://676242549"
+						audio.Volume = 0.5
+						audio:Play()
+						wait(2)
+						for i,part in next,Variables.FrozenObjects do
+							part.Anchored = false
+						end
+						
+						local old = service.Lighting:FindFirstChild("ADONIS_ZAWARUDO")
+						if old then
+							for i = -2,0,0.1 do
+								old.Saturation = i
+								wait(0.01)
+							end
+							old:Destroy()
+						end
+						
+						local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
+						if audio then
+							audio:Stop()
+							audio:Destroy()
+						end
+						
+						Variables.ZaWarudo:Disconnect()
+						Variables.FrozenObjects = {}
+						Variables.ZaWarudo = false
+						audio:Destroy()
+					else
+						local audio = service.New("Sound",workspace)
+						audio.SoundId = "rbxassetid://274698941"
+						audio.Volume = 10
+						audio:Play()
+						wait(2.25)
+						doPause(workspace)
+						Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
+							if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
+								c.Anchored = true
+								table.insert(Variables.FrozenObjects,c)
+							end
+						end)
+						
+						local cc = service.New("ColorCorrectionEffect",service.Lighting)
+						cc.Name = "ADONIS_ZAWARUDO"
+						for i = 0,-2,-0.1 do
+							cc.Saturation = i
 							wait(0.01)
 						end
-						old:Destroy()
-					end
-					
-					local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
-					if audio then
-						audio:Stop()
+						
 						audio:Destroy()
+						local clock = service.New("Sound",workspace)
+						clock.Name = "ADONIS_CLOCK_AUDIO"
+						clock.SoundId = "rbxassetid://160189066"
+						clock.Looped = true
+						clock.Volume = 1
+						clock:Play()
 					end
-					
-					Variables.ZaWarudo:Disconnect()
-					Variables.FrozenObjects = {}
-					Variables.ZaWarudo = false
-					audio:Destroy()
-				else
-					local audio = service.New("Sound",workspace)
-					audio.SoundId = "rbxassetid://274698941"
-					audio.Volume = 10
-					audio:Play()
-					wait(2.25)
-					doPause(workspace)
-					Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
-						if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
-							c.Anchored = true
-							table.insert(Variables.FrozenObjects,c)
-						end
-					end)
-					
-					local cc = service.New("ColorCorrectionEffect",service.Lighting)
-					cc.Name = "ADONIS_ZAWARUDO"
-					for i = 0,-2,-0.1 do
-						cc.Saturation = i
-						wait(0.01)
-					end
-					
-					audio:Destroy()
-					local clock = service.New("Sound",workspace)
-					clock.Name = "ADONIS_CLOCK_AUDIO"
-					clock.SoundId = "rbxassetid://160189066"
-					clock.Looped = true
-					clock.Volume = 1
-					clock:Play()
+					Variables.ZaWarudoDebounce = false
 				end
 			end
 		};

@@ -41,13 +41,15 @@ return function()
 		
 		TabToType = function(tab)
 			local indToName = {
-				Joins = "Join";
 				Chats = "Chat";
-				Errors = "Error";
-				Commands = "Command";
-				RemoteFires = "RemoteFire";
+				Joins = "Join";
+				Script = "Script";
 				Replications = "Replication";
 				NetworkOwners = "NetworkOwner";
+				RemoteFires = "RemoteFire";
+				Commands = "Command";
+				Exploit = "Exploit";
+				Errors = "Error";
 			}
 			
 			for ind,t in next,Logs do
@@ -79,7 +81,7 @@ return function()
 				table.remove(tab,#tab)
 			end
 			
-			service.Events.LogAdded:Fire(tab, log) --Logs.TabToType(tab))
+			service.Events.LogAdded:Fire(Logs.TabToType(tab), log, tab)
 		end;
 		
 		ListUpdaters = {

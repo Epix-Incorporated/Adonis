@@ -1,6 +1,15 @@
 return {
-	"Version: 136";
+	"Version: 138";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.26b [7/22/2018]";
+	"*Added a debounce to :zawarudo";
+	"*LogAdded event will now have a string for the type of log as first arg (eg \"Chat\" when a chat log is added)";
+	"";
+	"1.2.25b [6/27/2018]";
+	"*Merged GitHub pull requests";
+	"*Changed a bunch of stuff (localized some tables in server in each core module; server.TableHere.Whatever is now just TableHere.Whatever";
+	"*Stopped enforcing server-side instancce wrapping; May improve server performance";
 	"";
 	"1.2.24b [6/13/2018]";
 	"*Updated team commands";
