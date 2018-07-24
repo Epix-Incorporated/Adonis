@@ -9381,6 +9381,197 @@ return function()
 			end
 		};
 		
+		ifoundyou = {
+			Prefix = server.Settings.Prefix; 														
+			Commands = {"ufo","abduct","space","fromanotherworld","newmexico","area51","rockwell"}; 
+			Args = {"player"}; 																		
+			Description = "A world unlike our own.";												
+			Fun = true; 																			
+			Hidden = true; 																			
+			AdminLevel = "Admins"; 																	
+			Function = function(plr,args) 															
+				local data = server.Core.GetPlayer(plr)
+				local forYou = {
+					'"Who are you?"';
+					'"I am Death," said the creature. "I thought that was obvious."';
+					'"But you\'re so small!"';
+					'"Only because you are small."';
+					'"You are young and far from your Death, September, ..."';
+					'"... so I seem as anything would seem if you saw it from a long way off ..."';
+					'"... very small, very harmless."';
+					'"But I am always closer than I appear."'; 
+					'"As you grow, I shall grow with you ..."';
+					'"... until at the end, I shall loom huge and dark over your bed ..."';
+					'"... and you will shut your eyes so as not to see me."';
+					
+					'Find me.';
+					'Fear me.';
+					'Love me.';
+				}
+				
+				if not args[1] then
+					local ind = data.SleepInParadise or 1
+					data.SleepInParadise = ind+1
+					
+					if ind == 14 then
+						data.SleepInParadise = 12
+					end
+					
+					error(forYou[ind])
+				end
+				
+				for i,p in next,service.GetPlayers(plr,args[1]) do 
+					service.TrackTask("Thread: UFO", function()
+						local char = p.Character 
+						local torso = p.Character:FindFirstChild("HumanoidRootPart") 
+						local humanoid = p.Character:FindFirstChild("Humanoid")
+						
+						if torso and humanoid and not char:FindFirstChild("ADONIS_UFO") then 
+							local ufo = server.Deps.Assets.UFO:Clone()
+							if ufo then
+								local function check()
+									if not ufo.Parent or p.Parent ~= service.Players or not torso.Parent or not humanoid.Parent or not char.Parent then
+										return false
+									else
+										return true
+									end
+								end
+								
+								local light = ufo.Light
+								local rotScript = ufo.Rotator
+								local beam = ufo.BeamPart
+								local spotLight = light.SpotLight
+								local particles = light.ParticleEmitter
+								local primary = ufo.Primary
+								local bay = ufo.Bay
+								
+								local hum = light.Humming
+								local leaving = light.Leaving
+								local idle = light.Idle
+								local beamSound = light.Beam
+								
+								local tPos = torso.CFrame
+								local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
+								
+								humanoid.Name = "NoResetForYou"
+								humanoid.WalkSpeed = 0
+								ufo.Name = "ADONIS_UFO"
+								ufo.PrimaryPart = primary
+								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
+								
+								spotLight.Enabled = false
+								particles.Enabled = false
+								beam.Transparency = 1
+								
+								ufo.Parent = p.Character
+								
+								wait()
+								rotScript.Disabled = false
+								
+								for i = 1,200 do
+									if not check() then
+										break
+									else
+										ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
+										wait(0.001*(i/5))
+									end
+								end
+								
+								if check() then
+									wait(1)
+									spotLight.Enabled = true
+									particles.Enabled = true
+									beam.Transparency = 0.5
+									beamSound:Play()
+									
+									local tween = service.TweenService:Create(torso, info, {
+										CFrame = bay.CFrame*CFrame.new(0, 0, 0)
+									})
+									
+									torso.Anchored = true
+									tween:Play()
+									
+									for i,v in next,p.Character:GetChildren() do
+										if v:IsA("BasePart") then
+											service.TweenService:Create(v, TweenInfo.new(1), {
+												Transparency = 1
+											}):Play()
+											--v:ClearAllChildren()
+										end
+									end
+									
+									wait(5)
+									
+									spotLight.Enabled = false
+									particles.Enabled = false
+									beam.Transparency = 1
+									beamSound:Stop()
+									
+									--idle:Stop()
+									--leaving:Play()
+									
+									Remote.LoadCode(p,[[
+										local cam = workspace.CurrentCamera
+										local player = service.Players.LocalPlayer
+										local ufo = player.Character:FindFirstChild("ADONIS_UFO")
+										if ufo then
+											local part = ufo:FindFirstChild("Bay")
+											if part then
+												--cam.CameraType = "Track"
+												cam.CameraSubject = part
+											end
+										end
+									]])
+									
+									for i,v in next,p.Character:GetChildren() do
+										if v:IsA("BasePart") then
+											v.Anchored = true
+											v.Transparency = 1
+											pcall(function() v:FindFirstChildOfClass("Decale"):Destroy() end)
+										elseif v:IsA("Accoutrement") then
+											v:Destroy()
+										end
+									end
+									
+									wait(1)
+									
+									server.Remote.MakeGui(p,"Effect",{
+										Mode = "FadeOut";
+									})
+									
+									for i = 1,260 do
+										if not check() then
+											break
+										else
+											ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
+											--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
+											wait(0.001*(i/5))
+										end
+									end
+									
+									if check() then
+										p.CameraMaxZoomDistance = 0.5
+										
+										local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
+										local bg = Instance.new("Frame", gui)
+										bg.BackgroundTransparency = 0
+										bg.BackgroundColor3 = Color3.new(0,0,0)
+										bg.Size = UDim2.new(2,0,2,0)
+										bg.Position = UDim2.new(-0.5,0,-0.5,0)
+										if p and p.Parent == service.Players then service.TeleportService:Teleport(527443962,p,nil,bg) end
+										wait(0.5)
+										pcall(function() gui:Destroy() end)
+									end
+								end
+								
+								pcall(function() ufo:Destroy() end)
+							end
+						end
+					end)
+				end
+			end;
+		};
+		
 		Blind = {
 			Prefix = Settings.Prefix;
 			Commands = {"blind";};

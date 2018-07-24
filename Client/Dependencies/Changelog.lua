@@ -1,6 +1,9 @@
 return {
-	"Version: 138";
+	"Version: 139";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.27b [7/24/2018]";
+	"*They come from a world unlike our own.";
 	"";
 	"1.2.26b [7/22/2018]";
 	"*Added a debounce to :zawarudo";
