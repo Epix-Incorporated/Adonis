@@ -9368,6 +9368,133 @@ return function()
 			end
 		};
 		
+		Thanos = {
+			Prefix = server.Settings.Prefix; 														
+			Commands = {"thanos", "thanossnap","balancetheserver", "snap"}; 
+			Args = {"(opt)player"}; 																		
+			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";												
+			Fun = true; 																			
+			Hidden = false; 																			
+			AdminLevel = "Owners"; 																	
+			Function = function(plr,args)
+				local players = {}
+				local deliverUs = {}
+				local playerList = service.GetPlayers(args[1] and plr, args[1])
+				local plrLevel = server.Admin.GetLevel(plr)
+				
+				local audio = Instance.new("Sound")
+				audio.Name = "Adonis_Snap"
+				audio.SoundId = "rbxassetid://".. 2231214507
+				audio.Looped = false
+				audio.Volume = 1
+				audio.PlayOnRemove = true
+				
+				local thanos = audio:Clone()
+				thanos.Name = "Adonis_Thanos"
+				thanos.SoundId = "rbxassetid://".. 2231229572
+				
+				thanos.Parent = service.SoundService
+				audio.Parent = service.SoundService
+				
+				wait()
+				thanos:Destroy()
+				wait(1)
+				audio:Destroy()
+				
+				for i = 1, #playerList*10 do
+					if #players < math.max((#playerList/2), 1) then
+						local index = math.random(1, #playerList)
+						local targPlayer = playerList[index]
+						if not deliverUs[targPlayer] then
+							local targLevel = server.Admin.GetLevel(targPlayer)
+							if targLevel < plrLevel then
+								deliverUs[targPlayer] = true
+								table.insert(players, targPlayer)
+							else
+								table.remove(playerList, index)
+							end
+							wait()
+						end
+					else
+						break
+					end
+				end
+				
+				for i,p in next,players do 
+					service.TrackTask("Thread: Thanos", function()
+						for t = 0.1,1.1,0.05 do
+							if p.Character then
+								local human = p.Character:FindFirstChildOfClass("Humanoid")
+								if human then
+									human.HealthDisplayDistance = 1
+									human.NameDisplayDistance = 1
+									human.HealthDisplayType = "AlwaysOff"
+									human.NameOcclusion = "OccludeAll"
+								end
+								
+								for k,v in ipairs(p.Character:GetChildren()) do
+									if v:IsA("BasePart") then
+										local decal = v:FindFirstChildOfClass("Decal")
+										local foundDust = v:FindFirstChild("Thanos_Emitter")
+										local trans = (t/k)+t
+										
+										if decal then
+											decal.Transparency = trans
+										end
+										
+										v.Transparency = trans
+										
+										if v.Color ~= Color3.fromRGB(106, 57, 9) then
+											v.Color = v.Color:lerp(Color3.fromRGB(106, 57, 9), 0.05)
+										end
+										
+										if not foundDust and t < 0.3 then 
+											local em = Instance.new("ParticleEmitter")
+											em.Color = ColorSequence.new(Color3.fromRGB(199, 132, 65))
+											em.LightEmission = 0.5
+											em.LightInfluence = 0
+											em.Size = NumberSequence.new(2, 3, 1)
+											em.Texture = "rbxassetid://173642823"
+											em.Transparency = NumberSequence.new(0,1,0,0.051532,0,0,0.927577,0,0,1,1,0)
+											em.Acceleration = Vector3.new(1, 0.1, 0)
+											em.VelocityInheritance = 0
+											em.EmissionDirection = "Top"
+											em.Lifetime = NumberRange.new(3, 8)
+											em.Rate = 10
+											em.Rotation = NumberRange.new(0, 135)
+											em.RotSpeed = NumberRange.new(10, 20)
+											em.Speed = NumberRange.new(0, 0)
+											em.SpreadAngle = Vector2.new(0, 0)
+											em.Name = "Thanos_Emitter"
+											em.Parent = v
+										elseif t > 0.5 then
+											foundDust.Enabled = false
+										end
+									end
+								end
+							end
+							
+							--[[local root = p.Character:FindFirstChild("HumanoidRootPart")
+							if root then
+								local part = Instance.new("Part")
+								part.Anchored = false
+								part.CanCollide = true
+								part.BrickColor = BrickColor.new("Burnt Sienna")
+								part.Size = Vector3.new(0.1,0.1,0.1)
+								part.CFrame = root.CFrame*CFrame.new(math.random(-3,3), math.random(-3,3), math.random(-3,3))
+								part.Parent = workspace
+								service.Debris:AddItem(part, 5)
+							end--]]
+							wait(0.2)
+						end
+						
+						wait(1)
+						p:Kick("\"I don't feel so good\"")
+					end)
+				end
+			end;
+		};
+		
 		iloveyou = {
 			Prefix = "?";
 			Commands = {"iloveyou";"alwaysnear";"alwayswatching";};
@@ -9380,6 +9507,7 @@ return function()
 				Remote.MakeGui(plr,"Effect",{Mode = "lifeoftheparty"})
 			end
 		};
+		
 		
 		ifoundyou = {
 			Prefix = server.Settings.Prefix; 														

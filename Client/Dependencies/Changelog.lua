@@ -1,6 +1,12 @@
 return {
-	"Version: 139";
+	"Version: 141";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.29b [8/17/2018]";
+	"*Added :thanos so you can bring perfect balance to the server";
+	"";
+	"1.2.28b [8/16/2018]";
+	"*Fixed the window close button missing its 'x'";
 	"";
 	"1.2.27b [7/24/2018]";
 	"*They come from a world unlike our own.";
