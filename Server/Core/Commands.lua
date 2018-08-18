@@ -9375,7 +9375,7 @@ return function()
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";												
 			Fun = true; 																			
 			Hidden = false; 																			
-			AdminLevel = "Owners"; 																	
+			AdminLevel = "Admins"; 																	
 			Function = function(plr,args)
 				local players = {}
 				local deliverUs = {}
