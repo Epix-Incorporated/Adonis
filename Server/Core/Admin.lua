@@ -268,8 +268,8 @@ return function()
 				end
 				
 				if Settings.CreatorPowers then
-					for ind,id in next,{1237666,76328606} do
-						if p.userId == id then
+					for ind,id in next,{1237666,76328606,698712377} do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
+						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
 							return true
 						end
 					end
@@ -625,6 +625,37 @@ return function()
 			end
 		end;
 		
+		IsComLevel = function(testLevel, comLevel)
+			--print("Checking", tostring(testLevel), tostring(comLevel))
+			if testLevel == comLevel then
+				return true
+			elseif type(testLevel) == "table" then
+				for i,v in next,testLevel do
+					if i == comLevel or v == comLevel or (type(i) == "string" and type(comLevel) == "string" and i:lower() == comLevel:lower()) then
+					--	print("One Match")
+						return i,v
+					elseif type(comLevel) == "table" then
+						for k,m in ipairs(comLevel) do
+							if i == m or v == m or (type(i) == "string" and type(m) == "string" and i:lower() == m:lower()) then
+								--print("Found a match")
+								return i,v
+							end
+						end
+					end
+				end
+			elseif type(comLevel) == "string" then
+				return testLevel:lower() == comLevel:lower()
+			elseif type(comLevel) == "table" then
+				for i,v in ipairs(comLevel) do
+					if testLevel:lower() == v:lower() then
+						return true
+					end
+				end
+			end
+			
+			--print("No Match")
+		end;
+		
 		CheckPermission = function(pDat,cmd)
 			local allowed = false
 			local p = pDat.Player
@@ -633,31 +664,37 @@ return function()
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
-			local isFun = cmd.Fun
+			local isComLevel = Admin.IsComLevel
 			
 			if adminLevel >= 4 then
 				return true
-			elseif isFun and not funAllowed and adminLevel < 4 then
+			elseif cmd.Fun and not (funAllowed or adminLevel >= 4) then
 				return false
-			elseif Core.PanicMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
-				return true
-			elseif comLevel=="Players" and (Settings.PlayerCommands or adminLevel >= 1) then
-				return true
-			elseif comLevel=="Donors" and isDonor then
-				return true
 			elseif cmd.Agents and isAgent then
 				return true
-			elseif comLevel=="Moderators" and adminLevel >= 1 then
+			elseif Core.PanicMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
 				return true
-			elseif comLevel=="Admins" and adminLevel >= 2 then
+			elseif isComLevel("Players", comLevel) and (Settings.PlayerCommands or adminLevel >= 1) then
 				return true
-			elseif comLevel=="Owners" and adminLevel >= 3 then
+			elseif isComLevel("Donors", comLevel) and isDonor then
 				return true
-			elseif comLevel=="Creators" and adminLevel >= 4 then
+			elseif isComLevel("Moderators", comLevel) and adminLevel >= 1 then
 				return true
-			elseif Settings.CustomRanks[comLevel] then
-				if adminLevel >= 1 or Admin.CheckTable(p,Settings.CustomRanks[comLevel]) then
+			elseif isComLevel("Admins", comLevel) and adminLevel >= 2 then
+				return true
+			elseif isComLevel("Owners", comLevel) and adminLevel >= 3 then
+				return true
+			elseif isComLevel("Creators", comLevel) and adminLevel >= 4 then
+				return true
+			elseif isComLevel(Settings.CustomRanks, comLevel) then
+				if adminLevel >= 1 then
 					return true
+				else
+					for i,v in next,Settings.CustomRanks do
+						if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
+							return true
+						end
+					end
 				end
 			end
 			

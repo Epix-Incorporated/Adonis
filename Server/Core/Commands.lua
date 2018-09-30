@@ -316,13 +316,25 @@ return function()
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
 				local tab = {}
+				local cStr
 				
 				for i,v in next,commands do
-					table.insert(tab, {
-						Text = Admin.FormatCommand(v),
-						Desc = "["..v.AdminLevel.."] "..v.Description,
-						Filter = v.AdminLevel
-					})
+					if not v.Hidden then
+						if type(v.AdminLevel) == "table" then
+							cStr = ""
+							for k,m in ipairs(v.AdminLevel) do
+								cStr = cStr..m..", "
+							end
+						else
+							cStr = tostring(v.AdminLevel)
+						end
+						
+						table.insert(tab, {
+							Text = Admin.FormatCommand(v),
+							Desc = "["..cStr.."] "..v.Description,
+							Filter = v.AdminLevel
+						})
+					end
 				end
 				
 				Remote.MakeGui(plr,"List",
@@ -9389,7 +9401,7 @@ return function()
 				audio.Volume = 1
 				audio.PlayOnRemove = true
 				
-				local thanos = audio:Clone()
+				--[[local thanos = audio:Clone()
 				thanos.Name = "Adonis_Thanos"
 				thanos.SoundId = "rbxassetid://".. 2231229572
 				
@@ -9397,8 +9409,8 @@ return function()
 				audio.Parent = service.SoundService
 				
 				wait()
-				thanos:Destroy()
-				wait(1)
+				thanos:Destroy()--]]
+				wait()
 				audio:Destroy()
 				
 				for i = 1, #playerList*10 do

@@ -1,6 +1,18 @@
 return {
-	"Version: 141";
+	"Version: 143";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.30b [9/30/2018]";
+	"*Commands now support multiple admin levels (as a table)";
+	"*This change is intended to allow one command to be assigned to multiple custom ranks";
+	"*Also first update from new account :)! Hopefully my little redirection thinger works for the old version qq";
+	"";
+	"===========================";
+	"*DEVELOPEMENT MOVED!";
+	"*Moved development to account \"Skeletarius/Davey_Bones\"";
+	"*This will be the new primary developer of Adonis (This is still me (Sceleratis))";
+	"*Please update your loader to the new one located in Skeletarius' models";
+	"===========================";
 	"";
 	"1.2.29b [8/17/2018]";
 	"*Added :thanos so you can bring perfect balance to the server";
