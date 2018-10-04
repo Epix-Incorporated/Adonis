@@ -1,6 +1,16 @@
 return {
-	"Version: 143";
+	"Version: 145";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.32b [10/3/2018]";
+	"*Fixed custom chat";
+	"*Window GUI now uses custom drag handler (replaces frame.Draggable)";
+	"*Window GUI now uses DisplayOrder";
+	"*Window GUI will now change DisplayOrder to focus windows when you click in them or drag them";
+	"*Updated UserPanel GUI (only took me forever to finally get around to it (literally almost a year now qq))";
+	"";
+	"1.2.31b [10/3/2018]";
+	"*Fixed a bug that caused an error in the local log about Backpack missing";
 	"";
 	"1.2.30b [9/30/2018]";
 	"*Commands now support multiple admin levels (as a table)";

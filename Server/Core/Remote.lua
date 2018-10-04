@@ -229,9 +229,10 @@ return function()
 				local playerData = Core.GetPlayer(p)
 				local donor = args[1]
 				local resp = "OK"
-				if type(donor)=="table" and donor.Cape and type(donor.Cape)=="table" then
+				if type(donor) == "table" and donor.Cape and type(donor.Cape) == "table" then
+					print(donor.Cape.Image)
 					playerData.Donor = donor
-					Core.SavePlayer(p,playerData)
+					Core.SavePlayer(p, playerData)
 					if donor.Enabled then
 						Functions.Donor(p)
 					else
@@ -534,8 +535,9 @@ return function()
 				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
 				if retable[1] ~= true then
 					logError(p,retable[2])
+					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send(p,"GiveReturn",key,unpack(retable,2))
+					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
 				end
 			end;
 			
@@ -776,7 +778,11 @@ return function()
 				event:Disconnect()
 				
 				if returns then
-					return unpack(returns)
+					if returns[1] == "__ADONIS_RETURN_ERROR" then
+						error(returns[2])
+					else
+						return unpack(returns)
+					end
 				else
 					return nil
 				end

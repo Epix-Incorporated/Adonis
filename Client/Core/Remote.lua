@@ -97,9 +97,16 @@ return function()
 			end;
 			
 			Function = function(args)
-				local func = Functions[args[1]]
-				if func and type(func)=="function" then
-					return func(unpack(args,2))
+				local func = client.Functions[args[1]]
+				if func and type(func) == "function" then
+					return func(unpack(args, 2))
+				end
+			end;
+				
+			Handler = function(args)
+				local handler = client.Handlers[args[1]]
+				if handler and type(handler) == "function" then
+					return handler(unpack(args, 2))
 				end
 			end;
 			
@@ -191,11 +198,12 @@ return function()
 				local key = args[2]
 				local parms = {unpack(args,3)}
 				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,parms)})or{}
+				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
 				if retable[1] ~= true then
 					logError(retable[2])
+					Remote.Send("GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					Remote.Send("GiveReturn",key,unpack(retable,2))
+					Remote.Send("GiveReturn", key, unpack(retable,2))
 				end
 			end;
 			
@@ -273,11 +281,18 @@ return function()
 			end;
 			
 			Function = function(args)
-				local func = Functions[args[1]]
-				if func and type(func)=="function" then
+				local func = client.Functions[args[1]]
+				if func and type(func) == "function" then
 					Pcall(func,unpack(args,2))
 				end
 			end;
+			
+			Handler = function(args)
+				local handler = client.Handlers[args[1]]
+				if handler and type(handler) == "function" then
+					Pcall(handler, unpack(args, 2))
+				end
+			end
 		};
 		
 		Fire = function(...)
@@ -308,7 +323,11 @@ return function()
 			event:Disconnect()
 			
 			if returns then
-				return unpack(returns)
+				if returns[1] == "__ADONIS_RETURN_ERROR" then
+					error(returns[2])
+				else
+					return unpack(returns)
+				end
 			else
 				return nil
 			end

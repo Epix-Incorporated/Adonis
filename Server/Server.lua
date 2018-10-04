@@ -2,7 +2,7 @@
 -- Adonis Server --
 -------------------
 																																																																																						  --[[
-If you find bugs, typos, or ways to improve something please message me (Sceleratis) with 
+If you find bugs, typos, or ways to improve something please message me (Sceleratis/Davey_Bones) with 
 what you found so the script can be better. 
 
 Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.	

@@ -126,6 +126,7 @@ local LoadModule = function(plugin, yield, envVars)
 end;
 
 client = {
+	Handlers = {};
 	Modules = {};
 	Service = service;
 	Module = script;
@@ -448,6 +449,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.Core.Special = depsName
 	client = service.ReadOnly(client, {
 		[client.Variables] = true;
+		[client.Handlers] = true;
 		G_API = true;
 		G_Access = true;
 		G_Access_Key = true;

@@ -103,7 +103,7 @@ return function()
 			newEnv.service.Threads = service.CloneTable(service.Threads)
 			
 			for i,v in next,newEnv.client do
-				if type(v) == "table" and i ~= "Variables" then
+				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
 					newEnv.client[i] = service.CloneTable(v)
 				end
 			end

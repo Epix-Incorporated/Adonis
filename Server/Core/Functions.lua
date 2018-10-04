@@ -782,9 +782,9 @@ return function()
 				if donor and donor.Enabled then
 					local img,color,material
 					if donor and donor.Cape then 
-						img,color,material=donor.Cape.Image,donor.Cape.Color,donor.Cape.Material
+						img,color,material = donor.Cape.Image,donor.Cape.Color,donor.Cape.Material
 					else
-						img,color,material='0','White','Neon'
+						img,color,material = '0','White','Neon'
 					end 
 					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 						Functions.Cape(plr,true,material,color,img)

@@ -216,7 +216,7 @@ return function()
 			if data then
 				for i,v in next,service.GetPlayers() do
 					if Admin.GetLevel(v) > 0 then
-						Remote.Send(v,'Function','SendToChat',data.Player,data.Message,"Cross")
+						Remote.Send(v,"handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
 				end
 			end
@@ -245,31 +245,33 @@ return function()
 						b='UnIgnore'
 					end
 				end
+				
 				for i,v in pairs(service.GetPlayers(p,target,true)) do
-					Routine(function()
+					--Routine(function()
 						local a = service.Filter(a,p,v)
-						if p.Name==v.Name and b~='Private' and b~='Ignore' and b~='UnIgnore' then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Global' then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Team' and p.TeamColor==v.TeamColor then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Private' and v.Name~=p.Name then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Nil' then
-							Remote.Send(v,'Function','SendToChat',p,a,b)
-						elseif b=='Ignore' and v.Name~=p.Name then
+						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == "Global" then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == 'Team' and p.TeamColor == v.TeamColor then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == 'Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == 'Private' and v.Name ~= p.Name then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						elseif b == 'Nil' then
+							Remote.Send(v,"Handler","ChatHandler",p,a,b)
+						--[[elseif b == 'Ignore' and v.Name ~= p.Name then
 							Remote.Send(v,'AddToTable','IgnoreList',v.Name)
-						elseif b=='UnIgnore' and v.Name~=p.Name then
-							Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)
+						elseif b == 'UnIgnore' and v.Name ~= p.Name then
+							Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
 						end
-					end)
+					--end)
 				end
 			end
+			
 			service.Events.CustomChat:fire(p,a,b)
 		end;
 		

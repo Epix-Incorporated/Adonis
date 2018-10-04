@@ -2,6 +2,43 @@
 client = nil
 service = nil
 
+local canEditTables = {
+	Admins = true;
+	Owners = true;
+	Moderators = true;
+	Banned = true;
+	Muted = true;
+	Blacklist = true;
+	Whitelist = true;
+	Permissions = true;
+	MusicList = false;
+	CapeList = false;
+	CustomRanks = false;
+	
+	OnStartup = true;
+	OnJoin = true;
+	OnSpawn = true;
+	
+	Allowed_API_Calls = false;
+	AntiInsert = false;
+}
+
+local function tabToString(tab)
+	if type(tab) == "table" then
+		local str = ""
+		for i,v in next,tab do
+			if #str > 0 then
+				str = str.. "; "
+			end
+			
+			str = str.. tostring(i) ..": ".. tostring(v)
+		end
+		return str
+	else
+		return tostring(tab)
+	end
+end
+
 return function(data)
 	local gTable
 	local window = client.UI.Make("Window",{
@@ -17,22 +54,152 @@ return function(data)
 	local function showTable(tab, setting)
 		local tabWindow = client.UI.Make("Window",{
 			Name  = setting .. "EditSettingsTable";
-			Title = setting.. " Table";
+			Title = setting .. " Table Editor";
 			Size  = {320, 300};
 			AllowMultiple = false;
 		})
 		
 		if tabWindow then
 			--// Display tab & allow changes
-			local scroll = tabWindow:Add("ScrollingFrame", {
+			local items = tabWindow:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
+				BackgroundTransparency = 1;
 			})
 			
-			local add = tabWindow:Add("TextButton", {
-				Text = "Add";
+			if canEditTables[setting] then
+				local selected
+				local inputBlock
 				
-			})
+				local function showItems()
+					local num = 0
+					selected = nil
+					items:ClearAllChildren();
+					
+					for i,v in next,tab do
+						items:Add("TextButton", {
+							Text = tabToString(v);
+							Size = UDim2.new(1, 0, 0, 25);
+							Position = UDim2.new(0, 0, 0, num*25);
+							Visible = true;
+							ZIndex = 100;
+							OnClicked = function(button)
+								if selected then
+									selected.Button.BackgroundTransparency = 0
+								end
+								
+								button.BackgroundTransparency = 0.5
+								selected = {
+									Index = i;
+									Value = v;
+									Button = button;
+								}
+							end
+						})
+						
+						num = num + 1
+					end
+					
+					items:ResizeCanvas(false, true)
+				end
+				
+				local entryText
+				local entryBox; entryBox = tabWindow:Add("Frame", {
+					Visible = false;
+					Size = UDim2.new(0, 200, 0, 75);
+					Position = UDim2.new(0.5, -100, 0.5, -100);
+					Children = {
+						{
+							Class = "TextLabel";
+							Text = "Entry:";
+							Position = UDim2.new(0, 15, 0, 10);
+							Size = UDim2.new(0, 40, 0, 25);
+							BackgroundTransparency = 1;
+						};
+						{
+							Class = "TextButton";
+							Text = "Add";
+							Position = UDim2.new(0.5, 0, 1, -30);
+							Size = UDim2.new(0.5, -20, 0, 20);
+							BackgroundTransparency = 1;
+							OnClicked = function()
+								if not inputBlock then
+									inputBlock = true
+									if #entryText.Text > 0 then
+										client.Remote.Send("SaveTableAdd", setting, entryText.Text)
+										table.insert(tab, entryText.Text)
+									end
+									wait(0.5)
+									entryBox.Visible = false
+									inputBlock = false
+									showItems()
+								end
+							end
+						};
+						{
+							Class = "TextButton";
+							Text = "Cancel";
+							Position = UDim2.new(0, 10, 1, -30);
+							Size = UDim2.new(0.5, -20, 0, 20);
+							BackgroundTransparency = 1;
+							OnClicked = function()
+								if not inputBlock then
+									inputBlock = false
+									entryBox.Visible = false
+								end
+							end
+						};
+					}
+				})
+				
+				entryText = entryBox:Add("TextBox", {
+					Position = UDim2.new(0, 55, 0, 10);
+					Size = UDim2.new(1, -60, 0, 25);
+					Text = "";
+					PlaceholderText = "Type entry here";
+					TextScaled = true;
+					BackgroundColor3 = Color3.new(1,1,1);
+					BackgroundTransparency = 0.8;
+				})
+				
+				tabWindow:Add("TextButton", {
+					Text = "Remove";
+					Position = UDim2.new(0, 5, 1, -25);
+					Size = UDim2.new(0.5, -10, 0, 20);
+					OnClicked = function(button)
+						if selected and not inputBlock then
+							inputBlock = true
+							client.Remote.Send("SaveTableRemove", setting, selected.Value)
+							table.remove(tab, selected.Index)
+							showItems()
+							wait(0.5)
+							inputBlock = false
+						end
+					end
+				})
+				
+				tabWindow:Add("TextButton", {
+					Text = "Add",
+					Position = UDim2.new(0.5, 0, 1, -25);
+					Size = UDim2.new(0.5, -5, 0, 20);
+					OnClicked = function()
+						if not inputBlock then
+							entryText.Text = ""
+							entryBox.Visible = true
+						end
+					end
+				})
+				
+				showItems()
+			else
+				items:Add("TextLabel", {
+					Text = "Cannot edit this table in-game";
+					Size = UDim2.new(1, 0, 0, 25);
+					Position = UDim2.new(0, 0, 0, 0);
+				})
+			end
+			
+			tabWindow:Ready()
 		end
 	end
 	
@@ -125,7 +292,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 360052698)
+						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373505175)
 					end
 				}
 			})
@@ -137,7 +304,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 359948692)
+						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373501710)
 					end
 				}
 			})
@@ -151,7 +318,7 @@ return function(data)
 			local currentTexture  = donorData and donorData.Cape.Image
 			local currentColor    = donorData and donorData.Cape.Color
 			
-			if type(currentColor)=="table" then
+			if type(currentColor) == "table" then
 				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
 			else
 				currentColor = BrickColor.new(currentColor).Color	
@@ -173,7 +340,7 @@ return function(data)
 			
 			local function updateStatus()
 				dStatus.Text = "Updating..."
-				dStatus.Text = client.Remote.Get("UpdateDonor",playerData.Donor)
+				dStatus.Text = client.Remote.Get("UpdateDonor", playerData.Donor)
 				wait(0.5)
 				dStatus.Text = "Donated"
 			end
@@ -194,7 +361,7 @@ return function(data)
 						BackgroundTransparency = 1;
 						Enabled = playerData.isDonor and playerData.Donor.Enabled;
 						OnToggle = playerData.isDonor and function(enabled)
-							service.Debounce("DonorStatusUpdate", function(enabled, new)
+							service.Debounce("DonorStatusUpdate", function()
 								playerData.Donor.Enabled = enabled
 								updateStatus()
 							end)
@@ -228,7 +395,7 @@ return function(data)
 								
 								currentColor = newColor or currentColor
 								new.BackgroundColor3 = currentColor
-								donorData.Cape.Color = BrickColor.new(currentColor)
+								donorData.Cape.Color = currentColor
 								updateStatus()
 							end)
 						end
@@ -304,7 +471,7 @@ return function(data)
 						Position = UDim2.new(1, -105, 0, 0);
 						TextTransparency = (playerData.isDonor and 0) or 0.5;
 						BackgroundTransparency = 1;
-						OnClick = playerData.isDonor and function(new)
+						OnClick = playerData.isDonor and function(textureButton)
 							service.Debounce("DonorStatusUpdate", function()
 								local lastValid = currentTexture
 								local donePreview = false
@@ -312,6 +479,7 @@ return function(data)
 									Name = "CapeTexture";
 									Title = "Texture Preview";
 									Size = {200, 250};
+									Ready = true;
 									OnClose = function()
 										donePreview = true;
 									end
@@ -328,11 +496,11 @@ return function(data)
 									Text = currentTexture;
 									Size = UDim2.new(1, -10, 0, 30);
 									Position = UDim2.new(0, 5, 0, 5);
-									TextChanged = function(text, new)
+									TextChanged = function(text, enter, new)
 										local num = tonumber(text)
 										if num then
 											lastValid = num
-											img.Image = "rbxassetid://"..currentTexture;
+											img.Image = "rbxassetid://"..num;
 										else
 											new.Text = lastValid
 										end
@@ -345,13 +513,14 @@ return function(data)
 									Position = UDim2.new(0, 5, 1, -35);
 									OnClick = function(new)
 										currentTexture = lastValid;
-										donorData.Cape.Texture = lastValid;
+										donorData.Cape.Image = lastValid;
+										textureButton.Text = lastValid;
 										donePreview = true;
+										
+										pWindow:Close()
+										updateStatus()
 									end
 								})
-								
-								repeat wait() until donePreview
-								updateStatus()
 							end)
 						end
 					}
@@ -416,7 +585,7 @@ return function(data)
 				Size = UDim2.new(1, -10, 0, 40);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,0,1):lerp(Color3.new(1,0,0), 0.3);
+				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
 				OnClick = function()
 					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 497917601)
 				end
@@ -437,7 +606,7 @@ return function(data)
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 304651782)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212076)
 				end
 			})
 			
@@ -448,7 +617,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
-					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 304651828)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212077)
 				end
 			})
 			
@@ -459,7 +628,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.6);
 				OnClick = function()
-					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 304651926)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212081)
 				end
 			})
 			
@@ -470,7 +639,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.9);
 				OnClick = function()
-					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 304652066)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212082)
 				end
 			})
 		end
@@ -628,7 +797,7 @@ return function(data)
 			keyTab:Add("TextButton", {
 				Text = "Remove";
 				Position = UDim2.new(0, 5, 1, -25);
-				Size = UDim2.new(1/3, -(15/3), 0, 20);
+				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						inputBlock = true
@@ -895,7 +1064,6 @@ return function(data)
 									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									OnClick = function()
-										warn("Showing table")
 										showTable(value, setting)
 									end
 								}
@@ -916,7 +1084,8 @@ return function(data)
 									Position = UDim2.new(1, -100, 0, 0); 
 									BackgroundTransparency = 1;
 									OnToggle = function(enabled, button)
-										warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
+										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
+										client.Remote.Send("SaveSetSetting", setting, enabled)
 									end
 								}
 							}
@@ -937,7 +1106,8 @@ return function(data)
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
 										if enter then
-											warn("Setting "..tostring(setting)..": "..tostring(text))
+											--warn("Setting "..tostring(setting)..": "..tostring(text))
+											client.Remote.Send("SaveSetSetting", setting, text)
 										end
 									end
 								}
@@ -959,7 +1129,8 @@ return function(data)
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
 										if enter then
-											warn("Setting "..tostring(setting)..": "..tonumber(text))
+											--warn("Setting "..tostring(setting)..": "..tonumber(text))
+											client.Remote.Send("SaveSetSetting", setting, text)
 										end
 									end
 								}

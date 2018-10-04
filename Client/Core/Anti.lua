@@ -630,7 +630,7 @@ return function()
 			end
 			
 			local function checkTool(t)
-				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) and service.Player.Backpack and t:IsDescendantOf(service.Player.Backpack) then
+				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 						Detected("log","Building tools detected; "..tostring(t.BinType))
 					end
@@ -640,7 +640,6 @@ return function()
 			checkServ()
 			
 			service.DataModel.ChildAdded:connect(checkServ)
-			service.Player.Backpack.ChildAdded:connect(checkTool)
 			--service.Player.DescendantAdded:connect(checkTool)
 			
 			service.Players.PlayerAdded:connect(function(p)
@@ -730,6 +729,9 @@ return function()
 					Detected("crash","New CoreGui Object; "..tostring(c))
 				end
 			end)--]]
+			
+			service.Player:WaitForChild("Backpack")
+			service.Player.Backpack.ChildAdded:connect(checkTool)
 			
 			--// Detection Loop
 			service.StartLoop("Detection",10,function()
