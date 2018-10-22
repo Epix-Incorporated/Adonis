@@ -670,25 +670,27 @@ return function(data)
 				binds:ClearAllChildren();
 				
 				for i,v in next,client.Variables.KeyBinds do
-					binds:Add("TextButton", {
-						Text = "Key: ".. string.upper(string.char(i)) .." | Command: "..v;
-						Size = UDim2.new(1, 0, 0, 25);
-						Position = UDim2.new(0, 0, 0, num*25);
-						OnClicked = function(button)
-							if selected then
-								selected.Button.BackgroundTransparency = 0
+					if pcall(string.char, i) then
+						binds:Add("TextButton", {
+							Text = "Key: ".. string.upper(string.char(i)) .." | Command: "..v;
+							Size = UDim2.new(1, 0, 0, 25);
+							Position = UDim2.new(0, 0, 0, num*25);
+							OnClicked = function(button)
+								if selected then
+									selected.Button.BackgroundTransparency = 0
+								end
+								
+								button.BackgroundTransparency = 0.5
+								selected = {
+									Key = i;
+									Command = v;
+									Button = button;
+								}
 							end
-							
-							button.BackgroundTransparency = 0.5
-							selected = {
-								Key = i;
-								Command = v;
-								Button = button;
-							}
-						end
-					})
-					
-					num = num + 1
+						})
+						
+						num = num + 1
+					end
 				end
 				
 				binds:ResizeCanvas(false, true)
@@ -971,7 +973,7 @@ return function(data)
 					Text = "  ".. setData.Text;
 					ToolTip = setData.Desc;
 					TextXAlignment = "Left";
-					Size = UDim2.new(1, -10, 0, 30);
+					Size = UDim2.new(1, 0, 0, 30);
 					Position = UDim2.new(0, 0, 0, num*30);
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				})

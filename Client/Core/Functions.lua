@@ -833,10 +833,10 @@ return function()
 				
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then 
 					local isAdmin = Remote.Get("CheckAdmin")
-					if tick() - timer>5 or isAdmin then
+					if (tick() - timer > 5 or isAdmin) and pcall(string.char, key) then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = "[Ran] Key: "..string.char(key).." | Command: "..Variables.KeyBinds[key]
+							Message = "[Ran] Key: "..string.char(key).." | Command: "..tostring(Variables.KeyBinds[key])
 						})
 					end
 					timer = tick()
