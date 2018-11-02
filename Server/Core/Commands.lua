@@ -2898,7 +2898,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"List",{
-					Title = "Syned Ban List";
+					Title = "Synced Ban List";
 					Tab = HTTP.Trello.Bans;
 				})
 			end
