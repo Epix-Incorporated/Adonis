@@ -10821,7 +10821,7 @@ return function()
 				for i,v in pairs(Settings.Muted) do
 					table.insert(list,v)
 				end
-				Remote.MakeGui(plr,"Lis",{Title = "Mute List",Table = list})
+				Remote.MakeGui(plr,"List",{Title = "Mute List",Table = list})
 			end
 		};
 		
