@@ -1,5 +1,5 @@
 return {
-	{Text = "Sceleratis",				Desc = "Made Adonis & EISS"};
+	{Text = "Sceleratis/Davey_Bones",	Desc = "Made Adonis & EISS"};
 	{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
 	{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best scripter I know"};
 	{Text = "Rerumu (Shining_Diamando)",Desc = "Made the endless stairs place\nRerubi (Bytecode Interpreter)\nParser\nSteampunk theme"};

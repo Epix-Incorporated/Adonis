@@ -1,6 +1,15 @@
 return {
-	"Version: 145";
+	"Version: 147";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.34b [12/19/2018; 10:44AM/10:44]";
+	"**Reminder: Adonis has always been fully open-source and will NOT be affected by the upcoming private module changes**";
+	"**You can find the current module in Davey_Bone's inventory**";
+	"*Been busy with school/work; Sorry for the lack of updates";
+	"";
+	"1.2.33b [10/22/2018; 9:03AM/9:03]";
+	"*Possibly fixed a bug (sortof)";
+	"*Fixed client settings having a gross thick margin on the right side";
 	"";
 	"1.2.32b [10/3/2018]";
 	"*Fixed custom chat";
