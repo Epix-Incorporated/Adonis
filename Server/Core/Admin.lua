@@ -83,7 +83,7 @@ return function()
 							end
 						end
 					end
-				elseif isGood and check:match("^Group:(.*)") then
+				elseif isGood and check:sub(1, 6) == "Group:" then --check:match("^Group:(.*)") then
 					local group = tonumber(check:match("^Group:(.*)"))
 					if group then
 						local pGroup = Admin.GetPlayerGroup(p, group)
@@ -91,14 +91,14 @@ return function()
 							return true
 						end
 					end
-				elseif check:match("^Item:(.*)") then
+				elseif check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
 					local item = tonumber(check:match("^Item:(.*)"))
 					if item then
 						if service.MarketPlace:PlayerOwnsAsset(p, item) then
 							return true
 						end
 					end
-				elseif check:match("^GamePass:(.*)") then
+					elseif check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
 					local item = tonumber(check:match("^GamePass:(.*)"))
 					if item then
 						if service.GamepassService:PlayerHasPass(p, item) then
