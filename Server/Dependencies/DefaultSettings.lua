@@ -138,30 +138,30 @@ local descs = {}
 	
 	settings.HideScript = true						 -- Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
-	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encode all datastore entries; Changing this will lose any saved data
+	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 	settings.Storage = game:service("ServerStorage") -- Where things like tools are stored
 	
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
 	
-	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Owners = {}       	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
-	settings.Blacklist = {}		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}	
-	settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}
+	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Owners = {}       	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Blacklist = {}		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}	
+	settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Permissions = {}	-- Command permissions; 					  Format: {"Command:NewLevel";}
 	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}	
 	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
-	settings.CustomRanks = {};	-- List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} 
+	settings.CustomRanks = {};	-- List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";};} 
 	
 	settings.OnStartup = {};	-- List of commands ran at server start								Format: {":notif TestNotif"}
 	settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
 	settings.OnSpawn = {};		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
-
+	
 	settings.SaveAdmins = true		  -- If true anyone you :admin or :owner in-game will save
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join	
 	

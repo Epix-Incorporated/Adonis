@@ -94,8 +94,7 @@ return function()
 				elseif check:match("^Item:(.*)") then
 					local item = tonumber(check:match("^Item:(.*)"))
 					if item then
-						local ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, item) or service.GamepassService:PlayerHasPass(p, item) end)
-						if ran and ret then
+						if service.MarketPlace:PlayerOwnsAsset(p, item) then
 							return true
 						end
 					end
