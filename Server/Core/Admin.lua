@@ -94,7 +94,15 @@ return function()
 				elseif check:match("^Item:(.*)") then
 					local item = tonumber(check:match("^Item:(.*)"))
 					if item then
-						if service.MarketPlace:PlayerOwnsAsset(p,item) then
+						local ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, item) or service.GamepassService:PlayerHasPass(p, item) end)
+						if ran and ret then
+							return true
+						end
+					end
+				elseif check:match("^GamePass:(.*)") then
+					local item = tonumber(check:match("^GamePass:(.*)"))
+					if item then
+						if service.GamepassService:PlayerHasPass(p, item) then
 							return true
 						end
 					end
@@ -451,8 +459,8 @@ return function()
 				if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				if not service.GamepassService or not service.MarketPlace then return end
 				for ind,pass in next,Variables.DonorPass do
-					local ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p,pass) end)
-					if ran and ret then --service.GamepassService:PlayerHasPass(p,pass) or 
+					local ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p,pass) or service.GamepassService:PlayerHasPass(p,pass) end)
+					if ran and ret then
 						Variables.CachedDonors[key] = tick()
 						return true
 					end

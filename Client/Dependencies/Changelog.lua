@@ -1,6 +1,10 @@
 return {
-	"Version: 147";
+	"Version: 148";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.35b [12/28/2018; 4:56PM/16:56]";
+	"*Fixed gamepass-based admin support (cuz roblox did a roblox 'n borkied it)";
+	"*Specify gamepasses using GamePass:IDHERE";
 	"";
 	"1.2.34b [12/19/2018; 10:44AM/10:44]";
 	"**Reminder: Adonis has always been fully open-source and will NOT be affected by the upcoming private module changes**";
@@ -30,7 +34,7 @@ return {
 	"*DEVELOPEMENT MOVED!";
 	"*Moved development to account \"Skeletarius/Davey_Bones\"";
 	"*This will be the new primary developer of Adonis (This is still me (Sceleratis))";
-	"*Please update your loader to the new one located in Skeletarius' models";
+	"*Please update your loader to the new one located in Davey_Bones' models";
 	"===========================";
 	"";
 	"1.2.29b [8/17/2018]";
