@@ -1,6 +1,9 @@
 return {
-	"Version: 148";
+	"Version: 150";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.36b [12/29/2018; 4:09PM/16:09]";
+	"*settings.Permissions now supports multiple custom ranks per command (eg \":view:Staff,Guards,Helpers\")";
 	"";
 	"1.2.35b [12/28/2018; 4:56PM/16:56]";
 	"*Fixed gamepass-based admin support (cuz roblox did a roblox 'n borkied it)";

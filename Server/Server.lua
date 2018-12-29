@@ -541,7 +541,20 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Threading.NewThread(function()
 		for ind, music in next,server.Settings.MusicList or {} do table.insert(server.Variables.MusicList,music) end
 		for ind, cape in next,server.Settings.CapeList or {} do table.insert(server.Variables.Capes,cape) end
-		for ind, cmd in next,server.Settings.Permissions or {} do local com,level = cmd:match("^(.*):(.*)") if com and level then server.Admin.SetPermission(com,level) end end
+		for ind, cmd in next,server.Settings.Permissions or {} do 
+			local com,level = cmd:match("^(.*):(.*)") 
+			if com and level then 
+				if level:find(",") then
+					local newLevels = {}
+					for lvl in level:gmatch("[^%,]+") do
+						table.insert(newLevels, service.Trim(lvl))
+					end
+					server.Admin.SetPermission(com, newLevels)
+				else
+					server.Admin.SetPermission(com, level)
+				end
+			end 
+		end
 		pcall(function() service.Workspace.AllowThirdPartySales = true end)	
 		server.Functions.GetOldDonorList()
 	end)
