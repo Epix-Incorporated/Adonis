@@ -59,6 +59,52 @@ return function()
 				})
 			end;
 		};
+				
+		TrelloBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"trelloban";};
+			Args = {"player","reason"};
+			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				local board = Settings.Trello_Primary
+				local appkey = Settings.Trello_AppKey
+				local token = Settings.Trello_Token
+							
+				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello is not configured inside Adonis config, please configure Trello to be able to use this command.', {plr}) return end
+							
+				local trello = HTTP.Trello.API(appkey,token)
+				local lists = trello.getLists(board)
+				local logList = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
+
+				local level = Admin.GetLevel(plr)
+				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
+					if level > Admin.GetLevel(v) then 
+						trello.makeCard(logList.id,tostring(v)..":".. tostring(v.UserId),
+						"Administrator: " .. tostring(plr) .. 
+						"\nReason: ".. args[2] or "N/A")
+						HTTP.Trello.Update()
+						Functions.Hint("Trello banned ".. tostring(v),{plr})
+					end
+				end
+			end;
+		};
+					
+		TrelloUpdate = {
+			Prefix = Settings.Prefix;
+			Commands = {"tupdate";"trelloupdate";};
+			Args = {};
+			Description = "Updates the Adonis admin, bans, etc... lists from Trello (Trello needs to be configured)";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				HTTP.Trello.Update()
+				Functions.Hint('Updated lists from Trello (If enabled/configured)', {plr})
+			end;
+		};
 		
 		TestError = {
 			Hidden = true;
