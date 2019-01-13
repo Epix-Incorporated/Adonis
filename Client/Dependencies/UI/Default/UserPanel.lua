@@ -587,7 +587,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
 				OnClick = function()
-					service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 497917601)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 1348327) --497917601)
 				end
 			})
 			

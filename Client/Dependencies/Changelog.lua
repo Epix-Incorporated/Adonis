@@ -1,6 +1,11 @@
 return {
-	"Version: 150";
+	"Version: 151";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.37b [1/13/2019; 3:46PM/15:46]";
+	"*First update of the new year (!!!)";
+	"*Updated gamepass checking method (Merged from Brandon-Beck on GitHub)";
+	"*Donor perks purchase will take effect immediately upon purchase";
 	"";
 	"1.2.36b [12/29/2018; 4:09PM/16:09]";
 	"*settings.Permissions now supports multiple custom ranks per command (eg \":view:Staff,Guards,Helpers\")";

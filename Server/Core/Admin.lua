@@ -25,6 +25,12 @@ return function()
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
 	
+	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
+		if Variables and player.Parent and id == 1348327 and purchased then
+			Variables.CachedDonors[tostring(player.UserId)] = tick()
+		end
+	end)
+	
 	server.Admin = {
 		Init = Init;
 		PrefixCache = {};
@@ -456,11 +462,10 @@ return function()
 				return true
 			else
 				if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
-				if not service.GamepassService or not service.MarketPlace then return end
 				for ind,pass in next,Variables.DonorPass do
 					local ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
 					if ran and ret then
-						Variables.CachedDonors[key] = tick()
+						Variables.CachedDonors[key] = os.time()
 						return true
 					end
 				end
