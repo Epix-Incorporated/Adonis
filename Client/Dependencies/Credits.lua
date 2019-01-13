@@ -3,8 +3,8 @@ return {
 	{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
 	{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best scripter I know"};
 	{Text = "Rerumu (Shining_Diamando)",Desc = "Made the endless stairs place\nRerubi (Bytecode Interpreter)\nParser\nSteampunk theme"};
-	{Text = "MudockYatho", 				Desc = "GitHub Contributer"};	
-	{Text = "TheCakeChicken", 			Desc = "GitHub Contributer"};
+	{Text = "MudockYatho", 				Desc = "GitHub Contributor"};	
+	{Text = "TheCakeChicken", 			Desc = "GitHub Contributor"};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	
 	{Text = "darkelementallord",		Desc = "Updated some guis"};
 	{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
