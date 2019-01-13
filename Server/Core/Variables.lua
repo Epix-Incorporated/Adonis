@@ -33,7 +33,7 @@ return function()
 		CachedDonors = {};
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
-		DonorPass = {497917601,442800581,418722590,159549976,157092510};
+		DonorPass = {1348327,1990427,1911740,167686,98593};
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			OutdoorAmbient = service.Lighting.OutdoorAmbient;
