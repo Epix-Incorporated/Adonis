@@ -101,7 +101,7 @@ return function()
 					elseif check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
 					local item = tonumber(check:match("^GamePass:(.*)"))
 					if item then
-						if service.GamepassService:PlayerHasPass(p, item) then
+						if service.MarketPlace:UserOwnsGamePassAsync(p.UserId, item) then
 							return true
 						end
 					end
