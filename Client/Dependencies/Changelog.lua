@@ -6,6 +6,7 @@ return {
 	"*First update of the new year (!!!)";
 	"*Updated gamepass checking method (Merged from Brandon-Beck on GitHub)";
 	"*Donor perks purchase will take effect immediately upon purchase";
+	"*Fixed :mutelist (Merged from TheCakeChicken on GitHub)";
 	"";
 	"1.2.36b [12/29/2018; 4:09PM/16:09]";
 	"*settings.Permissions now supports multiple custom ranks per command (eg \":view:Staff,Guards,Helpers\")";
