@@ -448,7 +448,7 @@ return function()
 			local Len = (type(pLen) == "number" and pLen) or math.random(5,10) --// reru
 			local Res = {};
 		    for Idx = 1, Len do
-		        Res[Idx] = string.format('%02x', math.random(255));
+		        Res[Idx] = string.format('%02x', math.random(126));
 		    end;
 		    return table.concat(Res)
 		end; 

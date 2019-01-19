@@ -1,6 +1,12 @@
 return {
-	"Version: 151";
+	"Version: 152";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.38b [1/19/2019; 5:26PM/17:26]";
+	"*Changed encryption/decryption (fixed an issue with it as well)";
+	"*Minor changes and bug fixes";
+	"*Special thanks to WrathOfTheElvhen for bringing an encryption bug to my attention";
+	"!!NOTE: ALL ADONIS DATASTORE DATA WILL BE LOST DUE TO ENCRYPTION CHANGES!!";
 	"";
 	"1.2.37b [1/13/2019; 3:46PM/15:46]";
 	"*First update of the new year (!!!)";

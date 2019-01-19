@@ -355,34 +355,19 @@ return function()
 				return cache[key][str]
 			else
 				local keyCache = cache[key] or {}
-				local tobyte = string.byte
+				local byte = string.byte
 				local abs = math.abs
 				local sub = string.sub
 				local len = string.len
 				local char = string.char
-				local strBytes = {}
-				local endStr = ""
-				local byte = function(str, pos)
-					return tobyte(sub(str, pos, pos))
-				end
+				local endStr = {}
 				
 				for i = 1,len(str) do
-					if i%len(str) > 0 then
-						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
-							strBytes[i] = abs(byte(str,i) - byte(key, (i%len(key))+1))
-						else
-							strBytes[i] = abs(byte(key, (i%len(key))+1) + byte(str, i))
-						end
-					else
-						if byte(str, i) + byte(key, 1) > 255 then
-							strBytes[i] = abs(byte(str, i) - byte(key, 1))
-						else
-							strBytes[i] = abs(byte(key, 1) + byte(str, i))
-						end
-					end
+					local keyPos = (i%len(key))+1
+					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
 				
-				for i = 1,#strBytes do endStr = endStr .. char(strBytes[i]) end
+				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
@@ -397,38 +382,23 @@ return function()
 				return cache[key][str]
 			else
 				local keyCache = cache[key] or {}
-				local tobyte = string.byte
+				local byte = string.byte
 				local abs = math.abs
 				local sub = string.sub
 				local len = string.len
 				local char = string.char
-				local strBytes = {}
-				local endStr = ""
-				local byte = function(str, pos)
-					return tobyte(sub(str, pos, pos))
-				end
+				local endStr = {}
 				
 				for i = 1,len(str) do
-					if i%len(str) > 0 then
-						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
-							strBytes[i] = abs(byte(str,i) - byte(key, (i%len(key))+1))
-						else
-							strBytes[i] = abs(byte(key, (i%len(key))+1) - byte(str, i))
-						end
-					else
-						if byte(str, i) + byte(key, 1) > 255 then
-							strBytes[i] = abs(byte(str, i) - byte(key, 1))
-						else
-							strBytes[i] = abs(byte(key, 1) - byte(str, i))
-						end
-					end
+					local keyPos = (i%len(key))+1
+					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
 				
-				for i = 1,#strBytes do endStr = endStr .. char(strBytes[i]) end
+				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
 			end
 		end;
-	};
+	}
 end

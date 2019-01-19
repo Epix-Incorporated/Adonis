@@ -438,9 +438,42 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
+			
+	--// Bind cleanup
+	service.DataModel:BindToClose(CleanUp)
 	
 	--// Server Specific Service Functions
 	ServiceSpecific.GetPlayers = server.Functions.GetPlayers
+	
+	--// Load data
+	if server.Core.DataStore then
+		pcall(server.Core.LoadData)
+		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat)
+		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
+		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
+		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedVariables"), function(data) server.Process.DataStoreUpdated("SavedVariables",data) end)
+		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
+	end
+	
+	--// Events
+	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
+	service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", server.Process.PlayerRemoving))
+	service.RbxEvent(service.Workspace.ChildAdded, server.Process.WorkspaceChildAdded)
+	service.RbxEvent(service.LogService.MessageOut, server.Process.LogService)
+	service.RbxEvent(service.ScriptContext.Error, server.Process.ErrorMessage)
+	
+	if not server.FilteringEnabled then
+		service.RbxEvent(service.DataModel.DescendantAdded, server.Process.ObjectAdded)
+		service.RbxEvent(service.DataModel.DescendantRemoving, server.Process.ObjectRemoving)
+		service.RbxEvent(service.Workspace.DescendantAdded, server.Process.WorkspaceObjectAdded)
+		--service.RbxEvent(service.Workspace.DescendantRemoving, server.Process.WorkspaceObjectRemoving)
+	end
+	
+	--// NetworkServer Events
+	if service.NetworkServer then
+		service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
+		service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
+	end
 	
 	--// Cache Commands
 	server.Admin.CacheCommands()
@@ -486,44 +519,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	if not service.NetworkServer then wait(1) end 
 	for index,player in next,service.Players:GetPlayers() do server.Core.LoadExistingPlayer(player) end
 	
-	--// Events
-	service.DataModel:BindToClose(CleanUp)
-	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
-	service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", server.Process.PlayerRemoving))
-	service.RbxEvent(service.Workspace.ChildAdded, server.Process.WorkspaceChildAdded)
-	service.RbxEvent(service.LogService.MessageOut, server.Process.LogService)
-	service.RbxEvent(service.ScriptContext.Error, server.Process.ErrorMessage)
-	
-	if not server.FilteringEnabled then
-		service.RbxEvent(service.DataModel.DescendantAdded, server.Process.ObjectAdded)
-		service.RbxEvent(service.DataModel.DescendantRemoving, server.Process.ObjectRemoving)
-		service.RbxEvent(service.Workspace.DescendantAdded, server.Process.WorkspaceObjectAdded)
-		--service.RbxEvent(service.Workspace.DescendantRemoving, server.Process.WorkspaceObjectRemoving)
-	end
-	
 	--// Fake finder
 	service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
-	
-	--// NetworkServer Events
-	if service.NetworkServer then
-		service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
-		service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
-	end
 	
 	--// Start API
 	if service.NetworkServer then
 		--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
 		service.TrackTask("Thread: API Manager", server.Core.StartAPI)
-	end
-	
-	--// Load data
-	if server.Core.DataStore then
-		Pcall(server.Core.LoadData)
-		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat)
-		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
-		server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedVariables"), function(data) server.Process.DataStoreUpdated("SavedVariables",data) end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
 	end
 	
 	--// Queue handler
@@ -574,9 +576,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
 			ancsafe.Mode.Value = "AnchorSafe" 
 			ancsafe.Name = "ADONIS_AnchorSafe" 
-			ancsafe.Archivable = false 
+		ancsafe.Archivable = false 
 			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
+		ancsafe.Disabled = false 
 		end
 		
 		if server.Settings.AntiDelete and not service.ServerScriptService:FindFirstChild("ADONIS_ObjectSafe") then 

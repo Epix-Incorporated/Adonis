@@ -658,7 +658,7 @@ return function()
 		end;
 		
 		DataStoreEncode = function(key)
-			return Remote.Encrypt(tostring(key), Settings.DataStoreKey)
+			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
 		end;
 		
 		SaveData = function(...)
@@ -738,6 +738,15 @@ return function()
 				if SavedSettings then
 					for setting,value in next,SavedSettings do
 						if not Blacklist[setting] then
+							if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+								local orig = Settings[setting]
+								for i,v in pairs(server.Commands) do
+									if v.Prefix == orig then
+										v.Prefix = value
+									end
+								end
+							end
+							
 							Settings[setting] = value
 						end
 					end

@@ -608,20 +608,22 @@ return function()
 			end;
 			
 			SaveSetSetting = function(p,args) 
-				if Admin.GetLevel(p)>=4 then
+				if Admin.GetLevel(p) >= 4 then
 					local setting = args[1]
 					local value = args[2]
 					
-					Settings[setting] = value
-					
-					if setting=='Prefix' or setting=='AnyPrefix' or setting=='SpecialPrefix' then
-						local orig=Settings[setting]
+					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+						local orig = Settings[setting]
 						for i,v in pairs(Commands) do
-							if v.Prefix==orig then
-								v.Prefix = Settings[setting]
+							if v.Prefix == orig then
+								v.Prefix = value
 							end
 						end
+						
+						server.Admin.CacheCommands()
 					end
+					
+					Settings[setting] = value
 				
 					Core.DoSave({
 						Type = "SetSetting";
@@ -632,23 +634,29 @@ return function()
 			end;
 			
 			ClearSavedSettings = function(p,args) 
-				if Admin.GetLevel(p)>=4 then
+				if Admin.GetLevel(p) >= 4 then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings",{p})
 				end
 			end;
 			
 			SetSetting = function(p,args) 
-				if Admin.GetLevel(p)>=4 then
-					Settings[args[1]]=args[2]
-					if args[1]=='Prefix' or args[1]=='AnyPrefix' or args[1]=='SpecialPrefix' then
-						local orig = server[args[1]]
+				if Admin.GetLevel(p) >= 4 then
+					local setting = args[1]
+					local value = args[2]
+					
+					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+						local orig = Settings[setting]
 						for i,v in pairs(Commands) do
 							if v.Prefix == orig then
-								v.Prefix = Settings[args[1]]
+								v.Prefix = value
 							end
 						end
+						
+						server.Admin.CacheCommands()
 					end
+					
+					Settings[setting] = value
 				end
 			end;
 			
@@ -932,6 +940,62 @@ return function()
 				return cache[key][str]
 			else
 				local keyCache = cache[key] or {}
+				local byte = string.byte
+				local abs = math.abs
+				local sub = string.sub
+				local len = string.len
+				local char = string.char
+				local endStr = {}
+				
+				for i = 1,len(str) do
+					local keyPos = (i%len(key))+1
+					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+				end
+				
+				endStr = table.concat(endStr)
+				cache[key] = keyCache
+				keyCache[str] = endStr
+				return endStr
+			end
+		end;
+		
+		Decrypt = function(str, key, cache)
+			local cache = cache or Remote.DecodeCache or {}
+			if not key or not str then 
+				return str 
+			elseif cache[key] and cache[key][str] then
+				return cache[key][str]
+			else
+				local keyCache = cache[key] or {}
+				local byte = string.byte
+				local abs = math.abs
+				local sub = string.sub
+				local len = string.len
+				local char = string.char
+				local endStr = {}
+				
+				for i = 1,len(str) do
+					local keyPos = (i%len(key))+1
+					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+				end
+				
+				endStr = table.concat(endStr)
+				cache[key] = keyCache
+				keyCache[str] = endStr
+				return endStr
+			end
+		end;
+			
+		--[[
+		--// Moldy
+		Encrypt = function(str, key, cache)
+			local cache = cache or Remote.EncodeCache or {}
+			if not key or not str then 
+				return str
+			elseif cache[key] and cache[key][str] then
+				return cache[key][str]
+			else
+				local keyCache = cache[key] or {}
 				local tobyte = string.byte
 				local abs = math.abs
 				local sub = string.sub
@@ -1004,6 +1068,6 @@ return function()
 				keyCache[str] = endStr
 				return endStr
 			end
-		end;
+		end;--]]
 	};
 end

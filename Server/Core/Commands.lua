@@ -7265,8 +7265,11 @@ return function()
 					s.Archivable = false
 					wait(0.5)
 					s:Play()
-					if Settings.SongHint then
-						Functions.Hint(name..' ('..id..')',service.Players:GetChildren())
+					
+					if name == "Invalid ID" then
+						error("Invalid ID")
+					elseif Settings.SongHint then
+						Functions.Hint(name, service.Players:GetChildren())
 					end
 				end
 			end
