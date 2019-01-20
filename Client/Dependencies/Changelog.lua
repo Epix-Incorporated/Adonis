@@ -1,12 +1,16 @@
 return {
-	"Version: 152";
+	"Version: 153";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.39b [1/20/2019; 12:49PM/12:49]";
+	"*Fixed shutdown reason";
+	"*Added :ws as an alias for :walkspeed";
 	"";
 	"1.2.38b [1/19/2019; 5:26PM/17:26]";
 	"*Changed encryption/decryption (fixed an issue with it as well)";
 	"*Minor changes and bug fixes";
 	"*Special thanks to WrathOfTheElvhen for bringing an encryption bug to my attention";
-	"!!NOTE: ALL ADONIS DATASTORE DATA WILL BE LOST DUE TO ENCRYPTION CHANGES!!";
+	"!!NOTE: ALL ADONIS DATASTORE DATA WILL BE LOST DUE TO CIPHER CHANGES!!";
 	"";
 	"1.2.37b [1/13/2019; 3:46PM/15:46]";
 	"*First update of the new year (!!!)";

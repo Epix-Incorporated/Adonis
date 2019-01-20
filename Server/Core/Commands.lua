@@ -1030,16 +1030,16 @@ return function()
 				if not Core.PanicMode then
 					local logs = Core.GetData("ShutdownLogs") or {}
 					if plr then
-						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[2] or "N/A"})
+						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[1] or "N/A"})
 					else
-						table.insert(logs,1,{User="Server/Trello",Time=service.GetTime(),Reason=args[2] or "N/A"})
+						table.insert(logs,1,{User="Server/Trello",Time=service.GetTime(),Reason=args[1] or "N/A"})
 					end
 					if #logs>1000 then
 						table.remove(logs,#logs)
 					end
 					Core.SaveData("ShutdownLogs",logs)
 				end
-				Functions.Shutdown(args[2])
+				Functions.Shutdown(args[1])
 			end
 		};
 		
@@ -6070,7 +6070,7 @@ return function()
 		
 		Speed = {
 			Prefix = Settings.Prefix;
-			Commands = {"speed";"setspeed";"walkspeed";};
+			Commands = {"speed";"setspeed";"walkspeed";"ws"};
 			Args = {"player";"number";};
 			Hidden = false;
 			Description = "Set the target player(s)'s WalkSpeed to <number>";
