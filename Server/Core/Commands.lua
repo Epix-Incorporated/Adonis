@@ -8294,7 +8294,7 @@ return function()
 					local event			
 					local torso = v.Character.HumanoidRootPart
 					event = v.Character.HumanoidRootPart.Touched:connect(function(p)
-						if torso and torso.Parent and not p:IsDescendantOf(v.Character) then
+						if torso and torso.Parent and not p:IsDescendantOf(v.Character) and not p.Locked then
 							Functions.MakeWeld(torso,p)
 						elseif not torso or not torso.Parent then 
 							event:disconnect()
@@ -9354,7 +9354,7 @@ return function()
 			Hidden = false;
 			Description = "Pixelizes the player's view";
 			Fun = true;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local size = tonumber(args[2]) or 19
 				local dist = tonumber(args[3]) or 100
