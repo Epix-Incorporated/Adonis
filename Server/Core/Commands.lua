@@ -91,20 +91,6 @@ return function()
 				end
 			end;
 		};
-					
-		TrelloUpdate = {
-			Prefix = Settings.Prefix;
-			Commands = {"tupdate";"trelloupdate";};
-			Args = {};
-			Description = "Updates the Adonis admin, bans, etc... lists from Trello (Trello needs to be configured)";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				HTTP.Trello.Update()
-				Functions.Hint('Updated lists from Trello (If enabled/configured)', {plr})
-			end;
-		};
 		
 		TestError = {
 			Hidden = true;
