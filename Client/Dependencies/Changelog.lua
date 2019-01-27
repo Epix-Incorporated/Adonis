@@ -1,6 +1,9 @@
 return {
-	"Version: 153";
+	"Version: 154";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.40b [1/27/2019; 9:06AM/9:06]";
+	"*Disabled \"Out of Sync\" kick";
 	"";
 	"1.2.39b [1/20/2019; 12:49PM/12:49]";
 	"*Fixed shutdown reason";
