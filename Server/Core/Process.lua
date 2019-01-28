@@ -46,7 +46,7 @@ return function()
 					local keys = Remote.Clients[key]
 					if keys then
 						keys.Received = keys.Received+1
-						if type(com)=="string" and cliData and cliData.Module == keys.Module and cliData.Loader == keys.Loader then-- and cliData.Sent == keys.Received then
+						if type(com)=="string" and cliData and cliData.Module == keys.Module and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
