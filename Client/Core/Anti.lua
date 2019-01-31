@@ -295,37 +295,38 @@ return function()
 		end;
 		 
 		AntiTools = function(data)
-			service.Player:WaitForChild("Backpack")
-			local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
-			local tools = data.AntiTools --Remote.Get("Setting","AntiTools")
-			local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")
-			local function check(t)
-				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) then
-					if client.AntiBuildingTools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						t.Active = false
-						t:Destroy()
-						Detected("log","Building tools detected")
-					end
-					if tools then
-						local good = false
-						for i,v in pairs(client.AllowedToolsList) do 
-							if t.Name==v then 
-								good = true
+			if service.Player:WaitForChild("Backpack", 120) then
+				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
+				local tools = data.AntiTools --Remote.Get("Setting","AntiTools")
+				local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")
+				local function check(t)
+					if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) then
+						if client.AntiBuildingTools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
+							t.Active = false
+							t:Destroy()
+							Detected("log","Building tools detected")
+						end
+						if tools then
+							local good = false
+							for i,v in pairs(client.AllowedToolsList) do 
+								if t.Name==v then 
+									good = true
+								end 
 							end 
-						end 
-						if not good then 
-							t:Destroy() 
-							Detected("log","Tool detected") 
+							if not good then 
+								t:Destroy() 
+								Detected("log","Tool detected") 
+							end
 						end
 					end
 				end
+				
+				for i,t in pairs(service.Player.Backpack:children()) do 
+					check(t)
+				end
+				
+				service.Player.Backpack.ChildAdded:connect(check)
 			end
-			
-			for i,t in pairs(service.Player.Backpack:children()) do 
-				check(t)
-			end
-			
-			service.Player.Backpack.ChildAdded:connect(check)
 		end;
 		
 		--[[
