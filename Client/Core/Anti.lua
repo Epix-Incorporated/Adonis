@@ -731,8 +731,9 @@ return function()
 				end
 			end)--]]
 			
-			service.Player:WaitForChild("Backpack")
-			service.Player.Backpack.ChildAdded:connect(checkTool)
+			if service.Player:WaitForChild("Backpack", 120) then
+				service.Player.Backpack.ChildAdded:connect(checkTool)
+			end
 			
 			--// Detection Loop
 			service.StartLoop("Detection",10,function()
