@@ -719,7 +719,7 @@ return function()
 				client.Kill("Client disconnected from server")
 			end)
 			
-			service.RunService.Heartbeat:connect(function()
+			service.RunService.Stepped:connect(function()
 				lastUpdate = tick()
 			end)
 			
@@ -738,7 +738,7 @@ return function()
 			--// Detection Loop
 			service.StartLoop("Detection",10,function()
 				--// Prevent event stopping
-				if tick()-lastUpdate > 30 then
+				if tick()-lastUpdate > 60 then
 					Detected("crash","Events stopped")
 				end
 				
