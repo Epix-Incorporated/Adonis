@@ -77,12 +77,12 @@ return function()
 							
 				local trello = HTTP.Trello.API(appkey,token)
 				local lists = trello.getLists(board)
-				local logList = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
+				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
 				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then 
-						trello.makeCard(logList.id,tostring(v)..":".. tostring(v.UserId),
+						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
 						"Administrator: " .. tostring(plr) .. 
 						"\nReason: ".. args[2] or "N/A")
 						HTTP.Trello.Update()
