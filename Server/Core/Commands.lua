@@ -2558,14 +2558,12 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing")
-				if Admin.CheckAdmin(plr) then
-					for i,p in pairs(service.GetPlayers(plr, args[1])) do
-						Remote.MakeGui(p,"PrivateMessage",{
-							Title = "Message from "..plr.Name;
-							Player = plr;
-							Message = service.Filter(args[2],plr,p);
-						})
-					end
+				for i,p in pairs(service.GetPlayers(plr, args[1])) do
+					Remote.MakeGui(p,"PrivateMessage",{
+						Title = "Message from "..plr.Name;
+						Player = plr;
+						Message = service.Filter(args[2],plr,p);
+					})
 				end
 			end
 		};
