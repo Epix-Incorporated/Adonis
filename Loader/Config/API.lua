@@ -173,8 +173,12 @@
 			Variables
 			Core
 			Remote
-			Anti
 			Functions
-			
+			Process
+			Admin
+			HTTP
+			Anti
+			Commands
+			Settings
 	
 --]]
