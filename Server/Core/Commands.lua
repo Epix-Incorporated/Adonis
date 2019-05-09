@@ -37,7 +37,7 @@ return function()
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil");
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					Process.Command(v, args[2], {isSystem = true});
 				end
 			end;
@@ -182,7 +182,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1] then
-					for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					for i,v in next,service.GetPlayers(plr, args[1]) do
 						local temp = {}
 						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 						
@@ -4001,7 +4001,7 @@ return function()
 			Description = "Shows all instances created client-side by Adonis";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local instList = Remote.Get(v, "InstanceList")
 					if instList then
 						Remote.MakeGui(plr, "List", {
@@ -7068,7 +7068,7 @@ return function()
 					SoundId = "rbxassetid://"..args[2];
 				})
 				
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -7087,7 +7087,7 @@ return function()
 			Description = "Removes audio placed into character via :charaudio command";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -7488,7 +7488,7 @@ return function()
 				
 				scr.Name = "ADONIS_FLIGHT"
 				
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local new = scr:Clone()
@@ -10052,7 +10052,7 @@ return function()
 				local nukes = {}
 				local partsHit = {}
 				
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -10191,7 +10191,7 @@ return function()
 					end
 				end
 				
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in next,service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
