@@ -1025,14 +1025,15 @@ return function()
 			Args = {"reason"};
 			Description = "Shuts the server down";
 			PanicMode = true;
+			Filter = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if not Core.PanicMode then
 					local logs = Core.GetData("ShutdownLogs") or {}
 					if plr then
-						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[1] or "N/A"})
+						table.insert(logs,1,{User = plr.Name, Time = service.GetTime(), Reason = args[1] or "N/A"})
 					else
-						table.insert(logs,1,{User="Server/Trello",Time=service.GetTime(),Reason=args[1] or "N/A"})
+						table.insert(logs,1,{User = "Server/Trello", Time = service.GetTime(), Reason = args[1] or "N/A"})
 					end
 					if #logs>1000 then
 						table.remove(logs,#logs)
@@ -2558,12 +2559,14 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing")
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.MakeGui(p,"PrivateMessage",{
-						Title = "Message from "..plr.Name;
-						Player = plr;
-						Message = service.Filter(args[2],plr,p);
-					})
+				if Admin.CheckAdmin(plr) then
+					for i,p in pairs(service.GetPlayers(plr, args[1])) do
+						Remote.MakeGui(p,"PrivateMessage",{
+							Title = "Message from "..plr.Name;
+							Player = plr;
+							Message = service.Filter(args[2],plr,p);
+						})
+					end
 				end
 			end
 		};

@@ -2,8 +2,8 @@ return {
 	"Version: 155";
 	"*Click and drag edges to expand*";
 	"";
-	"1.2.41b [4/20/2019; 5:42PM/17:42]";
-	"*Removed an useless check from :pm that messed up CustomRank perms for it";
+	"1.2.41b [7/14/2019; 12:36PM/12:36]";
+	"*Shutdown reason should be filtered now";
 	"";
 	"1.2.40b [1/27/2019; 9:06AM/9:06]";
 	"*Disabled \"Out of Sync\" kick";
