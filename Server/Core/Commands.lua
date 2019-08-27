@@ -182,7 +182,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr,args)
-				error("Disabled", 0)
+				--error("Disabled", 0)
 				local func,err = Core.Loadstring(args[1],GetEnv())
 				if func then 
 					func()
