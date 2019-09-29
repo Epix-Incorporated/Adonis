@@ -46,7 +46,7 @@ return function()
 					local keys = Remote.Clients[key]
 					if keys then
 						keys.Received = keys.Received+1
-						if type(com)=="string" and cliData and cliData.Module == keys.Module and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
+						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
@@ -87,7 +87,7 @@ return function()
 								end
 							end
 						else
-							Anti.Detected(p, "Kick", "Out of Sync (r10005)")
+							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
 					end
 				end

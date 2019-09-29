@@ -1,3 +1,13 @@
+--[[
+	
+	CURRENT LOADER:
+	https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
+	
+--]]
+
+
+
+
 ----------------------------------------------------------------------------------------
 --                                  Adonis Loader                                     --
 ----------------------------------------------------------------------------------------
@@ -48,10 +58,10 @@ else
 		Dopper = dropper;
 		Runner = runner;
 		
-		ModuleID = 359948692;
-		LoaderID = 360052698;
+		ModuleID = 2373501710;
+		LoaderID = 2373505175;
 		
-		DebugMode = false
+		DebugMode = false;
 	}
 	
 	--// Init

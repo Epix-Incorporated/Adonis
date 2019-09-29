@@ -1,6 +1,11 @@
 return {
-	"Version: 155";
+	"Version: 156";
 	"*Click and drag edges to expand*";
+	"";
+	"1.2.42b [9/29/19; 1:43PM/13:43]";
+	"*Merged GitHub changes";
+	"*Out of Sync will now log instead of kick";
+	"*Partially disabled Out of Sync check";
 	"";
 	"1.2.41b [7/14/2019; 12:36PM/12:36]";
 	"*Shutdown reason should be filtered now";
