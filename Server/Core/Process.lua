@@ -39,14 +39,19 @@ return function()
 		RateLog = {};
 	}
 	
-	local function RateLimit(p, type)
-		local ready = (not RateLimiter[type][p.UserId] or (RateLimiter[type][p.UserId] and tick() - RateLimiter[type][p.UserId] >= server.Process.RateLimits[type]));
-		RateLimiter[type][p.UserId] = tick();
-		return ready;
+	local function RateLimit(p, typ)
+		if p and type(p) == "userdata" and p:IsA("Player") then
+			local ready = (not RateLimiter[typ][p.UserId] or (RateLimiter[typ][p.UserId] and tick() - RateLimiter[typ][p.UserId] >= server.Process.RateLimits[typ]));
+			RateLimiter[typ][p.UserId] = tick();
+			return ready;
+		else
+			return true;
+		end
 	end
 	
 	server.Process = {
 		Init = Init;
+		RateLimit = RateLimit;
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -122,119 +127,114 @@ return function()
 		end;
 		
 		Command = function(p, msg, opts, noYield)
-			if RateLimit(p, "Command") then
-				local Admin = Admin
-				local Functions = Functions
-				local Process = Process
-				local Remote = Remote
-				local Logs = Logs
-				local opts = opts or {}
-				local msg = Functions.Trim(msg)
-				
-				if msg:match(Settings.BatchKey) then
-					for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
-						local cmd = Functions.Trim(cmd)
-						local waiter = Settings.PlayerPrefix.."wait"
-						if cmd:lower():sub(1,#waiter) == waiter then
-							local num = cmd:sub(#waiter+1)
-							if num and tonumber(num) then
-								wait(tonumber(num))
-							end
-						else
-							Process.Command(p, cmd, opts, false) 
-						end
-					end
-				else
-					local index,command,matched = Admin.GetCommand(msg)
-					
-					if not command then
-						if opts.Check then
-							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+			local Admin = Admin
+			local Functions = Functions
+			local Process = Process
+			local Remote = Remote
+			local Logs = Logs
+			local opts = opts or {}
+			local msg = Functions.Trim(msg)
+			
+			if msg:match(Settings.BatchKey) then
+				for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
+					local cmd = Functions.Trim(cmd)
+					local waiter = Settings.PlayerPrefix.."wait"
+					if cmd:lower():sub(1,#waiter) == waiter then
+						local num = cmd:sub(#waiter+1)
+						if num and tonumber(num) then
+							wait(tonumber(num))
 						end
 					else
-						local allowed = false
-						local isSystem = false
-						local pDat = {
-							Player = p;
-							Level = Admin.GetLevel(p);
-							isAgent = HTTP.Trello.CheckAgent(p);
-							isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
-						}
+						Process.Command(p, cmd, opts, false) 
+					end
+				end
+			else
+				local index,command,matched = Admin.GetCommand(msg)
+			
+				if not command then
+					if opts.Check then
+						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+					end
+				else
+					local allowed = false
+					local isSystem = false
+					local pDat = {
+						Player = p;
+						Level = Admin.GetLevel(p);
+						isAgent = HTTP.Trello.CheckAgent(p);
+						isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+					}
+					
+					if opts.isSystem or p == "SYSTEM" then 
+						isSystem = true
+						allowed = true
+						p = p or "SYSTEM"
+					else
+						allowed = Admin.CheckPermission(pDat, command)
+					end
+					
+					if allowed then
+						local cmdArgs = command.Args or command.Arguments
+						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
+						local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+						local taskName = "Command:: "..tostring(p)..": ("..msg..")"
+						local commandID = "COMMAND_".. math.random()
+						local running = true
 						
-						if opts.isSystem or p == "SYSTEM" then 
-							isSystem = true
-							allowed = true
-							p = p or "SYSTEM"
-						else
-							allowed = Admin.CheckPermission(pDat, command)
+						if #args > 0 and not isSystem and command.Filter or opts.Filter then
+							local safe = {
+								plr = true;
+								plrs = true;
+								name = true;
+								names = true;
+								username = true;
+								usernames = true;
+								players = true;
+								player = true;
+								users = true;
+								user = true;
+							}
+							
+							for i,arg in next,args do
+								if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
+									args[i] = service.LaxFilter(arg, p)
+								end
+							end
 						end
 						
-						if allowed then
-							local cmdArgs = command.Args or command.Arguments
-							local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
-							local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-							local taskName = "Command:: "..tostring(p)..": ("..msg..")"
-							local commandID = "COMMAND_".. math.random()
-							local running = true
-							
-							if #args > 0 and not isSystem and command.Filter or opts.Filter then
-								local safe = {
-									plr = true;
-									plrs = true;
-									name = true;
-									names = true;
-									username = true;
-									usernames = true;
-									players = true;
-									player = true;
-									users = true;
-									user = true;
-								}
-								
-								for i,arg in next,args do
-									if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
-										args[i] = service.LaxFilter(arg, p)
-									end
-								end
+						if not isSystem and not opts.DontLog then
+							AddLog("Commands",{
+								Text = p.Name,
+								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
+							})
+							if Settings.ConfirmCommands then
+								Functions.Hint('Executed Command: [ '..msg..' ]',{p})
 							end
-							
-							if not isSystem and not opts.DontLog then
-								AddLog("Commands",{
-									Text = p.Name,
-									Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
-								})
-								if Settings.ConfirmCommands then
-									Functions.Hint('Executed Command: [ '..msg..' ]',{p})
-								end
-							end
-							
-							if noYield then
-								taskName = "Thread: "..taskName
-							end
-							
-							local ran, error = service.TrackTask(taskName, command.Function, p, args)
-							if error and type(error) == "string" then 
-								error = tostring(error):match(":(.+)$") or "Unknown error"
-								if not isSystem then 
-									Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
-								end 
-							elseif error and type(error) ~= "string" then
-								if not isSystem then 
-									Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
-								end 
-							end
-							
-							service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
-						else
-							if not isSystem and not opts.NoOutput then
-								Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
-							end
+						end
+						
+						if noYield then
+							taskName = "Thread: "..taskName
+						end
+						
+						local ran, error = service.TrackTask(taskName, command.Function, p, args)
+						if error and type(error) == "string" then 
+							error = tostring(error):match(":(.+)$") or "Unknown error"
+							if not isSystem then 
+								Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
+							end 
+						elseif error and type(error) ~= "string" then
+							if not isSystem then 
+								Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
+							end 
+						end
+						
+						service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
+					else
+						if not isSystem and not opts.NoOutput then
+							Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
 						end
 					end
 				end
-			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
-				warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
 		end;
 		

@@ -1,6 +1,11 @@
 return {
-	"Version: 159";
+	"Version: 160";
 	"*Click and drag edges to expand*";
+	"";
+	"[03.22.2020 18:10]";
+	"*Fixed a RateLimit issue with commands";
+	"*Fixed punish";
+	"*Fixed a tools issue with :refresh";
 	"";
 	"[03.22.2020 12:06]";
 	"*Changelog will now just use the date and time instead of a senseless number";

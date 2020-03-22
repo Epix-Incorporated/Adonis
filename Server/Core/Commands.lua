@@ -2122,7 +2122,7 @@ return function()
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then 
-						v.Character.Parent = Settings.Storage
+						v.Character.Parent = service.UnWrap(Settings.Storage);
 					end
 				end
 			end
@@ -2136,7 +2136,8 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					v.Character.Parent = service.Workspace v.Character:MakeJoints()
+					v.Character.Parent = service.Workspace 
+					v.Character:MakeJoints()
 				end
 			end
 		};
@@ -5078,21 +5079,27 @@ return function()
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local pos = v.Character.HumanoidRootPart.CFrame
 					local temptools = {}
-					ypcall(function() v.Character.Humanoid:UnequipTools() end)
+					
+					pcall(function() v.Character.Humanoid:UnequipTools() end)
 					for k,t in pairs(v.Backpack:children()) do
 						if t:IsA('Tool') or t:IsA('HopperBin') then
 							table.insert(temptools,t)
+							t.Parent = nil;
 						end
 					end
+					
 					v:LoadCharacter()
 					v.Character.HumanoidRootPart.CFrame = pos
+					
 					for d,f in pairs(v.Character:children()) do
 						if f:IsA('ForceField') then f:Destroy() end
 					end
+					
 					v:WaitForChild("Backpack")
 					v.Backpack:ClearAllChildren()
+					
 					for l,m in pairs(temptools) do
-						m:clone().Parent = v.Backpack
+						m.Parent = v.Backpack
 					end
 				end
 			end
