@@ -132,6 +132,7 @@ return function()
 						ret = Settings[setting]
 					end
 				end
+				
 				return ret
 			end;
 			
@@ -528,6 +529,7 @@ return function()
 		
 		Commands = {
 			GetReturn = function(p,args)
+				print("THE CLIENT IS ASKING US FOR A RETURN")
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
@@ -537,12 +539,15 @@ return function()
 					logError(p,retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
+					print("SENT THEM A RETURN")
 					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
 				end
 			end;
 			
 			GiveReturn = function(p,args)
+				print("THE CLIENT GAVE US A RETURN");
 				if Remote.PendingReturns[args[1]] then
+					print("VALID PENDING RETURN");
 					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
@@ -755,7 +760,7 @@ return function()
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
 				keys.Sent = keys.Sent+1
-				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Sent = 0},...)
+				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0},...)
 			end
 		end;
 		
@@ -766,23 +771,50 @@ return function()
 			end
 		end;
 		
+		GetFire = function(p, ...)
+			local keys = Remote.Clients[tostring(p.userId)]
+			local RemoteEvent = Core.RemoteEvent
+			if RemoteEvent and RemoteEvent.Function then
+				keys.Sent = keys.Sent+1
+				return RemoteEvent.Function:InvokeClient(p, {Mode = "Get", Sent = 0}, ...)
+			end
+		end;
+		
 		Get = function(p,com,...)
+			local keys = Remote.Clients[tostring(p.userId)]
+			if keys and keys.RemoteReady == true then 
+				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
+				if type(ret) == "table" then
+					return unpack(ret);
+				else
+					return ret;
+				end
+			end
+		end;
+		
+		OldGet = function(p, com, ...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
 				local returns, finished
 				local key = Functions:GetRandom()
-				local event = service.Events[key]:Connect(function(...) finished = true returns = {...} end)
+				local waiter = service.New("BindableEvent") -- issue with service.Events:Wait()??????
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
 				
 				Remote.PendingReturns[key] = true
 				Remote.Send(p,"GetReturn",com,key,...)
 				
-				if not returns and p.Parent then
+				print("GETTING RETURN");
+				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					delay(600, function() if not finished then event:Fire() end end)
-					returns = {event:Wait()}
+					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
+					--returns = returns or {event:Wait()}
+					waiter.Event:Wait();
+					print(string.format("WE GOT IT! %s", tostring(returns)));
 					pEvent:Disconnect()
 				end
 				
+				print("GOT RETURN");
 				event:Disconnect()
 				
 				if returns then

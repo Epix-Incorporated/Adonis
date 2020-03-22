@@ -32,9 +32,29 @@ return function()
 		Logs:AddLog("Script", "Processing Module Initialized")
 	end;
 	
+	local RateLimiter = {
+		Remote = {};
+		Command = {};
+		Chat = {};
+		RateLog = {};
+	}
+	
+	local function RateLimit(p, type)
+		local ready = (not RateLimiter[type][p.UserId] or (RateLimiter[type][p.UserId] and tick() - RateLimiter[type][p.UserId] >= server.Process.RateLimits[type]));
+		RateLimiter[type][p.UserId] = tick();
+		return ready;
+	end
+	
 	server.Process = {
 		Init = Init;
-		Remote = function(p,cliData,com,...)
+		RateLimits = {
+			Remote = 0.01;
+			Command = 0.1;
+			Chat = 0.1;
+			RateLog = 10;
+		};
+		
+		Remote = function(p, cliData, com, ...)
 			if p and p:IsA("Player") then
 				if cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
@@ -46,163 +66,175 @@ return function()
 					local keys = Remote.Clients[key]
 					if keys then
 						keys.Received = keys.Received+1
-						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
-							if com == keys.Special.."GET_KEY" then
-								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
-									keys.LoadingStatus = "LOADING"
-									keys.RemoteReady = true
-								else
-									Anti.Detected(p, "kick","Communication Key Error (r10003)")
-								end
-								
-								AddLog("RemoteFires", {
-									Text = tostring(p).." requested key from server", 
-									Desc = "Player requested key from server"
-								})
-							elseif UnEncrypted[com] then
-								AddLog("RemoteFires", {
-									Text = tostring(p).." fired "..tostring(com), 
-									Desc = "Player fired unencrypted remote command "..com
-								})
-								
-								UnEncrypted[com](p,...)
-							elseif string.len(com) <= Remote.MaxLen then
-								local comString = Decrypt(com, keys.Key, keys.Cache)
-								local command = Commands[comString]
-								
-								AddLog("RemoteFires", {
-									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
-									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
-								})
-								
-								if command then 
-									local ran,err = TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)
-									keys.LastUpdate = tick()
-									if not ran and err then
-										logError(p, tostring(comString) .. ": ".. tostring(err))
+						if RateLimit(p, "Remote") then
+							if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
+								if com == keys.Special.."GET_KEY" then
+									if keys.LoadingStatus == "WAITING_FOR_KEY" then
+										Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
+										keys.LoadingStatus = "LOADING"
+										keys.RemoteReady = true
+									else
+										Anti.Detected(p, "kick","Communication Key Error (r10003)")
 									end
-								else
-									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
+									
+									AddLog("RemoteFires", {
+										Text = tostring(p).." requested key from server", 
+										Desc = "Player requested key from server"
+									})
+								elseif UnEncrypted[com] then
+									AddLog("RemoteFires", {
+										Text = tostring(p).." fired "..tostring(com), 
+										Desc = "Player fired unencrypted remote command "..com
+									})
+									
+									return {UnEncrypted[com](p,...)}
+								elseif string.len(com) <= Remote.MaxLen then
+									local comString = Decrypt(com, keys.Key, keys.Cache)
+									local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
+									
+									AddLog("RemoteFires", {
+										Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
+										Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
+									})
+									
+									if command then 
+										local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
+										keys.LastUpdate = tick()
+										if not rets[1] then
+											logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
+										else
+											return {unpack(rets, 2)};
+										end
+									else
+										Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
+									end
 								end
+							else
+								Anti.Detected(p, "Log", "Out of Sync (r10005)")
 							end
-						else
-							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
+					elseif RateLimit(p, "RateLog") then
+						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
+						warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 					end
 				end
 			end
 		end;
 		
 		Command = function(p, msg, opts, noYield)
-			local Admin = Admin
-			local Functions = Functions
-			local Process = Process
-			local Remote = Remote
-			local Logs = Logs
-			local opts = opts or {}
-			local msg = Functions.Trim(msg)
-			
-			if msg:match(Settings.BatchKey) then
-				for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
-					local cmd = Functions.Trim(cmd)
-					local waiter = Settings.PlayerPrefix.."wait"
-					if cmd:lower():sub(1,#waiter) == waiter then
-						local num = cmd:sub(#waiter+1)
-						if num and tonumber(num) then
-							wait(tonumber(num))
-						end
-					else
-						Process.Command(p, cmd, opts, false) 
-					end
-				end
-			else
-				local index,command,matched = Admin.GetCommand(msg)
+			if RateLimit(p, "Command") then
+				local Admin = Admin
+				local Functions = Functions
+				local Process = Process
+				local Remote = Remote
+				local Logs = Logs
+				local opts = opts or {}
+				local msg = Functions.Trim(msg)
 				
-				if not command then
-					if opts.Check then
-						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+				if msg:match(Settings.BatchKey) then
+					for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
+						local cmd = Functions.Trim(cmd)
+						local waiter = Settings.PlayerPrefix.."wait"
+						if cmd:lower():sub(1,#waiter) == waiter then
+							local num = cmd:sub(#waiter+1)
+							if num and tonumber(num) then
+								wait(tonumber(num))
+							end
+						else
+							Process.Command(p, cmd, opts, false) 
+						end
 					end
 				else
-					local allowed = false
-					local isSystem = false
-					local pDat = {
-						Player = p;
-						Level = Admin.GetLevel(p);
-						isAgent = HTTP.Trello.CheckAgent(p);
-						isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
-					}
+					local index,command,matched = Admin.GetCommand(msg)
 					
-					if opts.isSystem or p == "SYSTEM" then 
-						isSystem = true
-						allowed = true
-						p = p or "SYSTEM"
+					if not command then
+						if opts.Check then
+							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+						end
 					else
-						allowed = Admin.CheckPermission(pDat, command)
-					end
-					
-					if allowed then
-						local cmdArgs = command.Args or command.Arguments
-						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
-						local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-						local taskName = "Command:: "..tostring(p)..": ("..msg..")"
-						local commandID = "COMMAND_".. math.random()
-						local running = true
+						local allowed = false
+						local isSystem = false
+						local pDat = {
+							Player = p;
+							Level = Admin.GetLevel(p);
+							isAgent = HTTP.Trello.CheckAgent(p);
+							isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+						}
 						
-						if #args > 0 and not isSystem and command.Filter or opts.Filter then
-							local safe = {
-								plr = true;
-								plrs = true;
-								name = true;
-								names = true;
-								username = true;
-								usernames = true;
-								players = true;
-								player = true;
-								users = true;
-								user = true;
-							}
+						if opts.isSystem or p == "SYSTEM" then 
+							isSystem = true
+							allowed = true
+							p = p or "SYSTEM"
+						else
+							allowed = Admin.CheckPermission(pDat, command)
+						end
+						
+						if allowed then
+							local cmdArgs = command.Args or command.Arguments
+							local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
+							local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+							local taskName = "Command:: "..tostring(p)..": ("..msg..")"
+							local commandID = "COMMAND_".. math.random()
+							local running = true
 							
-							for i,arg in next,args do
-								if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
-									args[i] = service.LaxFilter(arg, p)
+							if #args > 0 and not isSystem and command.Filter or opts.Filter then
+								local safe = {
+									plr = true;
+									plrs = true;
+									name = true;
+									names = true;
+									username = true;
+									usernames = true;
+									players = true;
+									player = true;
+									users = true;
+									user = true;
+								}
+								
+								for i,arg in next,args do
+									if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
+										args[i] = service.LaxFilter(arg, p)
+									end
 								end
 							end
-						end
-						
-						if not isSystem and not opts.DontLog then
-							AddLog("Commands",{
-								Text = p.Name,
-								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
-							})
-							if Settings.ConfirmCommands then
-								Functions.Hint('Executed Command: [ '..msg..' ]',{p})
+							
+							if not isSystem and not opts.DontLog then
+								AddLog("Commands",{
+									Text = p.Name,
+									Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
+								})
+								if Settings.ConfirmCommands then
+									Functions.Hint('Executed Command: [ '..msg..' ]',{p})
+								end
 							end
-						end
-						
-						if noYield then
-							taskName = "Thread: "..taskName
-						end
-						
-						local ran, error = service.TrackTask(taskName, command.Function, p, args)
-						if error and type(error) == "string" then 
-							error = tostring(error):match(":(.+)$") or "Unknown error"
-							if not isSystem then 
-								Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
-							end 
-						elseif error and type(error) ~= "string" then
-							if not isSystem then 
-								Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
-							end 
-						end
-						
-						service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
-					else
-						if not isSystem and not opts.NoOutput then
-							Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
+							
+							if noYield then
+								taskName = "Thread: "..taskName
+							end
+							
+							local ran, error = service.TrackTask(taskName, command.Function, p, args)
+							if error and type(error) == "string" then 
+								error = tostring(error):match(":(.+)$") or "Unknown error"
+								if not isSystem then 
+									Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
+								end 
+							elseif error and type(error) ~= "string" then
+								if not isSystem then 
+									Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
+								end 
+							end
+							
+							service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
+						else
+							if not isSystem and not opts.NoOutput then
+								Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
+							end
 						end
 					end
 				end
+			elseif RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
 		end;
 		
@@ -223,65 +255,70 @@ return function()
 		end;
 		
 		CustomChat = function(p,a,b,canCross)
-			if b == "Cross" then
-				if canCross and Admin.CheckAdmin(p) then
-					Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
-				end
-			else
-				local target = Settings.SpecialPrefix..'all'
-				if not b then b = 'Global' end
-				if not service.Players:FindFirstChild(p.Name) then b='Nil' end
-				if a:sub(1,1)=='@' then
-					b='Private'
-					target,a=a:match('@(.%S+) (.+)')
-					Remote.Send(p,'Function','SendToChat',p,a,b)
-				elseif a:sub(1,1)=='#' then
-					if a:sub(1,7)=='#ignore' then
-						target=a:sub(9)
-						b='Ignore'
+			if RateLimit(p, "Chat") then
+				if b == "Cross" then
+					if canCross and Admin.CheckAdmin(p) then
+						Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
 					end
-					if a:sub(1,9)=='#unignore' then
-						target=a:sub(11)
-						b='UnIgnore'
+				else
+					local target = Settings.SpecialPrefix..'all'
+					if not b then b = 'Global' end
+					if not service.Players:FindFirstChild(p.Name) then b='Nil' end
+					if a:sub(1,1)=='@' then
+						b='Private'
+						target,a=a:match('@(.%S+) (.+)')
+						Remote.Send(p,'Function','SendToChat',p,a,b)
+					elseif a:sub(1,1)=='#' then
+						if a:sub(1,7)=='#ignore' then
+							target=a:sub(9)
+							b='Ignore'
+						end
+						if a:sub(1,9)=='#unignore' then
+							target=a:sub(11)
+							b='UnIgnore'
+						end
+					end
+					
+					for i,v in pairs(service.GetPlayers(p,target,true)) do
+						--Routine(function()
+							local a = service.Filter(a,p,v)
+							if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == "Global" then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == 'Team' and p.TeamColor == v.TeamColor then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == 'Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == 'Private' and v.Name ~= p.Name then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							elseif b == 'Nil' then
+								Remote.Send(v,"Handler","ChatHandler",p,a,b)
+							--[[elseif b == 'Ignore' and v.Name ~= p.Name then
+								Remote.Send(v,'AddToTable','IgnoreList',v.Name)
+							elseif b == 'UnIgnore' and v.Name ~= p.Name then
+								Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
+							end
+						--end)
 					end
 				end
 				
-				for i,v in pairs(service.GetPlayers(p,target,true)) do
-					--Routine(function()
-						local a = service.Filter(a,p,v)
-						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == "Global" then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Team' and p.TeamColor == v.TeamColor then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Private' and v.Name ~= p.Name then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Nil' then
-							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						--[[elseif b == 'Ignore' and v.Name ~= p.Name then
-							Remote.Send(v,'AddToTable','IgnoreList',v.Name)
-						elseif b == 'UnIgnore' and v.Name ~= p.Name then
-							Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
-						end
-					--end)
-				end
+				service.Events.CustomChat:fire(p,a,b)
+			elseif RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
-			
-			service.Events.CustomChat:fire(p,a,b)
 		end;
 		
-		Chat = function(p,msg)
-			local pData = Core.GetPlayer(p)
-			if not pData.LastChat or tick() - pData.LastChat > 0.05 then
-				service.Events.PlayerChatted:fire(p,msg)
+		Chat = function(p, msg)
+			if RateLimit(p, "Chat") then
+				local pData = Core.GetPlayer(p)
+				service.Events.PlayerChatted:Fire(p,msg)
 				
 				if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-					Anti.Detected(p,"kick","Talking guest")
+					Anti.Detected(p, "kick", "Talking guest")
 				end
 				
 				local filtered = service.LaxFilter(msg, p)
@@ -297,18 +334,22 @@ return function()
 					end
 					Process.Command(p,msg)
 				end
+			elseif RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
-			
-			pData.LastChat = tick()
 		end;
 		
 		WorkspaceChildAdded = function(c)
-			if c:IsA("Model") then
+			--[[if c:IsA("Model") then
 				local p = service.Players:GetPlayerFromCharacter(c)
 				if p then
 					service.TrackTask(tostring(p)..": CharacterAdded", Process.CharacterAdded, p)
 				end
 			end
+			
+			-- Moved to PlayerAdded handler
+			--]]
 		end;
 		
 		WorkspaceObjectAdded = function(c)
@@ -518,6 +559,10 @@ return function()
 								Desc = tostring(p).." successfully joined the server";
 							})
 							
+							p.CharacterAdded:Connect(function(c)
+								service.TrackTask(tostring(p)..": CharacterAdded", Process.CharacterAdded, p)
+							end)
+							
 							wait(60*10)
 							if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
 								Logs.AddLog("Script", {
@@ -661,7 +706,6 @@ return function()
 			if Remote.Clients[key] then
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == service.Workspace then
-					--Process.CharacterAdded(p)
 					--service.Threads.TimeoutRunTask(tostring(p)..";CharacterAdded",Process.CharacterAdded,60,p)
 					service.TrackTask("Thread: "..tostring(p).." CharacterAdded", Process.CharacterAdded, p)
 				end
@@ -759,7 +803,7 @@ return function()
 				--end)
 				
 				--// Wait for UI keepalive to finish
-				Remote.Get(p,"UIKeepAlive")
+				Remote.Get(p,"UIKeepAlive");
 				
 				--//GUI loading
 				if Variables.NotifMessage then

@@ -745,7 +745,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					if service.Wrapped(parent) then parent = parent:GetObject() end
 					data.Parent = nil
 					
-					for val,prop in pairs(data) do 
+					for val,prop in next,data do 
 						new[val] = prop 
 					end 
 					

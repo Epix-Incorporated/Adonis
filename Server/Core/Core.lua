@@ -75,6 +75,7 @@ return function()
 						Core.RemoteEvent.DecoySecurity1:Disconnect()
 						Core.RemoteEvent.DecoySecurity2:Disconnect()
 						pcall(function() service.Delete(Core.RemoteEvent.Object) end)
+						pcall(function() service.Delete(Core.RemoteEvent.Function) end)
 						pcall(function() service.Delete(Core.RemoteEvent.Decoy1) end)
 						pcall(function() service.Delete(Core.RemoteEvent.Decoy2) end)
 					end
@@ -82,6 +83,7 @@ return function()
 					Core.RemoteEvent = {}
 					
 					local event = service.New("RemoteEvent")
+					local func = service.New("RemoteFunction", {Parent = event, Name = ""})
 					local decoy1 = event:Clone()
 					local decoy2 = event:Clone()
 					
@@ -94,6 +96,7 @@ return function()
 					decoy2.Archivable = false
 					
 					Core.RemoteEvent.Object = event
+					Core.RemoteEvent.Function = func
 					Core.RemoteEvent.Decoy1 = decoy1
 					Core.RemoteEvent.Decoy2 = decoy2
 					
@@ -101,10 +104,14 @@ return function()
 					--decoy1.Parent = service.JointsService
 					--decoy2.Parent = service.JointsService
 					
-					local function secure(ev)
+					local function secure(ev, name)
 						return service.RbxEvent(ev.Changed, function(p)
-							if p=="Name" then
-								event.Name = Core.Name--..Functions.GetRandom()--Core.Name
+							if Core.RemoteEvent.Function then
+								Core.RemoteEvent.Function.OnServerInvoke = Process.Remote
+							end
+							
+							if p == "Name" then
+								event.Name = name--..Functions.GetRandom()--Core.Name
 							else
 								Core.MakeEvent()
 							end
@@ -112,6 +119,8 @@ return function()
 					end
 					
 					Core.RemoteEvent.Event = service.RbxEvent(event.OnServerEvent, Process.Remote)
+					func.OnServerInvoke = Process.Remote
+					
 					service.RbxEvent(decoy1.OnServerEvent, function(p,modu,com,sub)
 						local keys = Remote.Clients[tostring(p.userId)]
 						if keys and com == "TrustCheck" and modu == keys.Module then
@@ -126,9 +135,10 @@ return function()
 						end
 					end)
 					
-					Core.RemoteEvent.Security = secure(event)
-					Core.RemoteEvent.DecoySecurity1 = secure(decoy1)
-					Core.RemoteEvent.DecoySecurity2 = secure(decoy2)
+					Core.RemoteEvent.Security = secure(event, Core.Name)
+					Core.RemoteEvent.FuncSec = secure(func, "");
+					Core.RemoteEvent.DecoySecurity1 = secure(decoy1, Core.Name)
+					Core.RemoteEvent.DecoySecurity2 = secure(decoy2, Core.Name)
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";
@@ -154,13 +164,13 @@ return function()
 					if net then p = p:GetPlayer() end
 					if p then
 						if Anti.ObjRLocked(p) then
-							Anti.Detected(p, "kick", "RobloxLocked")
+							Anti.Detected(p, "Log", "RobloxLocked")
 						else
 							local client = Remote.Clients[tostring(p.userId)]
 							if client and client.LoadingStatus == "READY" then
 								local lastTime = client.LastUpdate
 								if lastTime and tick()-lastTime > 60*5 then
-									Anti.Detected(p, "kick","Client Not Responding [Client hasn't checked in >5 minutes]")
+									Anti.Detected(p, "Log","Client Not Responding [Client hasn't checked in >5 minutes]")
 								end
 							end
 						end

@@ -108,6 +108,7 @@ return function(data)
 					Visible = false;
 					Size = UDim2.new(0, 200, 0, 75);
 					Position = UDim2.new(0.5, -100, 0.5, -100);
+					ZIndex = 100;
 					Children = {
 						{
 							Class = "TextLabel";
@@ -115,6 +116,7 @@ return function(data)
 							Position = UDim2.new(0, 15, 0, 10);
 							Size = UDim2.new(0, 40, 0, 25);
 							BackgroundTransparency = 1;
+							ZIndex = 100;
 						};
 						{
 							Class = "TextButton";
@@ -122,6 +124,7 @@ return function(data)
 							Position = UDim2.new(0.5, 0, 1, -30);
 							Size = UDim2.new(0.5, -20, 0, 20);
 							BackgroundTransparency = 1;
+							ZIndex = 100;
 							OnClicked = function()
 								if not inputBlock then
 									inputBlock = true
@@ -142,6 +145,7 @@ return function(data)
 							Position = UDim2.new(0, 10, 1, -30);
 							Size = UDim2.new(0.5, -20, 0, 20);
 							BackgroundTransparency = 1;
+							ZIndex = 100;
 							OnClicked = function()
 								if not inputBlock then
 									inputBlock = false
@@ -160,6 +164,7 @@ return function(data)
 					TextScaled = true;
 					BackgroundColor3 = Color3.new(1,1,1);
 					BackgroundTransparency = 0.8;
+					ZIndex = 100;
 				})
 				
 				tabWindow:Add("TextButton", {
@@ -190,6 +195,7 @@ return function(data)
 					end
 				})
 				
+				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
 				showItems()
 			else
 				items:Add("TextLabel", {

@@ -312,62 +312,31 @@ return function()
 		end;
 		
 		NewParticle = function(target, class, properties)
-			local part = Functions.GetParticleContainer(target)
-			if target and not part then
-				part = service.New("Part")
-				part.Name = target:GetFullName().."PARTICLES"
-				part.CanCollide = true
-				part.Anchored = false
-				part.Transparency = 1
-				part.Size = Vector3.new(0.1,0.1,0.1)
-				part.Locked = true
-				part.Archivable = false
-				part.Parent = service.LocalContainer()
-				
-				local obj = Instance.new("ObjectValue",part)
-				obj.Name = "_OBJECT"
-				obj.Value = target
-				
-				local weld = service.New("Weld",part)
-				weld.Name = "_WELD"
-				weld.Part0 = part
-				weld.Part1 = target
-				weld.C0 = CFrame.new(0,0,0)
-				
-				weld.Changed:Connect(function()
-					if not weld or not weld.Parent or weld.Parent ~= part or not target or not target.Parent then
-						part:Destroy()
-					end
-				end)
-			end
+			local effect, index;
 			
-			local effect = service.New(class, part)
+			properties.Parent = target;
+			properties.Enabled = Variables.ParticlesEnabled;
 			
-			for prop,value in next,properties do
-				effect[prop] = value
-			end
+			effect = service.New(class, properties);
+			index = Functions.GetRandom();
 			
-			effect.Enabled = Variables.ParticlesEnabled
-			effect.Parent = part
+			Variables.Particles[index] = effect;
 			
-			local index = Functions.GetRandom()
-			
-			Variables.Particles[index] = effect
+			table.insert(Variables.Particles, effect);
 			
 			effect.Changed:Connect(function()
-				if not effect or not effect.Parent or effect.Parent ~= part then
-					Variables.Particles[index] = nil
+				if not effect or not effect.Parent or effect.Parent ~= target then
+					pcall(function() effect:Destroy() end)
+					Variables.Particles[index] = nil;
 				end
 			end)
 		end;
 		
 		RemoveParticle = function(target, name)
-			local part = Functions.GetParticleContainer(target)
-			if part then
-				for ind,effect in next,part:GetChildren() do
-					if effect.Name == name then
-						effect:Destroy()
-					end
+			for i,effect in next,Variables.Particles do
+				if effect.Parent == target and effect.Name == name then
+					effect:Destroy();
+					Variables.Particles[i] = nil;
 				end
 			end
 		end;
@@ -844,14 +813,12 @@ return function()
 			end)
 		end;
 		
-		AddKeyBind = function(key,command)
+		AddKeyBind = function(key, command)
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
-			Routine(function()
-				UI.Make("Hint",{
-					Message = 'Bound "'..string.char(key)..'" to '..command
-				})
-			end)
+			UI.Make("Hint",{
+				Message = 'Bound "'..string.char(key)..'" to '..command
+			})
 		end;
 		
 		RemoveKeyBind = function(key)
