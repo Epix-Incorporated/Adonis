@@ -5740,49 +5740,20 @@ return function()
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				--[[local t1 = service.New("HopperBin") 
-				t1.Name = "Move" 
-				t1.BinType = "GameTool"
-				local t2 = service.New("HopperBin") 
-				t2.Name = "Clone"
-				t2.BinType = "Clone"
-				local t3 = service.New("HopperBin") 
-				t3.Name = "Delete"
-				t3.BinType = "Hammer"--]]
 				local f3x = service.New("Tool")
 				f3x.CanBeDropped = false
 				f3x.ManualActivationOnly = false
 				f3x.ToolTip = "Building Tools by F3X"
-				local handle = service.New("Part",f3x)
-				handle.Name = "Handle"
-				handle.Size = Vector3.new(1,1,1)
-				handle.CanCollide = false
-				handle.BrickColor = BrickColor.new("Really black")
-				local mesh = service.New("BlockMesh",handle) --#Lazy
-				mesh.Scale = Vector3.new(1.1,1.1,1.1)
-				for k,m in pairs(Deps.Assets['F3X Deps']:children()) do
+				for k,m in pairs(Deps.Assets['F3X Deps']:GetChildren()) do
 					m:Clone().Parent = f3x
 				end
-				f3x.Name='F3X'
-				--local t4 = service.New("HopperBin") 
-				--t4.Name = "Resize"
-				--local cl=deps.ResizeScript:clone()
-				--cl.Parent=t4
-				--cl.Disabled=false --F3X Kinda replaces the need for this
-				--[[service.New("StringValue",t1).Name = Variables.CodeName
-				service.New("StringValue",t2).Name = Variables.CodeName
-				service.New("StringValue",t3).Name = Variables.CodeName--]]
-				--service.New("StringValue",t4).Name = Variables.CodeName
+				f3x.Name='Building Tools'
 				service.New("StringValue",f3x).Name = Variables.CodeName
 				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					--Send.Remote(v,"Function","setEffectVal","AntiDeleteTool",false)
 					if v:findFirstChild("Backpack") then 
-						--[[t1:Clone().Parent = v.Backpack
-						t2:Clone().Parent = v.Backpack
-						t3:Clone().Parent = v.Backpack--]]
 						f3x:Clone().Parent = v.Backpack
-						--t4.Parent=v.Backpack
 					end
 				end
 			end
