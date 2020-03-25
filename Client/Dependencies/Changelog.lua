@@ -1,6 +1,9 @@
 return {
-	"Version: 161";
+	"Version: 162";
 	"*Click and drag edges to expand*";
+	"";
+	"[03.25.2020 1:03]";
+	"*Disabled Console GUI AutoLocalize property";
 	"";
 	"[03.25.2020 12:02]";
 	"*Fixed an issue that allowed server crashing via the chat system";
