@@ -1,6 +1,12 @@
 return {
-	"Version: 160";
+	"Version: 161";
 	"*Click and drag edges to expand*";
+	"";
+	"[03.25.2020 12:02]";
+	"*Fixed an issue that allowed server crashing via the chat system";
+	"*Messages larger than those allowed by ROBLOX's char (200 characters) will result in a kick";
+	"*Any chat (Admins too) or command (Non-Admins only; via the command bar) message over 500 characters will now be trimmed";
+	"*Limits defined by Process.MsgStringLimit & Process.MaxChatCharacterLimit";
 	"";
 	"[03.22.2020 18:10]";
 	"*Fixed a RateLimit issue with commands";
@@ -18,6 +24,7 @@ return {
 	"*Fixed a ZIndex issue in UserPanel game settings when adding to tables";
 	"*Adonis should no longer kick you for selecting stuff while in studio";
 	"*Minor other bug fixes/changes";
+	"*Previous issues confirmed to be resolved";
 	"";
 	"1.2.43b [1/16/20; 12:39PM/12:39]";
 	"UPDATE: 1:56PM";

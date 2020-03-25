@@ -52,6 +52,8 @@ return function()
 	server.Process = {
 		Init = Init;
 		RateLimit = RateLimit;
+		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
+		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -61,7 +63,7 @@ return function()
 		
 		Remote = function(p, cliData, com, ...)
 			if p and p:IsA("Player") then
-				if cliData == "BadMemes" or com == "BadMemes" then
+				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
@@ -119,7 +121,7 @@ return function()
 							end
 						end
 					elseif RateLimit(p, "RateLog") then
-						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
+						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
 						warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 					end
 				end
@@ -133,7 +135,12 @@ return function()
 			local Remote = Remote
 			local Logs = Logs
 			local opts = opts or {}
-			local msg = Functions.Trim(msg)
+			
+			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
+				msg = string.sub(msg, 1, Process.MsgStringLimit);
+			end
+			
+			msg = Functions.Trim(msg)
 			
 			if msg:match(Settings.BatchKey) then
 				for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
@@ -254,8 +261,12 @@ return function()
 			end
 		end;
 		
-		CustomChat = function(p,a,b,canCross)
+		CustomChat = function(p, a, b, canCross)
 			if RateLimit(p, "Chat") then
+				if type(a) == "string" then
+					a = string.sub(a, 1, Process.MsgStringLimit);
+				end
+				
 				if b == "Cross" then
 					if canCross and Admin.CheckAdmin(p) then
 						Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
@@ -307,35 +318,40 @@ return function()
 				
 				service.Events.CustomChat:fire(p,a,b)
 			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
 		end;
 		
 		Chat = function(p, msg)
 			if RateLimit(p, "Chat") then
-				local pData = Core.GetPlayer(p)
-				service.Events.PlayerChatted:Fire(p,msg)
-				
-				if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-					Anti.Detected(p, "kick", "Talking guest")
-				end
-				
-				local filtered = service.LaxFilter(msg, p)
-				AddLog(Logs.Chats,{
-					Text = p.Name..": "..tostring(filtered);
-					Desc = tostring(filtered);
-					NoTime = true;
-				})
-				
-				if Settings.ChatCommands then
-					if msg:sub(1,3)=="/e " then
-						msg = msg:sub(4)
+				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
+					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
+				else
+					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					local pData = Core.GetPlayer(p)
+					service.Events.PlayerChatted:Fire(p,msg)
+					
+					if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
+						Anti.Detected(p, "kick", "Talking guest")
 					end
-					Process.Command(p,msg)
+					
+					local filtered = service.LaxFilter(msg, p)
+					AddLog(Logs.Chats,{
+						Text = p.Name..": "..tostring(filtered);
+						Desc = tostring(filtered);
+						NoTime = true;
+					})
+					
+					if Settings.ChatCommands then
+						if msg:sub(1,3)=="/e " then
+							msg = msg:sub(4)
+						end
+						Process.Command(p,msg)
+					end
 				end
 			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 			end
 		end;
