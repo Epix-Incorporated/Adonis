@@ -513,9 +513,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	--for index,player in next,service.Players:GetPlayers() do server.Core.LoadExistingPlayer(player) end
 	
 	--// Add existing players in case some are already in the server
-	for i,player in next,service.Players:GetPlayers() do
+	--[[for i,player in next,service.Players:GetPlayers() do
 		service.TrackTask("PlayerAdded", server.Process.PlayerAdded, player);
-	end
+	end]]
 	
 	--// Events
 	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
