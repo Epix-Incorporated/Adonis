@@ -420,12 +420,17 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			client.Remote.Send("ClientLoaded")
 			delay(5, function() service.StartLoop("ClientCheck",30,client.Core.CheckClient,true) end)
 			
+			
 			local settings = client.Remote.Get("Setting",{"G_API","G_Access","G_Access_Key","G_Access_Perms","Allowed_API_Calls"})
-			client.G_API = settings.G_API
-			client.G_Access = settings.G_Access
-			client.G_Access_Key = settings.G_Access_Key
-			client.G_Access_Perms = settings.G_Access_Perms
-			client.Allowed_API_Calls = settings.Allowed_API_Calls
+			if settings then
+				client.G_API = settings.G_API
+				client.G_Access = settings.G_Access
+				client.G_Access_Key = settings.G_Access_Key
+				client.G_Access_Perms = settings.G_Access_Perms
+				client.Allowed_API_Calls = settings.Allowed_API_Calls
+			else
+				warn("FAILED TO GET SETTINGS FROM SERVER");
+			end
 			
 			--// API
 			if service.NetworkClient then

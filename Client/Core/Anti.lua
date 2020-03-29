@@ -60,9 +60,11 @@ return function()
 	local Detected = function(action,info)
 		if NetworkClient then
 			pcall(Send,"Detected",action,info)
-			wait(1)
+			wait(0.5)
 			if action == "kick" then
-				Disconnect(info)
+				if not service.RunService:IsStudio() then
+					Disconnect(info)
+				end
 			elseif action == "crash" then
 				Kill(info)
 			end

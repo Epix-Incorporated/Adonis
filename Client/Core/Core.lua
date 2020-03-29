@@ -76,21 +76,38 @@ return function()
 			
 			local function finishEvent(event)
 				if event then
-					Core.RemoteEvent.Object = event
-					Core.RemoteEvent.FireServer = event.FireServer
-					Core.RemoteEvent.Event = event.OnClientEvent:Connect(Process.Remote)--]]
-					Core.RemoteEvent.Security = event.Changed:Connect(function(p)
-						if p == "RobloxLocked" and Anti.RLocked(event) then
-							client.Kill("RemoteEvent Locked")
-						elseif not event or not event.Parent then
-							Core.GetEvent()
+					local rFunc = event:FindFirstChildOfClass("RemoteFunction")
+					if rFunc then
+						Core.RemoteEvent.Object = event
+						
+						Core.RemoteEvent.Function = rFunc
+						rFunc.OnClientInvoke = Process.Remote;
+						
+						Core.RemoteEvent.FireServer = event.FireServer
+						Core.RemoteEvent.Event = event.OnClientEvent:Connect(Process.Remote)--]]
+						Core.RemoteEvent.Security = event.Changed:Connect(function(p)
+							if Core.RemoteEvent.Function then
+								Core.RemoteEvent.Function.OnClientInvoke = Process.Remote;
+							end
+							
+							if p == "RobloxLocked" and Anti.RLocked(event) then
+								client.Kill("RemoteEvent Locked")
+							elseif not event or not event.Parent then
+								Core.GetEvent()
+							end
+						end)
+							
+						rFunc.Changed:Connect(function()
+							rFunc.OnClientInvoke = Process.Remote;
+						end)
+						
+						--SetFireServer(service.MetaFunc(event.FireServer))
+						
+						if not Core.Key then
+							Remote.Fire(client.DepsName.."GET_KEY")
 						end
-					end)
-					
-					--SetFireServer(service.MetaFunc(event.FireServer))
-					
-					if not Core.Key then
-						Remote.Fire(client.DepsName.."GET_KEY")
+					else
+						client.Kill("RemoteFunction not found")
 					end
 				else
 					client.Kill("RemoteEvent not found")
@@ -110,7 +127,7 @@ return function()
 				end
 				
 				for i,child in next,children do
-					if not Anti.ObjRLocked(child) and child:IsA("RemoteEvent") then
+					if not Anti.ObjRLocked(child) and child:IsA("RemoteEvent") and child:FindFirstChildOfClass("RemoteFunction") then
 						local index = rindex+1
 						rindex = index
 						if not events[child] then

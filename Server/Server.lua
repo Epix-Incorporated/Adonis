@@ -438,7 +438,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
-			
+	
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
 	
@@ -454,13 +454,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedVariables"), function(data) server.Process.DataStoreUpdated("SavedVariables",data) end)
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
 	end
-	
-	--// Events
-	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
-	service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", server.Process.PlayerRemoving))
-	service.RbxEvent(service.Workspace.ChildAdded, server.Process.WorkspaceChildAdded)
-	service.RbxEvent(service.LogService.MessageOut, server.Process.LogService)
-	service.RbxEvent(service.ScriptContext.Error, server.Process.ErrorMessage)
 	
 	if not server.FilteringEnabled then
 		service.RbxEvent(service.DataModel.DescendantAdded, server.Process.ObjectAdded)
@@ -517,7 +510,19 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
 	if not service.NetworkServer then wait(1) end 
-	for index,player in next,service.Players:GetPlayers() do server.Core.LoadExistingPlayer(player) end
+	--for index,player in next,service.Players:GetPlayers() do server.Core.LoadExistingPlayer(player) end
+	
+	--// Add existing players in case some are already in the server
+	for i,player in next,service.Players:GetPlayers() do
+		service.TrackTask("PlayerAdded", server.Process.PlayerAdded, player);
+	end
+	
+	--// Events
+	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
+	service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", server.Process.PlayerRemoving))
+	service.RbxEvent(service.Workspace.ChildAdded, server.Process.WorkspaceChildAdded)
+	service.RbxEvent(service.LogService.MessageOut, server.Process.LogService)
+	service.RbxEvent(service.ScriptContext.Error, server.Process.ErrorMessage)
 	
 	--// Fake finder
 	service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)

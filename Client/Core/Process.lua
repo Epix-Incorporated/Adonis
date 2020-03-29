@@ -60,15 +60,17 @@ return function()
 						client.Finish_Loading()
 					end
 				elseif Remote.UnEncrypted[com] then
-					Remote.UnEncrypted[com](...)
+					return {Remote.UnEncrypted[com](...)}
 				elseif Core.Key then
 					local comString = Remote.Decrypt(com,Core.Key)
-					local command = Remote.Commands[comString]
+					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 					if command then 
 						--local ran,err = pcall(command, args) --task service.Threads.RunTask("REMOTE:"..comString,command,args)
-						local ran,err = service.TrackTask("Remote: ".. comString, command, args)
-						if not ran and err then
-							logError(err)
+						local rets = {service.TrackTask("Remote: ".. comString, command, args)}
+						if not rets[1] then
+							logError(rets[2])
+						else
+							return {unpack(rets, 2)};
 						end
 					end
 				end

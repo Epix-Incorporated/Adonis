@@ -125,6 +125,7 @@ return function()
 						end
 					end
 				end
+				
 				return "Done"
 			end;
 			
@@ -132,6 +133,7 @@ return function()
 				local guiName = args[1]
 				local themeData = args[2]
 				local guiData = args[3]
+				
 				
 				--Core.Theme = themeData
 				return UI.Make(guiName,guiData,themeData)
@@ -194,6 +196,7 @@ return function()
 		
 		Commands = {
 			GetReturn = function(args)
+				print("THE SERVER IS ASKING US FOR A RETURN");
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
@@ -203,12 +206,15 @@ return function()
 					logError(retable[2])
 					Remote.Send("GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
+					print("SENT RETURN");
 					Remote.Send("GiveReturn", key, unpack(retable,2))
 				end
 			end;
 			
 			GiveReturn = function(args)
+				print("SERVER GAVE US A RETURN")
 				if Remote.PendingReturns[args[1]] then
+					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
@@ -299,7 +305,7 @@ return function()
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
 				Remote.Sent = Remote.Sent+1
-				RemoteEvent.Object:FireServer({Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
+				RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
 			end
 		end;
 		
@@ -308,17 +314,36 @@ return function()
 			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
 		end;
 		
+		GetFire = function(...)
+			local RemoteEvent = Core.RemoteEvent
+			if RemoteEvent and RemoteEvent.Function then
+				Remote.Sent = Remote.Sent+1
+				return RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
+			end
+		end;
+		
 		Get = function(com,...)
+			Core.LastUpdate = tick()
+			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
+			if type(ret) == "table" then
+				return unpack(ret);
+			else
+				return ret;
+			end
+		end;
+		
+		OldGet = function(com,...)
 			local returns
 			local key = Functions:GetRandom()
-			local event = service.Events[key]:Connect(function(...) returns = {...} end)
+			local waiter = service.New("BindableEvent");
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
 			
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)
-			
-			if not returns then
-				returns = {event:Wait()}
-			end
+			print(string.format("GETTING RETURNS? %s", tostring(returns)))
+			--returns = returns or {event:Wait()}
+			waiter.Event:Wait();
+			print(string.format("WE GOT IT! %s", tostring(returns)))
 			
 			event:Disconnect()
 			
