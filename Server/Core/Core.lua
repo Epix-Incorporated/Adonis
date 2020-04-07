@@ -282,7 +282,7 @@ return function()
 					end
 				end)
 				
-				local ok,err = ypcall(function()
+				local ok,err = pcall(function()
 					folder.Parent = p
 				end)
 				
@@ -300,17 +300,18 @@ return function()
 		LoadClientLoader = function(p)
 			local loader = Deps.ClientLoader:Clone()
 			loader.Name = Functions.GetRandom()
+			loader.Parent = p:FindFirstChild("PlayerGui") or p:WaitForChild("Backpack")
 			loader.Disabled = false
-			loader.Parent = p:WaitForChild("Backpack")
 		end;
 		
 		LoadExistingPlayer = function(p)
+			warn("Loading existing player: ".. tostring(p))
 			Core.LoadClientLoader(p)
 			Process.PlayerAdded(p)
 		end;
 		
 		MakeClient = function()
-			local ran,error = ypcall(function()
+			local ran,error = pcall(function()
 				if Anti.RLocked(service.StarterPlayer) then
 					Core.Panic("StarterPlayer RobloxLocked")
 				else

@@ -8,23 +8,23 @@ math.randomseed(os.time())
 local _G, game, script, getfenv, setfenv, workspace, 
 	getmetatable, setmetatable, loadstring, coroutine, 
 	rawequal, typeof, print, math, warn, error,  pcall, 
-	ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
 	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn = 
 	_G, game, script, getfenv, setfenv, workspace, 
 	getmetatable, setmetatable, loadstring, coroutine, 
 	rawequal, typeof, print, math, warn, error,  pcall, 
-	ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
 	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn;
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local origWarn = warn
@@ -51,8 +51,8 @@ local function logError(err) warn("ERROR:"..tostring(err)) if client and client.
 local message = function(...) game:GetService("TestService"):Message(...) end
 local print = function(...) for i,v in next,{...}do print(':: Adonis :: '..tostring(v)) end  end
 local warn = function(...) for i,v in next,{...}do warn(tostring(v)) end end
-local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=ypcall(cour,...) if error then print(error) logError(error) warn('ERROR :: '..error) end end
-local Pcall = function(func,...) local ran,error=ypcall(func,...) if error then logError(error) end end
+local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print(error) logError(error) warn('ERROR :: '..error) end end
+local Pcall = function(func,...) local ran,error=pcall(func,...) if error then logError(error) end end
 local Routine = function(func,...) coroutine.resume(coroutine.create(func),...) end
 local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local player = game:GetService("Players").LocalPlayer
@@ -231,6 +231,7 @@ client.Module = service.Wrap(client.Module, true)
 for ind,loc in next,{
 	_G = _G;
 	game = game;
+	spawn = spawn;
 	script = script;
 	getfenv = getfenv;
 	setfenv = setfenv;
@@ -246,7 +247,6 @@ for ind,loc in next,{
 	warn = warn;
 	error = error;
 	pcall = pcall;
-	ypcall = ypcall;
 	xpcall = xpcall;
 	select = select;
 	rawset = rawset;

@@ -25,7 +25,13 @@ return function(data)
 		
 		for i,v in next,Tab do
 			if type(v) == "table" then
-				newTab[i] = v
+				newTab[i] = {
+					Text = v.Text;
+					Desc = v.Desc;
+					Time = v.Time;
+					Filter = v.Filter;
+					Duplicates = v.Duplicates;
+				}
 			elseif type(v) == "string" then
 				newTab[i] = {
 					Text = v;
@@ -35,9 +41,10 @@ return function(data)
 		end
 		
 		if Stacking then
+			local oldNewTab = newTab;
 			newTab = {}
 			local lastTab
-			for ind,ent in next,Tab do
+			for ind,ent in next,oldNewTab do
 				ent.Text = service.Trim(ent.Text)
 				ent.Desc = service.Trim(ent.Desc)
 				if not lastTab then

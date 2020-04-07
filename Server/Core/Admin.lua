@@ -76,7 +76,7 @@ return function()
 					return true
 				end
 			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
-				local isGood = p.Parent == service.Players
+				local isGood = p and p.Parent == service.Players
 				if isGood and check:match("^Group:(.*):(.*)") then
 					local sGroup,sRank = check:match("^Group:(.*):(.*)")
 					local group,rank = tonumber(sGroup),tonumber(sRank)
@@ -97,14 +97,14 @@ return function()
 							return true
 						end
 					end
-				elseif check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
+				elseif isGood and check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
 					local item = tonumber(check:match("^Item:(.*)"))
 					if item then
 						if service.MarketPlace:PlayerOwnsAsset(p, item) then
 							return true
 						end
 					end
-					elseif check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
+				elseif p and check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
 					local item = tonumber(check:match("^GamePass:(.*)"))
 					if item then
 						if service.MarketPlace:UserOwnsGamePassAsync(p.UserId, item) then
@@ -120,7 +120,7 @@ return function()
 				elseif p.Name == check then
 					return true
 				end
-			elseif cType == "table" and pType == "userdata" and p:IsA("Player") then
+			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
 				if check.Group and check.Rank then
 					local rank = check.Rank
 					local pGroup = Admin.GetPlayerGroup(p, check.Group)

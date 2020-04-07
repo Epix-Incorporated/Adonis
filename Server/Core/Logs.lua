@@ -295,10 +295,12 @@ return function()
 			end;
 			
 			CommandLogs = function()
-				local temp={}
+				local temp = {}
+				
 				for i,m in pairs(Logs.Commands) do
-					table.insert(temp,{Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
+					table.insert(temp,{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
 				end
+				
 		 		return temp
 			end;
 			

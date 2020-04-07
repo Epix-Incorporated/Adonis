@@ -1,6 +1,11 @@
 return {
-	"Version: 162";
+	"Version: 163";
 	"*Click and drag edges to expand*";
+	"";
+	"[04.07.2020 13:29]";
+	"*Moved remote ratelimit check";
+	"*ACLI will only run once per player in case one already exists";
+	"*Minor changes & bug fixes";
 	"";
 	"[03.25.2020 1:03]";
 	"*Disabled Console GUI AutoLocalize property";

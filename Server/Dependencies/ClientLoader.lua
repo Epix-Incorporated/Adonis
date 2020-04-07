@@ -1,8 +1,6 @@
 --// ACLI - Adonis Client Loading Initializer
 
 local DebugMode = false
-local oneTooMany = 1 or 1 or 1 or 1 or 1 or ...,...,...,...,...,...,...,...
-
 local otime = os.time
 local time = time
 local game = game
@@ -193,46 +191,53 @@ end
 
 --// Load client
 
-print("Debug: ACLI Loading?")
-setfenv(1, {})
-script.Name = "\0"
-script:Destroy()
---lockCheck(script)
---lockCheck(game)
-
-warn("Checking CoreGui")
-if not Locked(game:GetService("CoreGui")) then
-	warn("CoreGui not locked?")
-	Kill("ACLI: Error")
+if _G.__CLIENTLOADER then
+	warn("ClientLoader already running;");
 else
-	warn("CoreGui Locked: "..tostring(Locked(game:GetService("CoreGui"))))
-end
+	_G.__CLIENTLOADER = true;
+	
+	print("Debug: ACLI Loading?")
+	setfenv(1, {})
+	script.Name = "\0"
+	script:Destroy()
+	--lockCheck(script)
+	--lockCheck(game)
 
-warn("Checking Services")
---[[for i,service in next,services do
-	doPcall(lockCheck, game:GetService(service))
-end--]]
-
-finderEvent = player.ChildAdded:connect(function(child)
-	warn("Child Added")
-	doPcall(checkChild, child)
-end)
-
-warn("Finding children...")
-scan()
-
-warn("Waiting and scanning (incase event fails?)...")
-while wait(5) and tick() - start < 60*10 and not foundClient do
+	warn("Checking CoreGui")
+	if not Locked(game:GetService("CoreGui")) then
+		warn("CoreGui not locked?")
+		Kill("ACLI: Error")
+	else
+		warn("CoreGui Locked: "..tostring(Locked(game:GetService("CoreGui"))))
+	end
+	
+	warn("Checking Services")
+	--[[for i,service in next,services do
+		doPcall(lockCheck, game:GetService(service))
+	end--]]
+	
+	finderEvent = player.ChildAdded:connect(function(child)
+		warn("Child Added")
+		doPcall(checkChild, child)
+	end)
+	
+	warn("Finding children...")
 	scan()
+	
+	warn("Waiting and scanning (incase event fails?)...")
+	while wait(5) and tick() - start < 60*10 and not foundClient do
+		scan()
+	end
+	
+	warn("Checking if client found...")
+	if not foundClient then
+		warn("Loading took too long")
+		Kick(player, "ACLI: Loading Error [Took Too Long]")
+	else
+		print("Debug: Adonis loaded?")
+		warn("Client found")
+		warn("Finished")
+		warn(time())
+	end
 end
 
-warn("Checking if client found...")
-if not foundClient then
-	warn("Loading took too long")
-	Kick(player, "ACLI: Loading Error [Took Too Long]")
-else
-	print("Debug: Adonis loaded?")
-	warn("Client found")
-	warn("Finished")
-	warn(time())
-end

@@ -23,23 +23,23 @@ math.randomseed(os.time())
 local _G, game, script, getfenv, setfenv, workspace, 
 	getmetatable, setmetatable, loadstring, coroutine, 
 	rawequal, typeof, print, math, warn, error,  pcall, 
-	ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
 	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray = 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn = 
 	_G, game, script, getfenv, setfenv, workspace, 
 	getmetatable, setmetatable, loadstring, coroutine, 
 	rawequal, typeof, print, math, warn, error,  pcall, 
-	ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
 	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 	Vector3int16, elapsedTime, require, table, type, wait, 
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
 	
 
 local unique = {}
@@ -252,6 +252,7 @@ server.Service = service
 for ind,loc in next,{
 	_G = _G;
 	game = game;
+	spawn = spawn;
 	script = script;
 	getfenv = getfenv;
 	setfenv = setfenv;
@@ -267,7 +268,6 @@ for ind,loc in next,{
 	warn = warn;
 	error = error;
 	pcall = pcall;
-	ypcall = ypcall;
 	xpcall = xpcall;
 	select = select;
 	rawset = rawset;
@@ -497,7 +497,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	
 	--// RemoteEvent Handling
 	server.Core.MakeEvent()	
-	server.Core.PrepareClient()	
 	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
 	service.JointsService.ChildRemoved:Connect(function(c) 
 		if server.Core.RemoteEvent and (c == server.Core.RemoteEvent.Object or c == server.Core.RemoteEvent.Decoy1 or c == c == server.Core.RemoteEvent.Decoy2) then 
@@ -509,12 +508,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for com in next,server.Remote.Commands do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
 	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
-	if not service.NetworkServer then wait(1) end 
-	--for index,player in next,service.Players:GetPlayers() do server.Core.LoadExistingPlayer(player) end
+	
+	--// Prepare the client loader
+	server.Core.PrepareClient()	
 	
 	--// Add existing players in case some are already in the server
-	for i,player in next,service.Players:GetPlayers() do
-		service.TrackTask("PlayerAdded", server.Process.PlayerAdded, player);
+	for index,player in next,service.Players:GetPlayers() do
+		service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), server.Core.LoadExistingPlayer, player);
 	end
 	
 	--// Events

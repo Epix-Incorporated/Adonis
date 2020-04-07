@@ -238,6 +238,20 @@ return function(data)
 		local gameTab = tabFrame:NewTab("Game",{
 			Text = "Game";
 		})
+			
+		if data.Tab then
+			if string.lower(data.Tab) == "info" then
+				infoTab:FocusTab();
+			elseif string.lower(data.Tab) == "donate" then
+				donorTab:FocusTab();
+			elseif string.lower(data.Tab) == "keybinds" then
+				keyTab:FocusTab();
+			elseif string.lower(data.Tab) == "client" then
+				clientTab:FocusTab();
+			elseif string.lower(data.Tab) == "settings" then
+				gameTab:FocusTab();
+			end
+		end
 		
 		
 		--// Help/Info

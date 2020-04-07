@@ -73,52 +73,50 @@ return function()
 					local keys = Remote.Clients[key]
 					if keys then
 						keys.Received = keys.Received+1
-						if RateLimit(p, "Remote") then
-							if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
-								if com == keys.Special.."GET_KEY" then
-									if keys.LoadingStatus == "WAITING_FOR_KEY" then
-										Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
-										keys.LoadingStatus = "LOADING"
-										keys.RemoteReady = true
-									else
-										Anti.Detected(p, "kick","Communication Key Error (r10003)")
-									end
-									
-									AddLog("RemoteFires", {
-										Text = tostring(p).." requested key from server", 
-										Desc = "Player requested key from server"
-									})
-								elseif UnEncrypted[com] then
-									AddLog("RemoteFires", {
-										Text = tostring(p).." fired "..tostring(com), 
-										Desc = "Player fired unencrypted remote command "..com
-									})
-									
-									return {UnEncrypted[com](p,...)}
-								elseif string.len(com) <= Remote.MaxLen then
-									local comString = Decrypt(com, keys.Key, keys.Cache)
-									local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
-									
-									AddLog("RemoteFires", {
-										Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
-										Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
-									})
-									
-									if command then 
-										local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
-										keys.LastUpdate = tick()
-										if not rets[1] then
-											logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
-										else
-											return {unpack(rets, 2)};
-										end
-									else
-										Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
-									end
+						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
+							if com == keys.Special.."GET_KEY" then
+								if keys.LoadingStatus == "WAITING_FOR_KEY" then
+									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
+									keys.LoadingStatus = "LOADING"
+									keys.RemoteReady = true
+								else
+									Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
-							else
-								Anti.Detected(p, "Log", "Out of Sync (r10005)")
+								
+								AddLog("RemoteFires", {
+									Text = tostring(p).." requested key from server", 
+									Desc = "Player requested key from server"
+								})
+							elseif UnEncrypted[com] then
+								AddLog("RemoteFires", {
+									Text = tostring(p).." fired "..tostring(com), 
+									Desc = "Player fired unencrypted remote command "..com
+								})
+								
+								return {UnEncrypted[com](p,...)}
+							elseif RateLimit(p, "Remote") and string.len(com) <= Remote.MaxLen then
+								local comString = Decrypt(com, keys.Key, keys.Cache)
+								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
+								
+								AddLog("RemoteFires", {
+									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
+									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
+								})
+								
+								if command then 
+									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
+									keys.LastUpdate = tick()
+									if not rets[1] then
+										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
+									else
+										return {unpack(rets, 2)};
+									end
+								else
+									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
+								end
 							end
+						else
+							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
 					elseif RateLimit(p, "RateLog") then
 						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
