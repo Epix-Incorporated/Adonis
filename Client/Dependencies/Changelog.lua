@@ -7,7 +7,7 @@ return {
 	"";
 	"[03.25.2020 12:02]";
 	"*Fixed an issue that allowed server crashing via the chat system";
-	"*Messages larger than those allowed by ROBLOX's char (200 characters) will result in a kick";
+	"*Messages larger than those allowed by ROBLOX's chat (200 characters) will result in a kick";
 	"*Any chat (Admins too) or command (Non-Admins only; via the command bar) message over 500 characters will now be trimmed";
 	"*Limits defined by Process.MsgStringLimit & Process.MaxChatCharacterLimit";
 	"";
