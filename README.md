@@ -1,10 +1,16 @@
 Adonis is a server moderation and management system created for the ROBLOX platform.
 
-Adonis Loader: https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
+Adonis Loader: 
 
-Adonis MainModule: https://www.roblox.com/library/2373501710/Adonis-MainModule
+https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
 
-Documentation:https://github.com/Sceleratis/Adonis/wiki
+Adonis MainModule: 
+
+https://www.roblox.com/library/2373501710/Adonis-MainModule
+
+Documentation:
+
+https://github.com/Sceleratis/Adonis/wiki
 
 
 
