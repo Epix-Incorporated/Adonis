@@ -6432,7 +6432,7 @@ return function()
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if point then
 							if v.Character.Humanoid.SeatPart~=nil then
-								v.Character.Humanoid.SeatPart:ClearAllChildren()
+								Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 							end 
 							if v.Character.Humanoid.Sit then
 								v.Character.Humanoid.Sit = false
@@ -6448,7 +6448,7 @@ return function()
 					local x,y,z = args[2]:match('(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do 
 						if v.Character.Humanoid.SeatPart~=nil then
-							v.Character.Humanoid.SeatPart:ClearAllChildren()
+							Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 						end 
 						if v.Character.Humanoid.Sit then
 							v.Character.Humanoid.Sit = false
@@ -6464,7 +6464,7 @@ return function()
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 							if n.Character.Humanoid.SeatPart~=nil then
-								n.Character.Humanoid.SeatPart:ClearAllChildren()
+								Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 							end 
 							if n.Character.Humanoid.Sit then
 								n.Character.Humanoid.Sit = false
@@ -6477,7 +6477,7 @@ return function()
 						for k,n in pairs(players) do
 							if n~=target then
 								if n.Character.Humanoid.SeatPart~=nil then
-									n.Character.Humanoid.SeatPart:ClearAllChildren()
+									Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 								end 
 								if n.Character.Humanoid.Sit then
 									n.Character.Humanoid.Sit = false
