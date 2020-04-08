@@ -6464,7 +6464,7 @@ return function()
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 							if n.Character.Humanoid.SeatPart~=nil then
-								Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+								Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
 							end 
 							if n.Character.Humanoid.Sit then
 								n.Character.Humanoid.Sit = false
@@ -6477,7 +6477,7 @@ return function()
 						for k,n in pairs(players) do
 							if n~=target then
 								if n.Character.Humanoid.SeatPart~=nil then
-									Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+									Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
 								end 
 								if n.Character.Humanoid.Sit then
 									n.Character.Humanoid.Sit = false
