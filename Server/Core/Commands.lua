@@ -6431,6 +6431,14 @@ return function()
 					
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if point then
+							if v.Character.Humanoid.SeatPart~=nil then
+								Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+							end 
+							if v.Character.Humanoid.Sit then
+								v.Character.Humanoid.Sit = false
+								v.Character.Humanoid.Jump = true
+							end
+							wait()
 							v.Character:MoveTo(point)
 						end
 					end
@@ -6439,6 +6447,14 @@ return function()
 				elseif args[2]:find(',') then
 					local x,y,z = args[2]:match('(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do 
+						if v.Character.Humanoid.SeatPart~=nil then
+							Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+						end 
+						if v.Character.Humanoid.Sit then
+							v.Character.Humanoid.Sit = false
+							v.Character.Humanoid.Jump = true
+						end
+						wait()
 						v.Character:MoveTo(Vector3.new(tonumber(x),tonumber(y),tonumber(z))) 
 					end
 				else
@@ -6447,18 +6463,26 @@ return function()
 					if #players == 1 and players[1] == target then
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-							n.Character.Humanoid.Jump = true
+							if n.Character.Humanoid.SeatPart~=nil then
+								Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
+							end 
+							if n.Character.Humanoid.Sit then
+								n.Character.Humanoid.Sit = false
+								n.Character.Humanoid.Jump = true
+							end
 							wait()
 							n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*1),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 						end
 					else
 						for k,n in pairs(players) do
 							if n~=target then
-								--if n.Character.Humanoid.Sit then
-								--	n.Character.Humanoid.Sit = false
-								--	wait(0.5)
-								--end
-								n.Character.Humanoid.Jump = true
+								if n.Character.Humanoid.SeatPart~=nil then
+									Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
+								end 
+								if n.Character.Humanoid.Sit then
+									n.Character.Humanoid.Sit = false
+									n.Character.Humanoid.Jump = true
+								end
 								wait()
 								if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 									n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
