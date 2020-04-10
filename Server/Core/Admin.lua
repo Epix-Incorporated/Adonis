@@ -517,7 +517,7 @@ return function()
 			if not service.Players:FindFirstChild(p.Name) then
 				Remote.Send(p,'Function','KillClient')
 			else
-				if p then ypcall(function() p:Kick("You have been banned") end) end
+				if p then pcall(function() p:Kick("You have been banned") end) end
 			end
 		end;
 		

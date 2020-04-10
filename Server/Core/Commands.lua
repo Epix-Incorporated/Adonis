@@ -2232,7 +2232,7 @@ return function()
 								if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" and obj~=plate then obj.Anchored = false end
 							end
 							wait(3)
-							ypcall(function() plate:Destroy() end)
+							pcall(function() plate:Destroy() end)
 						end
 					end)
 				end
@@ -4296,7 +4296,7 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local color="White"
-				if ypcall(function() return BrickColor.new(args[2]) end) then color = args[2] end
+				if pcall(function() return BrickColor.new(args[2]) end) then color = args[2] end
 				local mat = args[3] or "Fabric"
 				local ref = args[4]
 				local id = args[5]
@@ -7011,7 +7011,7 @@ return function()
 			AdminLevel = "Creators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local ran,failed = ypcall(function() service.PointsService:AwardPoints(v.userId,tonumber(args[2])) end)
+					local ran,failed = pcall(function() service.PointsService:AwardPoints(v.userId,tonumber(args[2])) end)
 					if ran and service.PointsService:GetAwardablePoints()>=tonumber(args[2]) then
 						Functions.Hint('Gave '..args[2]..' points to '..v.Name,{plr})
 					elseif service.PointsService:GetAwardablePoints()<tonumber(args[2]) then
@@ -9891,7 +9891,7 @@ return function()
 				
 				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
-						ypcall(function() v:Destroy() end)
+						pcall(function() v:Destroy() end)
 						wait()
 					end
 				end
@@ -10004,7 +10004,7 @@ return function()
 					--tornado.Parent=p
 					--tornado.Disabled=false
 					local cl=Core.NewScript('Script',[[
-						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=ypcall(cour,...) if error then print('Error: '..error) end end
+						local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print('Error: '..error) end end
 						local parts = {}
 						local main=script.Parent
 						main.Anchored=true
@@ -11848,7 +11848,7 @@ return function()
 			v=service.Players:FindFirstChild(']=]..v.Name..[=[')
 			for n = 1, ]=]..num..[=[]=] do
 			wait()
-			ypcall(function()
+			pcall(function()
 			if v and v.Character and v.Character:findFirstChild("Humanoid") then 
 			local val = service.New("ObjectValue", v.Character.Humanoid) val.Value = service.Players:FindFirstChild("]=]..plr.Name..[=[") val.Name = "creator"
 			v.Character:BreakJoints() 

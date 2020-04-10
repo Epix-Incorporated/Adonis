@@ -39,7 +39,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	local _G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -49,7 +49,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		_G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -1024,7 +1024,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if found ~= nil then
 				return found 
 			else
-				local ran,serv = ypcall(function() return (client ~= nil and service.Wrap(game:GetService(index), true)) or game:GetService(index) end)
+				local ran,serv = pcall(function() return (client ~= nil and service.Wrap(game:GetService(index), true)) or game:GetService(index) end)
 				if ran and serv then
 					service[tostring(serv)] = serv
 					return serv

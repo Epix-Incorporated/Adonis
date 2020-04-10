@@ -12,7 +12,7 @@ return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -22,7 +22,7 @@ return function()
 		_G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -108,12 +108,12 @@ return function()
 			if Variables.UIKeepAlive then
 				for ind,g in next,client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
-						if g.CanKeepAlive then
+						if g.CanKeepAlive and not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) then
 							g.KeepAlive = true
 							g.KeepParent = g.Object.Parent
 							g.Object.Parent = nil
-						elseif service.StarterGui.ResetPlayerGuiOnSpawn then
-							pcall(g.Destroy,g)
+						elseif not g.CanKeepAlive then
+							pcall(g.Destroy, g)
 						end
 					end
 				end

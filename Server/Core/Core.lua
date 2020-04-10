@@ -65,7 +65,7 @@ return function()
 		end;
 		
 		MakeEvent = function()
-			local ran,error = ypcall(function()
+			local ran,error = pcall(function()
 				if Anti.RLocked(service.JointsService) then
 					Core.Panic("JointsService RobloxLocked")
 				elseif server.Running then
