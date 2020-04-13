@@ -12,7 +12,7 @@ return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -22,7 +22,7 @@ return function()
 		_G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -56,9 +56,9 @@ return function()
 				return UI.Holder
 			else
 				pcall(function()if UI.Holder then UI.Holder:Destroy()end end)
-				local new=Instance.new'ScreenGui'
+				local new = service.New("ScreenGui");
 				new.Name = Functions.GetRandom()
-				new.Parent=service.PlayerGui
+				new.Parent = service.PlayerGui
 				UI.Holder = new
 				return UI.Holder
 			end

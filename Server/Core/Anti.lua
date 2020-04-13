@@ -104,7 +104,7 @@ return function()
 		
 		GetClassName = function(obj)
 			local testName = tostring(math.random()..math.random())
-			local ran,err = ypcall(function()
+			local ran,err = pcall(function()
 				local test = obj[testName]
 			end)
 			if err then
@@ -165,8 +165,8 @@ return function()
 			end
 			
 			Logs.AddLog(Logs.Script,{
-				Text = "Detected "..tostring(player);
-				Desc = "The Anti-Exploit system detected that "..tostring(player).." was exploiting";
+				Text = "AE Detected "..tostring(player);
+				Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
 			})
 			
 			Logs.AddLog(Logs.Exploit,{

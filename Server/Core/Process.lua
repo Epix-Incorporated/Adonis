@@ -817,6 +817,7 @@ return function()
 				--end)
 				
 				--// Wait for UI keepalive to finish
+				wait();
 				Remote.Get(p,"UIKeepAlive");
 				
 				--//GUI loading

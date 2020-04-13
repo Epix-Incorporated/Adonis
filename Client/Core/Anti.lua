@@ -12,7 +12,7 @@ return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -22,7 +22,7 @@ return function()
 		_G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -472,7 +472,7 @@ return function()
 				service.GuiService.CoreGuiNavigationEnabled = false
 				if Anti.ObjRLocked(item) and not service.GuiService:IsTenFootInterface() then
 					local cont = true
-					local ran,err = ypcall(function()
+					local ran,err = pcall(function()
 						local checks = {
 							service.Chat;
 							service.Teams;
@@ -611,7 +611,7 @@ return function()
 								--print("-------------------------------")
 								
 								local testName = tostring(math.random()..math.random())
-								local ye,err = ypcall(function() 
+								local ye,err = pcall(function() 
 									service.GuiService:AddSelectionParent(testName, item) -- Christbru figured out the detection method
 									service.GuiService:RemoveSelectionGroup(testName) 
 								end)
@@ -763,7 +763,7 @@ return function()
 				end
 				
 				--// Check Loadstring
-				local ran,err = ypcall(function() 
+				local ran,err = pcall(function() 
 					local func,err = loadstring("print('LOADSTRING TEST')") 
 				end)
 				if ran then 
@@ -771,7 +771,7 @@ return function()
 				end
 				
 				--// Check Context Level
-				local ran,err = ypcall(function()
+				local ran,err = pcall(function()
 					local test = Instance.new("StringValue") 
 					test.RobloxLocked = true 
 				end)
@@ -860,7 +860,7 @@ return function()
 		
 		GetClassName = function(obj)
 			local testName = tostring(math.random()..math.random())
-			local ran,err = ypcall(function()
+			local ran,err = pcall(function()
 				local test = obj[testName]
 			end)
 			if err then
@@ -893,7 +893,7 @@ return function()
 		
 		CoreRLocked = function(obj)
 			local testName = tostring(math.random()..math.random())
-			local ye,err = ypcall(function() 
+			local ye,err = pcall(function() 
 				game:GetService("GuiService"):AddSelectionParent(testName, obj)
 				game:GetService("GuiService"):RemoveSelectionGroup(testName) 
 			end)

@@ -66,8 +66,8 @@ local logError = function(plr,err) if server.Core and server.Core.DebugMode then
 local message = function(...) game:GetService("TestService"):Message(...) end
 local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
 local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
-local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = ypcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
-local Pcall = function(func,...) local ran,error = ypcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
+local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = pcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
+local Pcall = function(func,...) local ran,error = pcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Routine = function(func,...)  coroutine.resume(coroutine.create(func),...) end
 local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local GetEnv; GetEnv = function(env, repl)

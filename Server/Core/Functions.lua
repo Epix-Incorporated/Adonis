@@ -685,13 +685,13 @@ return function()
 				ID = tonumber(ID) 
 			end
 			
-			if not ypcall(function() updated=service.MarketPlace:GetProductInfo(ID).Created:match("%d+-%d+-%S+:%d+") end) then 
+			if not pcall(function() updated=service.MarketPlace:GetProductInfo(ID).Created:match("%d+-%d+-%S+:%d+") end) then 
 				return false
 			end
 			
 			for i = 0,10 do
 				local info
-				local ran,error = ypcall(function() info = service.MarketPlace:GetProductInfo(ID-i) end)
+				local ran,error = pcall(function() info = service.MarketPlace:GetProductInfo(ID-i) end)
 				if ran then
 					if info.AssetTypeId == 1 and info.Created:match("%d+-%d+-%S+:%d+") == updated then
 						return ID-i
@@ -732,11 +732,21 @@ return function()
 				end
 			end
 		end;
+																		
+		RemoveSeatWelds = function(seat)
+			for i,v in next,seat:GetChildren() do
+				if v:IsA("Weld") then
+					if v.Part1 and v.Part1.Name=="HumanoidRootPart" then
+						v:Destroy()
+					end 
+				end 
+			end 
+		end;
 		 
 		GrabNilPlayers = function(name)
 			local AllGrabbedPlayers = {}
 			for i,v in pairs(service.NetworkServer:GetChildren()) do
-				ypcall(function()
+				pcall(function()
 					if v:IsA("ServerReplicator") then
 						if v:GetPlayer().Name:lower():sub(1,#name)==name:lower() or name=='all' then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))

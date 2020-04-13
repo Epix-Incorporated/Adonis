@@ -12,7 +12,7 @@ return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -22,7 +22,7 @@ return function()
 		_G, game, script, getfenv, setfenv, workspace, 
 		getmetatable, setmetatable, loadstring, coroutine, 
 		rawequal, typeof, print, math, warn, error,  pcall, 
-		ypcall, xpcall, select, rawset, rawget, ipairs, pairs, 
+		xpcall, select, rawset, rawget, ipairs, pairs, 
 		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
@@ -115,18 +115,17 @@ return function()
 					for ind,g in next,client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
-								g.Object.Parent = service.PlayerGui
+								g.Object.Parent = service.Player.PlayerGui
 							elseif g.Class == "TextLabel" then
 								g.Object.Parent = UI.GetHolder()
 							end
-							g.KeepAlive = false
-						else
+						
 							g.KeepAlive = false
 						end
 					end
 				end
 				
-				return "Done"
+				return true;
 			end;
 			
 			UI = function(args)
