@@ -1,6 +1,10 @@
 return {
-	"Version: 165";
+	"Version: 166";
 	"*Click and drag edges to expand*";
+	"";
+	"[4.19.2020 06:02 EST]";
+	"*Git merge";
+	"*GetLevel will now return 0.5 for custom ranks";
 	"";
 	"[04.10.2020 12:50 EST]";
 	"*Merged GitHub changes";
@@ -12,7 +16,7 @@ return {
 	"*ACLI will only run once per player in case one already exists";
 	"*Minor changes & bug fixes";
 	"";
-	"[03.25.2020 1:03 EST]";
+	"[03.25.2020 13:03 EST]";
 	"*Disabled Console GUI AutoLocalize property";
 	"";
 	"[03.25.2020 12:02 EST]";

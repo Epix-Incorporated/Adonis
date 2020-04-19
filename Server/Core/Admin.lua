@@ -260,6 +260,12 @@ return function()
 				end
 			end
 			
+			for i,v in next,Settings.CustomRanks do
+				if checkTable(p, v) then
+					return 0.5
+				end
+			end
+			
 			return 0
 		end;
 		
@@ -686,19 +692,19 @@ return function()
 				return true
 			elseif Core.PanicMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
 				return true
-			elseif isComLevel("Players", comLevel) and (Settings.PlayerCommands or adminLevel >= 1) then
+			elseif (Settings.PlayerCommands or adminLevel >= 1) and isComLevel("Players", comLevel) then
 				return true
-			elseif isComLevel("Donors", comLevel) and isDonor then
+			elseif isDonor and isComLevel("Donors", comLevel)then
 				return true
-			elseif isComLevel("Moderators", comLevel) and adminLevel >= 1 then
+			elseif adminLevel >= 1 and isComLevel("Moderators", comLevel) then
 				return true
-			elseif isComLevel("Admins", comLevel) and adminLevel >= 2 then
+			elseif adminLevel >= 2 and isComLevel("Admins", comLevel) then
 				return true
-			elseif isComLevel("Owners", comLevel) and adminLevel >= 3 then
+			elseif adminLevel >= 3 and isComLevel("Owners", comLevel) then
 				return true
-			elseif isComLevel("Creators", comLevel) and adminLevel >= 4 then
+			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
 				return true
-			elseif isComLevel(Settings.CustomRanks, comLevel) then
+			elseif adminLevel > 0 and isComLevel(Settings.CustomRanks, comLevel) then
 				if adminLevel >= 1 then
 					return true
 				else
