@@ -734,10 +734,12 @@ return function()
 		end;
 																		
 		RemoveSeatWelds = function(seat)
-			for i,v in next,seat:GetChildren() do
-				if v:IsA("Weld") then
-					if v.Part1 and v.Part1.Name=="HumanoidRootPart" then
-						v:Destroy()
+			if seat~=nil then
+				for i,v in next,seat:GetChildren() do
+					if v:IsA("Weld") then
+						if v.Part1 ~= nil and v.Part1.Name=="HumanoidRootPart" then
+							v:Destroy()
+						end 
 					end 
 				end 
 			end 
