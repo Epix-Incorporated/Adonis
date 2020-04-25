@@ -1299,7 +1299,7 @@ return function()
 		
 		Countdown = {
 			Prefix = Settings.Prefix;
-			Commands = {"countdown", "timer"};
+			Commands = {"countdown", "timer", "cd"};
 			Args = {"time";};
 			Description = "Countdown";
 			AdminLevel = "Moderators";
@@ -1316,6 +1316,23 @@ return function()
 					--Functions.Message(" ", i, false, service.Players:children(), 0.8) 
 					--wait(1)
 				--end
+			end
+		};
+		
+		CountdownPM = {
+		Prefix = Settings.Prefix;
+			Commands = {"countdownpm", "timerpm", "cdpm"};
+			Args = {"player";"time";};
+			Description = "Countdown";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local num = tonumber(args[2]) --math.min(tonumber(args[1]),120)
+				assert(args[1] and args[2],"Argument missing or nil")
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					Remote.MakeGui(v, "Countdown", {
+						Time = num;
+					})
+				end
 			end
 		};
 		
@@ -1426,6 +1443,25 @@ return function()
 					})
 				end
 			end
+		};
+		
+		NotifyPM = {
+			Prefix = Settings.Prefix;
+			Commands = {"npm","smallmessagepm","nmessagepm","nmsgpm","npmmsg","smsgpm","spmmsg", "smessagepm"};
+			Args = {"player";"message";};
+			Filter = true;
+			Description = "Makes a small message on the target player(s) screen.";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+                assert(args[1] and args[2],"Argument missing or nil")
+                for i,v in pairs(service.GetPlayers(plr, args[1])) do
+                    Remote.RemoveGui(v,"Notify")
+                    Remote.MakeGui(v,"Notify",{
+                        Title = "Message from " .. plr.Name;
+                        Message = service.Filter(args[2],plr,v);
+                    })
+                end
+            end
 		};
 		
 		Hint = {
