@@ -1323,7 +1323,7 @@ return function()
 		Prefix = Settings.Prefix;
 			Commands = {"countdownpm", "timerpm", "cdpm"};
 			Args = {"player";"time";};
-			Description = "Countdown";
+			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = tonumber(args[2]) --math.min(tonumber(args[1]),120)
