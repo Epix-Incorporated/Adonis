@@ -1,6 +1,17 @@
 return {
-	"Version: 166";
+	"Version: 167";
 	"*Click and drag edges to expand*";
+	"";
+	"[04.27.2020 15:36 EST]";
+	"*Client will now queue Remote.Send and Remote.Get requests based on Process.RateLimits.Remote so the server doesn't drop them";
+	"*Minor performance changes to client loading process";
+	"*Added missing GitHub contributers to credits";
+	"*Fixed warnings and admin notes not saving";
+	"@GitHub Merged changes from NNickey:";
+	"-Merge: PlayerGui preferred for loading over Backpack due to replication (15 second timeout)";
+	"@GitHub Merged changes from ItsGJK:";
+	"-Merge: Added :notifypm and :countdownpm";
+	"-Merge: Fixed a typo";
 	"";
 	"[4.19.2020 06:02 EST]";
 	"*Git merge";

@@ -662,16 +662,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return num
 		end;
-		Queue = function(key,func)
-			if not Queues[key] then Queues[key] = {} end
-			local queue = Queues[key]
-			table.insert(queue,{
-				Function = func;
-				Running = false;
-				Time = tick();
-			})
-			service.ProcessQueue(queue)
-		end;
 		Debounce = function(key,func)
 			local env = getfenv(2)
 			local Debounces = (env and env._ADONIS_DEBOUNCES) or Debounces or {}
@@ -691,25 +681,46 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end
 		end;
+		
+		Queue = function(key,func)
+			if not Queues[key] then Queues[key] = {} end
+			local queue = Queues[key]
+			local tab = {}
+			
+			tab.Time = tick();
+			tab.Running = false;
+			tab.Function = func;
+			
+			table.insert(queue, tab);
+			
+			service.ProcessQueue(queue);
+		end;
+		
 		ProcessQueue = function(queue)
 			if queue then
-				if queue.Processing then
+				if queue.__PROCESSING then
 					return "Processing"
 				else
-					queue.Processing = true
-					while wait() and service.CountTable(queue) > 0 do 
+					local stepped = service.RunService.RenderStepped;
+					
+					queue.__PROCESSING = true
+					
+					while wait() and #queue > 0 do 
 						for i,v in next,queue do
-							if v.Running then
-								repeat wait() until not v.Running or not queue[i]
-							else
-								v.Running = true
-								pcall(v.Function)
-								v.Running = false
-								table.remove(queue,i)
+							if i ~= "__PROCESSING" then
+								if v.Running then
+									repeat stepped:wait() until not v.Running or not queue[i]
+								else
+									v.Running = true
+									pcall(v.Function)
+									v.Running = false
+									table.remove(queue,i)
+								end
 							end
 						end
 					end
-					queue.Processing = false
+					
+					queue.__PROCESSING = false
 				end
 			else
 				for ind,data in next,LoopQueue do
@@ -727,6 +738,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end
 		end;
+		
 		QueueItem = function(name,data)
 			local new = data
 			if data.MaxRuns then
@@ -734,9 +746,11 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			LoopQueue[name] = new
 		end;
+		
 		RemoveQueue = function(name)
 			LoopQueue[name] = nil
 		end;
+		
 		New = function(class,data) 
 			local new = Instance.new(class) 
 			if data then 
@@ -745,7 +759,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					if service.Wrapped(parent) then parent = parent:GetObject() end
 					data.Parent = nil
 					
-					for val,prop in next,data do 
+					for val,prop in pairs(data) do 
 						new[val] = prop 
 					end 
 					
@@ -921,7 +935,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return service.NewProxy {
 				__index = function(tab, ind)
 					local topEnv = doChecks and get and get(2)
-					local setRan,found = doChecks and pcall(settings)
+					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
 						ErrorHandler("ReadError", "Tampering with Client [read rt0001]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 					--elseif doChecks and (function() local ran,err = pc(function() for i in next,checkFor do if topEnv[i] then return true end end return false end) if not ran or ran and err then return true end end)() then
@@ -935,7 +949,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				
 				__newindex = function(tab,ind,new)
 					local topEnv = doChecks and get and get(2)
-					local setRan,found = doChecks and pcall(settings)
+					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
 						ErrorHandler("ReadError", "Tampering with Client [write wt0003]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 					--elseif doChecks and (function() local ran,err = pc(function() for i in next,checkFor do if topEnv[i] then return true end end return false end) if not ran or ran and err then return true end end)() then

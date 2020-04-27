@@ -20,6 +20,7 @@ local Instance = Instance
 local script = script
 local select = select
 local unpack = unpack
+local spawn = spawn
 local debug = debug
 local pairs = pairs
 local wait = wait
@@ -67,6 +68,7 @@ local function warn(str)
 end
 
 local function Kill(info)
+	if DebugMode then warn(info) return end
 	pcall(function() Kick(player, info) end) 
 	wait(1)
 	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
@@ -119,7 +121,7 @@ local function loadingTime()
 end
 
 local function checkChild(child)
-	warn("Checking child: "..child.ClassName.." : "..child:GetFullName())
+	warn("Checking child: ".. tostring(child and child.ClassName) .." : ".. tostring(child and child:GetFullName()))
 	callCheck(child)
 	if child and not foundClient and not checkedChildren[child] and child:IsA("Folder") and child.Name == "Adonis_Client" then
 		warn("Loading Folder...")
@@ -128,6 +130,7 @@ local function checkChild(child)
 		local depsFolder
 		local clientModule
 		local oldChild = child
+		local container = child.Parent
 		
 		warn("Adding child to checked list & setting parent...")
 		checkedChildren[child] = true
@@ -147,6 +150,14 @@ local function checkChild(child)
 		warn("Changing child parent...")
 		child.Parent = nil
 		
+		warn("Destroying parent...")
+		if container and container:IsA("ScreenGui") and container.Name == "Adonis_Container" then
+			spawn(function()
+				wait(0.5);
+				container:Destroy();
+			end)
+		end
+		
 		if clientModule and clientModule:IsA("ModuleScript") then
 			print("Debug: Loading the client?")
 			local meta = require(clientModule)
@@ -161,6 +172,7 @@ local function checkChild(child)
 					CallCheck = callCheck, 
 					Kill = Kill
 				})
+				
 				warn("Got return: "..tostring(ret))
 				if ret ~= "SUCCESS" then
 					warn(ret)
@@ -173,6 +185,7 @@ local function checkChild(child)
 					foundClient = true
 					if finderEvent then
 						finderEvent:Disconnect()
+						finderEvent = nil
 					end
 				end
 			end
@@ -180,11 +193,16 @@ local function checkChild(child)
 	end
 end
 
-local function scan()
+local function scan(folder)
 	warn("Scanning for client...")
 	if not doPcall(function()
-		for i,child in next,player:GetChildren() do
-			doPcall(checkChild, child)
+		for i,child in next,folder:GetChildren() do
+			if child.Name == "Adonis_Container" then
+				local client = child:FindFirstChildOfClass("Folder") or child:WaitForChild("Adonis_Client", 5);
+				if client then
+					doPcall(checkChild, client);
+				end
+			end
 		end
 	end) then warn("Scan failed?") Kick(player, "ACLI: Loading Error [Scan failed]"); end
 end
@@ -216,23 +234,47 @@ else
 		doPcall(lockCheck, game:GetService(service))
 	end--]]
 	
-	finderEvent = player.ChildAdded:connect(function(child)
+	warn("Waiting for PlayerGui...");
+	local playerGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 600);
+	
+	if not playerGui then
+		warn("PlayerGui not found after 10 minutes");
+		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)");
+	else
+		playerGui.Changed:Connect(function()
+			if playerGui.Name ~= "PlayerGui" then
+				playerGui.Name = "PlayerGui";
+			end
+		end)
+	end
+	
+	finderEvent = playerGui.ChildAdded:connect(function(child)
 		warn("Child Added")
-		doPcall(checkChild, child)
+		if not foundClient and child.Name == "Adonis_Container" then
+			local client = child:FindFirstChildOfClass("Folder");
+			doPcall(checkChild, client);
+		end
 	end)
 	
-	warn("Finding children...")
-	scan()
+	warn("Waiting and scanning (incase event fails)...")
+	repeat
+		scan(playerGui);
+		wait(5);
+	until (tick() - start > 600) or foundClient
 	
-	warn("Waiting and scanning (incase event fails?)...")
-	while wait(5) and tick() - start < 60*10 and not foundClient do
-		scan()
+	warn("Elapsed: ".. tostring(tick() - start));
+	warn("Timeout: ".. tostring(tick() - start > 600));
+	warn("Found Client: ".. tostring(foundClient));
+	
+	warn("Disconnecting finder event...");
+	if finderEvent then
+		finderEvent:Disconnect();
 	end
 	
 	warn("Checking if client found...")
 	if not foundClient then
 		warn("Loading took too long")
-		Kick(player, "ACLI: Loading Error [Took Too Long]")
+		Kick(player, "ACLI: Loading Error [Took Too Long (>10 Minutes)]")
 	else
 		print("Debug: Adonis loaded?")
 		warn("Client found")

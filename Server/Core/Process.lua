@@ -345,6 +345,7 @@ return function()
 						if msg:sub(1,3)=="/e " then
 							msg = msg:sub(4)
 						end
+						
 						Process.Command(p,msg)
 					end
 				end
@@ -531,6 +532,17 @@ return function()
 				
 				Remote.PlayerData[key] = nil
 				Remote.Clients[key] = keyData
+				
+				spawn(function()
+					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
+					if playerGui then
+						playerGui.Changed:Connect(function()
+							if playerGui.Name ~= "PlayerGui" then
+								playerGui.Name = "PlayerGui";
+							end
+						end)
+					end
+				end)
 				
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
@@ -816,8 +828,9 @@ return function()
 				--	SanitizeCharacter()
 				--end)
 				
-				--// Wait for UI keepalive to finish
-				wait();
+				--// Wait for UI stuff to finish
+				wait(1);
+				p:WaitForChild("PlayerGui");
 				Remote.Get(p,"UIKeepAlive");
 				
 				--//GUI loading

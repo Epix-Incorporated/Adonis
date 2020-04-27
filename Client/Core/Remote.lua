@@ -301,10 +301,17 @@ return function()
 		};
 		
 		Fire = function(...)
-			local RemoteEvent = Core.RemoteEvent
+			local limits = Process.RateLimits
+			local limit = (limits and limits.Remote) or 0.01;
+			local RemoteEvent = Core.RemoteEvent;
+			local extra = {...};
+			
 			if RemoteEvent and RemoteEvent.Object then
-				Remote.Sent = Remote.Sent+1
-				RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
+				service.Queue("REMOTE_SEND", function()
+					Remote.Sent = Remote.Sent+1;
+					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
+					wait(limit);
+				end)
 			end
 		end;
 		
@@ -314,10 +321,32 @@ return function()
 		end;
 		
 		GetFire = function(...)
-			local RemoteEvent = Core.RemoteEvent
+			local RemoteEvent = Core.RemoteEvent;
+			local limits = Process.RateLimits;
+			local limit = (limits and limits.Remote) or 0.02;
+			local extra = {...};
+			local returns;
+			
 			if RemoteEvent and RemoteEvent.Function then
-				Remote.Sent = Remote.Sent+1
-				return RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received},...)
+				local event = service.New("BindableEvent");
+				
+				service.Queue("REMOTE_SEND", function()
+					Remote.Sent = Remote.Sent+1;
+					spawn(function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
+						returns = {RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra))}
+						event:Fire();
+					end)
+					wait(limit)
+				end)
+				
+				if not returns then
+					event.Event:Wait();
+					event:Destroy();
+				end
+				
+				if returns then
+					return unpack(returns)
+				end
 			end
 		end;
 		

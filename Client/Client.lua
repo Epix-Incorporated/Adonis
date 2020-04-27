@@ -413,6 +413,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			service.LogService.MessageOut:Connect(client.Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
 			service.ScriptContext.Error:Connect(client.Process.ErrorMessage) --service.Threads.NewEventTask("EVENT:ErrorMessage",client.Process.ErrorMessage,60))
 			
+			--// Get RateLimits
+			client.Process.RateLimits = client.Remote.Get("RateLimits") or client.Process.RateLimits;
+			
 			--// Get CodeName
 			client.Variables.CodeName = client.Remote.Get("Variable", "CodeName")
 			
@@ -420,7 +423,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			client.Remote.Send("ClientLoaded")
 			delay(5, function() service.StartLoop("ClientCheck",30,client.Core.CheckClient,true) end)
 			
-			
+			--wait()
 			local settings = client.Remote.Get("Setting",{"G_API","G_Access","G_Access_Key","G_Access_Perms","Allowed_API_Calls"})
 			if settings then
 				client.G_API = settings.G_API
@@ -473,6 +476,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		Holder = true;
 		GUIs = true;
 		LastUpdate = true;
+		RateLimits = true;
 	}, true)
 	--[[client.UI = service.ReadOnly(client.UI, true)
 	client.Core = service.ReadOnly(client.Core, true, {RemoteEvent = true, Key = true, LastUpdate = true})

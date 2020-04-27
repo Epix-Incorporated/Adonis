@@ -627,7 +627,7 @@ return function()
 		
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
-				local parent = player:WaitForChild('PlayerGui',12) or player:WaitForChild('Backpack')
+				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild('PlayerGui', 15) or player:WaitForChild('Backpack')
 				local cl = Core.NewScript('LocalScript',source)
 				cl.Name = name or Functions.GetRandom()
 				cl.Parent = parent
@@ -834,6 +834,24 @@ return function()
 					return true
 				end
 			end
+		end;
+		
+		DSKeyNormalize = function(intab, reverse)
+			local tab = {}
+			
+			if reverse then
+				for i,v in next,intab do
+					if tonumber(i) then
+						tab[tonumber(i)] = v;
+					end
+				end
+			else
+				for i,v in next,intab do
+					tab[tostring(i)] = v;
+				end
+			end
+			
+			return tab;
 		end;
 		
 		GetIndex = function(tab,match)

@@ -50,6 +50,13 @@ return function()
 	
 	client.Process = {
 		Init = Init;
+		RateLimits = { --// Defaults; Will be updated with server data at client run
+			Remote = 0.02;
+			Command = 0.1;
+			Chat = 0.1;
+			RateLog = 10;
+		};
+		
 		Remote = function(data,com,...)
 			local args = {...}
 			Remote.Received = Remote.Received+1

@@ -36,6 +36,10 @@ return function()
 		DecodeCache = {};
 		
 		Returnables = {
+			RateLimits = function(p, args)
+				return server.Process.RateLimits
+			end;
+			
 			Test = function(p,args)
 				return "HELLO FROM THE OTHER SIDE :)!"
 			end;

@@ -263,8 +263,25 @@ return function()
 				local eventName = Functions:GetRandom()
 				local folder = server.Client:Clone()
 				local client = folder.Client
+				local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
+				
+				if playerGui and playerGui.ClassName ~= "PlayerGui" then
+					playerGui = p:FindFirstChildOfClass("PlayerGui");
+				end
+				
+				if not p.Parent then
+					return false
+				elseif not playerGui then
+					p:Kick("Loading Error: PlayerGui Missing (Waited 10 Minutes)") 
+					return false
+				end
 				
 				folder.Name = "Adonis_Client" --Core.Name.."\\"..depsName
+				
+				local container = service.New("ScreenGui");
+				container.ResetOnSpawn = false;
+				container.Name = "Adonis_Container";
+				folder.Parent = container;
 				
 				local specialVal = service.New("StringValue")
 				specialVal.Value = Core.Name.."\\"..depsName
@@ -276,14 +293,14 @@ return function()
 				keys.EventName = eventName
 				keys.Module = client
 				
-				service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
-					if folder.Parent == p then
-						folder:Destroy()
+				--[[service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
+					if container.Parent == playerGui then
+						container:Destroy()
 					end
-				end)
+				end)--]]
 				
 				local ok,err = pcall(function()
-					folder.Parent = p
+					container.Parent = playerGui
 				end)
 				
 				if not Core.PanicMode and not ok then
@@ -300,7 +317,7 @@ return function()
 		LoadClientLoader = function(p)
 			local loader = Deps.ClientLoader:Clone()
 			loader.Name = Functions.GetRandom()
-			loader.Parent = p:FindFirstChild("PlayerGui") or p:WaitForChild("Backpack")
+			loader.Parent = p:WaitForChild("PlayerGui", 60) or p:WaitForChild("Backpack")
 			loader.Disabled = false
 		end;
 		
@@ -317,7 +334,7 @@ return function()
 				else
 					local starterScripts = service.StarterPlayer:FindFirstChild(Core.Name)
 					if not starterScripts then
-						starterScripts = service.New("StarterPlayerScripts",service.StarterPlayer)
+						starterScripts = service.New("StarterPlayerScripts", service.StarterPlayer)
 						starterScripts.Name = Core.Name
 						starterScripts.Changed:connect(function(p)
 							if p=="Parent" then
@@ -328,13 +345,15 @@ return function()
 								Core.Panic("PlayerScripts RobloxLocked")
 							end
 						end)
+						
 						starterScripts.ChildAdded:connect(function(c)
-							if c.Name~=Core.Name then
+							if c.Name ~= Core.Name then
 								wait(0.5)
 								c:Destroy()
 							end
 						end)
 					end
+					
 					starterScripts:ClearAllChildren()
 					if Anti.RLocked(starterScripts) then
 						Core.Panic("StarterPlayerScripts RobloxLocked")
@@ -349,7 +368,7 @@ return function()
 							end
 						end
 						Core.Client = {}
-						local client = Deps.Client:clone()
+						local client = Deps.Client:Clone()
 						client.Name = Core.Name
 						server.ClientDeps:Clone().Parent = client
 						client.Parent = starterScripts
@@ -559,6 +578,9 @@ return function()
 				if Core.DataStore then
 					local data = Core.GetData(key)
 					if data and type(data) == "table" then
+						data.AdminNotes = (data.AdminNotes and Functions.DSKeyNormalize(data.AdminNotes, true)) or {}
+						data.Warnings = (data.Warnings and Functions.DSKeyNormalize(data.Warnings, true)) or {}
+						
 						for i,v in next,data do
 							PlayerData[i] = v
 						end
@@ -582,6 +604,10 @@ return function()
 				data.LastChat = nil
 				data.AdminLevel = nil
 				data.LastLevelUpdate = nil
+				
+				data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
+				data.Warnings = Functions.DSKeyNormalize(data.Warnings)
+				
 				Core.SetData(key, data)
 				Remote.PlayerData[key] = nil
 				Logs.AddLog(Logs.Script,{
@@ -882,20 +908,22 @@ return function()
 							return service.NewProxy {
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
+										Logs.AddLog(Logs.Script,{
+											Text = "Access to "..tostring(inde).." was granted";
+											Desc = "A server script was granted access to "..tostring(inde);
+										})
+										
 										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
 											return service.ReadOnly(targ[inde])
 										else
 											return targ[inde]
 										end
-										Logs.AddLog(Logs.Script,{
-											Text = "Access to "..tostring(inde).." was granted";
-											Desc = "A server script was granted access to "..tostring(inde);
-										})
 									elseif API_Special[inde] == false then
 										Logs.AddLog(Logs.Script,{
 											Text = "Access to "..tostring(inde).." was denied";
 											Desc = "A server script attempted to access "..tostring(inde).." via _G.Adonis.Access";
 										})
+										
 										error("Access Denied: "..tostring(inde))
 									else
 										error("Could not find "..tostring(inde))

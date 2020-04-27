@@ -1320,7 +1320,7 @@ return function()
 		};
 		
 		CountdownPM = {
-		Prefix = Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"countdownpm", "timerpm", "cdpm"};
 			Args = {"player";"time";};
 			Description = "Countdown on a target player(s) screen.";
@@ -1557,7 +1557,7 @@ return function()
 					local tab = {}
 					
 					if data.Warnings then
-						for k,m in ipairs(data.Warnings) do 
+						for k,m in next,data.Warnings do 
 							table.insert(tab,{Text = "["..k.."] "..m.Message,Desc = "Given by: "..m.From.."; "..m.Message})
 						end
 					end
