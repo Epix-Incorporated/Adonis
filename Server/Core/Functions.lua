@@ -627,7 +627,7 @@ return function()
 		
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
-				local parent = player:FindFirstChild('PlayerGui') or player:WaitForChild('Backpack')
+				local parent = player:WaitForChild('PlayerGui',12) or player:WaitForChild('Backpack')
 				local cl = Core.NewScript('LocalScript',source)
 				cl.Name = name or Functions.GetRandom()
 				cl.Parent = parent
