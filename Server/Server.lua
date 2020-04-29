@@ -547,6 +547,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	--// Load minor stuff
 	server.Threading.NewThread(function()
 		for ind, music in next,server.Settings.MusicList or {} do table.insert(server.Variables.MusicList,music) end
+		for ind, music in next,server.Settings.InsertList or {} do table.insert(server.Variables.InsertList,music) end
 		for ind, cape in next,server.Settings.CapeList or {} do table.insert(server.Variables.Capes,cape) end
 		for ind, cmd in next,server.Settings.Permissions or {} do 
 			local com,level = cmd:match("^(.*):(.*)") 
