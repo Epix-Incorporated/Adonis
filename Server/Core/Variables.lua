@@ -182,6 +182,8 @@ return function()
 			{Name='minecraftorchestral',ID=148900687}
 		};
 		
+		InsertList = {};
+		
 		Capes = {
 			{Name="crossota",Material="Neon",Color="Cyan",ID=420260457},
 			{Name="jamiejr99",Material="Neon",Color="Cashmere",ID=429297485},
