@@ -44,6 +44,7 @@ return function()
 			Mutes = {};
 			Bans = {};
 			Music = {};
+			InsertList = {};
 			Agents = {};
 			Blacklist = {};
 			Whitelist = {};
@@ -65,6 +66,7 @@ return function()
 					local creators = {}
 					local agents = {}
 					local music = {}
+					local insertlist = {}
 					local mutes = {}
 					local perms = {}
 					local blacklist = {}
@@ -80,6 +82,7 @@ return function()
 						local creatorList = trello.getListObj(lists,{"Creators","Creator List","Creatorlist","Place Owners"})
 						local ownerList = trello.getListObj(lists,{"Owners","Owner List","Ownerlist"})
 						local musicList = trello.getListObj(lists,{"Music","Music List","Musiclist","Songs"}) 
+						local insertList = trello.getListObj(lists,{"InsertList","Insert List","Insertlist","Inserts","ModelList","Model List","Modellist","Models"}) 
 						local permList = trello.getListObj(lists,{"Permissions","Permission List","Permlist"})
 						local muteList = trello.getListObj(lists,{"Mutelist","Mute List"})
 						local agentList = trello.getListObj(lists,{"Agents","Agent List","Agentlist"})
@@ -134,6 +137,16 @@ return function()
 								if k.name:match('^(.*):(.*)') then
 									local a,b=k.name:match('^(.*):(.*)')
 									table.insert(music,{Name = a,ID = tonumber(b)})
+								end
+							end
+						end
+						
+						if insertList then
+							local cards = trello.getCards(insertList.id)
+							for l,k in pairs(cards) do
+								if k.name:match('^(.*):(.*)') then
+									local a,b=k.name:match('^(.*):(.*)')
+									table.insert(insertlist,{Name = a,ID = tonumber(b)})
 								end
 							end
 						end
@@ -205,6 +218,7 @@ return function()
 					if #mods>0 then HTTP.Trello.Moderators = mods end
 					if #owners>0 then HTTP.Trello.Owners = owners end
 					if #music>0 then HTTP.Trello.Music = music end
+					if #insertlist>0 then HTTP.Trello.InsertList = insertlist end
 					if #mutes>0 then HTTP.Trello.Mutes = mutes end
 					if #agents>0 then HTTP.Trello.Agents = agents end
 					if #blacklist>0 then HTTP.Trello.Blacklist = blacklist end
