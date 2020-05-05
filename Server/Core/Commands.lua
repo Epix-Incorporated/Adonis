@@ -9925,12 +9925,18 @@ return function()
 				end 
 				Functions.Hint('Restoring Map...',service.Players:children())
 				
+				local terrain = service.Workspace.Terrain:CopyRegion(workspace.Terrain.MaxExtents)
+				
+				service.Workspace.Terrain:Clear()
+				
 				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						wait()
 					end
 				end
+				
+				service.Workspace.Terrain:PasteRegion(terrain, service.Workspace.Terrain.MaxExtents.Min, true)
 				
 				local new = Variables.MapBackup:Clone()
 				new:MakeJoints()
