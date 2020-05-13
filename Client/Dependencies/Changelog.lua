@@ -1,6 +1,10 @@
 return {
-	"Version: 167";
+	"Version: 168";
 	"*Click and drag edges to expand*";
+	"";
+	"[05.12.2020 19:55 EST]";
+	"*Revived a popular command with new wording to adhere to ROBLOX's terms";
+	"(The :CLOWNs, they are watching)";
 	"";
 	"[04.27.2020 15:36 EST]";
 	"*Client will now queue Remote.Send and Remote.Get requests based on Process.RateLimits.Remote so the server doesn't drop them";
