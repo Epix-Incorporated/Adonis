@@ -166,7 +166,8 @@ server = {
 
 locals = {
 	server = server;
-	settings = server.Settings;
+	CodeName = "";
+	Settings = server.Settings;
 	HookedEvents = HookedEvents;
 	sortedPairs = sortedPairs;
 	ErrorLogs = ErrorLogs;
@@ -350,6 +351,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Changelog = require(server.Client.Dependencies.Changelog)
 	server.Credits = require(server.Client.Dependencies.Credits)
 	server.Parser = require(server.Deps.Parser)
+	locals.Settings = server.Settings
+	locals.CodeName = server.CodeName
 	
 	if server.Settings.HideScript and data.Model then
 		data.Model.Parent = nil

@@ -3879,7 +3879,7 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local obj = service.Insert(tonumber(args[1]))
+				local obj = service.Insert(tonumber(args[1]), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj) 
 					obj.Parent = service.Workspace 

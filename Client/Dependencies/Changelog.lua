@@ -1,6 +1,11 @@
 return {
-	"Version: 170";
+	"Version: 171";
 	"*Click and drag edges to expand*";
+	"";
+	"[06.05.2020 17:18 EST]";
+	"*Minor plugin related changes/fixes";
+	"*Newest version of the loader now supports plugins named Client-SomePlugin/Server-SomePlugin or client:somePlugin or server:somePlugin";
+	"*This change makes the naming requirement a little less strict and compatable with Windows's file system (For git repo/file saving reasons)";
 	"";
 	"[05.24.2020 18:42 EST]";
 	"*Added the MIT license from the source repo to the Loader & MainModule";

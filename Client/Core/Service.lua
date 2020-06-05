@@ -997,9 +997,9 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return false
 		end;
-		Insert = function(id)
+		Insert = function(id, rawModel)
 			local model = service.InsertService:LoadAsset(id)
-			return model:GetChildren()[1]
+			return (not rawModel and model:IsA("Model") and model.Name == "Model" and model:GetChildren()[1]) or model
 		end;
 		GetPlayers = function() return service.Players:GetPlayers() end;
 		IsAdonisObject = function(obj) for i,v in next,CreatedItems do if v == obj then return true end end end;
