@@ -1,6 +1,9 @@
 return {
-	"Version: 171";
+	"Version: 172";
 	"*Click and drag edges to expand*";
+	"";
+	"[06.17.2020 11:33 EST]";
+	"*Fixed a permission issue that disabled some commands (like :blind)";
 	"";
 	"[06.05.2020 17:18 EST]";
 	"*Minor plugin related changes/fixes";

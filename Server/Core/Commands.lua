@@ -6958,7 +6958,7 @@ return function()
 			Hidden = false;
 			Description = "Make the target player(s) bleed";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
@@ -9793,7 +9793,7 @@ return function()
 			Hidden = false;
 			Description = "Blinds the target player(s)";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.MakeGui(v,"Effect",{Mode = "Blind"})
@@ -11792,8 +11792,8 @@ return function()
 					level="Owners"
 				elseif args[2]:lower()=='creator' or args[2]:lower()=='5' then
 					level="Creator"
-				elseif args[2]:lower()=='funtemp' or args[2]:lower()=='-1' or args[2]:lower()=="funmod" then
-					level="FunMod"
+				elseif args[2]:lower()=='funtemp' or args[2]:lower()=='-1' or args[2]:lower()=="Moderators" then
+					level="Moderators"
 				elseif args[2]:lower()=='funadmin' or args[2]:lower()=='-2' then
 					level="FunAdmin"
 				elseif args[2]:lower()=='funowner' or args[2]:lower()=='-3' then
@@ -11979,7 +11979,7 @@ return function()
 			Hidden = false;
 			Description = "Make the target player(s) look normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 			for i,v in pairs(service.GetPlayers(plr,args[1])) do
 			cPcall(function()
@@ -12075,7 +12075,7 @@ return function()
 			Hidden = false;
 			Description = "Turn the target player(s) back to normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
@@ -12102,7 +12102,7 @@ return function()
 			Hidden = false;
 			Description = "Turn them back to normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
