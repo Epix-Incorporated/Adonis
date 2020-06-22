@@ -1,6 +1,6 @@
 --[[
-	SERVER PLUGINS' NAMES MUST START WITH "Server: "
-	CLIENT PLUGINS' NAMES MUST START WITH "Client: "
+	SERVER PLUGINS' NAMES MUST START WITH "Server:" OR "Server-"
+	CLIENT PLUGINS' NAMES MUST START WITH "Client:" OR "Client-"
 	
 	Plugins have full access to the server/client tables and most variables.
 	

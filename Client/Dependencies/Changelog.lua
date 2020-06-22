@@ -1,6 +1,27 @@
 return {
-	"Version: 167";
+	"Version: 172";
 	"*Click and drag edges to expand*";
+	"";
+	"[06.17.2020 11:33 EST]";
+	"*Fixed a permission issue that disabled some commands (like :blind)";
+	"";
+	"[06.05.2020 17:18 EST]";
+	"*Minor plugin related changes/fixes";
+	"*Newest version of the loader now supports plugins named Client-SomePlugin/Server-SomePlugin or client:somePlugin or server:somePlugin";
+	"*This change makes the naming requirement a little less strict and compatable with Windows's file system (For git repo/file saving reasons)";
+	"";
+	"[05.24.2020 18:42 EST]";
+	"*Added the MIT license from the source repo to the Loader & MainModule";
+	"!Warning: There is at least one malicious version of Adonis hovering around";
+	"!Make sure you are using the Loader from Davey_Bones(Newest) or Sceleratis(Outdated)";
+	"!Adonis is still updated, and there is only one official version (this one)";
+	"*Removed our Trello(old/unmaintained) from the secondary boards default setting";
+	"";
+	"[05.12.2020 19:55 EST]";
+	"*Revived a popular command with new wording to adhere to ROBLOX's terms";
+	"(The :CLOWNs, they are watching)";
+	"(Based on previous conversations, I was told the wording used was the issue)";
+	"(@ROBLOX staff, if this is still an issue, let me know and I'll re-remove it)";
 	"";
 	"[04.27.2020 15:36 EST]";
 	"*Client will now queue Remote.Send and Remote.Get requests based on Process.RateLimits.Remote so the server doesn't drop them";

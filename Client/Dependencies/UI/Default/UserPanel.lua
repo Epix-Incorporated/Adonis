@@ -258,7 +258,7 @@ return function(data)
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a script created by Sceleratis.\n\nIts purpose is to assist in the\nadministration and moderation\nof ROBLOX game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
+				Text = "Adonis is a script created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof ROBLOX game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
 				TextWrapped = true; 
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);

@@ -24,7 +24,7 @@ if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
 		.."\nRunning Location: ".._G["__Adonis_MUTEX"]
 		.."\nThis Location: "..script:GetFullName()
 		.."\n-----------------------------------------------")
-	script:Destroy()
+	--script:Destroy()
 else
 	_G["__Adonis_MUTEX"] = script:GetFullName()
 	
@@ -74,7 +74,7 @@ else
 		setTab = {}
 	end
 	data.Settings, data.Descriptions, data.Order = setTab.Settings,setTab.Descriptions,setTab.Order
-	for _,Plugin in next,plugins:GetChildren()do if Plugin.Name:sub(1,8)=="Client: " then table.insert(data.ClientPlugins,Plugin) elseif Plugin.Name:sub(1,8)=="Server: " then table.insert(data.ServerPlugins,Plugin) else warn("Unknown Plugin Type for "..tostring(Plugin)) end end
+	for _,Plugin in next,plugins:GetChildren()do if Plugin.Name:lower():sub(1,7)=="client:" or Plugin.Name:lower():sub(1,7) == "client-" then table.insert(data.ClientPlugins,Plugin) elseif Plugin.Name:lower():sub(1,7)=="server:" or Plugin.Name:lower():sub(1,7)=="server-" then table.insert(data.ServerPlugins,Plugin) else warn("Unknown Plugin Type for "..tostring(Plugin)) end end
 	for _,Theme in next,themes:GetChildren()do table.insert(data.Themes,Theme) end
 	if data.DebugMode then moduleId = model.Parent.MainModule end
 	local module = require(moduleId)

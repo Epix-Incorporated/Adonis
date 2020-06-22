@@ -1,4 +1,14 @@
---[[	--// WARNING: MAY BE SEVERELY OUTDATED; REQUIRES UPDATING
+--[[
+
+	Current Documentation:
+	https://github.com/Sceleratis/Adonis/wiki
+	
+	
+	
+	------------------------------------------------------
+	The following documentation is old and likely outdated.
+	Documentation updates will be made to the GitHub wiki.
+	
 	--// INCOMPLETE; WILL FINISH LATER
 	
 	Adonis API Documentation for developers
@@ -93,20 +103,13 @@
 		Extra functions:
 			service.Delete(object) 
 				- Uses service.Debris to delete an object; Works on some RobloxLocked objects
-
-			service.Events.EventName:Connect(function)
-				- Attaches a function to an Adonis event
-				- Returns a table conaining the :Disconnect() and :Wait() methods
 			
-			service.Events.EventName:Wait()
-				- Will wait for EventName to fire once
-				- Will return all arguments passed
+			service.HookEvent(eventName, function) 
+				- Hooks events fired by service.FireEvent; Useful for running PlayerAdded after the admin finishes loading them
+				- Returns a table conaining the UnHook() function to "unhook" the event
 			
-			service.Events.EventName:Fire(...)
-				- Fires all functions for the specified event (EventName)
-			
-			service.TrackTask(TaskName, TaskFunction, arg1, arg2, ...)
-				- Creates a new task named TaskName using TaskFunction and passes supplied arguments
+			service.FireEvent(eventName, params) 
+				- Fires all functions for a specific event added by service.HookEvent
 			
 			service.StartLoop(loopName, delay, function) 
 				- Starts an infinite loop that can be stopped using service.StopLoop(loopName)

@@ -174,7 +174,7 @@ local descs = {}
 	settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
 	settings.Trello_Enabled = false;		  -- Are the Trello features enabled?
 	settings.Trello_Primary = ""; 		      -- Primary Trello board
-	settings.Trello_Secondary = {"9HH6BEX2"}; -- Secondary Trello boards			        Format: {"BoardID";"BoardID2","etc"}
+	settings.Trello_Secondary = {}; 		  -- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
 	settings.Trello_AppKey = "";              -- Your Trello AppKey						  	Link: https://trello.com/app-key	
 	settings.Trello_Token = "";               -- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 	
@@ -333,6 +333,7 @@ local descs = {}
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 	
 	descs.AutoClean = [[ Will auto clean service.Workspace of things like hats and tools ]]
+	descs.AutoBackup = [[ Run a map backup command when the server starts, this usually can be false if the server is FE, which means exploits are mostly prevented to require :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
 	
 	descs.CustomChat = [[ Custom chat ]]

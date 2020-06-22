@@ -3886,7 +3886,7 @@ return function()
 						break
 					end 
 				end
-				local obj = service.Insert(tonumber(id))
+				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj) 
 					obj.Parent = service.Workspace 
@@ -6985,7 +6985,7 @@ return function()
 			Hidden = false;
 			Description = "Make the target player(s) bleed";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
@@ -9820,7 +9820,7 @@ return function()
 			Hidden = false;
 			Description = "Blinds the target player(s)";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.MakeGui(v,"Effect",{Mode = "Blind"})
@@ -11473,6 +11473,152 @@ return function()
 			end;
 		};
 		
+		ClownYoink = {
+			Prefix = server.Settings.Prefix; 					-- Someone's always watching me
+			Commands = {"clown","yoink","youloveme","van"};   	-- Someone's always there
+			Args = {"player"}; 									-- When I'm sleeping he just waits
+			Description = "Clowns."; 							-- And he stares
+			Fun = true; 										-- Someone's always standing in the
+			Hidden = true; 										-- Darkest corner of my room
+			AdminLevel = "Admins"; 								-- He's tall and wears a suit of black,
+			Function = function(plr,args) 						-- Dressed like the perfect groom
+				local data = server.Core.GetPlayer(plr)
+				local forYou = {
+					'"Who are you?"';
+					'"I am Death," said the creature. "I thought that was obvious."';
+					'"But you\'re so small!"';
+					'"Only because you are small."';
+					'"You are young and far from your Death, September, ..."';
+					'"... so I seem as anything would seem if you saw it from a long way off ..."';
+					'"... very small, very harmless."';
+					'"But I am always closer than I appear."'; 
+					'"As you grow, I shall grow with you ..."';
+					'"... until at the end, I shall loom huge and dark over your bed ..."';
+					'"... and you will shut your eyes so as not to see me."';
+					
+					'Find me.';
+					'Fear me.';
+					'Love me.';
+				}
+				
+				if not args[1] then
+					local ind = data.SleepInParadise or 1
+					data.SleepInParadise = ind+1
+					
+					if ind == 14 then
+						data.SleepInParadise = 12
+					end
+					
+					error(forYou[ind])
+				end
+				
+				for i,p in next,service.GetPlayers(plr,args[1]) do 
+					spawn(function()
+						local char = p.Character 
+						local torso = p.Character:FindFirstChild("HumanoidRootPart") 
+						local humanoid = p.Character:FindFirstChild("Humanoid")
+						if torso and humanoid and not char:FindFirstChild("ADONIS_VAN") then 
+							local van = server.Deps.Assets.Van:Clone()
+							if van then
+								local function check()
+									if not van or not van.Parent or not p or p.Parent ~= service.Players or not torso or not humanoid or not torso.Parent or not humanoid.Parent or not char or not char.Parent then
+										return false
+									else
+										return true
+									end
+								end
+								
+								local driver = van.Driver 
+								local grabber = van.Clown 
+								local primary = van.Primary
+								local door = van.Door
+								local tPos = torso.CFrame
+								
+								local sound = Instance.new("Sound",primary)
+								sound.SoundId = "rbxassetid://258529216"
+								sound.Looped = true
+								sound:Play()
+								
+								local chuckle = Instance.new("Sound",primary)
+								chuckle.SoundId = "rbxassetid://164516281"
+								chuckle.Looped = true
+								chuckle.Volume = 0.25
+								chuckle:Play()
+								
+								van.PrimaryPart = van.Primary
+								van.Name = "ADONIS_VAN"
+								van.Parent = workspace
+								humanoid.Name = "NoResetForYou"
+								humanoid.WalkSpeed = 0
+								sound.Pitch = 1.3
+								
+								server.Remote.PlayAudio(p,421358540,0.2,1,true)
+								
+								for i = 1,200 do
+									if not check() then
+										break
+									else
+										van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0,math.rad(270),0)))
+										wait(0.001*(i/5))
+									end
+								end
+								
+								sound.Pitch = 0.9
+								
+								wait(0.5)
+								if check() then
+									door.Transparency = 1
+								end
+								wait(0.5)
+								
+								if check() then
+									torso.CFrame = primary.CFrame*(CFrame.new(0,2.3,0)*CFrame.Angles(0,math.rad(90),0))
+								end
+								
+								wait(0.5)
+								if check() then
+									door.Transparency = 0
+								end
+								wait(0.5)
+								
+								sound.Pitch = 1.3
+								server.Remote.MakeGui(p,"Effect",{
+									Mode = "FadeOut";
+								})
+								
+								p.CameraMaxZoomDistance = 0.5
+								
+								for i = 1,400 do
+									if not check() then
+										break
+									else
+										van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0,math.rad(270),0)))
+										torso.CFrame = primary.CFrame*(CFrame.new(0,2.3,0)*CFrame.Angles(0,math.rad(90),0))
+										wait(0.1/(i*5))
+										
+										if i == 270 then
+											server.Remote.FadeAudio(p,421358540,nil,nil,0.5)
+										end
+									end
+								end
+								
+								local gui = Instance.new("ScreenGui",service.ReplicatedStorage)
+								local bg = Instance.new("Frame", gui)
+								bg.BackgroundTransparency = 0
+								bg.BackgroundColor3 = Color3.new(0,0,0)
+								bg.Size = UDim2.new(2,0,2,0)
+								bg.Position = UDim2.new(-0.5,0,-0.5,0)
+								if p and p.Parent == service.Players then service.TeleportService:Teleport(527443962,p,nil,bg) end
+								wait(0.5)
+								pcall(function() van:Destroy() end)
+								pcall(function() gui:Destroy() end)
+							end
+						end
+					end)
+				end
+			end;
+		};
+		
 		Headlian = {
 			Prefix = Settings.Prefix;
 			Commands = {"headlian","beautiful"};
@@ -11673,8 +11819,8 @@ return function()
 					level="Owners"
 				elseif args[2]:lower()=='creator' or args[2]:lower()=='5' then
 					level="Creator"
-				elseif args[2]:lower()=='funtemp' or args[2]:lower()=='-1' or args[2]:lower()=="funmod" then
-					level="FunMod"
+				elseif args[2]:lower()=='funtemp' or args[2]:lower()=='-1' or args[2]:lower()=="Moderators" then
+					level="Moderators"
 				elseif args[2]:lower()=='funadmin' or args[2]:lower()=='-2' then
 					level="FunAdmin"
 				elseif args[2]:lower()=='funowner' or args[2]:lower()=='-3' then
@@ -11860,7 +12006,7 @@ return function()
 			Hidden = false;
 			Description = "Make the target player(s) look normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 			for i,v in pairs(service.GetPlayers(plr,args[1])) do
 			cPcall(function()
@@ -11956,7 +12102,7 @@ return function()
 			Hidden = false;
 			Description = "Turn the target player(s) back to normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
@@ -11983,7 +12129,7 @@ return function()
 			Hidden = false;
 			Description = "Turn them back to normal";
 			Fun = true;
-			AdminLevel = "FunMod";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
