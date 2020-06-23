@@ -5,10 +5,11 @@ return {
 	{Text = "Rerumu (Shining_Diamando)",Desc = "Made the endless stairs place\nRerubi (Bytecode Interpreter)\nParser\nSteampunk theme"};
 	{Text = "@GitHub MudockYatho", 				Desc = "GitHub Contributor"};	
 	{Text = "@GitHub TheCakeChicken", 			Desc = "GitHub Contributor"};
-	{Text = "@GitHub NNickey", 					Desc = "GitHub Contributor"};
-	{Text = "@GitHub ItsGJK", 					Desc = "GitHub Contributor"};
-	{Text = "@GitHub Kan18", 					Desc = "GitHub Contributor"};
+	{Text = "@GitHub NNickey", 				Desc = "GitHub Contributor"};
+	{Text = "@GitHub ItsGJK", 				Desc = "GitHub Contributor"};
+	{Text = "@GitHub Kan18", 				Desc = "GitHub Contributor"};
 	{Text = "@GitHub Brandon-Beck", 			Desc = "GitHub Contributor"};
+	{Text = "@GitHub GeneralScripter", 			Desc = "GitHub Contributor"};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	
 	{Text = "darkelementallord",		Desc = "Updated some guis"};
 	{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
