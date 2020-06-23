@@ -8795,41 +8795,11 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Head") then 
-						for a, mod in pairs(v.Character:children()) do 
-							if mod:findFirstChild("NameTag") then 
-								v.Character.Head.Transparency = 0 
-								mod:Destroy() 
-							end 
+					if v.Character and v.Character:findFirstChild("Humanoid") then 
+						v.Character.Humanoid.DisplayName = args[2]
+						if args[2]:lower() == 'hide' then
+							v.Character.Humanoid.DisplayName = '‎'
 						end
-						
-						local char = v.Character
-						local head = char:FindFirstChild('Head')
-						local mod = service.New("Model", char) 
-						local cl = char.Head:Clone()
-						local hum = service.New("Humanoid", mod)
-						mod.Name = args[2] or '' 
-						cl.Parent = mod  
-						hum.Name = "NameTag" 
-						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait(0.5)
-						hum.Health=v.Character.Humanoid.Health
-						
-						if args[2]:lower()=='hide' then
-							mod.Name = ''
-							hum.MaxHealth = 0
-							hum.Health = 0
-						else
-							v.Character.Humanoid.Changed:connect(function(c)
-								hum.MaxHealth = v.Character.Humanoid.MaxHealth
-								wait()
-								hum.Health = v.Character.Humanoid.Health
-							end)
-						end
-							
-						cl.CanCollide = false
-						local weld = service.New("Weld", cl) weld.Part0 = cl weld.Part1 = char.Head
-						char.Head.Transparency = 1
 					end
 				end
 			end
@@ -8845,13 +8815,8 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Head") then 
-						for a, mod in pairs(v.Character:children()) do 
-							if mod:findFirstChild("NameTag") then 
-								v.Character.Head.Transparency = 0 
-								mod:Destroy() 
-							end 
-						end
+					if v.Character and v.Character:findFirstChild("Humanoid") then 
+						v.Character.Humanoid.DisplayName = v.DisplayName
 					end
 				end
 			end
