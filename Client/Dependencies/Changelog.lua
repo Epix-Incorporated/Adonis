@@ -1,6 +1,9 @@
 return {
-	"Version: 172";
+	"Version: 173";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.23.2020 7:49 EST]";
+	"*Git merge";
 	"";
 	"[06.17.2020 11:33 EST]";
 	"*Fixed a permission issue that disabled some commands (like :blind)";
