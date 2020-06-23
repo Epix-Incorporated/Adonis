@@ -57,8 +57,6 @@ local descs = {}
 		
 		
 		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/owners ;p
-
-
 		--// Admins
 		
 			settings.Moderators = {"Sceleratis";"BobJenkins:1237123";1237666;"Group:181:255";"Item:1234567"}
@@ -155,6 +153,7 @@ local descs = {}
 	settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Permissions = {}	-- Command permissions; 					  Format: {"Command:NewLevel";}
 	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}	
+	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
 	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
 	settings.CustomRanks = {};	-- List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";};} 
 	
@@ -288,6 +287,7 @@ local descs = {}
 	descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
 	descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
+	descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 	descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
 	descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 	
@@ -383,6 +383,7 @@ local descs = {}
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
+		"InsertList";
 		"CapeList";
 		"CustomRanks";
 		" ";

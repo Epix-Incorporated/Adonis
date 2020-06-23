@@ -3879,13 +3879,40 @@ return function()
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local obj = service.Insert(tonumber(args[1]), true)
+				local id = args[1]:lower()
+				for i,v in pairs(Variables.InsertList) do 
+					if id==v.Name:lower() then
+						id = v.ID
+						break
+					end 
+				end
+				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj) 
 					obj.Parent = service.Workspace 
 					pcall(function() obj:MakeJoints() end)
 					obj:MoveTo(plr.Character:GetModelCFrame().p)
 				end
+			end
+		};
+		
+		InsertList = {
+			Prefix = Settings.Prefix;
+			Commands = {"insertlist";"inserts";"inslist";"modellist";"models";};
+			Args = {};
+			Hidden = false;
+			Description = "Shows you the script's available insert list";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local listforclient={}
+				for i, v in pairs(Variables.InsertList) do 
+					table.insert(listforclient,{Text=v.Name,Desc=v.ID})
+				end
+				for i, v in pairs(HTTP.Trello.InsertList) do 
+					table.insert(listforclient,{Text=v.Name,Desc=v.ID})
+				end
+				Remote.MakeGui(plr,"List",{Title = "Insert List", Table = listforclient})
 			end
 		};
 		

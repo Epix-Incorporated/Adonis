@@ -12,6 +12,7 @@ local canEditTables = {
 	Whitelist = true;
 	Permissions = true;
 	MusicList = false;
+	InsertList = false;
 	CapeList = false;
 	CustomRanks = false;
 	
