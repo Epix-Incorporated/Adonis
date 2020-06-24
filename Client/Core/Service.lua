@@ -912,7 +912,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 		Immutable = function(...)
-			local co = coroutine.create(function(...) while true do coroutine.yield(...) end end)
+			local co = coroutine.wrap(function(...) while true do coroutine.yield(...) end end)
 			co(...)
 			return co
 		end;
@@ -999,7 +999,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 		Insert = function(id, rawModel)
 			local model = service.InsertService:LoadAsset(id)
-			return (not rawModel and model:IsA("Model") and model.Name == "Model" and model:GetChildren()[1]) or model
+			if not rawModel and model:IsA("Model") and model.Name == "Model" then
+				local asset = model:GetChildren()[1]
+				asset.Parent = model.Parent
+				model:Destroy()
+				return asset
+			end
+			return model
 		end;
 		GetPlayers = function() return service.Players:GetPlayers() end;
 		IsAdonisObject = function(obj) for i,v in next,CreatedItems do if v == obj then return true end end end;
