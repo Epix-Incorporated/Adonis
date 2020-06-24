@@ -55,10 +55,11 @@ local cPcall = function(func,...) local function cour(...) coroutine.resume(coro
 local Pcall = function(func,...) local ran,error=pcall(func,...) if error then logError(error) end end
 local Routine = function(func,...) coroutine.resume(coroutine.create(func),...) end
 local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local Immutable = function(...) local mut = coroutine.wrap(function(...) while true do coroutine.yield(...) end end) mut(...) return mut end
 local player = game:GetService("Players").LocalPlayer
 local Fire, Detected
 local wrap = coroutine.wrap
-local Kill = function(info)
+local Kill; Kill = Immutable(function(info)
 	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
 	wrap(function() pcall(function()
 		if Detected then
@@ -77,12 +78,12 @@ local Kill = function(info)
 		wait(5)
 		while true do 
 			pcall(spawn,function()
-				spawn(Kill)
+				spawn(Kill())
 				-- memes
 			end)
 		end
 	end) end)()
-end;
+end);
 
 local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({},{
@@ -125,7 +126,7 @@ local LoadModule = function(plugin, yield, envVars)
 	end
 end;
 
-client = {
+client = setmetatable({
 	Handlers = {};
 	Modules = {};
 	Service = service;
@@ -142,11 +143,25 @@ client = {
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
 		wait(30)
-		client.Kill(info)
+		client.Kill()(info)
 	end;
 	
-	Kill = Kill;
-};
+	--Kill = Kill;
+}, {
+	__index = function(self, ind)
+		if ind == "Kill" then
+			local ran,func = pcall(function() return Kill() end);
+			
+			if not ran or type(func) ~= "function" then
+				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)");
+				while true do end
+			end
+			
+			return func;
+		end
+	end
+
+});
 
 locals = {
 	Pcall = Pcall;
@@ -164,7 +179,7 @@ locals = {
 service = setfenv(require(script.Parent.Core.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" and service.Detected then
-		Kill("Shananigans denied")
+		Kill()("Shananigans denied")
 		--player:Kick("Method error")
 		--service.Detected("kick", "Method change detected")
 	elseif eType == "ServerError" then
@@ -175,7 +190,7 @@ service = setfenv(require(script.Parent.Core.Service), GetEnv(nil, {client = cli
 		--message(tostring(desc))
 		--message("    ")
 		
-		Kill(tostring(msg))
+		Kill()(tostring(msg))
 		--if Detected then 
 		--	Detected("log", tostring(msg))
 		--end
@@ -406,7 +421,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			--// Events
 			service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
 			service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
-			service.Player.Changed:Connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick","Parent not players") elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
+			service.Player.Changed:Connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick", "Parent not players", true) elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
 			service.Player.Chatted:Connect(service.EventTask("Event: ProcessChat", client.Process.Chat))
 			service.Player.CharacterRemoving:Connect(service.EventTask("Event: CharacterRemoving", client.Process.CharacterRemoving))
 			service.Player.CharacterAdded:Connect(service.Threads.NewEventTask("Event: CharacterAdded", client.Process.CharacterAdded))
@@ -446,7 +461,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			client.Finish_Loading = function() end
 			client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
 		else
-			client.Kill("Missing remote key")
+			client.Kill()("Missing remote key")
 		end
 	end
 	

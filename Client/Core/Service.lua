@@ -912,7 +912,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 		Immutable = function(...)
-			local co = coroutine.create(function(...) while true do coroutine.yield(...) end end)
+			local co = coroutine.wrap(function(...) while true do coroutine.yield(...) end end)
 			co(...)
 			return co
 		end;
