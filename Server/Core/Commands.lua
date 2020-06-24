@@ -901,7 +901,7 @@ return function()
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then 
 						Admin.AddBan(v, true)
-						Functions.Hint("Server banned "..tostring(v),{plr})
+						Functions.Hint("Game banned "..tostring(v),{plr})
 					end
 				end
 			end
