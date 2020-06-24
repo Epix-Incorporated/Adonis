@@ -58,7 +58,7 @@ return function()
 	getfenv().script = nil
 	
 	local Detected = function(action,info)
-		if NetworkClient and action ~= "_" then
+		if NetworkClient then
 			pcall(Send,"Detected",action,info)
 			wait(0.5)
 			if action == "kick" then
@@ -69,24 +69,7 @@ return function()
 				Kill(info)
 			end
 		end
-		return true
 	end;
-	
-	Routine(function()
-		while wait(5) do 
-			if not Detected("_", "_") then -- detects the current bypass
-				while true do end
-			end
-			
-			-- this part you can choose whether or not you wanna use
-			for _,v in pairs({"Sentinel", "SentinelSpy", "ScriptDumper"}) do -- recursive findfirstchild check that yeets some stuff;
-				local object = game.FindFirstChild(game, v, true)            -- ill update the list periodically 
-				if object then                                               
-					Detected("crash", "Malicious Object: " .. v)
-				end
-			end
-		end		
-	end)
 	
 	local CheckEnv = function()
 		if tostring(getfenv) ~= toget or type(getfenv) ~= "function" then
