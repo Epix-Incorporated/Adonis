@@ -57,13 +57,17 @@ return function()
 	getfenv().service = nil
 	getfenv().script = nil
 	
-	local Detected = function(action,info)
+	local Detected = function(action, info, nocrash)
 		if NetworkClient then
 			pcall(Send,"Detected",action,info)
 			wait(0.5)
 			if action == "kick" then
 				if not service.RunService:IsStudio() then
-					Disconnect(info)
+					if nocrash then
+						service.Players.LocalPlayer:Kick(info);
+					else 
+						Disconnect(info)
+					end
 				end
 			elseif action == "crash" then
 				Kill(info)
