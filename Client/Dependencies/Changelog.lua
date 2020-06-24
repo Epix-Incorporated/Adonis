@@ -1,6 +1,9 @@
 return {
-	"Version: 173";
+	"Version: 174";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.24.2020 10:31 EST]";
+	"*Git merge (Refer to GitHub repo /Sceleratis/Adonis for changes)";
 	"";
 	"[6.23.2020 7:49 EST]";
 	"*Git merge";
