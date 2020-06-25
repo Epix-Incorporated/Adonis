@@ -247,6 +247,7 @@ server.Folder = Folder
 server.Deps = Folder.Dependencies;
 server.Client = Folder.Parent.Client;
 server.Dependencies = Folder.Dependencies;
+server.PluginsFolder = Folder.Plugins;
 server.Service = service
 
 --// Setting things up
@@ -494,8 +495,12 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	})
 	
 	--// Load Plugins
+	for index,plugin in next,server.PluginsFolder:GetChildren() do
+		LoadModule(plugin, false, {script = plugin});
+	end
+	
 	for index,plugin in next,(data.ServerPlugins or {}) do 
-		LoadModule(plugin,false,{script = plugin}) 
+		LoadModule(plugin, false, {script = plugin});
 	end
 	
 	--// RemoteEvent Handling

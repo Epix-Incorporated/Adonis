@@ -8516,7 +8516,7 @@ return function()
 		BigHead = {
 			Prefix = Settings.Prefix;
 			Commands = {"bighead";};
-			Args = {"player";};
+			Args = {"player", "num"};
 			Hidden = false;
 			Description = "Give the target player(s) a larger ego";
 			Fun = true;
@@ -8524,8 +8524,40 @@ return function()
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then 
-						v.Character.Head.Mesh.Scale = Vector3.new(3,3,3) 
-						v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,1.9,0) * CFrame.Angles(math.rad(90),math.rad(180),0) 
+						--v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
+						--v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
+						local char = v.Character;
+						local human = char and char:FindFirstChildOfClass("Humanoid");
+						local scale = human and human:FindFirstChild("HeadScale");
+						
+						if scale then 
+							scale.Value = tonumber(args[2]) or 1.5;
+						end 
+					end
+				end
+			end
+		};
+		
+		SmallHead = {
+			Prefix = Settings.Prefix;
+			Commands = {"smallhead";"minihead";};
+			Args = {"player", "num"};
+			Hidden = false;
+			Description = "Give the target player(s) a small head";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						--v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
+						--v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
+						local char = v.Character;
+						local human = char and char:FindFirstChildOfClass("Humanoid");
+						local scale = human and human:FindFirstChild("HeadScale");
+						
+						if scale then 
+							scale.Value = tonumber(args[2]) or 0.5;
+						end 
 					end
 				end
 			end
@@ -8534,143 +8566,28 @@ return function()
 		Resize = {
 			Prefix = Settings.Prefix;
 			Commands = {"resize";"size";};
-			Args = {"player";"number";};
+			Args = {"player";"mult";};
 			Hidden = false;
-			Description = "Resize the target player(s)'s character by <number>";
+			Description = "Resize the target player(s)'s character by <mult>";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if tonumber(args[2])>50 then 
+				if tonumber(args[2]) > 50 then 
 					args[2] = 50 
 				end
 				
 				local num = tonumber(args[2])	
 				
-				local function sizePlayer(p)
-					local char = p.Character
-					local torso = char:FindFirstChild("Torso")
-					local root = char:FindFirstChild("HumanoidRootPart")
-					local welds = {}
-					
-					torso.Anchored = true
-					torso.BottomSurface = 0
-					torso.TopSurface = 0
-					
-					for i,v in pairs(char:GetChildren()) do
-						if v:IsA("BasePart") then
-							v.Anchored = true
+				for i,v in next,service.GetPlayers(plr,args[1]) do
+					local char = v.Character;
+					local human = char and char:FindFirstChildOfClass("Humanoid");
+
+					if human then
+						for k,val in next,human:GetChildren() do
+							if val:IsA("NumberValue") and val.Name:match(".*Scale") then 
+								val.Value = val.Value * num;
+							end
 						end
-					end
-					
-					local function size(part)
-						for i,v in pairs(part:GetChildren()) do
-							if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
-								local p1 = v.Part1
-								local c0 = {v.C0:components()}
-								local c1 = {v.C1:components()}
-							
-								for i = 1,3 do
-									c0[i] = c0[i]*num
-									c1[i] = c1[i]*num
-								end
-								
-								p1.Anchored = true
-								v.Part1 = nil
-			
-								v.C0 = CFrame.new(unpack(c0)) 
-								v.C1 = CFrame.new(unpack(c1))
-								
-								if p1.Name ~= 'Head' and p1.Name ~= 'Torso' then
-									p1.formFactor = 3
-									p1.Size = p1.Size*num
-								elseif p1.Name ~= 'Torso' then
-									p1.Anchored = true
-									for k,m in pairs(p1:children()) do 
-										if m:IsA('Weld') then 
-											m.Part0 = nil 
-											m.Part1.Anchored = true 
-										end 
-									end
-									
-									p1.formFactor = 3 
-									p1.Size = p1.Size*num
-									
-									for k,m in pairs(p1:children()) do 
-										if m:IsA('Weld') then 
-											m.Part0 = p1 
-											m.Part1.Anchored = false 
-										end 
-									end
-								end
-								
-								if v.Parent == torso then 
-									p1.BottomSurface = 0 
-									p1.TopSurface = 0 
-								end
-								
-								p1.Anchored = false
-								v.Part1 = p1
-								
-								if v.Part0 == torso then 
-									table.insert(welds,v) 
-									p1.Anchored = true 
-									v.Part0 = nil 
-								end
-							elseif v:IsA('CharacterMesh') then
-								local bp = tostring(v.BodyPart):match('%w+.%w+.(%w+)')
-								local msh = service.New('SpecialMesh')
-							elseif v:IsA('SpecialMesh') and v.Parent ~= char.Head then 
-								v.Scale = v.Scale*num
-							end 
-							size(v)
-						end
-					end
-					
-					size(char)
-					
-					torso.formFactor = 3
-					torso.Size = torso.Size*num
-					
-					for i,v in pairs(welds) do 
-						v.Part0 = torso 
-						v.Part1.Anchored = false 
-					end
-					
-					for i,v in pairs(char:GetChildren()) do 
-						if v:IsA('BasePart') then 
-							v.Anchored = false 
-						end 
-					end
-					
-					local weld = service.New('Weld',root) 
-					weld.Part0 = root 
-					weld.Part1 = torso
-					
-					local cape = char:findFirstChild("ADONIS_CAPE")
-					if cape then
-						cape.Size = cape.Size*num
-					end
-				end
-				
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					sizePlayer(v)
-				end
-			end
-		};
-		
-		SmallHead = {
-			Prefix = Settings.Prefix;
-			Commands = {"smallhead";"minihead";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Give the target player(s) a small head";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
-						v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
-						v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0) 
 					end
 				end
 			end
@@ -8798,7 +8715,7 @@ return function()
 					if v.Character and v.Character:findFirstChild("Humanoid") then 
 						v.Character.Humanoid.DisplayName = args[2]
 						if args[2]:lower() == 'hide' then
-							v.Character.Humanoid.DisplayName = '‎'
+							v.Character.Humanoid.DisplayName = ''
 						end
 					end
 				end

@@ -1,6 +1,10 @@
 return {
-	"Version: 174";
+	"Version: 175";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.25.2020 12:03 EST]";
+	"*:resize :bighead and smallhead now use ROBLOX's BodyScale humanoid properties (should be fixed now)";
+	"*+Added :nocollide to disable player to player character collisions";
 	"";
 	"[6.24.2020 10:31 EST]";
 	"*Git merge (Refer to GitHub repo /Sceleratis/Adonis for changes)";
