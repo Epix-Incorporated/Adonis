@@ -4467,15 +4467,27 @@ return function()
 		
 		FlyNoClip = {
 			Prefix = Settings.Prefix;
-			Commands = {"flynoclip";};
-			Args = {"player";"speed";};
+			Commands = {"flynoclip";"oldnoclip";};
+			Args = {"player";};
 			Hidden = false;
-			Description = "Flying noclip";
+			Description = "Old flying NoClip";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)					
+			Function = function(plr,args)
+				local scr = Deps.Assets.FlyClipper:Clone()
+				scr.Name = "ADONIS_NoClip"
+				
+				local enabled = service.New("BoolValue",{
+					Parent = scr;
+					Value = true;
+					Name = "Enabled";
+				})
+					
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Commands.Fly.Function(p, args, true)
+					Admin.RunCommand(Settings.Prefix.."clip",p.Name)
+					local new = scr:Clone()
+					new.Parent = p.Character.Humanoid
+					new.Disabled = false
 				end
 			end
 		};
@@ -7565,17 +7577,12 @@ return function()
 			Description = "Lets the target player(s) fly";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args,noclip)
+			Function = function(plr,args)
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
 					Name = "Speed";
 					Value = speed;
-					Parent = scr;
-				})
-				local NoclipVal = service.New("BoolValue", {
-					Name = "Noclip";
-					Value = noclip or false;
 					Parent = scr;
 				})
 				
