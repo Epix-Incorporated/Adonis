@@ -1,6 +1,9 @@
 return {
-	"Version: 175";
+	"Version: 176";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.26.2020 9:14 EST]";
+	"*Changes to client loading process";
 	"";
 	"[6.25.2020 12:03 EST]";
 	"*:resize :bighead and smallhead now use ROBLOX's BodyScale humanoid properties (should be fixed now)";

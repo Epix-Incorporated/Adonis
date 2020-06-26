@@ -262,6 +262,7 @@ return function()
 				local depsName = Functions:GetRandom()
 				local eventName = Functions:GetRandom()
 				local folder = server.Client:Clone()
+				local acli = server.Deps.ClientMover:Clone();
 				local client = folder.Client
 				local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
 				
@@ -280,7 +281,8 @@ return function()
 				
 				local container = service.New("ScreenGui");
 				container.ResetOnSpawn = false;
-				container.Name = "Adonis_Container";
+				container.Enabled = false;
+				container.Name = "\0";--"Adonis_Container";
 				folder.Parent = container;
 				
 				local specialVal = service.New("StringValue")
@@ -292,6 +294,9 @@ return function()
 				keys.Special = depsName
 				keys.EventName = eventName
 				keys.Module = client
+				
+				acli.Parent = folder;
+				acli.Disabled = false;
 				
 				--[[service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
 					if container.Parent == playerGui then

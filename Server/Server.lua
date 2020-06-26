@@ -126,7 +126,7 @@ local CleanUp = function()
 	--local ran,ret = pcall(function() return env.script:GetFullName() end)
 	warn("Beginning Adonis cleanup & shutdown process...")
 	--warn("CleanUp called from "..tostring((ran and ret) or "Unknown"))
-	local loader = server.Core.ClientLoader
+	--local loader = server.Core.ClientLoader
 	server.Model.Parent = service.ServerScriptService
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
@@ -136,9 +136,9 @@ local CleanUp = function()
 		v:Disconnect() 
 		table.remove(RbxEvents, i) 
 	end
-	loader.Archivable = false
-	loader.Disabled = true
-	loader:Destroy()
+	--loader.Archivable = false
+	--loader.Disabled = true
+	--loader:Destroy()
 	if server.Core.RemoteEvent then
 		server.Core.RemoteEvent.Security:Disconnect()
 		server.Core.RemoteEvent.Event:Disconnect()
@@ -518,7 +518,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
 	
 	--// Prepare the client loader
-	server.Core.PrepareClient()	
+	--server.Core.PrepareClient()	
 	
 	--// Add existing players in case some are already in the server
 	for index,player in next,service.Players:GetPlayers() do
