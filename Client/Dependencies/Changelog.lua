@@ -1,6 +1,9 @@
 return {
-	"Version: 176";
+	"Version: 177";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.27.2020 7:09 EST]";
+	"*Removed :nocollide due to issues caused in games without player collisions";
 	"";
 	"[6.26.2020 9:14 EST]";
 	"*Changes to client loading process";
