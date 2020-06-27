@@ -862,15 +862,16 @@ return function()
 		Ban = {
 			Prefix = Settings.Prefix;
 			Commands = {"ban";};
-			Args = {"player";};
+			Args = {"player","optional reason";};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local level = Admin.GetLevel(plr)
+				local br = args[2] or "No Reason Given"
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then 
-						Admin.AddBan(v)
-						Functions.Hint("Server banned "..tostring(v),{plr})
+						Admin.AddBan(v, false, br)
+						Functions.Hint("Server banned "..tostring(v).." For: "..br,{plr})
 					end
 				end
 			end
@@ -893,15 +894,17 @@ return function()
 		GameBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"gameban", "saveban", "databan"};
-			Args = {"player";};
+			Args = {"player","optional reason";};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				local level = Admin.GetLevel(plr)
+				local br = args[2] or "No Reason Given"
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
+				
 					if level > Admin.GetLevel(v) then 
-						Admin.AddBan(v, true)
-						Functions.Hint("Game banned "..tostring(v),{plr})
+						Admin.AddBan(v, true, br)
+						Functions.Hint("Game banned "..tostring(v).." For: "..br,{plr})
 					end
 				end
 			end
