@@ -511,7 +511,7 @@ return function()
 			end
 		end;
 		
-		AddBan = function(p, doSave)
+		AddBan = function(p, doSave, reason)
 			table.insert(Settings.Banned, p.Name..':'..p.userId) 
 			if doSave then
 				Core.DoSave({
@@ -520,10 +520,11 @@ return function()
 					Value = p.Name..':'..p.UserId;
 				})
 			end
+			local banreason = reason or "No Reason Specified"
 			if not service.Players:FindFirstChild(p.Name) then
 				Remote.Send(p,'Function','KillClient')
 			else
-				if p then pcall(function() p:Kick("You have been banned") end) end
+				if p then pcall(function() p:Kick("You have been banned for:\n"..banreason) end) end
 			end
 		end;
 		
