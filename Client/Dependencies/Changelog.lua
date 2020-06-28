@@ -1,6 +1,11 @@
 return {
-	"Version: 177";
+	"Version: 178";
 	"*Click and drag edges to expand*";
+	"";
+	"[6.28.2020 15:35 EST]";
+	"*:name now notifies players when their name is changed";
+	"*This change was done because it is no longer possible to see your own name when changing it via :name";
+	"*It also acts as a replacement to the visual feedback you previously got when naming yourself";
 	"";
 	"[6.27.2020 7:09 EST]";
 	"*Removed :nocollide due to issues caused in games without player collisions";

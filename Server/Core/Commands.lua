@@ -8712,10 +8712,23 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then 
-						v.Character.Humanoid.DisplayName = args[2]
+					local char = v.Character;
+					local human = char and char:FindFirstChildOfClass("Humanoid");
+					if human then 
 						if args[2]:lower() == 'hide' then
-							v.Character.Humanoid.DisplayName = ''
+							human.DisplayName = ''
+							Remote.MakeGui(v,"Notification",{
+								Title = "Notification";
+								Message = "Your character name has been hidden";
+								Time = 10;
+							})
+						else
+							human.DisplayName = args[2]
+							Remote.MakeGui(v,"Notification",{
+								Title = "Notification";
+								Message = "Your character name is now \"".. args[2].."\"";
+								Time = 10;
+							})
 						end
 					end
 				end
@@ -8732,8 +8745,15 @@ return function()
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then 
-						v.Character.Humanoid.DisplayName = v.DisplayName
+					local char = v.Character;
+					local human = char and char:FindFirstChildOfClass("Humanoid");
+					if human then 
+						human.DisplayName = v.DisplayName
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "Your character name has been restored";
+							Time = 10;
+						})
 					end
 				end
 			end
