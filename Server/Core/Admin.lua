@@ -530,7 +530,7 @@ return function()
 		RemoveBan = function(name, doSave)
 			local ret
 			for i,v in next,Settings.Banned do
-				if v:lower():sub(1,#name) == name:lower() or name:lower()=="all" then
+				if tostring(v):lower():sub(1,#name) == name:lower() or name:lower()=="all" then
 					table.remove(Settings.Banned, i)
 					ret = v
 					if doSave then
