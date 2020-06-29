@@ -8,10 +8,12 @@ local char = player.Character
 local human = char:FindFirstChildOfClass("Humanoid")
 local aliveVal = part:WaitForChild("ADONIS_FLIGHT_ALIVE")
 local speed = script:WaitForChild("Speed").Value
+local noclip = script:WaitForChild("Noclip")
 local Create = Instance.new
 local flying = true
 local keyTab = {}
 local dir = {}
+local conn -- used for noclip
 local bPos, bGyro, antiLoop, humChanged
 
 function Check()
@@ -62,6 +64,16 @@ function Start()
 	bGyro.cframe = part.CFrame
 	
 	antiLoop = antiReLoop
+	
+	if noclip.Value then
+		conn = runService.Stepped:Connect(function()
+			for _,v in pairs(char:GetDescendants()) do
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+				end
+			end
+		end)
+	end
 	
 	while flying and antiLoop == antiReLoop and Check() do
 		local new = bGyro.cframe - bGyro.cframe.p + bPos.position
@@ -134,6 +146,10 @@ function Stop()
 	
 	if bGyro then
 		bGyro:Destroy()
+	end
+	
+	if conn then
+		conn:Disconnect()
 	end
 end
 
