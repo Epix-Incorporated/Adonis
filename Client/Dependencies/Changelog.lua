@@ -2,6 +2,11 @@ return {
 	"Version: 178";
 	"*Click and drag edges to expand*";
 	"";
+	"[6.29.2020 8:17 EST]";
+	"*Reverted to the original :name command";
+	"*New :name command is now :displayname";
+	"*Git merge";
+	"";
 	"[6.28.2020 15:35 EST]";
 	"*:name now notifies players when their name is changed";
 	"*This change was done because it is no longer possible to see your own name when changing it via :name";

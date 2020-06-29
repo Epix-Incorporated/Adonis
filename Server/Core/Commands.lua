@@ -8696,9 +8696,9 @@ return function()
 			end
 		};
 		
-		Name = {
+		DisplayName = {
 			Prefix = Settings.Prefix;
-			Commands = {"name";"rename";};
+			Commands = {"displayname";"dname";};
 			Args = {"player";"name/hide";};
 			Filter = true;
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
@@ -8728,9 +8728,9 @@ return function()
 			end
 		};
 		
-		UnName = {
+		UnDisplayName = {
 			Prefix = Settings.Prefix;
-			Commands = {"unname";"fixname";};
+			Commands = {"undisplayname";"undname";};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Put the target player(s)'s back to normal";
@@ -8747,6 +8747,77 @@ return function()
 							Message = "Your character name has been restored";
 							Time = 10;
 						})
+					end
+				end
+			end
+		};
+
+		Name = {
+			Prefix = Settings.Prefix;
+			Commands = {"name";"rename";};
+			Args = {"player";"name/hide";};
+			Filter = true;
+			Description = "Name the target player(s) <name> or say hide to hide their character name";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:findFirstChild("Head") then 
+						for a, mod in pairs(v.Character:children()) do 
+							if mod:findFirstChild("NameTag") then 
+								v.Character.Head.Transparency = 0 
+								mod:Destroy() 
+							end 
+						end
+						
+						local char = v.Character
+						local head = char:FindFirstChild('Head')
+						local mod = service.New("Model", char) 
+						local cl = char.Head:Clone()
+						local hum = service.New("Humanoid", mod)
+						mod.Name = args[2] or '' 
+						cl.Parent = mod  
+						hum.Name = "NameTag" 
+						hum.MaxHealth=v.Character.Humanoid.MaxHealth
+						wait(0.5)
+						hum.Health=v.Character.Humanoid.Health
+						
+						if args[2]:lower()=='hide' then
+							mod.Name = ''
+							hum.MaxHealth = 0
+							hum.Health = 0
+						else
+							v.Character.Humanoid.Changed:connect(function(c)
+								hum.MaxHealth = v.Character.Humanoid.MaxHealth
+								wait()
+								hum.Health = v.Character.Humanoid.Health
+							end)
+						end
+							
+						cl.CanCollide = false
+						local weld = service.New("Weld", cl) weld.Part0 = cl weld.Part1 = char.Head
+						char.Head.Transparency = 1
+					end
+				end
+			end
+		};
+		
+		UnName = {
+			Prefix = Settings.Prefix;
+			Commands = {"unname";"fixname";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Put the target player(s)'s back to normal";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:findFirstChild("Head") then 
+						for a, mod in pairs(v.Character:children()) do 
+							if mod:findFirstChild("NameTag") then 
+								v.Character.Head.Transparency = 0 
+								mod:Destroy() 
+							end 
+						end
 					end
 				end
 			end
