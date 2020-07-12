@@ -83,7 +83,7 @@ return function()
 			end
 			
 			-- this part you can choose whether or not you wanna use
-			for _,v in pairs({"Sentinel", "SentinelSpy", "ScriptDumper"}) do -- recursive findfirstchild check that yeets some stuff;
+			for _,v in pairs({"SentinelSpy", "ScriptDumper"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]] 
 				local object = game.FindFirstChild(game, v, true)            -- ill update the list periodically 
 				if object then                                               
 					Detected("crash", "Malicious Object: " .. v)

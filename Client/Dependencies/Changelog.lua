@@ -1,6 +1,9 @@
 return {
-	"Version: 178";
+	"Version: 179";
 	"*Click and drag edges to expand*";
+	"";
+	"[7.12.2020 5:28 EST]";
+	"*Disabled Sentinel malicious object detection";
 	"";
 	"[6.29.2020 8:17 EST]";
 	"*Reverted to the original :name command";
