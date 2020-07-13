@@ -22,9 +22,13 @@ return function()
 		Variables = server.Variables;
 		Settings = server.Settings;
 		
-		MaxLogs = Settings.MaxLogs
+		MaxLogs = Settings.MaxLogs;
 		
-		Logs:AddLog("Script", "Logging Module Initialized")
+		game:BindToClose(function() 
+			Logs.SaveCommandLogs()
+		end);
+		
+		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
 	
 	server.Logs = {
@@ -84,6 +88,34 @@ return function()
 			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
 		end;
 		
+		SaveCommandLogs = function()
+			Core.UpdateData("OldCommandLogs", function(oldLogs)
+				local temp = {}
+			
+				for i,m in ipairs(Logs.Commands) do
+					table.insert(temp, m)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+				end
+				
+				if oldLogs then
+					for i,m in ipairs(oldLogs) do
+						table.insert(temp, m)
+					end
+				end
+				
+				table.sort(temp, function(a, b)
+					return a.Time > b.Time;
+				end)
+				
+				for i,v in ipairs(temp) do
+					if i > MaxLogs then
+						temp[i] = nil;
+					end
+				end
+				
+			 	return temp
+			end)
+		end;
+		
 		ListUpdaters = {
 			ShowTasks = function(plr,arg)
 				if arg then
@@ -135,8 +167,22 @@ return function()
 				end
 			end;
 			
+			OldCommandLogs = function()
+				local temp = {}
+				if Core.DataStore then
+					local data = Core.GetData("OldCommandLogs")
+					if data then
+						for i,m in pairs(data) do
+							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+						end
+					end
+				end
+				
+				return temp;
+			end;
+			
 			DonorList = function()
-				local temptable={}
+				local temptable = {}
 				for i,v in pairs(service.Players:children()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)

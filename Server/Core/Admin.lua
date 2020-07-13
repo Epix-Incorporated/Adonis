@@ -22,6 +22,19 @@ return function()
 		Settings = server.Settings;
 		Commands = server.Commands;
 		
+		Core.CrossServer.RunCommand = function(plrData, command, ...)
+			local ind,com = Admin.GetCommand(command)
+			if com then
+				local cmdArgs = com.Args or com.Arguments
+				local args = Admin.GetArgs(command,#cmdArgs,...)
+				local ran, error = service.TrackTask("Command: ".. tostring(command), com.Function, (plrData ~= nil and plrData) or {Name = "::SERVER::", UserId = -1}, args)
+				if error then 
+					--logError("SERVER","Command",error) 
+				end
+			end
+			--Admin.RunCommand(...);
+		end
+		
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
 	

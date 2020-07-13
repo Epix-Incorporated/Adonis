@@ -1,6 +1,15 @@
 return {
-	"Version: 179";
+	"Version: 180";
 	"*Click and drag edges to expand*";
+	"";
+	"[7.13.2020 15:25 EST]";
+	"*Git merge (Adds :unteam <player>)";
+	"*Added :crossserver <command>";
+	"*Minor console changes & fixes";
+	":Added :oldlogs";
+	"*Adonis will now save some previous server logs; All old logs will appear in one list ordered by time";
+	"*The purpose of this is to aid in the identification of admin abusers shutting down servers";
+	"*Log retention number based on MaxLogs setting";
 	"";
 	"[7.12.2020 5:28 EST]";
 	"*Disabled Sentinel malicious object detection";

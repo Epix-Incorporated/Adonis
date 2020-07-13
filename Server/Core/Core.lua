@@ -9,6 +9,9 @@ logError = nil
 --// Core
 return function()
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps
+	local CrossServer = {};
+	local CrossEncCache = {};
+	
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -23,12 +26,33 @@ return function()
 		Deps = server.Deps
 		
 		Logs:AddLog("Script", "Core Module Initialized")
+		
+		--// Cross-Server Messaging
+		local function crossProcessor(enc, ...)
+			local com = enc and server.Remote.Decrypt(enc, server.Settings.DataStoreKey, CrossEncCache);
+			if com and CrossServer[com] then
+				local pass, ret = pcall(CrossServer[com], ...);
+				if not pass then
+					warn("CrossServer Command Failed: ".. tostring(ret));
+				end
+				Logs:AddLog("Script", "Processes Cross-Server Command; ".. tostring(com))
+			end
+		end
+		
+		local ran, conn = pcall(function()
+			return service.MessagingService:SubscribeAsync("CrossServerAdonisEvent", function(message)
+				crossProcessor(unpack(message.Data));
+			end)
+		end)
+		
+		Logs:AddLog("Script", "Cross-Server Messaging Ready");
 	end;
 	
 	server.Core = {
 		Init = Init;
 		DataQueue = {};
 		DataCache = {};
+		CrossServer = CrossServer;
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
@@ -37,6 +61,17 @@ return function()
 		Variables = {
 			TimeBans = {};
 		};
+		
+		SendCrossServer = function(com, ...)
+			local enc = server.Remote.Encrypt(com, server.Settings.DataStoreKey, CrossEncCache);
+			local ran, ret = pcall(function(...)
+				return service.MessagingService:PublishAsync("CrossServerAdonisEvent", {enc, ...});
+			end, ...)
+			
+			if not ran then
+				warn("CrossServer Publish Failed: ".. tostring(ret));
+			end
+		end;
 		
 		Panic = function(reason)
 			local hint = Instance.new("Hint", service.Workspace)
@@ -328,7 +363,7 @@ return function()
 		
 		LoadExistingPlayer = function(p)
 			warn("Loading existing player: ".. tostring(p))
-			Core.LoadClientLoader(p)
+			--Core.LoadClientLoader(p)
 			Process.PlayerAdded(p)
 		end;
 		

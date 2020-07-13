@@ -1,4 +1,5 @@
 --// ACLI - Adonis Client Loading Initializer
+if true then return end --// #DISABLED
 
 local DebugMode = false
 local otime = os.time
