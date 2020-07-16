@@ -419,8 +419,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.Finish_Loading = function()
 		if client.Core.Key then
 			--// Events
-			service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
-			service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
+			--service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
+			--service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
 			service.Player.Changed:Connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick", "Parent not players", true) elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
 			service.Player.Chatted:Connect(service.EventTask("Event: ProcessChat", client.Process.Chat))
 			service.Player.CharacterRemoving:Connect(service.EventTask("Event: CharacterRemoving", client.Process.CharacterRemoving))
