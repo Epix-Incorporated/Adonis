@@ -181,7 +181,7 @@ return function()
 		end;
 		
 		LoadBytecode = function(str, env)
-			return require(client.Deps.Rerubi)(str, env)
+			return require(client.Deps.FiOne)(str, env)
 		end;
 		
 		LoadCode = function(str, env)
@@ -203,7 +203,7 @@ return function()
 		
 		StartAPI = function()
 			local ScriptCache = Core.ScriptCache
-			local Rerubi = client.Deps.Rerubi
+			local FiOne = client.Deps.FiOne
 			local Get = Remote.Get
 			local G_API = client.G_API
 			local Allowed_API_Calls = client.Allowed_API_Calls
@@ -314,7 +314,7 @@ return function()
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(Rerubi:Clone())
+								module = require(FiOne:Clone())
 								table.insert(ScriptCache,{
 									Script = getfenv(2).script; 
 									Source = data.Source; 
