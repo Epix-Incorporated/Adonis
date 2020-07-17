@@ -1007,7 +1007,7 @@ return function()
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(Deps.Loadstring.Rerubi:Clone())
+								module = require(Deps.Loadstring.FiOne:Clone())
 								table.insert(Core.ScriptCache,{
 									Script = getfenv(2).script; 
 									Source = data.Source; 
