@@ -237,7 +237,7 @@ return function()
 				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{p})
 				for i,v in pairs(playz) do
 					cPcall(function()
-						if type(v)=="String" and v=="NoPlayer" then
+						if type(v)=="string" and v=="NoPlayer" then
 							table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
 						else	
 							local ping

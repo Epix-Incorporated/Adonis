@@ -472,28 +472,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
 	end
 	
-	--// Cache Commands
-	server.Admin.CacheCommands()
-	
-	--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
-	setmetatable(server.Commands, {
-		__index = function(self, ind)
-			local targInd = server.Admin.CommandCache[ind:lower()]
-			if targInd then
-				return rawget(server.Commands, targInd)
-			end
-		end;
-		
-		__newindex = function(self, ind, val)
-			rawset(server.Commands, ind, val)
-			if val and type(val) == "table" and val.Commands and val.Prefix then
-				for i,cmd in next,val.Commands do
-					server.Admin.CommandCache[(val.Prefix..cmd):lower()] = ind
-				end
-			end
-		end;
-	})
-	
 	--// Load Plugins
 	for index,plugin in next,server.PluginsFolder:GetChildren() do
 		LoadModule(plugin, false, {script = plugin});
@@ -592,9 +570,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
 			ancsafe.Mode.Value = "AnchorSafe" 
 			ancsafe.Name = "ADONIS_AnchorSafe" 
-		ancsafe.Archivable = false 
+			ancsafe.Archivable = false 
 			ancsafe.Parent = service.ServerScriptService 
-		ancsafe.Disabled = false 
+			ancsafe.Disabled = false 
 		end
 		
 		if server.Settings.AntiDelete and not service.ServerScriptService:FindFirstChild("ADONIS_ObjectSafe") then 

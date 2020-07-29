@@ -57,6 +57,8 @@ local descs = {}
 		
 		
 		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/owners ;p
+
+
 		--// Admins
 		
 			settings.Moderators = {"Sceleratis";"BobJenkins:1237123";1237666;"Group:181:255";"Item:1234567"}
@@ -151,10 +153,10 @@ local descs = {}
 	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Blacklist = {}		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}	
 	settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Permissions = {}	-- Command permissions; 					  Format: {"Command:NewLevel";}
+	settings.Permissions = {}	-- Command permissions; 					  Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
 	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}	
-	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
 	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
+	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
 	settings.CustomRanks = {};	-- List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";};} 
 	
 	settings.OnStartup = {};	-- List of commands ran at server start								Format: {":notif TestNotif"}
@@ -209,7 +211,7 @@ local descs = {}
 	settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 	settings.SystemTitle = "System Message"		-- Title to display in :sm 
 	
-	settings.MaxLogs = 500			-- Maximum logs to save before deleting the oldest; Too high can lag the game
+	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	
@@ -287,8 +289,8 @@ local descs = {}
 	descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
 	descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
-	descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 	descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
+	descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 	descs.CustomRanks = [[ List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";};} ]]
 	
 	descs.OnStartup = [[ List of commands ran at server start								Format: {":notif TestNotif"} ]]
@@ -383,7 +385,6 @@ local descs = {}
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
-		"InsertList";
 		"CapeList";
 		"CustomRanks";
 		" ";

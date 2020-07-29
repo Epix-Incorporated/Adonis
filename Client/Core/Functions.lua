@@ -37,7 +37,7 @@ return function()
 		UI = client.UI;
 		Anti = client.Anti;
 		Core = client.Core;
-		Variables = client.Variables
+		Variables = client.Variables;
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
@@ -793,6 +793,7 @@ return function()
 		end;
 		
 		KeyBindListener = function()
+			if not Variables then wait() end;
 			local timer = 0
 			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
 				

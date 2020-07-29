@@ -211,7 +211,7 @@ local descs = {}
 	settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
 	settings.SystemTitle = "System Message"		-- Title to display in :sm 
 	
-	settings.MaxLogs = 500			-- Maximum logs to save before deleting the oldest; Too high can lag the game
+	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	

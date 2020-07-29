@@ -22,7 +22,27 @@ return function()
 		Remote = server.Remote;
 		Process = server.Process;
 		Variables = server.Variables;
+		Commands = server.Commands;
 		Deps = server.Deps
+		
+		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
+		setmetatable(Commands, {
+			__index = function(self, ind)
+				local targInd = Admin.CommandCache[ind:lower()]
+				if targInd then
+					return rawget(Commands, targInd)
+				end
+			end;
+			
+			__newindex = function(self, ind, val)
+				rawset(Commands, ind, val)
+				if val and type(val) == "table" and val.Commands and val.Prefix then
+					for i,cmd in next,val.Commands do
+						Admin.CommandCache[(val.Prefix..cmd):lower()] = ind
+					end
+				end
+			end;
+		})
 
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
@@ -90,107 +110,6 @@ return function()
 					end
 				end
 			end;
-		};
-
-		TestError = {
-			Hidden = true;
-			Prefix = ":";
-			Commands = {"testerror","debugtest"};
-			Args = {"type","msg"};
-			Description = "Test Error";
-			AdminLevel = "Creators";
-			Function = function(plr,args)
-				--assert(args[1] and args[2],"Argument missing or nil")
-				Remote.Send(plr, "TestError")
-				Routine(function() plr.Bobobobobobobo.Hi = 1 end)
-				if not args[1] then
-					error("This is an intentional test error")
-				elseif args[1]:lower() == "error" then
-					error(args[2])
-				elseif args[1]:lower() == "assert" then
-					assert(false,args[2])
-				end
-			end;
-		};
-
-		TestGet = {
-			Prefix = ":";
-			Commands = {"testget"};
-			Args = {};
-			Description = "Test Error";
-			Hidden = true;
-			AdminLevel = "Creators";
-			Function = function(plr,args)
-				local tack = tick()
-				print(tack)
-				print(Remote.Get(plr,"Test"))
-				local tab = {
-					{
-						Children = {
-							{Class = "sdfhasdfjkasjdf"}
-						};
-						{{Something = "hi"}};
-					}
-				}
-
-				local m, ret = Remote.Get(plr, "Test", tab)
-				if ret then
-					print(ret)
-					for i,v in next, ret do
-						print(i,v)
-						for i,v in next,v do
-							print(i,v)
-							for i,v in next,v do
-								print(i,v)
-								for i,v in next,v do
-									print(i,v)
-								end
-							end
-						end
-					end
-				end
-
-				print(tick()-tack)
-				print("TESTING EVENT")
-				Remote.MakeGui(plr,"Settings",{
-					IsOwner = true
-				})
-				local testColor = Remote.GetGui(plr,"ColorPicker",{Color = Color3.new(1,1,1)})
-				print(testColor)
-				local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
-					Question = "Is this a test question?";
-				}), Remote.NewPlayerEvent(plr,"TestEvent",function(...)
-					print("EVENT WAS FIRED; WE GOT:")
-					print(...)
-					print("THAT'D BE ALL")
-				end)
-				print("PLAYER ANSWER: "..tostring(ans))
-				wait(0.5)
-				print("SENDING REMOTE EVENT TEST")
-				Remote.Send(plr,"TestEvent","TestEvent","hi mom I went thru the interwebs")
-				print("SENT")
-			end;
-		};
-
-		DebugLoadstring = {
-			Prefix = ":";
-			Commands = {"debugloadstring";};
-			Args = {"code";};
-			Description = "DEBUG LOADSTRING";
-			Hidden = true;
-			NoFilter = true;
-			Fun = false;
-			AdminLevel = "Creators";
-			Function = function(plr,args)
-				--error("Disabled", 0)
-				local func,err = Core.Loadstring(args[1],GetEnv())
-				if func then
-					func()
-				else
-					logError("DEBUG",err)
-					Functions.Hint(err,{plr})
-				end
-			end
 		};
 
 		CrossServer = {
@@ -3238,7 +3157,7 @@ return function()
 				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{plr})
 				for i,v in pairs(playz) do
 					Routine(function()
-						if type(v)=="String" and v=="NoPlayer" then
+						if type(v)=="string" and v=="NoPlayer" then
 							table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
 						else
 							local ping
@@ -6512,7 +6431,7 @@ return function()
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if point then
 							if v.Character.Humanoid.SeatPart~=nil then
-								Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+								Functions.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 							end
 							if v.Character.Humanoid.Sit then
 								v.Character.Humanoid.Sit = false
@@ -6528,7 +6447,7 @@ return function()
 					local x,y,z = args[2]:match('(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character.Humanoid.SeatPart~=nil then
-							Function.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+							Functions.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
 						end
 						if v.Character.Humanoid.Sit then
 							v.Character.Humanoid.Sit = false
@@ -6544,7 +6463,7 @@ return function()
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 							if n.Character.Humanoid.SeatPart~=nil then
-								Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
+								Functions.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
 							end
 							if n.Character.Humanoid.Sit then
 								n.Character.Humanoid.Sit = false
@@ -6557,7 +6476,7 @@ return function()
 						for k,n in pairs(players) do
 							if n~=target then
 								if n.Character.Humanoid.SeatPart~=nil then
-									Function.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
+									Functions.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
 								end
 								if n.Character.Humanoid.Sit then
 									n.Character.Humanoid.Sit = false

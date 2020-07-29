@@ -1,6 +1,12 @@
 return {
-	"Version: 180";
+	"Version: 181";
 	"*Click and drag edges to expand*";
+	"";
+	"[7.28.2020 21:09 EST]";
+	"*Adonis' List UI now supports pages; Allowing for much longer list/log sizes";
+	"*Window UI TextButtons now support Deboung built-in for OnClick event";
+	"*Changed the default MaxLogs setting from 500 to 5000 (Let me know if you experience server lag/problems with lots of logs... shouldn't but idk)";
+	"*Minor code changes/cleanup/bug fixes";
 	"";
 	"[7.13.2020 15:25 EST]";
 	"*Git merge (Adds :unteam <player>)";

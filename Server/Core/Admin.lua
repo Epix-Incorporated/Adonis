@@ -22,6 +22,9 @@ return function()
 		Settings = server.Settings;
 		Commands = server.Commands;
 		
+		--// Cache Commands
+		Admin.CacheCommands()
+		
 		Core.CrossServer.RunCommand = function(plrData, command, ...)
 			local ind,com = Admin.GetCommand(command)
 			if com then
@@ -603,10 +606,12 @@ return function()
 			local tempTable = {}
 			local tempPrefix = {}
 			for ind,data in next,Commands do
+				if type(data) == "table" then
 				for i,cmd in next,data.Commands do
 					if data.Prefix == "" then Variables.BlankPrefix = true end
-					tempPrefix[data.Prefix] = true
-					tempTable[(data.Prefix..cmd):lower()] = ind
+						tempPrefix[data.Prefix] = true
+						tempTable[(data.Prefix..cmd):lower()] = ind
+					end
 				end
 			end
 			
