@@ -435,7 +435,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			client.Variables.CodeName = client.Remote.Get("Variable", "CodeName")
 			
 			--// Ping loop
-			client.Remote.Send("ClientLoaded", pcall(function() service.Players:GetNameFromUserIdAsync(service.Player.UserId) end))
+			client.Remote.Send("ClientLoaded")
 			delay(5, function() service.StartLoop("ClientCheck",30,client.Core.CheckClient,true) end)
 			
 			--wait()

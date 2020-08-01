@@ -1,6 +1,13 @@
 return {
-	"Version: 182";
+	"Version: 183";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.1.2020 18:38 EST]";
+	"*Fixed a console special characters bug";
+	"*Added urgent Adonis-related messages (:adonisalerts)";
+	"*CLEARED ALL DATASTORE SAVED TABLES(ADMINS) AND SETTINGS (refer to :adonisalerts)";
+	"*Added an anti-spoof check in case this happens in the future";
+	"*Refer to urgent messages for more information";
 	"";
 	"[8.1.2020 7:44 EST]";
 	"*Added minor name spoofing check";

@@ -26,6 +26,7 @@ return function()
 	
 	server.Anti = {
 		Init = Init;
+		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = info or "No Reason Given"
 			pcall(function() service.UnWrap(p):Kick(tostring(info)) end)
@@ -39,17 +40,34 @@ return function()
 			})
 		end;
 		
-		UserNameCheck = function(p)
-			local ran,name = pcall(function()
-				return service.Players:GetNameFromUserIdAsync(p.UserId);
-			end)
-			--print(name)
-			--if p.DisplayName ~= p.Name then
-			--	return false;
-			--end
-			
-			if ran and name == p.Name then 
-				return true;
+		UserSpoofCheck = function(p)
+			--// Supplied by BetterAccount
+			if not service.RunService:IsStudio() then
+				local userService = service.UserService;
+		   		local success,err = pcall(function()
+					local userInfo = Anti.SpoofCheckCache[p.UserId] or userService:GetUserInfosByUserIdsAsync({p.UserId})
+					local data = userInfo and userInfo[1];
+					
+					Anti.SpoofCheckCache[p.UserId] = userInfo;
+					
+					if data and data.Id == p.UserId then
+						if p.Name ~= data.Username or p.DisplayName ~= data.DisplayName then
+				        	return true
+						end
+					else
+						for i,user in next,userInfo do
+							if user.Id == p.UserId then
+								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
+									return true
+								end
+							end
+						end
+					end
+				end)
+		    
+				if not success then
+					warn("Failed to check validity of player's name, reason: ".. tostring(err))
+				end
 			end
 		end;
 		
@@ -184,7 +202,7 @@ return function()
 			})
 			
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).."] "..tostring(player);
+				Text = "[Action: "..tostring(action).."] "..tostring(player) ..": ".. tostring(info);
 				Desc = tostring(info);
 			})
 		end;

@@ -695,9 +695,10 @@ return function()
 				end
 			end;
 			
-			ClientLoaded = function(p,args)
+			ClientLoaded = function(p, args)
 				local key = tostring(p.userId)
 				local client = Remote.Clients[key]
+				
 				if client and client.LoadingStatus == "LOADING" then
 					client.LastUpdate = tick()
 					client.RemoteReady = true

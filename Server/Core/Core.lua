@@ -58,8 +58,14 @@ return function()
 		PanicMode = false;
 		ScriptCache = {};
 		Connections = {};
+		
 		Variables = {
 			TimeBans = {};
+		};
+		
+		DS_RESET_SALTS = { --// Used to change/"reset" specific datastore keys
+			SavedSettings = "32K5j4";
+			SavedTables = 	"32K5j4";
 		};
 		
 		SendCrossServer = function(com, ...)
@@ -735,6 +741,10 @@ return function()
 		end;
 		
 		DataStoreEncode = function(key)
+			if Core.DS_RESET_SALTS[key] then
+				key = Core.DS_RESET_SALTS[key] .. key
+			end
+			
 			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
 		end;
 		
