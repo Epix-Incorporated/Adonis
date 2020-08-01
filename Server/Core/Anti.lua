@@ -39,6 +39,20 @@ return function()
 			})
 		end;
 		
+		UserNameCheck = function(p)
+			local ran,name = pcall(function()
+				return service.Players:GetNameFromUserIdAsync(p.UserId);
+			end)
+			--print(name)
+			--if p.DisplayName ~= p.Name then
+			--	return false;
+			--end
+			
+			if ran and name == p.Name then 
+				return true;
+			end
+		end;
+		
 		Sanitize = function(obj, classList)
 			if Anti.RLocked(obj) then
 				pcall(service.Delete, obj)

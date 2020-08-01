@@ -1,6 +1,10 @@
 return {
-	"Version: 181";
+	"Version: 182";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.1.2020 7:44 EST]";
+	"*Added minor name spoofing check";
+	"*ROBLOX CURRENTLY HAS AN EXPLOIT TO SPOOF NAMES! BE WARNED!";
 	"";
 	"[7.28.2020 21:09 EST]";
 	"*Adonis' List UI now supports pages; Allowing for much longer list/log sizes";

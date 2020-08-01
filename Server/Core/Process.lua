@@ -515,6 +515,8 @@ return function()
 		PlayerAdded = function(p)
 			if p.UserId < 0 and p.Name:match("^Guest ") and not service.RunService:IsStudio() then
 				p:Kick("Guest Account")
+			elseif not service.RunService:IsStudio() and not Anti.UserNameCheck(p) then
+				Anti.Detected(p, "kick", "Username Spoofing");
 			else
 				local key = tostring(p.userId)
 				local keyData = {
