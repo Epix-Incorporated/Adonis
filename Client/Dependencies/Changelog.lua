@@ -1,6 +1,9 @@
 return {
-	"Version: 183";
+	"Version: 184";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.5.2020 10:32 EST]";
+	"*GetPlayers will now only return each found player ONCE; This prevents name & finder spam (:re scel,scel,scel,scel,scel,scel...)";
 	"";
 	"[8.1.2020 18:38 EST]";
 	"*Fixed a console special characters bug";

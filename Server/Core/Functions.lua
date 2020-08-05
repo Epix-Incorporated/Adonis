@@ -438,7 +438,20 @@ return function()
 					end
 				end
 			end
-			return players
+			
+			--// The following is intended to prevent name spamming (eg. :re scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel...)
+			--// It will also prevent situations where a player falls within multiple player finders (eg. :re group-1928483,nonadmins,radius-50 (one player can match all 3 of these))
+			local filteredList = {};
+			local checkList = {};
+			
+			for i,v in next, players do
+				if not checkList[v] then
+					table.insert(filteredList, v);
+					checkList[v] = true;
+				end
+			end
+			
+			return filteredList;
 		end;
 		
 		GetRandom = function(pLen)
