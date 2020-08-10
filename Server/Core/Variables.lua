@@ -140,8 +140,8 @@ return function()
 			{Name="tsunami",ID=569900517};
 			{Name="finalcountdownremix",ID=145162750};
 			{Name="stereolove",ID=142318819};
-			{Name='minecraftorchestral',ID=148900687};
-			{Name='superbacon',ID=300872612};
+			{Name="minecraftorchestral",ID=148900687};
+			{Name="superbacon",ID=300872612};
 		};
 		
 		InsertList = {};
