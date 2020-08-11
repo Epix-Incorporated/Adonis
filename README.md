@@ -11,7 +11,7 @@ When DebugMode is enabled, the loader will try to load the MainModule from the s
 
 If you want to maintain your own version of the MainModule you need to either enable DebugMode in the loader script and have the MainModule in the same directory as the "Adonis_Loader" model (NOT in the model, just the same PARENT as the model) or you need to upload the MainModule to Roblox and change the ModuleId in the Loader script to your own module id.
 
-If you don't know/can't figure out how to do either of the things I just mentioned, you probably shouldn't be messing with the module at all or you'll probably break something.
+If you don't know/can't figure out how to do either of the things I just mentioned, you probably shouldn't be messing with the module at all as you **will** break something.
 
 ## Adonis Loader:
 
