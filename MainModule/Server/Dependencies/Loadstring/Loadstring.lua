@@ -10,7 +10,7 @@
 --]]
 
 local waitDeps = {
-	'Rerubi';
+	'FiOne';
 	'LuaK';
 	'LuaP';
 	'LuaU';
@@ -25,7 +25,7 @@ local luaX = require(script.LuaX)
 local luaY = require(script.LuaY)
 local luaZ = require(script.LuaZ)
 local luaU = require(script.LuaU)
-local rerubi = require(script.Rerubi)
+local fiOne = require(script.FiOne)
 
 luaX:init()
 local LuaState = {}
@@ -42,7 +42,7 @@ return function(str,env)
 		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
 		writer, buff = luaU:make_setS()
 		luaU:dump(LuaState, func, writer, buff)
-		f = rerubi(buff.data, env)
+		f = fiOne(buff.data, env)
 	end)
 	
 	if ran then
