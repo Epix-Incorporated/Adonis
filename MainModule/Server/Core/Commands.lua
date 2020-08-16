@@ -9,7 +9,10 @@ sortedPairs = nil
 
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...
-return function()
+return function(Vargs)
+	local server = Vargs.Server;
+	local service = Vargs.Service;
+	
 	local Settings = server.Settings
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
 	local function Init()

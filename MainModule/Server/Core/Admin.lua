@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Admin
-return function()
+return function(Vargs)
+	local server = Vargs.Server;
+	local service = Vargs.Service;
+	
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local function Init()
 		Functions = server.Functions;

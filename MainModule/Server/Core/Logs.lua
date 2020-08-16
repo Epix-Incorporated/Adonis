@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Special Variables
-return function()
+return function(Vargs)
+	local server = Vargs.Server;
+	local service = Vargs.Service;
+	
 	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()

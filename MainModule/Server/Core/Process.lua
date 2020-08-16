@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Processing
-return function()
+return function(Vargs)
+	local server = Vargs.Server;
+	local service = Vargs.Service;
+	
 	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()

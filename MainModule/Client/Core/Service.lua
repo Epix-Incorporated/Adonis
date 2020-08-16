@@ -109,7 +109,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			
 			if isThread then
 				data.Thread = coroutine.create(taskFunc)
-				return select(2, coroutine.resume(data.Thread, ...))
+				return coroutine.resume(data.Thread, ...) --select(2, coroutine.resume(data.Thread, ...))
 			else
 				return taskFunc(...)
 			end

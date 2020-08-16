@@ -9,7 +9,10 @@ sortedPairs = nil
 
 --// This module is for stuff specific to debugging
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function()
+return function(Vargs)
+	local server = Vargs.Server;
+	local service = Vargs.Service;
+	
 	local Settings = server.Settings
 	local Functions = server.Functions;
 	local Commands = server.Commands;

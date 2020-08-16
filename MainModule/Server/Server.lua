@@ -10,7 +10,6 @@ Also just be aware that I'm a very messy person, so a lot of this may or may not
 math.randomseed(os.time())
 
 --// Todo:
---//   Finish GUI-To-Window conversions (UserPanel and Explorer)(I think that's all?)
 --//   Fix a loooootttttttt of bugged commands
 --//   Probably a lot of other stuff idk
 --//   Transform from Sceleratis into Dr. Sceleratii; Evil alter-ego; Creator of bugs, destroyer of all code that is good
@@ -86,7 +85,15 @@ local GetEnv; GetEnv = function(env, repl)
 	return scriptEnv
 end;
 
-local LoadModule = function(plugin, yield, envVars)
+local GetVargTable = function()
+	return {
+		Server = server;
+		Service = service;
+	}
+end
+
+local LoadModule = function(plugin, yield, envVars, noEnv)
+	noEnv = false --// Seems to make loading take longer when true (?)
 	local plug = require(plugin)
 	
 	if server.Modules then
@@ -96,14 +103,14 @@ local LoadModule = function(plugin, yield, envVars)
 	if type(plug) == "function" then
 		if yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
 				warn(tostring(err))
 			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),GetVargTable())
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
 				warn(tostring(err))
@@ -413,7 +420,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for ind,load in next,LoadingOrder do 
 		local modu = Folder.Core:FindFirstChild(load) 
 		if modu then 
-			LoadModule(modu,true,{script = script}) 
+			LoadModule(modu,true,{script = script}, true) --noenv
 		end 
 	end
 
@@ -474,7 +481,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	
 	--// Load Plugins
 	for index,plugin in next,server.PluginsFolder:GetChildren() do
-		LoadModule(plugin, false, {script = plugin});
+		LoadModule(plugin, false, {script = plugin}, true); --noenv
 	end
 	
 	for index,plugin in next,(data.ServerPlugins or {}) do 
