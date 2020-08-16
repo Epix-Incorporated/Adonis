@@ -354,7 +354,7 @@ return function()
 				if name=="me" then
 					Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
 				elseif name=="all" then
-					for i,v in pairs(server.CommandLoops) do
+					for i,v in pairs(Variables.CommandLoops) do
 						Variables.CommandLoops[i] = nil
 					end
 				elseif args[2] then
