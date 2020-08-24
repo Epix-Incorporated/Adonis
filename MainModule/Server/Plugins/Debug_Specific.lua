@@ -13,7 +13,8 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 	
-	local Settings = server.Settings
+	local Core = server.Core;
+	local Settings = server.Settings;
 	local Functions = server.Functions;
 	local Commands = server.Commands;
 	local Remote = server.Remote;
