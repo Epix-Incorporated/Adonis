@@ -4918,7 +4918,9 @@ return function(Vargs)
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
-					local tool = service.New('HopperBin')
+					local tool = service.New('Tool')
+					tool.CanBeDropped = false
+					tool.RequiresHandle = false
 					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
@@ -4940,7 +4942,9 @@ return function(Vargs)
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
-					local tool = service.New('HopperBin')
+					local tool = service.New('Tool')
+					tool.CanBeDropped = false
+					tool.RequiresHandle = false
 					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
