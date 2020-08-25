@@ -7602,13 +7602,20 @@ return function(Vargs)
 			Function = function(plr,args)
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
+				local bg = Instance.new("BodyGyro")
+				bg.Name = "SPINNER_GYRO"
+				bg.maxTorque = Vector3.new(0,math.huge,0)
+				bg.P = 11111
+				bg.D = 0
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for i,v in pairs(v.Character.HumanoidRootPart:children()) do
-							if v.Name == "SPINNER" then
-								v:Destroy()
+						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
+								q:Destroy()
 							end
 						end
+						local gyro = bg:Clone()
+						gyro.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
 						new.Disabled = false
@@ -7629,7 +7636,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
 						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
-							if q.Name == "SPINNER" then
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
 						end

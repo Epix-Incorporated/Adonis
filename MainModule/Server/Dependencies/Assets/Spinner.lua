@@ -1,8 +1,5 @@
 local torso = script.Parent
-local bg = Instance.new("BodyGyro", torso)
-bg.Name = "SPINNER"
-bg.maxTorque = Vector3.new(0,math.huge,0)
-bg.P = 11111
+local bg = torso:FindFirstChild("SPINNER_GYRO")
 bg.cframe = torso.CFrame
 repeat
   wait(1/44)
