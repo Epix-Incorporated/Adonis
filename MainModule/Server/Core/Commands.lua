@@ -7538,16 +7538,33 @@ return function(Vargs)
 				scr.Name = "ADONIS_FLIGHT"
 
 				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					local human = v.Character:FindFirstChildOfClass("Humanoid")
+					if human then
+						human.PlatformStand = true
+					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
-						local new = scr:Clone()
-						local keepAlive = service.New("BoolValue")
-						local oldk = part:FindFirstChild("ADONIS_FLIGHT_ALIVE")
+						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldk then oldk:Destroy() wait(1) end
+						if oldp then oldp:Destroy() end
+						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
-						keepAlive.Name = "ADONIS_FLIGHT_ALIVE"
-						keepAlive.Parent = part
+						
+						local new = scr:Clone()
+						local flightPosition = service.New("BodyPosition")
+						local flightGyro = service.New("BodyGyro")
+						
+						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
+						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.Position = part.Position
+						flightPosition.Parent = part
+						
+						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
+						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.CFrame = part.CFrame
+						flightGyro.Parent = part
+						
 						new.Parent = part
 						new.Disabled = false
 					end
@@ -7565,11 +7582,17 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local human = v.Character:FindFirstChildOfClass("Humanoid")
+					if human then
+						human.PlatformStand = false
+					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
-						local oldk = part:FindFirstChild("ADONIS_FLIGHT_ALIVE")
+						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldk then oldk:Destroy() wait(1) end
+						if oldp then oldp:Destroy() end
+						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
