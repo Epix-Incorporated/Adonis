@@ -25,7 +25,7 @@ return {
 		"FULL DETAILS BELOW.";
 		"";
 		"=What Happened?=";
-		"A ROBLOX exploit (not Adonis) allowed users to change their usernames, allowing them to impersonate users.";
+		"A Roblox exploit (not Adonis) allowed users to change their usernames, allowing them to impersonate users.";
 		"This also allowed them to impersonate admins, such as the place owner.";
 		"Adonis, as well as all other scripts, would see the exploiter's Name property as their desired fake name.";
 		"I have been informed that this was patched at some point earlier today.";

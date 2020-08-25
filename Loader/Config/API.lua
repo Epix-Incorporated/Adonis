@@ -97,7 +97,7 @@
 			
 	
 	Service:
-		Metatable used to access ROBLOX services and some utility functions
+		Metatable used to access Roblox services and some utility functions
 		For example: service.Players
 		
 		Extra functions:
@@ -128,7 +128,7 @@
 			Events:
 				service.Events.eventName
 					- Returns a table containing :connect and :disconnect
-					- Basically the same as service.HookEvent but more like a ROBLOX event
+					- Basically the same as service.HookEvent but more like a Roblox event
 					
 				Event List:
 					PlayerAdded

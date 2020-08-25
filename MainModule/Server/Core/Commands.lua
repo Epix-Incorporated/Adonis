@@ -3111,7 +3111,7 @@ return function(Vargs)
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg,{plr})
 					end
 				else
-					Functions.Hint(args[1].." is not a valid ROBLOX user",{plr})
+					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
 				end
 			end
 		};
@@ -11333,7 +11333,7 @@ return function(Vargs)
 			Prefix = Settings.Prefix;
 			Commands = {"deadlands","farlands","renderingcyanide"};
 			Args = {"player","mult"};
-			Description = "The edge of ROBLOX math; WARNING CAPES CAN CAUSE LAG";
+			Description = "The edge of Roblox math; WARNING CAPES CAN CAUSE LAG";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
