@@ -7619,6 +7619,7 @@ return function(Vargs)
 							end
 						end
 						local gyro = bg:Clone()
+						gyro.cframe = v.Character.HumanoidRootPart.CFrame
 						gyro.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
