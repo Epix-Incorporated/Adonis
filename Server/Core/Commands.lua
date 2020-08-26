@@ -899,6 +899,11 @@ return function()
 			Function = function(plr,args)
 				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
+					if v == plr then
+						Functions.Hint("You cannot ban yourself", {plr})
+						continue
+					end
+
 					if level > Admin.GetLevel(v) then 
 						Admin.AddBan(v, true)
 						Functions.Hint("Game banned "..tostring(v),{plr})
