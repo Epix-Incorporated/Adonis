@@ -24,7 +24,6 @@ return function(data)
 		Font = "SourceSans";
 		TextScaled = true;
 		BackgroundTransparency = 1;
-		TextScaled = true;
 		TextWrapped = true;
 		Size = UDim2.new(1, -10, 0.7, -5);
 	})

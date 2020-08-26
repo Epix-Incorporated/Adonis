@@ -1,6 +1,10 @@
 return {
-	"Version: 186";
+	"Version: 187";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.26.2020 12:23 EST]";
+	"*Git merge";
+	"*Added missing button to clear all saved settings in the userpanel gui";
 	"";
 	"[8.16.2020 14:17 EST]";
 	"*Squished some bugs (r i p)";

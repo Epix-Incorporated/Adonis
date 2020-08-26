@@ -258,7 +258,7 @@ return function(data)
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a script created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
+				Text = "Adonis is a system created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
 				TextWrapped = true; 
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -1049,7 +1049,28 @@ return function(data)
 				local descs = settingsData.Descs
 				local order = settingsData.Order
 				
+				gameTab:Add("TextLabel", {
+					Text = "  Clear all saved settings: ";
+					ToolTip = "Clears all saved settings";
+					BackgroundTransparency = 0.2;
+					Size = UDim2.new(1, -10, 0, 30);
+					Position = UDim2.new(0, 5, 0, 5);
+					TextXAlignment = "Left";
+					Children = {
+						TextButton = {
+							Text = "Clear";
+							Size = UDim2.new(0, 100, 1, 0);
+							Position = UDim2.new(1, -100, 0, 0);
+							BackgroundTransparency = 1;
+							OnClick = function()
+								client.Remote.Send("ClearSavedSettings")
+							end
+						}
+					}
+				})
+				
 				for i, setting in next,order do
+					local i = i+1;
 					local value = settings[setting]
 					local desc = descs[setting]
 					if setting == "" or setting == " " and value == nil then
