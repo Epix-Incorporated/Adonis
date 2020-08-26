@@ -3111,7 +3111,7 @@ return function(Vargs)
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg,{plr})
 					end
 				else
-					Functions.Hint(args[1].." is not a valid ROBLOX user",{plr})
+					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
 				end
 			end
 		};
@@ -4918,7 +4918,9 @@ return function(Vargs)
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
-					local tool = service.New('HopperBin')
+					local tool = service.New('Tool')
+					tool.CanBeDropped = false
+					tool.RequiresHandle = false
 					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
@@ -4940,7 +4942,9 @@ return function(Vargs)
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
-					local tool = service.New('HopperBin')
+					local tool = service.New('Tool')
+					tool.CanBeDropped = false
+					tool.RequiresHandle = false
 					service.New("StringValue",tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
@@ -7534,18 +7538,61 @@ return function(Vargs)
 				scr.Name = "ADONIS_FLIGHT"
 
 				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					local human = v.Character:FindFirstChildOfClass("Humanoid")
+					if human then
+						human.PlatformStand = true
+					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
-						local new = scr:Clone()
-						local keepAlive = service.New("BoolValue")
-						local oldk = part:FindFirstChild("ADONIS_FLIGHT_ALIVE")
+						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldk then oldk:Destroy() wait(1) end
+						if oldp then oldp:Destroy() end
+						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
-						keepAlive.Name = "ADONIS_FLIGHT_ALIVE"
-						keepAlive.Parent = part
+						
+						local new = scr:Clone()
+						local flightPosition = service.New("BodyPosition")
+						local flightGyro = service.New("BodyGyro")
+						
+						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
+						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.Position = part.Position
+						flightPosition.Parent = part
+						
+						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
+						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.CFrame = part.CFrame
+						flightGyro.Parent = part
+						
 						new.Parent = part
 						new.Disabled = false
+					end
+				end
+			end
+		};
+		
+		FlySpeed = {
+			Prefix = Settings.Prefix;
+			Commands = {"flyspeed";"flightspeed";};
+			Args = {"player", "speed"};
+			Hidden = false;
+			Description = "Change the target player(s) flight speed";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args,noclip)
+				local speed = tonumber(args[2])
+
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					if part then
+						local scr = part:FindFirstChild("ADONIS_FLIGHT")
+						if scr then
+							local sVal = scr:FindFirstChild("Speed")
+							if sVal then
+								sVal.Value = speed
+							end
+						end
 					end
 				end
 			end
@@ -7561,11 +7608,17 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local human = v.Character:FindFirstChildOfClass("Humanoid")
+					if human then
+						human.PlatformStand = false
+					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
-						local oldk = part:FindFirstChild("ADONIS_FLIGHT_ALIVE")
+						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldk then oldk:Destroy() wait(1) end
+						if oldp then oldp:Destroy() end
+						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
@@ -7602,13 +7655,21 @@ return function(Vargs)
 			Function = function(plr,args)
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
+				local bg = Instance.new("BodyGyro")
+				bg.Name = "SPINNER_GYRO"
+				bg.maxTorque = Vector3.new(0,math.huge,0)
+				bg.P = 11111
+				bg.D = 0
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for i,v in pairs(v.Character.HumanoidRootPart:children()) do
-							if v.Name == "SPINNER" then
-								v:Destroy()
+						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
+								q:Destroy()
 							end
 						end
+						local gyro = bg:Clone()
+						gyro.cframe = v.Character.HumanoidRootPart.CFrame
+						gyro.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
 						new.Disabled = false
@@ -7629,7 +7690,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
 						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
-							if q.Name == "SPINNER" then
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
 						end
@@ -11326,7 +11387,7 @@ return function(Vargs)
 			Prefix = Settings.Prefix;
 			Commands = {"deadlands","farlands","renderingcyanide"};
 			Args = {"player","mult"};
-			Description = "The edge of ROBLOX math; WARNING CAPES CAN CAUSE LAG";
+			Description = "The edge of Roblox math; WARNING CAPES CAN CAUSE LAG";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)

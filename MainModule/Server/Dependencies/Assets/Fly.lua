@@ -6,18 +6,19 @@ local contextService = game:GetService("ContextActionService")
 local player = players.LocalPlayer
 local char = player.Character
 local human = char:FindFirstChildOfClass("Humanoid")
-local aliveVal = part:WaitForChild("ADONIS_FLIGHT_ALIVE")
-local speed = script:WaitForChild("Speed").Value
+local bPos = part:WaitForChild("ADONIS_FLIGHT_POSITION")
+local bGyro = part:WaitForChild("ADONIS_FLIGHT_GYRO")
+local speedVal = script:WaitForChild("Speed")
 local noclip = script:WaitForChild("Noclip")
 local Create = Instance.new
 local flying = true
 local keyTab = {}
 local dir = {}
 local conn -- used for noclip
-local bPos, bGyro, antiLoop, humChanged
+local antiLoop, humChanged
 
 function Check()
-	if aliveVal.Parent == part and script.Parent == part then
+	if script.Parent == part then
 		return true
 	end
 end
@@ -48,20 +49,22 @@ end
 
 function Start()
 	local curSpeed = 0
-	local speedInc = speed/25
+	local topSpeed = speedVal.Value
+	local speedInc = topSpeed/25
 	local camera = workspace.CurrentCamera
 	local antiReLoop = {}
 	local realPos = part.CFrame
 	
-	bPos, bGyro = Create("BodyPosition"), Create("BodyGyro")
+	speedVal.Changed:Connect(function()
+		topSpeed = speedVal.Value
+		speedInc = topSpeed/25
+	end)
 	
-	bPos.Parent = part
-	bPos.maxForce = Vector3.new(math.huge, math.huge, math.huge)
 	bPos.position = part.Position
+	bPos.maxForce = Vector3.new(math.huge, math.huge, math.huge)
 
-	bGyro.Parent = part
-	bGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
 	bGyro.cframe = part.CFrame
+	bGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
 	
 	antiLoop = antiReLoop
 	
@@ -110,8 +113,8 @@ function Start()
 				curSpeed = curSpeed + speedInc
 			end
 		
-			if curSpeed > speed then
-				curSpeed = speed
+			if curSpeed > topSpeed then
+				curSpeed = topSpeed
 			end
 		end
 		
@@ -141,11 +144,11 @@ function Stop()
 	end
 	
 	if bPos then
-		bPos:Destroy()
+		bPos.maxForce = Vector3.new(0, 0, 0)
 	end
 	
 	if bGyro then
-		bGyro:Destroy()
+		bGyro.maxTorque = Vector3.new(0, 0, 0)
 	end
 	
 	if conn then

@@ -19,7 +19,7 @@ performance, organization, and customization. Going foward it is very unlikely t
 updates. This will not replace the EISS model and EISS will still be usable for anyone who prefers it for whatever
 their reasons may be.
 
-If you find bugs or improvements that can be made please message me on ROBLOX:
+If you find bugs or improvements that can be made please message me on Roblox:
 https://www.roblox.com/users/1237666/profile
 
 Or make a bug report/contribution on GitHub :)!

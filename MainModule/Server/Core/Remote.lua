@@ -353,7 +353,7 @@ return function(Vargs)
 					Usage = "message <message>";
 					Command = "message";
 					Arguments = 1;
-					Description = "Sends a message in the ROBLOX chat";
+					Description = "Sends a message in the Roblox chat";
 					Function = function(p, args, data)
 						for i,v in next,service.GetPlayers() do
 							Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))

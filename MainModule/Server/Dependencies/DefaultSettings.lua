@@ -29,8 +29,8 @@ local descs = {}
 		from the programmer to anyone who reads their stuff. Anything in a comment will 
 		not be seen by Lua. 
 		
-		Incase you don't know what Lua is; Lua is the scripting language ROBLOX uses... 
-		so every script you see (such as this one) and pretty much any code on ROBLOX is
+		Incase you don't know what Lua is; Lua is the scripting language Roblox uses... 
+		so every script you see (such as this one) and pretty much any code on Roblox is
 		written in Lua. 
 		
 		

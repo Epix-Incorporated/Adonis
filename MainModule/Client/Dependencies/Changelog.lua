@@ -57,7 +57,7 @@ return {
 	"*Changes to client loading process";
 	"";
 	"[6.25.2020 12:03 EST]";
-	"*:resize :bighead and smallhead now use ROBLOX's BodyScale humanoid properties (should be fixed now)";
+	"*:resize :bighead and smallhead now use Roblox's BodyScale humanoid properties (should be fixed now)";
 	"*+Added :nocollide to disable player to player character collisions";
 	"";
 	"[6.24.2020 10:31 EST]";
@@ -82,10 +82,10 @@ return {
 	"*Removed our Trello(old/unmaintained) from the secondary boards default setting";
 	"";
 	"[05.12.2020 19:55 EST]";
-	"*Revived a popular command with new wording to adhere to ROBLOX's terms";
+	"*Revived a popular command with new wording to adhere to Roblox's terms";
 	"(The :CLOWNs, they are watching)";
 	"(Based on previous conversations, I was told the wording used was the issue)";
-	"(@ROBLOX staff, if this is still an issue, let me know and I'll re-remove it)";
+	"(@Roblox staff, if this is still an issue, let me know and I'll re-remove it)";
 	"";
 	"[04.27.2020 15:36 EST]";
 	"*Client will now queue Remote.Send and Remote.Get requests based on Process.RateLimits.Remote so the server doesn't drop them";
@@ -117,7 +117,7 @@ return {
 	"";
 	"[03.25.2020 12:02 EST]";
 	"*Fixed an issue that allowed server crashing via the chat system";
-	"*Messages larger than those allowed by ROBLOX's chat (200 characters) will result in a kick";
+	"*Messages larger than those allowed by Roblox's chat (200 characters) will result in a kick";
 	"*Any chat (Admins too) or command (Non-Admins only; via the command bar) message over 500 characters will now be trimmed";
 	"*Limits defined by Process.MsgStringLimit & Process.MaxChatCharacterLimit";
 	"";
@@ -423,7 +423,7 @@ return {
 	"*Changed client.UI.GetGui to client.UI.Get";
 	"";
 	"1.1.4b";
-	"*As per ROBLOX's Request the following commands have been removed:";
+	"*As per Roblox's Request the following commands have been removed:";
 	"*Removed :salem, :crucify, :kidnap, :trippy, :flash, :drug, :strobe, and :bleach";
 	"";
 	"*Anyway...";
@@ -624,7 +624,7 @@ return {
 	"";
 	"1.0.113b";
 	"LoadLibrary(\"RbxUtility\") for some reason caused an error which resulted in Loading Error 2; Removed it and it appears to be working now";
-	"Sorry about that, I guess ROBLOX updated or something and LoadLibrary/RbxUtility decided to break(?)";
+	"Sorry about that, I guess Roblox updated or something and LoadLibrary/RbxUtility decided to break(?)";
 	"";
 	"1.0.112b";
 	"-Removed a duplicate module in the client";
@@ -669,7 +669,7 @@ return {
 	"1.0.104b";
 	"+Added service.LaxFilter(str,plr); It's like the relaxed version of BroadcastFilter (also ignores numbers)";
 	"*All non-numerical command arguments are now filtered using service.LaxFilter()";
-	"NOTE: ROBLOX knows about the problems with text filter & game auto moderation";
+	"NOTE: Roblox knows about the problems with text filter & game auto moderation";
 	"They are working to make the system better as they know it's hitting pretty much everyone";
 	"IF YOUR GAME GETS MODERATED; SEND AN EMAIL TO APPEALS@ROBLOX.COM";
 	"Also if your game is moderated because of unfiltered text somewhere in Adonis be sure to message me aswell";
@@ -715,7 +715,7 @@ return {
 	"*Client now uses server to filter";
 	"*Remote.Get now logs errors and returns nil if it hits one instead of hanging";
 	"*Messages & Hints now use FilterStringAsync instead of BroadcastFilter (less annoying maybe?)";
-	"Once again, filtering is a requirement of ROBLOX";
+	"Once again, filtering is a requirement of Roblox";
 	"You can disable it with a plugin if you want";
 	"Though I really don't recommend it";
 	"If you disable it, you risk moderation";
@@ -727,7 +727,7 @@ return {
 	"Well the simple answer is:";
 	"You guys apparently can't be trusted";
 	"to not spam random profainity";
-	"so now ROBLOX is basically enforcing filtering";
+	"so now Roblox is basically enforcing filtering";
 	"If you decide not to filter, you will risk moderation";
 	"Personally I rather not get my stuff or your game deleted";
 	"Also yes EISS will be getting this update aswell";
@@ -743,7 +743,7 @@ return {
 	"+Added client.UI.PrepareGui(gui)";
 	"+Added Theming_Info module to UI folder for some info stuffs";
 	"*Certain GUIs will go into a holder instead of PlayerGui";
-	"*This fixes that :m problem with the ROBLOX chat";
+	"*This fixes that :m problem with the Roblox chat";
 	"";
 	"1.0.91b";
 	"*Fixed mobile hint";
