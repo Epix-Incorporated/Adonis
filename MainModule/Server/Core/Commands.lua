@@ -14,7 +14,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 	
 	local Settings = server.Settings
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -26,7 +26,7 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Commands = server.Commands;
-		Deps = server.Deps
+		Deps = server.Deps;
 		
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {

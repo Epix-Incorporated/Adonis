@@ -1,6 +1,9 @@
 return {
-	"Version: 187";
+	"Version: 188";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.26.2020 20:28 EST]";
+	"*Fixed a window resize bug (thx xtntt)";
 	"";
 	"[8.26.2020 12:23 EST]";
 	"*Git merge";
