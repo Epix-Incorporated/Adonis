@@ -95,7 +95,7 @@ return function()
 		LoadModule = function(module, data, env)
 			local ran,func = pcall(require, module)
 			local newEnv = GetEnv(env)
-			local data = data or{}
+			local data = data or {}
 			
 			newEnv.script = module
 			newEnv.client = service.CloneTable(client)
@@ -216,6 +216,7 @@ return function()
 			if newGui then
 				local isModule = newGui:IsA("ModuleScript")
 				local conf = newGui:FindFirstChild("Config")
+				local mod = conf and conf:FindFirstChild("Modifier")
 				
 				if isModule then
 					return UI.LoadModule(newGui, data, {
@@ -259,6 +260,15 @@ return function()
 						
 						code.Parent = conf
 						code.Name = name
+						
+						if mod then
+							UI.LoadModule(mod, data, {
+								script = mod;
+								gTable = gTable;
+								Data = data;
+								GUI = newGui;
+							})
+						end
 						
 						return UI.LoadModule(code, data, {
 							script = code;

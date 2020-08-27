@@ -1,6 +1,12 @@
 return {
-	"Version: 188";
+	"Version: 189";
 	"*Click and drag edges to expand*";
+	"";
+	"[8.27.2020 14:18 EST]";
+	"*New theme! \"Rounded\"  provides rounded windows, window elements, and notifications (uses UICorner)";
+	"*Minor UI Changes";
+	"*Fixed a bug related to the theme client setting not showing the currently selected theme (always showed \"Game Theme\")";
+	"*UI elements can now have a \"Modifier\" module that runs before the GUI's code";
 	"";
 	"[8.26.2020 20:28 EST]";
 	"*Fixed a window resize bug (thx xtntt)";
