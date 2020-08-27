@@ -251,6 +251,8 @@ return function(data)
 				clientTab:FocusTab();
 			elseif string.lower(data.Tab) == "settings" then
 				gameTab:FocusTab();
+			else
+				infoTab:FocusTab();
 			end
 		end
 		
