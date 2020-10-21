@@ -1,6 +1,9 @@
 return {
-	"Version: 189";
+	"Version: 190";
 	"*Click and drag edges to expand*";
+	"";
+	"[10.21.2020 18:57 EST]";
+	"*pcall'd some datastore related things that happen when the server starts that seem to randomly cause a loading error in certain games (?)";
 	"";
 	"[8.27.2020 14:18 EST]";
 	"*New theme! \"Rounded\"  provides rounded windows, window elements, and notifications (uses UICorner)";
