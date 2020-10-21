@@ -11,4 +11,4 @@ Uploaded to GitHub for collaboration and issue tracking.
 [Adonis-MainModule](https://www.roblox.com/library/2373501710/Adonis-MainModule)
 
 ## Documentation:
-[GitHub Repository](https://github.com/Sceleratis/Adonis/wiki)
+[GitHub Wiki](https://github.com/Sceleratis/Adonis/wiki)
