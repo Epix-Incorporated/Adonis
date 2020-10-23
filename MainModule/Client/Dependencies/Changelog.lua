@@ -1,6 +1,9 @@
 return {
-	"Version: 190";
+	"Version: 191";
 	"*Click and drag edges to expand*";
+	"";
+	"[10.23.2020 17:04]";
+	"*Fixed a spammable issue with the !help request system";
 	"";
 	"[10.21.2020 18:57 EST]";
 	"*pcall'd some datastore related things that happen when the server starts that seem to randomly cause a loading error in certain games (?)";

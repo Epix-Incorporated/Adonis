@@ -12,7 +12,7 @@ sortedPairs = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
 	local function Init()
@@ -27,7 +27,7 @@ return function(Vargs)
 		Variables = server.Variables;
 		Commands = server.Commands;
 		Deps = server.Deps;
-		
+
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {
 			__index = function(self, ind)
@@ -36,7 +36,7 @@ return function(Vargs)
 					return rawget(Commands, targInd)
 				end
 			end;
-			
+
 			__newindex = function(self, ind, val)
 				rawset(Commands, ind, val)
 				if val and type(val) == "table" and val.Commands and val.Prefix then
@@ -106,8 +106,8 @@ return function(Vargs)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
-						"Administrator: " .. tostring(plr) ..
-						"\nReason: ".. args[2] or "N/A")
+							"Administrator: " .. tostring(plr) ..
+								"\nReason: ".. args[2] or "N/A")
 						HTTP.Trello.Update()
 						Functions.Hint("Trello banned ".. tostring(v),{plr})
 					end
@@ -1245,9 +1245,9 @@ return function(Vargs)
 					})
 				end
 				--for i = num, 1, -1 do
-					--Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
-					--Functions.Message(" ", i, false, service.Players:children(), 0.8)
-					--wait(1)
+				--Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
+				--Functions.Message(" ", i, false, service.Players:children(), 0.8)
+				--wait(1)
 				--end
 			end
 		};
@@ -1386,15 +1386,15 @@ return function(Vargs)
 			Description = "Makes a small message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-                assert(args[1] and args[2],"Argument missing or nil")
-                for i,v in pairs(service.GetPlayers(plr, args[1])) do
-                    Remote.RemoveGui(v,"Notify")
-                    Remote.MakeGui(v,"Notify",{
-                        Title = "Message from " .. plr.Name;
-                        Message = service.Filter(args[2],plr,v);
-                    })
-                end
-            end
+				assert(args[1] and args[2],"Argument missing or nil")
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveGui(v,"Notify")
+					Remote.MakeGui(v,"Notify",{
+						Title = "Message from " .. plr.Name;
+						Message = service.Filter(args[2],plr,v);
+					})
+				end
+			end
 		};
 
 		Hint = {
@@ -3030,44 +3030,53 @@ return function(Vargs)
 				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
+					local pending = Variables.HelpRequests[plr.Name];
 
-					if Variables.HelpRequests[plr.Name] ~= nil then
+					if pending and os.time() - pending.Time < 30 then
+						error("You can only send a help request once every 30 seconds.");
+					elseif pending and pending.Pending then
 						error("You already have a pending request")
 					else
-						Functions.Hint("Request sent",{plr})
-						Variables.HelpRequests[plr.Name] = true
-					end
+						service.TrackTask("Thread: ".. tostring(plr).. " Help Request Handler", function()
+							Functions.Hint("Request sent",{plr})
 
-					for ind,p in pairs(service.Players:GetChildren()) do
-						Routine(function()
-							if Admin.CheckAdmin(p) then
-								local ret = Remote.MakeGuiGet(p,"Notification",{
-									Title = "Help Request";
-									Message = plr.Name.." needs help!";
-									Time = 30;
-									OnClick = Core.Bytecode("return true");
-									OnClose = Core.Bytecode("return false");
-									OnIgnore = Core.Bytecode("return false");
-								})
+							pending = {
+								Time = os.time();
+								Pending = true;
+							}
 
-								num = num+1
-								if ret then
-									if not answered then
-										answered = true
-										Admin.RunCommand(Settings.Prefix.."tp",p.Name,plr.Name)
+							Variables.HelpRequests[plr.Name] = pending;
+
+							for ind,p in pairs(service.Players:GetChildren()) do
+								if Admin.CheckAdmin(p) then
+									local ret = Remote.MakeGuiGet(p,"Notification",{
+										Title = "Help Request";
+										Message = plr.Name.." needs help!";
+										Time = 30;
+										OnClick = Core.Bytecode("return true");
+										OnClose = Core.Bytecode("return false");
+										OnIgnore = Core.Bytecode("return false");
+									})
+
+									num = num+1
+									if ret then
+										if not answered then
+											answered = true
+											Admin.RunCommand(Settings.Prefix.."tp",p.Name,plr.Name)
+										end
 									end
 								end
 							end
+
+							local w = tick()
+							repeat wait(0.5) until tick()-w>30 or answered
+
+							pending.Pending = false;
+
+							if not answered then
+								Functions.Message("Help System","Sorry but no one is available to help you right now",{plr})
+							end
 						end)
-					end
-
-					local w = tick()
-					repeat wait(0.5) until tick()-w>30 or answered
-
-					Variables.HelpRequests[plr.Name] = nil
-
-					if not answered then
-						Functions.Message("Help System","Sorry but no one is available to help you right now",{plr})
 					end
 				else
 					Functions.Message("Help System","Help System Disabled by Place Owner",{plr})
@@ -4517,12 +4526,12 @@ return function(Vargs)
 
 						local ind = tostring(v.userId)
 						local jail = {
-								Player = v;
-								Name = v.Name;
-								Index = ind;
-								Jail = mod;
-								Tools = {};
-							}
+							Player = v;
+							Name = v.Name;
+							Index = ind;
+							Jail = mod;
+							Tools = {};
+						}
 
 						Variables.Jails[ind] = jail
 
@@ -4963,44 +4972,44 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-				for i2,v2 in pairs(service.GetPlayers(plr,args[2])) do
-					local temptools=service.New('Model')
-					local tempcloths=service.New('Model')
-					local vpos=v.Character.HumanoidRootPart.CFrame
-					local v2pos=v2.Character.HumanoidRootPart.CFrame
-					local vface=v.Character.Head.face
-					local v2face=v2.Character.Head.face
-					vface.Parent=v2.Character.Head
-					v2face.Parent=v.Character.Head
-					for k,p in pairs(v.Character:children()) do
-						if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
-							p.Parent=tempcloths
-						elseif p:IsA('Tool') then
+					for i2,v2 in pairs(service.GetPlayers(plr,args[2])) do
+						local temptools=service.New('Model')
+						local tempcloths=service.New('Model')
+						local vpos=v.Character.HumanoidRootPart.CFrame
+						local v2pos=v2.Character.HumanoidRootPart.CFrame
+						local vface=v.Character.Head.face
+						local v2face=v2.Character.Head.face
+						vface.Parent=v2.Character.Head
+						v2face.Parent=v.Character.Head
+						for k,p in pairs(v.Character:children()) do
+							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
+								p.Parent=tempcloths
+							elseif p:IsA('Tool') then
+								p.Parent=temptools
+							end
+						end
+						for k,p in pairs(v.Backpack:children()) do
 							p.Parent=temptools
 						end
-					end
-					for k,p in pairs(v.Backpack:children()) do
-						p.Parent=temptools
-					end
-					for k,p in pairs(v2.Character:children()) do
-						if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
-							p.Parent=v.Character
-						elseif p:IsA('Tool') then
+						for k,p in pairs(v2.Character:children()) do
+							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
+								p.Parent=v.Character
+							elseif p:IsA('Tool') then
+								p.Parent=v.Backpack
+							end
+						end
+						for k,p in pairs(tempcloths:children()) do
+							p.Parent=v2.Character
+						end
+						for k,p in pairs(v2.Backpack:children()) do
 							p.Parent=v.Backpack
 						end
+						for k,p in pairs(temptools:children()) do
+							p.Parent=v2.Backpack
+						end
+						v2.Character.HumanoidRootPart.CFrame=vpos
+						v.Character.HumanoidRootPart.CFrame=v2pos
 					end
-					for k,p in pairs(tempcloths:children()) do
-						p.Parent=v2.Character
-					end
-					for k,p in pairs(v2.Backpack:children()) do
-						p.Parent=v.Backpack
-					end
-					for k,p in pairs(temptools:children()) do
-						p.Parent=v2.Backpack
-					end
-					v2.Character.HumanoidRootPart.CFrame=vpos
-					v.Character.HumanoidRootPart.CFrame=v2pos
-				end
 				end
 			end
 		};
@@ -5960,7 +5969,7 @@ return function(Vargs)
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
 						for a, frc in pairs(v.Character.HumanoidRootPart:children()) do
 							if frc.Name == "ADONIS_GRAVITY" then
-							frc:Destroy() end
+								frc:Destroy() end
 						end
 					end
 				end
@@ -6172,7 +6181,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-			 	local color = BrickColor.new(math.random(1,227))
+				local color = BrickColor.new(math.random(1,227))
 				if BrickColor.new(args[2])~=nil then color=BrickColor.new(args[2]) end
 				local team = service.New("Team", service.Teams)
 				team.Name = args[1]
@@ -6190,7 +6199,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-			 	for i,v in pairs(service.Teams:children()) do
+				for i,v in pairs(service.Teams:children()) do
 					if v:IsA("Team") and v.Name:lower():sub(1,#args[1])==args[1]:lower() then
 						v:Destroy()
 					end
@@ -6214,7 +6223,7 @@ return function(Vargs)
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
 				end
 			end
-			};
+		};
 
 		SetFOV = {
 			Prefix = Settings.Prefix;
@@ -6821,19 +6830,19 @@ return function(Vargs)
 						local color
 						local num=math.random(1,7)
 						if num==1 then
-						color='Really blue'
+							color='Really blue'
 						elseif num==2 then
-						color='Really red'
+							color='Really red'
 						elseif num==3 then
-						color='Magenta'
+							color='Magenta'
 						elseif num==4 then
-						color='Lime green'
+							color='Lime green'
 						elseif num==5 then
-						color='Hot pink'
+							color='Hot pink'
 						elseif num==6 then
-						color='New Yeller'
+							color='New Yeller'
 						elseif num==7 then
-						color='White'
+							color='White'
 						end
 						local hum=v.Character:FindFirstChild('Humanoid')
 						if not hum then return end
@@ -6938,53 +6947,53 @@ return function(Vargs)
 						k.Name='ADONIS_BLEED'
 						Routine(function()
 							repeat
-							wait(0.15)
-							v.Character.Humanoid.Health=v.Character.Humanoid.Health-1
-							local p = service.New("Part",v.Character)
-							p.CanCollide = false
-							local color = math.random(1, 3)
-							local bcolor
-							if color == 1 then
-								bcolor = BrickColor.new(21)
-							elseif color == 2 then
-								bcolor = BrickColor.new(1004)
-							elseif color == 3 then
-								bcolor = BrickColor.new(21)
-							end
-							p.BrickColor = bcolor
-							local m=service.New('BlockMesh',p)
-							p.Size=Vector3.new(0.1,0.1,0.1)
-							m.Scale = Vector3.new(math.random()*0.9, math.random()*0.9, math.random()*0.9)
-							p.Locked = true
-							p.TopSurface = "Smooth"
-							p.BottomSurface = "Smooth"
-							p.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(Vector3.new(2, 0, 0))
-							p.Velocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
-							p.Anchored = false
-							m.Name='Blood Peice'
-							p.Name='Blood Peice'
-							p.Touched:connect(function(o)
-								if not o or not o.Parent then return end
-								if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
-									local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
-									p:Destroy()
-									local g=service.New('Part',service.Workspace)
-									g.Anchored=true
-									g.CanCollide=false
-									g.Size=Vector3.new(0.1,0.1,0.1)
-									g.Name='Blood Plate'
-									g.CFrame=cf
-									g.BrickColor=BrickColor.new(21)
-									local c=service.New('CylinderMesh',g)
-									c.Scale=Vector3.new(1,0.2,1)
-									c.Name='BloodMesh'
-									wait(10)
-									g:Destroy()
-								elseif o and o.Name=='Blood Plate' and p then
-									p:Destroy()
-									o.BloodMesh.Scale=o.BloodMesh.Scale+Vector3.new(0.5,0,0.5)
+								wait(0.15)
+								v.Character.Humanoid.Health=v.Character.Humanoid.Health-1
+								local p = service.New("Part",v.Character)
+								p.CanCollide = false
+								local color = math.random(1, 3)
+								local bcolor
+								if color == 1 then
+									bcolor = BrickColor.new(21)
+								elseif color == 2 then
+									bcolor = BrickColor.new(1004)
+								elseif color == 3 then
+									bcolor = BrickColor.new(21)
 								end
-							end)
+								p.BrickColor = bcolor
+								local m=service.New('BlockMesh',p)
+								p.Size=Vector3.new(0.1,0.1,0.1)
+								m.Scale = Vector3.new(math.random()*0.9, math.random()*0.9, math.random()*0.9)
+								p.Locked = true
+								p.TopSurface = "Smooth"
+								p.BottomSurface = "Smooth"
+								p.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(Vector3.new(2, 0, 0))
+								p.Velocity = v.Character.Head.CFrame.lookVector * 1 + Vector3.new(math.random(-1, 1), math.random(-1, 1), math.random(-1, 1))
+								p.Anchored = false
+								m.Name='Blood Peice'
+								p.Name='Blood Peice'
+								p.Touched:connect(function(o)
+									if not o or not o.Parent then return end
+									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
+										local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
+										p:Destroy()
+										local g=service.New('Part',service.Workspace)
+										g.Anchored=true
+										g.CanCollide=false
+										g.Size=Vector3.new(0.1,0.1,0.1)
+										g.Name='Blood Plate'
+										g.CFrame=cf
+										g.BrickColor=BrickColor.new(21)
+										local c=service.New('CylinderMesh',g)
+										c.Scale=Vector3.new(1,0.2,1)
+										c.Name='BloodMesh'
+										wait(10)
+										g:Destroy()
+									elseif o and o.Name=='Blood Plate' and p then
+										p:Destroy()
+										o.BloodMesh.Scale=o.BloodMesh.Scale+Vector3.new(0.5,0,0.5)
+									end
+								end)
 							until run==false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head'))
 						end)
 						wait(10)
@@ -7550,28 +7559,28 @@ return function(Vargs)
 						if oldp then oldp:Destroy() end
 						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
-						
+
 						local new = scr:Clone()
 						local flightPosition = service.New("BodyPosition")
 						local flightGyro = service.New("BodyGyro")
-						
+
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
 						flightPosition.MaxForce = Vector3.new(0, 0, 0)
 						flightPosition.Position = part.Position
 						flightPosition.Parent = part
-						
+
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
 						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
 						flightGyro.CFrame = part.CFrame
 						flightGyro.Parent = part
-						
+
 						new.Parent = part
 						new.Disabled = false
 					end
 				end
 			end
 		};
-		
+
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed";"flightspeed";};
@@ -8911,7 +8920,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					for k,m in pairs(v.Character:children()) do
 						if m:IsA('CharacterMesh') and m.BodyPart=='RightArm' then
-							 m:Destroy()
+							m:Destroy()
 						end
 					end
 
@@ -9380,7 +9389,7 @@ return function(Vargs)
 								prt.Reflectance = .4
 								prt.BrickColor = BrickColor.new("Bright yellow")
 							elseif prt:findFirstChild("NameTag") then
-								 prt.Head.Transparency = 0
+								prt.Head.Transparency = 0
 								prt.Head.Reflectance = .4
 								prt.Head.BrickColor = BrickColor.new("Bright yellow")
 							end
