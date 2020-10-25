@@ -1,6 +1,13 @@
 return {
-	"Version: 191";
+	"Version: 192";
 	"*Click and drag edges to expand*";
+	"";
+	"*Updated cross server communication handling";
+	"*All cross-server stuff is handled by the Cross_Server module now";
+	"*Cross server rate limiting";
+	"*Fixed :cross";
+	"*Added a wait queue for datastore updates";
+	"*Fixed a visual issue with minimize on windows when using Rounded theme";
 	"";
 	"[10.23.2020 17:04]";
 	"*Fixed a spammable issue with the !help request system";

@@ -172,8 +172,8 @@ return function(Vargs)
 						--Trello_Enabled = true;	
 						--Trello_PrimaryBoard = true;
 						--Trello_SecondaryBoards = true;
-						--Trello_AppKey = true;
-						--Trello_Token = true;
+						Trello_AppKey = true;
+						Trello_Token = true;
 						
 						G_API = true;
 						G_Access = true;

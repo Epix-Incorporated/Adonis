@@ -463,9 +463,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 			--// Occasionally the below line causes a script execution timeout error, so lets just pcall the whole thing and hope loading doesn't break yolo(?)
 			local ds = server.Core.DataStore;
-			pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat) -- WE NEED TO UPGRADE THIS TO THAT CROSS SERVER MESSAGE SERVICE THING. This is big bad currently.
-			pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
-			pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
+			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat) -- WE NEED TO UPGRADE THIS TO THAT CROSS SERVER MESSAGE SERVICE THING. This is big bad currently.
+			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
+			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
 		end)
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat)
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)

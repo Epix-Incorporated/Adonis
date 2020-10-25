@@ -115,17 +115,6 @@ return function(Vargs)
 			end;
 		};
 
-		CrossServer = {
-			Prefix = ":";
-			Commands = {"crossserver","cross","allservers"};
-			Args = {"command"};
-			Description = "Runs the specified command string on all servers; WARNING: RUNS AS SERVER/CREATOR";
-			AdminLevel = "Creators";
-			Function = function(plr,args)
-				Core.SendCrossServer("RunCommand", {Name = plr.Name; UserId = plr.UserId}, args[1]);
-			end;
-		};
-
 		Terminal = {
 			Prefix = ":";
 			Commands = {"terminal";"console";};

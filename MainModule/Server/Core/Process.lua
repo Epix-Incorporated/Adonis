@@ -181,6 +181,10 @@ return function(Vargs)
 						allowed = Admin.CheckPermission(pDat, command)
 					end
 					
+					if opts.CrossServer and command.CrossServerDenied then
+						allowed = false;
+					end
+					
 					if allowed then
 						local cmdArgs = command.Args or command.Arguments
 						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
@@ -210,11 +214,12 @@ return function(Vargs)
 							end
 						end
 						
-						if not isSystem and not opts.DontLog then
+						if opts.CrossServer or (not isSystem and not opts.DontLog) then
 							AddLog("Commands",{
-								Text = p.Name,
+								Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
 								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
 							})
+							
 							if Settings.ConfirmCommands then
 								Functions.Hint('Executed Command: [ '..msg..' ]',{p})
 							end
@@ -248,7 +253,7 @@ return function(Vargs)
 		
 		DataStoreUpdated = function(key,data)
 			if key and data then
-				Routine(Core.LoadData,key,data)
+				Routine(Core.LoadData, key, data)
 			end
 		end;
 		
@@ -270,7 +275,8 @@ return function(Vargs)
 				
 				if b == "Cross" then
 					if canCross and Admin.CheckAdmin(p) then
-						Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
+						Core.CrossServer("ServerChat", {Player = p.Name, Message = a});
+						--Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
 					end
 				else
 					local target = Settings.SpecialPrefix..'all'

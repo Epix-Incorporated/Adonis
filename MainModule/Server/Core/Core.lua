@@ -11,9 +11,7 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 	
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps
-	local CrossServer = {};
-	local CrossEncCache = {};
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
 	
 	local function Init()
 		Functions = server.Functions;
@@ -29,33 +27,14 @@ return function(Vargs)
 		Deps = server.Deps
 		
 		Logs:AddLog("Script", "Core Module Initialized")
-		
-		--// Cross-Server Messaging
-		local function crossProcessor(enc, ...)
-			local com = enc and server.Remote.Decrypt(enc, server.Settings.DataStoreKey, CrossEncCache);
-			if com and CrossServer[com] then
-				local pass, ret = pcall(CrossServer[com], ...);
-				if not pass then
-					warn("CrossServer Command Failed: ".. tostring(ret));
-				end
-				Logs:AddLog("Script", "Processes Cross-Server Command; ".. tostring(com))
-			end
-		end
-		
-		local ran, conn = pcall(function()
-			return service.MessagingService:SubscribeAsync("CrossServerAdonisEvent", function(message)
-				crossProcessor(unpack(message.Data));
-			end)
-		end)
-		
-		Logs:AddLog("Script", "Cross-Server Messaging Ready");
 	end;
 	
 	server.Core = {
 		Init = Init;
 		DataQueue = {};
 		DataCache = {};
-		CrossServer = CrossServer;
+		CrossServerCommands = {};
+		CrossServer = function() return false end;
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
@@ -70,17 +49,6 @@ return function(Vargs)
 			SavedSettings = "32K5j4";
 			SavedTables = 	"32K5j4";
 		};
-		
-		SendCrossServer = function(com, ...)
-			local enc = server.Remote.Encrypt(com, server.Settings.DataStoreKey, CrossEncCache);
-			local ran, ret = pcall(function(...)
-				return service.MessagingService:PublishAsync("CrossServerAdonisEvent", {enc, ...});
-			end, ...)
-			
-			if not ran then
-				warn("CrossServer Publish Failed: ".. tostring(ret));
-			end
-		end;
 		
 		Panic = function(reason)
 			local hint = Instance.new("Hint", service.Workspace)
@@ -542,19 +510,24 @@ return function(Vargs)
 		DoSave = function(data)
 			local type = data.Type
 			if type == "ClearSettings" then
-				Core.SetData("SavedSettings",{})
-				Core.SetData("SavedTables",{})
+				Core.SetData("SavedSettings",{});
+				Core.SetData("SavedTables",{});
+				Core.CrossServer("LoadData");
 			elseif type == "SetSetting" then
 				local setting = data.Setting
 				local value = data.Value
+				
 				Core.UpdateData("SavedSettings", function(settings)
 					settings[setting] = value
 					return settings
 				end)
+				
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
 			elseif type == "TableRemove" then
 				local tab = data.Table
 				local value = data.Value
 				data.Time = os.time()
+				
 				Core.UpdateData("SavedTables", function(sets)
 					sets = sets or {}
 					for i,v in next,sets do 
@@ -564,10 +537,14 @@ return function(Vargs)
 							end
 						end
 					end
+					
 					data.Action = "Remove"
 					table.insert(sets,data)
 					return sets
 				end)
+				
+
+				Core.CrossServer("TableRemove", data);
 			elseif type == "TableAdd" then
 				local tab = data.Table
 				local value = data.Value
@@ -585,6 +562,8 @@ return function(Vargs)
 					table.insert(sets,data)
 					return sets
 				end)
+				
+				Core.CrossServer("TableAdd", data);
 			end
 			
 			Logs.AddLog(Logs.Script,{
@@ -757,24 +736,37 @@ return function(Vargs)
 		
 		SetData = function(key, value)
 			if Core.DataStore then
-				local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
-				if ran then
-					Core.DataCache[key] = value
-					return ret
-				else
-					logError("DataStore SetAsync Failed: ".. tostring(ret))
-				end
+				service.Queue("DataStoreSetData".. tostring(key), function()
+					local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
+					if ran then
+						Core.DataCache[key] = value
+					else
+						logError("DataStore SetAsync Failed: ".. tostring(ret))
+					end
+				end)
 			end
 		end;
 		
 		UpdateData = function(key, func)
 			if Core.DataStore then
-				local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
-				if ran then
-					return ret
-				else
-					logError("DataStore UpdateAsync Failed: ".. tostring(ret))
-				end
+				local didUpdate = false;
+				local err = false; 
+				
+				delay(120, function() didUpdate = true err = "Took too long" end)
+				service.Queue("DataStoreUpdateData".. tostring(key), function()
+					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
+					
+					if ran then
+						--return ret
+					else
+						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+					end
+					
+					wait(5)
+					didUpdate = true
+				end)
+				repeat wait() until didUpdate
+				return err
 			end
 		end;
 		
