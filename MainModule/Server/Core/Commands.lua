@@ -10884,7 +10884,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
-						Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
+						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
 						for k,m in pairs(Settings.Muted) do
 							if Admin.DoCheck(v,m) then
@@ -10893,7 +10893,7 @@ return function(Vargs)
 						end
 
 						if check then
-							table.insert(Settings.Muted,v.Name..':'..v.userId)
+							table.insert(Settings.Muted, v.Name..':'..v.userId)
 						end
 					end
 				end
@@ -10912,8 +10912,8 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					for k,m in pairs(Settings.Muted) do
 						if Admin.DoCheck(v,m) then
-							table.remove(Settings.Muted,k)
-							Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat",true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
+							table.remove(Settings.Muted, k)
+							--Remote.LoadCode(v,[[if not client.Variables.CustomChat then service.StarterGui:SetCoreGuiEnabled("Chat",true) client.Variables.ChatEnabled = false end client.Variables.Muted = true]])
 						end
 					end
 				end

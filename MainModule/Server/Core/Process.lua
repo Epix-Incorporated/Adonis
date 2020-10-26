@@ -268,7 +268,7 @@ return function(Vargs)
 		end;
 		
 		CustomChat = function(p, a, b, canCross)
-			if RateLimit(p, "Chat") then
+			if RateLimit(p, "Chat") and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit);
 				end
@@ -331,24 +331,25 @@ return function(Vargs)
 		end;
 		
 		Chat = function(p, msg)
+			if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
+				Anti.Detected(p, "kick", "Talking guest")
+			end
+			
 			if RateLimit(p, "Chat") then
 				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
-				else
+				elseif not Admin.IsMuted(p) then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local pData = Core.GetPlayer(p)
-					service.Events.PlayerChatted:Fire(p,msg)
-					
-					if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-						Anti.Detected(p, "kick", "Talking guest")
-					end
-					
 					local filtered = service.LaxFilter(msg, p)
+					
 					AddLog(Logs.Chats,{
 						Text = p.Name..": "..tostring(filtered);
 						Desc = tostring(filtered);
 						NoTime = true;
 					})
+					
+					service.Events.PlayerChatted:Fire(p,msg)
 					
 					if Settings.ChatCommands then
 						if msg:sub(1,3)=="/e " then
@@ -878,11 +879,11 @@ return function(Vargs)
 				end
 				
 				--// Check muted
-				for ind,admin in pairs(Settings.Muted) do
+				--[=[for ind,admin in pairs(Settings.Muted) do
 					if Admin.DoCheck(p,admin) then
 						Remote.LoadCode(p,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 					end
-				end
+				end--]=]
 				
 				Functions.Donor(p)
 				

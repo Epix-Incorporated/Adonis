@@ -28,6 +28,19 @@ return function(Vargs)
 		--// Cache Commands
 		Admin.CacheCommands()
 		
+		--// ChatService mute handler (credit to Coasterteam)
+		local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
+		ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+			local speaker = ChatService:GetSpeaker(speakerName)
+			local player = speaker:GetPlayer()
+			if player and Admin.IsMuted(player) then
+				speaker:SendSystemMessage("You are muted!", channelName)
+				return true
+			end
+
+			return false
+		end) 
+		
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
 	
@@ -62,6 +75,20 @@ return function(Vargs)
 					if (isID and group == v.Id) or (not isID and group == v.Name) then
 						return v
 					end
+				end
+			end
+		end;
+		
+		IsMuted = function(player)
+			for _,v in next,server.Settings.Muted do
+				if server.Admin.DoCheck(player, v) then
+					return true
+				end
+			end
+			
+			for _,v in next,server.HTTP.Trello.Mutes do
+				if server.Admin.DoCheck(player, v) then
+					return true
 				end
 			end
 		end;

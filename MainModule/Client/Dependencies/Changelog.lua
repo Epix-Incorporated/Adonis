@@ -1,7 +1,11 @@
 return {
-	"Version: 192";
+	"Version: 193";
 	"*Click and drag edges to expand*";
 	"";
+	"[10.26.2020]";
+	"*Mute now uses the ChatSystem (thx Coasterteam)";
+	"";
+	"[I Forgot To Put a Timestamp]";
 	"*Updated cross server communication handling";
 	"*All cross-server stuff is handled by the Cross_Server module now";
 	"*Cross server rate limiting";
