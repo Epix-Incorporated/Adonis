@@ -673,7 +673,7 @@ return function(Vargs)
 			end;
 			
 			Detected = function(p,args)
-				Anti.Detected(p,args[1],args[2])
+				Anti.Detected(p, args[1], args[2])
 			end;
 			
 			TrelloOperation = function(p,args)

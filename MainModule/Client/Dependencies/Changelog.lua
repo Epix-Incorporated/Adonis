@@ -1,6 +1,14 @@
 return {
-	"Version: 193";
+	"Version: 194";
 	"*Click and drag edges to expand*";
+	"";
+	"[10.30.2020 20:32]";
+	"*Hotfix for issue #149 on the git";
+	"*Reminder: I don't put important messages and alerts in the exploit logs (that's what :adonisalerts is for)";
+	"*Someone is spoofing \"alerts\" in the exploit logs that attempt to get you to run their backdoor";
+	"*If you see something strange, like a message telling you to update in the exploit logs";
+	"*Be sure to run :remotelogs immediately and look for a user who ran \"Detected\" as that's probably the person doing it";
+	"*Send a message to my disc (Sceleratis#0001) or make a comment on git issue #149 if you encounter this";
 	"";
 	"[10.26.2020]";
 	"*Mute now uses the ChatSystem (thx Coasterteam)";

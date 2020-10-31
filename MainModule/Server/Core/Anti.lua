@@ -180,7 +180,9 @@ return function(Vargs)
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if action:lower() == 'kick' then
+					if action:lower() == 'log' then
+						-- yay?
+					elseif action:lower() == 'kick' then
 						Anti.RemovePlayer(player, info)
 						--player:Kick("Adonis; Disconnected by server; \n"..tostring(info))
 					elseif action:lower() == 'kill' then
@@ -195,6 +197,10 @@ return function(Vargs)
 						end)
 						
 						Anti.RemovePlayer(player, info)
+					else
+						-- fake log (thonk?)
+						Anti.Detected(player, "Kick", "Spoofed log")
+						return;
 					end
 				end
 			end
@@ -205,7 +211,7 @@ return function(Vargs)
 			})
 			
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).."] "..tostring(player) ..": ".. tostring(info);
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 25)) .. " (Mouse over full info)";
 				Desc = tostring(info);
 			})
 		end;
