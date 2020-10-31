@@ -3,6 +3,7 @@ return {
 	"*Click and drag edges to expand*";
 	"";
 	"[10.30.2020 20:32]";
+	"*Ahem: I... briefly broke everything. Should be good now tho...";
 	"*Hotfix for issue #149 on the git";
 	"*Reminder: I don't put important messages and alerts in the exploit logs (that's what :adonisalerts is for)";
 	"*Someone is spoofing \"alerts\" in the exploit logs that attempt to get you to run their backdoor";
