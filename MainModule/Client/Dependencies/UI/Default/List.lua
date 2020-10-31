@@ -54,6 +54,7 @@ return function(data)
 				newTab[i] = {
 					Text = v.Text;
 					Desc = v.Desc;
+					Color = v.Color;
 					Time = v.Time;
 					Filter = v.Filter;
 					Duplicates = v.Duplicates;
