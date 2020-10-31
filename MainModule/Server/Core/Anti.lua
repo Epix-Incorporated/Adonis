@@ -176,6 +176,8 @@ return function(Vargs)
 		end;
 		
 		Detected = function(player,action,info)
+			local info = string.gsub(tostring(info), "\n", "")
+			
 			if Core.DebugMode or service.RunService:IsStudio() then 
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
@@ -211,7 +213,7 @@ return function(Vargs)
 			})
 			
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 25)) .. " (Mouse over full info)";
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
 				Desc = tostring(info);
 			})
 		end;
