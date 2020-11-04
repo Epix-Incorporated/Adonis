@@ -5,6 +5,7 @@ return {
 	"[11.4.2020 14:06 EST]";
 	"*Git merge";
 	"*Minor changes/fixes";
+	"*Added :slowmode (Currently Roblox's chat system only)";
 	"";
 	"[10.30.2020 20:32 EST]";
 	"*Ahem: I... briefly broke everything. Should be good now tho...";

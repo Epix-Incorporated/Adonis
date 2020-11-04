@@ -1221,6 +1221,26 @@ return function(Vargs)
 				end
 			end
 		};
+		
+		SlowMode = {
+			Prefix = Settings.Prefix;
+			Commands = {"slowmode"};
+			Args = {"seconds or \"disable\""};
+			Description = "Chat Slow Mode";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
+				if not args[1] then error("Argument 1 missing") end
+				
+				if num then
+					Admin.SlowMode = num;
+					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.Players:children())
+				else
+					Admin.SlowMode = nil;
+					Admin.SlowCache = {};
+				end
+			end
+		};
 
 		Countdown = {
 			Prefix = Settings.Prefix;

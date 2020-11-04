@@ -30,12 +30,21 @@ return function(Vargs)
 		
 		--// ChatService mute handler (credit to Coasterteam)
 		local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
+		
 		ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+			local slowCache = Admin.SlowCache;
 			local speaker = ChatService:GetSpeaker(speakerName)
 			local player = speaker:GetPlayer()
 			if player and Admin.IsMuted(player) then
 				speaker:SendSystemMessage("You are muted!", channelName)
 				return true
+			elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+				speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+				return true
+			end
+			
+			if Admin.SlowMode then
+				slowCache[player] = os.time()
 			end
 
 			return false
@@ -57,6 +66,7 @@ return function(Vargs)
 		SpecialLevels = {};
 		GroupRanks = {};
 		TempAdmins = {};
+		SlowCache = {};
 		BlankPrefix = false;
 		
 		GetTrueRank = function(p, group)
