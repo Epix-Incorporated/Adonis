@@ -16,6 +16,7 @@ return {
 	{Text = "@GitHub crywink", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub jaydensar", 		Desc = "GitHub Contributor"};
 	{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
+	{Text = "@GitHub TheLegendarySpark",Desc = "GitHub Contributor"};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	
 	{Text = "darkelementallord",		Desc = "Updated some guis"};
 	{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};

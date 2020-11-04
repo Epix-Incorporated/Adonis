@@ -1,8 +1,12 @@
 return {
-	"Version: 194";
+	"Version: 195";
 	"*Click and drag edges to expand*";
 	"";
-	"[10.30.2020 20:32]";
+	"[11.4.2020 14:06 EST]";
+	"*Git merge";
+	"*Minor changes/fixes";
+	"";
+	"[10.30.2020 20:32 EST]";
 	"*Ahem: I... briefly broke everything. Should be good now tho...";
 	"*Hotfix for issue #149 on the git";
 	"*Reminder: I don't put important messages and alerts in the exploit logs (that's what :adonisalerts is for)";

@@ -500,7 +500,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.MakeEvent()	
 	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
 	service.JointsService.ChildRemoved:Connect(function(c) 
-		if server.Core.RemoteEvent and (c == server.Core.RemoteEvent.Object or c == server.Core.RemoteEvent.Decoy1 or c == c == server.Core.RemoteEvent.Decoy2) then 
+		if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then 
+			wait();
 			server.Core.MakeEvent() 
 		end 
 	end)

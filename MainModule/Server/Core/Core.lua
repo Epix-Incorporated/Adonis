@@ -38,8 +38,10 @@ return function(Vargs)
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
+		FixingEvent = false;
 		ScriptCache = {};
 		Connections = {};
+		LastEventValue = 1;
 		
 		Variables = {
 			TimeBans = {};
@@ -76,29 +78,39 @@ return function(Vargs)
 			})
 		end;
 		
+		DisconnectEvent = function()
+			if Core.RemoteEvent and not Core.FixingEvent then
+				Core.FixingEvent = true;
+				Core.RemoteEvent.FuncSec:Disconnect()
+				Core.RemoteEvent.Security:Disconnect()
+				Core.RemoteEvent.Event:Disconnect()
+				Core.RemoteEvent.DecoySecurity1:Disconnect()
+				Core.RemoteEvent.DecoySecurity2:Disconnect()
+				pcall(function() service.Delete(Core.RemoteEvent.Object) end)
+				pcall(function() service.Delete(Core.RemoteEvent.Function) end)
+				pcall(function() service.Delete(Core.RemoteEvent.Decoy1) end)
+				pcall(function() service.Delete(Core.RemoteEvent.Decoy2) end)
+				Core.FixingEvent = false;
+				Core.RemoteEvent = nil;
+			end
+		end;
+		
 		MakeEvent = function()
 			local ran,error = pcall(function()
 				if Anti.RLocked(service.JointsService) then
 					Core.Panic("JointsService RobloxLocked")
 				elseif server.Running then
-					if Core.RemoteEvent then
-						Core.RemoteEvent.FuncSec:Disconnect() -- Without this, the system would create massive spam because it's interrupting RemoteFunction's security.
-						Core.RemoteEvent.Security:Disconnect()
-						Core.RemoteEvent.Event:Disconnect()
-						Core.RemoteEvent.DecoySecurity1:Disconnect()
-						Core.RemoteEvent.DecoySecurity2:Disconnect()
-						pcall(function() service.Delete(Core.RemoteEvent.Object) end)
-						pcall(function() service.Delete(Core.RemoteEvent.Function) end)
-						pcall(function() service.Delete(Core.RemoteEvent.Decoy1) end)
-						pcall(function() service.Delete(Core.RemoteEvent.Decoy2) end)
-					end
-					
-					Core.RemoteEvent = {}
-					
+					local rTable = {};
 					local event = service.New("RemoteEvent")
 					local func = service.New("RemoteFunction", {Parent = event, Name = ""})
 					local decoy1 = event:Clone()
 					local decoy2 = event:Clone()
+					local secureTriggered = false
+					local tripDet = math.random()
+					
+					Core.DisconnectEvent();
+					Core.RemoteEvent = rTable;
+					Core.TripDet = tripDet;
 					
 					event.Name = Core.Name--..Functions.GetRandom() -- Core.Name
 					decoy1.Name = Core.Name..Functions.GetRandom()
@@ -119,14 +131,19 @@ return function(Vargs)
 					
 					local function secure(ev, name)
 						return service.RbxEvent(ev.Changed, function(p)
-							if Core.RemoteEvent.Function then
-								Core.RemoteEvent.Function.OnServerInvoke = Process.Remote
-							end
-							
-							if p == "Name" then
-								event.Name = name--..Functions.GetRandom()--Core.Name
-							else
-								Core.MakeEvent()
+							if Core.RemoteEvent == rTable then
+								if ev and ev == Core.RemoteEvent.Function then
+									Core.RemoteEvent.Function.OnServerInvoke = Process.Remote
+								end
+								
+								if p == "Name" then
+									event.Name = name--..Functions.GetRandom()--Core.Name
+								elseif tripDet == Core.TripDet and wait() and not secureTriggered then
+									--print("Secure triggered");
+									secureTriggered = true;
+									Core.DisconnectEvent();
+									Core.MakeEvent()
+								end
 							end
 						end)
 					end

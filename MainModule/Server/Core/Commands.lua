@@ -708,26 +708,29 @@ return function(Vargs)
 					time = time:sub(1,#time-1)
 					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
 				end
-
+				
+				local level = Admin.GetLevel(plr);
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
-					local endTime = tonumber(os.time())+tonumber(time)
-					local timebans = Core.Variables.TimeBans
-					local data = {
-						Name = v.Name;
-						UserId = v.UserId;
-						EndTime = endTime;
-					}
+					if level > Admin.GetLevel(v) then
+						local endTime = tonumber(os.time())+tonumber(time)
+						local timebans = Core.Variables.TimeBans
+						local data = {
+							Name = v.Name;
+							UserId = v.UserId;
+							EndTime = endTime;
+						}
 
-					table.insert(timebans, data)
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = "TimeBans";
-						Parent = "Variables";
-						Value = data;
-					})
+						table.insert(timebans, data)
+						Core.DoSave({
+							Type = "TableAdd";
+							Table = "TimeBans";
+							Parent = "Variables";
+							Value = data;
+						})
 
-					v:Kick("Banned until "..endTime)
-					Functions.Hint("Banned "..v.Name.." for "..time,{plr})
+						v:Kick("Banned until "..endTime)
+						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
+					end
 				end
 			end
 		};
