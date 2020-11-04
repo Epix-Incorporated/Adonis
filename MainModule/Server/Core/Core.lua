@@ -82,6 +82,7 @@ return function(Vargs)
 					Core.Panic("JointsService RobloxLocked")
 				elseif server.Running then
 					if Core.RemoteEvent then
+						Core.RemoteEvent.FuncSec:Disconnect() -- Without this, the system would create massive spam because it's interrupting RemoteFunction's security.
 						Core.RemoteEvent.Security:Disconnect()
 						Core.RemoteEvent.Event:Disconnect()
 						Core.RemoteEvent.DecoySecurity1:Disconnect()
