@@ -3136,6 +3136,30 @@ return function(Vargs)
 				end
 			end
 		};
+		
+		GlobalJoin = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"joinfriend";};
+			Args = {"username";};
+			Hidden = false;
+			Description = "Joins your friend outside/inside of the game (must be online)";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args) -- uses Player:GetFriendsOnline()
+				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+				
+				local player = service.Players:GetUserIdFromNameAsync(args[1])
+				if player then
+					for i,v in next, plr:GetFriendsOnline() do
+					    if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
+					        service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, plr)
+					    end
+					end
+				else
+					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
+				end
+			end
+		};
 
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
