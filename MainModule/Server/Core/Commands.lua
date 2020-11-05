@@ -9937,7 +9937,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Variables.MapBackup or not Variables.TerrianMapBackup then
+				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
 					error("Backup map wasn't enabled")
 					return
 				end
@@ -9963,7 +9963,7 @@ return function(Vargs)
 				new:Destroy()
 
 				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrianMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
 				Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
@@ -10001,7 +10001,7 @@ return function(Vargs)
 
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
-				Variables.TerrianMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
+				Variables.TerrainMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
 
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
