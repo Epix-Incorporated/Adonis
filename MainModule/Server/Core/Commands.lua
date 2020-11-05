@@ -4234,23 +4234,14 @@ return function(Vargs)
 		Sell = {
 			Prefix = Settings.Prefix;
 			Commands = {"sell";};
-			Args = {"player";"id";"currency";};
+			Args = {"player";"id";};
 			Hidden = false;
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local type = args[3] or 'default'
-				local t
-				if type:lower()=='tix' or type:lower()=='tickets' or type:lower()=='t' then
-					t = Enum.CurrencyType.Tix
-				elseif type:lower()=='robux' or type:lower()=='rb' or type:lower()=='r' then
-					t = Enum.CurrencyType.Robux
-				else
-					t = Enum.CurrencyType.Default
-				end
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false,t)
+					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false)
 				end
 			end
 		};
