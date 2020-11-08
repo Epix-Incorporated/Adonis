@@ -8624,10 +8624,41 @@ return function(Vargs)
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 
-					if human then
+					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						for k,val in next,human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value = val.Value * num;
+							end
+						end
+					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						local Motors = {}
+						local Percent = num
+						
+						table.insert(Motors, Player.Character.HumanoidRootPart.RootJoint)
+						for i,Motor in pairs(Player.Character.Torso:GetChildren()) do
+							if Motor:IsA("Motor6D") == false then continue end
+							table.insert(Motors, Motor)
+						end
+						for i,v in pairs(Motors) do
+							v.C0 = CFrame.new((v.C0.Position * Percent)) * (v.C0 - v.C0.Position)
+							v.C1 = CFrame.new((v.C1.Position * Percent)) * (v.C1 - v.C1.Position)
+						end
+
+
+						for i,Part in pairs(Player.Character:GetChildren()) do
+							if Part:IsA("BasePart") == false then continue end
+							Part.Size = Part.Size * Percent
+						end
+
+
+						for i,Accessory in pairs(Player.Character:GetChildren()) do
+							if Accessory:IsA("Accessory") == false then continue end
+
+							Accessory.Handle.AccessoryWeld.C0 = CFrame.new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
+							Accessory.Handle.AccessoryWeld.C1 = CFrame.new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
+							
+							if Accessory.Handle:FindFirstChildOfClass("SpecialMesh") then
+								Accessory.Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
 							end
 						end
 					end
