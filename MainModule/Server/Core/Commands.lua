@@ -1306,7 +1306,7 @@ return function(Vargs)
 			Commands = {"stopcountdown", "stopcd"};
 			Args = {};
 			Description = "Stops all currently running countdowns";
-			AdminLevel = "Players";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					server.Remote.RemoveGui(v, "Countdown")
