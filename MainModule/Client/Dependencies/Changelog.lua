@@ -1,6 +1,9 @@
 return {
-	"Version: 195";
+	"Version: 196";
 	"*Click and drag edges to expand*";
+	"";
+	"[11.7.2020 19:39 EST]";
+	"*Git merge (Of Note: Adds !joinfriend <Username> to join)";
 	"";
 	"[11.4.2020 14:06 EST]";
 	"*Git merge";
