@@ -133,9 +133,8 @@ return function()
 				local themeData = args[2]
 				local guiData = args[3]
 				
-				
-				--Core.Theme = themeData
-				return UI.Make(guiName,guiData,themeData)
+				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
+				return UI.Make(guiName, guiData, themeData)
 			end;
 			
 			InstanceList = function(args)
@@ -263,7 +262,7 @@ return function()
 				local themeData = args[2]
 				local guiData = args[3]
 				
-				--Core.Theme = themeData
+				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
 				UI.Make(guiName,guiData,themeData)
 			end;
 			

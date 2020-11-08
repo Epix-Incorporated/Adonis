@@ -1,6 +1,11 @@
 return {
-	"Version: 196";
+	"Version: 197";
 	"*Click and drag edges to expand*";
+	"";
+	"[11.8.2020 4:15 EST]";
+	"*Git merge";
+	"*Bug fixes (server theme setting was not applying to Windows)";
+	"*Credits update";
 	"";
 	"[11.7.2020 19:39 EST]";
 	"*Git merge (Of Note: Adds !joinfriend <Username> to join)";
