@@ -1623,18 +1623,16 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[1])
-				if image then
-					if plr.Character and image then
+				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 11 then
+					local shirt = service.Insert(tonumber(args[1]))
+					if plr.Character then
 						for g,k in pairs(plr.Character:children()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						service.New('Shirt',plr.Character).ShirtTemplate="http://www.roblox.com/asset/?id="..image
+						if shirt then shirt:Clone().Parent = plr.Character end
 					end
 				else
-					for g,k in pairs(plr.Character:children()) do
-						if k:IsA("Shirt") then k:Destroy() end
-					end
+					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -1648,18 +1646,16 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[1])
-				if image then
-					if plr.Character and image then
+				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 12 then
+					local pants = service.Insert(tonumber(args[1]))
+					if plr.Character then
 						for g,k in pairs(plr.Character:children()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						service.New('Pants',plr.Character).PantsTemplate="http://www.roblox.com/asset/?id="..image
+						if pants then pants:Clone().Parent = plr.Character end
 					end
 				else
-					for g,k in pairs(plr.Character:children()) do
-						if k:IsA("Pants") then k:Destroy() end
-					end
+					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -3291,7 +3287,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1]:lower())) do
-					Remote.MakeGui(v,"Alert",{Message = (service.Filter(args[2],plr,v) or "Wake up")})
+					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up"})
 				end
 			end
 		};
@@ -3392,13 +3388,13 @@ return function(Vargs)
 			Commands = {"cameras";"cams";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you admin cameras in the server and lets you delete/view them";
+			Description = "Shows a list of admin cameras";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
 				for i,v in pairs(Variables.Cameras) do
-					table.insert(tab,{Text = v.Name,Desc = "Pos: "..v.Object.Position})
+					table.insert(tab,{Text = v.Name,Desc = "Pos: "..tostring(v.Brick.Position)})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Cameras", Tab = tab})
 			end
@@ -6654,20 +6650,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if image then
-						if v.Character and image then
+				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 11 then
+					local shirt = service.Insert(tonumber(args[2]))
+					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						if v.Character then
 							for g,k in pairs(v.Character:children()) do
 								if k:IsA("Shirt") then k:Destroy() end
 							end
-							service.New('Shirt',v.Character).ShirtTemplate="http://www.roblox.com/asset/?id="..image
-						end
-					else
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Shirt") then k:Destroy() end
+							if shirt then shirt:Clone().Parent = v.Character end
 						end
 					end
+				else
+					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -6681,20 +6675,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if image then
-						if v.Character and image then
+				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 12 then
+					local pants = service.Insert(tonumber(args[2]))
+					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						if v.Character then
 							for g,k in pairs(v.Character:children()) do
 								if k:IsA("Pants") then k:Destroy() end
 							end
-							service.New('Pants',v.Character).PantsTemplate="http://www.roblox.com/asset/?id="..image
-						end
-					else
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Pants") then k:Destroy() end
+							if pants then pants:Clone().Parent = v.Character end
 						end
 					end
+				else
+					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -8283,105 +8275,113 @@ return function(Vargs)
 
 				local function sizePlayer(p)
 					local char = p.Character
-					local torso = char:FindFirstChild("Torso")
-					local root = char:FindFirstChild("HumanoidRootPart")
-					local welds = {}
-
-					torso.Anchored = true
-					torso.BottomSurface = 0
-					torso.TopSurface = 0
-
-					for i,v in pairs(char:GetChildren()) do
-						if v:IsA("BasePart") then
-							v.Anchored = true
+					local human = char:FindFirstChildOfClass("Humanoid")
+					
+					if human and human.RigType == Enum.HumanoidRigType.R15 then
+						if human:FindFirstChild("BodyDepthScale") then 
+							human.BodyDepthScale.Value = 0.1
 						end
-					end
+					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						local torso = char:FindFirstChild("Torso")
+						local root = char:FindFirstChild("HumanoidRootPart")
+						local welds = {}
 
-					local function size(part)
-						for i,v in pairs(part:GetChildren()) do
-							if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
-								local p1 = v.Part1
-								local c0 = {v.C0:components()}
-								local c1 = {v.C1:components()}
+						torso.Anchored = true
+						torso.BottomSurface = 0
+						torso.TopSurface = 0
 
-								c0[3] = c0[3]*num
-								c1[3] = c1[3]*num
-
-								p1.Anchored = true
-								v.Part1 = nil
-
-								v.C0 = CFrame.new(unpack(c0))
-								v.C1 = CFrame.new(unpack(c1))
-
-								if p1.Name ~= 'Head' and p1.Name ~= 'Torso' then
-									p1.formFactor = 3
-									p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
-								elseif p1.Name ~= 'Torso' then
-									p1.Anchored = true
-									for k,m in pairs(p1:children()) do
-										if m:IsA('Weld') then
-											m.Part0 = nil
-											m.Part1.Anchored = true
-										end
-									end
-
-									p1.formFactor = 3
-									p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
-
-									for k,m in pairs(p1:children()) do
-										if m:IsA('Weld') then
-											m.Part0 = p1
-											m.Part1.Anchored = false
-										end
-									end
-								end
-
-								if v.Parent == torso then
-									p1.BottomSurface = 0
-									p1.TopSurface = 0
-								end
-
-								p1.Anchored = false
-								v.Part1 = p1
-
-								if v.Part0 == torso then
-									table.insert(welds,v)
-									p1.Anchored = true
-									v.Part0 = nil
-								end
-							elseif v:IsA('CharacterMesh') then
-								local bp = tostring(v.BodyPart):match('%w+.%w+.(%w+)')
-								local msh = service.New('SpecialMesh')
-							elseif v:IsA('SpecialMesh') and v.Parent ~= char.Head then
-								v.Scale = Vector3.new(v.Scale.X,v.Scale.Y,num)
+						for i,v in pairs(char:GetChildren()) do
+							if v:IsA("BasePart") then
+								v.Anchored = true
 							end
-							size(v)
 						end
-					end
 
-					size(char)
+						local function size(part)
+							for i,v in pairs(part:GetChildren()) do
+								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
+									local p1 = v.Part1
+									local c0 = {v.C0:components()}
+									local c1 = {v.C1:components()}
 
-					torso.formFactor = 3
-					torso.Size = Vector3.new(torso.Size.X,torso.Size.Y,num)
+									c0[3] = c0[3]*num
+									c1[3] = c1[3]*num
 
-					for i,v in pairs(welds) do
-						v.Part0 = torso
-						v.Part1.Anchored = false
-					end
+									p1.Anchored = true
+									v.Part1 = nil
 
-					for i,v in pairs(char:GetChildren()) do
-						if v:IsA('BasePart') then
-							v.Anchored = false
+									v.C0 = CFrame.new(unpack(c0))
+									v.C1 = CFrame.new(unpack(c1))
+
+									if p1.Name ~= 'Head' and p1.Name ~= 'Torso' then
+										p1.formFactor = 3
+										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
+									elseif p1.Name ~= 'Torso' then
+										p1.Anchored = true
+										for k,m in pairs(p1:children()) do
+											if m:IsA('Weld') then
+												m.Part0 = nil
+												m.Part1.Anchored = true
+											end
+										end
+
+										p1.formFactor = 3
+										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
+
+										for k,m in pairs(p1:children()) do
+											if m:IsA('Weld') then
+												m.Part0 = p1
+												m.Part1.Anchored = false
+											end
+										end
+									end
+
+									if v.Parent == torso then
+										p1.BottomSurface = 0
+										p1.TopSurface = 0
+									end
+
+									p1.Anchored = false
+									v.Part1 = p1
+
+									if v.Part0 == torso then
+										table.insert(welds,v)
+										p1.Anchored = true
+										v.Part0 = nil
+									end
+								elseif v:IsA('CharacterMesh') then
+									local bp = tostring(v.BodyPart):match('%w+.%w+.(%w+)')
+									local msh = service.New('SpecialMesh')
+								elseif v:IsA('SpecialMesh') and v.Parent ~= char.Head then
+									v.Scale = Vector3.new(v.Scale.X,v.Scale.Y,num)
+								end
+								size(v)
+							end
 						end
-					end
 
-					local weld = service.New('Weld',root)
-					weld.Part0 = root
-					weld.Part1 = torso
+						size(char)
 
-					local cape = char:findFirstChild("ADONIS_CAPE")
-					if cape then
-						cape.Size = cape.Size*num
+						torso.formFactor = 3
+						torso.Size = Vector3.new(torso.Size.X,torso.Size.Y,num)
+
+						for i,v in pairs(welds) do
+							v.Part0 = torso
+							v.Part1.Anchored = false
+						end
+
+						for i,v in pairs(char:GetChildren()) do
+							if v:IsA('BasePart') then
+								v.Anchored = false
+							end
+						end
+
+						local weld = service.New('Weld',root)
+						weld.Part0 = root
+						weld.Part1 = torso
+
+						local cape = char:findFirstChild("ADONIS_CAPE")
+						if cape then
+							cape.Size = cape.Size*num
+						end
 					end
 				end
 
@@ -8614,11 +8614,7 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if tonumber(args[2]) > 50 then
-					args[2] = 50
-				end
-
-				local num = tonumber(args[2])
+				local num = math.min(tonumber(args[2]), 50)
 
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local char = v.Character;
@@ -8634,8 +8630,8 @@ return function(Vargs)
 						local Motors = {}
 						local Percent = num
 						
-						table.insert(Motors, Player.Character.HumanoidRootPart.RootJoint)
-						for i,Motor in pairs(Player.Character.Torso:GetChildren()) do
+						table.insert(Motors, char.HumanoidRootPart.RootJoint)
+						for i,Motor in pairs(char.Torso:GetChildren()) do
 							if Motor:IsA("Motor6D") == false then continue end
 							table.insert(Motors, Motor)
 						end
@@ -8645,13 +8641,13 @@ return function(Vargs)
 						end
 
 
-						for i,Part in pairs(Player.Character:GetChildren()) do
+						for i,Part in pairs(char:GetChildren()) do
 							if Part:IsA("BasePart") == false then continue end
 							Part.Size = Part.Size * Percent
 						end
 
 
-						for i,Accessory in pairs(Player.Character:GetChildren()) do
+						for i,Accessory in pairs(char:GetChildren()) do
 							if Accessory:IsA("Accessory") == false then continue end
 
 							Accessory.Handle.AccessoryWeld.C0 = CFrame.new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
@@ -8858,7 +8854,7 @@ return function(Vargs)
 						cl.Parent = mod
 						hum.Name = "NameTag"
 						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait(0.5)
+						wait()
 						hum.Health=v.Character.Humanoid.Health
 
 						if args[2]:lower()=='hide' then
@@ -9158,7 +9154,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v and v.Character then
 						v.CharacterAppearanceId = v.userId
-						v:LoadCharacter()
+						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
 					end
 				end
 			end
