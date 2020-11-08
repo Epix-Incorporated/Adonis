@@ -443,8 +443,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.Name = server.Functions:GetRandom()
 	server.Core.Themes = data.Themes or {}
 	server.Core.Plugins = data.Plugins or {}
-	server.Core.ModuleID = data.ModuleID or 359948692
-	server.Core.LoaderID = data.LoaderID or 360052698
+	server.Core.ModuleID = data.ModuleID or 2373501710
+	server.Core.LoaderID = data.LoaderID or 2373505175
 	server.Core.DebugMode = data.DebugMode or false
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
