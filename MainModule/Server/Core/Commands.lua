@@ -1289,9 +1289,28 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = math.min(tonumber(args[1]),120)
-				for i = num, 1, -1 do
-					Functions.Hint(i, service.Players:children(),2.5)
-					wait(1)
+				local loop
+				loop = service.StartLoop("HintCountdown", 1, function()
+					if num < 1 then
+						loop.Running = false
+					else
+						server.Functions.Hint(num, service.Players:children(), 2.5)
+						num -= 1
+					end
+				end)
+			end
+		};
+		
+		StopCountdown = {
+			Prefix = server.Settings.Prefix;
+			Commands = {"stopcountdown", "stopcd"};
+			Args = {};
+			Description = "Stops all currently running countdowns";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					server.Remote.RemoveGui(v, "Countdown")
+					service.StopLoop("HintCountdown")
 				end
 			end
 		};
