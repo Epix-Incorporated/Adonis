@@ -4234,23 +4234,14 @@ return function(Vargs)
 		Sell = {
 			Prefix = Settings.Prefix;
 			Commands = {"sell";};
-			Args = {"player";"id";"currency";};
+			Args = {"player";"id";};
 			Hidden = false;
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local type = args[3] or 'default'
-				local t
-				if type:lower()=='tix' or type:lower()=='tickets' or type:lower()=='t' then
-					t = Enum.CurrencyType.Tix
-				elseif type:lower()=='robux' or type:lower()=='rb' or type:lower()=='r' then
-					t = Enum.CurrencyType.Robux
-				else
-					t = Enum.CurrencyType.Default
-				end
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false,t)
+					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false)
 				end
 			end
 		};
@@ -9946,7 +9937,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Variables.MapBackup or not Variables.TerrianMapBackup then
+				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
 					error("Backup map wasn't enabled")
 					return
 				end
@@ -9972,7 +9963,7 @@ return function(Vargs)
 				new:Destroy()
 
 				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrianMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
 				Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
@@ -10010,7 +10001,7 @@ return function(Vargs)
 
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
-				Variables.TerrianMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
+				Variables.TerrainMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
 
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
