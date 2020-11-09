@@ -7599,6 +7599,8 @@ return function(Vargs)
 						new.Disabled = false
 					end
 				end
+				
+				scr:Destroy() -- ARrrrg there be a scr in nil forever
 			end
 		};
 
