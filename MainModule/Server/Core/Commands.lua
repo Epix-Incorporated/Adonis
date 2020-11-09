@@ -7569,7 +7569,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args,noclip)
-				local speed = tonumber(args[2]) or 2
+				local speed = tonumber(args[2]) or 1.35
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
 					Name = "Speed";
@@ -7584,34 +7584,17 @@ return function(Vargs)
 
 				scr.Name = "ADONIS_FLIGHT"
 
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in pairs(Functions.GetPlayers(plr, args[1]))do
 					local human = v.Character:FindFirstChildOfClass("Humanoid")
 					if human then
 						human.PlatformStand = true
 					end
-					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					local part = v.Character:FindFirstChild("HumanoidRootPart")or v.Character.PrimaryPart
 					if part then
-						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
-						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldp then oldp:Destroy() end
-						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
-
+						
 						local new = scr:Clone()
-						local flightPosition = service.New("BodyPosition")
-						local flightGyro = service.New("BodyGyro")
-
-						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
-						flightPosition.MaxForce = Vector3.new(0, 0, 0)
-						flightPosition.Position = part.Position
-						flightPosition.Parent = part
-
-						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
-						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
-						flightGyro.CFrame = part.CFrame
-						flightGyro.Parent = part
-
 						new.Parent = part
 						new.Disabled = false
 					end
@@ -7661,11 +7644,7 @@ return function(Vargs)
 					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
-						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
-						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldp then oldp:Destroy() end
-						if oldg then oldg:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
