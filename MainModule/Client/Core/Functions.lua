@@ -603,18 +603,20 @@ return function()
 				objects[i] = nil
 			end
 		end;
-		
-		PlayAnimation = function(animId)
-			for i,v in next,service.Player.Character.Humanoid:GetPlayingAnimationTracks()do
-				v:Stop()
-			end
-			if animId == 0 then return end
-			local anim = service.New('Animation')
-			anim.AnimationId = 'http://www.roblox.com/Asset?ID='..animId
-			anim.Name = "ADONIS_Animation"
-			local track = service.Player.Character.Humanoid:LoadAnimation(anim)
-			track:Play()
-		end;
+
+-- 		"PlayAnimation" function deprecated because of a devforum announcement https://devforum.roblox.com/t/deprecating-loadanimation-on-humanoid-and-animationcontroller/857129
+--
+--		PlayAnimation = function(animId)
+--			for i,v in next,service.Player.Character.Humanoid:GetPlayingAnimationTracks()do
+--				v:Stop()
+--			end
+--			if animId == 0 then return end
+--			local anim = service.New('Animation')
+--			anim.AnimationId = 'http://www.roblox.com/Asset?ID='..animId
+--			anim.Name = "ADONIS_Animation"
+--			local track = service.Player.Character.Humanoid:LoadAnimation(anim)
+--			track:Play()
+--		end;
 		
 		SetLighting = function(prop,value)
 			if service.Lighting[prop]~=nil then
