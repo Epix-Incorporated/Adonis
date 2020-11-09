@@ -104,7 +104,8 @@ return function(Vargs)
 
 				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
-					if level > Admin.GetLevel(v) then
+					if v == plr then Functions.Hint("You cannot ban yourself",{plr})
+					elseif level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
 							"Administrator: " .. tostring(plr) ..
 								"\nReason: ".. args[2] or "N/A")
@@ -711,7 +712,8 @@ return function(Vargs)
 				
 				local level = Admin.GetLevel(plr);
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
-					if level > Admin.GetLevel(v) then
+					if v == plr then Functions.Hint("You cannot ban yourself",{plr})
+					elseif level > Admin.GetLevel(v) then
 						local endTime = tonumber(os.time())+tonumber(time)
 						local timebans = Core.Variables.TimeBans
 						local data = {
@@ -793,7 +795,8 @@ return function(Vargs)
 			Function = function(plr,args)
 				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
-					if level > Admin.GetLevel(v) then
+					if v == plr then Functions.Hint("You cannot ban yourself",{plr})
+					elseif level > Admin.GetLevel(v) then
 						Admin.AddBan(v)
 						Functions.Hint("Server banned "..tostring(v),{plr})
 					end
@@ -824,7 +827,8 @@ return function(Vargs)
 			Function = function(plr,args)
 				local level = Admin.GetLevel(plr)
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
-					if level > Admin.GetLevel(v) then
+					if v == plr then Functions.Hint("You cannot ban yourself",{plr})
+					elseif level > Admin.GetLevel(v) then
 						Admin.AddBan(v, true)
 						Functions.Hint("Game banned "..tostring(v),{plr})
 					end
