@@ -6849,7 +6849,8 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,'Function','PlayAnimation',27789359)
+					Functions.PlayAnimation(v, 27789359)
+					--Remote.Send(v,'Function','PlayAnimation',27789359)
 				end
 			end
 		};
