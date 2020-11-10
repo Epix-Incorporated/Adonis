@@ -413,6 +413,26 @@ return function()
 			end
 		end;
 		
+		PlayAnimation = function(player, animid)
+			if player.Character then
+				local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+				
+				if humanoid then
+					-- need to use animation object for server access
+					local animator = humanoid:FindFirstChildOfClass("Animator")
+					if not animator then
+						Instance.new("Animator").Parent = humanoid
+					end
+					
+					local playingAnim = Instance.new("Animation")
+					playingAnim.AnimationId = "http://www.roblox.com/asset/?id="..animid
+					local animControl = animator:LoadAnimation(playingAnim)
+					animControl:Play()
+					return animControl
+				end
+			end
+		end;
+		
 		NewCape = function(data)
 			local char = data.Parent
 			local material = data.Material or "Neon"
