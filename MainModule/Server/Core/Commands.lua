@@ -7156,6 +7156,7 @@ return function(Vargs)
 				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid")
 				local audio = service.New("Sound", {
 					Looped = true;
+					Name = "ADONIS_AUDIO";
 					SoundId = "rbxassetid://"..args[2];
 				})
 
