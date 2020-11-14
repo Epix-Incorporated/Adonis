@@ -82,7 +82,20 @@ return function(Vargs)
 				})
 			end;
 		};
-
+		Davey = {
+			Prefix = Settings.Prefix;
+			Commands = {"Davey_Bones";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Turns you into me <3";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"698712377")
+				end
+			end
+		};--//hello Dr. Sceleratii ~Ender was here
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
