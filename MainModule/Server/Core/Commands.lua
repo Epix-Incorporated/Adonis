@@ -368,6 +368,39 @@ return function(Vargs)
 			end
 		};
 
+		AbortAll = {
+			Prefix = Settings.Prefix;
+			Commands = {"abortall";"stoploops";};
+			Args = {"username (optional)";};
+			Description = "Aborts all existing command loops";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local name = args[1] and args[1]:lower()
+																
+				if name and name=="me" then
+					for i,v in ipairs(Variables.CommandLoops) do
+						if i:sub(1,plr.Name):lower() == plr.Name:lower() then
+							Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
+						end
+					end
+				elseif name and name=="all" then
+					for i,v in ipairs(Variables.CommandLoops) do
+						Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
+					end
+				elseif args[2] then
+					if Variables.CommandLoops[name..args[2]] then
+						Variables.CommandLoops[name..args[2]] = nil
+					else
+						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No loops relating to your search'}) 											
+					end
+				else
+					for i,v in ipairs(Variables.CommandLoops) do
+						Variables.CommandLoops[i] = nil
+					end
+				end
+			end
+		};
+														
 		TempModerator = {
 			Prefix = Settings.Prefix;
 			Commands = {"admin","tempadmin","ta","temp","helper";};
