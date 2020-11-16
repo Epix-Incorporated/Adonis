@@ -1,8 +1,11 @@
 return {
-	"Version: 197";
+	"Version: 198";
 	"*Click and drag edges to expand*";
 	"";
-	"[11.8.2020 4:15 EST]";
+	"[11.16.2020 14:04 EST]";
+	"*Git merge";
+	"";
+	"[11.8.2020 16:15 EST]";
 	"*Git merge";
 	"*Bug fixes (server theme setting was not applying to Windows)";
 	"*Credits update";
