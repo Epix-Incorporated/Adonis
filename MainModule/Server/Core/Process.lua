@@ -39,6 +39,7 @@ return function(Vargs)
 		Remote = {};
 		Command = {};
 		Chat = {};
+		CustomChat = {};
 		RateLog = {};
 	}
 	
@@ -61,6 +62,7 @@ return function(Vargs)
 			Remote = 0.01;
 			Command = 0.1;
 			Chat = 0.1;
+			CustomChat = 0.1;
 			RateLog = 10;
 		};
 		
@@ -268,7 +270,7 @@ return function(Vargs)
 		end;
 		
 		CustomChat = function(p, a, b, canCross)
-			if RateLimit(p, "Chat") and not Admin.IsMuted(p) then
+			if RateLimit(p, "CustomChat") and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit);
 				end
