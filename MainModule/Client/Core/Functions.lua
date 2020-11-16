@@ -605,14 +605,19 @@ return function()
 		end;
 		
 		PlayAnimation = function(animId)
-			for i,v in next,service.Player.Character.Humanoid:GetPlayingAnimationTracks()do
+			if animId == 0 then return end
+			
+			local char = service.Player.Character
+			local human = char:FindFirstChildOfClass("Humanoid")
+			local animator = human:FindFirstChildOfClass("Animator") or human:WaitForChild("Animator")
+			
+			for i,v in pairs(animator:GetPlayingAnimationTracks()) do
 				v:Stop()
 			end
-			if animId == 0 then return end
 			local anim = service.New('Animation')
-			anim.AnimationId = 'http://www.roblox.com/Asset?ID='..animId
+			anim.AnimationId = 'rbxassetid://'..animId
 			anim.Name = "ADONIS_Animation"
-			local track = service.Player.Character.Humanoid:LoadAnimation(anim)
+			local track = animator:LoadAnimation(anim)
 			track:Play()
 		end;
 		

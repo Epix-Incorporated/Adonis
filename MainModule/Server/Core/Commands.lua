@@ -1323,8 +1323,8 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					server.Remote.RemoveGui(v, "Countdown")
-					service.StopLoop("HintCountdown")
 				end
+				service.StopLoop("HintCountdown")
 			end
 		};
 
@@ -2428,7 +2428,7 @@ return function(Vargs)
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid ID")
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,"Function","PlayAnimation",args[2])
+					Functions.PlayAnimation(v,args[2])
 				end
 			end
 		};
@@ -6862,7 +6862,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,'Function','PlayAnimation',27789359)
+					Functions.PlayAnimation(v,27789359)
 				end
 			end
 		};

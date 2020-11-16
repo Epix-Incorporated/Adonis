@@ -641,6 +641,16 @@ return function(Vargs)
 			end
 		end;
 		
+		PlayAnimation = function(player, animId)
+			if player.Character and tonumber(animId) then
+				local human = player.Character:FindFirstChildOfClass("Humanoid")
+				if human and not human:FindFirstChildOfClass("Animator") then
+					service.New("Animator", human)
+				end
+				Remote.Send(player,"Function","PlayAnimation",animId)
+			end
+		end;
+		
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
 				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild('PlayerGui', 15) or player:WaitForChild('Backpack')
