@@ -96,6 +96,26 @@ return function(Vargs)
 				end
 			end
 		};--//hello Dr. Sceleratii ~Ender was here
+		CustommMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"cm";"custommessage";};
+			Args = {"Upper message","message";};
+			Filter = true;
+			Description = "Same as message but says whatever you want upper message to be instead of your name.";
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				assert(args[2],"Argument missing or nil")
+				for i,v in pairs(service.Players:GetChildren()) do
+					Remote.RemoveGui(v,"Message")
+					Remote.MakeGui(v,"Message",{
+						Title = args[1];
+						Message = args[2];
+						--service.Filter(args[1],plr,v);
+					})
+				end
+			end
+		};--pog ok this is accuatly angering me if anyone knows how to make it so you can have spaces in upper message pls edit that thank you
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
