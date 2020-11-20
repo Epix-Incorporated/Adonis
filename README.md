@@ -4,6 +4,7 @@ Uploaded to GitHub for collaboration and issue tracking.
 
 NOTE: By default, the Adonis.rbxm file in this repo may have debug mode enabled. To disable it, open Adonis_Loader > Loader > Loader.lua and change DebugMode = true to DebugMode = false in the "data" table. I recommend using the Adonis_Loader model instead.
 
+Quick Start: https://youtu.be/XnhWcfoAJ_o
 
 
 ## How to load a custom version:
