@@ -127,6 +127,21 @@ return function(Vargs)
 				end
 			end;
 		};
+		Obama = {
+			Prefix = Settings.Prefix;
+			Commands = {"sceleratis";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Turns you into me <3";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = 
+			local audio = service.New("Sound",workspace)
+			audio.SoundId = "rbxassetid://1076678702"
+			audio.Volume = 0.5
+			audio:Play()
+			end
+		};
 
 		Terminal = {
 			Prefix = ":";
