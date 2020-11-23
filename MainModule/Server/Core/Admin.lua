@@ -185,6 +185,7 @@ return function(Vargs)
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
+				Player = p;
 			})
 			return data.AdminLevel
 		end;
