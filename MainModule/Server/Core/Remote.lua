@@ -10,7 +10,7 @@ logError = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local function Init()
 		Functions = server.Functions;
@@ -24,10 +24,10 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Commands = server.Commands
-		
+
 		Logs:AddLog("Script", "Remote Module Initialized")
 	end;
-	
+
 	server.Remote = {
 		Init = Init;
 		Clients = {};
@@ -37,49 +37,49 @@ return function(Vargs)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
-		
+
 		Returnables = {
 			RateLimits = function(p, args)
 				return server.Process.RateLimits
 			end;
-			
+
 			Test = function(p,args)
 				return "HELLO FROM THE OTHER SIDE :)!"
 			end;
-			
+
 			Ping = function(p,args)
 				return "Pong"
 			end;
-			
+
 			Filter = function(p,args)
 				return service.Filter(args[1],args[2],args[3])
 			end;
-			
+
 			BroadcastFilter = function(p,args)
 				return service.BroadcastFilter(args[1],args[2] or p)
 			end;
-			
+
 			ClientCheck = function(p,args)
 				local key = tostring(p.userId)
 				local data = args[1]
 				local special = args[2]
 				local returner = args[3]
 				local keys = Remote.Clients[key]
-				
+
 				--print("Sent: "..(data.Sent+1).." : "..keys.Received)
 				--print("Received: "..data.Received.." : "..keys.Sent)
-				
+
 				if (math.abs(data.Received-keys.Sent) > 10) then
 					--print("Something is wrong...")
 				end
-				
+
 				if keys and special and special == keys.Special then
 					keys.LastUpdate = tick()
 				end
-				
+
 				return returner
 			end;
-			
+
 			TaskManager = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local action = args[1]
@@ -98,15 +98,15 @@ return function(Vargs)
 					end
 				end
 			end;
-			
+
 			ExecutePermission = function(p,args)
 				return Core.ExecutePermission(args[1],args[2],true)
 			end;
-			
+
 			Variable = function(p,args)
 				return Variables[args[1]]
 			end;
-			
+
 			Setting = function(p,args)
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
@@ -114,19 +114,19 @@ return function(Vargs)
 				local blocked = {
 					DataStore = true;
 					DataStoreKey = true;
-					
+
 					Trello_Enabled = true;	
 					Trello_PrimaryBoard = true;
 					Trello_SecondaryBoards = true;
 					Trello_AppKey = true;
 					Trello_Token = true; 
-					
+
 					--G_Access = true;
 					--G_Access_Key = true;
 					--G_Access_Perms = true;
 					--Allowed_API_Calls = true;
 				}
-				
+
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
@@ -139,10 +139,10 @@ return function(Vargs)
 						ret = Settings[setting]
 					end
 				end
-				
+
 				return ret
 			end;
-			
+
 			UpdateList = function(p, args)
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]
@@ -150,64 +150,64 @@ return function(Vargs)
 					return update(p, unpack(args,2))
 				end
 			end;
-			
+
 			AllSettings = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local sets = {}
-					
+
 					sets.Settings = {}
 					sets.Descs = server.Descriptions
 					sets.Order = server.Order
-					
+
 					for i,v in pairs(Settings) do
 						sets.Settings[i] = v
 					end
-					
+
 					local blocked = {
 						HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
 						DataStore = true;
 						DataStoreKey = true;
 						DataStoreEnabled = true;
-						
+
 						--Trello_Enabled = true;	
 						--Trello_PrimaryBoard = true;
 						--Trello_SecondaryBoards = true;
 						Trello_AppKey = true;
 						Trello_Token = true;
-						
+
 						G_API = true;
 						G_Access = true;
 						G_Access_Key = true;
 						G_Access_Perms = true;
 						Allowed_API_Calls = true;
-						
+
 						OnStartup = true;
 						OnSpawn = true;
 						OnJoin = true;
-						
+
 						AntiInsert = true;  -- Not supported yet
 						CustomRanks = true; -- Not supported yet 
 					}
-				
+
 					for setting,value in pairs(sets.Settings) do
 						if blocked[setting] then
 							sets.Settings[setting] = nil
 						end
 					end
-					
+
 					return sets
 				end
 			end;
-			
+
 			AdminLevel = function(p,args)
 				return Admin.GetLevel(p)
 			end;
-			
+
 			Keybinds = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				return playerData.Keybinds or {}
 			end;
-			
+
 			UpdateKeybinds = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
@@ -221,7 +221,7 @@ return function(Vargs)
 				end
 				return resp
 			end;
-			
+
 			UpdateClient = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local setting = args[1]
@@ -232,7 +232,7 @@ return function(Vargs)
 				Core.SavePlayer(p,playerData)
 				return "Updated"
 			end;
-			
+
 			UpdateDonor = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local donor = args[1]
@@ -252,21 +252,21 @@ return function(Vargs)
 				end
 				return resp
 			end;
-			
+
 			PlayerData = function(p,args)
 				local data = Core.GetPlayer(p)
 				data.isDonor = Admin.CheckDonor(p)
 				return data
 			end;
-			
+
 			CheckAdmin = function(p,args)
 				return Admin.CheckAdmin(p)
 			end;
-			
+
 			SearchCommands = function(p,args)
 				return Admin.SearchCommands(p,args[1] or "all")
 			end;
-			
+
 			FormattedCommands = function(p,args)
 				local commands = Admin.SearchCommands(p,args[1] or "all")
 				local tab = {}
@@ -275,7 +275,7 @@ return function(Vargs)
 				end
 				return tab
 			end;
-			
+
 			TerminalData = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local entry = Remote.Terminal.Data[tostring(p.UserId)]
@@ -285,7 +285,7 @@ return function(Vargs)
 							Output = {};
 						}
 					end
-					
+
 					return {
 						ServerLogs = service.LogService:GetLogHistory();
 						ClientLogs = {};
@@ -299,7 +299,7 @@ return function(Vargs)
 					}
 				end
 			end;
-			
+
 			Terminal = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local data = args[2]
@@ -325,7 +325,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		Terminal = {
 			Data = {};
 			Format = function(msg,data) (data or {}).Text = msg end;
@@ -348,7 +348,7 @@ return function(Vargs)
 						return output
 					end;
 				};
-				
+
 				Message = {
 					Usage = "message <message>";
 					Command = "message";
@@ -360,7 +360,7 @@ return function(Vargs)
 						end
 					end
 				};
-				
+
 				Test = {
 					Usage = "test <return>";
 					Command = "test";
@@ -370,7 +370,7 @@ return function(Vargs)
 						Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
 					end
 				};
-				
+
 				Loadstring = {
 					Usage = "loadstring <string>";
 					Command = "loadstring";
@@ -381,7 +381,7 @@ return function(Vargs)
 							print = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
 							warn = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
 						})
-						
+
 						local func,err = Core.Loadstring(args[1], newenv)
 						if func then 
 							func()
@@ -390,7 +390,7 @@ return function(Vargs)
 						end
 					end
 				};
-				
+
 				Execute = {
 					Usage = "execute <command>";
 					Command = "execute";
@@ -403,7 +403,7 @@ return function(Vargs)
 						}
 					end
 				};
-				
+
 				Sudo = {
 					Usage = "sudo <player> <command>";
 					Command = "sudo";
@@ -416,7 +416,7 @@ return function(Vargs)
 						}
 					end
 				};
-				
+
 				Kick = {
 					Usage = "kick <player> <reason>";
 					Command = "kick";
@@ -434,7 +434,7 @@ return function(Vargs)
 						end
 					end
 				};
-				
+
 				Kill = {
 					Usage = "kill <player>";
 					Command = "kill";
@@ -452,7 +452,7 @@ return function(Vargs)
 						end
 					end
 				};
-				
+
 				Respawn = {
 					Usage = "respawn <player>";
 					Command = "respawn";
@@ -470,7 +470,7 @@ return function(Vargs)
 						end
 					end
 				};
-				
+
 				Shutdown = {
 					Usage = "shutdown";
 					Command = "shutdown";
@@ -480,7 +480,7 @@ return function(Vargs)
 						for i,v in next,service.Players:GetPlayers() do
 							v:Kick()
 						end
-						
+
 						service.PlayerAdded:connect(function(p)
 							p:Kick()
 						end)
@@ -488,16 +488,16 @@ return function(Vargs)
 				};
 			};
 		};
-		
+
 		SessionHandlers = {
-			
+
 		};
-		
+
 		UnEncrypted = {
 			AddReplication = function(p,action,obj,data)
 				local na = "_SERVER"
 				local datat
-				
+
 				if p then na = p.Name end
 				if action == "Created" then
 					--local obj = data.obj
@@ -518,22 +518,22 @@ return function(Vargs)
 						datat = {Action=action,Parent=parent,ClassName=class,Player=na,Object=obj,Name=name,Path=path}
 					end
 				end
-				
+
 				if datat then
 					Logs.AddLog(Logs.Replications,datat)
 				end
 			end;
-			
+
 			TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
 			end;
-			
+
 			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)
 			end;
 		};
-		
+
 		Commands = {
 			GetReturn = function(p,args)
 				print("THE CLIENT IS ASKING US FOR A RETURN")
@@ -550,7 +550,7 @@ return function(Vargs)
 					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
 				end
 			end;
-			
+
 			GiveReturn = function(p,args)
 				print("THE CLIENT GAVE US A RETURN");
 				if Remote.PendingReturns[args[1]] then
@@ -559,7 +559,7 @@ return function(Vargs)
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
 			end;
-			
+
 			Session = function(p,args)
 				local type = args[1]
 				local data = args[2]
@@ -568,13 +568,13 @@ return function(Vargs)
 					handler(p,data)
 				end
 			end;
-			
+
 			HandleExplore = function(p, args)
 				if Admin.CheckAdmin(p) then
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
-					
+
 					if obj then
 						if com == "Delete" then
 							obj:Destroy()
@@ -582,35 +582,35 @@ return function(Vargs)
 					end
 				end
 			end;
-			
+
 			PlayerEvent = function(p,args)
 				service.Events[tostring(args[1])..p.userId]:fire(unpack(args,2))
 			end;
-			
+
 			SaveTableAdd = function(p,args) 
 				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
-					
+
 					table.insert(Settings[tab],value)
-					
+
 					Core.DoSave({
 						Type = "TableAdd";
 						Table = tab;
 						Value = value;
 					})
-					 
+
 				end
 			end;
-			
+
 			SaveTableRemove = function(p,args) 
 				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
 					local ind = Functions.GetIndex(Settings[tab],value)
-					
+
 					if ind then table.remove(Settings[tab],ind) end
-					
+
 					Core.DoSave({
 						Type = "TableRemove";
 						Table = tab;
@@ -618,12 +618,12 @@ return function(Vargs)
 					})
 				end
 			end;
-			
+
 			SaveSetSetting = function(p,args) 
 				if Admin.GetLevel(p) >= 4 then
 					local setting = args[1]
 					local value = args[2]
-					
+
 					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
 						local orig = Settings[setting]
 						for i,v in pairs(Commands) do
@@ -631,12 +631,12 @@ return function(Vargs)
 								v.Prefix = value
 							end
 						end
-						
+
 						server.Admin.CacheCommands()
 					end
-					
+
 					Settings[setting] = value
-				
+
 					Core.DoSave({
 						Type = "SetSetting";
 						Setting = setting;
@@ -644,19 +644,19 @@ return function(Vargs)
 					})
 				end
 			end;
-			
+
 			ClearSavedSettings = function(p,args) 
 				if Admin.GetLevel(p) >= 4 then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings",{p})
 				end
 			end;
-			
+
 			SetSetting = function(p,args) 
 				if Admin.GetLevel(p) >= 4 then
 					local setting = args[1]
 					local value = args[2]
-					
+
 					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
 						local orig = Settings[setting]
 						for i,v in pairs(Commands) do
@@ -664,18 +664,18 @@ return function(Vargs)
 								v.Prefix = value
 							end
 						end
-						
+
 						server.Admin.CacheCommands()
 					end
-					
+
 					Settings[setting] = value
 				end
 			end;
-			
+
 			Detected = function(p,args)
 				Anti.Detected(p, args[1], args[2])
 			end;
-			
+
 			TrelloOperation = function(p,args)
 				if Admin.GetLevel(p) > 2 then
 					local data = args[1]
@@ -692,16 +692,17 @@ return function(Vargs)
 							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." performed Trello operation";
 								Desc = "Player created a Trello card";
+								Player = p;
 							})
 						end
 					end
 				end
 			end;
-			
+
 			ClientLoaded = function(p, args)
 				local key = tostring(p.userId)
 				local client = Remote.Clients[key]
-				
+
 				if client and client.LoadingStatus == "LOADING" then
 					client.LastUpdate = tick()
 					client.RemoteReady = true
@@ -711,7 +712,7 @@ return function(Vargs)
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
 			end;
-			
+
 			ClientCheck = function(p,args)
 				--// LastUpdate should be auto updated upon command finding
 				--[[local key = tostring(p.userId)
@@ -721,15 +722,15 @@ return function(Vargs)
 					client.LastUpdate = tick()
 				end--]]
 			end;
-			
+
 			LogError = function(p,args)
 				logError(p,args[1])
 			end;
-			
+
 			Test = function(p,args)
 				print("OK WE GOT COMMUNICATION! FROM: "..p.Name.." ORGL: "..args[1])
 			end;
-			
+
 			ProcessCommand = function(p,args)
 				if Process.RateLimit(p, "Command") then
 					Process.Command(p,args[1],{Check=true})	
@@ -738,19 +739,19 @@ return function(Vargs)
 					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
 				end
 			end;
-			
+
 			ProcessChat = function(p,args)
 				Process.Chat(p,args[1])
 				--Process.CustomChat(p,args[1])
 			end;
-			
+
 			ProcessCustomChat = function(p,args)
 				Process.Chat(p,args[1],"CustomChat")
 				Process.CustomChat(p,args[1],args[2],true)
 			end;
-			
+
 			PrivateMessage = function(p,args)
-			--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
+				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local title = args[1]
 				local target = args[2]
 				local from = args[3]
@@ -760,14 +761,15 @@ return function(Vargs)
 					Player = p;
 					Message = service.Filter(message, p, target);
 				})
-				
+
 				Logs.AddLog(Logs.Script,{
 					Text = p.Name.." replied to "..tostring(target),
 					Desc = message
+					Player = p;
 				})
 			end;
 		};
-		
+
 		Fire = function(p, ...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			local RemoteEvent = Core.RemoteEvent
@@ -776,14 +778,14 @@ return function(Vargs)
 				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0},...)
 			end
 		end;
-		
+
 		Send = function(p,com,...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
 				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 			end
 		end;
-		
+
 		GetFire = function(p, ...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			local RemoteEvent = Core.RemoteEvent
@@ -792,7 +794,7 @@ return function(Vargs)
 				return RemoteEvent.Function:InvokeClient(p, {Mode = "Get", Sent = 0}, ...)
 			end
 		end;
-		
+
 		Get = function(p,com,...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
@@ -804,7 +806,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		OldGet = function(p, com, ...)
 			local keys = Remote.Clients[tostring(p.userId)]
 			if keys and keys.RemoteReady == true then 
@@ -812,10 +814,10 @@ return function(Vargs)
 				local key = Functions:GetRandom()
 				local waiter = service.New("BindableEvent") -- issue with service.Events:Wait()??????
 				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
-				
+
 				Remote.PendingReturns[key] = true
 				Remote.Send(p,"GetReturn",com,key,...)
-				
+
 				print("GETTING RETURN");
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
@@ -826,10 +828,10 @@ return function(Vargs)
 					print(string.format("WE GOT IT! %s", tostring(returns)));
 					pEvent:Disconnect()
 				end
-				
+
 				print("GOT RETURN");
 				event:Disconnect()
-				
+
 				if returns then
 					if returns[1] == "__ADONIS_RETURN_ERROR" then
 						error(returns[2])
@@ -841,7 +843,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		CheckClient = function(p)
 			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
 			if ran and ret == Remote.Clients[tostring(p.userId)].Special then
@@ -850,89 +852,89 @@ return function(Vargs)
 				return false
 			end
 		end;
-		
+
 		Ping = function(p)
 			return Remote.Get(p,"Ping")
 		end;
-		
-		MakeGui = function(p,GUI,data,themeData)
+
+		MakeGui = function(p, GUI, data, themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			Remote.Send(p,"UI",GUI,theme,data  or {})
+			Remote.Send(p, "UI", GUI, theme, data or {})
 		end;
-		
+
 		MakeGuiGet = function(p,GUI,data,themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
-		
+
 		GetGui = function(p,GUI,data,themeData)
 			return Remote.MakeGuiGet(p,GUI,data,themeData)
 		end;
-		
+
 		RemoveGui = function(p,name,ignore)
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
-		
+
 		NewParticle = function(p,target,type,properties)
 			Remote.Send(p,"Function","NewParticle",target,type,properties)
 		end;
-		
+
 		RemoveParticle = function(p,target,name)
 			Remote.Send(p,"Function","RemoveParticle",target,name)
 		end;
-		
+
 		NewLocal = function(p, type, props, parent)
 			Remote.Send(p,"Function","NewLocal",type,props,parent)
 		end;
-		
+
 		MakeLocal = function(p,object,parent,clone)
 			object.Parent = p
 			wait(0.5)
 			Remote.Send(p,"Function","MakeLocal",object,parent,clone)
 		end;
-		
+
 		MoveLocal = function(p,object,parent,newParent)
 			Remote.Send(p,"Function","MoveLocal",object,false,newParent)
 		end;
-		
+
 		RemoveLocal = function(p,object,parent,match)
 			Remote.Send(p,"Function","RemoveLocal",object,parent,match)
 		end;
-		
+
 		SetLighting = function(p,prop,value)
 			Remote.Send(p,"Function","SetLighting",prop,value)
 		end;
-		
+
 		FireEvent = function(p,...)
 			Remote.Send(p,"FireEvent",...)
 		end;
-		
+
 		NewPlayerEvent = function(p,type,func)
 			return service.Events[type..p.userId]:connect(func)
 		end;
-		
+
 		StartLoop = function(p,name,delay,funcCode)
 			Remote.Send(p,"StartLoop",name,delay,Core.ByteCode(funcCode))
 		end;
-		
+
 		StopLoop = function(p,name)
 			Remote.Send(p,"StopLoop",name)
 		end;
-		
+
 		PlayAudio = function(p,audioId,volume,pitch,looped)
 			Remote.Send(p,"Function","PlayAudio",audioId,volume,pitch,looped)
 		end;
-		
+
 		StopAudio = function(p,id)
 			Remote.Send(p,"Function","StopAudio",id)
 		end;
-		
+
 		FadeAudio = function(p,id,inVol,pitch,looped,incWait)
 			Remote.Send(p,"Function","FadeAudio",id,inVol,pitch,looped,incWait)
 		end;
-		
+
 		StopAllAudio = function(p)
 			Remote.Send(p,"Function","KillAllLocalAudio")
 		end;
@@ -976,7 +978,7 @@ return function(Vargs)
 				Remote.Send(p,"LoadCode",Core.Bytecode(code))
 			end
 		end;
-		
+
 		Encrypt = function(str, key, cache)
 			local cache = cache or Remote.EncodeCache or {}
 			if not key or not str then 
@@ -991,19 +993,19 @@ return function(Vargs)
 				local len = string.len
 				local char = string.char
 				local endStr = {}
-				
+
 				for i = 1,len(str) do
 					local keyPos = (i%len(key))+1
 					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
 			end
 		end;
-		
+
 		Decrypt = function(str, key, cache)
 			local cache = cache or Remote.DecodeCache or {}
 			if not key or not str then 
@@ -1018,19 +1020,19 @@ return function(Vargs)
 				local len = string.len
 				local char = string.char
 				local endStr = {}
-				
+
 				for i = 1,len(str) do
 					local keyPos = (i%len(key))+1
 					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
 			end
 		end;
-			
+
 		--[[
 		--// Moldy
 		Encrypt = function(str, key, cache)
