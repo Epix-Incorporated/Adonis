@@ -61,7 +61,7 @@ local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
 local isModule = function(module)for ind,modu in next,server.Modules do if module == modu then return true end end end
-local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err}) end end
+local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err,Player=plr}) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
 local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
 local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
@@ -238,13 +238,13 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
---[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-script = service.Wrap(script)
-Enum = service.Wrap(Enum)
-game = service.Wrap(game)
-workspace = service.Wrap(workspace)
-Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+                                                                                                                                                                                                                                                                                                                                                            --[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
+                                                                                                                                                                                                                                                                                                                                                            script = service.Wrap(script)
+                                                                                                                                                                                                                                                                                                                                                            Enum = service.Wrap(Enum)
+                                                                                                                                                                                                                                                                                                                                                            game = service.Wrap(game)
+                                                                                                                                                                                                                                                                                                                                                            workspace = service.Wrap(workspace)
+                                                                                                                                                                                                                                                                                                                                                            Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
+                                                                                                                                                                                                                                                                                                                                                            require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual

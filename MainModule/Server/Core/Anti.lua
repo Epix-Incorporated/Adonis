@@ -209,12 +209,14 @@ return function(Vargs)
 			
 			Logs.AddLog(Logs.Script,{
 				Text = "AE Detected "..tostring(player);
-				Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
+                Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
+                Player = player;
 			})
 			
 			Logs.AddLog(Logs.Exploit,{
 				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
 				Desc = tostring(info);
+				Player = player;
 			})
 		end;
 		
