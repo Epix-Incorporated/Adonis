@@ -9962,6 +9962,24 @@ return function(Vargs)
 			end
 		};
 
+		ScreenVideo = {
+			Prefix = Settings.Prefix;
+			Commands = {"screenvideo";"scrvid";"video";};
+			Args = {"player";"videoid";};
+			Hidden = false;
+			Description = "Places the desired video on the target's screen";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local img = tostring(args[2])
+				if not img then error(args[2].." is not a valid ID") end
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.MakeGui(v,"Effect",{Mode = "ScreenVideo",Video = args[2]})
+				end
+			end
+		};
+
+
 		UnEffect = {
 			Prefix = Settings.Prefix;
 			Commands = {"uneffect";"unimage";"uneffectgui";"unspook";"unblind";"unstrobe";"untrippy";"unpixelize","unlowres","unpixel","undance";"unflashify";"unrainbowify";"guifix";"fixgui";};
