@@ -771,7 +771,8 @@ return function(Vargs)
 		};
 
 		Fire = function(p, ...)
-			local keys = Remote.Clients[tostring(p.userId)]
+			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")
+			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
 				keys.Sent = keys.Sent+1
@@ -780,14 +781,15 @@ return function(Vargs)
 		end;
 
 		Send = function(p,com,...)
-			local keys = Remote.Clients[tostring(p.userId)]
+			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
+			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then 
 				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 			end
 		end;
 
 		GetFire = function(p, ...)
-			local keys = Remote.Clients[tostring(p.userId)]
+			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
 				keys.Sent = keys.Sent+1
@@ -796,7 +798,7 @@ return function(Vargs)
 		end;
 
 		Get = function(p,com,...)
-			local keys = Remote.Clients[tostring(p.userId)]
+			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then 
 				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 				if type(ret) == "table" then
@@ -808,7 +810,7 @@ return function(Vargs)
 		end;
 
 		OldGet = function(p, com, ...)
-			local keys = Remote.Clients[tostring(p.userId)]
+			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then 
 				local returns, finished
 				local key = Functions:GetRandom()
@@ -846,7 +848,7 @@ return function(Vargs)
 
 		CheckClient = function(p)
 			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
-			if ran and ret == Remote.Clients[tostring(p.userId)].Special then
+			if ran and ret == Remote.Clients[tostring(p.UserId)].Special then
 				return true 
 			else
 				return false

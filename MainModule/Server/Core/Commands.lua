@@ -376,7 +376,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local name = args[1] and args[1]:lower()
-																
+
 				if name and name=="me" then
 					for i,v in ipairs(Variables.CommandLoops) do
 						if i:sub(1,plr.Name):lower() == plr.Name:lower() then
@@ -400,7 +400,7 @@ return function(Vargs)
 				end
 			end
 		};
-														
+
 		TempModerator = {
 			Prefix = Settings.Prefix;
 			Commands = {"admin","tempadmin","ta","temp","helper";};
@@ -754,7 +754,7 @@ return function(Vargs)
 					time = time:sub(1,#time-1)
 					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
 				end
-				
+
 				local level = Admin.GetLevel(plr);
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
 					if level > Admin.GetLevel(v) then
@@ -1120,10 +1120,10 @@ return function(Vargs)
 			Function = function(plr,args)
 				if args[1]:lower()=='on' or args[1]:lower()=='enable' then
 					Variables.Whitelist.Enabled = true
-					Functions.Hint("Server Whitelisted", service.Players:GetChildren())
+					Functions.Hint("Server Whitelisted", service.Players:GetPlayers())
 				elseif args[1]:lower()=='off' or args[1]:lower()=='disable' then
 					Variables.Whitelist.Enabled = false
-					Functions.Hint("Server Unwhitelisted", service.Players:GetChildren())
+					Functions.Hint("Server Unwhitelisted", service.Players:GetPlayers())
 				elseif args[1]:lower()=="add" then
 					if args[2] then
 						local plrs = service.GetPlayers(plr,args[2],true)
@@ -1267,7 +1267,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		SlowMode = {
 			Prefix = Settings.Prefix;
 			Commands = {"slowmode"};
@@ -1277,7 +1277,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
 				if not args[1] then error("Argument 1 missing") end
-				
+
 				if num then
 					Admin.SlowMode = num;
 					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.Players:children())
@@ -1346,7 +1346,7 @@ return function(Vargs)
 				end)
 			end
 		};
-		
+
 		StopCountdown = {
 			Prefix = server.Settings.Prefix;
 			Commands = {"stopcountdown", "stopcd"};
@@ -1370,7 +1370,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2] and tonumber(args[1]),"Argument missing or invalid")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
@@ -1390,7 +1390,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in next,service.Players:GetChildren() do
+				for i,v in next,service.Players:GetPlayers() do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
@@ -1411,7 +1411,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = Settings.SystemTitle;
@@ -1445,7 +1445,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Notify")
 					Remote.MakeGui(v,"Notify",{
 						Title = "Message from " .. plr.Name;
@@ -1483,7 +1483,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.MakeGui(v,"Hint",{
 						Message = tostring(plr or "")..": "..service.Filter(args[1],plr,v);
 					})
@@ -3120,7 +3120,7 @@ return function(Vargs)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind,p in pairs(service.Players:GetChildren()) do
+							for ind,p in pairs(service.Players:GetPlayers()) do
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p,"Notification",{
 										Title = "Help Request";
@@ -3197,7 +3197,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		GlobalJoin = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"joinfriend";};
@@ -3208,13 +3208,13 @@ return function(Vargs)
 			AdminLevel = "Players";
 			Function = function(plr,args) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				
+
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 				if player then
 					for i,v in next, plr:GetFriendsOnline() do
-					    if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
-					        service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, plr)
-					    end
+						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
+							service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, plr)
+						end
 					end
 				else
 					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
@@ -7405,7 +7405,7 @@ return function(Vargs)
 					if name == "Invalid ID" then
 						error("Invalid ID")
 					elseif Settings.SongHint then
-						Functions.Hint(name, service.Players:GetChildren())
+						Functions.Hint(name, service.Players:GetPlayers())
 					end
 				end
 			end
@@ -7812,35 +7812,35 @@ return function(Vargs)
 								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 							end
 							local char, torso, ca1, ca2 = plr.Character, plr.Character.Torso, CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-							
+
 							torso.Transparency = 1
-							
+
 							for i,v in next,torso:GetChildren() do
 								if v:IsA'Motor6D' then
 									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
 								end
 							end
-							
+
 							torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
 							torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
 							torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
 							torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
 							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
 							local st = service.New("Seat", {
-									Name = "Adonis_Torso",
-									FormFactor = 0,
-									TopSurface = 0,
-									BottomSurface = 0,
-									Size = Vector3.new(3, 1, 4),
+								Name = "Adonis_Torso",
+								FormFactor = 0,
+								TopSurface = 0,
+								BottomSurface = 0,
+								Size = Vector3.new(3, 1, 4),
 							})
-							
+
 							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
-							
+
 							st.CFrame = torso.CFrame
 							st.Parent = char 	
-							
+
 							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
-							
+
 							for d,e in next, char:GetDescendants() do
 								if e:IsA"BasePart" then
 									e.BrickColor = BrickColor.new("Brown")
@@ -8351,7 +8351,7 @@ return function(Vargs)
 				local function sizePlayer(p)
 					local char = p.Character
 					local human = char:FindFirstChildOfClass("Humanoid")
-					
+
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						if human:FindFirstChild("BodyDepthScale") then 
 							human.BodyDepthScale.Value = 0.1
@@ -8704,7 +8704,7 @@ return function(Vargs)
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
 						local Motors = {}
 						local Percent = num
-						
+
 						table.insert(Motors, char.HumanoidRootPart.RootJoint)
 						for i,Motor in pairs(char.Torso:GetChildren()) do
 							if Motor:IsA("Motor6D") == false then continue end
@@ -8727,7 +8727,7 @@ return function(Vargs)
 
 							Accessory.Handle.AccessoryWeld.C0 = CFrame.new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
 							Accessory.Handle.AccessoryWeld.C1 = CFrame.new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
-							
+
 							if Accessory.Handle:FindFirstChildOfClass("SpecialMesh") then
 								Accessory.Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
 							end
@@ -10110,7 +10110,7 @@ return function(Vargs)
 				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
-				Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
+				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
 			end
 		};
 
