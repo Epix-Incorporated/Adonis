@@ -172,10 +172,10 @@ return function(Vargs)
 					local allowed = false
 					local isSystem = false
 					local pDat = {
-						Player = p;
-						Level = Admin.GetLevel(p);
-						isAgent = HTTP.Trello.CheckAgent(p);
-						isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+						Player = opts.Player or p;
+						Level = opts.AdminLevel or Admin.GetLevel(p);
+						isAgent = opts.IsAgent or HTTP.Trello.CheckAgent(p);
+						isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 					}
 
 					if opts.isSystem or p == "SYSTEM" then 
@@ -235,7 +235,7 @@ return function(Vargs)
 							taskName = "Thread: "..taskName
 						end
 
-						local ran, error = service.TrackTask(taskName, command.Function, p, args)
+						local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
 						if error and type(error) == "string" then 
 							error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
 							if not isSystem then 
@@ -247,7 +247,17 @@ return function(Vargs)
 							end 
 						end
 
-						service.Events.CommandRan:Fire(p, msg, matched, args, command, index, ran, error, isSystem)
+						service.Events.CommandRan:Fire(p,{
+							Message = msg;
+							Matched = matched;
+							Args = args;
+							Command = command;
+							Index = index;
+							Success = ran;
+							Error = error;
+							Options = opts;
+							PlayerData = pDat;
+						})
 					else
 						if not isSystem and not opts.NoOutput then
 							Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 

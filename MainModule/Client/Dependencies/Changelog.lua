@@ -1,6 +1,14 @@
 return {
-	"Version: 199";
+	"Version: 200";
 	"*Click and drag edges to expand*";
+	"";
+	"[11.29.2020 13:04 EST]";
+	"*Fixed incorrect 'Unknown Error' message when commands fail";
+	"*server.Events.CommandRan has been changed, it now only has two args passed to it: Player, and a table containing information about the whole command 'transaction'";
+	"*Commands now have a third param passed to them: a table containing data such as the player's level and other info like command options (from the Process function caller)";
+	"*Cross server will now pass the player's current admin level and will only run commands they have permission to, and will pass their current level to the command when it runs";
+	"*Cross server is now usable by Owners+ instead of Creators only";
+	"*Commands using GetLevel(plr) have been updated to use data.PlayerData.Level (passed from the command processor)";
 	"";
 	"[11.28.2020 19:38 EST]";
 	"(Git/policetonyr) Add Player Property to Logs";

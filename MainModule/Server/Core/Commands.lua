@@ -103,8 +103,9 @@ return function(Vargs)
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
 			Fun = false;
+			CrossServerDenied = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local board = Settings.Trello_Primary
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
@@ -115,7 +116,7 @@ return function(Vargs)
 				local lists = trello.getLists(board)
 				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
-				local level = Admin.GetLevel(plr)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
@@ -409,8 +410,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) a temporary moderator; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -437,8 +438,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) a moderator; Saves";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -465,8 +466,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) an admin; Saves";
 			Fun = false;
 			AdminLevel = "Owners";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -493,8 +494,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) an owner; Saves";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -521,10 +522,10 @@ return function(Vargs)
 			Description = "Removes the target players' admin powers; Saves";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr, args, data)
 				assert(args[1],"Argument missing or nil")
 
-				local sendLevel = Admin.GetLevel(plr)
+				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in next,plrs do
@@ -569,10 +570,10 @@ return function(Vargs)
 			Description = "Removes the target players' admin powers for this server; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr, args, data)
 				assert(args[1],"Argument missing or nil")
 
-				local sendLevel = Admin.GetLevel(plr)
+				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in pairs(plrs) do
@@ -664,8 +665,8 @@ return function(Vargs)
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local plrLevel = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local plrLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -739,7 +740,7 @@ return function(Vargs)
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :undataban";
 			Fun = false;
 			AdminLevel = "Owners";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local time = args[2] or '60'
 				assert(args[1] and args[2], "Argument missing or nil")
 				if time:lower():sub(#time)=='s' then
@@ -755,7 +756,7 @@ return function(Vargs)
 					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
 				end
 
-				local level = Admin.GetLevel(plr);
+				local level = data.PlayerData.Level;
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
 					if level > Admin.GetLevel(v) then
 						local endTime = tonumber(os.time())+tonumber(time)
@@ -836,8 +837,8 @@ return function(Vargs)
 			Args = {"player";};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local level = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v)
@@ -867,8 +868,8 @@ return function(Vargs)
 			Args = {"player";};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "Owners";
-			Function = function(plr,args)
-				local level = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, true)
@@ -962,9 +963,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','Crash')
 					end
 				end
@@ -979,9 +980,9 @@ return function(Vargs)
 			Description = "Hard crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','HardCrash')
 					end
 				end
@@ -996,9 +997,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','RAMCrash')
 					end
 				end
@@ -1013,9 +1014,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','GPUCrash')
 					end
 				end
@@ -1498,9 +1499,9 @@ return function(Vargs)
 			Filter = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -1529,9 +1530,9 @@ return function(Vargs)
 			Filter = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -9606,11 +9607,11 @@ return function(Vargs)
 			Fun = true;
 			Hidden = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args, data)
 				local players = {}
 				local deliverUs = {}
 				local playerList = service.GetPlayers(args[1] and plr, args[1])
-				local plrLevel = server.Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 
 				local audio = Instance.new("Sound")
 				audio.Name = "Adonis_Snap"
@@ -11039,9 +11040,9 @@ return function(Vargs)
 			Description = "Makes it so the target player(s) can't talk";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
 						for k,m in pairs(Settings.Muted) do
@@ -11199,9 +11200,9 @@ return function(Vargs)
 			Description = "Makes the target player(s)'s FPS drop";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,"Function","SetFPS",5)
 					end
 				end
@@ -11231,13 +11232,13 @@ return function(Vargs)
 			Description = "Sends players to The Fun Box. Please don't use this on people with epilepsy.";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local funid={
 					241559484,
 					266815338,
 				}--168920853 RIP
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(funid[math.random(1,#funid)],v)
 					end
 				end
@@ -11252,9 +11253,9 @@ return function(Vargs)
 			Description = "Sends player to The Forest for a time out";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(209424751,v)
 					end
 				end
@@ -11269,9 +11270,9 @@ return function(Vargs)
 			Description = "Sends player to The Maze for a time out";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(280846668,v)
 					end
 				end
