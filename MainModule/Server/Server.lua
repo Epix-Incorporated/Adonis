@@ -94,9 +94,11 @@ end
 
 local LoadModule = function(plugin, yield, envVars, noEnv)
 	noEnv = false --// Seems to make loading take longer when true (?)
-	local plug = require(plugin)
+	local isFunc = type(plugin) == "function"
+	local plugin = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or plugin
+	local plug = (isFunc and plugin) or require(plugin)
 
-	if server.Modules then
+	if server.Modules and type(plugin) ~= "function" then
 		table.insert(server.Modules,plugin)
 	end
 
@@ -449,6 +451,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
+	server.LoadModule = LoadModule
 
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
