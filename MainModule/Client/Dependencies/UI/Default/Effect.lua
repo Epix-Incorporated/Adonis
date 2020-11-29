@@ -230,5 +230,6 @@ return function(data)
 		bg.Size = UDim2.new(1,0,1,0) 
 		bg.Position = UDim2.new(0,0,0,0) 
 		bg.ZIndex = 10
+		bg:Play()
 	end
 end
