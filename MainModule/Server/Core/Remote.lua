@@ -764,7 +764,7 @@ return function(Vargs)
 
 				Logs.AddLog(Logs.Script,{
 					Text = p.Name.." replied to "..tostring(target),
-					Desc = message
+					Desc = message,
 					Player = p;
 				})
 			end;

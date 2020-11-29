@@ -1,6 +1,10 @@
 return {
-	"Version: 198";
+	"Version: 199";
 	"*Click and drag edges to expand*";
+	"";
+	"[11.28.2020 19:38 EST]";
+	"(Git/policetonyr) Add Player Property to Logs";
+	"(Git/TheLegendarySpark) Added :screenvideo command";
 	"";
 	"[11.16.2020 14:04 EST]";
 	"*Git merge";

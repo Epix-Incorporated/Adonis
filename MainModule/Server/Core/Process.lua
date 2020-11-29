@@ -90,13 +90,13 @@ return function(Vargs)
 
 								AddLog("RemoteFires", {
 									Text = tostring(p).." requested key from server", 
-									Desc = "Player requested key from server"
+									Desc = "Player requested key from server",
 									Player = p;
 								})
 							elseif UnEncrypted[com] then
 								AddLog("RemoteFires", {
 									Text = tostring(p).." fired "..tostring(com), 
-									Desc = "Player fired unencrypted remote command "..com
+									Desc = "Player fired unencrypted remote command "..com,
 									Player = p;
 								})
 
@@ -107,7 +107,7 @@ return function(Vargs)
 
 								AddLog("RemoteFires", {
 									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
-									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args)
+									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args),
 									Player = p;
 								})
 
@@ -222,7 +222,7 @@ return function(Vargs)
 						if opts.CrossServer or (not isSystem and not opts.DontLog) then
 							AddLog("Commands",{
 								Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
-								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey)
+								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
 								Player = p;
 							})
 
@@ -613,7 +613,7 @@ return function(Vargs)
 							if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
 								Logs.AddLog("Script", {
 									Text = tostring(p).." Failed to Load", 
-									Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)"
+									Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
 									Player = p;
 								});
 								--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
