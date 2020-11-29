@@ -224,7 +224,7 @@ return function(data)
 		bg.ZIndex = 10
 	elseif mode == "ScreenVideo" then
 		local bg = Instance.new("VideoFrame", gui) 
-		bg.Image="rbxassetid://"..data.Video
+		bg.Video="rbxassetid://"..data.Video
 		bg.BackgroundColor3 = Color3.new(0,0,0) 
 		bg.BackgroundTransparency = 0 
 		bg.Size = UDim2.new(1,0,1,0) 
