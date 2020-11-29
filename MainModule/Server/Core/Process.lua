@@ -237,7 +237,7 @@ return function(Vargs)
 
 						local ran, error = service.TrackTask(taskName, command.Function, p, args)
 						if error and type(error) == "string" then 
-							error = tostring(error):match(":(.+)$") or "Unknown error"
+							error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
 							if not isSystem then 
 								Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
 							end 
