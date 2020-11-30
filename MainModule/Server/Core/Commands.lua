@@ -339,7 +339,7 @@ return function(Vargs)
 				local command = args[3]
 				local name = plr.Name:lower()
 				assert(command, "Argument #1 needs to be supplied")
-				if command:sub(1,#Settings.Prefix+string.len("repeat")):lower() == string.lower(Settings.Prefix.."repeat") or command:sub(1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") then
+				if command:sub(1,#Settings.Prefix+string.len("repeat")):lower() == string.lower(Settings.Prefix.."repeat") or command:sub(1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."repeat") then
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
