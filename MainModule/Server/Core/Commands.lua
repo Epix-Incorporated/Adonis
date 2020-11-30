@@ -3850,6 +3850,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				local prefix = Settings.Prefix
 				local split = Settings.SplitKey
+				local specialPrefix = Settings.SpecialPrefix
 				local num = 0
 				local children = {
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
@@ -3872,7 +3873,7 @@ return function(Vargs)
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
 									OnClick = Core.Bytecode([[
-										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..[[me]]..split..v.Name..[[");
+										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
 									]]);
 								}
 							};
