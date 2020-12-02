@@ -10831,6 +10831,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local sb = Variables.ScriptBuilder[tostring(plr.userId)]
 				if not sb then
 					sb = {
@@ -10992,6 +10993,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local cl = Core.NewScript('Script',args[1])
 				cl.Parent = service.ServerScriptService
 				cl.Disabled = false
