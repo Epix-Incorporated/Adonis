@@ -1016,7 +1016,7 @@ return function(Vargs)
 						end
 						
 						for i,v in pairs(Core.ScriptCache) do
-							if v.Script == getfenv(2).script then
+							if v.Script == rawget(getfenv(2), "script") then
 								exists = v
 							end
 						end
@@ -1026,13 +1026,13 @@ return function(Vargs)
 							return exists.Source, exists.Loadstring
 						end
 						
-						local data = Core.ExecutePermission(getfenv(2).script,code)
+						local data = Core.ExecutePermission(rawget(getfenv(2), "script"),code)
 						if data and data.Source then
 							local module;
 							if not exists then
 								module = require(Deps.Loadstring.FiOne:Clone())
 								table.insert(Core.ScriptCache,{
-									Script = getfenv(2).script; 
+									Script = rawget(getfenv(2), "script"); 
 									Source = data.Source; 
 									Loadstring = module;
 									noCache = data.noCache;
