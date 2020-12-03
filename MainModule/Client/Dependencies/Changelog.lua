@@ -1,6 +1,17 @@
 return {
-	"Version: 200";
+	"Version: 201";
 	"*Click and drag edges to expand*";
+	"";
+	"[12.03.2020 11:29 EST]";
+	"*Added IsMuted(plr) to _G.Adonis";
+	"*Muted player messages will now be logged and will have [MUTED] added before their name";
+	"*Git merge:";
+	"(Git/TheLegendarySpark) Prevented the repeat command from repeating cmd";
+	"(Git/TheLegendarySpark) Fixed a small bug with Effect UI > ScreenVideo";
+	"(Git/TheLegendarySpark) Added command \"cleareffects\"";
+	"(Git/TheLegendarySpark) Added two asserts in two script commands";
+	"(Git/TheLegendarySpark) Improved Core Security";
+	"(Git/NeoInversion) ToolList now works with special prefixes";
 	"";
 	"[11.29.2020 13:04 EST]";
 	"*Fixed incorrect 'Unknown Error' message when commands fail";

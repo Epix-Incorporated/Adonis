@@ -352,11 +352,11 @@ return function(Vargs)
 			end
 
 			if RateLimit(p, "Chat") then
+				local isMuted = Admin.IsMuted(p);
 				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
-				elseif not Admin.IsMuted(p) then
+				elseif not isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
-					local pData = Core.GetPlayer(p)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats,{
@@ -375,6 +375,15 @@ return function(Vargs)
 
 						Process.Command(p,msg)
 					end
+				elseif isMuted then
+					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					local filtered = service.LaxFilter(msg, p)
+					AddLog(Logs.Chats,{
+						Text = "[MUTED] ".. p.Name ..": "..tostring(filtered);
+						Desc = tostring(filtered);
+						NoTime = true;
+						Player = p;
+					})
 				end
 			elseif RateLimit(p, "RateLog") then
 				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
