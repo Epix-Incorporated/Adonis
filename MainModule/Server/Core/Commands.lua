@@ -338,9 +338,15 @@ return function(Vargs)
 				if amount>50 then amount=50 end
 				local command = args[3]
 				local name = plr.Name:lower()
+				assert(command, "Argument #1 needs to be supplied")
+				if command:sub(1,#Settings.Prefix+string.len("repeat")):lower() == string.lower(Settings.Prefix.."repeat") or command:sub(1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."repeat") then
+					error("Cannot repeat the loop command in a loop command")
+					return
+				end
+															
 				Variables.CommandLoops[name..command] = true
 				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
-				for i = 1,amount do
+				for i = 1,amount do										
 					if not Variables.CommandLoops[name..command] then break end
 					Process.Command(plr,command,{Check = false;})
 					wait(timer)
