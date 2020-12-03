@@ -2,7 +2,9 @@ Adonis is a server moderation and management system created for the Roblox platf
 
 Uploaded to GitHub for collaboration and issue tracking.
 
-NOTE: By default, the Adonis.rbxm file in this repo may have debug mode enabled. To disable it, open Adonis_Loader > Loader > Loader.lua and change DebugMode = true to DebugMode = false in the "data" table. I recommend using the Adonis_Loader model instead.
+NOTE: Adonis is constantly changing. Whether it be new features, improvements, or the removal or modification of existing features when necessary. If a plugin you've been using suddenly stops working, something it relied on was likely changed. Adonis is updated whenever new changes are made, as opposed to other softwares that have "stable" and "nightly" branches/releases, Adonis' model on ROBLOX will always be the most up to date version, so if you have important plugins that are essential to the operation of your game, I advise that you either fork Adonis or use the version that can be found in the releases on this GitHub. You will have to manually update to get any future changes. 
+
+By default, the Adonis.rbxm file in this repo may have debug mode enabled. To disable it, open Adonis_Loader > Loader > Loader.lua and change DebugMode = true to DebugMode = false in the "data" table. I recommend using the Adonis_Loader model instead.
 
 Quick Start: https://youtu.be/XnhWcfoAJ_o
 
