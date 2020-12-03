@@ -4180,6 +4180,21 @@ return function(Vargs)
 			end
 		};
 
+		ClearEffects = {
+			Prefix = Settings.Prefix;
+			Commands = {"cleareffects"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Removes all screen UI effects such as Spooky, Clown, ScreenImage, ScreenVideo, etc.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
+					Remote.RemoveGui(v,"Effect")
+				end
+			end
+		};
+		
 		ResetLighting = {
 			Prefix = Settings.Prefix;
 			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
