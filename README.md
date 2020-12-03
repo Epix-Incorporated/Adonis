@@ -1,4 +1,4 @@
-Adonis is a server moderation and management system created for the Roblox platform.
+Adonis is a server moderation and management system created for use on the Roblox platform.
 
 Uploaded to GitHub for collaboration and issue tracking.
 
