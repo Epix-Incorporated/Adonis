@@ -7684,6 +7684,12 @@ return function(Vargs)
 
 						new.Parent = part
 						new.Disabled = false
+						local ret = Remote.MakeGuiGet(plr,"Notification",{
+							Title = "Flight";
+							Message = "You are now flying press E to toggle flight.";
+							Time = 10;
+
+						})
 					end
 				end
 			end
