@@ -128,7 +128,26 @@ return function(Vargs)
 				end
 			end;
 		};
-
+		Boombox = {
+			Prefix = Settings.Prefix;
+			Commands = {"boombox"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Gives the target player(s) a boombox";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local gear = service.Insert(tonumber(212641536))
+				if gear:IsA("Tool") or gear:IsA("HopperBin") then
+					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
+					for i, v in pairs(service.GetPlayers(plr,args[1])) do
+						if v:findFirstChild("Backpack") then
+							gear:Clone().Parent = v.Backpack
+						end
+					end
+				end
+			end
+		};
 		Terminal = {
 			Prefix = ":";
 			Commands = {"terminal";"console";};
