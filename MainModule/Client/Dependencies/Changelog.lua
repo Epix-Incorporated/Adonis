@@ -1,6 +1,12 @@
 return {
-	"Version: 201";
+	"Version: 202";
 	"*Click and drag edges to expand*";
+	"";
+	"[12.16.2020 16:32 EST]";
+	"*Git merge:";
+	"(Git/TheLegendarySpark) Added service.SelfEvent";
+	"(Git/EnderUwU) Added boombox command";
+	"(Git/EnderUwU) Added notification that pops up if somene gives you fly";
 	"";
 	"[12.03.2020 11:29 EST]";
 	"*Added IsMuted(plr) to _G.Adonis";
