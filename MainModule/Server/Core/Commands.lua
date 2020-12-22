@@ -4537,17 +4537,68 @@ return function(Vargs)
 			end
 		};
 
-		FlyNoClip = {
+		Fly = {
 			Prefix = Settings.Prefix;
-			Commands = {"flynoclip";};
-			Args = {"player";"speed";};
+			Commands = {"fly";"flight";};
+			Args = {"player", "speed"};
 			Hidden = false;
-			Description = "Flying noclip";
+			Description = "Lets the target player(s) fly";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Commands.Fly.Function(p, args, true)
+			Function = function(plr,args,noclip)
+				local speed = tonumber(args[2]) or 2
+				local scr = Deps.Assets.Fly:Clone()
+				local sVal = service.New("NumberValue", {
+					Name = "Speed";
+					Value = speed;
+					Parent = scr;
+				})
+				local NoclipVal = service.New("BoolValue", {
+					Name = "Noclip";
+					Value = true;
+					Parent = scr;
+				})
+
+				scr.Name = "ADONIS_FLIGHT"
+
+				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+					local human = v.Character:FindFirstChildOfClass("Humanoid")
+					if human then
+						human.PlatformStand = true
+					end
+					local part = v.Character:FindFirstChild("HumanoidRootPart")
+					if part then
+						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local olds = part:FindFirstChild("ADONIS_FLIGHT")
+						if oldp then oldp:Destroy() end
+						if oldg then oldg:Destroy() end
+						if olds then olds:Destroy() end
+
+						local new = scr:Clone()
+						local flightPosition = service.New("BodyPosition")
+						local flightGyro = service.New("BodyGyro")
+
+						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
+						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.Position = part.Position
+						flightPosition.Parent = part
+
+						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
+						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.CFrame = part.CFrame
+						flightGyro.Parent = part
+
+						new.Parent = part
+						new.Disabled = false
+						local ret = Remote.MakeGuiGet(plr,"Notification",{
+							Title = "Flight";
+							Message = "You are now flying press E to toggle flight.";
+							Time = 10;
+
+
+						})
+					end
 				end
 			end
 		};
@@ -7649,12 +7700,12 @@ return function(Vargs)
 			end
 		};
 
-		Fly = {
+		FlyClip = {
 			Prefix = Settings.Prefix;
-			Commands = {"fly";"flight";};
+			Commands = {"flyclip";"flightclip";};
 			Args = {"player", "speed"};
 			Hidden = false;
-			Description = "Lets the target player(s) fly";
+			Description = "Lets the target player(s) fly (clipping them)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args,noclip)
@@ -7667,7 +7718,7 @@ return function(Vargs)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = false;
 					Parent = scr;
 				})
 
@@ -7708,12 +7759,13 @@ return function(Vargs)
 							Message = "You are now flying press E to toggle flight.";
 							Time = 10;
 
+
 						})
 					end
 				end
 			end
 		};
-
+		
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed";"flightspeed";};
