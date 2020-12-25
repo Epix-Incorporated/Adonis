@@ -573,6 +573,41 @@ return function(Vargs)
 			end
 		end;
 		
+		ConvertPlayerCharacterToRig = function(p, rigType)
+			rigType = rigType or "R15"
+			
+			local char = p.Character
+			if not p.Character then
+				p:LoadCharacter()
+				p.CharacterAdded:Wait()
+				char = p.Character
+			end
+			
+			local head = char:FindFirstChild"Head"
+			local human = char:FindFirstChildOfClass"Humanoid"
+			
+			if head then
+				local rig = server.Deps["Rig"..rigType]:Clone() -- requires R6 and R15 in Dependencies to retrieve the Rig Models !!
+				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
+				local origHeadCF = head.CFrame
+				rig.Name = p.Name
+				
+				for a,b in pairs(char:children()) do
+					if b:IsA("Accessory") or b:IsA("Pants") or b:IsA("Shirt") or b:IsA("ShirtGraphic") or b:IsA("BodyColors") then
+						b.Parent = rig
+					elseif b:IsA"BasePart" and b.Name == "Head" and b:FindFirstChild("face") then
+						rig.Head.face.Texture = b.face.Texture
+					end
+				end
+				
+				p.Character = rig
+				rig.Parent = workspace
+				rig.Head.CFrame = origHeadCF
+				
+				human.RigType = Enum.HumanoidRigType[rigType]
+			end
+		end;
+																		
 		NewParticle = function(target,type,props)
 			local ind = Functions.GetRandom()
 			Variables.LocalEffects[ind] = {
