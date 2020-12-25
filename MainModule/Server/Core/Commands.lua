@@ -9240,25 +9240,31 @@ return function(Vargs)
 			Commands = {"char";"character";"appearance";};
 			Args = {"player";"ID or player";};
 			Hidden = false;
-			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If argument 2 is a number it will auto assume it's an ID.";
+			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be filled")
+				assert(args[2], "Argument #2 must be filled")
+				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if tonumber(args[2]) then
-						v.CharacterAppearanceId = tonumber(args[2])
-						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-					else
-						if not service.Players:FindFirstChild(args[2]) then
-							local userid=args[2]
-							Pcall(function() userid=service.Players:GetUserIdFromNameAsync(args[2]) end)
-							v.CharacterAppearanceId = userid
-							Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-						else
-							for k,m in pairs(service.GetPlayers(plr,args[2])) do
-								v.CharacterAppearanceId = m.userId
-								Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
+					local validId = (args[2]:sub(1,6):lower()=="userid-" and tonumber(args[2]:sub(7))) or tonumber(args[2])
+					
+					local suc,ers = pcall(function()
+						return service.Players:GetHumanoidDescriptionFromUserId(service.Players:GetUserIdFromNameAsync(args[2]))
+					end)
+					
+					if suc then
+						local char = plr.Character
+						
+						if char then
+							local humanoid = char:FindFirstChildOfClass"Humanoid"
+							
+							if humanoid then
+								humanoid:ApplyDescription(ers)
 							end
+						else
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Cannot convert "..v.Name.."'s character (No character visible)"})
 						end
 					end
 				end
@@ -9276,8 +9282,31 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v and v.Character then
-						v.CharacterAppearanceId = v.userId
-						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
+						local suc,ers = pcall(function()
+							return service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+						end)
+						
+						if suc then
+							local char = v.Character
+							
+							if char then
+								local humanoid = char:FindFirstChildOfClass"Humanoid"
+								
+								if humanoid then
+									humanoid:ApplyDescription(ers)
+								else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+								end
+							else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+							end
+						else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+						end
+						
 					end
 				end
 			end
