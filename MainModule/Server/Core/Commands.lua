@@ -5252,13 +5252,43 @@ return function(Vargs)
 			Commands = {"respawn";"re"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Repsawns the target player(s)";
+			Description = "Respawns the target player(s)"; -- typo fixed
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					v:LoadCharacter()
 					Remote.Send(v,'Function','SetView','reset')
+				end
+			end
+		};
+
+		R6 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r6","classicrig"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R6";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R6")
+				end
+			end
+		};
+
+		R15 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r15","rthro"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R15";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R15")
 				end
 			end
 		};
