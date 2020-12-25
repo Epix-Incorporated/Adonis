@@ -587,7 +587,7 @@ return function(Vargs)
 			local human = char:FindFirstChildOfClass"Humanoid"
 			
 			if head then
-				local rig = server.Deps["Rig"..rigType]:Clone() -- requires R6 and R15 in Dependencies to retrieve the Rig Models !!
+				local rig = server.Deps.Assets["Rig"..rigType]:Clone() -- requires R6 and R15 in Dependencies to retrieve the Rig Models !!
 				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
 				local origHeadCF = head.CFrame
 				rig.Name = p.Name
