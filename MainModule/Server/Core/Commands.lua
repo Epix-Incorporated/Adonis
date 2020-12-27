@@ -1722,6 +1722,14 @@ return function(Vargs)
 						end
 						if shirt then shirt:Clone().Parent = plr.Character end
 					end
+				elseif service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 1 then
+					if plr.Character then
+						for g,k in pairs(plr.Character:children()) do
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						local Shirt = Instance.new("Shirt")
+						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
+					end
 				else
 					error("Item ID passed has invalid item type")
 				end
@@ -1744,6 +1752,14 @@ return function(Vargs)
 							if k:IsA("Pants") then k:Destroy() end
 						end
 						if pants then pants:Clone().Parent = plr.Character end
+					end
+				elseif service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 1 then
+					if plr.Character then
+						for g,k in pairs(plr.Character:children()) do
+							if k:IsA("Pants") then k:Destroy() end
+						end
+						local Pants = Instance.new("Pants")
+						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
 					end
 				else
 					error("Item ID passed has invalid item type")
@@ -6767,6 +6783,14 @@ return function(Vargs)
 							if shirt then shirt:Clone().Parent = v.Character end
 						end
 					end
+				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
+					if plr.Character then
+						for g,k in pairs(plr.Character:children()) do
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						local Shirt = Instance.new("Shirt")
+						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
+					end
 				else
 					error("Item ID passed has invalid item type")
 				end
@@ -6791,6 +6815,14 @@ return function(Vargs)
 							end
 							if pants then pants:Clone().Parent = v.Character end
 						end
+					end
+				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
+					if plr.Character then
+						for g,k in pairs(plr.Character:children()) do
+							if k:IsA("Pants") then k:Destroy() end
+						end
+						local Pants = Instance.new("Pants")
+						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
 					end
 				else
 					error("Item ID passed has invalid item type")
