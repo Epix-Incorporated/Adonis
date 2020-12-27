@@ -411,7 +411,7 @@ return function()
 			local menuOpened = false
 			local gotGoodTime = tick()
 			local coreNums = {}
-			local coreClears = {
+			local coreClears = ReadOnly({
 				FriendStatus = true;
 				ImageButton = false;
 				ButtonHoverText = true;
@@ -427,9 +427,9 @@ return function()
 				ColumnName = true;
 				Frame = false;
 				StatText = false;
-			}
+			})
 			
-			local lookFor = {
+			local lookFor = service.ReadOnly({
 				--'stigma';
 				--'sevenscript';
 				--"a".."ssh".."ax";
@@ -439,7 +439,7 @@ return function()
 				'gui made by kujo';
 				"tetanus reloaded hooked";
 				--"brackhub";
-			}
+			})
 			
 			local files = {
 				["C:\RC7\rc7.dat"] = true;
@@ -494,7 +494,7 @@ return function()
 				if Anti.ObjRLocked(item) and not service.GuiService:IsTenFootInterface() then
 					local cont = true
 					local ran,err = pcall(function()
-						local checks = {
+						local checks = ReadOnly({
 							service.Chat;
 							service.Teams;
 							service.Lighting;
@@ -510,7 +510,7 @@ return function()
 							service.HttpService;
 							service.Workspace;
 							service.Players;
-						}
+						})
 						for i,v in next,checks do
 							if item:IsDescendantOf(v) then cont = false end
 						end
@@ -520,7 +520,7 @@ return function()
 						local cont = false
 						local class = Anti.GetClassName(item)
 						local name = tostring(item)
-						local checks = {
+						local checks = ReadOnly({
 							"Script";
 							"LocalScript";
 							"CoreScript";
@@ -532,7 +532,7 @@ return function()
 							"TextBox";
 							"ImageButton";
 							"GuiMain";
-						}
+						})
 						
 						if class then 
 							if class == "LocalScript" then
