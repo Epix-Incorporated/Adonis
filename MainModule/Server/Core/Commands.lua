@@ -1728,7 +1728,9 @@ return function(Vargs)
 							if k:IsA("Shirt") then k:Destroy() end
 						end
 						local Shirt = Instance.new("Shirt")
+						Shirt.Name = "Shirt"
 						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
+						Shirt.Parent = plr.Character
 					end
 				else
 					error("Item ID passed has invalid item type")
@@ -1759,7 +1761,9 @@ return function(Vargs)
 							if k:IsA("Pants") then k:Destroy() end
 						end
 						local Pants = Instance.new("Pants")
+						Pants.Name = "Pants"
 						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
+						Pants.Parent = plr.Character
 					end
 				else
 					error("Item ID passed has invalid item type")
@@ -6784,12 +6788,14 @@ return function(Vargs)
 						end
 					end
 				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+					if v.Character then
+						for g,k in pairs(v.Character:children()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
 						local Shirt = Instance.new("Shirt")
+						Shirt.Name = "Shirt"
 						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
+						Shirt.Parent = v.Character
 					end
 				else
 					error("Item ID passed has invalid item type")
@@ -6817,12 +6823,14 @@ return function(Vargs)
 						end
 					end
 				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+					if v.Character then
+						for g,k in pairs(v.Character:children()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
 						local Pants = Instance.new("Pants")
+						Pants.Name = "Pants"
 						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
+						Pants.Parent = v.Character
 					end
 				else
 					error("Item ID passed has invalid item type")
