@@ -1714,26 +1714,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 11 then
-					local shirt = service.Insert(tonumber(args[1]))
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+					if Shirt then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						if shirt then shirt:Clone().Parent = plr.Character end
+						Shirt:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
-				elseif service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 1 then
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
-							if k:IsA("Shirt") then k:Destroy() end
-						end
-						local Shirt = Instance.new("Shirt")
-						Shirt.Name = "Shirt"
-						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
-						Shirt.Parent = plr.Character
-					end
-				else
-					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -1747,26 +1739,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 12 then
-					local pants = service.Insert(tonumber(args[1]))
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+					if Pants then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						if pants then pants:Clone().Parent = plr.Character end
+						Pants:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
-				elseif service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 1 then
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
-							if k:IsA("Pants") then k:Destroy() end
-						end
-						local Pants = Instance.new("Pants")
-						Pants.Name = "Pants"
-						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[1]))
-						Pants.Parent = plr.Character
-					end
-				else
-					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -6777,28 +6761,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 11 then
-					local shirt = service.Insert(tonumber(args[2]))
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				if Shirt then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
-							for g,k in pairs(v.Character:children()) do
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Shirt") then k:Destroy() end
 							end
-							if shirt then shirt:Clone().Parent = v.Character end
+							Shirt:Clone().Parent = v.Character
 						end
-					end
-				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
-					if v.Character then
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Shirt") then k:Destroy() end
-						end
-						local Shirt = Instance.new("Shirt")
-						Shirt.Name = "Shirt"
-						Shirt.ShirtTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
-						Shirt.Parent = v.Character
 					end
 				else
-					error("Item ID passed has invalid item type")
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -6812,28 +6788,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 12 then
-					local pants = service.Insert(tonumber(args[2]))
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				if Pants then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
-							for g,k in pairs(v.Character:children()) do
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Pants") then k:Destroy() end
 							end
-							if pants then pants:Clone().Parent = v.Character end
+							Pants:Clone().Parent = v.Character
 						end
-					end
-				elseif service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 1 then
-					if v.Character then
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Pants") then k:Destroy() end
-						end
-						local Pants = Instance.new("Pants")
-						Pants.Name = "Pants"
-						Pants.PantsTemplate = string.format("rbxassetid://%d", tonumber(args[2]))
-						Pants.Parent = v.Character
 					end
 				else
-					error("Item ID passed has invalid item type")
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
