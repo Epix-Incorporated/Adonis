@@ -899,6 +899,13 @@ return function(Vargs)
 					end
 				end
 			end
+		end;
+
+		CreateClothingFromImageId = function(clothingtype, Id)
+			local Clothing = Instance.new(clothingtype)
+			Clothing.Name = clothingtype
+			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
+			return Clothing
 		end
 	};
 end
