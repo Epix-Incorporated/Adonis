@@ -411,7 +411,7 @@ return function()
 			local menuOpened = false
 			local gotGoodTime = tick()
 			local coreNums = {}
-			local coreClears = {
+			local coreClears = service.ReadOnly({
 				FriendStatus = true;
 				ImageButton = false;
 				ButtonHoverText = true;
@@ -427,7 +427,7 @@ return function()
 				ColumnName = true;
 				Frame = false;
 				StatText = false;
-			}
+			})
 			
 			local lookFor = {
 				--'stigma';

@@ -362,7 +362,7 @@ return function(Vargs)
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
-															
+
 				Variables.CommandLoops[name..command] = true
 				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
 				for i = 1,amount do										
@@ -1714,16 +1714,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 11 then
-					local shirt = service.Insert(tonumber(args[1]))
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+					if Shirt then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						if shirt then shirt:Clone().Parent = plr.Character end
+						Shirt:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
-				else
-					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -1737,16 +1739,18 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[1])).AssetTypeId == 12 then
-					local pants = service.Insert(tonumber(args[1]))
-					if plr.Character then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+					if Pants then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						if pants then pants:Clone().Parent = plr.Character end
+						Pants:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
-				else
-					error("Item ID passed has invalid item type")
 				end
 			end
 		};
@@ -3752,6 +3756,22 @@ return function(Vargs)
 				for i,v in pairs(HTTP.Trello.Owners) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
+				
+				for i,v in pairs(server.HTTP.WebPanel.Creators) do
+					table.insert(temptable,v .. " - Creator [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Moderators) do
+					table.insert(temptable,v .. " - Mod [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Admins) do
+					table.insert(temptable,v .. " - Admin [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Owners) do
+					table.insert(temptable,v .. " - Owner [WebPanel]")
+				end
 
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
@@ -4220,7 +4240,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		ResetLighting = {
 			Prefix = Settings.Prefix;
 			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
@@ -5252,13 +5272,43 @@ return function(Vargs)
 			Commands = {"respawn";"re"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Repsawns the target player(s)";
+			Description = "Respawns the target player(s)"; -- typo fixed
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					v:LoadCharacter()
 					Remote.Send(v,'Function','SetView','reset')
+				end
+			end
+		};
+
+		R6 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r6","classicrig"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R6";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R6")
+				end
+			end
+		};
+
+		R15 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r15","rthro"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R15";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R15")
 				end
 			end
 		};
@@ -6757,18 +6807,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 11 then
-					local shirt = service.Insert(tonumber(args[2]))
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				if Shirt then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
-							for g,k in pairs(v.Character:children()) do
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Shirt") then k:Destroy() end
 							end
-							if shirt then shirt:Clone().Parent = v.Character end
+							Shirt:Clone().Parent = v.Character
 						end
 					end
 				else
-					error("Item ID passed has invalid item type")
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -6782,18 +6834,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId == 12 then
-					local pants = service.Insert(tonumber(args[2]))
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				if Pants then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
-							for g,k in pairs(v.Character:children()) do
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Pants") then k:Destroy() end
 							end
-							if pants then pants:Clone().Parent = v.Character end
+							Pants:Clone().Parent = v.Character
 						end
 					end
 				else
-					error("Item ID passed has invalid item type")
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -9240,25 +9294,31 @@ return function(Vargs)
 			Commands = {"char";"character";"appearance";};
 			Args = {"player";"ID or player";};
 			Hidden = false;
-			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If argument 2 is a number it will auto assume it's an ID.";
+			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be filled")
+				assert(args[2], "Argument #2 must be filled")
+				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if tonumber(args[2]) then
-						v.CharacterAppearanceId = tonumber(args[2])
-						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-					else
-						if not service.Players:FindFirstChild(args[2]) then
-							local userid=args[2]
-							Pcall(function() userid=service.Players:GetUserIdFromNameAsync(args[2]) end)
-							v.CharacterAppearanceId = userid
-							Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-						else
-							for k,m in pairs(service.GetPlayers(plr,args[2])) do
-								v.CharacterAppearanceId = m.userId
-								Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
+					local validId = (args[2]:sub(1,6):lower()=="userid-" and tonumber(args[2]:sub(7))) or tonumber(args[2])
+					
+					local suc,ers = pcall(function()
+						return service.Players:GetHumanoidDescriptionFromUserId(service.Players:GetUserIdFromNameAsync(args[2]))
+					end)
+					
+					if suc then
+						local char = plr.Character
+						
+						if char then
+							local humanoid = char:FindFirstChildOfClass"Humanoid"
+							
+							if humanoid then
+								humanoid:ApplyDescription(ers)
 							end
+						else
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Cannot convert "..v.Name.."'s character (No character visible)"})
 						end
 					end
 				end
@@ -9276,8 +9336,31 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v and v.Character then
-						v.CharacterAppearanceId = v.userId
-						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
+						local suc,ers = pcall(function()
+							return service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+						end)
+						
+						if suc then
+							local char = v.Character
+							
+							if char then
+								local humanoid = char:FindFirstChildOfClass"Humanoid"
+								
+								if humanoid then
+									humanoid:ApplyDescription(ers)
+								else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+								end
+							else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+							end
+						else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+						end
+						
 					end
 				end
 			end

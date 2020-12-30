@@ -1,6 +1,16 @@
 return {
-	"Version: 202";
+	"Version: 203";
 	"*Click and drag edges to expand*";
+	"";
+	"[12.30.2020 15:10 EST]";
+	"*Minor changes";
+	"*WebPanel preparation/limited beta";
+	"*Git merge:";
+	"(Git/TheLegendarySpark) Added R6 and R15 Commands";
+	"(Git/TheLegendarySpark) Imrproved the character and uncharacter command";
+	"(Git/ccuser44) Made coreclears table read only.";
+	"(Git/fxeP1) Update Credits.lua";
+	"(Git/ccuser44) Updated shirt, pants, donor pants and donor shirt";
 	"";
 	"[12.16.2020 16:32 EST]";
 	"*Git merge:";
