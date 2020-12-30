@@ -1,6 +1,10 @@
 return {
-	"Version: 202";
+	"Version: 203";
 	"*Click and drag edges to expand*";
+	"";
+	"[12.30.2020 15:10 EST]";
+	"*Minor changes";
+	"*WebPanel preparation/limited beta";
 	"";
 	"[12.16.2020 16:32 EST]";
 	"*Git merge:";

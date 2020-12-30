@@ -362,7 +362,7 @@ return function(Vargs)
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
-															
+
 				Variables.CommandLoops[name..command] = true
 				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
 				for i = 1,amount do										
@@ -3752,6 +3752,22 @@ return function(Vargs)
 				for i,v in pairs(HTTP.Trello.Owners) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
+				
+				for i,v in pairs(server.HTTP.WebPanel.Creators) do
+					table.insert(temptable,v .. " - Creator [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Moderators) do
+					table.insert(temptable,v .. " - Mod [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Admins) do
+					table.insert(temptable,v .. " - Admin [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Owners) do
+					table.insert(temptable,v .. " - Owner [WebPanel]")
+				end
 
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
@@ -4220,7 +4236,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		ResetLighting = {
 			Prefix = Settings.Prefix;
 			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
