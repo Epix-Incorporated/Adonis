@@ -96,7 +96,7 @@ return function(Vargs)
 				end
 			end
 		};--//hello Dr. Sceleratii ~Ender was here
-		CustommMessage = {
+		CustomMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"cm";"custommessage";};
 			Args = {"Upper message","message";};
@@ -115,7 +115,7 @@ return function(Vargs)
 					})
 				end
 			end
-		};--pog ok this is accuatly angering me if anyone knows how to make it so you can have spaces in upper message pls edit that thank you
+		};
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
