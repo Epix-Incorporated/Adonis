@@ -236,15 +236,17 @@ return function(Vargs)
 						end
 
 						local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
-						if error and type(error) == "string" then 
-							error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
-							if not isSystem then 
-								Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
-							end 
-						elseif error and type(error) ~= "string" then
-							if not isSystem then 
-								Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
-							end 
+						if not opts.IgnoreErrors then
+							if error and type(error) == "string" then 
+								error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
+								if not isSystem then 
+									Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
+								end 
+							elseif error and type(error) ~= "string" then
+								if not isSystem then 
+									Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
+								end 
+							end
 						end
 
 						service.Events.CommandRan:Fire(p,{

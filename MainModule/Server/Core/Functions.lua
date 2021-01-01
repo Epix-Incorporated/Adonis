@@ -650,6 +650,52 @@ return function(Vargs)
 				Remote.Send(player,"Function","PlayAnimation",animId)
 			end
 		end;
+		
+		ApplyBodyPart = function(character, model)
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid then 
+				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
+				local part = model:FindFirstChild(rigType)
+				
+				if not part and rigType == "R15" then 
+					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
+				end
+				
+				if part then 
+					if rigType == "R6" then 
+						local children = character:GetChildren()
+						for _,v in pairs(part:GetChildren()) do 
+							for _,x in pairs(children) do
+								if x:IsA("CharacterMesh") and x.BodyPart == v.BodyPart then 
+									x:Destroy()
+								end 
+							end
+							v:Clone().Parent = character
+						end 
+					elseif rigType == "R15" then 
+						local validParts = {}
+						for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do 
+							validParts[x.Name] = x.Value 
+						end
+						for _,v in pairs(part:GetChildren()) do 
+							if validParts[v.Name] then 
+								humanoid:ReplaceBodyPartR15(validParts[v.Name], v:Clone())
+							end 
+						end
+					end
+				end
+			end
+		end;
+		
+		GetJoints = function(character)
+			local temp = {}
+			for _,v in pairs(character:GetDescendants()) do
+				if v:IsA("Motor6D") then 
+					temp[v.Name] = v -- assumes no 2 joints have the same name, hopefully this wont cause issues
+				end
+			end
+			return temp
+		end;
 
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
