@@ -9309,7 +9309,7 @@ return function(Vargs)
 					end)
 					
 					if suc then
-						local char = plr.Character
+						local char = v.Character
 						
 						if char then
 							local humanoid = char:FindFirstChildOfClass"Humanoid"
