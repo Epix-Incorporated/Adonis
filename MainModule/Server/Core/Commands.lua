@@ -1372,6 +1372,23 @@ return function(Vargs)
 				end
 			end;	
 		};
+
+		GlobalPlace = {
+			Prefix = Settings.Prefix;
+			Commands = {"globalplace","gplace"};
+			Args = {"placeid"};
+			Description = "Sends a global message to all servers";
+			AdminLevel = "Creators";
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				assert(tonumber(args[1], "Argument #1 must be a number")
+				
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;
+		};
 		
 		MessagePM = {
 			Prefix = Settings.Prefix;
