@@ -102,6 +102,11 @@ return function()
 	end
 
 	-- Long polling to listen for any changes on the panel
+	
+	if service.RunService:IsStudio() then
+		return; -- Web Panel doesn't support studio servers !!	
+	end
+	
 	while Settings.WebPanel_Enabled do
 		local success, res = pcall(HTTP.RequestAsync, HTTP, {
 			Url = "https://robloxconnection.adonis.dev/load";
