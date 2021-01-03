@@ -4990,21 +4990,16 @@ return function(Vargs)
 				assert(target_character, "Targeted player doesn't have a character or has a locked character")
 				
 				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
-				target_humandescrip = target_humandescrip and target_humandescrip:Clone() or nil
-				
-				assert(target, "Targeted player wasn't found")
-				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription in their humanoid [Cannot copy target's character]")
-				
+
+				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
+
+				target_humandescrip.Archivable = true
+				target_humandescrip = target_humandescrip:Clone()
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
 						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
 							v.Character.Archivable = true
-							
-							local player_humanoiddescrip = v.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
-							
-							if player_humanoiddescrip then
-								service.Delete(player_humanoiddescrip)
-							end
 							
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
