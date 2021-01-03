@@ -8935,12 +8935,19 @@ return function(Vargs)
 				local sizeLimit = Settings.SizeLimit or 20
 				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
+				if not args[2] or not tonumber(args[2]) then
+					num = 1
+					Functions.Hint("Size changed to 1 [Argument #2 wasn't supplied correctly.]", {plr})
+				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
+					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 went over the size limit]", {plr})
+				end
+				
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 
 					if not human then
-						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!")
+						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!",{plr})
 						continue
 					end
 					
@@ -8949,7 +8956,7 @@ return function(Vargs)
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.")
+						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.",{plr})
 						continue
 					end
 					
