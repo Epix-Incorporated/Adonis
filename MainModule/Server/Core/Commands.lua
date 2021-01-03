@@ -8946,10 +8946,10 @@ return function(Vargs)
 					
 					if not Variables.SizedCharacters[char] then
 						Variables.SizedCharacters[char] = num
-					elseif Variables.SizedCharacters[char]*num <= sizeLimit then
+					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint("Cannot resize "..v.Name.."'s character. Size limit exceeded.")
+						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.")
 						continue
 					end
 					
