@@ -88,6 +88,8 @@ return function(Vargs)
 		
 		LocalEffects = {};
 		
+		SizedCharacters = {};
+		
 		MusicList = {
 			{Name='jericho',ID=292340735};
 			{Name='dieinafire',ID=242222291};
