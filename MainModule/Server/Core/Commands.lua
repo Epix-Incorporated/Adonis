@@ -10072,7 +10072,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
-					error("Backup map wasn't enabled")
+					error("Cannot restore when there are no backup maps!!")
 					return
 				end
 				if server.Variables.RestoringMap then
