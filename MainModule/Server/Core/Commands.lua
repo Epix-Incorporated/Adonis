@@ -8939,6 +8939,20 @@ return function(Vargs)
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 
+					if not human then
+						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!")
+						continue
+					end
+					
+					if not Variables.SizedCharacters[char] then
+						Variables.SizedCharacters[char] = num
+					elseif Variables.SizedCharacters[char]*num <= sizeLimit then
+						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
+					else
+						Functions.Hint("Cannot resize "..v.Name.."'s character. Size limit exceeded.")
+						continue
+					end
+					
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						for k,val in next,human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
