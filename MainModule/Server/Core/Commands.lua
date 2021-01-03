@@ -5155,6 +5155,12 @@ return function(Vargs)
 						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
 							v.Character.Archivable = true
 							
+							for d,e in pairs(v.Character:children()) do
+								if e:IsA"Accessory" then
+									e:Destroy()
+								end
+							end
+							
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
 							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
