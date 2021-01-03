@@ -4181,9 +4181,11 @@ return function(Vargs)
 				for i,v in pairs(plz) do
 					if args[2] and tonumber(args[2]) then
 						local role = v:GetRoleInGroup(tonumber(args[2]))
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Rank: "..tostring(role),{plr})
+						local hasSafeChat = (service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat).." Rank: "..tostring(role),{plr})
 					else
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge,{plr})
+						local hasSafeChat = (service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat),{plr})
 					end
 				end
 			end
