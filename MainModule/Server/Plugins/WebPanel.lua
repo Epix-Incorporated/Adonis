@@ -104,6 +104,7 @@ return function()
 	-- Long polling to listen for any changes on the panel
 	
 	if service.RunService:IsStudio() then
+		warn("WEB PANEL WARNING: STUDIO SERVERS CANNOT USE WEB PANEL !!")
 		return; -- Web Panel doesn't support studio servers !!	
 	end
 	
