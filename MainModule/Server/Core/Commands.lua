@@ -7759,7 +7759,7 @@ return function(Vargs)
 						new.Disabled = false
 						local ret = Remote.MakeGuiGet(plr,"Notification",{
 							Title = "Flight";
-							Message = "You are now flying press E to toggle flight.";
+							Message = "You are now flying. Press the E key to toggle flight.";
 							Time = 10;
 
 						})
