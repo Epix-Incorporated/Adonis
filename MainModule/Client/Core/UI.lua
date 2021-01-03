@@ -208,7 +208,7 @@ return function()
 		Make = function(name, data, themeData)
 			local data = data or {}
 			local defaults = {Desktop = "Default"; Mobile = "Mobilius"}
-			local themeData = themeData or Core.Theme or defaults
+			local themeData = themeData or Variables.LastServerTheme or defaults
 			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
 			local folder = Deps.UI:FindFirstChild(theme) or Deps.UI.Default
 			local newGui, folder2, foundConf = UI.GetNew(theme, name)

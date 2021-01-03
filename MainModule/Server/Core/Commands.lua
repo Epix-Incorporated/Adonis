@@ -82,7 +82,20 @@ return function(Vargs)
 				})
 			end;
 		};
-
+		Davey = {
+			Prefix = Settings.Prefix;
+			Commands = {"Davey_Bones";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Turns you into me <3";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"698712377")
+				end
+			end
+		};--//hello Dr. Sceleratii ~Ender was here
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
@@ -90,8 +103,9 @@ return function(Vargs)
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
 			Fun = false;
+			CrossServerDenied = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local board = Settings.Trello_Primary
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
@@ -102,7 +116,7 @@ return function(Vargs)
 				local lists = trello.getLists(board)
 				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
-				local level = Admin.GetLevel(plr)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
@@ -114,7 +128,26 @@ return function(Vargs)
 				end
 			end;
 		};
-
+		Boombox = {
+			Prefix = Settings.Prefix;
+			Commands = {"boombox"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Gives the target player(s) a boombox";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local gear = service.Insert(tonumber(212641536))
+				if gear:IsA("Tool") or gear:IsA("HopperBin") then
+					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
+					for i, v in pairs(service.GetPlayers(plr,args[1])) do
+						if v:findFirstChild("Backpack") then
+							gear:Clone().Parent = v.Backpack
+						end
+					end
+				end
+			end
+		};
 		Terminal = {
 			Prefix = ":";
 			Commands = {"terminal";"console";};
@@ -324,9 +357,15 @@ return function(Vargs)
 				if amount>50 then amount=50 end
 				local command = args[3]
 				local name = plr.Name:lower()
+				assert(command, "Argument #1 needs to be supplied")
+				if command:sub(1,#Settings.Prefix+string.len("repeat")):lower() == string.lower(Settings.Prefix.."repeat") or command:sub(1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."repeat") then
+					error("Cannot repeat the loop command in a loop command")
+					return
+				end
+
 				Variables.CommandLoops[name..command] = true
 				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
-				for i = 1,amount do
+				for i = 1,amount do										
 					if not Variables.CommandLoops[name..command] then break end
 					Process.Command(plr,command,{Check = false;})
 					wait(timer)
@@ -355,6 +394,39 @@ return function(Vargs)
 			end
 		};
 
+		AbortAll = {
+			Prefix = Settings.Prefix;
+			Commands = {"abortall";"stoploops";};
+			Args = {"username (optional)";};
+			Description = "Aborts all existing command loops";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local name = args[1] and args[1]:lower()
+
+				if name and name=="me" then
+					for i,v in ipairs(Variables.CommandLoops) do
+						if i:sub(1,plr.Name):lower() == plr.Name:lower() then
+							Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
+						end
+					end
+				elseif name and name=="all" then
+					for i,v in ipairs(Variables.CommandLoops) do
+						Variables.CommandLoops[plr.Name:lower()..args[2]] = nil
+					end
+				elseif args[2] then
+					if Variables.CommandLoops[name..args[2]] then
+						Variables.CommandLoops[name..args[2]] = nil
+					else
+						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No loops relating to your search'}) 											
+					end
+				else
+					for i,v in ipairs(Variables.CommandLoops) do
+						Variables.CommandLoops[i] = nil
+					end
+				end
+			end
+		};
+
 		TempModerator = {
 			Prefix = Settings.Prefix;
 			Commands = {"admin","tempadmin","ta","temp","helper";};
@@ -363,8 +435,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) a temporary moderator; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -391,8 +463,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) a moderator; Saves";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -419,8 +491,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) an admin; Saves";
 			Fun = false;
 			AdminLevel = "Owners";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -447,8 +519,8 @@ return function(Vargs)
 			Description = "Makes the target player(s) an owner; Saves";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr,args)
-				local sendLevel = Admin.GetLevel(plr)
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
@@ -475,10 +547,10 @@ return function(Vargs)
 			Description = "Removes the target players' admin powers; Saves";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr, args, data)
 				assert(args[1],"Argument missing or nil")
 
-				local sendLevel = Admin.GetLevel(plr)
+				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in next,plrs do
@@ -523,10 +595,10 @@ return function(Vargs)
 			Description = "Removes the target players' admin powers for this server; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr, args, data)
 				assert(args[1],"Argument missing or nil")
 
-				local sendLevel = Admin.GetLevel(plr)
+				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
 				if plrs and #plrs>0 then
 					for i,v in pairs(plrs) do
@@ -618,8 +690,8 @@ return function(Vargs)
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local plrLevel = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local plrLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -693,7 +765,7 @@ return function(Vargs)
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :undataban";
 			Fun = false;
 			AdminLevel = "Owners";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local time = args[2] or '60'
 				assert(args[1] and args[2], "Argument missing or nil")
 				if time:lower():sub(#time)=='s' then
@@ -708,8 +780,8 @@ return function(Vargs)
 					time = time:sub(1,#time-1)
 					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
 				end
-				
-				local level = Admin.GetLevel(plr);
+
+				local level = data.PlayerData.Level;
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
 					if level > Admin.GetLevel(v) then
 						local endTime = tonumber(os.time())+tonumber(time)
@@ -790,8 +862,8 @@ return function(Vargs)
 			Args = {"player";};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local level = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v)
@@ -821,8 +893,8 @@ return function(Vargs)
 			Args = {"player";};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "Owners";
-			Function = function(plr,args)
-				local level = Admin.GetLevel(plr)
+			Function = function(plr,args,data)
+				local level = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, true)
@@ -916,9 +988,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','Crash')
 					end
 				end
@@ -933,9 +1005,9 @@ return function(Vargs)
 			Description = "Hard crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','HardCrash')
 					end
 				end
@@ -950,9 +1022,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','RAMCrash')
 					end
 				end
@@ -967,9 +1039,9 @@ return function(Vargs)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,'Function','GPUCrash')
 					end
 				end
@@ -1074,10 +1146,10 @@ return function(Vargs)
 			Function = function(plr,args)
 				if args[1]:lower()=='on' or args[1]:lower()=='enable' then
 					Variables.Whitelist.Enabled = true
-					Functions.Hint("Server Whitelisted", service.Players:GetChildren())
+					Functions.Hint("Server Whitelisted", service.Players:GetPlayers())
 				elseif args[1]:lower()=='off' or args[1]:lower()=='disable' then
 					Variables.Whitelist.Enabled = false
-					Functions.Hint("Server Unwhitelisted", service.Players:GetChildren())
+					Functions.Hint("Server Unwhitelisted", service.Players:GetPlayers())
 				elseif args[1]:lower()=="add" then
 					if args[2] then
 						local plrs = service.GetPlayers(plr,args[2],true)
@@ -1221,7 +1293,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		SlowMode = {
 			Prefix = Settings.Prefix;
 			Commands = {"slowmode"};
@@ -1231,7 +1303,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
 				if not args[1] then error("Argument 1 missing") end
-				
+
 				if num then
 					Admin.SlowMode = num;
 					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.Players:children())
@@ -1289,10 +1361,29 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local num = math.min(tonumber(args[1]),120)
-				for i = num, 1, -1 do
-					Functions.Hint(i, service.Players:children(),2.5)
-					wait(1)
+				local loop
+				loop = service.StartLoop("HintCountdown", 1, function()
+					if num < 1 then
+						loop.Running = false
+					else
+						server.Functions.Hint(num, service.Players:children(), 2.5)
+						num -= 1
+					end
+				end)
+			end
+		};
+
+		StopCountdown = {
+			Prefix = server.Settings.Prefix;
+			Commands = {"stopcountdown", "stopcd"};
+			Args = {};
+			Description = "Stops all currently running countdowns";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					server.Remote.RemoveGui(v, "Countdown")
 				end
+				service.StopLoop("HintCountdown")
 			end
 		};
 
@@ -1305,7 +1396,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2] and tonumber(args[1]),"Argument missing or invalid")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
@@ -1325,7 +1416,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in next,service.Players:GetChildren() do
+				for i,v in next,service.Players:GetPlayers() do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = "Message from " .. plr.Name;
@@ -1346,7 +1437,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = Settings.SystemTitle;
@@ -1414,7 +1505,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Notify")
 					Remote.MakeGui(v,"Notify",{
 						Title = "Message from " .. plr.Name;
@@ -1452,7 +1543,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.MakeGui(v,"Hint",{
 						Message = tostring(plr or "")..": "..service.Filter(args[1],plr,v);
 					})
@@ -1467,9 +1558,9 @@ return function(Vargs)
 			Filter = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -1498,9 +1589,9 @@ return function(Vargs)
 			Filter = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				assert(args[1] and args[2],"Argument missing or nil")
-				local plrLevel = Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
@@ -1665,14 +1756,12 @@ return function(Vargs)
 						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						
 						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
 
 						if humandescrip then
 							humandescrip.Shirt = ClothingId
 						end
-						
 						Shirt:Clone().Parent = plr.Character
 					else
 						error("Unexpected error occured. Clothing is missing")
@@ -1698,14 +1787,14 @@ return function(Vargs)
 						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						
+
 						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
 
 						if humandescrip then
 							humandescrip.Pants = ClothingId
 						end
-						
+
 						Pants:Clone().Parent = plr.Character
 					else
 						error("Unexpected error occured. Clothing is missing")
@@ -2458,7 +2547,7 @@ return function(Vargs)
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid ID")
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,"Function","PlayAnimation",args[2])
+					Functions.PlayAnimation(v,args[2])
 				end
 			end
 		};
@@ -3117,7 +3206,7 @@ return function(Vargs)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind,p in pairs(service.Players:GetChildren()) do
+							for ind,p in pairs(service.Players:GetPlayers()) do
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p,"Notification",{
 										Title = "Help Request";
@@ -3188,6 +3277,30 @@ return function(Vargs)
 						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 					else
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg,{plr})
+					end
+				else
+					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
+				end
+			end
+		};
+
+		GlobalJoin = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"joinfriend";};
+			Args = {"username";};
+			Hidden = false;
+			Description = "Joins your friend outside/inside of the game (must be online)";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args) -- uses Player:GetFriendsOnline()
+				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+
+				local player = service.Players:GetUserIdFromNameAsync(args[1])
+				if player then
+					for i,v in next, plr:GetFriendsOnline() do
+						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
+							service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, plr)
+						end
 					end
 				else
 					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
@@ -3325,7 +3438,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1]:lower())) do
-					Remote.MakeGui(v,"Alert",{Message = (service.Filter(args[2],plr,v) or "Wake up")})
+					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up"})
 				end
 			end
 		};
@@ -3426,13 +3539,13 @@ return function(Vargs)
 			Commands = {"cameras";"cams";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you admin cameras in the server and lets you delete/view them";
+			Description = "Shows a list of admin cameras";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
 				for i,v in pairs(Variables.Cameras) do
-					table.insert(tab,{Text = v.Name,Desc = "Pos: "..v.Object.Position})
+					table.insert(tab,{Text = v.Name,Desc = "Pos: "..tostring(v.Brick.Position)})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Cameras", Tab = tab})
 			end
@@ -3699,6 +3812,22 @@ return function(Vargs)
 				for i,v in pairs(HTTP.Trello.Owners) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
+				
+				for i,v in pairs(server.HTTP.WebPanel.Creators) do
+					table.insert(temptable,v .. " - Creator [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Moderators) do
+					table.insert(temptable,v .. " - Mod [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Admins) do
+					table.insert(temptable,v .. " - Admin [WebPanel]")
+				end
+
+				for i,v in pairs(server.HTTP.WebPanel.Owners) do
+					table.insert(temptable,v .. " - Owner [WebPanel]")
+				end
 
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
@@ -3822,6 +3951,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				local prefix = Settings.Prefix
 				local split = Settings.SplitKey
+				local specialPrefix = Settings.SpecialPrefix
 				local num = 0
 				local children = {
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
@@ -3844,7 +3974,7 @@ return function(Vargs)
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
 									OnClick = Core.Bytecode([[
-										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..[[me]]..split..v.Name..[[");
+										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
 									]]);
 								}
 							};
@@ -4152,6 +4282,21 @@ return function(Vargs)
 			end
 		};
 
+		ClearEffects = {
+			Prefix = Settings.Prefix;
+			Commands = {"cleareffects"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Removes all screen UI effects such as Spooky, Clown, ScreenImage, ScreenVideo, etc.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
+					Remote.RemoveGui(v,"Effect")
+				end
+			end
+		};
+
 		ResetLighting = {
 			Prefix = Settings.Prefix;
 			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
@@ -4294,23 +4439,14 @@ return function(Vargs)
 		Sell = {
 			Prefix = Settings.Prefix;
 			Commands = {"sell";};
-			Args = {"player";"id";"currency";};
+			Args = {"player";"id";};
 			Hidden = false;
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local type = args[3] or 'default'
-				local t
-				if type:lower()=='tix' or type:lower()=='tickets' or type:lower()=='t' then
-					t = Enum.CurrencyType.Tix
-				elseif type:lower()=='robux' or type:lower()=='rb' or type:lower()=='r' then
-					t = Enum.CurrencyType.Robux
-				else
-					t = Enum.CurrencyType.Default
-				end
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false,t)
+					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false)
 				end
 			end
 		};
@@ -5277,13 +5413,43 @@ return function(Vargs)
 			Commands = {"respawn";"re"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Repsawns the target player(s)";
+			Description = "Respawns the target player(s)"; -- typo fixed
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					v:LoadCharacter()
 					Remote.Send(v,'Function','SetView','reset')
+				end
+			end
+		};
+
+		R6 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r6","classicrig"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R6";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R6")
+				end
+			end
+		};
+
+		R15 = {
+			Prefix = Settings.Prefix;
+			Commands = {"r15","rthro"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Converts players' character to R15";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.ConvertPlayerCharacterToRig(v, "R15")
 				end
 			end
 		};
@@ -6782,20 +6948,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if image then
-						if v.Character and image then
-							for g,k in pairs(v.Character:children()) do
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				if Shirt then
+					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						if v.Character then
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Shirt") then k:Destroy() end
 							end
-							service.New('Shirt',v.Character).ShirtTemplate="http://www.roblox.com/asset/?id="..image
-						end
-					else
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Shirt") then k:Destroy() end
+							Shirt:Clone().Parent = v.Character
 						end
 					end
+				else
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -6809,20 +6975,20 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if image then
-						if v.Character and image then
-							for g,k in pairs(v.Character:children()) do
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				if Pants then
+					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						if v.Character then
+							for g,k in pairs(v.Character:GetChildren()) do
 								if k:IsA("Pants") then k:Destroy() end
 							end
-							service.New('Pants',v.Character).PantsTemplate="http://www.roblox.com/asset/?id="..image
-						end
-					else
-						for g,k in pairs(v.Character:children()) do
-							if k:IsA("Pants") then k:Destroy() end
+							Pants:Clone().Parent = v.Character
 						end
 					end
+				else
+					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -6966,7 +7132,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,'Function','PlayAnimation',27789359)
+					Functions.PlayAnimation(v,27789359)
 				end
 			end
 		};
@@ -7273,6 +7439,7 @@ return function(Vargs)
 				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid")
 				local audio = service.New("Sound", {
 					Looped = true;
+					Name = "ADONIS_AUDIO";
 					SoundId = "rbxassetid://"..args[2];
 				})
 
@@ -7475,7 +7642,7 @@ return function(Vargs)
 					if name == "Invalid ID" then
 						error("Invalid ID")
 					elseif Settings.SongHint then
-						Functions.Hint(name, service.Players:GetChildren())
+						Functions.Hint(name, service.Players:GetPlayers())
 					end
 				end
 			end
@@ -7731,6 +7898,12 @@ return function(Vargs)
 
 						new.Parent = part
 						new.Disabled = false
+						local ret = Remote.MakeGuiGet(plr,"Notification",{
+							Title = "Flight";
+							Message = "You are now flying press E to toggle flight.";
+							Time = 10;
+
+						})
 					end
 				end
 			end
@@ -7872,39 +8045,48 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for i,plr in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
-						if v and v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-							if v.Character:findFirstChild("Shirt") then
-								v.Character.Shirt.Parent = v.Character.HumanoidRootPart
+						if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
+							if plr.Chraracter:FindFirstChild"Shirt" then
+								plr.Chaacter.Shirt.Parent = plr.Character.HumanoidRootPart
 							end
-							if v.Character:findFirstChild("Pants") then
-								v.Character.Pants.Parent = v.Character.HumanoidRootPart
+							if plr.Character:FindFirstChild"Pants" then
+								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 							end
-							v.Character.HumanoidRootPart.Transparency = 1
-							v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,-.5,-2) * CFrame.Angles(math.rad(90),math.rad(180),0)
-							v.Character.HumanoidRootPart["Right Shoulder"].C0 = CFrame.new(.5,-1.5,-1.5) * CFrame.Angles(0,math.rad(90),0)
-							v.Character.HumanoidRootPart["Left Shoulder"].C0 = CFrame.new(-.5,-1.5,-1.5) * CFrame.Angles(0,math.rad(-90),0)
-							v.Character.HumanoidRootPart["Right Hip"].C0 = CFrame.new(1.5,-1,1.5) * CFrame.Angles(0,math.rad(90),0)
-							v.Character.HumanoidRootPart["Left Hip"].C0 = CFrame.new(-1.5,-1,1.5) * CFrame.Angles(0,math.rad(-90),0)
-							local new = service.New("Seat", v.Character)
-							new.Name = "FAKETORSO"
-							new.formFactor = "Symmetric"
-							new.TopSurface = 0
-							new.BottomSurface = 0
-							new.Size = Vector3.new(3,1,4)
-							new.CFrame = v.Character.HumanoidRootPart.CFrame
-							local bf = service.New("BodyForce", new)
-							bf.force = Vector3.new(0,new:GetMass()*196.25,0)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
-							weld.Part0 = v.Character.HumanoidRootPart
-							weld.Part1 = new
-							weld.C0 = CFrame.new(0,-.5,0)
-							for a, part in pairs(v.Character:children()) do
-								if part:IsA("BasePart") then
-									part.BrickColor = BrickColor.new("Brown")
-								elseif part:findFirstChild("NameTag") then
-									part.Head.BrickColor = BrickColor.new("Brown")
+							local char, torso, ca1, ca2 = plr.Character, plr.Character.Torso, CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
+
+							torso.Transparency = 1
+
+							for i,v in next,torso:GetChildren() do
+								if v:IsA'Motor6D' then
+									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+								end
+							end
+
+							torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+							torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
+							torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
+							torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
+							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
+							local st = service.New("Seat", {
+								Name = "Adonis_Torso",
+								FormFactor = 0,
+								TopSurface = 0,
+								BottomSurface = 0,
+								Size = Vector3.new(3, 1, 4),
+							})
+
+							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+
+							st.CFrame = torso.CFrame
+							st.Parent = char 	
+
+							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+
+							for d,e in next, char:GetDescendants() do
+								if e:IsA"BasePart" then
+									e.BrickColor = BrickColor.new("Brown")
 								end
 							end
 						end
@@ -8411,105 +8593,113 @@ return function(Vargs)
 
 				local function sizePlayer(p)
 					local char = p.Character
-					local torso = char:FindFirstChild("Torso")
-					local root = char:FindFirstChild("HumanoidRootPart")
-					local welds = {}
+					local human = char:FindFirstChildOfClass("Humanoid")
 
-					torso.Anchored = true
-					torso.BottomSurface = 0
-					torso.TopSurface = 0
-
-					for i,v in pairs(char:GetChildren()) do
-						if v:IsA("BasePart") then
-							v.Anchored = true
+					if human and human.RigType == Enum.HumanoidRigType.R15 then
+						if human:FindFirstChild("BodyDepthScale") then 
+							human.BodyDepthScale.Value = 0.1
 						end
-					end
+					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						local torso = char:FindFirstChild("Torso")
+						local root = char:FindFirstChild("HumanoidRootPart")
+						local welds = {}
 
-					local function size(part)
-						for i,v in pairs(part:GetChildren()) do
-							if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
-								local p1 = v.Part1
-								local c0 = {v.C0:components()}
-								local c1 = {v.C1:components()}
+						torso.Anchored = true
+						torso.BottomSurface = 0
+						torso.TopSurface = 0
 
-								c0[3] = c0[3]*num
-								c1[3] = c1[3]*num
-
-								p1.Anchored = true
-								v.Part1 = nil
-
-								v.C0 = CFrame.new(unpack(c0))
-								v.C1 = CFrame.new(unpack(c1))
-
-								if p1.Name ~= 'Head' and p1.Name ~= 'Torso' then
-									p1.formFactor = 3
-									p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
-								elseif p1.Name ~= 'Torso' then
-									p1.Anchored = true
-									for k,m in pairs(p1:children()) do
-										if m:IsA('Weld') then
-											m.Part0 = nil
-											m.Part1.Anchored = true
-										end
-									end
-
-									p1.formFactor = 3
-									p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
-
-									for k,m in pairs(p1:children()) do
-										if m:IsA('Weld') then
-											m.Part0 = p1
-											m.Part1.Anchored = false
-										end
-									end
-								end
-
-								if v.Parent == torso then
-									p1.BottomSurface = 0
-									p1.TopSurface = 0
-								end
-
-								p1.Anchored = false
-								v.Part1 = p1
-
-								if v.Part0 == torso then
-									table.insert(welds,v)
-									p1.Anchored = true
-									v.Part0 = nil
-								end
-							elseif v:IsA('CharacterMesh') then
-								local bp = tostring(v.BodyPart):match('%w+.%w+.(%w+)')
-								local msh = service.New('SpecialMesh')
-							elseif v:IsA('SpecialMesh') and v.Parent ~= char.Head then
-								v.Scale = Vector3.new(v.Scale.X,v.Scale.Y,num)
+						for i,v in pairs(char:GetChildren()) do
+							if v:IsA("BasePart") then
+								v.Anchored = true
 							end
-							size(v)
 						end
-					end
 
-					size(char)
+						local function size(part)
+							for i,v in pairs(part:GetChildren()) do
+								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
+									local p1 = v.Part1
+									local c0 = {v.C0:components()}
+									local c1 = {v.C1:components()}
 
-					torso.formFactor = 3
-					torso.Size = Vector3.new(torso.Size.X,torso.Size.Y,num)
+									c0[3] = c0[3]*num
+									c1[3] = c1[3]*num
 
-					for i,v in pairs(welds) do
-						v.Part0 = torso
-						v.Part1.Anchored = false
-					end
+									p1.Anchored = true
+									v.Part1 = nil
 
-					for i,v in pairs(char:GetChildren()) do
-						if v:IsA('BasePart') then
-							v.Anchored = false
+									v.C0 = CFrame.new(unpack(c0))
+									v.C1 = CFrame.new(unpack(c1))
+
+									if p1.Name ~= 'Head' and p1.Name ~= 'Torso' then
+										p1.formFactor = 3
+										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
+									elseif p1.Name ~= 'Torso' then
+										p1.Anchored = true
+										for k,m in pairs(p1:children()) do
+											if m:IsA('Weld') then
+												m.Part0 = nil
+												m.Part1.Anchored = true
+											end
+										end
+
+										p1.formFactor = 3
+										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
+
+										for k,m in pairs(p1:children()) do
+											if m:IsA('Weld') then
+												m.Part0 = p1
+												m.Part1.Anchored = false
+											end
+										end
+									end
+
+									if v.Parent == torso then
+										p1.BottomSurface = 0
+										p1.TopSurface = 0
+									end
+
+									p1.Anchored = false
+									v.Part1 = p1
+
+									if v.Part0 == torso then
+										table.insert(welds,v)
+										p1.Anchored = true
+										v.Part0 = nil
+									end
+								elseif v:IsA('CharacterMesh') then
+									local bp = tostring(v.BodyPart):match('%w+.%w+.(%w+)')
+									local msh = service.New('SpecialMesh')
+								elseif v:IsA('SpecialMesh') and v.Parent ~= char.Head then
+									v.Scale = Vector3.new(v.Scale.X,v.Scale.Y,num)
+								end
+								size(v)
+							end
 						end
-					end
 
-					local weld = service.New('Weld',root)
-					weld.Part0 = root
-					weld.Part1 = torso
+						size(char)
 
-					local cape = char:findFirstChild("ADONIS_CAPE")
-					if cape then
-						cape.Size = cape.Size*num
+						torso.formFactor = 3
+						torso.Size = Vector3.new(torso.Size.X,torso.Size.Y,num)
+
+						for i,v in pairs(welds) do
+							v.Part0 = torso
+							v.Part1.Anchored = false
+						end
+
+						for i,v in pairs(char:GetChildren()) do
+							if v:IsA('BasePart') then
+								v.Anchored = false
+							end
+						end
+
+						local weld = service.New('Weld',root)
+						weld.Part0 = root
+						weld.Part1 = torso
+
+						local cape = char:findFirstChild("ADONIS_CAPE")
+						if cape then
+							cape.Size = cape.Size*num
+						end
 					end
 				end
 
@@ -8749,10 +8939,41 @@ return function(Vargs)
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 
-					if human then
+					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						for k,val in next,human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value = val.Value * num;
+							end
+						end
+					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						local Motors = {}
+						local Percent = num
+
+						table.insert(Motors, char.HumanoidRootPart.RootJoint)
+						for i,Motor in pairs(char.Torso:GetChildren()) do
+							if Motor:IsA("Motor6D") == false then continue end
+							table.insert(Motors, Motor)
+						end
+						for i,v in pairs(Motors) do
+							v.C0 = CFrame.new((v.C0.Position * Percent)) * (v.C0 - v.C0.Position)
+							v.C1 = CFrame.new((v.C1.Position * Percent)) * (v.C1 - v.C1.Position)
+						end
+
+
+						for i,Part in pairs(char:GetChildren()) do
+							if Part:IsA("BasePart") == false then continue end
+							Part.Size = Part.Size * Percent
+						end
+
+
+						for i,Accessory in pairs(char:GetChildren()) do
+							if Accessory:IsA("Accessory") == false then continue end
+
+							Accessory.Handle.AccessoryWeld.C0 = CFrame.new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
+							Accessory.Handle.AccessoryWeld.C1 = CFrame.new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
+
+							if Accessory.Handle:FindFirstChildOfClass("SpecialMesh") then
+								Accessory.Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
 							end
 						end
 					end
@@ -8952,7 +9173,7 @@ return function(Vargs)
 						cl.Parent = mod
 						hum.Name = "NameTag"
 						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait(0.5)
+						wait()
 						hum.Health=v.Character.Humanoid.Health
 
 						if args[2]:lower()=='hide' then
@@ -9215,25 +9436,31 @@ return function(Vargs)
 			Commands = {"char";"character";"appearance";};
 			Args = {"player";"ID or player";};
 			Hidden = false;
-			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If argument 2 is a number it will auto assume it's an ID.";
+			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be filled")
+				assert(args[2], "Argument #2 must be filled")
+				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if tonumber(args[2]) then
-						v.CharacterAppearanceId = tonumber(args[2])
-						Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-					else
-						if not service.Players:FindFirstChild(args[2]) then
-							local userid=args[2]
-							Pcall(function() userid=service.Players:GetUserIdFromNameAsync(args[2]) end)
-							v.CharacterAppearanceId = userid
-							Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
-						else
-							for k,m in pairs(service.GetPlayers(plr,args[2])) do
-								v.CharacterAppearanceId = m.userId
-								Admin.RunCommand(Settings.Prefix.."refresh",v.Name)
+					local validId = (args[2]:sub(1,6):lower()=="userid-" and tonumber(args[2]:sub(7))) or tonumber(args[2])
+					
+					local suc,ers = pcall(function()
+						return service.Players:GetHumanoidDescriptionFromUserId(service.Players:GetUserIdFromNameAsync(args[2]))
+					end)
+					
+					if suc then
+						local char = plr.Character
+						
+						if char then
+							local humanoid = char:FindFirstChildOfClass"Humanoid"
+							
+							if humanoid then
+								humanoid:ApplyDescription(ers)
 							end
+						else
+							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Cannot convert "..v.Name.."'s character (No character visible)"})
 						end
 					end
 				end
@@ -9251,8 +9478,31 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v and v.Character then
-						v.CharacterAppearanceId = v.userId
-						v:LoadCharacter()
+						local suc,ers = pcall(function()
+							return service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
+						end)
+						
+						if suc then
+							local char = v.Character
+							
+							if char then
+								local humanoid = char:FindFirstChildOfClass"Humanoid"
+								
+								if humanoid then
+									humanoid:ApplyDescription(ers)
+								else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+								end
+							else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+							end
+						else
+								v.CharacterAppearanceId = v.UserId
+								v:LoadCharacter()
+						end
+						
 					end
 				end
 			end
@@ -9629,11 +9879,11 @@ return function(Vargs)
 			Fun = true;
 			Hidden = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args, data)
 				local players = {}
 				local deliverUs = {}
 				local playerList = service.GetPlayers(args[1] and plr, args[1])
-				local plrLevel = server.Admin.GetLevel(plr)
+				local plrLevel = data.PlayerData.Level
 
 				local audio = Instance.new("Sound")
 				audio.Name = "Adonis_Snap"
@@ -9985,6 +10235,24 @@ return function(Vargs)
 			end
 		};
 
+		ScreenVideo = {
+			Prefix = Settings.Prefix;
+			Commands = {"screenvideo";"scrvid";"video";};
+			Args = {"player";"videoid";};
+			Hidden = false;
+			Description = "Places the desired video on the target's screen";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local img = tostring(args[2])
+				if not img then error(args[2].." is not a valid ID") end
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.MakeGui(v,"Effect",{Mode = "ScreenVideo",Video = args[2]})
+				end
+			end
+		};
+
+
 		UnEffect = {
 			Prefix = Settings.Prefix;
 			Commands = {"uneffect";"unimage";"uneffectgui";"unspook";"unblind";"unstrobe";"untrippy";"unpixelize","unlowres","unpixel","undance";"unflashify";"unrainbowify";"guifix";"fixgui";};
@@ -10096,8 +10364,9 @@ return function(Vargs)
 				end
 				if server.Variables.BackingupMap then
 					error("Cannot restore map while backing up map is in process!")
-					return
-				end
+          return
+        end
+        
 				server.Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...',service.Players:children())
 
@@ -10858,6 +11127,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local sb = Variables.ScriptBuilder[tostring(plr.userId)]
 				if not sb then
 					sb = {
@@ -11019,6 +11289,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local cl = Core.NewScript('Script',args[1])
 				cl.Parent = service.ServerScriptService
 				cl.Disabled = false
@@ -11067,9 +11338,9 @@ return function(Vargs)
 			Description = "Makes it so the target player(s) can't talk";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
 						for k,m in pairs(Settings.Muted) do
@@ -11227,9 +11498,9 @@ return function(Vargs)
 			Description = "Makes the target player(s)'s FPS drop";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v,"Function","SetFPS",5)
 					end
 				end
@@ -11259,13 +11530,13 @@ return function(Vargs)
 			Description = "Sends players to The Fun Box. Please don't use this on people with epilepsy.";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				local funid={
 					241559484,
 					266815338,
 				}--168920853 RIP
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(funid[math.random(1,#funid)],v)
 					end
 				end
@@ -11280,9 +11551,9 @@ return function(Vargs)
 			Description = "Sends player to The Forest for a time out";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(209424751,v)
 					end
 				end
@@ -11297,9 +11568,9 @@ return function(Vargs)
 			Description = "Sends player to The Maze for a time out";
 			Fun = true;
 			AdminLevel = "Admins";
-			Function = function(plr,args)
+			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if Admin.GetLevel(plr)>Admin.GetLevel(v) then
+					if data.PlayerData.Level>Admin.GetLevel(v) then
 						service.TeleportService:Teleport(280846668,v)
 					end
 				end

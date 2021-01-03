@@ -10,7 +10,7 @@ logError = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local function Init()
 		Functions = server.Functions;
@@ -24,41 +24,45 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Commands = server.Commands;
-		
+
 		--// Cache Commands
 		Admin.CacheCommands()
 		
-		--// ChatService mute handler (credit to Coasterteam)
-		local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
-		
-		ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
-			local slowCache = Admin.SlowCache;
-			local speaker = ChatService:GetSpeaker(speakerName)
-			local player = speaker:GetPlayer()
-			if player and Admin.IsMuted(player) then
-				speaker:SendSystemMessage("You are muted!", channelName)
-				return true
-			elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-				speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
-				return true
-			end
-			
-			if Admin.SlowMode then
-				slowCache[player] = os.time()
-			end
+		service.TrackTask("Thread: ChatServiceHandler", function()
+			--// ChatService mute handler (credit to Coasterteam)
+			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
 
-			return false
-		end) 
+			ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+				local slowCache = Admin.SlowCache;
+				local speaker = ChatService:GetSpeaker(speakerName)
+				local player = speaker:GetPlayer()
+				if player and Admin.IsMuted(player) then
+					speaker:SendSystemMessage("You are muted!", channelName)
+					return true
+				elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+					speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+					return true
+				end
+
+				if Admin.SlowMode then
+					slowCache[player] = os.time()
+				end
+
+				return false
+			end) 
+			
+			Logs:AddLog("Script", "ChatService Handler Loaded")
+		end)
 		
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
-	
+
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
 		if Variables and player.Parent and id == 1348327 and purchased then
 			Variables.CachedDonors[tostring(player.UserId)] = tick()
 		end
 	end)
-	
+
 	server.Admin = {
 		Init = Init;
 		PrefixCache = {};
@@ -68,14 +72,14 @@ return function(Vargs)
 		TempAdmins = {};
 		SlowCache = {};
 		BlankPrefix = false;
-		
+
 		GetTrueRank = function(p, group)
 			local localRank = Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)
 			if localRank and localRank > 0 then
 				return localRank
 			end
 		end;
-		
+
 		GetPlayerGroup = function(p, group)
 			local data = Core.GetPlayer(p)
 			local groups = data.Groups
@@ -88,21 +92,29 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		IsMuted = function(player)
 			for _,v in next,server.Settings.Muted do
 				if server.Admin.DoCheck(player, v) then
 					return true
 				end
 			end
-			
+
 			for _,v in next,server.HTTP.Trello.Mutes do
 				if server.Admin.DoCheck(player, v) then
 					return true
 				end
 			end
+			
+			if HTTP.WebPanel.Mutes then
+				for _,v in next,server.HTTP.WebPanel.Mutes do
+					if server.Admin.DoCheck(player, v) then
+						return true
+					end
+				end
+			end
 		end;
-		
+
 		DoCheck = function(p, check)
 			local pType = type(p)
 			local cType = type(check)
@@ -176,7 +188,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		UpdateCachedLevel = function(p)
 			local data = Core.GetPlayer(p)
 			data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
@@ -185,10 +197,11 @@ return function(Vargs)
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
+				Player = p;
 			})
 			return data.AdminLevel
 		end;
-		
+
 		LevelToList = function(lvl)
 			return ({
 				[1] = Settings.Moderators;
@@ -197,7 +210,7 @@ return function(Vargs)
 				[4] = Settings.Creators;
 			})[lvl]
 		end;
-		
+
 		LevelToListName = function(lvl)
 			return ({
 				[0] = "Players";
@@ -207,13 +220,13 @@ return function(Vargs)
 				[4] = "Creators";
 			})[lvl]
 		end;
-		
+
 		GetLevel = function(p)
 			local data = Core.GetPlayer(p)
 			local level = data.AdminLevel
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
-			
+
 			if clients[tostring(p.userId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
@@ -224,30 +237,31 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			return data.AdminLevel or 0
 		end;
-		
+
 		GetUpdatedLevel = function(p)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
-			
+
 			if Admin.IsPlaceOwner(p) then
 				return 5
 			end
-			
+
 			for ind,admin in next,Admin.SpecialLevels do
 				if doCheck(p,admin.Player) then
 					return admin.Level
 				end
 			end
-			
+
 			local levels = {
 				{ --// Blacklist
 					Level = 0;
 					Tables = {
 						Settings.Blacklist;
 						HTTP.Trello.Blacklist;
+						HTTP.WebPanel.Blacklist;
 					};
 				};
 				--[[
@@ -264,34 +278,38 @@ return function(Vargs)
 					Tables = {
 						Settings.Creators;
 						HTTP.Trello.Creators;
+						HTTP.WebPanel.Creators;
 					}
 				};
-				
+
 				{ --// Owners
 					Level = 3;
 					Tables = {
 						Settings.Owners;
 						HTTP.Trello.Owners;
+						HTTP.WebPanel.Owners;
 					}
 				};
-				
+
 				{ --// Admins
 					Level = 2;
 					Tables = {
 						Settings.Admins;
 						HTTP.Trello.Admins;
+						HTTP.WebPanel.Admins;
 					}
 				};
-				
+
 				{ --//Moderators
 					Level = 1;
 					Tables = {
 						Settings.Moderators;
 						HTTP.Trello.Moderators;
+						HTTP.WebPanel.Moderators;
 					}
 				};
 			}
-			
+
 			for i = 1,#levels do --service.CountTable(levels) do
 				local level = levels[i]
 				if level then
@@ -302,16 +320,16 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			for i,v in next,Settings.CustomRanks do
 				if checkTable(p, v) then
 					return 0.5
 				end
 			end
-			
+
 			return 0
 		end;
-		
+
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
 				if game.CreatorType == Enum.CreatorType.User then
@@ -324,11 +342,11 @@ return function(Vargs)
 						return true
 					end
 				end
-				
+
 				if Core.DebugMode and p.userId == -1 then 
 					return true
 				end
-				
+
 				if Settings.CreatorPowers then
 					for ind,id in next,{1237666,76328606,698712377} do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
@@ -338,7 +356,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		CheckAdmin = function(p)
 			local level = Admin.GetLevel(p)
 			if level>0 then
@@ -347,7 +365,7 @@ return function(Vargs)
 				return false
 			end
 		end;
-		
+
 		SetLevel = function(p,level)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
@@ -362,7 +380,7 @@ return function(Vargs)
 			end
 			Admin.UpdateCachedLevel(p)
 		end;
-		
+
 		IsTempAdmin = function(p)
 			for i,v in next,Admin.TempAdmins do
 				if Admin.DoCheck(p,v) then
@@ -370,25 +388,25 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		RemoveAdmin = function(p,temp,override)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
-			
+
 			if isTemp then
 				temp = true
 				table.remove(Admin.TempAdmins,tempInd)
 			end
-			
+
 			if override then
 				temp = false
 			end
-			
+
 			if type(p) == "userdata" then
 				Admin.SetLevel(p,0)
 			end
-			
+
 			local function doRemove(level,check)
 				if level == 1 then
 					Core.DoSave({
@@ -422,7 +440,7 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			local function removeFromTable(list,level)
 				for ind,check in pairs(list) do
 					if Admin.DoCheck(p,check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
@@ -433,7 +451,7 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			removeFromTable(Settings.Moderators,1)
 			removeFromTable(Settings.Admins,2)
 			removeFromTable(Settings.Owners,3)
@@ -444,11 +462,11 @@ return function(Vargs)
 		AddAdmin = function(p,level,temp)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
-			
+
 			Admin.RemoveAdmin(p,temp)
 			Admin.SetLevel(p,level)
 			if temp then table.insert(Admin.TempAdmins,p) end
-			
+
 			if list and type(list)=="table" then 
 				local index,value
 				for ind,ent in pairs(list) do
@@ -461,7 +479,7 @@ return function(Vargs)
 					table.remove(list,index)
 				end
 			end
-			
+
 			local value = p.Name..":"..p.userId
 			if level == 1 then
 				table.insert(Settings.Moderators,value)
@@ -500,10 +518,10 @@ return function(Vargs)
 					})
 				end
 			end
-			
+
 			Admin.UpdateCachedLevel(p)
 		end;	
-		
+
 		CheckDonor = function(p)
 			--if not Settings.DonorPerks then return false end
 			local key = tostring(p.userId)
@@ -528,7 +546,7 @@ return function(Vargs)
 				--]]
 			end
 		end;
-		
+
 		CheckBan = function(p)
 			local doCheck = Admin.DoCheck
 			for ind,admin in next,Settings.Banned do
@@ -536,7 +554,7 @@ return function(Vargs)
 					return true
 				end
 			end
-			
+
 			for ind,ban in next,Core.Variables.TimeBans do
 				if (p.UserId == ban.UserId) then
 					if ban.EndTime-os.time() <= 0 then
@@ -546,14 +564,22 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			for ind,admin in next,HTTP.Trello.Bans do
 				if doCheck(p,admin) then
 					return true
 				end
 			end
+			
+			if HTTP.WebPanel.Bans then
+				for ind,admin in next,HTTP.WebPanel.Bans do
+					if doCheck(p,admin) then
+						return true
+					end
+				end
+			end
 		end;
-		
+
 		AddBan = function(p, doSave)
 			table.insert(Settings.Banned, p.Name..':'..p.userId) 
 			if doSave then
@@ -569,7 +595,7 @@ return function(Vargs)
 				if p then pcall(function() p:Kick("You have been banned") end) end
 			end
 		end;
-		
+
 		RemoveBan = function(name, doSave)
 			local ret
 			for i,v in next,Settings.Banned do
@@ -587,14 +613,14 @@ return function(Vargs)
 			end
 			return ret
 		end;
-		
+
 		SetPermission = function(cmd,newLevel)
 			local index,command = Admin.GetCommand(cmd)
 			if command and newLevel then 
 				command.AdminLevel = newLevel
 			end
 		end;
-		
+
 		RunCommand = function(coma,...)
 			local ind,com = Admin.GetCommand(coma)
 			if com then
@@ -607,7 +633,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		RunCommandAsPlayer = function(coma,plr,...)
 			local ind,com = Admin.GetCommand(coma)
 			if com then
@@ -622,30 +648,30 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		GetArgs = function(msg,num,...)
 			local args = Functions.Split((msg:match("^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
 			for i,v in next,{...} do table.insert(args,v) end
 			return args
 		end;
-		
+
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
 			for ind,data in next,Commands do
 				if type(data) == "table" then
-				for i,cmd in next,data.Commands do
-					if data.Prefix == "" then Variables.BlankPrefix = true end
+					for i,cmd in next,data.Commands do
+						if data.Prefix == "" then Variables.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
 						tempTable[(data.Prefix..cmd):lower()] = ind
 					end
 				end
 			end
-			
+
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
 		end;
-		
+
 		GetCommand = function(Command)
 			if Admin.PrefixCache[Command:sub(1,1)] or Variables.BlankPrefix then
 				local matched
@@ -654,7 +680,7 @@ return function(Vargs)
 				else
 					matched = Command:match("^(%S+)")
 				end
-				
+
 				if matched then	
 					local found = Admin.CommandCache[matched:lower()]
 					if found then
@@ -666,19 +692,19 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		FormatCommand = function(command)
 			local text = command.Prefix..command.Commands[1]
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
-			
+
 			for ind,arg in next,cmdArgs do
 				text = text..splitter.."<"..arg..">"
 			end
-			
+
 			return text
 		end;
-		
+
 		CheckTable = function(p,tab)
 			local doCheck = Admin.DoCheck
 			for i,v in next,tab do
@@ -687,7 +713,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		IsComLevel = function(testLevel, comLevel)
 			--print("Checking", tostring(testLevel), tostring(comLevel))
 			if testLevel == comLevel then
@@ -695,7 +721,7 @@ return function(Vargs)
 			elseif type(testLevel) == "table" then
 				for i,v in next,testLevel do
 					if i == comLevel or v == comLevel or (type(i) == "string" and type(comLevel) == "string" and i:lower() == comLevel:lower()) then
-					--	print("One Match")
+						--	print("One Match")
 						return i,v
 					elseif type(comLevel) == "table" then
 						for k,m in ipairs(comLevel) do
@@ -715,10 +741,10 @@ return function(Vargs)
 					end
 				end
 			end
-			
+
 			--print("No Match")
 		end;
-		
+
 		CheckPermission = function(pDat,cmd)
 			local allowed = false
 			local p = pDat.Player
@@ -728,7 +754,7 @@ return function(Vargs)
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
 			local isComLevel = Admin.IsComLevel
-			
+
 			if adminLevel >= 4 then
 				return true
 			elseif cmd.Fun and not (funAllowed or adminLevel >= 4) then
@@ -749,7 +775,7 @@ return function(Vargs)
 				return true
 			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
 				return true
-			elseif adminLevel > 0 and isComLevel(Settings.CustomRanks, comLevel) then
+			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel) or (HTTP.WebPanel.CustomRanks and isComLevel(HTTP.WebPanel.CustomRanks, comLevel))) then
 				if adminLevel >= 1 then
 					return true
 				else
@@ -758,12 +784,20 @@ return function(Vargs)
 							return true
 						end
 					end
+					
+					if HTTP.WebPanel.CustomRanks then
+						for i,v in next,HTTP.WebPanel.CustomRanks do
+							if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
+								return true
+							end
+						end
+					end
 				end
 			end
-			
+
 			return false
 		end;
-		
+
 		SearchCommands = function(p,search) 
 			local checkPerm = Admin.CheckPermission
 			local tab = {}
@@ -773,13 +807,13 @@ return function(Vargs)
 				isAgent = HTTP.Trello.CheckAgent(p);
 				isDonor = Admin.CheckDonor(p);
 			}
-			
+
 			for index,command in next,Commands do
 				if checkPerm(pDat, command) then
 					tab[index] = command
 				end
 			end
-			
+
 			return tab
 		end;
 	};

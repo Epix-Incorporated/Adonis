@@ -61,7 +61,7 @@ local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
 local isModule = function(module)for ind,modu in next,server.Modules do if module == modu then return true end end end
-local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err}) end end
+local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err,Player=plr}) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
 local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
 local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
@@ -94,9 +94,11 @@ end
 
 local LoadModule = function(plugin, yield, envVars, noEnv)
 	noEnv = false --// Seems to make loading take longer when true (?)
-	local plug = require(plugin)
+	local isFunc = type(plugin) == "function"
+	local plugin = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or plugin
+	local plug = (isFunc and plugin) or require(plugin)
 
-	if server.Modules then
+	if server.Modules and type(plugin) ~= "function" then
 		table.insert(server.Modules,plugin)
 	end
 
@@ -238,13 +240,13 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
---[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-script = service.Wrap(script)
-Enum = service.Wrap(Enum)
-game = service.Wrap(game)
-workspace = service.Wrap(workspace)
-Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+                                                                                                                                                                                                                                                                                                                                                            --[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
+                                                                                                                                                                                                                                                                                                                                                            script = service.Wrap(script)
+                                                                                                                                                                                                                                                                                                                                                            Enum = service.Wrap(Enum)
+                                                                                                                                                                                                                                                                                                                                                            game = service.Wrap(game)
+                                                                                                                                                                                                                                                                                                                                                            workspace = service.Wrap(workspace)
+                                                                                                                                                                                                                                                                                                                                                            Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
+                                                                                                                                                                                                                                                                                                                                                            require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual
@@ -443,12 +445,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.Name = server.Functions:GetRandom()
 	server.Core.Themes = data.Themes or {}
 	server.Core.Plugins = data.Plugins or {}
-	server.Core.ModuleID = data.ModuleID or 359948692
-	server.Core.LoaderID = data.LoaderID or 360052698
+	server.Core.ModuleID = data.ModuleID or 2373501710
+	server.Core.LoaderID = data.LoaderID or 2373505175
 	server.Core.DebugMode = data.DebugMode or false
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
+	server.LoadModule = LoadModule
 
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)

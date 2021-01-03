@@ -1,7 +1,14 @@
 local hum = script.Parent
-local torso = hum.Parent:FindFirstChild("HumanoidRootPart")
+local char = hum.Parent
+local torso = char:FindFirstChild("HumanoidRootPart")
 local origY = torso.Position.Y
-local event = game:service("RunService").RenderStepped:connect(function()
-	torso.CFrame = CFrame.new(torso.CFrame.X,origY,torso.CFrame.Z)
+local event = game:service("RunService").Stepped:connect(function()
+	for _,v in pairs(char:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CanCollide = false
+		end
+	end
+	local cf = torso.CFrame
+	torso.CFrame = (cf - cf.Position) + Vector3.new(cf.X, origY, cf.Z)
 	hum:ChangeState(11)
 end)

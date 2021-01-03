@@ -1030,6 +1030,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		Gamepasses = game:service("GamePassService");
 		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0)) pcall(obj.Delete, obj) end;
 		RbxEvent = function(signal, func) local event = signal:connect(func) table.insert(RbxEvents, event) return event end;
+		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
 		SanitizeString = function(str) str = service.Trim(str) local new = "" for i = 1,#str do if str:sub(i,i) ~= "\n" and str:sub(i,i) ~= "\0" then new = new..str:sub(i,i) end end return new end;
 		Trim = function(str) return str:match("^%s*(.-)%s*$") end; 
