@@ -10071,16 +10071,25 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Variables.MapBackup or not Variables.TerrianMapBackup then
+				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
 					error("Backup map wasn't enabled")
 					return
 				end
+				if server.Variables.RestoringMap then
+					error("Restoring map is already in the process. Please try again later.")
+					return
+				end
+				if server.Variables.BackingupMap then
+					error("Cannot restore map while backing up map is in process!")
+					return
+				end
+				server.Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...',service.Players:children())
 
 				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
-						wait()
+						service.RunService.Heartbeat:Wait()
 					end
 				end
 
@@ -10097,10 +10106,11 @@ return function(Vargs)
 				new:Destroy()
 
 				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrianMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
-				Functions.Hint('Map Restore Complete.',service.Players:GetChildren())
+				server.Variables.RestoringMap = false
+				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
 			end
 		};
 
@@ -10118,7 +10128,18 @@ return function(Vargs)
 				else
 					--warn("Performing Map Backup...")
 				end
-
+				
+				if server.Variables.BackingupMap then
+					error("Backup Map is in progress. Please try again later!")
+					return
+				end
+				if server.Variables.RestoringMap then
+					error("Cannot backup map while map is being restored!")
+					return
+				end
+				
+				server.Variables.BackingupMap = true
+				
 				local tempmodel = service.New('Model')
 
 				for i,v in pairs(service.Workspace:GetChildren()) do
@@ -10135,14 +10156,16 @@ return function(Vargs)
 
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
-				Variables.TerrianMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
+				Variables.TerrainMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
 
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
 				else
 					--warn("Backup Complete")
 				end
-
+				
+				server.Variables.BackingupMap = false
+				
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
 					Desc = "Map was successfully backed up";
