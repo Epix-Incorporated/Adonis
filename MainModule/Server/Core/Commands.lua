@@ -1362,11 +1362,12 @@ return function(Vargs)
 			Args = {"message"};
 			Description = "Sends a global message to all servers";
 			AdminLevel = "Owners";
+			Filter = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 				
-				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..service.LaxFilter(args[1],plr)) then
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;	
