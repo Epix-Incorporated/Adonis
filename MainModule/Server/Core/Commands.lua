@@ -1356,6 +1356,22 @@ return function(Vargs)
 			end
 		};
 
+		GlobalMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"globalmessage","gm","globalannounce"};
+			Args = {"message"};
+			Description = "Sends a global message to all servers";
+			AdminLevel = "Owners";
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..service.LaxFilter(args[1],plr)) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;	
+		};
+		
 		MessagePM = {
 			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
@@ -1623,17 +1639,25 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[1])
-				if image then
-					if plr.Character and image then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+					if Shirt then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						service.New('Shirt',plr.Character).ShirtTemplate="http://www.roblox.com/asset/?id="..image
-					end
-				else
-					for g,k in pairs(plr.Character:children()) do
-						if k:IsA("Shirt") then k:Destroy() end
+						
+						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end
+						
+						Shirt:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
 				end
 			end
@@ -1648,17 +1672,25 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				local image = Functions.GetTexture(args[1])
-				if image then
-					if plr.Character and image then
-						for g,k in pairs(plr.Character:children()) do
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+					if Pants then
+						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						service.New('Pants',plr.Character).PantsTemplate="http://www.roblox.com/asset/?id="..image
-					end
-				else
-					for g,k in pairs(plr.Character:children()) do
-						if k:IsA("Pants") then k:Destroy() end
+						
+						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end
+						
+						Pants:Clone().Parent = plr.Character
+					else
+						error("Unexpected error occured. Clothing is missing")
 					end
 				end
 			end
@@ -1680,6 +1712,14 @@ return function(Vargs)
 				local id = tonumber(args[1])
 				local market = service.MarketPlace
 				local info = market:GetProductInfo(id)
+				
+				local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+				local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+				if humandescrip then
+					humandescrip.Face = id
+				end
+				
 				if info.AssetTypeId == 18 or info.AssetTypeId == 9 then
 					service.Insert(args[1]).Parent = plr.Character:FindFirstChild("Head")
 				else
@@ -4928,6 +4968,59 @@ return function(Vargs)
 			end
 		};
 
+		CopyCharacter = {
+			Prefix = Settings.Prefix;
+			Commands = {"copychar";"copycharacter";"copyplayercharacter"};
+			Args = {"player";"target";};
+			Hidden = false;
+			Description = "Changes specific players' character to the target's character. (i.g. To copy Player1's character, do ':copychar me Player1')";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied.")
+				assert(args[2], "Argument #2 must be supplied. What player would you want to copy?")
+				
+				local target = service.GetPlayers(plr,args[2])[1]
+				local target_character = target.Character
+				if target_character then
+					target_character.Archivable = true
+					target_character = target_character:Clone()
+				end
+				
+				assert(target_character, "Targeted player doesn't have a character or has a locked character")
+				
+				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
+				target_humandescrip = target_humandescrip and target_humandescrip:Clone() or nil
+				
+				assert(target, "Targeted player wasn't found")
+				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription in their humanoid [Cannot copy target's character]")
+				
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Routine(function()
+						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
+							v.Character.Archivable = true
+							
+							local player_humanoiddescrip = v.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
+							
+							if player_humanoiddescrip then
+								service.Delete(player_humanoiddescrip)
+							end
+							
+							local cl = target_humandescrip:Clone()
+							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
+							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
+							
+							for d,e in pairs(target_character:children()) do
+								if e:IsA"Accessory" then
+									e:Clone().Parent = v.Character
+								end
+							end
+						end
+					end)
+				end
+			end
+		};
+		
 		ClickTeleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"clickteleport";"teleporttoclick";"ct";"clicktp";"forceteleport";"ctp";"ctt";};
@@ -4976,6 +5069,40 @@ return function(Vargs)
 			end
 		};
 
+		LockMap = {
+			Prefix = Settings.Prefix;
+			Commands = {"lockmap";};
+			Args = {};
+			Hidden = false;
+			Description = "Locks the map";
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in next, workspace:GetDescendants() do
+					if v and v.Parent and v:IsA"BasePart" then
+						v.Locked = true
+					end
+				end
+			end
+		};
+		
+		UnlockMap = {
+			Prefix = Settings.Prefix;
+			Commands = {"unlockmap";};
+			Args = {};
+			Hidden = false;
+			Description = "Unlocks the map";
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in next, workspace:GetDescendants() do
+					if v and v.Parent and v:IsA"BasePart" then
+						v.Locked = false
+					end
+				end
+			end
+		};
+		
 		BodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"bodyswap";"bodysteal";"bswap";};
@@ -5100,6 +5227,7 @@ return function(Vargs)
 					end
 
 					v:LoadCharacter()
+					wait(0.1)
 					v.Character.HumanoidRootPart.CFrame = pos
 
 					for d,f in pairs(v.Character:children()) do
