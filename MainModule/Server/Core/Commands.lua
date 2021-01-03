@@ -8724,11 +8724,8 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if tonumber(args[2]) > 50 then
-					args[2] = 50
-				end
-
-				local num = tonumber(args[2])
+				local sizeLimit = Settings.SizeLimit or 20
+				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local char = v.Character;
