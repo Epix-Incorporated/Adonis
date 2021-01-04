@@ -464,7 +464,13 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			Admin.RemoveAdmin(p,temp)
+			
+			if Admin.GetUpdatedLevel(p) == 0 then
+				return false	
+			end
+			
 			Admin.SetLevel(p,level)
+			
 			if temp then table.insert(Admin.TempAdmins,p) end
 
 			if list and type(list)=="table" then 
