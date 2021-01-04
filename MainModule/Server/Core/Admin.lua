@@ -466,7 +466,11 @@ return function(Vargs)
 			Admin.RemoveAdmin(p,temp)
 			
 			if Admin.GetUpdatedLevel(p) == 0 then
-				return false	
+				for i,v in next,Settings.Blacklist do
+					if checkTab(p,v) then
+						return false	
+					end
+				end
 			end
 			
 			Admin.SetLevel(p,level)
