@@ -312,24 +312,28 @@ return function()
 		end;
 		
 		NewParticle = function(target, class, properties)
-			local effect, index;
-			
-			properties.Parent = target;
-			properties.Enabled = Variables.ParticlesEnabled;
-			
-			effect = service.New(class, properties);
-			index = Functions.GetRandom();
-			
-			Variables.Particles[index] = effect;
-			
-			table.insert(Variables.Particles, effect);
-			
-			effect.Changed:Connect(function()
-				if not effect or not effect.Parent or effect.Parent ~= target then
-					pcall(function() effect:Destroy() end)
-					Variables.Particles[index] = nil;
-				end
-			end)
+			if target and class and properties then
+				local effect, index;
+
+				properties.Parent = target;
+				properties.Enabled = Variables.ParticlesEnabled;
+
+				effect = service.New(class, properties);
+				index = Functions.GetRandom();
+
+				Variables.Particles[index] = effect;
+
+				table.insert(Variables.Particles, effect);
+
+				effect.Changed:Connect(function()
+					if not effect or not effect.Parent or effect.Parent ~= target then
+						if effect then
+							effect:Destroy()
+						end
+						Variables.Particles[index] = nil;
+					end
+				end)
+			end
 		end;
 		
 		RemoveParticle = function(target, name)

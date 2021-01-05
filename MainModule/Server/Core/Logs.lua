@@ -45,6 +45,7 @@ return function(Vargs)
 		Commands = {};
 		Exploit = {};
 		Errors = {};
+		TempUpdaters = {};
 		
 		TabToType = function(tab)
 			local indToName = {
@@ -120,6 +121,14 @@ return function(Vargs)
 		end;
 		
 		ListUpdaters = {
+			TempUpdate = function(plr, data)
+				local updateKey = data.UpdateKey;
+				local updater = Logs.TempUpdaters[updateKey];
+				if updater then
+					return updater(data);
+				end
+			end;
+			
 			ShowTasks = function(plr,arg)
 				if arg then
 					for i,v in next,Functions.GetPlayers(plr, arg) do
