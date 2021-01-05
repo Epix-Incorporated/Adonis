@@ -1,6 +1,18 @@
 return {
-	"Version: 203";
+	"Version: 204";
 	"*Click and drag edges to expand*";
+	"";
+	"[1.5.2021 09:35 EST]";
+	"*First update of the new year!";
+	"*Added :crossservervote <answerlist> <question>";
+	"*Note: :crossservervote will ask every player in every server and cannot (currently) be directed to specific people";
+	"*:vote now shows you results in real time";
+	"*Git merge:";
+	"(Git/pbstFusion) Add a system notify";
+	"(Git/Awesomewebm) Add Add/Subtract Support for :volume & :pitch";
+	"(Git/joritochip) Fix and improve many commands";
+	"(Git/fxeP1) Fixed error caused from NewParticle";
+	"(Git/EnderUwU) Update Commands.lua";
 	"";
 	"[12.30.2020 15:10 EST]";
 	"*Minor changes";
