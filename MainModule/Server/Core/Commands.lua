@@ -1481,6 +1481,26 @@ return function(Vargs)
 			end
 		};
 
+
+		SystemNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
+			Args = {"message";};
+			Filter = true;
+			Description = "Makes a system small message,";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				for i,v in pairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v,"Notify")
+					Remote.MakeGui(v,"Notify",{
+						Title = Settings.SystemTitle;
+						Message = service.Filter(args[1],plr,v);
+					})
+				end
+			end
+		};
+
 		NotifyPM = {
 			Prefix = Settings.Prefix;
 			Commands = {"npm","smallmessagepm","nmessagepm","nmsgpm","npmmsg","smsgpm","spmmsg", "smessagepm"};
