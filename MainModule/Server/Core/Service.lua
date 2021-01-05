@@ -596,7 +596,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.Chat:FilterStringAsync(lines[i],from,to) end)
+				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId) end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
@@ -623,7 +623,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.Chat:FilterStringForBroadcast(lines[i],from) end)
+				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetNonChatStringForBroadcastAsync() end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
