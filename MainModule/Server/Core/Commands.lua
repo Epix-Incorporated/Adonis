@@ -96,6 +96,26 @@ return function(Vargs)
 				end
 			end
 		};--//hello Dr. Sceleratii ~Ender was here
+		CustomMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"cm";"custommessage";};
+			Args = {"Upper message","message";};
+			Filter = true;
+			Description = "Same as message but says whatever you want upper message to be instead of your name.";
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				assert(args[2],"Argument missing or nil")
+				for i,v in pairs(service.Players:GetChildren()) do
+					Remote.RemoveGui(v,"Message")
+					Remote.MakeGui(v,"Message",{
+						Title = args[1];
+						Message = args[2];
+						--service.Filter(args[1],plr,v);
+					})
+				end
+			end
+		};
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
@@ -1475,6 +1495,26 @@ return function(Vargs)
 					Remote.RemoveGui(v,"Notify")
 					Remote.MakeGui(v,"Notify",{
 						Title = "Message from " .. plr.Name;
+						Message = service.Filter(args[1],plr,v);
+					})
+				end
+			end
+		};
+
+
+		SystemNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
+			Args = {"message";};
+			Filter = true;
+			Description = "Makes a system small message,";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				for i,v in pairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v,"Notify")
+					Remote.MakeGui(v,"Notify",{
+						Title = Settings.SystemTitle;
 						Message = service.Filter(args[1],plr,v);
 					})
 				end
@@ -3576,6 +3616,22 @@ return function(Vargs)
 				end
 			end
 		};
+		
+		--[[Viewport = {
+			Prefix = Settings.Prefix;
+			Commands = {"viewport", "cctv"};
+			Args = {"player";};
+			Description = "Makes a viewport of the target player<s>";
+			Agents = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					if v and v.Character:FindFirstChild('Humanoid') then
+						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
+					end
+				end
+			end
+		};--]]
 
 		ResetView = {
 			Prefix = Settings.Prefix;
@@ -3756,7 +3812,7 @@ return function(Vargs)
 				for i,v in pairs(HTTP.Trello.Owners) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
-				
+
 				for i,v in pairs(server.HTTP.WebPanel.Creators) do
 					table.insert(temptable,v .. " - Creator [WebPanel]")
 				end
@@ -3832,6 +3888,45 @@ return function(Vargs)
 				if not question then error("You forgot to supply a question!") end
 				local answers = args[2]
 				local anstab = {}
+				local responses = {}
+				local voteKey = "ADONISVOTE".. math.random();
+				local players = service.GetPlayers(plr,args[1])
+				local startTime = os.time();
+
+				local function voteUpdate()
+					local results = {}
+					local total = #responses
+					local tab = {
+						"Question: "..question;
+						"Total Responses: "..total;
+						"Didn't Vote: "..#players-total;
+						"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
+					}
+
+					for i,v in pairs(responses) do
+						if not results[v] then results[v] = 0 end
+						results[v] = results[v]+1
+					end
+
+					for i,v in pairs(anstab) do
+						local ans = v
+						local num = results[v]
+						local percent
+						if not num then
+							num = 0
+							percent = 0
+						else
+							percent = math.floor((num/total)*100)
+						end
+
+						table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
+					end
+
+					return tab;
+				end
+
+				Logs.TempUpdaters[voteKey] = voteUpdate;
+
 				if not answers then
 					anstab = {"Yes","No"}
 				else
@@ -3839,6 +3934,34 @@ return function(Vargs)
 						table.insert(anstab,ans)
 					end
 				end
+				
+				for i,v in pairs(players) do
+					Routine(function()
+						local response = Remote.GetGui(v,"Vote",{Question = question,Answers = anstab})
+						if response then
+							table.insert(responses, response)
+						end
+					end)
+				end
+				
+				Remote.MakeGui(plr,"List",{
+					Title = 'Results', 
+					Tab = voteUpdate(),
+					Update = "TempUpdate",
+					UpdateArgs = {{UpdateKey = voteKey}},
+					AutoUpdate = 1,
+				})
+
+				delay(120, function() Logs.TempUpdaters[voteKey] = nil;end)
+				--[[
+				if not answers then
+					anstab = {"Yes","No"}
+				else
+					for ans in answers:gmatch("([^,]+)") do
+						table.insert(anstab,ans)
+					end
+				end
+				
 				local responses = {}
 				local players = service.GetPlayers(plr,args[1])
 
@@ -3880,7 +4003,7 @@ return function(Vargs)
 
 					table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
 				end
-				Remote.MakeGui(plr,"List",{Title = 'Results', Tab = tab})
+				Remote.MakeGui(plr,"List",{Title = 'Results', Tab = tab})--]]
 			end
 		};
 
@@ -7184,7 +7307,7 @@ return function(Vargs)
 			end
 		};
 
-		PlayerPoints = {
+		--[[PlayerPoints = {
 			Prefix = Settings.Prefix;
 			Commands = {"ppoints";"playerpoints";"getpoints";};
 			Args = {};
@@ -7195,7 +7318,7 @@ return function(Vargs)
 			Function = function(plr,args)
 				Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(),{plr})
 			end
-		};
+		};]]
 
 		GivePlayerPoints = {
 			Prefix = Settings.Prefix;
@@ -7343,10 +7466,17 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local pitch = args[1]
-				for i,v in pairs(service.Workspace:children()) do
-					if v.Name=="ADONIS_SOUND" then
-						v.Pitch = pitch
-					end
+				for i,v in pairs(service.Workspace:children()) do 
+					if v.Name=="ADONIS_SOUND" then 
+						if args[1]:sub(1,1) == "+" then
+							v.Pitch=v.Pitch+tonumber(args[1]:sub(2))
+						elseif args[1]:sub(1,1) == "-" then
+							v.Pitch=v.Pitch-tonumber(args[1]:sub(2))
+						else
+							v.Pitch = pitch 
+						end
+
+					end 
 				end
 			end
 		};
@@ -7360,9 +7490,15 @@ return function(Vargs)
 			Function = function(plr,args)
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i,v in pairs(service.Workspace:children()) do
-					if v.Name=="ADONIS_SOUND" then
-						v.Volume = volume
+				for i,v in pairs(service.Workspace:children()) do 
+					if v.Name=="ADONIS_SOUND" then 
+						if args[1]:sub(1,1) == "+" then
+							v.Volume=v.Volume+tonumber(args[1]:sub(2))
+						elseif args[1]:sub(1,1) == "-" then
+							v.Volume=v.Volume-tonumber(args[1]:sub(2))
+						else
+							v.Volume = volume 
+						end
 					end
 				end
 			end
@@ -7757,11 +7893,10 @@ return function(Vargs)
 
 						new.Parent = part
 						new.Disabled = false
-						local ret = Remote.MakeGuiGet(plr,"Notification",{
+						local ret = Remote.MakeGuiGet(v,"Notification",{
 							Title = "Flight";
-							Message = "You are now flying press E to toggle flight.";
+							Message = "You are now flying. Press E to toggle flight.";
 							Time = 10;
-
 						})
 					end
 				end
@@ -8632,51 +8767,53 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
-						local head = v.Character.Head
-						local torso = v.Character.HumanoidRootPart
-						local larm = v.Character['Left Arm']
-						local rarm = v.Character['Right Arm']
-						local lleg = v.Character['Left Leg']
-						local rleg = v.Character['Right Leg']
-						for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=true end end
-						torso.FormFactor="Custom"
-						torso.Size=Vector3.new(torso.Size.X,torso.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=v.Character.HumanoidRootPart
-						weld.C0=v.Character.HumanoidRootPart.CFrame
-						head.FormFactor="Custom"
-						head.Size=Vector3.new(head.Size.X,head.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=head
-						weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0,1.5,0)
-						larm.FormFactor="Custom"
-						larm.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=larm
-						weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,0,0)
-						rarm.FormFactor="Custom"
-						rarm.Size=Vector3.new(rarm.Size.X,rarm.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=rarm
-						weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,0,0)
-						lleg.FormFactor="Custom"
-						lleg.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=lleg
-						weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5,0)
-						rleg.FormFactor="Custom"
-						rleg.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
-						local weld = service.New("Weld",v.Character.HumanoidRootPart)
-						weld.Part0=v.Character.HumanoidRootPart
-						weld.Part1=rleg
-						weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5,0)
-						wait()
-						for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=false end end
+						if v.Character then
+							local head = v.Character.Head
+							local torso = v.Character.HumanoidRootPart
+							local larm = v.Character['Left Arm']
+							local rarm = v.Character['Right Arm']
+							local lleg = v.Character['Left Leg']
+							local rleg = v.Character['Right Leg']
+							for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=true end end
+							torso.FormFactor="Custom"
+							torso.Size=Vector3.new(torso.Size.X,torso.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=v.Character.HumanoidRootPart
+							weld.C0=v.Character.HumanoidRootPart.CFrame
+							head.FormFactor="Custom"
+							head.Size=Vector3.new(head.Size.X,head.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=head
+							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0,1.5,0)
+							larm.FormFactor="Custom"
+							larm.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=larm
+							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,0,0)
+							rarm.FormFactor="Custom"
+							rarm.Size=Vector3.new(rarm.Size.X,rarm.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=rarm
+							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,0,0)
+							lleg.FormFactor="Custom"
+							lleg.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=lleg
+							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5,0)
+							rleg.FormFactor="Custom"
+							rleg.Size=Vector3.new(larm.Size.X,larm.Size.Y,tonumber(args[2]) or 0.1)
+							local weld = service.New("Weld",v.Character.HumanoidRootPart)
+							weld.Part0=v.Character.HumanoidRootPart
+							weld.Part1=rleg
+							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5,0)
+							wait()
+							for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=false end end
+						end
 					end)
 				end
 			end
@@ -8691,18 +8828,24 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				local hat = service.Insert(36883367)
+				local players = service.GetPlayers(plr,args[1])
+				for i,v in pairs(players) do
 					for k,m in pairs(v.Character:children()) do
 						if m:IsA("CharacterMesh") or m:IsA("Accoutrement") then
 							m:Destroy()
 						end
 					end
-					service.Insert(36781518).Parent = v.Character
-					service.Insert(36781481).Parent = v.Character
-					service.Insert(36781407).Parent = v.Character
-					service.Insert(36781447).Parent = v.Character
-					service.Insert(36781360).Parent = v.Character
-					service.Insert(36883367).Parent = v.Character
+					hat:Clone().Parent = v.Character
+				end
+				if #players > 0 then
+					-- This is done outside of the for loop above as the Package command inserts all package items each time the command is run 
+					-- By only running it once, it's only inserting the items once and therefore reducing overhead
+					local t = {}
+					for _,v in pairs(players) do 
+						table.insert(t, v.Name) 
+					end
+					Admin.RunCommand(Settings.Prefix.."package "..table.concat(t,",").." 295")
 				end
 			end
 		};
@@ -8718,15 +8861,49 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						if v.Character:findFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
-						if v.Character:findFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
-						v.Character.HumanoidRootPart.Transparency = 0
-						v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,1,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
-						v.Character.HumanoidRootPart["Right Shoulder"].C0 = CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(90),0)
-						v.Character.HumanoidRootPart["Left Shoulder"].C0 = CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(-90),0)
-						v.Character.HumanoidRootPart["Right Hip"].C0 = CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(90),0)
-						v.Character.HumanoidRootPart["Left Hip"].C0 = CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(-90),0)
-						for a, part in pairs(v.Character:children()) do if part:IsA("BasePart") then part.BrickColor = BrickColor.new("Bright green") if part.Name == "FAKETORSO" then part:Destroy() end elseif part:findFirstChild("NameTag") then part.Head.BrickColor = BrickColor.new("Bright green") end end
+						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
+							local joints = Functions.GetJoints(v.Character)
+
+							if v.Character:findFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
+							if v.Character:findFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
+
+							if joints["Neck"] then 
+								joints["Neck"].C0 = isR15 and CFrame.new(0, 1, 0) or (CFrame.new(0,1,0) * CFrame.Angles(math.rad(90),math.rad(180),0))
+							end
+
+							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
+							if rarm then 
+								rarm.C0 = isR15 and CFrame.new(-1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(90),0))
+							end
+
+							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
+							if larm then 
+								larm.C0 = isR15 and CFrame.new(1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(-90),0))
+							end 
+
+							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
+							if rleg then 
+								rleg.C0 = isR15 and (CFrame.new(-0.5,-0.5,0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(90),0))
+							end 
+
+							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
+							if lleg then
+								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5,0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(-90),0))
+							end 
+
+							for a, part in pairs(v.Character:children()) do 
+								if part:IsA("BasePart") then 
+									part.BrickColor = BrickColor.new("Bright green") 
+									if part.Name == "FAKETORSO" then 
+										part:Destroy() 
+									end 
+								elseif part:findFirstChild("NameTag") then 
+									part.Head.BrickColor = BrickColor.new("Bright green") 
+								end
+							end
+						end
 					end
 				end
 			end
@@ -8743,14 +8920,19 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						--v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
-						--v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid");
-						local scale = human and human:FindFirstChild("HeadScale");
 
-						if scale then
-							scale.Value = tonumber(args[2]) or 1.5;
+						if human then 
+							if human.RigType == Enum.HumanoidRigType.R6 then 
+								v.Character.Head.Mesh.Scale = Vector3.new(1.75,1.75,1.75)
+								v.Character.Torso.Neck.C0 = CFrame.new(0,1.3,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
+							else 
+								local scale = human and human:FindFirstChild("HeadScale");
+								if scale then
+									scale.Value = tonumber(args[2]) or 1.5;
+								end
+							end 
 						end
 					end
 				end
@@ -8768,14 +8950,19 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						--v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
-						--v.Character.HumanoidRootPart.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid");
-						local scale = human and human:FindFirstChild("HeadScale");
 
-						if scale then
-							scale.Value = tonumber(args[2]) or 0.5;
+						if human then 
+							if human.RigType == Enum.HumanoidRigType.R6 then 
+								v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
+								v.Character.Torso.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
+							else 
+								local scale = human and human:FindFirstChild("HeadScale");
+								if scale then
+									scale.Value = tonumber(args[2]) or 0.5;
+								end
+							end 
 						end
 					end
 				end
@@ -9091,16 +9278,15 @@ return function(Vargs)
 					error('ID is not a right leg!')
 				end
 
-				local part = service.Insert(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA('CharacterMesh') and m.BodyPart=='RightLeg' then
-							m:Destroy()
-						end
-					end
+				local model = service.Insert(args[2], true)
 
-					part.Parent=v.Character
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						Functions.ApplyBodyPart(v.Character, model)
+					end
 				end
+
+				model:Destroy()
 			end
 		};
 
@@ -9119,16 +9305,15 @@ return function(Vargs)
 					error('ID is not a left leg!')
 				end
 
-				local part = service.Insert(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA('CharacterMesh') and m.BodyPart=='LeftLeg' then
-							m:Destroy()
-						end
-					end
+				local model = service.Insert(args[2], true)
 
-					part.Parent = v.Character
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						Functions.ApplyBodyPart(v.Character, model)
+					end
 				end
+
+				model:Destroy()
 			end
 		};
 
@@ -9147,16 +9332,15 @@ return function(Vargs)
 					error('ID is not a right arm!')
 				end
 
-				local part = service.Insert(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA('CharacterMesh') and m.BodyPart=='RightArm' then
-							m:Destroy()
-						end
-					end
+				local model = service.Insert(args[2], true)
 
-					part.Parent=v.Character
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						Functions.ApplyBodyPart(v.Character, model)
+					end
 				end
+
+				model:Destroy()
 			end
 		};
 
@@ -9175,20 +9359,19 @@ return function(Vargs)
 					error('ID is not a left arm!')
 				end
 
-				local part = service.Insert(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA('CharacterMesh') and m.BodyPart=='LeftArm' then
-							m:Destroy()
-						end
-					end
+				local model = service.Insert(args[2], true)
 
-					part.Parent = v.Character
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						Functions.ApplyBodyPart(v.Character, model)
+					end
 				end
+
+				model:Destroy()
 			end
 		};
 
-		TorsoPackage = {
+		Torso = {
 			Prefix = Settings.Prefix;
 			Commands = {"torso";"torsopackage";};
 			Args = {"player";"id";};
@@ -9203,16 +9386,15 @@ return function(Vargs)
 					error('ID is not a torso!')
 				end
 
-				local part = service.Insert(args[2])
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA('CharacterMesh') and m.BodyPart=='HumanoidRootPart' then
-							m:Destroy()
-						end
-					end
+				local model = service.Insert(args[2], true)
 
-					part.Parent = v.Character
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then 
+						Functions.ApplyBodyPart(v.Character, model)
+					end
 				end
+
+				model:Destroy()
 			end
 		};
 
@@ -9226,10 +9408,30 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA("CharacterMesh") then
-							m:Destroy()
-						end
+					if v.Character then 
+						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then 
+							local rigType = humanoid.RigType
+							if rigType == Enum.HumanoidRigType.R6 then 
+								for _,x in pairs(v.Character:GetChildren()) do
+									if x:IsA("CharacterMesh") then 
+										x:Destroy()
+									end 
+								end
+							elseif rigType == Enum.HumanoidRigType.R15 then 
+								local rig = server.Deps.Assets.RigR15
+								local rigHumanoid = rig.Humanoid 
+								local validParts = {}
+								for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do 
+									validParts[x.Name] = x.Value 
+								end
+								for _,x in pairs(rig:GetChildren()) do 
+									if x:IsA("BasePart") and validParts[x.Name] then
+										humanoid:ReplaceBodyPartR15(validParts[x.Name], x:Clone())
+									end 
+								end
+							end
+						end 
 					end
 				end
 			end
@@ -9246,45 +9448,47 @@ return function(Vargs)
 			Function = function(plr,args)
 				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid ID")
 
+				local details = game.AssetService:GetBundleDetailsAsync(tonumber(args[2]))
 				local parts = {}
-				local assets = game.AssetService:GetAssetIdsForPackage(tonumber(args[2]))
-				local potProps = {
-					BrickColor = true;
-					Color = true;
-					Material = true;
-					MeshId = true;
-					Reflectance = true;
-					TextureID = true;
-					Transparency = true;
-					Size = true;
-				}
+				local validIds = {27,28,29,30,31,17,18,8,41,42,43,44,45,46,47,57,58}
 
-				for i,v in next,assets do
-					table.insert(parts,service.Insert(v))
+				for i,v in next,details.Items do
+					if table.find(validIds, service.MarketPlace:GetProductInfo(v.Id).AssetTypeId) then
+						table.insert(parts,service.Insert(v.Id, true))
+					end
 				end
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for k,m in pairs(v.Character:children()) do
-						if m:IsA("CharacterMesh") then
-							m:Destroy()
-						end
-					end
+					if v.Character then 
+						Routine(function()
+							for _,part in pairs(parts) do
+								if part:FindFirstChild("R6") or part:FindFirstChild("R15") or part:FindFirstChild("R15Fixed") then
+									Functions.ApplyBodyPart(v.Character, part)
+								else
+									for _,x in pairs(part:GetChildren()) do
+										if x:IsA("Accoutrement") then 
+											x:Clone().Parent = v.Character
+										elseif x:IsA("Decal") or x:IsA("DataModelMesh") then 
+											local CheckClass = x:IsA("Decal") and "Decal" or "DataModelMesh"
 
-
-					for i,part in next,parts do
-						if part:IsA("Folder") and part.Name == "R15" then
-							for i,found in next,part:GetChildren() do
-								local temp = v.Character:FindFirstChild(found.Name)
-								if temp and temp:IsA(found.ClassName) then
-									for prop,use in next,potProps do
-										temp[prop] = found[prop]
+											if v.Character:FindFirstChild("Head") then 
+												for _,z in pairs(v.Character.Head:GetChildren()) do
+													if z:IsA(CheckClass) then 
+														z:Destroy()
+													end 
+												end 
+												x:Clone().Parent = v.Character.Head
+											end
+										end
 									end
 								end
-							end
-						else
-							part:Clone().Parent = v.Character
-						end
+							end 
+						end)
 					end
+				end
+
+				for i,v in pairs(parts) do 
+					v:Destroy()
 				end
 			end
 		};
@@ -9300,26 +9504,31 @@ return function(Vargs)
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be filled")
 				assert(args[2], "Argument #2 must be filled")
-				
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local validId = (args[2]:sub(1,6):lower()=="userid-" and tonumber(args[2]:sub(7))) or tonumber(args[2])
-					
-					local suc,ers = pcall(function()
-						return service.Players:GetHumanoidDescriptionFromUserId(service.Players:GetUserIdFromNameAsync(args[2]))
-					end)
-					
-					if suc then
-						local char = plr.Character
-						
-						if char then
-							local humanoid = char:FindFirstChildOfClass"Humanoid"
-							
-							if humanoid then
-								humanoid:ApplyDescription(ers)
+
+				local target = tonumber(args[2]:match("^userid%-(%d*)"))
+				if not target then
+					-- Grab id from name 
+					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[2])
+					if success then 
+						target = id 
+					else
+						error("Unable to find target user")
+					end 
+				end 
+
+				if target then 
+					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
+
+					if success then
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
+							v.CharacterAppearanceId = target
+
+							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then 
+								v.Character.Humanoid:ApplyDescription(desc)
 							end
-						else
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Cannot convert "..v.Name.."'s character (No character visible)"})
 						end
+					else 
+						error("Unable to get avatar for target user")
 					end
 				end
 			end
@@ -9335,33 +9544,17 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character then
-						local suc,ers = pcall(function()
-							return service.Players:GetHumanoidDescriptionFromUserId(v.UserId)
-						end)
-						
-						if suc then
-							local char = v.Character
-							
-							if char then
-								local humanoid = char:FindFirstChildOfClass"Humanoid"
-								
-								if humanoid then
-									humanoid:ApplyDescription(ers)
-								else
-								v.CharacterAppearanceId = v.UserId
-								v:LoadCharacter()
-								end
-							else
-								v.CharacterAppearanceId = v.UserId
-								v:LoadCharacter()
+					Routine(function()
+						v.CharacterAppearanceId = v.UserId
+
+						if v.Character and v.Character:FindFirstChild("Humanoid") then 
+							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
+
+							if success then 
+								v.Character.Humanoid:ApplyDescription(desc)
 							end
-						else
-								v.CharacterAppearanceId = v.UserId
-								v:LoadCharacter()
 						end
-						
-					end
+					end)
 				end
 			end
 		};
@@ -9474,21 +9667,27 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local bodyColors = service.New("BodyColors", {
+					HeadColor = BrickColor.new("Bright yellow"),
+					LeftArmColor = BrickColor.new("Bright yellow"),
+					RightArmColor = BrickColor.new("Bright yellow"),
+					LeftLegColor = BrickColor.new("Br. yellowish green"),
+					RightLegColor = BrickColor.new("Br. yellowish green"),
+					TorsoColor = BrickColor.new("Bright blue")
+				})
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
 						for k,p in pairs(v.Character:children()) do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
+							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
 								p:Destroy()
-							elseif p.Name=="Left Arm" or p.Name=="Right Arm" or p.Name=="Head" then
-								p.BrickColor=BrickColor.new("Bright yellow")
-							elseif p.Name=="Left Leg" or p.Name=="Right Leg" then
-								p.BrickColor=BrickColor.new("Bright green")
-							elseif p.Name=="HumanoidRootPart" then
-								p.BrickColor=BrickColor.new("Bright blue")
 							end
 						end
+						bodyColors:Clone().Parent = v.Character
 					end
 				end
+
+				bodyColors:Destroy()
 			end
 		};
 
@@ -10213,7 +10412,7 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
-					error("Backup map wasn't enabled")
+					error("Map has not been backed up")
 					return
 				end
 				Functions.Hint('Restoring Map...',service.Players:children())
@@ -10256,8 +10455,6 @@ return function(Vargs)
 			Function = function(plr,args)
 				if plr then
 					Functions.Hint('Updating Map Backup...',{plr})
-				else
-					--warn("Performing Map Backup...")
 				end
 
 				local tempmodel = service.New('Model')
@@ -10280,8 +10477,6 @@ return function(Vargs)
 
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
-				else
-					--warn("Backup Complete")
 				end
 
 				Logs.AddLog(Logs.Script,{
@@ -10301,7 +10496,6 @@ return function(Vargs)
 			AdminLevel = "Owners";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"Explorer")
-				--error("Disabled until I get around to finishing the explorer revamp; Use :dex for now")
 			end
 		};
 
@@ -10499,7 +10693,7 @@ return function(Vargs)
 			Prefix = Settings.Prefix;
 			Commands = {"wildfire";};
 			Args = {"player";};
-			Description = "Starts a fire at the target player(s); Ignores locked parts and parts named 'BasePlate'";
+			Description = "Starts a fire at the target player(s); Ignores locked parts and parts named 'BasePlate' or 'Baseplate'";
 			AdminLevel = "Owners";
 			Fun = true;
 			Function = function(plr,args)
@@ -10522,7 +10716,7 @@ return function(Vargs)
 						objs = nil
 						partsHit = nil
 						finished = true
-					elseif partsHit and objs and part:IsA("BasePart") and (not part.Locked or (part.Parent:IsA("Model") and service.Players:GetPlayerFromCharacter(part.Parent))) and part.Name ~= "BasePlate" and not partsHit[part] then
+					elseif partsHit and objs and part:IsA("BasePart") and (not part.Locked or (part.Parent:IsA("Model") and service.Players:GetPlayerFromCharacter(part.Parent))) and part.Name ~= "BasePlate" and part.Name ~= "Baseplate" and not partsHit[part] then
 						partsHit[part] = true
 
 						local oColor = part.Color
@@ -10939,16 +11133,13 @@ return function(Vargs)
 		ShowLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"showlogs";"showcommandlogs";};
-			Args = {"player"};
+			Args = {"player","autoupdate"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local temp = {}
-				for i,m in pairs(Logs.Commands) do
-					table.insert(temp,{Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
-				end
+				local str = Settings.Prefix.."logs"..(args[2] or "")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.MakeGui(plr,"List",{Title = "Admin Logs", Table = temp, Dots = true, Update = "CommandLogs"; Sanitize = true})
+					Admin.RunCommandAsPlayer(str, v)
 				end
 			end
 		};
@@ -11216,7 +11407,7 @@ return function(Vargs)
 			Commands = {"mutelist";"mutes";"muted";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows a list of currently muted players, like a ban list, but for mutes instead of bans";
+			Description = "Shows a list of currently muted players";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)

@@ -76,8 +76,34 @@ return function(Vargs)
 		
 		LoadData = function(jobId, ...)
 			Core.LoadData(...);
-		end
+		end;
+		
+		Event = function(jobId, eventId, ...)
+			service.Events["CRSSRV:".. eventId]:Fire(...)
+		end;
+		
+		CrossServerVote = function(jobId, data)
+			local question = data.Question;
+			local answers = data.Answers;
+			local voteKey = data.VoteKey;
+			
+			local start = os.time()
+			local players = service.GetPlayers()
+
+			for i,v in pairs(players) do
+				Routine(function()
+					local response = Remote.GetGui(v, "Vote", {Question = question,Answers = answers})
+					if response and os.time() - start <= 120 then
+						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
+					end
+				end)
+			end
+		end;
 	}
+	
+	local function CrossEvent(eventId)
+		return service.Events["CRSSRV".. eventId]
+	end
 	
 	--// User Commands
 	Commands.CrossServer = {
@@ -92,6 +118,89 @@ return function(Vargs)
 				error("CrossServer Handler Not Ready");
 			end
 		end;
+	};
+	
+	Commands.CrossServerVote = {
+		Prefix = Settings.Prefix;
+		Commands = {"crossservervote", "crsvote"};
+		Args = {"anwser1,answer2,etc (NO SPACES)";"question";};
+		Filter = true;
+		Description = "Lets you ask players in all servers a question with a list of answers and get the results";
+		AdminLevel = "Moderators";
+		CrossServerDenied = true;
+		Function = function(plr,args)
+			local question = args[2]
+			if not question then error("You forgot to supply a question!") end
+			local answers = args[1]
+			local anstab = {}
+			local responses = {}
+			local voteKey = "ADONISVOTE".. math.random();
+			local startTime = os.time();
+			
+			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
+				table.insert(responses, data.Data.Response)
+			end)
+
+			local function voteUpdate()
+				local results = {}
+				local total = #responses
+				local tab = {
+					"Question: "..question;
+					"Total Responses: "..total;
+					"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
+					--"Didn't Vote: "..#players-total;
+				}
+				
+				for i,v in pairs(responses) do
+					if not results[v] then results[v] = 0 end
+					results[v] = results[v]+1
+				end
+
+				for i,v in pairs(anstab) do
+					local ans = v
+					local num = results[v]
+					local percent
+					if not num then
+						num = 0
+						percent = 0
+					else
+						percent = math.floor((num/total)*100)
+					end
+
+					table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
+				end
+				
+				return tab;
+			end
+			
+			Logs.TempUpdaters[voteKey] = voteUpdate;
+
+			if not answers then
+				anstab = {"Yes","No"}
+			else
+				for ans in answers:gmatch("([^,]+)") do
+					table.insert(anstab,ans)
+				end
+			end
+			
+			local data = {
+				Answers = anstab;
+				Question = question;
+				VoteKey = voteKey
+			}
+			
+			Core.CrossServer("CrossServerVote", data)
+			
+			Remote.MakeGui(plr,"List",{
+				Title = 'Results', 
+				Tab = voteUpdate(),
+				Update = "TempUpdate",
+				UpdateArgs = {{UpdateKey = voteKey}},
+				AutoUpdate = 1,
+			})
+			
+			delay(120, function() Logs.TempUpdaters[voteKey] = nil; msgSub:Disconnect(); end)
+		end
 	};
 	
 	--// Handlers

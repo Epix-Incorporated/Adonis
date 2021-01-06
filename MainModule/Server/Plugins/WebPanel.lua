@@ -1,13 +1,10 @@
 --[[ 
 
-	Currently in development.
+	Currently in beta.
 	
+	Author: Cald_fan
+	Contributors: joritochip (Requests/custom commands)
 	
-	
-	Original Comment: 
-	Credit to joritochip for help with custom commands metatable
-
-	san fixed this :P
 ]]
 
 server = nil
@@ -39,6 +36,8 @@ return function()
 	
 	server.HTTP.WebPanel = WebPanel
 	
+	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
+	
 	-- Create a fake player for use in remote execution
 	local fakePlayer = service.Wrap(service.New("Folder"))
 	local data = {
@@ -47,8 +46,8 @@ return function()
 		ClassName = "Player";
 		AccountAge = 0;
 		CharacterAppearanceId = -1;
-		UserId = -1;
-		userId = -1;
+		UserId = ownerId;
+		userId = ownerId;
 		Parent = service.Players;
 		Character = Instance.new("Model");
 		Backpack = Instance.new("Folder");
@@ -229,7 +228,7 @@ return function()
 						server.Functions.Shutdown("Game Shutdown")
 					elseif v.action == "remoteexecute" then
 						if typeof(v.command) ~= "string" then v.command = tostring(v.command) end
-						server.Process.Command(fakePlayer, v.command, {AdminLevel = 4, isSystem = true})
+						server.Process.Command(fakePlayer, v.command, {AdminLevel = 4, DontLog = true, IgnoreErrors = true})
 					end
 				end
 			end
