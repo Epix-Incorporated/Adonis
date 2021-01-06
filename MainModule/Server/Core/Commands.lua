@@ -790,6 +790,7 @@ return function(Vargs)
 				assert(args[1] and args[2], "Argument missing or nil")
 				if time:lower():sub(#time)=='s' then
 					time = time:sub(1,#time-1)
+					time = tonumber(time)
 				elseif time:lower():sub(#time)=='m' then
 					time = time:sub(1,#time-1)
 					time = tonumber(time)*60
@@ -798,7 +799,7 @@ return function(Vargs)
 					time = (tonumber(time)*60)*60
 				elseif time:lower():sub(#time)=='d' then
 					time = time:sub(1,#time-1)
-					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
+					time = ((tonumber(time)*60)*60)*24
 				end
 
 				local level = data.PlayerData.Level;
