@@ -464,7 +464,17 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			Admin.RemoveAdmin(p,temp)
+			
+			if Admin.GetUpdatedLevel(p) == 0 then
+				for i,v in next,Settings.Blacklist do
+					if checkTab(p,v) then
+						return false	
+					end
+				end
+			end
+			
 			Admin.SetLevel(p,level)
+			
 			if temp then table.insert(Admin.TempAdmins,p) end
 
 			if list and type(list)=="table" then 

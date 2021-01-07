@@ -790,6 +790,7 @@ return function(Vargs)
 				assert(args[1] and args[2], "Argument missing or nil")
 				if time:lower():sub(#time)=='s' then
 					time = time:sub(1,#time-1)
+					time = tonumber(time)
 				elseif time:lower():sub(#time)=='m' then
 					time = time:sub(1,#time-1)
 					time = tonumber(time)*60
@@ -798,7 +799,7 @@ return function(Vargs)
 					time = (tonumber(time)*60)*60
 				elseif time:lower():sub(#time)=='d' then
 					time = time:sub(1,#time-1)
-					time = ((tonumber(time:sub(1,#time-1))*60)*60)*24
+					time = ((tonumber(time)*60)*60)*24
 				end
 
 				local level = data.PlayerData.Level;
@@ -1467,6 +1468,40 @@ return function(Vargs)
 			end
 		};
 
+		GlobalMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"globalmessage","gm","globalannounce"};
+			Args = {"message"};
+			Description = "Sends a global message to all servers";
+			AdminLevel = "Owners";
+			Filter = true;
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;	
+		};
+
+		GlobalPlace = {
+			Prefix = Settings.Prefix;
+			Commands = {"globalplace","gplace"};
+			Args = {"placeid"};
+			Description = "Sends a global message to all servers";
+			AdminLevel = "Creators";
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				assert(tonumber(args[1]), "Argument #1 must be a number")
+				
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;
+		};
+		
 		MessagePM = {
 			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
@@ -1762,6 +1797,12 @@ return function(Vargs)
 						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
+						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end
 						Shirt:Clone().Parent = plr.Character
 					else
 						error("Unexpected error occured. Clothing is missing")
@@ -1787,6 +1828,14 @@ return function(Vargs)
 						for g,k in pairs(plr.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
+
+						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end
+
 						Pants:Clone().Parent = plr.Character
 					else
 						error("Unexpected error occured. Clothing is missing")
@@ -1811,6 +1860,14 @@ return function(Vargs)
 				local id = tonumber(args[1])
 				local market = service.MarketPlace
 				local info = market:GetProductInfo(id)
+				
+				local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
+				local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
+
+				if humandescrip then
+					humandescrip.Face = id
+				end
+				
 				if info.AssetTypeId == 18 or info.AssetTypeId == 9 then
 					service.Insert(args[1]).Parent = plr.Character:FindFirstChild("Head")
 				else
@@ -3280,10 +3337,13 @@ return function(Vargs)
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
 
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
+				
 				if player then
 					for i,v in next, plr:GetFriendsOnline() do
 						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
-							service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, plr)
+							local new = Core.NewScript('LocalScript',"service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, "..plr:GetFullName()..")")
+							new.Disabled = false
+							new.Parent = plr:FindFirstChildOfClass"Backpack"
 						end
 					end
 				else
@@ -3292,6 +3352,47 @@ return function(Vargs)
 			end
 		};
 
+		HandTo = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"handto";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Hands an item to a player";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local target = service.GetPlayers(plr, args[1])[1]
+				
+				if target ~= plr then
+					local targetchar = target.Character
+					
+					if not targetchar then
+						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
+						return
+					end
+					
+					local plrChar = plr.Character
+					
+					if not plrChar then
+						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
+						return
+					end
+					
+					local tool = plrChar:FindFirstChildOfClass"Tool"
+					
+					if not tool then
+						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
+						return
+					else
+						tool.Parent = targetchar
+						Functions.Hint("[HANDTO]: Successfully given the item to "..target.Name, {plr})
+					end
+				else
+					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
+				end
+			end;
+		};
+		
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
 			Commands = {"showtools";"viewtools";"seebackpack";"viewbackpack";"showbackpack";"displaybackpack";"displaytools";};
@@ -4447,13 +4548,15 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local plz = service.GetPlayers(plr, args[1]:lower())
+				local plz = service.GetPlayers(plr, (args[1] and args[1]:lower()) or plr.Name:lower())
 				for i,v in pairs(plz) do
 					if args[2] and tonumber(args[2]) then
 						local role = v:GetRoleInGroup(tonumber(args[2]))
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Rank: "..tostring(role),{plr})
+						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat).." Rank: "..tostring(role),{plr})
 					else
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge,{plr})
+						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
+						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat),{plr})
 					end
 				end
 			end
@@ -5187,6 +5290,60 @@ return function(Vargs)
 			end
 		};
 
+		CopyCharacter = {
+			Prefix = Settings.Prefix;
+			Commands = {"copychar";"copycharacter";"copyplayercharacter"};
+			Args = {"player";"target";};
+			Hidden = false;
+			Description = "Changes specific players' character to the target's character. (i.g. To copy Player1's character, do ':copychar me Player1')";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied.")
+				assert(args[2], "Argument #2 must be supplied. What player would you want to copy?")
+				
+				local target = service.GetPlayers(plr,args[2])[1]
+				local target_character = target.Character
+				if target_character then
+					target_character.Archivable = true
+					target_character = target_character:Clone()
+				end
+				
+				assert(target_character, "Targeted player doesn't have a character or has a locked character")
+				
+				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
+
+				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
+
+				target_humandescrip.Archivable = true
+				target_humandescrip = target_humandescrip:Clone()
+
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Routine(function()
+						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
+							v.Character.Archivable = true
+							
+							for d,e in pairs(v.Character:children()) do
+								if e:IsA"Accessory" then
+									e:Destroy()
+								end
+							end
+							
+							local cl = target_humandescrip:Clone()
+							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
+							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
+							
+							for d,e in pairs(target_character:children()) do
+								if e:IsA"Accessory" then
+									e:Clone().Parent = v.Character
+								end
+							end
+						end
+					end)
+				end
+			end
+		};
+		
 		ClickTeleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"clickteleport";"teleporttoclick";"ct";"clicktp";"forceteleport";"ctp";"ctt";};
@@ -5235,6 +5392,40 @@ return function(Vargs)
 			end
 		};
 
+		LockMap = {
+			Prefix = Settings.Prefix;
+			Commands = {"lockmap";};
+			Args = {};
+			Hidden = false;
+			Description = "Locks the map";
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in next, workspace:GetDescendants() do
+					if v and v.Parent and v:IsA"BasePart" then
+						v.Locked = true
+					end
+				end
+			end
+		};
+		
+		UnlockMap = {
+			Prefix = Settings.Prefix;
+			Commands = {"unlockmap";};
+			Args = {};
+			Hidden = false;
+			Description = "Unlocks the map";
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in next, workspace:GetDescendants() do
+					if v and v.Parent and v:IsA"BasePart" then
+						v.Locked = false
+					end
+				end
+			end
+		};
+		
 		BodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"bodyswap";"bodysteal";"bswap";};
@@ -5359,6 +5550,7 @@ return function(Vargs)
 					end
 
 					v:LoadCharacter()
+					wait(0.1)
 					v.Character.HumanoidRootPart.CFrame = pos
 
 					for d,f in pairs(v.Character:children()) do
@@ -8978,12 +9170,34 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local num = math.min(tonumber(args[2]), 50)
+				local sizeLimit = Settings.SizeLimit or 20
+				local num = math.clamp(tonumber(args[2]) or 1, 0.001, sizeLimit) -- Size limit exceeding over 20 would be unnecessary and may potientially create massive lag !!
 
+				if not args[2] or not tonumber(args[2]) then
+					num = 1
+					Functions.Hint("Size changed to 1 [Argument #2 wasn't supplied correctly.]", {plr})
+				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
+					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 went over the size limit]", {plr})
+				end
+				
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
 
+					if not human then
+						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!",{plr})
+						continue
+					end
+					
+					if not Variables.SizedCharacters[char] then
+						Variables.SizedCharacters[char] = num
+					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
+						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
+					else
+						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.",{plr})
+						continue
+					end
+					
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						for k,val in next,human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
@@ -10412,15 +10626,25 @@ return function(Vargs)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
+					error("Cannot restore when there are no backup maps!!")
+					return
+				end
+				if server.Variables.RestoringMap then
 					error("Map has not been backed up")
 					return
 				end
+				if server.Variables.BackingupMap then
+					error("Cannot restore map while backing up map is in process!")
+          return
+        end
+        
+				server.Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...',service.Players:children())
 
 				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
-						wait()
+						service.RunService.Heartbeat:Wait()
 					end
 				end
 
@@ -10440,6 +10664,7 @@ return function(Vargs)
 				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
+				server.Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
 			end
 		};
@@ -10456,7 +10681,18 @@ return function(Vargs)
 				if plr then
 					Functions.Hint('Updating Map Backup...',{plr})
 				end
-
+				
+				if server.Variables.BackingupMap then
+					error("Backup Map is in progress. Please try again later!")
+					return
+				end
+				if server.Variables.RestoringMap then
+					error("Cannot backup map while map is being restored!")
+					return
+				end
+				
+				server.Variables.BackingupMap = true
+				
 				local tempmodel = service.New('Model')
 
 				for i,v in pairs(service.Workspace:GetChildren()) do
@@ -10478,7 +10714,9 @@ return function(Vargs)
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
 				end
-
+				
+				server.Variables.BackingupMap = false
+				
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
 					Desc = "Map was successfully backed up";
