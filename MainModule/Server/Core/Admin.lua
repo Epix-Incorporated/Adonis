@@ -649,7 +649,13 @@ return function(Vargs)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args)
+				local adminLvl = Admin.GetLevel(plr)
+				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
+					Player = plr;
+					Level = adminLvl;
+					isAgent = HTTP.Trello.CheckAgent(p) or false;
+					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors)) or false;
+				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then 
 					--logError(plr,"Command",error) 
