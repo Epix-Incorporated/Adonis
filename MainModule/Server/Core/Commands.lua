@@ -3341,7 +3341,7 @@ return function(Vargs)
 				if player then
 					for i,v in next, plr:GetFriendsOnline() do
 						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
-							local new = Core.NewScript('LocalScript',"service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, "..plr:GetFullName()..")")
+							local new = Core.NewScript('LocalScript',"service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
 							new.Disabled = false
 							new.Parent = plr:FindFirstChildOfClass"Backpack"
 						end
