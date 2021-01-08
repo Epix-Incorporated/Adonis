@@ -71,6 +71,7 @@ return function(Vargs)
 		GroupRanks = {};
 		TempAdmins = {};
 		SlowCache = {};
+		UserIdCache = {};
 		BlankPrefix = false;
 
 		GetTrueRank = function(p, group)
@@ -174,6 +175,26 @@ return function(Vargs)
 					end
 				elseif p.Name == check then
 					return true
+				elseif type(check) == "string" then
+					local cache = Admin.UserIdCache[check]
+					
+					if cache and p.UserId == cache then
+						return true
+					elseif cache==false then
+						return
+					end
+					
+					local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
+					
+					if suc and userId then
+						Admin.UserIdCache[check] = userId
+						
+						if p.UserId == userId then
+							return true
+						end
+					elseif not suc then
+						Admin.UserIdCache[check] = false
+					end
 				end
 			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
 				if check.Group and check.Rank then
