@@ -467,7 +467,7 @@ return function(Vargs)
 			
 			if Admin.GetUpdatedLevel(p) == 0 then
 				for i,v in next,Settings.Blacklist do
-					if checkTab(p,v) then
+					if Admin.DoCheck(p,v) then -- I deeply apologize, it was supposed to be Admin.DoCheck, not checkTab. My bad.... :/
 						return false	
 					end
 				end
