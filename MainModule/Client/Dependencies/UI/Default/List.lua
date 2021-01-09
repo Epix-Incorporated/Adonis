@@ -20,6 +20,7 @@ return function(data)
 	local PageSize = data.PageSize or 100;
 	local PageNumber = data.PageNumber or 1;
 	local PageCounter = PageNumber or 1;
+	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
 	local getListTab, getPage
 	local doSearch, genList
 	local window, scroller, search
@@ -150,7 +151,7 @@ return function(data)
 		end
 		
 		currentListTab = gotList;
-		scroller:GenerateList(getPage(gotList, PageCounter));
+		scroller:GenerateList(getPage(gotList, PageCounter), {RichText = RichText;});
 	end
 	
 	window = client.UI.Make("Window",{
