@@ -189,7 +189,12 @@ return function(Vargs)
 					if opts.CrossServer and command.CrossServerDenied then
 						allowed = false;
 					end
-
+					
+					if allowed and opts.Chat and command.Chattable==false then
+						Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not permitted this in chat: '..msg; Color = Color3.new(1,0,0)})
+						return
+					end
+					
 					if allowed then
 						local cmdArgs = command.Args or command.Arguments
 						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
@@ -375,7 +380,7 @@ return function(Vargs)
 							msg = msg:sub(4)
 						end
 
-						Process.Command(p,msg)
+						Process.Command(p,msg,{Chat = true;})
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
