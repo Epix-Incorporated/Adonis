@@ -151,7 +151,7 @@ return function(data)
 		end
 		
 		currentListTab = gotList;
-		scroller:GenerateList(getPage(gotList, PageCounter), {RichText = RichText;});
+		scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText;});
 	end
 	
 	window = client.UI.Make("Window",{
