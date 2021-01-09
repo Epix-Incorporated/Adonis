@@ -7257,6 +7257,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+							local knownchar = v.Character
 							local speed = 10
 							local Part = service.New("Part")
 							Part.Parent = v.Character
@@ -7288,8 +7289,10 @@ return function(Vargs)
 							--]]
 							wait(5)
 							BodyVelocity:remove()
-							service.New("Explosion",service.Workspace).Position = v.Character.HumanoidRootPart.Position
-							v.Character:BreakJoints()
+							if knownchar.Parent then
+								service.New("Explosion",service.Workspace).Position = knownchar.HumanoidRootPart.Position
+								knownchar:BreakJoints()
+							end
 						end
 					end)
 				end
