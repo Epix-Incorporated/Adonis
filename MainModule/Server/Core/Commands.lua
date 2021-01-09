@@ -11851,12 +11851,10 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					--[[v.Character.Archivable=true
-					local newchar=v.Character:clone()
-					newchar.Parent=Storage
-					v.Character=nil--]]
-					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					Remote.Send(v,'Function','setCamProperty','CameraSubject',service.Workspace)
+					local freecam = Deps.Assets.Freecam:Clone()
+					freecam.Enabled = true
+					freecam.ResetOnSpawn = false
+					freecam.Parent = v:FindFirstChildOfClass"PlayerGui"
 					v.Character.HumanoidRootPart.Anchored=true
 				end
 			end
@@ -11872,8 +11870,12 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					Remote.Send(v,'Function','setCamProperty','CameraSubject',v.Character.Humanoid)
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+					
+					if plrgui:FindFirstChild"Freecam" then
+						plrgui.Freecam:Destroy()
+					end
+					
 					v.Character.HumanoidRootPart.Anchored=false
 				end
 			end
