@@ -4783,17 +4783,17 @@ return function(Vargs)
 			end
 		};
 
-		FlyNoClip = {
+		FlyClip = {
 			Prefix = Settings.Prefix;
-			Commands = {"flynoclip";};
+			Commands = {"flyclip";};
 			Args = {"player";"speed";};
 			Hidden = false;
-			Description = "Flying noclip";
+			Description = "Flying clipped";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Commands.Fly.Function(p, args, true)
+					server.Commands.Fly.Function(p, args, false)
 				end
 			end
 		};
@@ -8049,7 +8049,7 @@ return function(Vargs)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = true;
 					Parent = scr;
 				})
 
