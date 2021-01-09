@@ -8233,53 +8233,66 @@ return function(Vargs)
 			Description = "Turn the target player(s) into a dog";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,plr in pairs(service.GetPlayers(plr,args[1])) do
-					Routine(function()
+			Function = function(p,args)
+				for i,plr in pairs(service.GetPlayers(p,args[1])) do
+					--Routine(function()
 						if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
-							if plr.Chraracter:FindFirstChild"Shirt" then
-								plr.Chaacter.Shirt.Parent = plr.Character.HumanoidRootPart
+							local human = plr.Character:FindFirstChildOfClass"Humanoid"
+							
+							if not human then
+								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+								return
 							end
-							if plr.Character:FindFirstChild"Pants" then
-								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
-							end
-							local char, torso, ca1, ca2 = plr.Character, plr.Character.Torso, CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-
-							torso.Transparency = 1
-
-							for i,v in next,torso:GetChildren() do
-								if v:IsA'Motor6D' then
-									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+							
+							if human.RigType == Enum.HumanoidRigType.R6 then
+								if plr.Character:FindFirstChild"Shirt" then
+									plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
 								end
-							end
-
-							torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
-							torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
-							torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
-							torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
-							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
-							local st = service.New("Seat", {
-								Name = "Adonis_Torso",
-								FormFactor = 0,
-								TopSurface = 0,
-								BottomSurface = 0,
-								Size = Vector3.new(3, 1, 4),
-							})
-
-							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
-
-							st.CFrame = torso.CFrame
-							st.Parent = char 	
-
-							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
-
-							for d,e in next, char:GetDescendants() do
-								if e:IsA"BasePart" then
-									e.BrickColor = BrickColor.new("Brown")
+								if plr.Character:FindFirstChild"Pants" then
+									plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 								end
+								local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild"Torso" or plr.Character:FindFirstChild"UpperTorso", CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
+								local head = char:FindFirstChild"Head"
+								
+								torso.Transparency = 1
+
+								for i,v in next,torso:GetChildren() do
+									if v:IsA'Motor6D' then
+										local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+									end
+								end
+								
+								torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+								
+								torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
+								torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
+								torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
+								torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
+								local st = service.New("Seat", {
+									Name = "Adonis_Torso",
+									FormFactor = 0,
+									TopSurface = 0,
+									BottomSurface = 0,
+									Size = Vector3.new(3, 1, 4),
+								})
+
+								local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+
+								st.CFrame = torso.CFrame
+								st.Parent = char 	
+
+								local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+
+								for d,e in next, char:GetDescendants() do
+									if e:IsA"BasePart" then
+										e.BrickColor = BrickColor.new("Brown")
+									end
+								end
+							elseif human.RigType == Enum.HumanoidRigType.R15 then
+								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
 							end
 						end
-					end)
+					--end)
 				end
 			end
 		};
