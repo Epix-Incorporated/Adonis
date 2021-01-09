@@ -163,7 +163,9 @@ return function(data)
 			if Tab then
 				genList(Tab)
 			end
-		end
+		end;
+		
+		RichTextSupport = data.RichTextSupport or data.SupportRichText or false;
 	})
 	
 	scroller = window:Add("ScrollingFrame",{
