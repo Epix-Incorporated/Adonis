@@ -6671,6 +6671,7 @@ return function(Vargs)
 			Prefix = Settings.Prefix;
 			Commands = {"newteam","createteam","maketeam"};
 			Args = {"name";"BrickColor";};
+			Filter = true;
 			Hidden = false;
 			Description = "Make a new team with the specified name and color";
 			Fun = false;
@@ -9710,7 +9711,7 @@ return function(Vargs)
 		Char = {
 			Prefix = Settings.Prefix;
 			Commands = {"char";"character";"appearance";};
-			Args = {"player";"ID or player";};
+			Args = {"player";"username";};
 			Hidden = false;
 			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
 			Fun = false;
@@ -11916,7 +11917,7 @@ return function(Vargs)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot";"trainingbot"};
-			Args = {"plr";"num";"walk";"attack","friendly","health","speed","damage"};
+			Args = {"player";"num";"walk";"attack","friendly","health","speed","damage"};
 			Hidden = false;
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			Fun = false;
@@ -12017,7 +12018,7 @@ return function(Vargs)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot";"tbot";"trainingbot";"bots";"robot";"robots";"dummy";"dummys";"testdummy";"testdummys";"dolls";"doll";};
-			Args = {"plr";"num";"walk";"attk";"swarm";"speed";"dmg";"hp";"dist";};
+			Args = {"player";"num";"walk";"attk";"swarm";"speed";"dmg";"hp";"dist";};
 			Hidden = false;
 			Description = "Configurable AIs made for training";
 			Fun = false;
