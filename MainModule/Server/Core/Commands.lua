@@ -3352,47 +3352,6 @@ return function(Vargs)
 			end
 		};
 
-		HandTo = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"handto";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Hands an item to a player";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				local target = service.GetPlayers(plr, args[1])[1]
-				
-				if target ~= plr then
-					local targetchar = target.Character
-					
-					if not targetchar then
-						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
-						return
-					end
-					
-					local plrChar = plr.Character
-					
-					if not plrChar then
-						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
-						return
-					end
-					
-					local tool = plrChar:FindFirstChildOfClass"Tool"
-					
-					if not tool then
-						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
-						return
-					else
-						tool.Parent = targetchar
-						Functions.Hint("[HANDTO]: Successfully given the item to "..target.Name, {plr})
-					end
-				else
-					Functions.Hint("[HANDTO]: Cannot give item to yourself", {plr})
-				end
-			end;
-		};
-		
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
 			Commands = {"showtools";"viewtools";"seebackpack";"viewbackpack";"showbackpack";"displaybackpack";"displaytools";};
