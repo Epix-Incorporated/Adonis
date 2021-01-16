@@ -7276,17 +7276,17 @@ return function(Vargs)
 							BodyVelocity.Parent = Part
 							BodyVelocity.maxForce = Vector3.new(math.huge,math.huge,math.huge)
 							BodyVelocity.velocity = Vector3.new(0,100*speed,0)
-							--[[
-							cPcall(function()
-								for i = 1,math.huge do
-									local Explosion = service.New("Explosion")
-									Explosion.Parent = Part
-									Explosion.BlastRadius = 0
-									Explosion.Position = Part.Position + Vector3.new(0,0,0)
-									wait()
-								end
-							end)
-							--]]
+									--[[
+									cPcall(function()
+										for i = 1,math.huge do
+											local Explosion = service.New("Explosion")
+											Explosion.Parent = Part
+											Explosion.BlastRadius = 0
+											Explosion.Position = Part.Position + Vector3.new(0,0,0)
+											wait()
+										end
+									end)
+									--]]
 							wait(5)
 							BodyVelocity:remove()
 							if knownchar.Parent then
@@ -7298,7 +7298,7 @@ return function(Vargs)
 				end
 			end
 		};
-
+		
 		Dance = {
 			Prefix = Settings.Prefix;
 			Commands = {"dance";};
