@@ -11862,17 +11862,22 @@ return function(Vargs)
 			Commands = {"freecam";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Makes it so the target player(s)'s cam can move around freely";
+			Description = "Makes it so the target player(s)'s cam can move around freely (Press Space or Shift+P to toggle freecam)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+					
+					if not plrgui or plrgui:FindFirstChild"Freecam" then
+						continue
+					end
+					
 					local freecam = Deps.Assets.Freecam:Clone()
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
 					freecam.Freecam.Disabled = false
-					freecam.Parent = v:FindFirstChildOfClass"PlayerGui"
-					v.Character.HumanoidRootPart.Anchored=true
+					freecam.Parent = plrgui
 				end
 			end
 		};
@@ -11888,12 +11893,40 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					local plrgui = v:FindFirstChildOfClass"PlayerGui"
-					
-					if plrgui:FindFirstChild"Freecam" then
+
+					if plrgui and plrgui:FindFirstChild"Freecam" then
+						local freecam = plrgui:FindFirstChild"Freecam"
+						
+						if freecam:FindFirstChildOfClass"RemoteFunction" then
+							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
+						end
+						
+						wait(2)
 						plrgui.Freecam:Destroy()
 					end
-					
-					v.Character.HumanoidRootPart.Anchored=false
+				end
+			end
+		};
+		
+		ToggleFreecam = {
+			Prefix = Settings.Prefix;
+			Commands = {"togglefreecam";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Toggles Freecam";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+
+					if plrgui:FindFirstChild"Freecam" then
+						local freecam = plrgui:FindFirstChild"Freecam"
+
+						if freecam:FindFirstChildOfClass"RemoteFunction" then
+							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "Toggle")
+						end
+					end
 				end
 			end
 		};
