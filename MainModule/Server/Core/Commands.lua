@@ -11870,6 +11870,7 @@ return function(Vargs)
 					local freecam = Deps.Assets.Freecam:Clone()
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
+					freecam.Freecam.Disabled = false
 					freecam.Parent = v:FindFirstChildOfClass"PlayerGui"
 					v.Character.HumanoidRootPart.Anchored=true
 				end
