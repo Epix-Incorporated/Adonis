@@ -939,6 +939,58 @@ return function(Vargs)
 			end
 		};
 
+		DirectBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"directban"};
+			Args = {"player";};
+			Description = "DirectBans the player (Saves)";
+			AdminLevel = "Creators";
+			Function = function(plr,args,data)
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userid = service.Players:GetUserIdFromNameAsync(i)
+
+					if userid == plr.UserId then
+						error("You cannot ban yourself or the creator of the game", 2)
+						return
+					end
+
+					if userid then
+						Core.DoSave({
+							Type = "TableAdd";
+							Table = "Banned";
+							Value = i..':'..userid;
+						})
+
+						Core.CrossServer("Loadstring", "server.Remote.Send(service.Players."..i..", 'Kill')")
+						Functions.Hint("System-Banned "..i..":"..userid, {plr})
+					end
+				end
+			end
+		};
+		
+		UnDirectBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"undirectban"};
+			Args = {"player";};
+			Description = "UnDirectBans the player (Saves)";
+			AdminLevel = "Creators";
+			Function = function(plr,args,data)
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userid = service.Players:GetUserIdFromNameAsync(i)
+
+					if userid then
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = "Banned";
+							Value = i..':'..userid;
+						})
+						
+						Functions.Hint("System-UnBanned "..i..":"..userid, {plr})
+					end
+				end
+			end
+		};
+		
 		Dizzy = {
 			Prefix = Settings.Prefix;
 			Commands = {"dizzy";};
