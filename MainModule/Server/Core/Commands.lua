@@ -11901,8 +11901,7 @@ return function(Vargs)
 							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
 						end
 						
-						wait(2)
-						plrgui.Freecam:Destroy()
+						service.Debris:AddItem(freecam, 2)
 					end
 				end
 			end
