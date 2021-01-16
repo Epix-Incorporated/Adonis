@@ -66,6 +66,10 @@ return function(Vargs)
 			Process.Command(fakePlayer, comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 		
+		Loadstring = function(jobId, source)
+			server.Core.Loadstring(source, GetEnv{})()
+		end;
+		
 		DataStoreUpdate = function(jobId, type, data)
 			server.Process.DataStoreUpdated(type, data) 
 		end;
