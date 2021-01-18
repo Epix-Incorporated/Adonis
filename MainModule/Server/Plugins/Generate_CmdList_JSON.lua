@@ -12,6 +12,8 @@ return function(Vargs)
 		local endpoint = _G.ADONISWEB_CMD_JSON_ENDPOINT;
 		if not enabled or not secret or not endpoint then return end
 		
+		print("WEB ENABLED DO UPDATE");
+		
 		local server = Vargs.Server;
 		local service = Vargs.Service;
 		
@@ -19,6 +21,7 @@ return function(Vargs)
 		local Commands = server.Commands;
 		
 		if Core.DebugMode and enabled then
+			print("DEBUG DO LAUNCH ENABLED");
 			wait(5)
 			
 			local list = {};
@@ -57,6 +60,9 @@ return function(Vargs)
 			});
 			
 			print("LAUNCHED TO WEBPANEL")
+			print("RESPONSE BELOW")
+			print("SUCCESS: ".. tostring(success).. "\n"..
+				"RESPONSE:\n"..(res and HTTP.JSONEncode(res)) or res)
 		end
 	end)
 end

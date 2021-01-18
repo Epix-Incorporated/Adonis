@@ -967,7 +967,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		UnDirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"undirectban"};
@@ -984,13 +984,13 @@ return function(Vargs)
 							Table = "Banned";
 							Value = i..':'..userid;
 						})
-						
+
 						Functions.Hint("System-UnBanned "..i..":"..userid, {plr})
 					end
 				end
 			end
 		};
-		
+
 		Dizzy = {
 			Prefix = Settings.Prefix;
 			Commands = {"dizzy";};
@@ -1530,7 +1530,7 @@ return function(Vargs)
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
-				
+
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
@@ -1547,13 +1547,13 @@ return function(Vargs)
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 				assert(tonumber(args[1]), "Argument #1 must be a number")
-				
+
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;
 		};
-		
+
 		MessagePM = {
 			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
@@ -1912,14 +1912,14 @@ return function(Vargs)
 				local id = tonumber(args[1])
 				local market = service.MarketPlace
 				local info = market:GetProductInfo(id)
-				
+
 				local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
 				local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
 
 				if humandescrip then
 					humandescrip.Face = id
 				end
-				
+
 				if info.AssetTypeId == 18 or info.AssetTypeId == 9 then
 					service.Insert(args[1]).Parent = plr.Character:FindFirstChild("Head")
 				else
@@ -3389,7 +3389,7 @@ return function(Vargs)
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
 
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
-				
+
 				if player then
 					for i,v in next, plr:GetFriendsOnline() do
 						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
@@ -3405,33 +3405,33 @@ return function(Vargs)
 		};
 
 		HandTo = {
-			Prefix = Settings.PlayerPrefix;
+			Prefix = Settings.Prefix;
 			Commands = {"handto";};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Hands an item to a player";
 			Fun = false;
-			AdminLevel = "Players";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local target = service.GetPlayers(plr, args[1])[1]
-				
+
 				if target ~= plr then
 					local targetchar = target.Character
-					
+
 					if not targetchar then
 						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
 						return
 					end
-					
+
 					local plrChar = plr.Character
-					
+
 					if not plrChar then
 						Functions.Hint("[HANDTO]: Unable to hand item to "..target.Name, {plr})
 						return
 					end
-					
+
 					local tool = plrChar:FindFirstChildOfClass"Tool"
-					
+
 					if not tool then
 						Functions.Hint("[HANDTO]: You must be holding an item", {plr})
 						return
@@ -3444,7 +3444,7 @@ return function(Vargs)
 				end
 			end;
 		};
-		
+
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
 			Commands = {"showtools";"viewtools";"seebackpack";"viewbackpack";"showbackpack";"displaybackpack";"displaytools";};
@@ -3769,7 +3769,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		--[[Viewport = {
 			Prefix = Settings.Prefix;
 			Commands = {"viewport", "cctv"};
@@ -4087,7 +4087,7 @@ return function(Vargs)
 						table.insert(anstab,ans)
 					end
 				end
-				
+
 				for i,v in pairs(players) do
 					Routine(function()
 						local response = Remote.GetGui(v,"Vote",{Question = question,Answers = anstab})
@@ -4096,7 +4096,7 @@ return function(Vargs)
 						end
 					end)
 				end
-				
+
 				Remote.MakeGui(plr,"List",{
 					Title = 'Results', 
 					Tab = voteUpdate(),
@@ -5353,16 +5353,16 @@ return function(Vargs)
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied.")
 				assert(args[2], "Argument #2 must be supplied. What player would you want to copy?")
-				
+
 				local target = service.GetPlayers(plr,args[2])[1]
 				local target_character = target.Character
 				if target_character then
 					target_character.Archivable = true
 					target_character = target_character:Clone()
 				end
-				
+
 				assert(target_character, "Targeted player doesn't have a character or has a locked character")
-				
+
 				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
 
 				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
@@ -5374,17 +5374,17 @@ return function(Vargs)
 					Routine(function()
 						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
 							v.Character.Archivable = true
-							
+
 							for d,e in pairs(v.Character:children()) do
 								if e:IsA"Accessory" then
 									e:Destroy()
 								end
 							end
-							
+
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
 							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
-							
+
 							for d,e in pairs(target_character:children()) do
 								if e:IsA"Accessory" then
 									e:Clone().Parent = v.Character
@@ -5395,7 +5395,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		ClickTeleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"clickteleport";"teleporttoclick";"ct";"clicktp";"forceteleport";"ctp";"ctt";};
@@ -5460,7 +5460,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		UnlockMap = {
 			Prefix = Settings.Prefix;
 			Commands = {"unlockmap";};
@@ -5477,7 +5477,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		BodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"bodyswap";"bodysteal";"bswap";};
@@ -7351,7 +7351,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		Dance = {
 			Prefix = Settings.Prefix;
 			Commands = {"dance";};
@@ -8289,62 +8289,62 @@ return function(Vargs)
 			Function = function(p,args)
 				for i,plr in pairs(service.GetPlayers(p,args[1])) do
 					--Routine(function()
-						if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
-							local human = plr.Character:FindFirstChildOfClass"Humanoid"
-							
-							if not human then
-								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
-								return
-							end
-							
-							if human.RigType == Enum.HumanoidRigType.R6 then
-								if plr.Character:FindFirstChild"Shirt" then
-									plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
-								end
-								if plr.Character:FindFirstChild"Pants" then
-									plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
-								end
-								local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild"Torso" or plr.Character:FindFirstChild"UpperTorso", CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-								local head = char:FindFirstChild"Head"
-								
-								torso.Transparency = 1
+					if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
+						local human = plr.Character:FindFirstChildOfClass"Humanoid"
 
-								for i,v in next,torso:GetChildren() do
-									if v:IsA'Motor6D' then
-										local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
-									end
-								end
-								
-								torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
-								
-								torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
-								torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
-								torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
-								torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
-								local st = service.New("Seat", {
-									Name = "Adonis_Torso",
-									FormFactor = 0,
-									TopSurface = 0,
-									BottomSurface = 0,
-									Size = Vector3.new(3, 1, 4),
-								})
-
-								local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
-
-								st.CFrame = torso.CFrame
-								st.Parent = char 	
-
-								local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
-
-								for d,e in next, char:GetDescendants() do
-									if e:IsA"BasePart" then
-										e.BrickColor = BrickColor.new("Brown")
-									end
-								end
-							elseif human.RigType == Enum.HumanoidRigType.R15 then
-								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
-							end
+						if not human then
+							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+							return
 						end
+
+						if human.RigType == Enum.HumanoidRigType.R6 then
+							if plr.Character:FindFirstChild"Shirt" then
+								plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
+							end
+							if plr.Character:FindFirstChild"Pants" then
+								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
+							end
+							local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild"Torso" or plr.Character:FindFirstChild"UpperTorso", CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
+							local head = char:FindFirstChild"Head"
+
+							torso.Transparency = 1
+
+							for i,v in next,torso:GetChildren() do
+								if v:IsA'Motor6D' then
+									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+								end
+							end
+
+							torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+
+							torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
+							torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
+							torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
+							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
+							local st = service.New("Seat", {
+								Name = "Adonis_Torso",
+								FormFactor = 0,
+								TopSurface = 0,
+								BottomSurface = 0,
+								Size = Vector3.new(3, 1, 4),
+							})
+
+							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+
+							st.CFrame = torso.CFrame
+							st.Parent = char 	
+
+							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+
+							for d,e in next, char:GetDescendants() do
+								if e:IsA"BasePart" then
+									e.BrickColor = BrickColor.new("Brown")
+								end
+							end
+						elseif human.RigType == Enum.HumanoidRigType.R15 then
+							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
+						end
+					end
 					--end)
 				end
 			end
@@ -9248,7 +9248,7 @@ return function(Vargs)
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
 					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 went over the size limit]", {plr})
 				end
-				
+
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local char = v.Character;
 					local human = char and char:FindFirstChildOfClass("Humanoid");
@@ -9257,7 +9257,7 @@ return function(Vargs)
 						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!",{plr})
 						continue
 					end
-					
+
 					if not Variables.SizedCharacters[char] then
 						Variables.SizedCharacters[char] = num
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
@@ -9266,7 +9266,7 @@ return function(Vargs)
 						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.",{plr})
 						continue
 					end
-					
+
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
 						for k,val in next,human:GetChildren() do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
@@ -10704,9 +10704,9 @@ return function(Vargs)
 				end
 				if server.Variables.BackingupMap then
 					error("Cannot restore map while backing up map is in process!")
-          return
-        end
-        
+					return
+				end
+
 				server.Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...',service.Players:children())
 
@@ -10750,7 +10750,7 @@ return function(Vargs)
 				if plr then
 					Functions.Hint('Updating Map Backup...',{plr})
 				end
-				
+
 				if server.Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
@@ -10759,9 +10759,9 @@ return function(Vargs)
 					error("Cannot backup map while map is being restored!")
 					return
 				end
-				
+
 				server.Variables.BackingupMap = true
-				
+
 				local tempmodel = service.New('Model')
 
 				for i,v in pairs(service.Workspace:GetChildren()) do
@@ -10783,9 +10783,9 @@ return function(Vargs)
 				if plr then
 					Functions.Hint('Backup Complete',{plr})
 				end
-				
+
 				server.Variables.BackingupMap = false
-				
+
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
 					Desc = "Map was successfully backed up";
@@ -11921,11 +11921,11 @@ return function(Vargs)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					local plrgui = v:FindFirstChildOfClass"PlayerGui"
-					
+
 					if not plrgui or plrgui:FindFirstChild"Freecam" then
 						continue
 					end
-					
+
 					local freecam = Deps.Assets.Freecam:Clone()
 					freecam.Enabled = true
 					freecam.ResetOnSpawn = false
@@ -11949,17 +11949,17 @@ return function(Vargs)
 
 					if plrgui and plrgui:FindFirstChild"Freecam" then
 						local freecam = plrgui:FindFirstChild"Freecam"
-						
+
 						if freecam:FindFirstChildOfClass"RemoteFunction" then
 							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
 						end
-						
+
 						service.Debris:AddItem(freecam, 2)
 					end
 				end
 			end
 		};
-		
+
 		ToggleFreecam = {
 			Prefix = Settings.Prefix;
 			Commands = {"togglefreecam";};
