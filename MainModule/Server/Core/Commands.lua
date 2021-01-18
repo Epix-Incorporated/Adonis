@@ -939,6 +939,58 @@ return function(Vargs)
 			end
 		};
 
+		DirectBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"directban"};
+			Args = {"player";};
+			Description = "DirectBans the player (Saves)";
+			AdminLevel = "Creators";
+			Function = function(plr,args,data)
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userid = service.Players:GetUserIdFromNameAsync(i)
+
+					if userid == plr.UserId then
+						error("You cannot ban yourself or the creator of the game", 2)
+						return
+					end
+
+					if userid then
+						Core.DoSave({
+							Type = "TableAdd";
+							Table = "Banned";
+							Value = i..':'..userid;
+						})
+
+						Core.CrossServer("Loadstring", "server.Remote.Send(service.Players."..i..", 'Kill')")
+						Functions.Hint("System-Banned "..i..":"..userid, {plr})
+					end
+				end
+			end
+		};
+		
+		UnDirectBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"undirectban"};
+			Args = {"player";};
+			Description = "UnDirectBans the player (Saves)";
+			AdminLevel = "Creators";
+			Function = function(plr,args,data)
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userid = service.Players:GetUserIdFromNameAsync(i)
+
+					if userid then
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = "Banned";
+							Value = i..':'..userid;
+						})
+						
+						Functions.Hint("System-UnBanned "..i..":"..userid, {plr})
+					end
+				end
+			end
+		};
+		
 		Dizzy = {
 			Prefix = Settings.Prefix;
 			Commands = {"dizzy";};
@@ -3341,7 +3393,7 @@ return function(Vargs)
 				if player then
 					for i,v in next, plr:GetFriendsOnline() do
 						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
-							local new = Core.NewScript('LocalScript',"service.TeleportService:TeleportToPlaceInstance(v.PlaceId, v.GameId, "..plr:GetFullName()..")")
+							local new = Core.NewScript('LocalScript',"service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
 							new.Disabled = false
 							new.Parent = plr:FindFirstChildOfClass"Backpack"
 						end
@@ -7257,6 +7309,7 @@ return function(Vargs)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+							local knownchar = v.Character
 							local speed = 10
 							local Part = service.New("Part")
 							Part.Parent = v.Character
@@ -7275,27 +7328,29 @@ return function(Vargs)
 							BodyVelocity.Parent = Part
 							BodyVelocity.maxForce = Vector3.new(math.huge,math.huge,math.huge)
 							BodyVelocity.velocity = Vector3.new(0,100*speed,0)
-							--[[
-							cPcall(function()
-								for i = 1,math.huge do
-									local Explosion = service.New("Explosion")
-									Explosion.Parent = Part
-									Explosion.BlastRadius = 0
-									Explosion.Position = Part.Position + Vector3.new(0,0,0)
-									wait()
-								end
-							end)
-							--]]
+									--[[
+									cPcall(function()
+										for i = 1,math.huge do
+											local Explosion = service.New("Explosion")
+											Explosion.Parent = Part
+											Explosion.BlastRadius = 0
+											Explosion.Position = Part.Position + Vector3.new(0,0,0)
+											wait()
+										end
+									end)
+									--]]
 							wait(5)
 							BodyVelocity:remove()
-							service.New("Explosion",service.Workspace).Position = v.Character.HumanoidRootPart.Position
-							v.Character:BreakJoints()
+							if knownchar.Parent then
+								service.New("Explosion",service.Workspace).Position = knownchar.HumanoidRootPart.Position
+								knownchar:BreakJoints()
+							end
 						end
 					end)
 				end
 			end
 		};
-
+		
 		Dance = {
 			Prefix = Settings.Prefix;
 			Commands = {"dance";};
@@ -8230,53 +8285,66 @@ return function(Vargs)
 			Description = "Turn the target player(s) into a dog";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,plr in pairs(service.GetPlayers(plr,args[1])) do
-					Routine(function()
+			Function = function(p,args)
+				for i,plr in pairs(service.GetPlayers(p,args[1])) do
+					--Routine(function()
 						if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
-							if plr.Chraracter:FindFirstChild"Shirt" then
-								plr.Chaacter.Shirt.Parent = plr.Character.HumanoidRootPart
+							local human = plr.Character:FindFirstChildOfClass"Humanoid"
+							
+							if not human then
+								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+								return
 							end
-							if plr.Character:FindFirstChild"Pants" then
-								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
-							end
-							local char, torso, ca1, ca2 = plr.Character, plr.Character.Torso, CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-
-							torso.Transparency = 1
-
-							for i,v in next,torso:GetChildren() do
-								if v:IsA'Motor6D' then
-									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+							
+							if human.RigType == Enum.HumanoidRigType.R6 then
+								if plr.Character:FindFirstChild"Shirt" then
+									plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
 								end
-							end
-
-							torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
-							torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
-							torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
-							torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
-							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
-							local st = service.New("Seat", {
-								Name = "Adonis_Torso",
-								FormFactor = 0,
-								TopSurface = 0,
-								BottomSurface = 0,
-								Size = Vector3.new(3, 1, 4),
-							})
-
-							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
-
-							st.CFrame = torso.CFrame
-							st.Parent = char 	
-
-							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
-
-							for d,e in next, char:GetDescendants() do
-								if e:IsA"BasePart" then
-									e.BrickColor = BrickColor.new("Brown")
+								if plr.Character:FindFirstChild"Pants" then
+									plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 								end
+								local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild"Torso" or plr.Character:FindFirstChild"UpperTorso", CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
+								local head = char:FindFirstChild"Head"
+								
+								torso.Transparency = 1
+
+								for i,v in next,torso:GetChildren() do
+									if v:IsA'Motor6D' then
+										local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+									end
+								end
+								
+								torso.Neck.C0 = CFrame.new(0, -.5, -2) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+								
+								torso["Right Shoulder"].C0 = CFrame.new(.5, -1.5, -1.5) * ca1
+								torso["Left Shoulder"].C0 = CFrame.new(-.5, -1.5, -1.5) * ca2
+								torso["Right Hip"].C0 = CFrame.new(1.5, -1, 1.5) * ca1
+								torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
+								local st = service.New("Seat", {
+									Name = "Adonis_Torso",
+									FormFactor = 0,
+									TopSurface = 0,
+									BottomSurface = 0,
+									Size = Vector3.new(3, 1, 4),
+								})
+
+								local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+
+								st.CFrame = torso.CFrame
+								st.Parent = char 	
+
+								local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
+
+								for d,e in next, char:GetDescendants() do
+									if e:IsA"BasePart" then
+										e.BrickColor = BrickColor.new("Brown")
+									end
+								end
+							elseif human.RigType == Enum.HumanoidRigType.R15 then
+								Remote.MakeGui(p,'Output',{Title = 'Output'; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
 							end
 						end
-					end)
+					--end)
 				end
 			end
 		};
@@ -11846,18 +11914,22 @@ return function(Vargs)
 			Commands = {"freecam";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Makes it so the target player(s)'s cam can move around freely";
+			Description = "Makes it so the target player(s)'s cam can move around freely (Press Space or Shift+P to toggle freecam)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					--[[v.Character.Archivable=true
-					local newchar=v.Character:clone()
-					newchar.Parent=Storage
-					v.Character=nil--]]
-					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					Remote.Send(v,'Function','setCamProperty','CameraSubject',service.Workspace)
-					v.Character.HumanoidRootPart.Anchored=true
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+					
+					if not plrgui or plrgui:FindFirstChild"Freecam" then
+						continue
+					end
+					
+					local freecam = Deps.Assets.Freecam:Clone()
+					freecam.Enabled = true
+					freecam.ResetOnSpawn = false
+					freecam.Freecam.Disabled = false
+					freecam.Parent = plrgui
 				end
 			end
 		};
@@ -11872,9 +11944,40 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.Send(v,'Function','setCamProperty','CameraType','Custom')
-					Remote.Send(v,'Function','setCamProperty','CameraSubject',v.Character.Humanoid)
-					v.Character.HumanoidRootPart.Anchored=false
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+
+					if plrgui and plrgui:FindFirstChild"Freecam" then
+						local freecam = plrgui:FindFirstChild"Freecam"
+						
+						if freecam:FindFirstChildOfClass"RemoteFunction" then
+							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
+						end
+						
+						service.Debris:AddItem(freecam, 2)
+					end
+				end
+			end
+		};
+		
+		ToggleFreecam = {
+			Prefix = Settings.Prefix;
+			Commands = {"togglefreecam";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Toggles Freecam";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+
+					if plrgui:FindFirstChild"Freecam" then
+						local freecam = plrgui:FindFirstChild"Freecam"
+
+						if freecam:FindFirstChildOfClass"RemoteFunction" then
+							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "Toggle")
+						end
+					end
 				end
 			end
 		};
