@@ -182,6 +182,8 @@ return function()
 			--// Aliases, Perms/Disabling
 			for i,v in pairs(data.CommandOverrides) do
 				local index,command = server.Admin.GetCommand(server.Settings.Prefix..i)
+				if not index or not command then index,command = server.Admin.GetCommand(server.Settings.PlayerPrefix..i) end
+				
 				if index and command then
 					if v.disabled then
 						command.Function = function()
