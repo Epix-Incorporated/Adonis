@@ -166,7 +166,7 @@ local descs = {}
 	settings.SaveAdmins = true		  -- If true anyone you :admin or :owner in-game will save
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join	
 	
-	settings.Prefix = ":"				-- The : in :kill me
+	settings.Prefix = ";"				-- The ; in ;kill me
 	settings.PlayerPrefix = "!"			-- The ! in !donate; Mainly used for commands that any player can run; Do not make it the same as settings.Prefix
 	settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me)
 	settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
