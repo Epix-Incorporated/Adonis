@@ -207,14 +207,13 @@ return function(Vargs)
 							local safe = {
 								plr = true;
 								plrs = true;
-								name = true;
-								names = true;
 								username = true;
 								usernames = true;
 								players = true;
 								player = true;
 								users = true;
 								user = true;
+								brickcolor = true;
 							}
 
 							for i,arg in next,args do
