@@ -9721,56 +9721,66 @@ return function(Vargs)
 
 		GivePackage = {
 			Prefix = Settings.Prefix;
-			Commands = {"package", "givepackage", "setpackage"};
+			Commands = {"package", "givepackage", "setpackage", "bundle"};
 			Args = {"player", "id"};
 			Hidden = false;
-			Description = "Gives the target player(s) the desired package";
+			Description = "Gives the target player(s) the desired package (ID MUST BE A NUMBER)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid ID")
-
-				local details = game.AssetService:GetBundleDetailsAsync(tonumber(args[2]))
-				local parts = {}
-				local validIds = {27,28,29,30,31,17,18,8,41,42,43,44,45,46,47,57,58}
-
-				for i,v in next,details.Items do
-					if table.find(validIds, service.MarketPlace:GetProductInfo(v.Id).AssetTypeId) then
-						table.insert(parts,service.Insert(v.Id, true))
+				assert(args[1] and args[2] and tonumber(args[2]), "Argument 1 or 2 is not supplied properly")
+				
+				local items = {}
+				local id = tonumber(args[2])
+				local assetHD = Variables.BundleCache[id]
+				
+				if assetHD == false then
+					Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
+					return
+				end
+				
+				if not assetHD then
+					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+					
+					if suc then
+						for _, item in next, ers.Items do
+							if item.Type == "UserOutfit" then
+								local s,r = pcall(function() return service.Players:GetHumanoidDescriptionFromOutfitId(item.Id) end)
+								Variables.BundleCache[id] = r
+								assetHD = r
+								break
+							end
+						end
+					end
+					
+					if not suc or not assetHD then
+						Variables.BundleCache[id] = false
+						
+						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
+						return
 					end
 				end
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
-						Routine(function()
-							for _,part in pairs(parts) do
-								if part:FindFirstChild("R6") or part:FindFirstChild("R15") or part:FindFirstChild("R15Fixed") then
-									Functions.ApplyBodyPart(v.Character, part)
-								else
-									for _,x in pairs(part:GetChildren()) do
-										if x:IsA("Accoutrement") then 
-											x:Clone().Parent = v.Character
-										elseif x:IsA("Decal") or x:IsA("DataModelMesh") then 
-											local CheckClass = x:IsA("Decal") and "Decal" or "DataModelMesh"
-
-											if v.Character:FindFirstChild("Head") then 
-												for _,z in pairs(v.Character.Head:GetChildren()) do
-													if z:IsA(CheckClass) then 
-														z:Destroy()
-													end 
-												end 
-												x:Clone().Parent = v.Character.Head
-											end
-										end
-									end
+				
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local char = v.Character
+					
+					if char then
+						local humanoid = char:FindFirstChildOfClass"Humanoid"
+						
+						if not humanoid then
+							Functions.Hint("Could not transfer bundle to "..v.Name, {plr})
+						else
+							local newDescription = humanoid:GetAppliedDescription()
+							local defaultDescription = Instance.new("HumanoidDescription")
+							for _, property in next, {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
+								if assetHD[property] ~= defaultDescription[property] then
+									newDescription[property] = assetHD[property]
 								end
-							end 
-						end)
+							end
+							
+							humanoid:ApplyDescription(newDescription)
+						end
 					end
-				end
-
-				for i,v in pairs(parts) do 
-					v:Destroy()
 				end
 			end
 		};
