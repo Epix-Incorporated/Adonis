@@ -5942,6 +5942,36 @@ return function(Vargs)
 				end
 			end
 		};
+		
+		Paint = {
+			Prefix = Settings.Prefix;
+			Commands = {"paint";};
+			Args = {"player";"brickcolor"};
+			Hidden = false;
+			Description = "Paints the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+				
+				if not args[2] then
+					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
+				elseif not brickColor then
+					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
+					brickColor = BrickColor.new("Pearl")
+				end
+				
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
+						local bc = v.Character:FindFirstChildOfClass"BodyColors"
+						
+						for i,v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
+							bc[v] = brickColor
+						end
+					end
+				end
+			end
+		};
 
 		Oddliest = {
 			Prefix = Settings.Prefix;
@@ -10018,23 +10048,47 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local mats = {
+					Plastic = 256;
+					Wood = 512;
+					Slate = 800;
+					Concrete = 816;
+					CorrodedMetal = 1040;
+					DiamondPlate = 1056;
+					Foil = 1072;
+					Grass = 1280;
+					Ice = 1536;
+					Marble = 784;
+					Granite = 832;
+					Brick = 848;
+					Pebble = 864;
+					Sand = 1296;
+					Fabric = 1312;
+					SmoothPlastic = 272;
+					Metal = 1088;
+					WoodPlanks = 528;
+					Neon = 288;
+				}
+				local enumMats = Enum.Material:GetEnumItems()
+				
+				local chosenMat = args[2] or "Plastic"
+				
+				if not args[2] then
+					Functions.Hint("Material wasn't supplied. Plastic was chosen instead")
+				elseif tonumber(args[2]) then
+					chosenMat = table.find(mats, tonumber(args[2]))
+				end
+
+				if not chosenMat then
+					Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid material choice"})
+					return
+				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
 						for k,p in pairs(v.Character:children()) do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
-								p:Destroy()
-							elseif p:IsA("Part") then
-								p.Material = args[2]
-								if args[3] then
-									local str = BrickColor.new('Institutional white').Color
-									local teststr = args[3]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
-								if p.Name=="Head" then
-									local mesh=p:FindFirstChild("Mesh")
-									if mesh then mesh:Destroy() end
-								end
+							if p:IsA"BasePart" then
+								p.Material = chosenMat
 							end
 						end
 					end
