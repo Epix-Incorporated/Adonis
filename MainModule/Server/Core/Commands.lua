@@ -11953,6 +11953,7 @@ return function(Vargs)
 							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
 						end
 						
+						Remote.Send(v,'Function','SetView','reset')
 						service.Debris:AddItem(freecam, 2)
 					end
 				end
