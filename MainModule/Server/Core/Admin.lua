@@ -598,6 +598,7 @@ return function(Vargs)
 					Table = "Banned";
 					Value = p.Name..':'..p.UserId;
 				})
+				Core.CrossServer("Loadstring", "service.Players["..p.Name.."]:Kick("..Variables.BanMessage")")
 			end
 			if not service.Players:FindFirstChild(p.Name) then
 				Remote.Send(p,'Function','KillClient')
