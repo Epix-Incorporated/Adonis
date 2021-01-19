@@ -243,7 +243,7 @@ return function()
 			local code, msg = res.StatusCode, res.StatusMessage
 
 			if code ~= 524 then
-				print("WebPanel: Server Timeout")
+				server.Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
 			end
 		end
 		wait()
