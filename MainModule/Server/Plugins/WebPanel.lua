@@ -244,6 +244,9 @@ return function()
 
 			if code ~= 524 then
 				server.Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
+				server.Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+			else
+				server.Logs:AddLog("Script", "WebPanel Server Timeout")
 			end
 		end
 		wait()
