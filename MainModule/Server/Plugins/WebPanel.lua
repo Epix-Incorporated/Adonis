@@ -176,7 +176,7 @@ return function()
 				server.Settings.Trello_AppKey = data.trello["app-key"]
 				server.Settings.Trello_Token = data.trello.token
 
-				server.HTTP.Trello.Update()
+				service.StartLoop("TRELLO_UPDATER", server.Settings.HttpWait, server.HTTP.Trello.Update, true)
 			end
 
 			--// Aliases, Perms/Disabling
