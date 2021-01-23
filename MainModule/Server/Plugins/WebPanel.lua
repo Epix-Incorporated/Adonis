@@ -245,6 +245,7 @@ return function()
 			if code ~= 524 then
 				print("WebPanel: Server Timeout")
 			end
+			break
 		end
 		wait()
 	end
