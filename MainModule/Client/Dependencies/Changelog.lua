@@ -1,6 +1,18 @@
 return {
-	"Version: 204";
+	"Version: 206";
 	"*Click and drag edges to expand*";
+	"";
+	"[1.9.2021 14:01 EST]";
+	"*Reverted a change that broke some stuff related to admining people in-game";
+	"Git merge:";
+	"(Git/joritochip) Emergency fix for AddAdmin";
+	"(Git/TheLegendarySpark) Added another check for Admin.DoCheck";
+	"";
+	"[1.7.2021 16:07 EST]";
+	"*Removed a debug print that was left in the WebPanel code by mistake";
+	"*Git merge:";
+	"(Git/TheLegendarySpark) Fixed the issue with RunCommandAsPlayer when it comes to AutoJoin";
+	"(Git/TheLegendarySpark) Done several changes to the foundation";
 	"";
 	"[1.5.2021 09:35 EST]";
 	"*First update of the new year!";

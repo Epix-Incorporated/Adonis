@@ -1,3 +1,4 @@
+--!nolint GlobalUsedAsLocal
 --[[
 	SERVER PLUGINS' NAMES MUST START WITH "Server:" OR "Server-"
 	CLIENT PLUGINS' NAMES MUST START WITH "Client:" OR "Client-"
@@ -23,8 +24,6 @@
 	
 --]]
 
-server = nil -- Mutes warnings about unknown globals
-service = nil
 return function()
 	server.Commands.ExampleCommand = {
 		Prefix = server.Settings.Prefix;	-- Prefix to use for command

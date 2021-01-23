@@ -1,5 +1,4 @@
-client = nil
-service = nil
+--!nolint GlobalUsedAsLocal
 return function()
 	--Acts the same as a server plugin but with client functions instead of server.
 	--[[

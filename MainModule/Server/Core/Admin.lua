@@ -71,6 +71,7 @@ return function(Vargs)
 		GroupRanks = {};
 		TempAdmins = {};
 		SlowCache = {};
+		UserIdCache = {};
 		BlankPrefix = false;
 
 		GetTrueRank = function(p, group)
@@ -174,6 +175,26 @@ return function(Vargs)
 					end
 				elseif p.Name == check then
 					return true
+				elseif type(check) == "string" then
+					local cache = Admin.UserIdCache[check]
+					
+					if cache and p.UserId == cache then
+						return true
+					elseif cache==false then
+						return
+					end
+					
+					local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
+					
+					if suc and userId then
+						Admin.UserIdCache[check] = userId
+						
+						if p.UserId == userId then
+							return true
+						end
+					elseif not suc then
+						Admin.UserIdCache[check] = false
+					end
 				end
 			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
 				if check.Group and check.Rank then
@@ -464,17 +485,7 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			Admin.RemoveAdmin(p,temp)
-			
-			if Admin.GetUpdatedLevel(p) == 0 then
-				for i,v in next,Settings.Blacklist do
-					if checkTab(p,v) then
-						return false	
-					end
-				end
-			end
-			
 			Admin.SetLevel(p,level)
-			
 			if temp then table.insert(Admin.TempAdmins,p) end
 
 			if list and type(list)=="table" then 
@@ -530,7 +541,7 @@ return function(Vargs)
 			end
 
 			Admin.UpdateCachedLevel(p)
-		end;	
+		end;		
 
 		CheckDonor = function(p)
 			--if not Settings.DonorPerks then return false end
@@ -650,7 +661,13 @@ return function(Vargs)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args)
+				local adminLvl = Admin.GetLevel(plr)
+				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
+					Player = plr;
+					Level = adminLvl;
+					isAgent = HTTP.Trello.CheckAgent(p) or false;
+					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors)) or false;
+				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then 
 					--logError(plr,"Command",error) 
