@@ -90,6 +90,8 @@ return function(Vargs)
 		
 		SizedCharacters = {};
 		
+		BundleCache = {};
+		
 		MusicList = {
 			{Name='jericho',ID=292340735};
 			{Name='dieinafire',ID=242222291};

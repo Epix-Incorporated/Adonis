@@ -3984,7 +3984,7 @@ return function(Vargs)
 
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
-						table.insert(temptable,admin.." - "..rank)
+						table.insert(temptable,tostring(admin).." - "..rank)
 					end)
 				end)
 
@@ -5942,6 +5942,36 @@ return function(Vargs)
 				end
 			end
 		};
+		
+		Paint = {
+			Prefix = Settings.Prefix;
+			Commands = {"paint";};
+			Args = {"player";"brickcolor"};
+			Hidden = false;
+			Description = "Paints the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+				
+				if not args[2] then
+					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
+				elseif not brickColor then
+					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
+					brickColor = BrickColor.new("Pearl")
+				end
+				
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
+						local bc = v.Character:FindFirstChildOfClass"BodyColors"
+						
+						for i,v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
+							bc[v] = brickColor
+						end
+					end
+				end
+			end
+		};
 
 		Oddliest = {
 			Prefix = Settings.Prefix;
@@ -7808,6 +7838,228 @@ return function(Vargs)
 			end
 		};
 
+		CreateSoundPart = {
+			Prefix = server.Settings.Prefix;	-- Prefix to use for command
+			Commands = {"createsoundpart","createspart"};	-- Commands
+			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "disco (default: false)", "showhint (default: false)", "noloop (default: false)", "volume (default: 1)", "changeable (default: false)", "clicktotoggle (default: false)" ,"rangetotoggle (default: 10) (required: clicktotoggle)","share type (default: everyone)"};	-- Command arguments
+			Description = "Creates a sound part";	-- Command Description
+			Hidden = false; -- Is it hidden from the command list?
+			Fun = true;	-- Is it fun?
+			AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
+			Function = function(plr,args)    -- Function to run for command
+				assert(plr.Character ~= nil, "Character not found")
+				assert(typeof(plr.Character) == "Instance", "Character found fake")
+				assert(plr.Character:IsA("Model"), "Character isn't a model.")
+
+				local char = plr.Character
+				assert(char:FindFirstChild("Head"), "Head isn't found in your character. How is it going to spawn?")
+
+				local soundid = (args[1] and tonumber(args[1])) or select(1, function()
+					if args[1] then
+						local nam = args[1]
+
+						for i,v in next, server.Variables.MusicList do
+							if v.Name:lower() == nam:lower() then
+								return v.ID
+							end
+						end
+					end
+				end)() or error("SoundId wasn't provided or wasn't a valid number")
+
+				local soundrange = (args[2] and tonumber(args[2])) or 10
+				local pitch = (args[3] and tonumber(args[3])) or 1
+				local disco = (args[4] and args[4]:lower() == 'true') or false
+				local showhint = (args[5] and args[5]:lower() == 'true') or false
+				local noloop = (args[6] and args[6]:lower() == 'true') or false
+				local volume = (args[7] and tonumber(args[7])) or 1
+				local changeable = (args[8] and args[8]:lower() == 'true') or false
+				local toggable = (args[9] and args[9]:lower() == 'true') or false
+				local rangetotoggle = (args[10] and tonumber(args[10])) or 10
+				local sharetype = (args[11] and args[11]:lower() == 'all' and 'all') or (args[11] and args[11]:lower() == 'self' and 'self') or (args[11] and args[11]:lower() == 'friends' and 'friends') or (args[11] and args[11]:lower() == 'admins' and 'admins') or 'all'
+
+				if rangetotoggle == 0 then
+					rangetotoggle = 32
+				elseif rangetotoggle < 0 then
+					rangetotoggle = math.abs(rangetotoggle)
+				end
+
+				pitch = math.abs(pitch)
+				soundrange = math.abs(soundrange)
+
+				if soundrange > 100 then
+					soundrange = 100
+				end
+
+				local did,soundinfo = pcall(function()
+					return service.MarketplaceService:GetProductInfo(soundid)
+				end)
+
+				assert(did == true, "Sound Id isn't a sound or doesn't exist.")
+				if did then
+					assert(soundinfo.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
+
+					local sound = service.New("Sound")
+					sound.Name = "Part_Sound"
+					sound.Looped = not noloop
+					sound.SoundId = "rbxassetid://"..soundid
+					sound.Volume = volume
+					sound.EmitterSize = soundrange
+					sound.PlaybackSpeed = pitch
+					sound.Archivable = false
+
+					local spart = service.New("Part")
+					spart.Anchored = true
+					spart.Name = "SoundPart"
+					spart.Position = char:FindFirstChild("Head").Position
+					spart.Size = Vector3.new(2, 1, 2)
+					table.insert(Variables.InsertedObjects, spart)
+
+					local curTag
+					local function createTag(txt, secs)
+						if showhint == false then return end
+						if curTag then pcall(function() curTag:Destroy() end) end
+						local tag = script.Tag:Clone()
+						tag.Name = "\0"
+						tag.Enabled = true
+						tag.Frame.Tag.Text = tostring(txt)
+						tag.Parent = spart
+						curTag = tag
+
+
+						if secs then
+							game:GetService("Debris"):AddItem(tag, secs)
+						else
+							game:GetService("Debris"):AddItem(tag, 5)
+						end
+					end
+
+					sound.Changed:Connect(function(prot)
+						if prot == "SoundId" then
+							if sound.IsPlaying then
+								sound:Stop()
+							end
+
+							sound.TimePosition = 0
+						end
+					end)
+
+					sound.Ended:Connect(function()
+						createTag("Sound "..tostring(sound.SoundId).." ended", 5)
+					end)
+
+					local discoscript
+					if disco == true then
+						discoscript = script.DiscoPart:Clone()
+						discoscript.Disabled = false
+						discoscript.Archivable = false
+						server.SyncAPI.TrustScript(discoscript)
+						discoscript.Parent = spart
+					end
+
+					if changeable == true then
+						spart.Name = tostring(soundid)
+					end
+
+					if toggable == true then
+						local clickd = service.New("ClickDetector")
+						clickd.Name = "ClickToPlay"
+						clickd.Archivable = false
+						clickd.MaxActivationDistance = rangetotoggle
+						local clicks = 0
+
+						local ownerid = plr.UserId
+						clickd.MouseClick:Connect(function(clicker)
+							if sharetype == "self" and clicker.UserId ~= ownerid then return end
+							if sharetype == "friends" then
+								if clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
+									return
+								end
+							end
+
+							clicks = clicks + 1
+							delay(0.4, function()
+								clicks = clicks - 1
+							end)
+
+							if clicks == 1 then
+								if sound.IsPlaying then
+									sound:Pause()
+									createTag("Music paused by "..clicker.Name, 5)
+								else
+									sound:Resume()
+									createTag("Music resumed by "..clicker.Name, 5)								
+								end
+							elseif clicks == 2 then
+								if sound.IsPlaying then
+									sound:Stop()
+									createTag("Music stopped by "..clicker.Name, 5)
+								else
+									sound:Play()
+									createTag("Music replaying by "..clicker.Name, 5)								
+								end
+							elseif clicks == 3 then
+								if discoscript and discoscript.Parent ~= nil then
+									if discoscript.Disabled then
+										discoscript.Disabled = false
+									else
+										discoscript.Disabled = true
+									end
+								end
+							end
+						end)
+
+						clickd.Parent = spart
+					end
+
+					local prevname = spart.Name
+					spart.Changed:Connect(function(prot)
+						if prot == "Name" and changeable then
+							if prevname == spart.Name then return end
+							local suc,prodinfo = pcall(function()
+								return service.MarketplaceService:GetProductInfo(tonumber(spart.Name or 0))
+							end)
+
+							if suc and prodinfo then
+								if prodinfo.AssetTypeId ~= 3 then
+									spart.Name = prevname
+									createTag("Sound "..spart.Name.." is not valid.")
+									sound:Pause()
+									return end
+
+								soundinfo = prodinfo
+								prevname = spart.Name
+								sound.SoundId = "rbxassetid://"..spart.Name
+								createTag("Sound "..sound.SoundId.." inserted")
+								wait(2)
+								createTag("Sound Name: "..tostring(prodinfo.Name))
+							elseif not suc then
+								createTag("Sound "..tostring(spart.Name).." is not valid.")
+								spart.Name = prevname
+							end
+
+							if not toggable then
+								sound:Play()
+							end
+						end
+					end)
+
+					if not toggable then
+						sound:Play()
+						createTag("Now playing " ..soundinfo.Name)
+						wait(2)
+						createTag("SoundId "..soundinfo.AssetId)
+					else
+
+					end
+
+					createTag("Sound Name: "..tostring(soundinfo.Name))
+					sound.Parent = spart
+					spart.Parent = workspace
+					spart.Archivable = false
+				end
+			end
+		};
+		
 		Music = {
 			Prefix = Settings.Prefix;
 			Commands = {"music";"song";"playsong";};
@@ -9722,56 +9974,66 @@ return function(Vargs)
 
 		GivePackage = {
 			Prefix = Settings.Prefix;
-			Commands = {"package", "givepackage", "setpackage"};
+			Commands = {"package", "givepackage", "setpackage", "bundle"};
 			Args = {"player", "id"};
 			Hidden = false;
-			Description = "Gives the target player(s) the desired package";
+			Description = "Gives the target player(s) the desired package (ID MUST BE A NUMBER)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2] and tonumber(args[2]), "Argument missing or invalid ID")
-
-				local details = game.AssetService:GetBundleDetailsAsync(tonumber(args[2]))
-				local parts = {}
-				local validIds = {27,28,29,30,31,17,18,8,41,42,43,44,45,46,47,57,58}
-
-				for i,v in next,details.Items do
-					if table.find(validIds, service.MarketPlace:GetProductInfo(v.Id).AssetTypeId) then
-						table.insert(parts,service.Insert(v.Id, true))
+				assert(args[1] and args[2] and tonumber(args[2]), "Argument 1 or 2 is not supplied properly")
+				
+				local items = {}
+				local id = tonumber(args[2])
+				local assetHD = Variables.BundleCache[id]
+				
+				if assetHD == false then
+					Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
+					return
+				end
+				
+				if not assetHD then
+					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+					
+					if suc then
+						for _, item in next, ers.Items do
+							if item.Type == "UserOutfit" then
+								local s,r = pcall(function() return service.Players:GetHumanoidDescriptionFromOutfitId(item.Id) end)
+								Variables.BundleCache[id] = r
+								assetHD = r
+								break
+							end
+						end
+					end
+					
+					if not suc or not assetHD then
+						Variables.BundleCache[id] = false
+						
+						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
+						return
 					end
 				end
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
-						Routine(function()
-							for _,part in pairs(parts) do
-								if part:FindFirstChild("R6") or part:FindFirstChild("R15") or part:FindFirstChild("R15Fixed") then
-									Functions.ApplyBodyPart(v.Character, part)
-								else
-									for _,x in pairs(part:GetChildren()) do
-										if x:IsA("Accoutrement") then 
-											x:Clone().Parent = v.Character
-										elseif x:IsA("Decal") or x:IsA("DataModelMesh") then 
-											local CheckClass = x:IsA("Decal") and "Decal" or "DataModelMesh"
-
-											if v.Character:FindFirstChild("Head") then 
-												for _,z in pairs(v.Character.Head:GetChildren()) do
-													if z:IsA(CheckClass) then 
-														z:Destroy()
-													end 
-												end 
-												x:Clone().Parent = v.Character.Head
-											end
-										end
-									end
+				
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local char = v.Character
+					
+					if char then
+						local humanoid = char:FindFirstChildOfClass"Humanoid"
+						
+						if not humanoid then
+							Functions.Hint("Could not transfer bundle to "..v.Name, {plr})
+						else
+							local newDescription = humanoid:GetAppliedDescription()
+							local defaultDescription = Instance.new("HumanoidDescription")
+							for _, property in next, {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
+								if assetHD[property] ~= defaultDescription[property] then
+									newDescription[property] = assetHD[property]
 								end
-							end 
-						end)
+							end
+							
+							humanoid:ApplyDescription(newDescription)
+						end
 					end
-				end
-
-				for i,v in pairs(parts) do 
-					v:Destroy()
 				end
 			end
 		};
@@ -10009,23 +10271,47 @@ return function(Vargs)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local mats = {
+					Plastic = 256;
+					Wood = 512;
+					Slate = 800;
+					Concrete = 816;
+					CorrodedMetal = 1040;
+					DiamondPlate = 1056;
+					Foil = 1072;
+					Grass = 1280;
+					Ice = 1536;
+					Marble = 784;
+					Granite = 832;
+					Brick = 848;
+					Pebble = 864;
+					Sand = 1296;
+					Fabric = 1312;
+					SmoothPlastic = 272;
+					Metal = 1088;
+					WoodPlanks = 528;
+					Neon = 288;
+				}
+				local enumMats = Enum.Material:GetEnumItems()
+				
+				local chosenMat = args[2] or "Plastic"
+				
+				if not args[2] then
+					Functions.Hint("Material wasn't supplied. Plastic was chosen instead")
+				elseif tonumber(args[2]) then
+					chosenMat = table.find(mats, tonumber(args[2]))
+				end
+
+				if not chosenMat then
+					Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid material choice"})
+					return
+				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
 						for k,p in pairs(v.Character:children()) do
-							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
-								p:Destroy()
-							elseif p:IsA("Part") then
-								p.Material = args[2]
-								if args[3] then
-									local str = BrickColor.new('Institutional white').Color
-									local teststr = args[3]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
-								if p.Name=="Head" then
-									local mesh=p:FindFirstChild("Mesh")
-									if mesh then mesh:Destroy() end
-								end
+							if p:IsA"BasePart" then
+								p.Material = chosenMat
 							end
 						end
 					end
@@ -11953,7 +12239,8 @@ return function(Vargs)
 						if freecam:FindFirstChildOfClass"RemoteFunction" then
 							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
 						end
-
+            
+						Remote.Send(v,'Function','SetView','reset')
 						service.Debris:AddItem(freecam, 2)
 					end
 				end
