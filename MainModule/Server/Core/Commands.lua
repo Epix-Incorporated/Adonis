@@ -3984,7 +3984,7 @@ return function(Vargs)
 
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
-						table.insert(temptable,admin.." - "..rank)
+						table.insert(temptable,tostring(admin).." - "..rank)
 					end)
 				end)
 
