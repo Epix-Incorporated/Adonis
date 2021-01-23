@@ -1028,7 +1028,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		GamepassService = game:service("GamePassService");
 		ChatService = game:service("Chat");
 		Gamepasses = game:service("GamePassService");
-		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0)) pcall(obj.Delete, obj) end;
+		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
 		RbxEvent = function(signal, func) local event = signal:connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
