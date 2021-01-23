@@ -7837,6 +7837,228 @@ return function(Vargs)
 			end
 		};
 
+		CreateSoundPart = {
+			Prefix = server.Settings.Prefix;	-- Prefix to use for command
+			Commands = {"createsoundpart","createspart"};	-- Commands
+			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "disco (default: false)", "showhint (default: false)", "noloop (default: false)", "volume (default: 1)", "changeable (default: false)", "clicktotoggle (default: false)" ,"rangetotoggle (default: 10) (required: clicktotoggle)","share type (default: everyone)"};	-- Command arguments
+			Description = "Creates a sound part";	-- Command Description
+			Hidden = false; -- Is it hidden from the command list?
+			Fun = true;	-- Is it fun?
+			AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
+			Function = function(plr,args)    -- Function to run for command
+				assert(plr.Character ~= nil, "Character not found")
+				assert(typeof(plr.Character) == "Instance", "Character found fake")
+				assert(plr.Character:IsA("Model"), "Character isn't a model.")
+
+				local char = plr.Character
+				assert(char:FindFirstChild("Head"), "Head isn't found in your character. How is it going to spawn?")
+
+				local soundid = (args[1] and tonumber(args[1])) or select(1, function()
+					if args[1] then
+						local nam = args[1]
+
+						for i,v in next, server.Variables.MusicList do
+							if v.Name:lower() == nam:lower() then
+								return v.ID
+							end
+						end
+					end
+				end)() or error("SoundId wasn't provided or wasn't a valid number")
+
+				local soundrange = (args[2] and tonumber(args[2])) or 10
+				local pitch = (args[3] and tonumber(args[3])) or 1
+				local disco = (args[4] and args[4]:lower() == 'true') or false
+				local showhint = (args[5] and args[5]:lower() == 'true') or false
+				local noloop = (args[6] and args[6]:lower() == 'true') or false
+				local volume = (args[7] and tonumber(args[7])) or 1
+				local changeable = (args[8] and args[8]:lower() == 'true') or false
+				local toggable = (args[9] and args[9]:lower() == 'true') or false
+				local rangetotoggle = (args[10] and tonumber(args[10])) or 10
+				local sharetype = (args[11] and args[11]:lower() == 'all' and 'all') or (args[11] and args[11]:lower() == 'self' and 'self') or (args[11] and args[11]:lower() == 'friends' and 'friends') or (args[11] and args[11]:lower() == 'admins' and 'admins') or 'all'
+
+				if rangetotoggle == 0 then
+					rangetotoggle = 32
+				elseif rangetotoggle < 0 then
+					rangetotoggle = math.abs(rangetotoggle)
+				end
+
+				pitch = math.abs(pitch)
+				soundrange = math.abs(soundrange)
+
+				if soundrange > 100 then
+					soundrange = 100
+				end
+
+				local did,soundinfo = pcall(function()
+					return service.MarketplaceService:GetProductInfo(soundid)
+				end)
+
+				assert(did == true, "Sound Id isn't a sound or doesn't exist.")
+				if did then
+					assert(soundinfo.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
+
+					local sound = service.New("Sound")
+					sound.Name = "Part_Sound"
+					sound.Looped = not noloop
+					sound.SoundId = "rbxassetid://"..soundid
+					sound.Volume = volume
+					sound.EmitterSize = soundrange
+					sound.PlaybackSpeed = pitch
+					sound.Archivable = false
+
+					local spart = service.New("Part")
+					spart.Anchored = true
+					spart.Name = "SoundPart"
+					spart.Position = char:FindFirstChild("Head").Position
+					spart.Size = Vector3.new(2, 1, 2)
+					table.insert(Variables.InsertedObjects, spart)
+
+					local curTag
+					local function createTag(txt, secs)
+						if showhint == false then return end
+						if curTag then pcall(function() curTag:Destroy() end) end
+						local tag = script.Tag:Clone()
+						tag.Name = "\0"
+						tag.Enabled = true
+						tag.Frame.Tag.Text = tostring(txt)
+						tag.Parent = spart
+						curTag = tag
+
+
+						if secs then
+							game:GetService("Debris"):AddItem(tag, secs)
+						else
+							game:GetService("Debris"):AddItem(tag, 5)
+						end
+					end
+
+					sound.Changed:Connect(function(prot)
+						if prot == "SoundId" then
+							if sound.IsPlaying then
+								sound:Stop()
+							end
+
+							sound.TimePosition = 0
+						end
+					end)
+
+					sound.Ended:Connect(function()
+						createTag("Sound "..tostring(sound.SoundId).." ended", 5)
+					end)
+
+					local discoscript
+					if disco == true then
+						discoscript = script.DiscoPart:Clone()
+						discoscript.Disabled = false
+						discoscript.Archivable = false
+						server.SyncAPI.TrustScript(discoscript)
+						discoscript.Parent = spart
+					end
+
+					if changeable == true then
+						spart.Name = tostring(soundid)
+					end
+
+					if toggable == true then
+						local clickd = service.New("ClickDetector")
+						clickd.Name = "ClickToPlay"
+						clickd.Archivable = false
+						clickd.MaxActivationDistance = rangetotoggle
+						local clicks = 0
+
+						local ownerid = plr.UserId
+						clickd.MouseClick:Connect(function(clicker)
+							if sharetype == "self" and clicker.UserId ~= ownerid then return end
+							if sharetype == "friends" then
+								if clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
+									return
+								end
+							end
+
+							clicks = clicks + 1
+							delay(0.4, function()
+								clicks = clicks - 1
+							end)
+
+							if clicks == 1 then
+								if sound.IsPlaying then
+									sound:Pause()
+									createTag("Music paused by "..clicker.Name, 5)
+								else
+									sound:Resume()
+									createTag("Music resumed by "..clicker.Name, 5)								
+								end
+							elseif clicks == 2 then
+								if sound.IsPlaying then
+									sound:Stop()
+									createTag("Music stopped by "..clicker.Name, 5)
+								else
+									sound:Play()
+									createTag("Music replaying by "..clicker.Name, 5)								
+								end
+							elseif clicks == 3 then
+								if discoscript and discoscript.Parent ~= nil then
+									if discoscript.Disabled then
+										discoscript.Disabled = false
+									else
+										discoscript.Disabled = true
+									end
+								end
+							end
+						end)
+
+						clickd.Parent = spart
+					end
+
+					local prevname = spart.Name
+					spart.Changed:Connect(function(prot)
+						if prot == "Name" and changeable then
+							if prevname == spart.Name then return end
+							local suc,prodinfo = pcall(function()
+								return service.MarketplaceService:GetProductInfo(tonumber(spart.Name or 0))
+							end)
+
+							if suc and prodinfo then
+								if prodinfo.AssetTypeId ~= 3 then
+									spart.Name = prevname
+									createTag("Sound "..spart.Name.." is not valid.")
+									sound:Pause()
+									return end
+
+								soundinfo = prodinfo
+								prevname = spart.Name
+								sound.SoundId = "rbxassetid://"..spart.Name
+								createTag("Sound "..sound.SoundId.." inserted")
+								wait(2)
+								createTag("Sound Name: "..tostring(prodinfo.Name))
+							elseif not suc then
+								createTag("Sound "..tostring(spart.Name).." is not valid.")
+								spart.Name = prevname
+							end
+
+							if not toggable then
+								sound:Play()
+							end
+						end
+					end)
+
+					if not toggable then
+						sound:Play()
+						createTag("Now playing " ..soundinfo.Name)
+						wait(2)
+						createTag("SoundId "..soundinfo.AssetId)
+					else
+
+					end
+
+					createTag("Sound Name: "..tostring(soundinfo.Name))
+					sound.Parent = spart
+					spart.Parent = workspace
+					spart.Archivable = false
+				end
+			end
+		};
+		
 		Music = {
 			Prefix = Settings.Prefix;
 			Commands = {"music";"song";"playsong";};
