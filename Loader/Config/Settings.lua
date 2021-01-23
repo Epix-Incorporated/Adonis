@@ -171,7 +171,7 @@ local descs = {}
 	settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me)
 	settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
-	settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: http://wiki.roblox.com/index.php?title=API:Enum/KeyCode
+	settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode 
 	
 	settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
 	settings.Trello_Enabled = false;		  -- Are the Trello features enabled?
