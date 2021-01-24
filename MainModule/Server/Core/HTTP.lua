@@ -38,7 +38,16 @@ return function(Vargs)
 			if y and not n then return true end
 		end;
 		
-		WebPanel = {};
+		WebPanel = {
+			Moderators = {};
+			Admins = {};
+			Owners = {};
+			Creators = {};
+			Mutes = {};
+			Bans = {};
+			Blacklist = {};
+			Whitelist = {};
+		};
 		
 		Trello = {
 			Helpers = {};

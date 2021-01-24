@@ -602,14 +602,19 @@ return function(Vargs)
 		end;
 
 		AddBan = function(p, doSave)
-			table.insert(Settings.Banned, p.Name..':'..p.userId) 
+			table.insert(Settings.Banned, p.Name..':'..p.UserId) 
 			if doSave then
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "Banned";
 					Value = p.Name..':'..p.UserId;
 				})
-				Core.CrossServer("Loadstring", "service.Players["..p.Name.."]:Kick("..Variables.BanMessage")")
+				Core.CrossServer("Loadstring", [[
+					local player = game:GetService("Players"):FindFirstChild("]]..p.Name..[[")
+					if player then
+						player:Kick("]]..Variables.BanMessage..[[")
+					end
+				]])
 			end
 			if not service.Players:FindFirstChild(p.Name) then
 				Remote.Send(p,'Function','KillClient')
