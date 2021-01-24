@@ -23,7 +23,7 @@ Wiki contributions should focus on technical information, such as what various f
 ## My contribution was accepted. Now what?
 When I merge contributions, I open studio and manually update each changed file as well as the changelog. Due to some issue with the (current) size of the Commands module (I think(?)) automating this process (currently) runs into some issues.
 
-When I handle the merge, I will also add you to the credits as "@GitHub <YourGitHubUsernameHere>" if it's your first contribution. If I forget to do this, and you notice, just let me know and I'll fix it.
+When I handle the merge, I will also add you to the credits as "@GitHub YourGitHubUsernameHere" if it's your first contribution. If I forget to do this, and you notice, just let me know and I'll fix it.
 
 Once I finish merging changes, I'll do some quick minor testing to make sure everything still works correctly. Once that's done, I'll upload the updated models, after which all new servers will be running the latest version. 
 
