@@ -955,14 +955,8 @@ return function(Vargs)
 					end
 
 					if userid then
-						Core.DoSave({
-							Type = "TableAdd";
-							Table = "Banned";
-							Value = i..':'..userid;
-						})
-
-						Core.CrossServer("Loadstring", "server.Remote.Send(service.Players."..i..", 'Kill')")
-						Functions.Hint("System-Banned "..i..":"..userid, {plr})
+						Admin.AddBan({UserId = userId, Name = i}, true)
+						Functions.Hint("Direct banned "..i, {plr})
 					end
 				end
 			end
@@ -985,7 +979,7 @@ return function(Vargs)
 							Value = i..':'..userid;
 						})
 
-						Functions.Hint("System-UnBanned "..i..":"..userid, {plr})
+						Functions.Hint(i.." has been Unbanned", {plr})
 					end
 				end
 			end
@@ -3966,19 +3960,19 @@ return function(Vargs)
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
 
-				for i,v in pairs(server.HTTP.WebPanel.Creators) do
+				for i,v in pairs(HTTP.WebPanel.Creators) do
 					table.insert(temptable,v .. " - Creator [WebPanel]")
 				end
 
-				for i,v in pairs(server.HTTP.WebPanel.Moderators) do
+				for i,v in pairs(HTTP.WebPanel.Moderators) do
 					table.insert(temptable,v .. " - Mod [WebPanel]")
 				end
 
-				for i,v in pairs(server.HTTP.WebPanel.Admins) do
+				for i,v in pairs(HTTP.WebPanel.Admins) do
 					table.insert(temptable,v .. " - Admin [WebPanel]")
 				end
 
-				for i,v in pairs(server.HTTP.WebPanel.Owners) do
+				for i,v in pairs(HTTP.WebPanel.Owners) do
 					table.insert(temptable,v .. " - Owner [WebPanel]")
 				end
 
