@@ -5942,7 +5942,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		Paint = {
 			Prefix = Settings.Prefix;
 			Commands = {"paint";};
@@ -5953,18 +5953,18 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-				
+
 				if not args[2] then
 					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
 				elseif not brickColor then
 					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
 					brickColor = BrickColor.new("Pearl")
 				end
-				
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
 						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-						
+
 						for i,v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
 							bc[v] = brickColor
 						end
@@ -8059,7 +8059,7 @@ return function(Vargs)
 				end
 			end
 		};
-		
+
 		Music = {
 			Prefix = Settings.Prefix;
 			Commands = {"music";"song";"playsong";};
@@ -9982,19 +9982,19 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1] and args[2] and tonumber(args[2]), "Argument 1 or 2 is not supplied properly")
-				
+
 				local items = {}
 				local id = tonumber(args[2])
 				local assetHD = Variables.BundleCache[id]
-				
+
 				if assetHD == false then
 					Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
 					return
 				end
-				
+
 				if not assetHD then
 					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
-					
+
 					if suc then
 						for _, item in next, ers.Items do
 							if item.Type == "UserOutfit" then
@@ -10005,21 +10005,21 @@ return function(Vargs)
 							end
 						end
 					end
-					
+
 					if not suc or not assetHD then
 						Variables.BundleCache[id] = false
-						
+
 						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Package "..id.." is not supported."})
 						return
 					end
 				end
-				
+
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					local char = v.Character
-					
+
 					if char then
 						local humanoid = char:FindFirstChildOfClass"Humanoid"
-						
+
 						if not humanoid then
 							Functions.Hint("Could not transfer bundle to "..v.Name, {plr})
 						else
@@ -10030,7 +10030,7 @@ return function(Vargs)
 									newDescription[property] = assetHD[property]
 								end
 							end
-							
+
 							humanoid:ApplyDescription(newDescription)
 						end
 					end
@@ -10293,9 +10293,9 @@ return function(Vargs)
 					Neon = 288;
 				}
 				local enumMats = Enum.Material:GetEnumItems()
-				
+
 				local chosenMat = args[2] or "Plastic"
-				
+
 				if not args[2] then
 					Functions.Hint("Material wasn't supplied. Plastic was chosen instead")
 				elseif tonumber(args[2]) then
@@ -12239,7 +12239,7 @@ return function(Vargs)
 						if freecam:FindFirstChildOfClass"RemoteFunction" then
 							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
 						end
-            
+
 						Remote.Send(v,'Function','SetView','reset')
 						service.Debris:AddItem(freecam, 2)
 					end
