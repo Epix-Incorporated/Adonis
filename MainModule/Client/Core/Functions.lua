@@ -843,6 +843,18 @@ return function()
 			end
 		end;
 		
+			SetAlias = function(alias, data)
+			Variables.Aliases[alias] = data
+			Remote.Get("UpdateAliases",Variables.Aliases)
+		end;
+		
+		RemoveAlias = function(alias)
+			if Variables.Aliases[alias] ~= nil then
+				Variables.Aliases[alias] = nil
+				Remote.Get("UpdateAliases",Variables.Aliases)
+			end
+		end;
+		
 		BrickBlur = function(on,trans,color)
 			local exists = service.LocalContainer():FindFirstChild("ADONIS_WINDOW_FUNC_BLUR")
 			if exists then exists:Destroy() end
