@@ -34,6 +34,7 @@ return function(Vargs)
 		FrozenObjects = {};
 		ScriptBuilder = {};
 		CachedDonors = {};
+		Aliases = {};
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
 		DonorPass = {1348327,1990427,1911740,167686,98593};
