@@ -840,14 +840,39 @@ return function(Vargs)
 				isAgent = HTTP.Trello.CheckAgent(p);
 				isDonor = Admin.CheckDonor(p);
 			}
-
+			
 			for index,command in next,Commands do
-				if checkPerm(pDat, command) then
+				if checkPerm(pDat, command) and not command.Hidden then
 					tab[index] = command
 				end
 			end
-
+			if server.Core.GetPlayer(p).Aliases then
+				for alias,data in pairs(server.Core.GetPlayer(p).Aliases) do
+					print(service.HttpService:JSONEncode(data))
+					tab[alias] = {
+						Commands = {alias},
+						Hidden = false,
+						AdminLevel = "Players",
+						Prefix = "",
+						Description = data.Description,
+						Args = data.Args.Names
+					}
+				end
+			end
+			
 			return tab
 		end;
+		
+		IsAlias = function(player, msg)
+			if server.Core.GetPlayer(player).Aliases then
+				for alias,data in pairs(server.Core.GetPlayer(player).Aliases) do
+					local match = string.match(msg:lower(), "^"..alias.."%s?")
+					if match then
+						return alias, data
+					end
+				end
+			end
+			return false
+		end
 	};
 end
