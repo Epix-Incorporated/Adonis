@@ -221,6 +221,25 @@ return function(Vargs)
 				end
 				return resp
 			end;
+			
+						Aliases = function(p,args)
+				local playerData = Core.GetPlayer(p)
+				return playerData.Aliases or {}
+			end;
+			
+			UpdateAliases = function(p,args)
+				local playerData = Core.GetPlayer(p)
+				local binds = args[1]
+				local resp = "OK"
+				if type(binds)=="table" then
+					playerData.Aliases = binds
+					Core.SavePlayer(p,playerData)
+					resp = "Updated"
+				else
+					resp = "Error"
+				end
+				return resp
+			end;
 
 			UpdateClient = function(p,args)
 				local playerData = Core.GetPlayer(p)
