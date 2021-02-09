@@ -946,6 +946,19 @@ return function(Vargs)
 				end
 			end
 		end;
+																		
+																				SetAlias = function(alias, data)
+		SetAlias = function(alias, data)
+			Variables.Aliases[alias] = data
+			Remote.Get("UpdateAliases",Variables.Aliases)
+		end;
+		
+		RemoveAlias = function(alias)
+			if Variables.Aliases[alias] ~= nil then
+				Variables.Aliases[alias] = nil
+				Remote.Get("UpdateAliases",Variables.Aliases)
+			end
+		end;
 		
 		--// Couldn't merge due to "conflicts" so just added manually.
 		ConvertPlayerCharacterToRig = function(p, rigType)
