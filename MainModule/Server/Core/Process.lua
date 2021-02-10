@@ -134,39 +134,69 @@ return function(Vargs)
 			end
 		end;
 
-		Command = function(p, msg, opts, noYield)
-			local Admin = Admin
-			local Functions = Functions
-			local Process = Process
-			local Remote = Remote
-			local Logs = Logs
-			local opts = opts or {}
+	Command = function(p, msg, opts, noYield)
+		local Admin = server.Admin
+		local Functions = server.Functions
+		local Process = server.Process
+		local Remote = server.Remote
+		local Logs = server.Logs
+		local opts = opts or {}
 
-			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
-				msg = string.sub(msg, 1, Process.MsgStringLimit);
-			end
+		if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
+			msg = string.sub(msg, 1, Process.MsgStringLimit);
+		end
 
-			msg = Functions.Trim(msg)
+		msg = Functions.Trim(msg)
 
-			if msg:match(Settings.BatchKey) then
-				for cmd in msg:gmatch('[^'..Settings.BatchKey..']+') do
-					local cmd = Functions.Trim(cmd)
-					local waiter = Settings.PlayerPrefix.."wait"
-					if cmd:lower():sub(1,#waiter) == waiter then
-						local num = cmd:sub(#waiter+1)
-						if num and tonumber(num) then
-							wait(tonumber(num))
-						end
-					else
-						Process.Command(p, cmd, opts, false) 
+		if msg:match(server.Settings.BatchKey) then
+			for cmd in msg:gmatch('[^'..server.Settings.BatchKey..']+') do
+				local cmd = Functions.Trim(cmd)
+				local waiter = server.Settings.PlayerPrefix.."wait"
+				if cmd:lower():sub(1,#waiter) == waiter then
+					local num = cmd:sub(#waiter+1)
+					if num and tonumber(num) then
+						wait(tonumber(num))
 					end
+				else
+					Process.Command(p, cmd, opts, false) 
+				end
+			end
+		else
+			local index,command,matched = Admin.GetCommand(msg)
+			local alias,aliasData = Admin.IsAlias(p, msg)
+
+			if not command and not alias then
+				if opts.Check then
+					Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
 				end
 			else
-				local index,command,matched = Admin.GetCommand(msg)
-
-				if not command then
-					if opts.Check then
-						Remote.MakeGui(p,'Output',{Title = 'Output'; Message = msg..' is not a valid command.'})
+				if alias then
+					local exec = aliasData.Command
+					if alias:match("%S+") and exec:match("%S+") then 
+						local suppliedArgs = string.split(msg, server.Settings.SplitKey)
+						table.remove(suppliedArgs, 1)
+						if #suppliedArgs > #aliasData.Args.Names then
+							for i = #aliasData.Args.Names+1, #suppliedArgs do
+								suppliedArgs[#aliasData.Args.Names] = suppliedArgs[#aliasData.Args.Names] .. server.Settings.SplitKey .. suppliedArgs[i]
+								suppliedArgs[i] = nil
+							end
+						end
+						exec = exec:gsub("<([^>]+)>", function(argName)
+							local argIndex
+							for i,v in ipairs(aliasData.Args.Names) do
+								if v == argName then
+									argIndex = i
+								end
+							end
+							if argIndex then
+								return suppliedArgs[argIndex] or aliasData.Args.Defaults[argIndex] or ""
+							end
+						end)
+						Process.Command(p, exec, opts, noYield)
+					else
+						if not opts.NoOutput then
+							Remote.MakeGui(p,'Output',{Title = ''; Message = 'Malformed alias: Missing command or alias name'; Color = Color3.new(1,0,0)})
+						end
 					end
 				else
 					local allowed = false
@@ -174,8 +204,8 @@ return function(Vargs)
 					local pDat = {
 						Player = opts.Player or p;
 						Level = opts.AdminLevel or Admin.GetLevel(p);
-						isAgent = opts.IsAgent or HTTP.Trello.CheckAgent(p);
-						isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+						isAgent = opts.IsAgent or server.HTTP.Trello.CheckAgent(p);
+						isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (server.Settings.DonorCommands or command.AllowDonors));
 					}
 
 					if opts.isSystem or p == "SYSTEM" then 
@@ -189,16 +219,16 @@ return function(Vargs)
 					if opts.CrossServer and command.CrossServerDenied then
 						allowed = false;
 					end
-					
+
 					if allowed and opts.Chat and command.Chattable==false then
 						Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not permitted this in chat: '..msg; Color = Color3.new(1,0,0)})
 						return
 					end
-					
+
 					if allowed then
 						local cmdArgs = command.Args or command.Arguments
-						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
-						local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+						local argString = msg:match("^.-"..server.Settings.SplitKey..'(.+)') or ''
+						local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, server.Settings.SplitKey, #cmdArgs)) or {}
 						local taskName = "Command:: "..tostring(p)..": ("..msg..")"
 						local commandID = "COMMAND_".. math.random()
 						local running = true
@@ -224,13 +254,13 @@ return function(Vargs)
 						end
 
 						if opts.CrossServer or (not isSystem and not opts.DontLog) then
-							AddLog("Commands",{
+							server.Logs.AddLog("Commands",{
 								Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
-								Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
+								Desc = matched.. server.Settings.SplitKey.. table.concat(args, server.Settings.SplitKey),
 								Player = p;
 							})
 
-							if Settings.ConfirmCommands then
+							if server.Settings.ConfirmCommands then
 								Functions.Hint('Executed Command: [ '..msg..' ]',{p})
 							end
 						end
@@ -271,7 +301,8 @@ return function(Vargs)
 					end
 				end
 			end
-		end;
+		end
+	end;
 
 		DataStoreUpdated = function(key,data)
 			if key and data then
