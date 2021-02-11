@@ -452,7 +452,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.Loadstring = require(server.Deps.Loadstring)
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
 	server.LoadModule = LoadModule
-
+	server.ServiceSpecific = ServiceSpecific
+			
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
 
