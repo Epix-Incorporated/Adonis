@@ -232,6 +232,10 @@ return function(data)
 			Text = "Keybinds";
 		})
 		
+		local aliasTab = tabFrame:NewTab("Aliases", {
+			Text = "Aliases";
+		})
+		
 		local clientTab = tabFrame:NewTab("Client",{
 			Text = "Client";
 		})
@@ -865,7 +869,65 @@ return function(data)
 			
 			getBinds()
 		end
-		
+		--// Alias tab
+				do
+			local doneKey
+			local selected
+			local currentAlias
+			local editOldAlias
+			local keyInputHandler
+			local curCommandText = ""
+			local inputBlock = false
+			local commandBox
+			local aliasBox
+			local aliases = aliasTab:Add("ScrollingFrame", {
+				Size = UDim2.new(1, -10, 1, -35);
+				Position = UDim2.new(0, 5, 0, 5);
+				BackgroundTransparency = 0.5;
+			})
+			
+			local function getAliases()
+				client.Variables.Aliases = client.Remote.Get("PlayerData").Aliases or {}
+				
+				local num = 0
+				selected = nil
+				aliases:ClearAllChildren();
+				
+				for i,v in next,client.Variables.Aliases do
+					if type(v) == 'table' then
+						aliases:Add("TextButton", {
+							Text = "Alias: ".. i;
+							Size = UDim2.new(1, 0, 0, 25);
+							Position = UDim2.new(0, 0, 0, num*25);
+							OnClicked = function(button)
+								local data = v
+								data.ExistingAlias = true
+								client.UI.Remove("Aliases")
+								client.UI.Make("Aliases", v)
+							end
+						})
+						
+						num = num + 1
+					else
+						client.Functions.RemoveAlias(i)
+					end
+				end
+				
+				aliases:ResizeCanvas(false, true)
+			end
+			
+			aliasTab:Add("TextButton", {
+				Text = "Add",
+				Position = UDim2.new(0, 5, 1, -25);
+				Size = UDim2.new(1, -10, 0, 20);
+				OnClicked = function()
+					client.UI.Remove("Aliases")
+					client.UI.Make("Aliases")
+				end
+			})
+			
+			getAliases()
+		end
 		
 		--// Client Settings
 		do
