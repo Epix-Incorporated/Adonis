@@ -7,3 +7,6 @@ loader.Parent = script.Parent
 loader.Name = "\0"
 loader.Archivable = false
 loader.Disabled = false
+
+-- Disable the Dropper so Adonis doesn't try to load on BindToClose()
+script.Disabled = true
