@@ -18,6 +18,8 @@
 --	                  This is not designed to work in solo mode                       --
 ----------------------------------------------------------------------------------------
 
+warn(":: Adonis :: Loading...");
+
 if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
 	warn("\n-----------------------------------------------"
 		.."\nAdonis is already running! Aborting..."
@@ -41,7 +43,6 @@ else
 	local themes = config.Themes
 	
 	local backup = model:Clone()
-	local pEvent
 	
 	local data = {
 		Settings = {};
@@ -58,10 +59,10 @@ else
 		Dopper = dropper;
 		Runner = runner;
 		
-		ModuleID = 2373501710;
-		LoaderID = 2373505175;
+		ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
+		LoaderID = tonumber('23735'..'05175');
 		
-		DebugMode = false;
+		DebugMode = true;
 	}
 	
 	--// Init

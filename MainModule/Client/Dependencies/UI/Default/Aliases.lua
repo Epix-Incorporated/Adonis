@@ -1,15 +1,18 @@
 client = nil
 service = nil
 
+--// Ported from Kronos
+
 return function(data)
 	local gTable
+	
 	local window = client.UI.Make("Window",{
 		Name  = "Aliases";
 		Title = "Alias Editor";
 		Size  = {420, 240};
 		AllowMultiple = false;
 	})
-	
+
 	local template =  {
 		Alias = "",
 		Args = {Names = {}, Defaults = {}},
@@ -21,20 +24,20 @@ return function(data)
 			data[i] = v
 		end
 	end
-	
+
 	if window then
 		local bg = window:Add("ScrollingFrame", {
 			BackgroundColor3 = Color3.fromRGB(31, 31, 31):lerp(Color3.new(1,1,1), 0.2);
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5)
 		})
-		
+
 		local content = bg:Add("ScrollingFrame", {
 			Size = UDim2.new(1, -10, 1, -35);
 			Position = UDim2.new(0, 5, 0, 5);
 			BackgroundTransparency = 0.5;
 		})
-		
+
 		local draw;
 		local curArgName, curArgDefault, argIndex;
 		local argBox; argBox = window:Add("Frame", {
@@ -78,7 +81,7 @@ return function(data)
 				};
 			}
 		})
-		
+
 		local endBtn = argBox:Add({
 			Class = "TextButton";
 			Text = "Remove";
@@ -96,7 +99,7 @@ return function(data)
 				argBox.Visible = false
 			end
 		})
-		
+
 		local argNameBox = argBox:Add("TextBox", {
 			Text = curArgName or "name";
 			Position = UDim2.new(0, 10, 0, 35);
@@ -105,7 +108,7 @@ return function(data)
 				curArgName = newText
 			end
 		});
-		
+
 		local argDefaultBox = argBox:Add("TextBox", {
 			Text = curArgDefault or "";
 			Position = UDim2.new(0, 10, 0, 90);
@@ -114,11 +117,11 @@ return function(data)
 				curArgDefault = newText
 			end
 		});
-		
+
 		argBox.BackgroundColor3 = argBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 		argNameBox.BackgroundColor3 = argNameBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
 		argDefaultBox.BackgroundColor3 = argNameBox.BackgroundColor3
-		
+
 		local function showArgBox(argData)
 			if not argBox.Visible then
 				if argData then
@@ -135,14 +138,14 @@ return function(data)
 				argBox.Visible = true
 			end
 		end
-		
+
 		function draw()
 			content:ClearAllChildren();
-			
+
 			local i = 1
 			content:Add("TextLabel", {
 				Text = "  ".."Alias"..": ";
-				ToolTip = "Set the alias Kronos should check for in chat";
+				ToolTip = "Set the alias Adonis should check for in chat";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
 				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
@@ -162,7 +165,7 @@ return function(data)
 			i = i + 1
 			content:Add("TextLabel", {
 				Text = "  ".."Command"..": ";
-				ToolTip = "Set the command(s) Kronos should execute when finding the alias";
+				ToolTip = "Set the command(s) Adonis should execute when finding the alias";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				Size = UDim2.new(1, -10, 0, 30);
 				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
@@ -223,9 +226,9 @@ return function(data)
 					end
 				})
 			end
-			
+
 			content:ResizeCanvas(false, true, false, false, 5, 5)
-			
+
 			bg:Add("TextButton", {
 				Text = "Cancel";
 				Position = UDim2.new(0, 5, 1, -25);
@@ -234,7 +237,7 @@ return function(data)
 					window:Close()
 				end
 			})
-			
+
 			bg:Add("TextButton", {
 				Text = "Remove";
 				Position = UDim2.new(1/3, 3, 1, -25);
@@ -248,7 +251,7 @@ return function(data)
 					window:Close()
 				end
 			})
-			
+
 			bg:Add("TextButton", {
 				Text = "Save";
 				Position = UDim2.new(2/3, 3, 1, -25);
@@ -265,9 +268,9 @@ return function(data)
 				end
 			})
 		end
-		
+
 		draw()
-		
+		gTable = window.gTable
 		window:Ready()
 	end
 end

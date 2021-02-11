@@ -2268,6 +2268,19 @@ return function(Vargs)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
+		
+		Aliases = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"aliases", "addalias", "removealias", "newalias"};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the alias manager";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
+			end
+		};
 
 		MakeTalk = {
 			Prefix = Settings.Prefix;
@@ -10945,8 +10958,8 @@ return function(Vargs)
 		};
 
 		Settings = {
-			Prefix = ":";
-			Commands = {"settings";"scriptsettings";"eisssettings";};
+			Prefix = "";
+			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "scriptsettings"};
 			Args = {};
 			Hidden = false;
 			Description = "Opens the settings manager";
@@ -12897,48 +12910,35 @@ return function(Vargs)
 				end
 			end
 		};
-		
-			AddAlias = {
+		--[[
+		AddAlias = {
 			Prefix = Settings.PlayerPrefix;	-- Prefix to use for command
-			Commands = {"addalias";"newalias"};	-- Commands
+			Commands = {"alias", "newalias", "addalias"};	-- Commands
 			Args = {"alias", "command(s)"};	-- Command arguments
-			Description = "Binds a command or batch of commands to a certain chat message";	-- Command Description
+			Description = "Binds a string/command to a certain chat message";	-- Command Description
 			Hidden = false; -- Is it hidden from the command list?
 			Fun = false;	-- Is it fun?
 			AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 			Function = function(plr,args)    -- Function to run for command
-				assert(args[1] and args[2], "Argument missing or nil")
-				for _,cmd in pairs(Admin.SearchCommands(plr,"all")) do
-					for _,subcmd in ipairs(cmd.Commands) do
-						if args[1]:lower() == cmd.Prefix..subcmd then
-							error("Alias has built-in binding")
-						end
-					end
-				end
-				local aliases = Core.GetPlayer(plr).Aliases
-				assert(aliases[args[1]:lower()] == nil, "Alias already bound to command")
-				local command = string.gsub(args[2], "&", Settings.BatchKey)
-				Remote.LoadCode(plr, "client.Functions.AddAlias('"..args[1]:lower().."', '"..command.."')")
+				assert(args[1] and args[2], "Argument missing or nil");
+				Remote.Send(plr, "Function", "AddAlias", args[1], args[2])
 			end
 		};
-		
+
 		RemoveAlias = {
 			Prefix = Settings.PlayerPrefix;	-- Prefix to use for command
 			Commands = {"removealias";"delalias"};	-- Commands
 			Args = {"alias"};	-- Command arguments
-			Description = "Unbinds a command or batch of commands from a certain chat message";	-- Command Description
+			Description = "Removes an alias";	-- Command Description
 			Hidden = false; -- Is it hidden from the command list?
 			Fun = false;	-- Is it fun?
 			AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 			Function = function(plr,args)    -- Function to run for command
 				assert(args[1], "Argument missing or nil")
-				local aliases = Core.GetPlayer(plr).Aliases
-				assert(aliases, "Alias not bound to command")
-				assert(aliases[args[1]:lower()], "Alias not bound to command")
-				Remote.LoadCode(plr, "client.Functions.RemoveAlias('"..args[1]:lower().."')")
+				Remote.Send(plr, "Function", "RemoveAlias", args[1])
 			end
 		};
-
+--]]
 
 		--[[
 

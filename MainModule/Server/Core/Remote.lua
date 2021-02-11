@@ -252,6 +252,23 @@ return function(Vargs)
 				end
 				return resp
 			end;
+			
+			UpdateAliases = function(p, args)
+				local aliases = args[1] or {};
+				
+				if type(aliases) == "table" then
+					local data = Core.GetPlayer(p)
+					
+					--// check for stupid stuff
+					for i,v in next,aliases do
+						if type(i) ~= "string" or type(v) ~= "string" then
+							aliases[i] = nil
+						end
+					end
+					
+					data.Aliases = aliases;
+				end
+			end;
 
 			PlayerData = function(p,args)
 				local data = Core.GetPlayer(p)

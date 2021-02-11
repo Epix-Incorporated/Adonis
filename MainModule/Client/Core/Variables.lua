@@ -59,6 +59,7 @@ return function()
 		CapesEnabled = true;
 		Particles = {};
 		KeyBinds = {};
+		Aliases = {};
 		Capes = {};
 		savedUI = {};
 		localSounds = {};

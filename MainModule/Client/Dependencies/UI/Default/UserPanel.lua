@@ -15,11 +15,11 @@ local canEditTables = {
 	InsertList = false;
 	CapeList = false;
 	CustomRanks = false;
-	
+
 	OnStartup = true;
 	OnJoin = true;
 	OnSpawn = true;
-	
+
 	Allowed_API_Calls = false;
 	AntiInsert = false;
 }
@@ -31,7 +31,7 @@ local function tabToString(tab)
 			if #str > 0 then
 				str = str.. "; "
 			end
-			
+
 			str = str.. tostring(i) ..": ".. tostring(v)
 		end
 		return str
@@ -51,7 +51,7 @@ return function(data)
 			client.Variables.WaitingForBind = false
 		end
 	})
-	
+
 	local function showTable(tab, setting)
 		local tabWindow = client.UI.Make("Window",{
 			Name  = setting .. "EditSettingsTable";
@@ -59,7 +59,7 @@ return function(data)
 			Size  = {320, 300};
 			AllowMultiple = false;
 		})
-		
+
 		if tabWindow then
 			--// Display tab & allow changes
 			local items = tabWindow:Add("ScrollingFrame", {
@@ -67,16 +67,16 @@ return function(data)
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 1;
 			})
-			
+
 			if canEditTables[setting] then
 				local selected
 				local inputBlock
-				
+
 				local function showItems()
 					local num = 0
 					selected = nil
 					items:ClearAllChildren();
-					
+
 					for i,v in next,tab do
 						items:Add("TextButton", {
 							Text = tabToString(v);
@@ -88,7 +88,7 @@ return function(data)
 								if selected then
 									selected.Button.BackgroundTransparency = 0
 								end
-								
+
 								button.BackgroundTransparency = 0.5
 								selected = {
 									Index = i;
@@ -97,13 +97,13 @@ return function(data)
 								}
 							end
 						})
-						
+
 						num = num + 1
 					end
-					
+
 					items:ResizeCanvas(false, true)
 				end
-				
+
 				local entryText
 				local entryBox; entryBox = tabWindow:Add("Frame", {
 					Visible = false;
@@ -156,7 +156,7 @@ return function(data)
 						};
 					}
 				})
-				
+
 				entryText = entryBox:Add("TextBox", {
 					Position = UDim2.new(0, 55, 0, 10);
 					Size = UDim2.new(1, -60, 0, 25);
@@ -167,7 +167,7 @@ return function(data)
 					BackgroundTransparency = 0.8;
 					ZIndex = 100;
 				})
-				
+
 				tabWindow:Add("TextButton", {
 					Text = "Remove";
 					Position = UDim2.new(0, 5, 1, -25);
@@ -183,7 +183,7 @@ return function(data)
 						end
 					end
 				})
-				
+
 				tabWindow:Add("TextButton", {
 					Text = "Add",
 					Position = UDim2.new(0.5, 0, 1, -25);
@@ -195,7 +195,7 @@ return function(data)
 						end
 					end
 				})
-				
+
 				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
 				showItems()
 			else
@@ -205,45 +205,47 @@ return function(data)
 					Position = UDim2.new(0, 0, 0, 0);
 				})
 			end
-			
+
 			tabWindow:Ready()
 		end
 	end
-	
+
 	if window then
 		local playerData   = client.Remote.Get("PlayerData")
 		local chatMod 	   = client.Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		local settingsData = client.Remote.Get("AllSettings")
 		
+		client.Variables.Aliases = playerData.Aliases or {};
+
 		local tabFrame = window:Add("TabFrame",{
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
 		})
-		
+
 		local infoTab = tabFrame:NewTab("Info",{
 			Text = "Info";
 		})
-		
+
 		local donorTab = tabFrame:NewTab("Donate",{
 			Text = "Donate";
 		})
-		
+
 		local keyTab = tabFrame:NewTab("Keybinds", {
 			Text = "Keybinds";
 		})
-		
+
 		local aliasTab = tabFrame:NewTab("Aliases", {
 			Text = "Aliases";
 		})
-		
+
 		local clientTab = tabFrame:NewTab("Client",{
 			Text = "Client";
 		})
-		
+
 		local gameTab = tabFrame:NewTab("Game",{
 			Text = "Game";
 		})
-			
+
 		if data.Tab then
 			if string.lower(data.Tab) == "info" then
 				infoTab:FocusTab();
@@ -251,6 +253,8 @@ return function(data)
 				donorTab:FocusTab();
 			elseif string.lower(data.Tab) == "keybinds" then
 				keyTab:FocusTab();
+			elseif string.lower(data.Tab) == "aliases" then
+				aliasTab:FocusTab();
 			elseif string.lower(data.Tab) == "client" then
 				clientTab:FocusTab();
 			elseif string.lower(data.Tab) == "settings" then
@@ -259,8 +263,8 @@ return function(data)
 				infoTab:FocusTab();
 			end
 		end
-		
-		
+
+
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
@@ -269,7 +273,7 @@ return function(data)
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
 			})
-			
+
 			infoTab:Add("TextButton", {
 				Text = "Commands";
 				Size = UDim2.new(0, 130, 0, 40);
@@ -281,7 +285,7 @@ return function(data)
 					end
 				}
 			})
-			
+
 			infoTab:Add("TextButton", {
 				Text = "Changelog";
 				Size = UDim2.new(0, 130, 0, 40);
@@ -296,7 +300,7 @@ return function(data)
 					end
 				}
 			})
-			
+
 			infoTab:Add("TextButton", {
 				Text = "Credits";
 				Size = UDim2.new(0, 130, 0, 40);
@@ -311,7 +315,7 @@ return function(data)
 					end
 				}
 			})
-			
+
 			infoTab:Add("TextButton", {
 				Text = "Get Loader";
 				Size = UDim2.new(0, 130, 0, 40);
@@ -323,7 +327,7 @@ return function(data)
 					end
 				}
 			})
-			
+
 			infoTab:Add("TextButton", {
 				Text = "Get Source";
 				Size = UDim2.new(0, 130, 0, 40);
@@ -336,21 +340,21 @@ return function(data)
 				}
 			})
 		end
-		
-		
+
+
 		--// Donor Tab
 		do
 			local donorData       = playerData.Donor
 			local currentMaterial = donorData and donorData.Cape.Material
 			local currentTexture  = donorData and donorData.Cape.Image
 			local currentColor    = donorData and donorData.Cape.Color
-			
+
 			if type(currentColor) == "table" then
 				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
 			else
 				currentColor = BrickColor.new(currentColor).Color	
 			end
-			
+
 			local dStatus = donorTab:Add("TextLabel", {
 				Text = " Donor Status: ";
 				Size = UDim2.new(1, -10, 0, 20);
@@ -364,14 +368,14 @@ return function(data)
 				BackgroundTransparency = 1;
 				TextXAlignment = "Right";
 			})
-			
+
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 				dStatus.Text = client.Remote.Get("UpdateDonor", playerData.Donor)
 				wait(0.5)
 				dStatus.Text = "Donated"
 			end
-			
+
 			donorTab:Add("TextLabel", {
 				Text = " Donor Cape: ";
 				Size = UDim2.new(1, -10, 0, 20);
@@ -396,7 +400,7 @@ return function(data)
 					}
 				}
 			})
-			
+
 			donorTab:Add("TextLabel", {
 				Text = " Cape Color: ";
 				Size = UDim2.new(1, -10, 0, 20);
@@ -419,7 +423,7 @@ return function(data)
 								local newColor = client.UI.Make("ColorPicker", {
 									Color = currentColor;
 								})
-								
+
 								currentColor = newColor or currentColor
 								new.BackgroundColor3 = currentColor
 								donorData.Cape.Color = currentColor
@@ -429,7 +433,7 @@ return function(data)
 					}
 				}
 			})
-			
+
 			donorTab:Add("TextLabel", {
 				Text = " Cape Material: ";
 				Size = UDim2.new(1, -10, 0, 20);
@@ -448,7 +452,7 @@ return function(data)
 						TextProperties = {
 							TextTransparency = (playerData.isDonor and 0) or 0.5;
 						};
-						
+
 						Options = playerData.isDonor and {
 							"Brick";
 							"Cobblestone";
@@ -472,7 +476,7 @@ return function(data)
 							"WoodPlanks";
 							"Glass";
 						};
-						
+
 						OnSelect = function(selection)
 							service.Debounce("DonorStatusUpdate", function()
 								donorData.Cape.Material = selection
@@ -482,7 +486,7 @@ return function(data)
 					}
 				}
 			})
-			
+
 			donorTab:Add("TextLabel", {
 				Text = " Cape Texture: ";
 				Size = UDim2.new(1, -10, 0, 20);
@@ -511,14 +515,14 @@ return function(data)
 										donePreview = true;
 									end
 								})
-								
+
 								local img = pWindow:Add("ImageLabel", {
 									BackgroundTransparency = 1;
 									Image = "rbxassetid://"..currentTexture;
 									Size = UDim2.new(1, -10, 1, -80);
 									Position = UDim2.new(0, 5, 0, 35);
 								})
-								
+
 								pWindow:Add("TextBox", {
 									Text = currentTexture;
 									Size = UDim2.new(1, -10, 0, 30);
@@ -533,7 +537,7 @@ return function(data)
 										end
 									end
 								})
-								
+
 								pWindow:Add("TextButton", {
 									Text = "Select";
 									Size = UDim2.new(1, -10, 0, 30);
@@ -543,7 +547,7 @@ return function(data)
 										donorData.Cape.Image = lastValid;
 										textureButton.Text = lastValid;
 										donePreview = true;
-										
+
 										pWindow:Close()
 										updateStatus()
 									end
@@ -553,11 +557,11 @@ return function(data)
 					}
 				}
 			})
-			
+
 			local donorPerks = {
 				"Perks you get here: "
 			}
-			
+
 			local capePerks,cmdPerks = {
 				"Customizable Cape";
 				"Access to !cape";
@@ -577,7 +581,7 @@ return function(data)
 				"Access to !shirt";
 				"Access to !pants";
 			}
-			
+
 			if chatMod.DonorCapes then
 				for i,v in ipairs(capePerks) do
 					table.insert(donorPerks, v)
@@ -585,7 +589,7 @@ return function(data)
 			else
 				table.insert(donorPerks, "Donor capes are disabled here")
 			end
-			
+
 			if chatMod.DonorCommands then
 				for i,v in ipairs(cmdPerks) do
 					table.insert(donorPerks, v)
@@ -593,20 +597,20 @@ return function(data)
 			else 
 				table.insert(donorPerks, "Donor commands are disabled here")
 			end
-			
+
 			donorTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -145, 1, -115);
 				Position = UDim2.new(0, 5, 0, 110);
 			}):GenerateList(donorPerks, {
 				TextXAlignment = "Left";
 			})
-			
+
 			local dFrame = donorTab:Add("Frame", {
 				Size = UDim2.new(0, 140, 1, -110);
 				Position = UDim2.new(1, -140, 0, 105);
 				BackgroundTransparency = 1;
 			})
-			
+
 			dFrame:Add("TextButton", {
 				Text = "Donate (Perks)";
 				Size = UDim2.new(1, -10, 0, 40);
@@ -617,7 +621,7 @@ return function(data)
 					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 1348327) --497917601)
 				end
 			})
-			
+
 			dFrame:Add("TextLabel", {
 				Text = "Extra (No Perks): ";
 				TextXAlignment = "Left";
@@ -625,7 +629,7 @@ return function(data)
 				Position = UDim2.new(0, 5, 1, -80);
 				BackgroundTransparency = 1;
 			})
-			
+
 			dFrame:Add("TextButton", {
 				Text = "50";
 				Size = UDim2.new(0, 60, 0, 20);
@@ -636,7 +640,7 @@ return function(data)
 					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212076)
 				end
 			})
-			
+
 			dFrame:Add("TextButton", {
 				Text = "100";
 				Size = UDim2.new(0, 60, 0, 20);
@@ -647,7 +651,7 @@ return function(data)
 					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212077)
 				end
 			})
-			
+
 			dFrame:Add("TextButton", {
 				Text = "500";
 				Size = UDim2.new(0, 60, 0, 20);
@@ -658,7 +662,7 @@ return function(data)
 					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212081)
 				end
 			})
-			
+
 			dFrame:Add("TextButton", {
 				Text = "1000";
 				Size = UDim2.new(0, 60, 0, 20);
@@ -670,8 +674,8 @@ return function(data)
 				end
 			})
 		end
-		
-		
+
+
 		--// Keybinds
 		do
 			local doneKey
@@ -690,12 +694,12 @@ return function(data)
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
 			})
-			
+
 			local function getBinds()
 				local num = 0
 				selected = nil
 				binds:ClearAllChildren();
-				
+
 				for i,v in next,client.Variables.KeyBinds do
 					if pcall(string.char, i) then
 						binds:Add("TextButton", {
@@ -706,7 +710,7 @@ return function(data)
 								if selected then
 									selected.Button.BackgroundTransparency = 0
 								end
-								
+
 								button.BackgroundTransparency = 0.5
 								selected = {
 									Key = i;
@@ -715,14 +719,14 @@ return function(data)
 								}
 							end
 						})
-						
+
 						num = num + 1
 					end
 				end
-				
+
 				binds:ResizeCanvas(false, true)
 			end
-			
+
 			local binderBox; binderBox = keyTab:Add("Frame", {
 				Visible = false;
 				Size = UDim2.new(0, 200, 0, 150);
@@ -750,7 +754,7 @@ return function(data)
 						BackgroundTransparency = 1;
 						OnClicked = function()
 							inputBlock = true
-							
+
 							if currentKey then
 								keyBox.Text = "Saving..."
 								if editOldKeybind then
@@ -760,7 +764,7 @@ return function(data)
 								client.Functions.AddKeyBind(currentKey.Value, commandBox.Text)
 								currentKey = nil
 							end
-							
+
 							binderBox.Visible = false
 							inputBlock = false
 							getBinds()
@@ -787,7 +791,7 @@ return function(data)
 					};
 				}
 			})
-			
+
 			commandBox = binderBox:Add("TextBox", {
 				Position = UDim2.new(0, 10, 0, 35);
 				Size = UDim2.new(1, -20, 0, 20);
@@ -795,7 +799,7 @@ return function(data)
 					curCommandText = newText
 				end
 			})
-			
+
 			keyBox = binderBox:Add("TextButton", {
 				Text = "Click To Bind";
 				Position = UDim2.new(0, 10, 0, 90);
@@ -818,11 +822,11 @@ return function(data)
 					end)
 				end
 			})
-			
+
 			commandBox.BackgroundColor3 = commandBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
 			keyBox.BackgroundColor3 = commandBox.BackgroundColor3
 			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
-			
+
 			keyTab:Add("TextButton", {
 				Text = "Remove";
 				Position = UDim2.new(0, 5, 1, -25);
@@ -836,11 +840,11 @@ return function(data)
 					end
 				end
 			})
-			
+
 			keyTab:Add("TextButton", {
 				Text = "Edit";
 				Position = UDim2.new((1/3), 0, 1, -25);
-				Size = UDim2.new(1/3, -(15/3)+5, 0, 20);
+				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						currentKey = nil
@@ -851,7 +855,7 @@ return function(data)
 					end
 				end
 			})
-			
+
 			keyTab:Add("TextButton", {
 				Text = "Add",
 				Position = UDim2.new((1/3)*2, 0, 1, -25);
@@ -866,69 +870,187 @@ return function(data)
 					end
 				end
 			})
-			
+
 			getBinds()
 		end
-		--// Alias tab
-				do
+		
+		--// Alias tab (basically a copy-paste of keyTab stuff with edits don't hurt me their functionality is so similar and I'm lazy)
+		do
 			local doneKey
 			local selected
 			local currentAlias
 			local editOldAlias
-			local keyInputHandler
 			local curCommandText = ""
+			local waitingForBind = false
+			local keyDebounce = false
 			local inputBlock = false
 			local commandBox
 			local aliasBox
+			
 			local aliases = aliasTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
 			})
-			
+
 			local function getAliases()
-				client.Variables.Aliases = client.Remote.Get("PlayerData").Aliases or {}
-				
 				local num = 0
 				selected = nil
 				aliases:ClearAllChildren();
-				
+
 				for i,v in next,client.Variables.Aliases do
-					if type(v) == 'table' then
-						aliases:Add("TextButton", {
-							Text = "Alias: ".. i;
-							Size = UDim2.new(1, 0, 0, 25);
-							Position = UDim2.new(0, 0, 0, num*25);
-							OnClicked = function(button)
-								local data = v
-								data.ExistingAlias = true
-								client.UI.Remove("Aliases")
-								client.UI.Make("Aliases", v)
+					aliases:Add("TextButton", {
+						Text = "Alias: ".. i .." | Command: "..v;
+						Size = UDim2.new(1, 0, 0, 25);
+						Position = UDim2.new(0, 0, 0, num*25);
+						OnClicked = function(button)
+							if selected then
+								selected.Button.BackgroundTransparency = 0
 							end
-						})
-						
-						num = num + 1
-					else
-						client.Functions.RemoveAlias(i)
-					end
+							
+							button.BackgroundTransparency = 0.5
+							selected = {
+								Alias = i;
+								Command = v;
+								Button = button;
+							}
+						end
+					})
+					num = num + 1
 				end
-				
+
 				aliases:ResizeCanvas(false, true)
 			end
-			
-			aliasTab:Add("TextButton", {
-				Text = "Add",
-				Position = UDim2.new(0, 5, 1, -25);
-				Size = UDim2.new(1, -10, 0, 20);
-				OnClicked = function()
-					client.UI.Remove("Aliases")
-					client.UI.Make("Aliases")
+
+			local binderBox; binderBox = aliasTab:Add("Frame", {
+				Visible = false;
+				Size = UDim2.new(0, 200, 0, 150);
+				Position = UDim2.new(0.5, -100, 0.5, -100);
+				Children = {
+					{
+						Class = "TextLabel";
+						Text = "Command:";
+						Position = UDim2.new(0, 0, 0, 10);
+						Size = UDim2.new(1, 0, 0, 20);
+						BackgroundTransparency = 1;
+					};
+					{
+						Class = "TextLabel";
+						Text = "Alias:";
+						Position = UDim2.new(0, 0, 0, 65);
+						Size = UDim2.new(1, 0, 0, 20);
+						BackgroundTransparency = 1;
+					};
+					{
+						Class = "TextButton";
+						Text = "Add";
+						Position = UDim2.new(0.5, 0, 1, -30);
+						Size = UDim2.new(0.5, -20, 0, 20);
+						BackgroundTransparency = 1;
+						OnClicked = function()
+							local alias = aliasBox.Text;
+							inputBlock = true
+							if alias ~= "" and commandBox.Text ~= "" then
+								aliasBox.Text = "Saving..."
+								
+								if editOldAlias then
+									client.Functions.RemoveAlias(editOldAlias)
+									editOldAlias = nil
+								end
+								
+								client.Functions.AddAlias(alias, commandBox.Text)
+								currentAlias = nil
+							end
+
+							binderBox.Visible = false
+							inputBlock = false
+							getAliases()
+						end
+					};
+					{
+						Class = "TextButton";
+						Text = "Cancel";
+						Position = UDim2.new(0, 10, 1, -30);
+						Size = UDim2.new(0.5, -20, 0, 20);
+						BackgroundTransparency = 1;
+						OnClicked = function()
+							if not inputBlock then
+								doneKey = true
+								currentAlias = nil
+								editOldAlias = nil
+								inputBlock = false
+								binderBox.Visible = false
+							end
+						end
+					};
+				}
+			})
+
+			commandBox = binderBox:Add("TextBox", {
+				Position = UDim2.new(0, 10, 0, 35);
+				Size = UDim2.new(1, -20, 0, 20);
+				TextChanged = function(newText, enter, box)
+					curCommandText = newText
 				end
 			})
-			
+
+			aliasBox = binderBox:Add("TextBox", {
+				Text = "";
+				Position = UDim2.new(0, 10, 0, 90);
+				Size = UDim2.new(1, -20, 0, 20);
+			})
+
+			commandBox.BackgroundColor3 = commandBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
+			aliasBox.BackgroundColor3 = commandBox.BackgroundColor3
+			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
+
+			aliasTab:Add("TextButton", {
+				Text = "Remove";
+				Position = UDim2.new(0, 5, 1, -25);
+				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
+				OnClicked = function(button)
+					if selected and not inputBlock then
+						inputBlock = true
+						client.Functions.RemoveAlias(selected.Alias)
+						getAliases()
+						inputBlock = false
+					end
+				end
+			})
+
+			aliasTab:Add("TextButton", {
+				Text = "Edit";
+				Position = UDim2.new((1/3), 0, 1, -25);
+				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
+				OnClicked = function(button)
+					if selected and not inputBlock then
+						currentAlias = nil
+						editOldAlias = selected.Alias
+						aliasBox.Text = editOldAlias
+						commandBox.Text = selected.Command
+						binderBox.Visible = true
+					end
+				end
+			})
+
+			aliasTab:Add("TextButton", {
+				Text = "Add",
+				Position = UDim2.new((1/3)*2, 0, 1, -25);
+				Size = UDim2.new(1/3, -(15/3), 0, 20);
+				OnClicked = function()
+					if not inputBlock then
+						currentAlias = nil
+						editOldAlias = nil
+						aliasBox.Text = ""
+						commandBox.Text = ""
+						binderBox.Visible = true
+					end
+				end
+			})
+
 			getAliases()
 		end
-		
+
 		--// Client Settings
 		do
 			local cliSettings = {
@@ -965,13 +1087,13 @@ return function(data)
 					Value = client.Variables.ParticlesEnabled;
 					Function = function(enabled, toggle)
 						client.Variables.ParticlesEnabled = enabled
-						
+
 						if enabled then
 							client.Functions.EnableParticles(true)
 						else
 							client.Functions.EnableParticles(false)
 						end
-						
+
 						local text = toggle.Text
 						toggle.Text = "Saving.."
 						client.Remote.Get("UpdateClient","ParticlesEnabled",enabled)
@@ -985,19 +1107,19 @@ return function(data)
 					Value = client.Variables.CapesEnabled;
 					Function = function(enabled, toggle)
 						client.Variables.CapesEnabled = enabled
-						
+
 						if enabled then
 							client.Functions.HideCapes(false)
 						else
 							client.Functions.HideCapes(true)
 						end
-						
+
 						if enabled then
 							client.Functions.MoveCapes()
 						else
 							service.StopLoop("CapeMover")
 						end
-						
+
 						local text = toggle.Text
 						toggle.Text = "Saving.."
 						client.Remote.Get("UpdateClient","CapesEnabled",enabled)
@@ -1019,9 +1141,9 @@ return function(data)
 									gotKey = InputObject.KeyCode.Name
 								end
 							end)
-							
+
 							repeat wait() until gotKey
-							
+
 							client.Variables.CustomConsoleKey = gotKey
 							event:Disconnect()
 							toggle.Text = "Saving.."
@@ -1048,12 +1170,12 @@ return function(data)
 					end
 				}
 			}
-			
+
 			local num = 0;
 			local cliScroll = clientTab:Add("ScrollingFrame", {
 				BackgroundTransparency = 1;
 			});
-			
+
 			for i, setData in next,cliSettings do
 				local label = cliScroll:Add("TextLabel", {
 					Text = "  ".. setData.Text;
@@ -1063,7 +1185,7 @@ return function(data)
 					Position = UDim2.new(0, 0, 0, num*30);
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				})
-				
+
 				if setData.Entry == "Boolean" then
 					label:Add("Boolean", {
 						Size = UDim2.new(0, 120, 1, 0);
@@ -1091,7 +1213,7 @@ return function(data)
 						BackgroundTransparency = 1;
 					})
 				end
-				
+
 				--[[cliScroll:Add("TextLabel", {
 					Text = setData.Desc;
 					ToolTip = setData.Desc;
@@ -1099,21 +1221,21 @@ return function(data)
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (num+1)*30);
 				})--]]
-				
+
 				num = num+1
 			end
-			
+
 			cliScroll:ResizeCanvas(false, true)
 		end
-		
-		
+
+
 		--// Game Settings
 		do
 			if settingsData then
 				local settings = settingsData.Settings
 				local descs = settingsData.Descs
 				local order = settingsData.Order
-				
+
 				gameTab:Add("TextLabel", {
 					Text = "  Clear all saved settings: ";
 					ToolTip = "Clears all saved settings";
@@ -1133,13 +1255,13 @@ return function(data)
 						}
 					}
 				})
-				
+
 				for i, setting in next,order do
 					local i = i+1;
 					local value = settings[setting]
 					local desc = descs[setting]
 					if setting == "" or setting == " " and value == nil then
-						
+
 					elseif value == nil then
 						gameTab:Add("TextLabel", {
 							Text = "  "..setting..": ";
@@ -1247,13 +1369,13 @@ return function(data)
 						})
 					end
 				end
-				
+
 				gameTab:ResizeCanvas(false, true, false, false, 5, 5)
 			else
 				gameTab:Disable()
 			end
 		end
-		
+
 		gTable = window.gTable
 		window:Ready()
 	end

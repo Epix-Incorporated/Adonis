@@ -609,6 +609,7 @@ return function(Vargs)
 				TimeBan = false;
 				AdminNotes = {};
 				Keybinds = {};
+				Aliases = {};
 				Client = {};
 				Warnings = {};
 				AdminPoints = 0;

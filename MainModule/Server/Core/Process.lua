@@ -162,6 +162,8 @@ return function(Vargs)
 					end
 				end
 			else
+				local pData = opts.PlayerData or (p and Core.GetPlayer(p));
+				local msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg;
 				local index,command,matched = Admin.GetCommand(msg)
 
 				if not command then
@@ -189,12 +191,12 @@ return function(Vargs)
 					if opts.CrossServer and command.CrossServerDenied then
 						allowed = false;
 					end
-					
+
 					if allowed and opts.Chat and command.Chattable==false then
 						Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not permitted this in chat: '..msg; Color = Color3.new(1,0,0)})
 						return
 					end
-					
+
 					if allowed then
 						local cmdArgs = command.Args or command.Arguments
 						local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''

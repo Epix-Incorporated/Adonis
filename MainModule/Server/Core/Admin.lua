@@ -27,7 +27,7 @@ return function(Vargs)
 
 		--// Cache Commands
 		Admin.CacheCommands()
-		
+
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
@@ -50,10 +50,10 @@ return function(Vargs)
 
 				return false
 			end) 
-			
+
 			Logs:AddLog("Script", "ChatService Handler Loaded")
 		end)
-		
+
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
 
@@ -106,7 +106,7 @@ return function(Vargs)
 					return true
 				end
 			end
-			
+
 			if HTTP.WebPanel.Mutes then
 				for _,v in next,server.HTTP.WebPanel.Mutes do
 					if server.Admin.DoCheck(player, v) then
@@ -177,18 +177,18 @@ return function(Vargs)
 					return true
 				elseif type(check) == "string" then
 					local cache = Admin.UserIdCache[check]
-					
+
 					if cache and p.UserId == cache then
 						return true
 					elseif cache==false then
 						return
 					end
-					
+
 					local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
-					
+
 					if suc and userId then
 						Admin.UserIdCache[check] = userId
-						
+
 						if p.UserId == userId then
 							return true
 						end
@@ -591,7 +591,7 @@ return function(Vargs)
 					return true
 				end
 			end
-			
+
 			if HTTP.WebPanel.Bans then
 				for ind,admin in next,HTTP.WebPanel.Bans do
 					if doCheck(p,admin) then
@@ -746,6 +746,39 @@ return function(Vargs)
 				end
 			end
 		end;
+		
+		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
+		CheckAliasBlacklist = function(alias)
+			local playerPrefix = Settings.PlayerPrefix;
+			local prefix = Settings.Prefix;
+			local blacklist = {
+				[playerPrefix.. "alias"] = true;
+				[playerPrefix.. "newalias"] = true;
+				[playerPrefix.. "removealias"] = true;
+				[playerPrefix.. "client"] = true;
+				[playerPrefix.. "userpanel"] = true;
+				[":adonissettings"] = true;
+				
+			}
+			--return Admin.CommandCache[alias:lower()] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
+			return blacklist[alias];
+		end;
+		
+		AliasFormat = function(aliases, msg)
+			if aliases then
+				for alias,cmd in next,aliases do
+					if not Admin.CheckAliasBlacklist(alias) then
+						if msg:match("^"..alias) then
+							msg = msg:gsub("^"..alias, cmd)
+						elseif msg:match("%s".. alias) then
+							msg = msg:gsub("%s".. alias, " "..cmd)
+						end
+					end
+				end
+			end
+			
+			return msg
+		end;
 
 		IsComLevel = function(testLevel, comLevel)
 			--print("Checking", tostring(testLevel), tostring(comLevel))
@@ -817,7 +850,7 @@ return function(Vargs)
 							return true
 						end
 					end
-					
+
 					if HTTP.WebPanel.CustomRanks then
 						for i,v in next,HTTP.WebPanel.CustomRanks do
 							if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then

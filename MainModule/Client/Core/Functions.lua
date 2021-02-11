@@ -10,25 +10,26 @@ logError = nil
 --// Special Variables
 return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
+	getmetatable, setmetatable, loadstring, coroutine, 
+	rawequal, typeof, print, math, warn, error,  pcall, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
+	Vector3int16, elapsedTime, require, table, type, wait, 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
 		_G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine, 
+	rawequal, typeof, print, math, warn, error,  pcall, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
+	Vector3int16, elapsedTime, require, table, type, wait, 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	
 	local script = script
 	local service = service
 	local client = client
@@ -42,28 +43,28 @@ return function()
 		Process = client.Process;
 		Remote = client.Remote;
 	end
-	
+
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
-	
+
 	client.Functions = {
 		Init = Init;
 		Kill = client.Kill;
-		
+
 		GetRandom = function(pLen)
 			local Len = (type(pLen) == "number" and pLen) or math.random(10,15) --// reru
 			local Res = {};
-		    for Idx = 1, Len do
-		        Res[Idx] = string.format('%02x', math.random(255));
-		    end;
-		    return table.concat(Res)
+			for Idx = 1, Len do
+				Res[Idx] = string.format('%02x', math.random(255));
+			end;
+			return table.concat(Res)
 		end; 
-		
+
 		Round = function(num)
 			return math.floor(num + 0.5)
 		end;
-		
+
 		SetView = function(ob)
 			if ob=='reset' then
 				workspace.CurrentCamera.CameraType = 'Custom' 
@@ -71,6 +72,40 @@ return function()
 				workspace.CurrentCamera.FieldOfView = 70
 			else
 				workspace.CurrentCamera.CameraSubject = ob
+			end
+		end;
+		
+		AddAlias = function(alias, command)
+			Variables.Aliases[alias:lower()] = command;
+			Remote.Get("UpdateAliases", Variables.Aliases)
+			spawn(function()
+				UI.MakeGui("Notification",{
+					Time = 5;
+					Title = "Notification";
+					Message = "Alias added";
+				}) 
+			end)
+		end;
+		
+		RemoveAlias = function(alias)
+			if client.Variables.Aliases[alias:lower()] then
+				Variables.Aliases[alias:lower()] = nil;
+				Remote.Get("UpdateAliases", Variables.Aliases)
+				spawn(function()
+					UI.MakeGui("Notification",{
+						Time = 5;
+						Title = "Notification";
+						Message = "Alias removed";
+					})
+				end)
+			else
+				spawn(function()
+					UI.MakeGui("Notification",{
+						Time = 5;
+						Title = "Notification";
+						Message = "Alias not found";
+					})
+				end)
 			end
 		end;
 		
@@ -87,11 +122,11 @@ return function()
 					print("in loop")
 					local dt = tick() - last
 					if flip then
-	    				rot = rot+math.rad(speed*dt)
+						rot = rot+math.rad(speed*dt)
 					else
-	    				rot = rot-math.rad(speed*dt)
+						rot = rot-math.rad(speed*dt)
 					end
-					
+
 					if rot >= 2.5 or rot <= -2.5 then
 						--flip = not flip
 					end
@@ -100,37 +135,37 @@ return function()
 				end)
 			end
 		end;
-		
+
 		Base64Encode = function(data)
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-		    return ((data:gsub('.', function(x) 
-		        local r,b='',string.byte(x)
-		        for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
-		        return r;
-		    end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-		        if (#x < 6) then return '' end
-		        local c=0
-		        for i=1,6 do c=c+(string.sub(x,i,i)=='1' and 2^(6-i) or 0) end
-		        return string.sub(b,c+1,c+1)
-		    end)..({ '', '==', '=' })[#data%3+1])
+			return ((data:gsub('.', function(x) 
+				local r,b='',string.byte(x)
+				for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+				return r;
+			end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+				if (#x < 6) then return '' end
+				local c=0
+				for i=1,6 do c=c+(string.sub(x,i,i)=='1' and 2^(6-i) or 0) end
+				return string.sub(b,c+1,c+1)
+			end)..({ '', '==', '=' })[#data%3+1])
 		end;
-		
+
 		Base64Decode = function(data)
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-		    data = string.gsub(data, '[^'..b..'=]', '')
-		    return (data:gsub('.', function(x)
-		        if (x == '=') then return '' end
-		        local r,f='',(string.find(b,x)-1)
-		        for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-		        return r;
-		    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-		        if (#x ~= 8) then return '' end
-		        local c=0
-		        for i=1,8 do c=c+(string.sub(x,i,i)=='1' and 2^(7-i) or 0) end
-		        return string.char(c)
+			data = string.gsub(data, '[^'..b..'=]', '')
+			return (data:gsub('.', function(x)
+				if (x == '=') then return '' end
+				local r,f='',(string.find(b,x)-1)
+				for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+				return r;
+			end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+				if (#x ~= 8) then return '' end
+				local c=0
+				for i=1,8 do c=c+(string.sub(x,i,i)=='1' and 2^(7-i) or 0) end
+				return string.char(c)
 			end))
 		end;
-		
+
 		GetGuiData = function(args)
 			local props = {
 				"AbsolutePosition";
@@ -179,7 +214,7 @@ return function()
 				"TextXAlignment";
 				"TextYAlignment";
 			};
-			
+
 			local classes = {
 				"ScreenGui";
 				"GuiMain";
@@ -193,7 +228,7 @@ return function()
 				"BillboardGui";
 				"SurfaceGui";
 			}
-			
+
 			local guis = {
 				Properties = {
 					Name = "ViewGuis";
@@ -201,31 +236,31 @@ return function()
 				};
 				Children = {};
 			}
-			
+
 			local rLockedFound = false
-			
+
 			local add; add = function(tab,child)
 				if not Anti.ObjRLocked(child) then
 					local good = false
-					
+
 					for i,v in next,classes do
 						if child:IsA(v) then
 							good = true
 						end
 					end
-					
+
 					if good then
 						local new = {
 							Properties = {};
 							Children = {};
 						}
-						
+
 						for i,v in next,props do
 							pcall(function()
 								new.Properties[v] = child[v]
 							end)
 						end
-						
+
 						for i,v in next,child:GetChildren()do
 							add(new,v)
 						end
@@ -240,19 +275,19 @@ return function()
 			end
 			return guis
 		end;
-		
+
 		LoadGuiData = function(data)
 			local make; make = function(dat)
 				local props = dat.Properties
 				local children = dat.Children
 				local gui = service.New(props.ClassName)
-				
+
 				for i,v in next,props do
 					pcall(function() 
 						gui[i] = v
 					end)
 				end
-				
+
 				for i,v in next,children do
 					pcall(function()
 						local g = make(v)
@@ -263,7 +298,7 @@ return function()
 				end
 				return gui
 			end
-			
+
 			local temp = Instance.new("Folder")
 			for i,v in next,service.PlayerGui:GetChildren()do
 				if not UI.Get(v) then
@@ -281,14 +316,14 @@ return function()
 				end)
 			end
 		end;
-		
+
 		UnLoadGuiData = function()
 			for i,v in next,service.PlayerGui:GetChildren()do
 				if v.Name == "LoadedGuis" then
 					v:Destroy()
 				end
 			end
-			
+
 			if Variables.GuiViewFolder then
 				for i,v in next,Variables.GuiViewFolder:GetChildren()do
 					v.Parent = service.PlayerGui
@@ -297,7 +332,7 @@ return function()
 				Variables.GuiViewFolder = nil
 			end
 		end;
-		
+
 		GetParticleContainer = function(target)
 			if target then
 				for i,v in next,service.LocalContainer():GetChildren()do
@@ -310,32 +345,28 @@ return function()
 				end
 			end
 		end;
-		
+
 		NewParticle = function(target, class, properties)
-			if target and class and properties then
-				local effect, index;
+			local effect, index;
 
-				properties.Parent = target;
-				properties.Enabled = Variables.ParticlesEnabled;
+			properties.Parent = target;
+			properties.Enabled = Variables.ParticlesEnabled;
 
-				effect = service.New(class, properties);
-				index = Functions.GetRandom();
+			effect = service.New(class, properties);
+			index = Functions.GetRandom();
 
-				Variables.Particles[index] = effect;
+			Variables.Particles[index] = effect;
 
-				table.insert(Variables.Particles, effect);
+			table.insert(Variables.Particles, effect);
 
-				effect.Changed:Connect(function()
-					if not effect or not effect.Parent or effect.Parent ~= target then
-						if effect then
-							effect:Destroy()
-						end
-						Variables.Particles[index] = nil;
-					end
-				end)
-			end
+			effect.Changed:Connect(function()
+				if not effect or not effect.Parent or effect.Parent ~= target then
+					pcall(function() effect:Destroy() end)
+					Variables.Particles[index] = nil;
+				end
+			end)
 		end;
-		
+
 		RemoveParticle = function(target, name)
 			for i,effect in next,Variables.Particles do
 				if effect.Parent == target and effect.Name == name then
@@ -344,7 +375,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		EnableParticles = function(enabled)
 			for i,effect in next,Variables.Particles do
 				if enabled then
@@ -354,13 +385,13 @@ return function()
 				end
 			end
 		end;
-		
+
 		NewLocal = function(class, props, parent)
 			local obj = service.New(class)
 			for prop,value in next,props do
 				obj[prop] = value
 			end
-			
+
 			if not parent or parent == "LocalContainer" then
 				obj.Parent = service.LocalContainer()
 			elseif parent == "Camera" then
@@ -369,7 +400,7 @@ return function()
 				obj.Parent = service.PlayerGui
 			end
 		end;
-		
+
 		MakeLocal = function(object,parent,clone)
 			if object then
 				local object = object
@@ -383,7 +414,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		MoveLocal = function(object,parent,newParent)
 			local par
 			if not parent or parent == "LocalContainer" then
@@ -399,7 +430,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		RemoveLocal = function(object,parent,match)
 			local par
 			if not parent or parent == "LocalContainer" then
@@ -409,14 +440,14 @@ return function()
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
-			
+
 			for ind,obj in next,par:GetChildren() do
 				if (match and string.match(obj.Name,object)) or (obj.Name == object or object == obj) then
 					obj:Destroy()
 				end
 			end
 		end;
-		
+
 		NewCape = function(data)
 			local char = data.Parent
 			local material = data.Material or "Neon"
@@ -440,11 +471,11 @@ return function()
 					p.Size = Vector3.new(2,4,0.1)
 					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
 					p.Parent = service.LocalContainer()
-					
+
 					if reflect then
 						p.Reflectance = reflect
 					end
-					
+
 					local motor1 = service.New("Motor", p)
 					motor1.Part0 = p
 					motor1.Part1 = torso
@@ -454,7 +485,7 @@ return function()
 
 					local msh = service.New("BlockMesh", p) 
 					msh.Scale = Vector3.new(0.9,0.87,0.1)
-					
+
 					local dec 
 					if decal and decal ~= 0 then
 						dec = service.New("Decal", p) 
@@ -463,7 +494,7 @@ return function()
 						dec.Texture = "http://www.roblox.com/asset/?id="..decal 
 						dec.Transparency = 0 
 					end
-					
+
 					local index = Functions.GetRandom()
 					Variables.Capes[index] = {
 						Part = p;
@@ -476,12 +507,12 @@ return function()
 						Wave = true;
 						isR15 = isR15;
 					}
-					
+
 					local p = service.Players:GetPlayerFromCharacter(data.Parent)
 					if p and p == service.Player then
 						Variables.Capes[index].isPlayer = true
 					end
-					
+
 					if not Variables.CapesEnabled then
 						p.Transparency = 1
 						if dec then
@@ -489,7 +520,7 @@ return function()
 						end
 						Variables.Capes[index].Enabled = false
 					end
-					
+
 					Functions.MoveCapes()
 				end
 			end
@@ -510,15 +541,15 @@ return function()
 				local motor = v.Motor
 				local wave = v.Wave
 				local decal = v.Decal
-				
+
 				if parent and parent.Parent and torso and torso.Parent and part and part.Parent then
 					if not hide then
 						part.Transparency = 0
-						
+
 						if decal then
 							decal.Transparency = 0
 						end
-						
+
 						v.Enabled = true
 					else
 						part.Transparency = 1
@@ -533,7 +564,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		MoveCapes = function()
 			service.StopLoop("CapeMover")
 			service.StartLoop("CapeMover",0.1,function()
@@ -549,15 +580,15 @@ return function()
 						local motor = v.Motor
 						local wave = v.Wave
 						local decal = v.Decal
-						
+
 						if parent and parent.Parent and torso and torso.Parent and part and part.Parent then
 							if v.Enabled and Variables.CapesEnabled then
 								part.Transparency = 0
-								
+
 								if decal then
 									decal.Transparency = 0
 								end
-								
+
 								local ang = 0.1
 								if wave then 
 									if torso.Velocity.magnitude > 1 then
@@ -591,7 +622,7 @@ return function()
 				end
 			end, true)
 		end;
-		
+
 		CountTable = function(tab)
 			local count = 0
 			for i,v in next,tab do
@@ -599,7 +630,7 @@ return function()
 			end
 			return count
 		end;
-		
+
 		ClearAllInstances = function()
 			local objects = service.GetAdonisObjects()
 			for i in next,objects do
@@ -607,14 +638,14 @@ return function()
 				objects[i] = nil
 			end
 		end;
-		
+
 		PlayAnimation = function(animId)
 			if animId == 0 then return end
-			
+
 			local char = service.Player.Character
 			local human = char:FindFirstChildOfClass("Humanoid")
 			local animator = human:FindFirstChildOfClass("Animator") or human:WaitForChild("Animator")
-			
+
 			for i,v in pairs(animator:GetPlayingAnimationTracks()) do
 				v:Stop()
 			end
@@ -624,14 +655,14 @@ return function()
 			local track = animator:LoadAnimation(anim)
 			track:Play()
 		end;
-		
+
 		SetLighting = function(prop,value)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
 			end
 		end;
-		
+
 		LocalLighting = function(on)
 			if on then
 				service.StartLoop("LocalLighting","RenderStepped",function()
@@ -645,38 +676,38 @@ return function()
 				service.StopLoop("LocalLighting")
 			end
 		end;
-		
+
 		ChatMessage = function(msg,color,font,size)
 			local tab = {}
-			
+
 			tab.Text = msg
-			
+
 			if color then
 				tab.Color = color
 			end
-			
+
 			if font then
 				tab.Font = font
 			end
-			
+
 			if size then
 				tab.Size = size
 			end
-			
+
 			service.StarterGui:SetCore("ChatMakeSystemMessage",tab)
-			
+
 			if Functions.SendToChat then
 				Functions.SendToChat({Name = "::Adonis::"},msg,"Private")
 			end
 		end;
-		
+
 		SetCamProperty = function(prop,value)
 			local cam = workspace.CurrentCamera
 			if cam[prop] then
 				cam[prop] = value
 			end
 		end;
-		
+
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
@@ -687,11 +718,11 @@ return function()
 				end)
 			end
 		end;
-		
+
 		RestoreFPS = function()
 			service.StopLoop("SetFPS")
 		end;
-		
+
 		Crash = function()
 			--[[
 			local load = function(f) return f() end 
@@ -723,20 +754,20 @@ return function()
 					end)
 				end)
 			end--]]
-			
+
 			local Run = service.RunService;
 			local Lol = 0;
-			
+
 			local Thread; function Thread()
-			    Run:BindToRenderStep(tostring(Lol), 100, function() print"Stopping"; Thread(); end);
-			    Lol = Lol + 1;
+				Run:BindToRenderStep(tostring(Lol), 100, function() print"Stopping"; Thread(); end);
+				Lol = Lol + 1;
 			end;
-			
+
 			Thread();
 			--local crash; crash = function() while true do repeat spawn(function() pcall(function() print(game[("%s|"):rep(100000)]) crash() end) end) until nil end end
 			--crash()
 		end;
-		
+
 		HardCrash = function()
 			local crash
 			local tab
@@ -762,7 +793,7 @@ return function()
 							end)
 						end)
 					end)
-				--print(game[("%s|"):rep(0xFFFFFFF)])
+					--print(game[("%s|"):rep(0xFFFFFFF)])
 				end
 				tab = {}
 			end
@@ -774,7 +805,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		GPUCrash = function()
 			local crash
 			local gui = service.New("ScreenGui",service.PlayerGui)
@@ -788,7 +819,7 @@ return function()
 			end
 			crash()
 		end;
-		
+
 		RAMCrash = function()
 			while wait(0.1) do
 				for i = 1,10000 do
@@ -796,20 +827,20 @@ return function()
 				end
 			end
 		end;
-		
+
 		KillClient = function()
 			client.Kill("KillClient called")
 		end;
-		
+
 		KeyBindListener = function()
 			if not Variables then wait() end;
 			local timer = 0
 			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
-				
+
 			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
 				local textbox = service.UserInputService:GetFocusedTextBox()
-				
+
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then 
 					local isAdmin = Remote.Get("CheckAdmin")
 					if (tick() - timer > 5 or isAdmin) and pcall(string.char, key) then
@@ -822,7 +853,7 @@ return function()
 				end
 			end)
 		end;
-		
+
 		AddKeyBind = function(key, command)
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
@@ -830,7 +861,7 @@ return function()
 				Message = 'Bound "'..string.char(key)..'" to '..command
 			})
 		end;
-		
+
 		RemoveKeyBind = function(key)
 			if Variables.KeyBinds[tostring(key)] ~= nil then
 				Variables.KeyBinds[tostring(key)] = nil
@@ -842,7 +873,7 @@ return function()
 				end)
 			end
 		end;
-		
+
 		BrickBlur = function(on,trans,color)
 			local exists = service.LocalContainer():FindFirstChild("ADONIS_WINDOW_FUNC_BLUR")
 			if exists then exists:Destroy() end
@@ -867,7 +898,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		PlayAudio = function(audioId, volume, pitch, looped)
 			if Variables.localSounds[tostring(audioId)] then Variables.localSounds[tostring(audioId)]:Stop() Variables.localSounds[tostring(audioId)]:Destroy() Variables.localSounds[tostring(audioId)]=nil end
 			local sound = service.New("Sound")
@@ -884,7 +915,7 @@ return function()
 			sound:Destroy()
 			Variables.localSounds[tostring(audioId)] = nil
 		end;
-		
+
 		StopAudio = function(audioId)
 			if Variables.localSounds[tostring(audioId)] then 
 				Variables.localSounds[tostring(audioId)]:Stop() 
@@ -892,7 +923,7 @@ return function()
 				Variables.localSounds[tostring(audioId)] = nil 
 			end
 		end;
-		
+
 		FadeAudio = function(audioId,inVol,pitch,looped,incWait)
 			if not inVol then
 				local sound = Variables.localSounds[tostring(audioId)]
@@ -915,7 +946,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		KillAllLocalAudio = function()
 			for i,v in next,Variables.localSounds do
 				v:Stop()
@@ -923,7 +954,7 @@ return function()
 				table.remove(Variables.localSounds,i)
 			end
 		end;
-		
+
 		RemoveGuis = function()
 			for i,v in next,service.PlayerGui:GetChildren()do
 				if not UI.Get(v) then
@@ -931,7 +962,7 @@ return function()
 				end
 			end
 		end;
-		
+
 		SetCoreGuiEnabled = function(element,enabled)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
 		end;
@@ -940,7 +971,7 @@ return function()
 			local cape = service.LocalContainer():FindFirstChild("::Adonis::Cape")
 			if cape then cape:Destroy() end
 		end;
-		
+
 		Cape = function(material,color,decal,reflect)
 			local torso = service.Player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
@@ -993,27 +1024,27 @@ return function()
 					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then 
 						motor1.MaxVelocity = .04 
 					end
-					
+
 					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.magnitude - oldmag) >=(torso.Velocity.magnitude/10) + 1
-					
+
 					if torso.Velocity.magnitude < .1 then 
 						wait(.1) 
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()
 			end 
 		end;
-		
+
 		TextToSpeech = function(str)
 			local audioId = 296333956
-			
+
 			local audio = Instance.new("Sound",service.LocalContainer())
 			audio.SoundId = "rbxassetid://"..audioId
 			audio.Volume = 1
-			
+
 			local audio2 = Instance.new("Sound",service.LocalContainer())
 			audio2.SoundId = "rbxassetid://"..audioId
 			audio2.Volume = 1
-			
+
 			local phonemes = {
 				{
 					str='%so';
@@ -1137,7 +1168,7 @@ return function()
 					str='air';
 					func={18}
 				}; --(hair)
-				
+
 				{
 					str='ar';
 					func={16}
@@ -1182,7 +1213,7 @@ return function()
 					str='i';
 					func={2}
 				};--(ship)
-				
+
 				{
 					str='y'; --y%S
 					func={37}
@@ -1197,12 +1228,12 @@ return function()
 					str='y';
 					func={37}
 				}; --(my)
-				
+
 				{
 					str='s';
 					func={23}
 				}; --(see)	
-				
+
 				{
 					str='e';
 					func={13};
@@ -1301,7 +1332,7 @@ return function()
 					str='h';
 					func={44}
 				}; --(hat)
-					{
+				{
 					str=' ';
 					func="wait";
 				};
@@ -1325,11 +1356,11 @@ return function()
 					str=':';
 					func="wait";
 				};
-				
+
 			}
-			
+
 			game:service("ContentProvider"):Preload("rbxassetid://"..audioId)
-			
+
 			local function getText(str)
 				local tab = {}
 				local str = str
@@ -1360,10 +1391,10 @@ return function()
 				getNext()
 				return tab
 			end
-			
+
 			local phos=getText(str)
 			local swap = false
-			
+
 			local function say(pos)
 				local sound=audio
 				--[[--]]
@@ -1375,7 +1406,7 @@ return function()
 				--wait(0.2) --wait(pause)
 				--sound:Stop()
 			end
-			
+
 			audio:Play()
 			audio2:Play()
 			for i,v in ipairs(phos) do
