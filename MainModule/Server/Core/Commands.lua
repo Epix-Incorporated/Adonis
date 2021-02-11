@@ -130,13 +130,13 @@ return function(Vargs)
 				local RunService = game:GetService("RunService")
 
 				if RunService:IsStudio() then
-					Functions.Message("Adonis", "Command does not work in studio",{plr}, false, 5)
+					Functions.Message("Adonis", "Command doesn't work in studio.",{plr}, false, 5)
 					
 				else
 				
 				local jobid = tostring(args[1])
 				
-				Functions.Message("Adonis", "Teleporting..",{plr}, false, 10)
+				Functions.Message("Adonis", "Teleporting please wait.",{plr}, false, 10)
 				
 				game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId,jobid,plr)
 
