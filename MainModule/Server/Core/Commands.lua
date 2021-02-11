@@ -116,6 +116,34 @@ return function(Vargs)
 				end
 			end
 		};
+		        joinserver = {
+			Prefix = Settings.Prefix;
+			Commands = {"joinserver";};
+			Args = {"jobid"};
+			Hidden = false;
+			Description = "Join a server using JobId";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1].."Argument missing or nil")
+				
+				local RunService = game:GetService("RunService")
+
+				if RunService:IsStudio() then
+					Functions.Message("Adonis", "Command does not work in studio",{plr}, false, 5)
+					
+				else
+				
+				local jobid = tostring(args[1])
+				
+				Functions.Message("Adonis", "Teleporting..",{plr}, false, 10)
+				
+				game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId,jobid,plr)
+
+				end
+				end
+		};
+
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
