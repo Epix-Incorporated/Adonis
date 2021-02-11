@@ -8358,10 +8358,6 @@ return function(Vargs)
 				scr.Name = "ADONIS_FLIGHT"
 
 				for i,v in next,Functions.GetPlayers(plr, args[1]) do
-					local human = v.Character:FindFirstChildOfClass("Humanoid")
-					if human then
-						human.PlatformStand = true
-					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
@@ -8433,10 +8429,6 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local human = v.Character:FindFirstChildOfClass("Humanoid")
-					if human then
-						human.PlatformStand = false
-					end
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
