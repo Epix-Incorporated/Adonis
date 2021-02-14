@@ -7685,13 +7685,65 @@ return function(Vargs)
 		TargetAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"taudio";"localsound";"localaudio";"lsound";"laudio";};
-			Args = {"player";"audioId";};
+			Args = {"player", "audioId", "noLoop", "pitch", "volume";};
 			Description = "Lets you play an audio on the player's client";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				if not tonumber(args[2]) then error(args[1].." is not a valid ID") return end
+			Function = function(plr,args,data)
+				
+				assert(args[1] and args[2],"Argument missing or nil")
+				
+				local id = args[2]
+				local volume = 1 --tonumber(args[5]) or 1
+				local pitch = 1 --tonumber(args[4]) or 1
+				local loop = true
+				
+				for i,v in pairs(Variables.MusicList) do 
+					if id==v.Name:lower() then 
+						id = v.ID
+						if v.Pitch then 
+							pitch = v.Pitch 
+						end 
+						if v.Volume then 
+							volume=v.Volume 
+						end 
+					end 
+				end
+
+				for i,v in pairs(HTTP.Trello.Music) do 
+					if id==v.Name:lower() then 
+						id = v.ID
+						if v.Pitch then 
+							pitch = v.Pitch 
+						end 
+						if v.Volume then 
+							volume = v.Volume 
+						end 
+					end 
+				end
+
+				if args[3] and args[3] == "true" then loop = false end
+				volume = tonumber(args[5]) or volume
+				pitch = tonumber(args[4]) or pitch
+				
+				
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.Send(v,"Function","PlayAudio",args[2])
+					Remote.Send(v,"Function","PlayAudio",id,volume,pitch,loop)
+					
+				end
+				Functions.Hint("Playing Audio on Player's Client",{plr})
+			end
+		};
+		
+		UnTargetAudio = {
+			Prefix = Settings.Prefix;
+			Commands = {"untaudio";"unlocalsound";"unlocalaudio";"unlsound";"unlaudio";};
+			Args = {"player";};
+			Description = "Lets you stop audio playing on the player's client";
+			AdminLevel = "Moderators";
+			Function = function(plr,args,data)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.Send(v,"Function","StopAudio","all")
+
 				end
 			end
 		};
