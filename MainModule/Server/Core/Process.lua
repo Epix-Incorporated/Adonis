@@ -569,7 +569,7 @@ return function(Vargs)
 					Cache = {};				
 					Sent = 0;
 					Received = 0;
-					Joined = tick();
+					Joined = os.time();
 					LastUpdate = tick();
 					FinishedLoading = false;
 					LoadingStatus = "WAITING_FOR_KEY";
