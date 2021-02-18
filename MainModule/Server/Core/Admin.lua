@@ -160,6 +160,21 @@ return function(Vargs)
 							return true
 						end
 					end
+				elseif isGood and check:sub(1,11) == "CustomRank:" then --check:match("^Item:(.*)") then
+					local cRank = check:match("CustomRank:(.*)")
+					if cRank then
+						for rank in string.gmatch(cRank, "[^,]+") do
+							for i,v in pairs(Settings.CustomRanks) do
+								if i:lower() == rank:lower() then
+									for d,e in pairs(v) do
+										if tostring(e):sub(1,11) ~= "CustomRank:" and Admin.DoCheck(p, e) then
+											return true
+										end
+									end
+								end
+							end
+						end
+					end
 				elseif p and check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
 					local item = tonumber(check:match("^GamePass:(.*)"))
 					if item then
@@ -177,18 +192,18 @@ return function(Vargs)
 					return true
 				elseif type(check) == "string" then
 					local cache = Admin.UserIdCache[check]
-					
+
 					if cache and p.UserId == cache then
 						return true
 					elseif cache==false then
 						return
 					end
-					
+
 					local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
-					
+
 					if suc and userId then
 						Admin.UserIdCache[check] = userId
-						
+
 						if p.UserId == userId then
 							return true
 						end
