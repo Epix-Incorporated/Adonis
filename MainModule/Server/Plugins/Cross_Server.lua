@@ -22,6 +22,8 @@ return function(Vargs)
 	local Remote = server.Remote;
 	local Logs = server.Logs;
 	
+	local GetEnv = server.GetEnv;
+	
 	local ServerId = game.JobId;
 	local MsgService = service.MessagingService;
 	local subKey = Core.DataStoreEncode("AdonisCrossServerMessaging");
