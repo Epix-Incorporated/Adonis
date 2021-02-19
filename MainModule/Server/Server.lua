@@ -361,6 +361,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Changelog = require(server.Client.Dependencies.Changelog)
 	server.Credits = require(server.Client.Dependencies.Credits)
 	server.Parser = require(server.Deps.Parser)
+	server.GetEnv = GetEnv
 	locals.Settings = server.Settings
 	locals.CodeName = server.CodeName
 
