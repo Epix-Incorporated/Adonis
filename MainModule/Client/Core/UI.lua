@@ -27,7 +27,7 @@ return function()
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
+		Vector3int16, os.clock, require, table, type, wait, 
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 		
 	local script = script
