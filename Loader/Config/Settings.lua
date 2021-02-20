@@ -215,7 +215,7 @@ settings.CreatorPowers  = true		-- Gives me creator level admin; This is strictl
 settings.CodeExecution  = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
 
 settings.SystemTitle = "System Message"		-- Title to display in :sm 
-settings.SystemImage = "http://www.roblox.com/asset/?id=6109242673" -- The image that shows up below the System Message titled, displayed in :sm
+settings.SystemImage = "rbxassetid://357249130" -- The image that shows up below the System Message titled, displayed in :sm
 
 --[[ Message shown to banned users, each line is a new line, for example {
 		"[Adonis]";
@@ -320,7 +320,7 @@ settings.PlayerList = false		-- Custom playerlist
 settings.Console    = true			-- Command console
 
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
-settings.HelpButtonImage = "http://www.roblox.com/asset/?id=6109242087" -- Image for the Help Button in the bottom right of the screen
+settings.HelpButtonImage = "rbxassetid://357249130" -- Image for the Help Button in the bottom right of the screen
 settings.HelpButton = true		-- Shows a little help button in the bottom right corner
 
 settings.DonorCapes    = true 		-- Donors get to show off their capes; Not disruptive ;)
