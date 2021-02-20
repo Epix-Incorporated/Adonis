@@ -3034,6 +3034,22 @@ return function(Vargs)
 				for i,v in pairs(server.HTTP.Trello.Owners) do 
 					table.insert(data.Owners,v .. " [Trello]") 
 				end
+				
+				for i,v in pairs(HTTP.WebPanel.Creators) do
+					table.insert(temptable,v .. " - Creator [WebPanel]")
+				end
+
+				for i,v in pairs(HTTP.WebPanel.Moderators) do
+					table.insert(temptable,v .. " - Mod [WebPanel]")
+				end
+
+				for i,v in pairs(HTTP.WebPanel.Admins) do
+					table.insert(temptable,v .. " - Admin [WebPanel]")
+				end
+
+				for i,v in pairs(HTTP.WebPanel.Owners) do
+					table.insert(temptable,v .. " - Owner [WebPanel]")
+				end
 
 				service.Iterate(server.Settings.CustomRanks,function(rank,tab)
 					service.Iterate(tab,function(ind,admin)
