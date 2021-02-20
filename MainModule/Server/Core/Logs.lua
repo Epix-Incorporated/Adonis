@@ -101,7 +101,7 @@ return function(Vargs)
 				end
 				
 				if oldLogs then
-					for i,m in ipairs(oldLogs) do
+					for i,m in ipairs(service.HttpService:JSONDecode(oldLogs)) do
 						table.insert(temp, m)
 					end
 				end
@@ -116,7 +116,7 @@ return function(Vargs)
 					end
 				end
 				
-			 	return temp
+			 	return service.HttpService:JSONEncode(temp)
 			end)
 		end;
 		
@@ -184,7 +184,7 @@ return function(Vargs)
 				if Core.DataStore then
 					local data = Core.GetData("OldCommandLogs")
 					if data then
-						for i,m in pairs(data) do
+						for i,m in pairs(service.HttpService:JSONDecode(data)) do
 							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
 						end
 					end
