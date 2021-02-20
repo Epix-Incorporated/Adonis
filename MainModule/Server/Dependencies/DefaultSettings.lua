@@ -80,11 +80,11 @@ local descs = {}
 		--// Command Permissions
 			
 			You can set the permission level for specific commands using setting.Permissions
-			If I wanted to make it so only owners+ can use ;ff player then I would do:
+			If I wanted to make it so only owners+ can use :ff player then I would do:
 			
-				settings.Permissions = {";ff:Owners"}
+				settings.Permissions = {":ff:Owners"}
 				
-				;ff is the Command ":ff scel" and 3 is the NewLevel
+				:ff is the Command ":ff scel" and 3 is the NewLevel
 
 				
 				Permissions Levels:
