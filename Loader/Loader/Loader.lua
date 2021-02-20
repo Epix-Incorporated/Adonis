@@ -69,8 +69,8 @@ local Data = {
 	Dropper = Dropper;
 	Runner = Runner;
 	
-	ModuleID = 6409108559;
-	LoaderID = 6409119154;
+	ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
+	LoaderID = tonumber('23735'..'05175');
 }
 
 local LoadPlugins = function()
