@@ -30,15 +30,15 @@ NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait, 
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn = 
 	_G, game, script, getfenv, setfenv, workspace, 
-getmetatable, setmetatable, loadstring, coroutine, 
-rawequal, typeof, print, math, warn, error,  pcall, 
-xpcall, select, rawset, rawget, ipairs, pairs, 
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-Vector3int16, elapsedTime, require, table, type, wait, 
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
+	getmetatable, setmetatable, loadstring, coroutine, 
+	rawequal, typeof, print, math, warn, error,  pcall, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
+	Vector3int16, elapsedTime, require, table, type, wait, 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
 
 
 local unique = {}
@@ -104,14 +104,12 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 
 	if type(plug) == "function" then
 		if yield then
-			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
 				warn(tostring(err))
 			end
 		else
-			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),GetVargTable())
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
@@ -131,11 +129,7 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 end;
 
 local CleanUp = function()
-	--local env = getfenv(2)
-	--local ran,ret = pcall(function() return env.script:GetFullName() end)
 	warn("Beginning Adonis cleanup & shutdown process...")
-	--warn("CleanUp called from "..tostring((ran and ret) or "Unknown"))
-	--local loader = server.Core.ClientLoader
 	server.Model.Parent = service.ServerScriptService
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
@@ -145,9 +139,7 @@ local CleanUp = function()
 		v:Disconnect() 
 		table.remove(RbxEvents, i) 
 	end
-	--loader.Archivable = false
-	--loader.Disabled = true
-	--loader:Destroy()
+	
 	if server.Core.RemoteEvent then
 		server.Core.RemoteEvent.Security:Disconnect()
 		server.Core.RemoteEvent.Event:Disconnect()
@@ -157,7 +149,7 @@ local CleanUp = function()
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
 	end
-	warn'Unloading complete'
+	warn("Unloading complete")
 end;
 
 server = {
@@ -199,10 +191,8 @@ service = setfenv(require(Folder.Core.Service), GetEnv(nil, {server = server}))(
 			})
 		end
 	elseif eType == "ServerError" then
-		--print("Server error")
 		logError("Server", msg)
 	elseif eType == "TaskError" then
-		--print("Task error")
 		logError("Task", msg)
 	end
 end, function(c, parent, tab) 
@@ -240,18 +230,9 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
-                                                                                                                                                                                                                                                                                                                                                            --[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-                                                                                                                                                                                                                                                                                                                                                            script = service.Wrap(script)
-                                                                                                                                                                                                                                                                                                                                                            Enum = service.Wrap(Enum)
-                                                                                                                                                                                                                                                                                                                                                            game = service.Wrap(game)
-                                                                                                                                                                                                                                                                                                                                                            workspace = service.Wrap(workspace)
-                                                                                                                                                                                                                                                                                                                                                            Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-                                                                                                                                                                                                                                                                                                                                                            require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual
---service.Players = service.Wrap(service.Players)
---Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
 server.Client = Folder.Parent.Client;
@@ -259,8 +240,7 @@ server.Dependencies = Folder.Dependencies;
 server.PluginsFolder = Folder.Plugins;
 server.Service = service
 
---// Setting things up
-for ind,loc in next,{
+for ind, loc in pairs({
 	_G = _G;
 	game = game;
 	spawn = spawn;
@@ -322,18 +302,18 @@ for ind,loc in next,{
 	CFrame = CFrame;
 	Ray = Ray;
 	service = service
-	}do locals[ind] = loc end
+}) do locals[ind] = loc end
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
-	if _G["__Adonis_MODULE_MUTEX"] and type(_G["__Adonis_MODULE_MUTEX"])=="string" then
+	if _G.__Adonis_MODULE_MUTEX and type(_G.__Adonis_MODULE_MUTEX)=="string" then
 		warn("\n-----------------------------------------------"
 			.."\nAdonis server-side is already running! Aborting..."
 			.."\n-----------------------------------------------")
 		script:Destroy()
-		return "FAILED"
+		return false, "ADONIS_RUNNING"
 	else
-		_G["__Adonis_MODULE_MUTEX"] = "Running"
+		_G.__Adonis_MODULE_MUTEX = "Running"
 	end
 
 	if not data or not data.Loader then 
@@ -425,6 +405,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			LoadModule(modu,true,{script = script}, true) --noenv
 		end 
 	end
+	
+	for _, CommandModule in next,server.Deps.Commands:GetChildren() do
+		LoadModule(CommandModule, true, {script = script}, true)
+	end
 
 	--// Initialize Cores
 	for i,name in next,LoadingOrder do
@@ -447,13 +431,19 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Core.Plugins = data.Plugins or {}
 	server.Core.ModuleID = data.ModuleID or 2373501710
 	server.Core.LoaderID = data.LoaderID or 2373505175
-	server.Core.DebugMode = data.DebugMode or false
+	server.Core.DebugMode = server.Settings.Debug or setTab.Debug or false
 	server.Core.DataStore = server.Core.GetDataStore()
 	server.Core.Loadstring = require(server.Deps.Loadstring)
-	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
 	server.LoadModule = LoadModule
 	server.ServiceSpecific = ServiceSpecific
-			
+	
+	server.Variables.Messages.Ban = table.concat(server.Settings.BanMessage,"\n")
+	server.Variables.Messages.TrelloBan = table.concat(server.Settings.TrelloBanMessage,"\n")
+	server.Variables.Messages.TimeBan = table.concat(server.Settings.TimeBanMessage,"\n")
+	server.Variables.Messages.GameBan = table.concat(server.Settings.GameBanMessage,"\n")
+	server.Variables.Messages.Lock = table.concat(server.Settings.LockMessage,"\n")
+	server.Variables.Messages.Whitelist = table.concat(server.Settings.NotWhitelistedMessage,"\n")
+	
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
 
@@ -577,7 +567,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	if server.Settings.AutoBackup then
 		service.TrackTask("Thread: Initial Map Backup", server.Admin.RunCommand, server.Settings.Prefix.."backupmap")
 	end 
-	--service.Threads.RunTask("Initial Map Backup",server.Admin.RunCommand,server.Settings.Prefix.."backupmap")
 
 	--// AutoClean
 	if server.Settings.AutoClean then
@@ -615,8 +604,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end)
 
 	--// Finished loading
-	server.Variables.BanMessage = server.Settings.BanMessage
-	server.Variables.LockMessage = server.Settings.LockMessage
 	for i,v in next,server.Settings.OnStartup do server.Logs.AddLog("Script",{Text = "Startup: Executed "..tostring(v); Desc = "Executed startup command; "..tostring(v)}) server.Threading.NewThread(server.Admin.RunCommand, v) end
 
 	server.Logs.AddLog(server.Logs.Script,{
@@ -630,5 +617,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		warn("Loading Complete;")
 	end
 
-	return "SUCCESS"
+	return true, "SUCCESS"
 end})
+
