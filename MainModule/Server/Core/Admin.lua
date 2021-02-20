@@ -70,6 +70,8 @@ return function(Vargs)
 		SpecialLevels = {};
 		GroupRanks = {};
 		TempAdmins = {};
+		ServerBans = {};
+		TimeBans = {};
 		SlowCache = {};
 		UserIdCache = {};
 		BlankPrefix = false;
@@ -104,14 +106,6 @@ return function(Vargs)
 			for _,v in next,server.HTTP.Trello.Mutes do
 				if server.Admin.DoCheck(player, v) then
 					return true
-				end
-			end
-
-			if HTTP.WebPanel.Mutes then
-				for _,v in next,server.HTTP.WebPanel.Mutes do
-					if server.Admin.DoCheck(player, v) then
-						return true
-					end
 				end
 			end
 		end;
@@ -282,7 +276,6 @@ return function(Vargs)
 					Tables = {
 						Settings.Blacklist;
 						HTTP.Trello.Blacklist;
-						HTTP.WebPanel.Blacklist;
 					};
 				};
 				--[[
@@ -299,7 +292,6 @@ return function(Vargs)
 					Tables = {
 						Settings.Creators;
 						HTTP.Trello.Creators;
-						HTTP.WebPanel.Creators;
 					}
 				};
 
@@ -308,7 +300,6 @@ return function(Vargs)
 					Tables = {
 						Settings.Owners;
 						HTTP.Trello.Owners;
-						HTTP.WebPanel.Owners;
 					}
 				};
 
@@ -317,7 +308,6 @@ return function(Vargs)
 					Tables = {
 						Settings.Admins;
 						HTTP.Trello.Admins;
-						HTTP.WebPanel.Admins;
 					}
 				};
 
@@ -326,7 +316,6 @@ return function(Vargs)
 					Tables = {
 						Settings.Moderators;
 						HTTP.Trello.Moderators;
-						HTTP.WebPanel.Moderators;
 					}
 				};
 			}
@@ -569,76 +558,199 @@ return function(Vargs)
 		end;
 
 		CheckBan = function(p)
-			local doCheck = Admin.DoCheck
-			for ind,admin in next,Settings.Banned do
-				if doCheck(p,admin) then
-					return true
-				end
-			end
-
-			for ind,ban in next,Core.Variables.TimeBans do
-				if (p.UserId == ban.UserId) then
-					if ban.EndTime-os.time() <= 0 then
-						table.remove(Core.Variables.TimeBans, ind)
-					else
-						return true
+			local getPlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if Ban.id == p.UserId then
+						return Ban
 					end
 				end
+
+				return false
 			end
 
-			for ind,admin in next,HTTP.Trello.Bans do
-				if doCheck(p,admin) then
-					return true
-				end
+			local SBan = getPlayerBan(Admin.ServerBans)
+			local TBan = getPlayerBan(Admin.TimeBans)
+			local GBan = getPlayerBan(Settings.Banned)
+
+			if SBan then
+				p:Kick(Functions.GetKickMessage("Ban",SBan))
+				return true
 			end
 
-			if HTTP.WebPanel.Bans then
-				for ind,admin in next,HTTP.WebPanel.Bans do
-					if doCheck(p,admin) then
-						return true
-					end
-				end
+			if TBan then
+				p:Kick(Functions.GetKickMessage("TimeBan",TBan))
+				return true
 			end
+
+			if GBan then
+				p:Kick(Functions.GetKickMessage("GameBan",GBan))
+				return true
+			end
+
+			return false
 		end;
 
-		AddBan = function(p, doSave)
-			table.insert(Settings.Banned, p.Name..':'..p.UserId) 
-			if doSave then
+		AddBan = function(p, banType, moderator, banTime, reason, expireTime)
+			if banType == "TIME" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = expireTime;
+					remainingTime = expireTime - os.time()
+				}
+				
+				table.insert(Admin.TimeBans, banData)
+				
+				Core.DoSave({
+					Type = "TableAdd";
+					Table = "TimeBans";
+					Value = banData
+				})	
+				
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("TimeBan",banData))
+				end
+			elseif banType == "BAN" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = "Server Ban";
+					remainingTime = "Server Ban"
+				}
+				
+				table.insert(Admin.ServerBans, banData)
+
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("Ban",banData))
+				end
+			elseif banType == "GAME" then
+				local banData = {
+					reason = reason or "No Reason Provided";
+					time = banTime or os.time();
+					name = p.Name;
+					id = p.UserId;
+					moderator = {Name = moderator.Name; UserId = moderator.UserId};
+					kickType = banType;
+					expireTime = "Game Ban";
+					remainingTime = "Game Ban"
+				}
+				
+				table.insert(Settings.Banned, banData)
+
 				Core.DoSave({
 					Type = "TableAdd";
 					Table = "Banned";
-					Value = p.Name..':'..p.UserId;
+					Value = banData
 				})
-				Core.CrossServer("Loadstring", [[
-					local player = game:GetService("Players"):FindFirstChild("]]..p.Name..[[")
-					if player then
-						player:Kick("]]..Variables.BanMessage..[[")
-					end
-				]])
-			end
-			if not service.Players:FindFirstChild(p.Name) then
-				Remote.Send(p,'Function','KillClient')
-			else
-				if p then pcall(function() p:Kick("You have been banned") end) end
-			end
-		end;
 
-		RemoveBan = function(name, doSave)
-			local ret
-			for i,v in next,Settings.Banned do
-				if tostring(v):lower():sub(1,#name) == name:lower() or name:lower()=="all" then
-					table.remove(Settings.Banned, i)
-					ret = v
-					if doSave then
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = "Banned";
-							Value = v;
-						})
-					end
+				if p and service.Players:FindFirstChild(tostring(p.Name)) then
+					service.Players:FindFirstChild(p.Name):Kick(Functions.GetKickMessage("GameBan",banData))
 				end
 			end
-			return ret
+
+			if not service.Players:FindFirstChild(p.Name) then
+				Remote.Send(p,'Function','KillClient')
+			end
+		end;
+		
+		GetBanData = function(plr)
+			local banData, found = {
+				reason = "No Reason Provided";
+				time = os.time();
+				name = plr.Name;
+				id = plr.UserId;
+				moderator = "None";
+				kickType = "nil";
+				expireTime = os.time();
+				remainingTime = 0;
+			}, nil
+			
+			local getPlayerBan = function(tab)
+				for _, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						for ind, val in pairs(banData) do
+							banData[ind] = Ban[ind]
+						end
+						
+						found = true
+						return banData
+					end
+				end
+				
+				return false
+			end
+			
+			getPlayerBan(Admin.ServerBans)
+			if not found then
+				getPlayerBan(Admin.TimeBans)
+			end
+			
+			if not found then
+				getPlayerBan(Settings.Banned)
+			end
+			
+			if not found then
+				return false
+			end
+			
+			local trelloBanData = HTTP.GetTrelloBan(plr)
+			
+			if trelloBanData then
+				return {
+					name = trelloBanData.name;
+					time = trelloBanData.time;
+				}
+			end
+			
+			return banData
+		end;
+
+		RemoveBan = function(plr)
+			local getPlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						return Ban
+					end
+				end
+
+				return false
+			end
+			
+			local removePlayerBan = function(tab)
+				for ind, Ban in pairs(tab) do
+					if Ban.id == plr.UserId then
+						tab[ind] = nil
+					end
+				end
+
+				return false
+			end
+			
+			local SBan = getPlayerBan(Admin.ServerBans)
+			local TBan = getPlayerBan(Admin.TimeBans)
+			local GBan = getPlayerBan(Settings.Banned)
+			
+			if SBan then
+				removePlayerBan(Admin.ServerBans)
+			end
+			
+			if TBan then
+				removePlayerBan(Admin.TimeBans)
+			end
+			
+			if GBan then
+				removePlayerBan(Settings.Banned)
+			end
+			
+			return plr.Name
 		end;
 
 		SetPermission = function(cmd,newLevel)
@@ -670,8 +782,8 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = adminLvl;
-					isAgent = HTTP.Trello.CheckAgent(p) or false;
-					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors)) or false;
+					isAgent = HTTP.Trello.CheckAgent(plr) or false;
+					isDonor = (Admin.CheckDonor(plr) and (Settings.DonorCommands or coma.AllowDonors)) or false;
 				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then 
@@ -841,21 +953,13 @@ return function(Vargs)
 				return true
 			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
 				return true
-			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel) or (HTTP.WebPanel.CustomRanks and isComLevel(HTTP.WebPanel.CustomRanks, comLevel))) then
+			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel)) then
 				if adminLevel >= 1 then
 					return true
 				else
 					for i,v in next,Settings.CustomRanks do
 						if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
 							return true
-						end
-					end
-
-					if HTTP.WebPanel.CustomRanks then
-						for i,v in next,HTTP.WebPanel.CustomRanks do
-							if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
-								return true
-							end
 						end
 					end
 				end
