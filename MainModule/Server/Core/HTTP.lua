@@ -37,6 +37,17 @@ return function(Vargs)
 			end)
 			if y and not n then return true end
 		end;
+		
+		WebPanel = {
+			Moderators = {};
+			Admins = {};
+			Owners = {};
+			Creators = {};
+			Mutes = {};
+			Bans = {};
+			Blacklist = {};
+			Whitelist = {};
+		};
 
 		Trello = {
 			API = require(server.Deps.TrelloAPI);
