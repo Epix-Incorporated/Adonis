@@ -39,6 +39,7 @@ return function(Vargs)
 		LastDataSave = 0;
 		PanicMode = false;
 		FixingEvent = false;
+		DebugMode = false;
 		ScriptCache = {};
 		Connections = {};
 		LastEventValue = 1;
@@ -312,7 +313,7 @@ return function(Vargs)
 				local container = service.New("ScreenGui");
 				container.ResetOnSpawn = false;
 				container.Enabled = false;
-				container.Name = "\0";--"Adonis_Container";
+				container.Name = "\0";
 				folder.Parent = container;
 
 				local specialVal = service.New("StringValue")
@@ -775,13 +776,11 @@ return function(Vargs)
 				service.Queue("DataStoreUpdateData".. tostring(key), function()
 					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
 
-					if ran then
-						--return ret
-					else
-						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+					if not ran then
+						logError("DataStore UpdateAsync Failed: "..tostring(ret))
+						err = ret
 					end
 
-					wait(5)
 					didUpdate = true
 				end)
 				repeat wait() until didUpdate
@@ -889,14 +888,14 @@ return function(Vargs)
 						end
 					end
 
-					if Core.Variables.TimeBans then
-						for i,v in next, Core.Variables.TimeBans do
+					if Admin.TimeBans then
+						for i,v in next, Admin.TimeBans do
 							if v.EndTime-os.time() <= 0 then
-								table.remove(Core.Variables.TimeBans, i)
+								table.remove(Admin.TimeBans, i)
 								Core.DoSave({
 									Type = "TableRemove";
 									Table = "TimeBans";
-									Parent = "Variables";
+									Parent = "Admin";
 									Value = v;
 								})
 							end
