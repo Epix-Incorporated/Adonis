@@ -349,6 +349,94 @@ return function(Vargs)
 			end
 			return str
 		end;
+		
+		GetKickMessage = function(Type, Data)
+			local Message = Variables.Messages[Type]
+			
+			if tonumber(Data.time) then
+				Data.time = Functions.EpochToHuman(Data.time)
+			end
+			
+			if tonumber(Data.expireTime) then
+				Data.expireTime = Functions.EpochToHuman(Data.expireTime)
+			end
+			
+			Message = Message:gsub("{reason}", Data.reason or "No Reason Provided")
+			Message = Message:gsub("{time}", Data.time or "None")
+			Message = Message:gsub("{name}", Data.name or "nil")
+			Message = Message:gsub("{id}", Data.id or "nil")
+			Message = Message:gsub("{moderator}", Data.moderator.Name or "None")
+			Message = Message:gsub("{type}", Data.kickType or "nil")
+			Message = Message:gsub("{expiretime}", Data.expireTime or "nil")
+			Message = Message:gsub("{remainingtime}", Data.remainingTime or "nil")
+			
+			print(Message)
+			return Message
+		end;
+		
+		GetSlockMessage = function()
+			local SlockData = Variables.SlockData
+			local Data = {
+				reason = SlockData.Reason;
+				time = SlockData.TimeEnabled;
+				name = "nil";
+				id = 0;
+				moderator = SlockData.Moderator;
+				kickType = "nil";
+				expireTime = "nil";
+				remainingTime = "nil";
+			}
+			
+			return Functions.GetKickMessage("Lock", Data)
+		end;
+		
+		GetWhitelistMessage = function()
+			local WhitelistData = Variables.WhitelistData
+			local Data = {
+				reason = WhitelistData.Reason;
+				time = WhitelistData.TimeEnabled;
+				name = "nil";
+				id = 0;
+				moderator = WhitelistData.Moderator;
+				kickType = "nil";
+				expireTime = "nil";
+				remainingTime = "nil";
+			}
+
+			return Functions.GetKickMessage("Whitelist", Data)
+		end;
+		
+		EpochToHuman = function(Epoch)
+			local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+			local Months = {"January"; "February"; "March"; "April"; "May"; "June"; "July"; "August"; "September"; "October"; "November"; "December"}
+			local TimeTable = os.date("!*t", tonumber(Epoch))
+
+			local Week = Weeks[TimeTable.wday]
+			local Month = Months[TimeTable.month]
+			local Day = TimeTable.day
+			local Year = TimeTable.year
+
+			local hour, am_pm
+
+			if TimeTable.hour >= 12 then
+				hour = TimeTable.hour - 12
+				am_pm = "PM"
+			else
+				hour = TimeTable.hour
+				am_pm = "AM"
+			end
+
+			if hour == 0 then
+				hour = 12
+			end
+
+			local Hour = string.format("%02s", tostring(hour))
+			local Minute = string.format("%02s", tostring(TimeTable.min))
+			local Seconds = string.format("%02s", tostring(TimeTable.sec))
+
+			local TimeString = Week.." "..Month.." "..Day.." @ "..Hour..":"..Minute..":"..Seconds.." "..am_pm.." (UTC)"
+			return TimeString
+		end;
 
 		GetPlayers = function(plr, names, dontError, isServer, isKicking, noID)
 			local players = {} 
@@ -519,6 +607,16 @@ return function(Vargs)
 				})
 			end
 		end;
+		
+		GetModelMass = function(Model)
+			local mass = 0
+			for _,p in ipairs(Model:GetDescendants()) do
+				if p:IsA("BasePart") then
+					mass = mass + p:GetMass()
+				end
+			end
+			return mass
+		end;
 
 		Notify = function(title,message,players,tim)
 			for i,v in pairs(players) do
@@ -650,17 +748,17 @@ return function(Vargs)
 				Remote.Send(player,"Function","PlayAnimation",animId)
 			end
 		end;
-		
+
 		ApplyBodyPart = function(character, model)
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then 
 				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
 				local part = model:FindFirstChild(rigType)
-				
+
 				if not part and rigType == "R15" then 
 					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
 				end
-				
+
 				if part then 
 					if rigType == "R6" then 
 						local children = character:GetChildren()
@@ -686,7 +784,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		GetJoints = function(character)
 			local temp = {}
 			for _,v in pairs(character:GetDescendants()) do
@@ -749,7 +847,6 @@ return function(Vargs)
 
 		GetTexture = function(ID)
 			ID = Functions.Trim(tostring(ID))
-			local created
 
 			if not tonumber(ID) then 
 				return false 
@@ -946,7 +1043,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		--// Couldn't merge due to "conflicts" so just added manually.
 		ConvertPlayerCharacterToRig = function(p, rigType)
 			rigType = rigType or "R15"
@@ -982,7 +1079,7 @@ return function(Vargs)
 				human.RigType = Enum.HumanoidRigType[rigType]
 			end
 		end;
-		
+
 		CreateClothingFromImageId = function(clothingtype, Id)
 			local Clothing = Instance.new(clothingtype)
 			Clothing.Name = clothingtype
