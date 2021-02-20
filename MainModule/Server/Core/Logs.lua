@@ -6,12 +6,12 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
---// Remote
+--// Special Variables
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -23,1126 +23,194 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Commands = server.Commands
 
-		Logs:AddLog("Script", "Remote Module Initialized")
+		Logs:AddLog("Script", "Variables Module Initialized")
 	end;
 
-	server.Remote = {
+	server.Variables = {
 		Init = Init;
-		Clients = {};
-		Returns = {};
-		Sessions = {};
-		PlayerData = {};
-		PendingReturns = {};
-		EncodeCache = {};
-		DecodeCache = {};
-
-		Returnables = {
-			RateLimits = function(p, args)
-				return server.Process.RateLimits
-			end;
-
-			Test = function(p,args)
-				return "HELLO FROM THE OTHER SIDE :)!"
-			end;
-
-			Ping = function(p,args)
-				return "Pong"
-			end;
-
-			Filter = function(p,args)
-				return service.Filter(args[1],args[2],args[3])
-			end;
-
-			BroadcastFilter = function(p,args)
-				return service.BroadcastFilter(args[1],args[2] or p)
-			end;
-
-			ClientCheck = function(p,args)
-				local key = tostring(p.userId)
-				local data = args[1]
-				local special = args[2]
-				local returner = args[3]
-				local keys = Remote.Clients[key]
-
-				--print("Sent: "..(data.Sent+1).." : "..keys.Received)
-				--print("Received: "..data.Received.." : "..keys.Sent)
-
-				if (math.abs(data.Received-keys.Sent) > 10) then
-					--print("Something is wrong...")
-				end
-
-				if keys and special and special == keys.Special then
-					keys.LastUpdate = tick()
-				end
-
-				return returner
-			end;
-
-			TaskManager = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
-					local action = args[1]
-					if action == "GetTasks" then
-						local tab = {}
-						for i,v in next, service.GetTasks() do
-							local new = {}
-							new.Status = v.Status
-							new.Name = v.Name
-							new.Index = v.Index
-							new.Created = v.Created
-							new.Function = tostring(v.Function)
-							table.insert(tab,new)
-						end
-						return tab
-					end
-				end
-			end;
-
-			ExecutePermission = function(p,args)
-				return Core.ExecutePermission(args[1],args[2],true)
-			end;
-
-			Variable = function(p,args)
-				return Variables[args[1]]
-			end;
-
-			Setting = function(p,args)
-				local setting = args[1]
-				local level = Admin.GetLevel(p)
-				local ret = nil
-				local blocked = {
-					DataStore = true;
-					DataStoreKey = true;
-
-					Trello_Enabled = true;	
-					Trello_PrimaryBoard = true;
-					Trello_SecondaryBoards = true;
-					Trello_AppKey = true;
-					Trello_Token = true; 
-
-					--G_Access = true;
-					--G_Access_Key = true;
-					--G_Access_Perms = true;
-					--Allowed_API_Calls = true;
-				}
-
-				if type(setting) == "table" then
-					ret = {}
-					for i,set in pairs(setting) do
-						if Settings[set] and not (blocked[set] and not level>=5) then 
-							ret[set] = Settings[set]
-						end
-					end
-				elseif type(setting) == "string" then
-					if Settings[setting] and not (blocked[setting] and not level>=5) then 
-						ret = Settings[setting]
-					end
-				end
-
-				return ret
-			end;
-
-			UpdateList = function(p, args)
-				local list = args[1]
-				local update = Logs.ListUpdaters[list]
-				if update then
-					return update(p, unpack(args,2))
-				end
-			end;
-
-			AllSettings = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
-					local sets = {}
-
-					sets.Settings = {}
-					sets.Descs = server.Descriptions
-					sets.Order = server.Order
-
-					for i,v in pairs(Settings) do
-						sets.Settings[i] = v
-					end
-
-					local blocked = {
-						HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
-						DataStore = true;
-						DataStoreKey = true;
-						DataStoreEnabled = true;
-
-						--Trello_Enabled = true;	
-						--Trello_PrimaryBoard = true;
-						--Trello_SecondaryBoards = true;
-						Trello_AppKey = true;
-						Trello_Token = true;
-
-						G_API = true;
-						G_Access = true;
-						G_Access_Key = true;
-						G_Access_Perms = true;
-						Allowed_API_Calls = true;
-
-						OnStartup = true;
-						OnSpawn = true;
-						OnJoin = true;
-
-						AntiInsert = true;  -- Not supported yet
-						CustomRanks = true; -- Not supported yet 
-					}
-
-					for setting,value in pairs(sets.Settings) do
-						if blocked[setting] then
-							sets.Settings[setting] = nil
-						end
-					end
-
-					return sets
-				end
-			end;
-
-			AdminLevel = function(p,args)
-				return Admin.GetLevel(p)
-			end;
-
-			Keybinds = function(p,args)
-				local playerData = Core.GetPlayer(p)
-				return playerData.Keybinds or {}
-			end;
-
-			UpdateKeybinds = function(p,args)
-				local playerData = Core.GetPlayer(p)
-				local binds = args[1]
-				local resp = "OK"
-				if type(binds)=="table" then
-					playerData.Keybinds = binds
-					Core.SavePlayer(p,playerData)
-					resp = "Updated"
-				else
-					resp = "Error"
-				end
-				return resp
-			end;
-
-			UpdateClient = function(p,args)
-				local playerData = Core.GetPlayer(p)
-				local setting = args[1]
-				local value = args[2]
-				local data = playerData.Client or {}
-				data[setting] = value
-				playerData.Client = data
-				Core.SavePlayer(p,playerData)
-				return "Updated"
-			end;
-
-			UpdateDonor = function(p,args)
-				local playerData = Core.GetPlayer(p)
-				local donor = args[1]
-				local resp = "OK"
-				if type(donor) == "table" and donor.Cape and type(donor.Cape) == "table" then
-					print(donor.Cape.Image)
-					playerData.Donor = donor
-					Core.SavePlayer(p, playerData)
-					if donor.Enabled then
-						Functions.Donor(p)
-					else
-						Functions.UnCape(p)
-					end
-					resp = "Updated"
-				else
-					resp = "Error"
-				end
-				return resp
-			end;
-			
-			UpdateAliases = function(p, args)
-				local aliases = args[1] or {};
-				
-				if type(aliases) == "table" then
-					local data = Core.GetPlayer(p)
-					
-					--// check for stupid stuff
-					for i,v in next,aliases do
-						if type(i) ~= "string" or type(v) ~= "string" then
-							aliases[i] = nil
-						end
-					end
-					
-					data.Aliases = aliases;
-				end
-			end;
-
-			PlayerData = function(p,args)
-				local data = Core.GetPlayer(p)
-				data.isDonor = Admin.CheckDonor(p)
-				return data
-			end;
-
-			CheckAdmin = function(p,args)
-				return Admin.CheckAdmin(p)
-			end;
-
-			SearchCommands = function(p,args)
-				return Admin.SearchCommands(p,args[1] or "all")
-			end;
-
-			FormattedCommands = function(p,args)
-				local commands = Admin.SearchCommands(p,args[1] or "all")
-				local tab = {}
-				for i,v in pairs(commands) do
-					table.insert(tab,Admin.FormatCommand(v))
-				end
-				return tab
-			end;
-
-			TerminalData = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
-					local entry = Remote.Terminal.Data[tostring(p.UserId)]
-					if not entry then
-						Remote.Terminal.Data[tostring(p.UserId)] = {
-							Player = p;
-							Output = {};
-						}
-					end
-
-					return {
-						ServerLogs = service.LogService:GetLogHistory();
-						ClientLogs = {};
-						ScriptLogs = Logs.Script;
-						AdminLogs = Logs.Commands;
-						ErrorLogs = Logs.Errors;
-						ChatLogs = Logs.Chats;
-						JoinLogs = Logs.Joins;
-						Replications = Logs.Replications;
-						Exploit = Logs.Exploit;
-					}
-				end
-			end;
-
-			Terminal = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
-					local data = args[2]
-					local message = args[1]
-					local command = message:match("(.-) ") or message
-					local argString = message:match("^.- (.+)") or ""
-					local comTable = Remote.Terminal.GetCommand(command)
-					if comTable then
-						local cArgs = Functions.Split(argString, " ", comTable.Arguments)
-						local ran,ret = pcall(comTable.Function,p,cArgs,data)
-						if ran then
-							return ret
-						else
-							return {
-								"COMMAND ERROR: "..tostring(ret)
-							}
-						end
-					else
-						return {
-							"Could not find any command matching \""..command.."\""
-						}
-					end
-				end
-			end
+		ZaWarudo = false;
+		CodeName = math.random();
+		FrozenObjects = {};
+		ScriptBuilder = {};
+		CachedDonors = {};
+		WhitelistData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			List = {};
+			Reason = "This server is whitelisted."
+		};
+		SlockData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			Reason = "This server is locked."
+		};
+		Messages = {
+			Ban = "";
+			TrelloBan = "";
+			Lock = "";
+			Whitelist = "";
+			TimeBan = "";
+			GameBan = "";
+		};
+		DonorPass = {3497976};
+		LightingSettings = {
+			Ambient = service.Lighting.Ambient;
+			OutdoorAmbient = service.Lighting.OutdoorAmbient;
+			Brightness = service.Lighting.Brightness;
+			TimeOfDay = service.Lighting.TimeOfDay;
+			FogColor = service.Lighting.FogColor;
+			FogEnd = service.Lighting.FogEnd;
+			FogStart = service.Lighting.FogStart;
+			GlobalShadows = service.Lighting.GlobalShadows;
+			Outlines = service.Lighting.Outlines;
+			ShadowColor = service.Lighting.ShadowColor;
+			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
+			ColorShift_Top = service.Lighting.ColorShift_Top;
+			GeographicLatitude = service.Lighting.GeographicLatitude;
+			Name = service.Lighting.Name;
 		};
 
-		Terminal = {
-			Data = {};
-			Format = function(msg,data) (data or {}).Text = msg end;
-			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in next,Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
-			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
-			Commands = {
-				Help = {
-					Usage = "help";
-					Command = "help";
-					Arguments = 0;
-					Description = "Shows a list of available commands and their usage";
-					Function = function(p,args,data)
-						local output = {}
-						for i,v in next,Remote.Terminal.Commands do
-							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
-							table.insert(output, "- ".. tostring(v.Description))
-							table.insert(output, " ")
-						end
-						return output
-					end;
-				};
-
-				Message = {
-					Usage = "message <message>";
-					Command = "message";
-					Arguments = 1;
-					Description = "Sends a message in the Roblox chat";
-					Function = function(p, args, data)
-						for i,v in next,service.GetPlayers() do
-							Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))
-						end
-					end
-				};
-
-				Test = {
-					Usage = "test <return>";
-					Command = "test";
-					Arguments = 1;
-					Description = "Used to test the connection to the server and it's ability to return data";
-					Function = function(p,args,data)
-						Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
-					end
-				};
-
-				Loadstring = {
-					Usage = "loadstring <string>";
-					Command = "loadstring";
-					Arguments = 1;
-					Description = "Loads and runs the given lua string";
-					Function = function(p,args,data)
-						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
-							warn = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
-						})
-
-						local func,err = Core.Loadstring(args[1], newenv)
-						if func then 
-							func()
-						else
-							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(err:match(":(.*)") or err))
-						end
-					end
-				};
-
-				Execute = {
-					Usage = "execute <command>";
-					Command = "execute";
-					Arguments = 1;
-					Description = "Runs the specified command as the server";
-					Function = function(p,args,data)
-						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
-						return {
-							"Command ran: "..args[1]
-						}
-					end
-				};
-
-				Sudo = {
-					Usage = "sudo <player> <command>";
-					Command = "sudo";
-					Arguments = 1;
-					Description = "Runs the specified command on the specified player as the server";
-					Function = function(p,args,data)
-						Process.Command(p, Settings.Prefix.."sudo ".. tostring(args[1]), {DontLog = true, Check = true}, true)
-						return {
-							"Command ran: ".. Settings.Prefix.."sudo ".. tostring(args[1])
-						}
-					end
-				};
-
-				Kick = {
-					Usage = "kick <player> <reason>";
-					Command = "kick";
-					Arguments = 2;
-					Description = "Disconnects the specified player from the server";
-					Function = function(p, args, data)
-						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for i,v in pairs(plrs) do
-								v:Kick(args[2] or "Disconnected by server")
-								return {"Disconnect "..tostring(v.Name).." from the server"}
-							end
-						else
-							return {"No players matching '"..args[1].."' found"}
-						end
-					end
-				};
-
-				Kill = {
-					Usage = "kill <player>";
-					Command = "kill";
-					Arguments = 1;
-					Description = "Calls :BreakJoints() on the target player's character";
-					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for i,v in pairs(plrs) do
-								v.Character:BreakJoints()
-								return {"Killed "..tostring(v.Name)}
-							end
-						else
-							return {"No players matching '"..args[1].."' found"}
-						end
-					end
-				};
-
-				Respawn = {
-					Usage = "respawn <player>";
-					Command = "respawn";
-					Arguments = 1;
-					Description = "Calls :LoadCharacter() on the target player";
-					Function = function(p,args,data)
-						local plrs = service.GetPlayers(p,args[1])
-						if #plrs>0 then
-							for i,v in pairs(plrs) do
-								v:LoadCharacter()
-								return {"Respawned "..tostring(v.Name)}
-							end
-						else
-							return {"No players matching '"..args[1].."' found"}
-						end
-					end
-				};
-
-				Shutdown = {
-					Usage = "shutdown";
-					Command = "shutdown";
-					Arguments = 0;
-					Description = "Disconnects all players from the server and prevents rejoining";
-					Function = function(p,args,data)
-						for i,v in next,service.Players:GetPlayers() do
-							v:Kick()
-						end
-
-						service.PlayerAdded:connect(function(p)
-							p:Kick()
-						end)
-					end
-				};
-			};
+		OriginalLightingSettings = {
+			Ambient = service.Lighting.Ambient;
+			OutdoorAmbient = service.Lighting.OutdoorAmbient;
+			Brightness = service.Lighting.Brightness;
+			TimeOfDay = service.Lighting.TimeOfDay;
+			FogColor = service.Lighting.FogColor;
+			FogEnd = service.Lighting.FogEnd;
+			FogStart = service.Lighting.FogStart;
+			GlobalShadows = service.Lighting.GlobalShadows;
+			Outlines = service.Lighting.Outlines;
+			ShadowColor = service.Lighting.ShadowColor;
+			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
+			ColorShift_Top = service.Lighting.ColorShift_Top;
+			GeographicLatitude = service.Lighting.GeographicLatitude;
+			Name = service.Lighting.Name;
+			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
 
-		SessionHandlers = {
+		HelpRequests = {};
 
+		Objects = {};
+
+		InsertedObjects = {};
+
+		CommandLoops = {};
+
+		Waypoints = {};
+
+		Cameras = {};
+
+		Jails = {};
+
+		LocalEffects = {};
+
+		SizedCharacters = {};
+
+		BundleCache = {};
+
+		MusicList = {
+			{Name='jericho',ID=292340735};
+			{Name='dieinafire',ID=242222291};
+			{Name='beam',ID=165065112};
+			{Name='myswamp',ID=166325648};
+			{Name='skeletons',ID=168983825};
+			{Name='russianmen',ID=173038059};
+			{Name='freedom',ID=130760592};
+			{Name='seatbelt',ID=135625718};
+			{Name='tempest',ID=135554032};
+			{Name="focus",ID=136786547};
+			{Name="azylio",ID=137603138};
+			{Name="caramell",ID=2303479};
+			{Name="epic",ID=27697743};
+			{Name="halo",ID=1034065};
+			{Name="pokemon",ID=1372261};
+			{Name="cursed",ID=1372257};
+			{Name="extreme",ID=11420933};
+			{Name="tacos",ID=142295308};
+			{Name="wakemeup",ID=2599359802};
+			{Name="awaken",ID=27697277};
+			{Name="alone",ID=27697392};
+			{Name="mario",ID=1280470};
+			{Name="choir",ID=1372258};
+			{Name="chrono",ID=1280463};
+			{Name="dotr",ID=11420922};
+			{Name="entertain",ID=27697267};
+			{Name="fantasy",ID=1280473};
+			{Name="final",ID=1280414};
+			{Name="emblem",ID=1372259};
+			{Name="flight",ID=27697719};
+			{Name="gothic",ID=27697743};
+			{Name="hiphop",ID=27697735};
+			{Name="intro",ID=27697707};
+			{Name="mule",ID=1077604};
+			{Name="film",ID=27697713};
+			{Name="nezz",ID=8610025};
+			{Name="resist",ID=27697234};
+			{Name="schala",ID=5985787};
+			{Name="organ",ID=11231513};
+			{Name="tunnel",ID=9650822};
+			{Name="spanish",ID=5982975};
+			{Name="venom",ID=1372262};
+			{Name="wind",ID=1015394};
+			{Name="guitar",ID=5986151};
+			{Name="weapon",ID=142400410};
+			{Name="derezzed",ID=142402620};
+			{Name="sceptics",ID=153251489};
+			{Name="pianoremix",ID=142407859};
+			{Name="antidote",ID=145579822};
+			{Name="overtime",ID=135037991};
+			{Name="fluffyunicorns",ID=141444871};
+			{Name="tsunami",ID=569900517};
+			{Name="finalcountdownremix",ID=145162750};
+			{Name="stereolove",ID=142318819};
+			{Name="minecraftorchestral",ID=148900687};
+			{Name="superbacon",ID=300872612};
+			{Name="alonemarsh",ID=639750143}; -- Alone - Marshmello
+			{Name="crabraveoof",ID=2590490779}; -- Crab rave oof
+			{Name="rickroll",ID=4581203569};
+			{Name="deathbed",ID=4966153470};
 		};
 
-		UnEncrypted = {
-			AddReplication = function(p,action,obj,data)
-				local na = "_SERVER"
-				local datat
+		InsertList = {};
 
-				if p then na = p.Name end
-				if action == "Created" then
-					--local obj = data.obj
-					local name = data.name
-					local class = data.class
-					local parent = data.parent
-					local path = data.path
-					if not obj then
-						datat = {Action=action,Parent=parent,ClassName=class,Player=na,Object=obj,Name=name,Path=path}
-					end
-				elseif action == "Destroyed" then
-					--local obj = data.obj
-					local name = data.name
-					local class = data.class
-					local parent = data.parent
-					local path = data.path
-					if obj and obj.Parent then
-						datat = {Action=action,Parent=parent,ClassName=class,Player=na,Object=obj,Name=name,Path=path}
-					end
-				end
-
-				if datat then
-					Logs.AddLog(Logs.Replications,datat)
-				end
-			end;
-
-			TrustCheck = function(p)
-				local keys = Remote.Clients[tostring(p.userId)]
-				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;
-
-			ProcessChat = function(p,msg)
-				Process.Chat(p,msg)
-			end;
+		Capes = {
+			{Name="crossota",Material="Neon",Color="Cyan",ID=420260457},
+			{Name="jamiejr99",Material="Neon",Color="Cashmere",ID=429297485},
+			{Name="new yeller",Material='Fabric',Color="New Yeller"},
+			{Name="pastel blue",Material='Fabric',Color="Pastel Blue"},
+			{Name="dusty rose",Material='Fabric',Color="Dusty Rose"},
+			{Name="cga brown",Material='Fabric',Color="CGA brown"},
+			{Name="random",Material='Fabric',Color=(BrickColor.random()).Name},
+			{Name="shiny",Material='Plastic',Color="Institutional white",Reflectance=1}, 
+			{Name="gold",Material='Plastic',Color="Bright yellow",Reflectance=0.4},
+			{Name="kohl",Material='Fabric',Color="Really black",ID=108597653},
+			{Name="script",Material='Plastic',Color="White",ID=151359194},
+			{Name="batman",Material='Fabric',Color="Institutional white",ID=108597669},
+			{Name="epix",Material='Plastic',Color="Really black",ID=149442745},
+			{Name="superman",Material='Fabric',Color="Bright blue",ID=108597677},
+			{Name="swag",Material='Fabric',Color="Pink",ID=109301474},
+			{Name="donor",Material='Plastic',Color="White",ID=149009184},
+			{Name="starbucks",Material='Plastic',Color="Black",ID=149248066},
+			{Name="gomodern",Material='Plastic',Color="Really black",ID=149438175},
+			{Name="admin",Material='Plastic',Color="White",ID=149092195},
+			{Name="giovannis",Material='Plastic',Color="White",ID=149808729},
+			{Name="godofdonuts",Material='Plastic',Color="Institutional white",ID=151034443},
+			{Name="host",Material='Plastic',Color="Really black",ID=152299000},
+			{Name="cohost",Material='Plastic',Color="Really black",ID=152298950},
+			{Name="trainer",Material='Plastic',Color="Really black",ID=152298976},
+			{Name="ba",Material='Plastic',Color='White',ID=172528001}
 		};
 
-		Commands = {
-			SBExecute = function(p, args)
-				local Code = args[1]
-				
-				local Script = Core.NewScript('Script',Code)
-				Script.Parent = service.ServerScriptService
-				Script.Disabled = false
-				Functions.Hint("Ran Script", {p}, 5)
-			end;
-			
-			GetReturn = function(p,args)
-				print("THE CLIENT IS ASKING US FOR A RETURN")
-				local com = args[1]
-				local key = args[2]
-				local parms = {unpack(args,3)}
-				local retfunc = Remote.Returnables[com]
-				local retable = (retfunc and {pcall(retfunc,p,parms)}) or {}
-				if retable[1] ~= true then
-					logError(p,retable[2])
-					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
-				else
-					print("SENT THEM A RETURN")
-					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
-				end
-			end;
-
-			GiveReturn = function(p,args)
-				print("THE CLIENT GAVE US A RETURN");
-				if Remote.PendingReturns[args[1]] then
-					print("VALID PENDING RETURN");
-					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:fire(unpack(args,2))
-				end
-			end;
-
-			Session = function(p,args)
-				local type = args[1]
-				local data = args[2]
-				local handler = Remote.SessionHandlers[type]
-				if handler then
-					handler(p,data)
-				end
-			end;
-
-			HandleExplore = function(p, args)
-				if Admin.CheckAdmin(p) then
-					local obj = args[1];
-					local com = args[2];
-					local data = args[3];
-
-					if obj then
-						if com == "Delete" then
-							obj:Destroy()
-						end
-					end
-				end
-			end;
-
-			PlayerEvent = function(p,args)
-				service.Events[tostring(args[1])..p.userId]:fire(unpack(args,2))
-			end;
-
-			SaveTableAdd = function(p,args) 
-				if Admin.GetLevel(p)>=4 then
-					local tab = args[1]
-					local value = args[2]
-
-					table.insert(Settings[tab],value)
-
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = tab;
-						Value = value;
-					})
-
-				end
-			end;
-
-			SaveTableRemove = function(p,args) 
-				if Admin.GetLevel(p)>=4 then
-					local tab = args[1]
-					local value = args[2]
-					local ind = Functions.GetIndex(Settings[tab],value)
-
-					if ind then table.remove(Settings[tab],ind) end
-
-					Core.DoSave({
-						Type = "TableRemove";
-						Table = tab;
-						Value = value;
-					})
-				end
-			end;
-
-			SaveSetSetting = function(p,args) 
-				if Admin.GetLevel(p) >= 4 then
-					local setting = args[1]
-					local value = args[2]
-
-					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
-						local orig = Settings[setting]
-						for i,v in pairs(Commands) do
-							if v.Prefix == orig then
-								v.Prefix = value
-							end
-						end
-
-						server.Admin.CacheCommands()
-					end
-
-					Settings[setting] = value
-
-					Core.DoSave({
-						Type = "SetSetting";
-						Setting = setting;
-						Value = value;
-					})
-				end
-			end;
-
-			ClearSavedSettings = function(p,args) 
-				if Admin.GetLevel(p) >= 4 then
-					Core.DoSave({Type = "ClearSettings"})
-					Functions.Hint("Cleared saved settings",{p})
-				end
-			end;
-
-			SetSetting = function(p,args) 
-				if Admin.GetLevel(p) >= 4 then
-					local setting = args[1]
-					local value = args[2]
-
-					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
-						local orig = Settings[setting]
-						for i,v in pairs(Commands) do
-							if v.Prefix == orig then
-								v.Prefix = value
-							end
-						end
-
-						server.Admin.CacheCommands()
-					end
-
-					Settings[setting] = value
-				end
-			end;
-
-			Detected = function(p,args)
-				Anti.Detected(p, args[1], args[2])
-			end;
-
-			TrelloOperation = function(p,args)
-				if Admin.GetLevel(p) > 2 then
-					local data = args[1]
-					if data.Action == "MakeCard" then
-						local list = data.List
-						local name = data.Name
-						local desc = data.Desc
-						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-						local lists = trello.Boards.GetLists(Settings.Trello_Primary)
-						local list = trello.GetListObject(lists,list)
-						if list then
-							local card = trello.Lists.MakeCard(list.id,name,desc)
-							Functions.Hint("Made card \""..card.name.."\"",{p})
-							Logs.AddLog(Logs.Script,{
-								Text = tostring(p).." performed Trello operation";
-								Desc = "Player created a Trello card";
-								Player = p;
-							})
-						end
-					end
-				end
-			end;
-
-			ClientLoaded = function(p, args)
-				local key = tostring(p.userId)
-				local client = Remote.Clients[key]
-
-				if client and client.LoadingStatus == "LOADING" then
-					client.LastUpdate = tick()
-					client.RemoteReady = true
-					client.LoadingStatus = "READY"
-					Process.FinishLoading(p)
-				else
-					--p:Kick("Loading error [ClientLoaded Failed]")
-				end
-			end;
-
-			ClientCheck = function(p,args)
-				--// LastUpdate should be auto updated upon command finding
-				--[[local key = tostring(p.userId)
-				local special = args[1]
-				local client = Remote.Clients[key]
-				if client then--and special and special == client.Special then
-					client.LastUpdate = tick()
-				end--]]
-			end;
-
-			LogError = function(p,args)
-				logError(p,args[1])
-			end;
-
-			Test = function(p,args)
-				print("OK WE GOT COMMUNICATION! FROM: "..p.Name.." ORGL: "..args[1])
-			end;
-
-			ProcessCommand = function(p,args)
-				if Process.RateLimit(p, "Command") then
-					Process.Command(p,args[1],{Check=true})	
-				elseif Process.RateLimit(p, "RateLog") then
-					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
-					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
-				end
-			end;
-
-			ProcessChat = function(p,args)
-				Process.Chat(p,args[1])
-				--Process.CustomChat(p,args[1])
-			end;
-
-			ProcessCustomChat = function(p,args)
-				Process.Chat(p,args[1],"CustomChat")
-				Process.CustomChat(p,args[1],args[2],true)
-			end;
-
-			PrivateMessage = function(p,args)
-				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
-				local title = args[1]
-				local target = args[2]
-				local from = args[3]
-				local message = args[4]
-				Remote.MakeGui(target,"PrivateMessage",{
-					Title = "Reply from ".. p.Name;--title;
-					Player = p;
-					Message = service.Filter(message, p, target);
-				})
-
-				Logs.AddLog(Logs.Script,{
-					Text = p.Name.." replied to "..tostring(target),
-					Desc = message,
-					Player = p;
-				})
-			end;
+		Whitelist = {
+			Enabled = server.Settings.WhitelistEnabled;
+			List = server.Settings.Whitelist or {};
 		};
-
-		Fire = function(p, ...)
-			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")
-			local keys = Remote.Clients[tostring(p.UserId)]
-			local RemoteEvent = Core.RemoteEvent
-			if RemoteEvent and RemoteEvent.Object then
-				keys.Sent = keys.Sent+1
-				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0},...)
-			end
-		end;
-
-		Send = function(p,com,...)
-			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
-			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
-				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
-			end
-		end;
-
-		GetFire = function(p, ...)
-			local keys = Remote.Clients[tostring(p.UserId)]
-			local RemoteEvent = Core.RemoteEvent
-			if RemoteEvent and RemoteEvent.Function then
-				keys.Sent = keys.Sent+1
-				return RemoteEvent.Function:InvokeClient(p, {Mode = "Get", Sent = 0}, ...)
-			end
-		end;
-
-		Get = function(p,com,...)
-			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
-				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
-				if type(ret) == "table" then
-					return unpack(ret);
-				else
-					return ret;
-				end
-			end
-		end;
-
-		OldGet = function(p, com, ...)
-			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
-				local returns, finished
-				local key = Functions:GetRandom()
-				local waiter = service.New("BindableEvent") -- issue with service.Events:Wait()??????
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
-
-				Remote.PendingReturns[key] = true
-				Remote.Send(p,"GetReturn",com,key,...)
-
-				print("GETTING RETURN");
-				if not finished and not returns and p.Parent then
-					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
-					delay(600, function() if not finished then event:Fire() end end)
-					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					--returns = returns or {event:Wait()}
-					waiter.Event:Wait();
-					print(string.format("WE GOT IT! %s", tostring(returns)));
-					pEvent:Disconnect()
-				end
-
-				print("GOT RETURN");
-				event:Disconnect()
-
-				if returns then
-					if returns[1] == "__ADONIS_RETURN_ERROR" then
-						error(returns[2])
-					else
-						return unpack(returns)
-					end
-				else
-					return nil
-				end
-			end
-		end;
-
-		CheckClient = function(p)
-			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
-			if ran and ret == Remote.Clients[tostring(p.UserId)].Special then
-				return true 
-			else
-				return false
-			end
-		end;
-
-		Ping = function(p)
-			return Remote.Get(p,"Ping")
-		end;
-
-		MakeGui = function(p, GUI, data, themeData)
-			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
-			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			Remote.Send(p, "UI", GUI, theme, data or {})
-		end;
-
-		MakeGuiGet = function(p,GUI,data,themeData)
-			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
-			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			return Remote.Get(p,"UI",GUI,theme,data or {})
-		end;
-
-		GetGui = function(p,GUI,ignore,returnOne)
-			return Remote.Get(p, "GetGui", GUI, ignore, returnOne)
-		end;
-
-		RemoveGui = function(p,name,ignore)
-			Remote.Send(p,"RemoveUI",name,ignore)
-		end;
-
-		NewParticle = function(p,target,type,properties)
-			Remote.Send(p,"Function","NewParticle",target,type,properties)
-		end;
-
-		RemoveParticle = function(p,target,name)
-			Remote.Send(p,"Function","RemoveParticle",target,name)
-		end;
-
-		NewLocal = function(p, type, props, parent)
-			Remote.Send(p,"Function","NewLocal",type,props,parent)
-		end;
-
-		MakeLocal = function(p,object,parent,clone)
-			object.Parent = p
-			wait(0.5)
-			Remote.Send(p,"Function","MakeLocal",object,parent,clone)
-		end;
-
-		MoveLocal = function(p,object,parent,newParent)
-			Remote.Send(p,"Function","MoveLocal",object,false,newParent)
-		end;
-
-		RemoveLocal = function(p,object,parent,match)
-			Remote.Send(p,"Function","RemoveLocal",object,parent,match)
-		end;
-
-		SetLighting = function(p,prop,value)
-			Remote.Send(p,"Function","SetLighting",prop,value)
-		end;
-
-		FireEvent = function(p,...)
-			Remote.Send(p,"FireEvent",...)
-		end;
-
-		NewPlayerEvent = function(p,type,func)
-			return service.Events[type..p.userId]:connect(func)
-		end;
-
-		StartLoop = function(p,name,delay,funcCode)
-			Remote.Send(p,"StartLoop",name,delay,Core.ByteCode(funcCode))
-		end;
-
-		StopLoop = function(p,name)
-			Remote.Send(p,"StopLoop",name)
-		end;
-
-		PlayAudio = function(p,audioId,volume,pitch,looped)
-			Remote.Send(p,"Function","PlayAudio",audioId,volume,pitch,looped)
-		end;
-
-		StopAudio = function(p,id)
-			Remote.Send(p,"Function","StopAudio",id)
-		end;
-
-		FadeAudio = function(p,id,inVol,pitch,looped,incWait)
-			Remote.Send(p,"Function","FadeAudio",id,inVol,pitch,looped,incWait)
-		end;
-
-		StopAllAudio = function(p)
-			Remote.Send(p,"Function","KillAllLocalAudio")
-		end;
-		--[[
-		StartSession = function(p,type,data)
-			local index = Functions.GetRandom()
-			local data = data or {}
-			local custKill = data.Kill
-			data.Type = type
-			data.Player = p
-			data.Index = index
-			data.Kill = function()
-				Remote.Sessions[index] = nil
-				if custKill then return custKill() end
-				return true
-			end
-			Remote.KillSession(p,type)
-			Remote.Sessions[index] = data
-		end;
 		
-		GetSession = function(p,type)
-			for i,v in pairs(Remote.Sessions) do
-				if v.Type == type and v.Player == p then
-					return v,i
-				end
-			end
-		end;
-		
-		KillSession = function(p,type)
-			for i,v in pairs(Remote.Sessions) do
-				if v.Type == type and v.Player == p then
-					v.Kill()
-				end
-			end
-		end;
-		--]]
-		LoadCode = function(p,code,getResult)
-			if getResult then
-				return Remote.Get(p,"LoadCode",Core.Bytecode(code))
-			else
-				Remote.Send(p,"LoadCode",Core.Bytecode(code))
-			end
-		end;
-
-		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
-			if not key or not str then 
-				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
-			else
-				local keyCache = cache[key] or {}
-				local byte = string.byte
-				local abs = math.abs
-				local sub = string.sub
-				local len = string.len
-				local char = string.char
-				local endStr = {}
-
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
-				end
-
-				endStr = table.concat(endStr)
-				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
-			end
-		end;
-
-		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
-			if not key or not str then 
-				return str 
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
-			else
-				local keyCache = cache[key] or {}
-				local byte = string.byte
-				local abs = math.abs
-				local sub = string.sub
-				local len = string.len
-				local char = string.char
-				local endStr = {}
-
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
-				end
-
-				endStr = table.concat(endStr)
-				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
-			end
-		end;
-
-		--[[
-		--// Moldy
-		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
-			if not key or not str then 
-				return str
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
-			else
-				local keyCache = cache[key] or {}
-				local tobyte = string.byte
-				local abs = math.abs
-				local sub = string.sub
-				local len = string.len
-				local char = string.char
-				local endStr = {}
-				local byte = function(str, pos)
-					return tobyte(sub(str, pos, pos))
-				end
-				
-				for i = 1,len(str) do
-					if i%len(str) > 0 then
-						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
-							endStr[i] = char(abs(byte(str,i) - byte(key, (i%len(key))+1)))
-						else
-							endStr[i] = char(abs(byte(key, (i%len(key))+1) + byte(str, i)))
-						end
-					else
-						if byte(str, i) + byte(key, 1) > 255 then
-							endStr[i] = char(abs(byte(str, i) - byte(key, 1)))
-						else
-							endStr[i] = char(abs(byte(key, 1) + byte(str, i)))
-						end
-					end
-				end
-				
-				endStr = table.concat(endStr)
-				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
-			end
-		end;
-		
-		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
-			if not key or not str then 
-				return str 
-			elseif cache[key] and cache[key][str] then
-				return cache[key][str]
-			else
-				local keyCache = cache[key] or {}
-				local tobyte = string.byte
-				local abs = math.abs
-				local sub = string.sub
-				local len = string.len
-				local char = string.char
-				local endStr = {}
-				local byte = function(str, pos)
-					return tobyte(sub(str, pos, pos))
-				end
-				
-				for i = 1,len(str) do
-					if i%len(str) > 0 then
-						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
-							endStr[i] = char(abs(byte(str,i) - byte(key, (i%len(key))+1)))
-						else
-							endStr[i] = char(abs(byte(key, (i%len(key))+1) - byte(str, i)))
-						end
-					else
-						if byte(str, i) + byte(key, 1) > 255 then
-							endStr[i] = char(abs(byte(str, i) - byte(key, 1)))
-						else
-							endStr[i] = char(abs(byte(key, 1) - byte(str, i)))
-						end
-					end
-				end
-				
-				endStr = table.concat(endStr)
-				cache[key] = keyCache
-				keyCache[str] = endStr
-				return endStr
-			end
-		end;--]]
+		TrackTable = {};
+		TeamBindings = {};
+		ForceField = {};
 	};
 end
