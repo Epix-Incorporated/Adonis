@@ -1514,7 +1514,10 @@ return function(Vargs)
 			NoFilter = true;
 			Function = function(plr,args)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				Remote.MakeGui(plr, "ScriptBuilder", {Code = args[1] or nil})
+				local cl = Core.NewScript('Script',args[1])
+				cl.Parent = service.ServerScriptService
+				cl.Disabled = false
+				Functions.Hint("Ran Script",{plr})
 			end
 		};
 
