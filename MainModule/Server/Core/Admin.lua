@@ -573,8 +573,16 @@ local levels = {
 		CheckBan = function(p)
 			local getPlayerBan = function(tab)
 				for ind, Ban in pairs(tab) do
-					if Ban.id == p.UserId then
-						return Ban
+					if type(Ban)=="string" then
+						local banned = Admin.DoCheck(p, Ban)
+						
+						if banned then
+							return true,Ban
+						end
+					elseif type(Ban)=="table" then
+						if Ban.id == p.UserId then
+							return Ban,"table"
+						end
 					end
 				end
 
@@ -583,7 +591,7 @@ local levels = {
 
 			local SBan = getPlayerBan(Admin.ServerBans)
 			local TBan = getPlayerBan(Admin.TimeBans)
-			local GBan = getPlayerBan(Settings.Banned)
+			local GBan, Type = getPlayerBan(Settings.Banned)
 
 			if SBan then
 				p:Kick(Functions.GetKickMessage("Ban",SBan))
@@ -596,15 +604,20 @@ local levels = {
 			end
 
 			if GBan then
-				p:Kick(Functions.GetKickMessage("GameBan",GBan))
-				return true
-			end
-			
-			if HTTP.WebPanel.Bans then
-				for ind,admin in next,HTTP.WebPanel.Bans do
-					if doCheck(p,admin) then
-						return true
-					end
+				if Type ~= "table" then
+					p:Kick(Functions.GetKickMessage("GameBan",{
+						reason = "Banned in settings by a developer. "..tostring(Type);
+						time = os.time();
+						name = p.Name;
+						id = p.UserId;
+						moderator = Type;
+						kickType = Type;
+						expireTime = "Game Banned";
+						remainingTime = "Game Banned"
+					}))
+				else
+					p:Kick(Functions.GetKickMessage("GameBan",GBan))
+					return true
 				end
 			end
 
