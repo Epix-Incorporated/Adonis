@@ -108,6 +108,14 @@ return function(Vargs)
 					return true
 				end
 			end
+			
+			if HTTP.WebPanel.Mutes then
+				for _,v in next,server.HTTP.WebPanel.Mutes do
+					if server.Admin.DoCheck(player, v) then
+						return true
+					end
+				end
+			end
 		end;
 
 		DoCheck = function(p, check)
@@ -270,12 +278,13 @@ return function(Vargs)
 				end
 			end
 
-			local levels = {
+local levels = {
 				{ --// Blacklist
 					Level = 0;
 					Tables = {
 						Settings.Blacklist;
 						HTTP.Trello.Blacklist;
+						HTTP.WebPanel.Blacklist;
 					};
 				};
 				--[[
@@ -292,6 +301,7 @@ return function(Vargs)
 					Tables = {
 						Settings.Creators;
 						HTTP.Trello.Creators;
+						HTTP.WebPanel.Creators;
 					}
 				};
 
@@ -300,6 +310,7 @@ return function(Vargs)
 					Tables = {
 						Settings.Owners;
 						HTTP.Trello.Owners;
+						HTTP.WebPanel.Owners;
 					}
 				};
 
@@ -308,6 +319,7 @@ return function(Vargs)
 					Tables = {
 						Settings.Admins;
 						HTTP.Trello.Admins;
+						HTTP.WebPanel.Admins;
 					}
 				};
 
@@ -316,6 +328,7 @@ return function(Vargs)
 					Tables = {
 						Settings.Moderators;
 						HTTP.Trello.Moderators;
+						HTTP.WebPanel.Moderators;
 					}
 				};
 			}
@@ -585,6 +598,14 @@ return function(Vargs)
 			if GBan then
 				p:Kick(Functions.GetKickMessage("GameBan",GBan))
 				return true
+			end
+			
+			if HTTP.WebPanel.Bans then
+				for ind,admin in next,HTTP.WebPanel.Bans do
+					if doCheck(p,admin) then
+						return true
+					end
+				end
 			end
 
 			return false
@@ -953,13 +974,21 @@ return function(Vargs)
 				return true
 			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
 				return true
-			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel)) then
+			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel) or (HTTP.WebPanel.CustomRanks and isComLevel(HTTP.WebPanel.CustomRanks, comLevel))) then
 				if adminLevel >= 1 then
 					return true
 				else
 					for i,v in next,Settings.CustomRanks do
 						if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
 							return true
+						end
+					end
+					
+					if HTTP.WebPanel.CustomRanks then
+						for i,v in next,HTTP.WebPanel.CustomRanks do
+							if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
+								return true
+							end
 						end
 					end
 				end
