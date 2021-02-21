@@ -562,25 +562,27 @@ return function(data)
 				"Perks you get here: "
 			}
 
-			local capePerks,cmdPerks = {
+		local capePerks,cmdPerks = {
 				"Customizable Cape";
 				"Access to !cape";
 				"Access to !uncape";
 			},{
-				"Access to !sparkles <Color>";
+				"Access to !sparkles <BrickColor>";
 				"Access to !unsparkles";
-				"Access to !particle";
+				"Access to !particle <textureid> <startColor3> <endColor3>";
 				"Access to !unparticle";
-				"Access to !fire <Color>";
+				"Access to !fire <BrickColor>";
 				"Access to !unfire";
-				"Access to !light <Color>";
+				"Access to !light <BrickColor>";
 				"Access to !unlight";
 				"Access to !hat <ID>";
 				"Access to !removehats";
-				"Access to !face";
-				"Access to !shirt";
-				"Access to !pants";
+				"Access to !face <ID>";
+				"Access to !neon <BrickColor>";
+				"Access to !shirt <ID>";
+				"Access to !pants <ID>";
 			}
+
 
 			if chatMod.DonorCapes then
 				for i,v in ipairs(capePerks) do
