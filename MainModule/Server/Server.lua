@@ -405,10 +405,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			LoadModule(modu,true,{script = script}, true) --noenv
 		end 
 	end
-	
-	for _, CommandModule in next,server.Deps.Commands:GetChildren() do
-		LoadModule(CommandModule, true, {script = script}, true)
-	end
 
 	--// Initialize Cores
 	for i,name in next,LoadingOrder do
