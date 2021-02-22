@@ -131,7 +131,7 @@ return function(Vargs)
 				if p.userId == check then
 					return true
 				end
-			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
+			elseif cType == "string" and pType == "userdata" and typeof(p) == "Instance" and p:IsA("Player") then
 				local isGood = p and p.Parent == service.Players
 				if isGood and check:match("^Group:(.*):(.*)") then
 					local sGroup,sRank = check:match("^Group:(.*):(.*)")
