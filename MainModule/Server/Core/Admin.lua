@@ -681,7 +681,7 @@ return function(Vargs)
 					Player = plr;
 					Level = adminLvl;
 					isAgent = HTTP.Trello.CheckAgent(p) or false;
-					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors)) or false;
+					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or com.AllowDonors)) or false;
 				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then 
