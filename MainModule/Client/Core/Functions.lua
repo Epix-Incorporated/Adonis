@@ -921,6 +921,12 @@ return function()
 				Variables.localSounds[tostring(audioId)]:Stop() 
 				Variables.localSounds[tostring(audioId)]:Destroy() 
 				Variables.localSounds[tostring(audioId)] = nil 
+			elseif audioId == "all" then
+				for i,v in pairs(Variables.localSounds) do
+					Variables.localSounds[i]:Stop() 
+					Variables.localSounds[i]:Destroy() 
+					Variables.localSounds[i] = nil 
+				end
 			end
 		end;
 
