@@ -62,6 +62,36 @@ return function(Vargs)
 			Variables.CachedDonors[tostring(player.UserId)] = tick()
 		end
 	end)
+	
+	local function FormatAliasArgs(alias, aliasCmd, msg)
+		local uniqueArgs = {}
+		local argTab = {}
+		local numArgs = 0;
+
+		--local cmdArgs = 
+		for arg in aliasCmd:gmatch("<(%S+)>") do
+			if arg ~= "" and arg ~= " " then
+				local arg = "<".. arg ..">"
+				if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
+					numArgs = numArgs+1;
+					uniqueArgs[arg] = true; --// :cmd <arg1> <arg2>
+					table.insert(argTab, arg)
+				end
+			end
+		end
+
+		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
+		local out = aliasCmd;
+
+		for i,argType in next,argTab do
+			local replaceWith = suppliedArgs[i]
+			if replaceWith then
+				out = out:gsub(argType, replaceWith)
+			end
+		end
+
+		return out;
+	end
 
 	server.Admin = {
 		Init = Init;
@@ -360,7 +390,7 @@ return function(Vargs)
 						end
 					end
 				end
-				
+
 				if game.CreatorType == Enum.CreatorType.User then
 					if p.userId == game.CreatorId then 
 						return true
@@ -682,12 +712,6 @@ return function(Vargs)
 			end
 		end;
 
-		GetArgs = function(msg,num,...)
-			local args = Functions.Split((msg:match("^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
-			for i,v in next,{...} do table.insert(args,v) end
-			return args
-		end;
-
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
@@ -746,7 +770,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
 		CheckAliasBlacklist = function(alias)
 			local playerPrefix = Settings.PlayerPrefix;
@@ -758,25 +782,29 @@ return function(Vargs)
 				[playerPrefix.. "client"] = true;
 				[playerPrefix.. "userpanel"] = true;
 				[":adonissettings"] = true;
-				
+
 			}
 			--return Admin.CommandCache[alias:lower()] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
 			return blacklist[alias];
 		end;
-		
+
+		GetArgs = function(msg,num,...)
+			local args = Functions.Split((msg:match("^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
+			for i,v in next,{...} do table.insert(args,v) end
+			return args
+		end;
+
 		AliasFormat = function(aliases, msg)
 			if aliases then
 				for alias,cmd in next,aliases do
 					if not Admin.CheckAliasBlacklist(alias) then
-						if msg:match("^"..alias) then
-							msg = msg:gsub("^"..alias, cmd)
-						elseif msg:match("%s".. alias) then
-							msg = msg:gsub("%s".. alias, " "..cmd)
+						if msg:match("^"..alias) or msg:match("%s".. alias) then
+							msg = FormatAliasArgs(alias, cmd, msg);
 						end
 					end
 				end
 			end
-			
+
 			return msg
 		end;
 

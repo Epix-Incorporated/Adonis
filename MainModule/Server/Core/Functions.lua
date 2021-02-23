@@ -650,17 +650,17 @@ return function(Vargs)
 				Remote.Send(player,"Function","PlayAnimation",animId)
 			end
 		end;
-		
+
 		ApplyBodyPart = function(character, model)
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then 
 				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
 				local part = model:FindFirstChild(rigType)
-				
+
 				if not part and rigType == "R15" then 
 					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
 				end
-				
+
 				if part then 
 					if rigType == "R6" then 
 						local children = character:GetChildren()
@@ -686,7 +686,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		GetJoints = function(character)
 			local temp = {}
 			for _,v in pairs(character:GetDescendants()) do
@@ -946,7 +946,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		--// Couldn't merge due to "conflicts" so just added manually.
 		ConvertPlayerCharacterToRig = function(p, rigType)
 			rigType = rigType or "R15"
@@ -982,7 +982,7 @@ return function(Vargs)
 				human.RigType = Enum.HumanoidRigType[rigType]
 			end
 		end;
-		
+
 		CreateClothingFromImageId = function(clothingtype, Id)
 			local Clothing = Instance.new(clothingtype)
 			Clothing.Name = clothingtype

@@ -70,6 +70,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	local FilterCache = {}
 	local TrackedTasks = {}
 	local RunningLoops = {}
+	local TaskSchedulers = {}
 	local ServiceVariables = {}
 	local CreatedItems = setmetatable({},{__mode = "v"});
 	local Wrappers = setmetatable({},{__mode = "kv"});
@@ -124,6 +125,53 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 		GetTasks = function()
 			return TrackedTasks
+		end;
+		
+		TaskScheduler = function(taskName, props)
+			local props = props or {};
+			if not props.Temporary and TaskSchedulers[taskName] then return TaskSchedulers[taskName] end
+			
+			local new = {
+				Name = taskName;
+				Running = true;
+				Properties = props;
+				LinkedTasks = {};
+				RunnerEvent = service.New("BindableEvent");
+			}
+
+			function new:Trigger(self, ...) 
+				self.Event:Fire(...) 
+			end;
+			
+			function new:Delete(self)
+				if not props.Temporary then 
+					TaskSchedulers[taskName] = nil; 
+				end
+				
+				new.Running = false;
+				new.Event:Disconnect();
+			end;
+			
+			new.Event = new.RunnerEvent.Event:Connect(function(...)
+				for i,v in next,new.LinkedTasks do
+					local ran,result = pcall(v);
+					if result then
+						table.remove(new.LinkedTasks, i);
+					end
+				end
+			end)
+			
+			if props.Interval then
+				while wait(props.Interval) and new.Running do
+					new:Trigger(os.time());
+				end
+			end
+			
+			if not props.Temporary then
+				TaskSchedulers[taskName] = new;
+			end
+			
+			return new;
 		end;
 
 		Events = setmetatable({},{

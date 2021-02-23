@@ -116,32 +116,29 @@ return function(Vargs)
 				end
 			end
 		};
-		        joinserver = {
+		
+		JoinServer = {
 			Prefix = Settings.Prefix;
-			Commands = {"joinserver";};
-			Args = {"jobid"};
+			Commands = {"toserver", "joinserver"};
+			Args = {"player", "jobid"};
 			Hidden = false;
-			Description = "Join a server using JobId";
+			Description = "Send player(s) to a server using the server's JobId";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1].."Argument missing or nil")
-				
+				local jobId = args[2];
+				assert(args[1] and jobId, "Argument missing or nil")
+
 				local RunService = game:GetService("RunService")
-
 				if RunService:IsStudio() then
-					Functions.Message("Adonis", "Command doesn't work in studio.",{plr}, false, 5)
-					
+					error("Command cannot be used in studio.")
 				else
-				
-				local jobid = tostring(args[1])
-				
-				Functions.Message("Adonis", "Teleporting please wait.",{plr}, false, 10)
-				
-				game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId,jobid,plr)
-
+					for i, v in pairs(service.GetPlayers(plr,args[1])) do
+						Functions.Message("Adonis", "Teleporting please wait.", {v}, false, 10)
+						game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, jobId, v)
+					end
 				end
-				end
+			end
 		};
 
 		TrelloBan = {
@@ -848,7 +845,7 @@ return function(Vargs)
 							Parent = "Variables";
 							Value = data;
 						})
-
+						
 						v:Kick("Banned until "..endTime)
 						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
 					end
@@ -876,6 +873,7 @@ return function(Vargs)
 							Parent = "Variables";
 							Value = data;
 						})
+						
 						Functions.Hint(tostring(data.Name)..' has been Unbanned',{plr})
 					end
 				end
@@ -2296,7 +2294,7 @@ return function(Vargs)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
-		
+
 		Aliases = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"aliases", "addalias", "removealias", "newalias"};
@@ -7717,14 +7715,14 @@ return function(Vargs)
 			Description = "Lets you play an audio on the player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				
+
 				assert(args[1] and args[2],"Argument missing or nil")
-				
+
 				local id = args[2]
 				local volume = 1 --tonumber(args[5]) or 1
 				local pitch = 1 --tonumber(args[4]) or 1
 				local loop = true
-				
+
 				for i,v in pairs(Variables.MusicList) do 
 					if id==v.Name:lower() then 
 						id = v.ID
@@ -7752,16 +7750,16 @@ return function(Vargs)
 				if args[3] and args[3] == "true" then loop = false end
 				volume = tonumber(args[5]) or volume
 				pitch = tonumber(args[4]) or pitch
-				
-				
+
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","PlayAudio",id,volume,pitch,loop)
-					
+
 				end
 				Functions.Hint("Playing Audio on Player's Client",{plr})
 			end
 		};
-		
+
 		UnTargetAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"untaudio";"unlocalsound";"unlocalaudio";"unlsound";"unlaudio";};
@@ -7822,7 +7820,7 @@ return function(Vargs)
 				end
 			end;
 		};
-		
+
 		Pause = {
 			Prefix = Settings.Prefix;
 			Commands = {"pause","pausemusic","psound","pausesound";};
@@ -7838,12 +7836,12 @@ return function(Vargs)
 						else
 							Functions.Hint("Music is already paused | Run "..Settings.Prefix.."resume to resume",{plr})
 						end
-					
+
 					end 
 				end
 			end
 		};
-		
+
 		Resume = {
 			Prefix = Settings.Prefix;
 			Commands = {"resume","resumemusic","rsound","resumesound";};
@@ -8198,7 +8196,7 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				
+
 
 				local id = args[1]:lower()
 				local looped = args[2]
@@ -8247,14 +8245,14 @@ return function(Vargs)
 							name = 'Now playing '..mp:GetProductInfo(id).Name 
 						end 
 					end)
-					
+
 					if name == 'Invalid ID ' then
 						Functions.Hint("Invalid ID | Use "..Settings.Prefix.."stopmusic to stop the music",{plr})
 						return
 					elseif Settings.SongHint then
 						Functions.Hint(name, service.Players:GetPlayers())
 					end
-					
+
 					for i, v in pairs(service.Workspace:GetChildren()) do 
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
 

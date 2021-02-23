@@ -6,6 +6,7 @@ return {
 	{Text = "Rerumu (Shining_Diamando)",Desc = "Made the endless stairs place\nRerubi (No longer used)\nFiOne (Bytecode Interpreter)\nParser\nSteampunk theme"};
 	{Text = "Cald_fan", 				Desc = "Made the WebPanel"};
 	{Text = "joritochip",				Desc = "WebPanel Contributor"};
+	{Text = "Coasterteam",				Desc = "Development contributions (Kronos developer)"};
 	{Text = "",		Desc = ""};
 	{Text = "~ GIT CONTRIBUTORS ~",		Desc = ""};
 	{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};	
@@ -28,6 +29,7 @@ return {
 	{Text = "@GitHub policetonyR",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub enescglyn",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub EpicFazbear",		Desc = "GitHub Contributor"};
+	{Text = "@GitHub p3tray",			Desc = "GitHub Contributor"};
 	{Text = "",		Desc = "Everyone else"};
 	{Text = "~ EVERYONE ELSE ~",		Desc = ""};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	

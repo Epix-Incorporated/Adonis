@@ -1,6 +1,19 @@
 return {
-	"Version: 209";
+	"Version: 210";
 	"*Click and drag edges to expand*";
+	"";
+	"[2.23.2021 18:13 EST]";
+	"*Added :serverlist (just shows servers byu jobid and number of players for now)";
+	"*Possibly fixed existing servers not updating to newest DataStore.SavedTables";
+	"*Aliases now support positional arguments";
+	"**Example: If \":ff <arg1> | :fire <arg1> <arg2>\" is bound to \":bob\" and you chat \":bob me Really red\", it will :ff you and give you really red fire";
+	"*Git merge:";
+	"(Git/EnderUwU) Added :joinserver <player> <jobid>";
+	"(Git/Awesomewebm) :pause, :resume, and changes to :music";
+	"(Git/Awesomewebm) Improvements to :taudio";
+	"(Git/p3tray) Fixed structuring of IsPlaceOwner";
+	"(Git/Cald-fan) Update WebPanel.lua";
+	"(Git/EnterUwU) Update UserPanel.lua";
 	"";
 	"[2.11.2021 14:42 EST]";
 	"*Added command/text aliases (Credit to Git/pbstFusion for some porting commits and spurring me to fully implment this)";
