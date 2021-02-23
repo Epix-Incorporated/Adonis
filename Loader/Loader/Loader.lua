@@ -34,7 +34,7 @@ end
 
 --// Root Folder Instances
 local Model = script.Parent.Parent
-local Config = Model.Configuration
+local Config = Model.Config
 local Core = Model.Loader
 local Backup = Model:Clone()
 local OrigName = Model.Name
