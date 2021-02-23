@@ -22,7 +22,8 @@ return function(Vargs)
 		settings.WebPanel_ApiKey = "";
 	]]
 
-  local WebPanel = server.HTTP.WebPanel
+
+	local WebPanel = server.HTTP.WebPanel
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
 
@@ -174,9 +175,7 @@ return function(Vargs)
 
 				if index and command then
 					if v.disabled then
-						command.Function = function()
-							error("Command Disabled!")
-						end
+						command = nil
 					end
 					if v.level ~= "Default" then command.AdminLevel = v.level end
 					for i, alias in ipairs(v.aliases) do
@@ -229,16 +228,12 @@ return function(Vargs)
 			end
 		else
 			local code, msg = res.StatusCode, res.StatusMessage
-
-			if code ~= 524 then
-				--print("WebPanel: Server Timeout")
+			
+			if code ~= 520 or code ~= 524 then
 				server.Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
 				server.Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
-			else
-				server.Logs:AddLog("Script", "WebPanel Server Timeout")
+				break
 			end
-			
-			break
 		end
 		wait()
 	end
