@@ -349,6 +349,15 @@ return function(Vargs)
 			end
 			return str
 		end;
+																		
+		SetKickMessage = function(Message, Table, Default)
+			if type(Table)=="table" then
+				server.Variables.Messages[Message] = table.concat(Table, "\n")
+			else
+				server.Variables.Messages[Message] = table.concat(Default, "\n")
+				warn(tostring(Message).." is not a table! (Is your configuration out of date?) Using default...")
+			end
+		end;
 		
 		GetKickMessage = function(Type, Data)
 			local Message = Variables.Messages[Type]
