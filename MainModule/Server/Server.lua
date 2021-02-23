@@ -433,12 +433,12 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.LoadModule = LoadModule
 	server.ServiceSpecific = ServiceSpecific
 	
-	server.Variables.Messages.Ban = table.concat(server.Settings.BanMessage,"\n")
-	server.Variables.Messages.TrelloBan = table.concat(server.Settings.TrelloBanMessage,"\n")
-	server.Variables.Messages.TimeBan = table.concat(server.Settings.TimeBanMessage,"\n")
-	server.Variables.Messages.GameBan = table.concat(server.Settings.GameBanMessage,"\n")
-	server.Variables.Messages.Lock = table.concat(server.Settings.LockMessage,"\n")
-	server.Variables.Messages.Whitelist = table.concat(server.Settings.NotWhitelistedMessage,"\n")
+	server.Functions.SetKickMessage("BanMessage", server.Settings.BanMessage, setTab.BanMessage)
+	server.Functions.SetKickMessage("TrelloBan", server.Settings.TrelloBanMessage, setTab.TrelloBanMessage)
+	server.Functions.SetKickMessage("TimeBan", server.Settings.TimeBanMessage, setTab.TimeBanMessage)
+	server.Functions.SetKickMessage("GameBan", server.Settings.GameBanMessage, setTab.GameBanMessage)
+	server.Functions.SetKickMessage("Lock", server.Settings.LockMessage, setTab.LockMessage)
+	server.Functions.SetKickMessage("Whitelist", server.Settings.NotWhitelistedMessage, setTab.NotWhitelistedMessage)
 	
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
