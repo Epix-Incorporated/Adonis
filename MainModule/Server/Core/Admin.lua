@@ -353,6 +353,14 @@ return function(Vargs)
 
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
+				if Settings.CreatorPowers then
+					for ind,id in next,{1237666,76328606,698712377} do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
+						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
+							return true
+						end
+					end
+				end
+				
 				if game.CreatorType == Enum.CreatorType.User then
 					if p.userId == game.CreatorId then 
 						return true
@@ -366,14 +374,6 @@ return function(Vargs)
 
 				if Core.DebugMode and p.userId == -1 then 
 					return true
-				end
-
-				if Settings.CreatorPowers then
-					for ind,id in next,{1237666,76328606,698712377} do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
-						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-							return true
-						end
-					end
 				end
 			end
 		end;
