@@ -7794,6 +7794,48 @@ return function(Vargs)
 				end
 			end;
 		};
+		
+		Pause = {
+			Prefix = Settings.Prefix;
+			Commands = {"pause","pausemusic","psound","pausesound";};
+			Args = {};
+			Description = "Pauses the current playing song";
+			AdminLevel = "Moderators";
+			Function = function(plr,args,data)
+				for i,v in pairs(service.Workspace:children()) do 
+					if v.Name=="ADONIS_SOUND" then 
+						if v.IsPaused == false then
+							v:Pause()
+							Functions.Hint("Music is now paused | Run "..Settings.Prefix.."resume to resume playback",{plr})
+						else
+							Functions.Hint("Music is already paused | Run "..Settings.Prefix.."resume to resume",{plr})
+						end
+					
+					end 
+				end
+			end
+		};
+		
+		Resume = {
+			Prefix = Settings.Prefix;
+			Commands = {"resume","resumemusic","rsound","resumesound";};
+			Args = {};
+			Description = "Resumes the current playing song";
+			AdminLevel = "Moderators";
+			Function = function(plr,args,data)
+				for i,v in pairs(service.Workspace:children()) do 
+					if v.Name=="ADONIS_SOUND" then 
+						if v.IsPaused == true then
+							v:Resume()
+							Functions.Hint("Resuming Playback...",{plr})
+						else
+							Functions.Hint("Music is not paused",{plr})
+						end
+
+					end 
+				end
+			end
+		};
 
 		Pitch = {
 			Prefix = Settings.Prefix;
@@ -8121,18 +8163,14 @@ return function(Vargs)
 
 		Music = {
 			Prefix = Settings.Prefix;
-			Commands = {"music";"song";"playsong";};
+			Commands = {"music";"song";"playsong","sound";};
 			Args = {"id";"noloop(true/false)";"pitch";"volume"};
 			Hidden = false;
 			Description = "Start playing a song";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.Workspace:GetChildren()) do
-					if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
-						v:Destroy()
-					end
-				end
+			Function = function(plr,args,data)
+				
 
 				local id = args[1]:lower()
 				local looped = args[2]
@@ -8152,52 +8190,71 @@ return function(Vargs)
 						looped = true
 					end
 
-					for i,v in pairs(Variables.MusicList) do
-						if id==v.Name:lower() then
+					for i,v in pairs(Variables.MusicList) do 
+						if id==v.Name:lower() then 
 							id = v.ID
-							if v.Pitch then
-								pitch = v.Pitch
-							end
-							if v.Volume then
-								volume=v.Volume
-							end
-						end
+							if v.Pitch then 
+								pitch = v.Pitch 
+							end 
+							if v.Volume then 
+								volume=v.Volume 
+							end 
+						end 
 					end
 
-					for i,v in pairs(HTTP.Trello.Music) do
-						if id==v.Name:lower() then
+					for i,v in pairs(HTTP.Trello.Music) do 
+						if id==v.Name:lower() then 
 							id = v.ID
-							if v.Pitch then
-								pitch = v.Pitch
-							end
-							if v.Volume then
-								volume = v.Volume
-							end
-						end
+							if v.Pitch then 
+								pitch = v.Pitch 
+							end 
+							if v.Volume then 
+								volume = v.Volume 
+							end 
+						end 
 					end
 
-					pcall(function()
-						if mp:GetProductInfo(id).AssetTypeId == 3 then
-							name = 'Now playing '..mp:GetProductInfo(id).Name
-						end
+					pcall(function() 
+						if mp:GetProductInfo(id).AssetTypeId == 3 then 
+							name = 'Now playing '..mp:GetProductInfo(id).Name 
+						end 
 					end)
+					
+					if name == 'Invalid ID ' then
+						Functions.Hint("Invalid ID | Use "..Settings.Prefix.."stopmusic to stop the music",{plr})
+						return
+					elseif Settings.SongHint then
+						Functions.Hint(name, service.Players:GetPlayers())
+					end
+					
+					for i, v in pairs(service.Workspace:GetChildren()) do 
+						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
 
-					local s = service.New("Sound")
+							if v.IsPaused == true then
+								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
+									Question = "There is currently a track paused, do you wish to override it?";})	 	
+								if ans == "No" then return end end
+
+							v:Destroy() 
+						end 
+					end
+
+					local s = service.New("Sound") 
 					s.Name = "ADONIS_SOUND"
 					s.Parent = service.Workspace
-					s.SoundId = "http://www.roblox.com/asset/?id=" .. id
-					s.Volume = volume
-					s.Pitch = pitch
+					s.SoundId = "http://www.roblox.com/asset/?id=" .. id 
+					s.Volume = volume 
+					s.Pitch = pitch 
 					s.Looped = looped
 					s.Archivable = false
 					wait(0.5)
 					s:Play()
 
-					if name == "Invalid ID" then
-						error("Invalid ID")
-					elseif Settings.SongHint then
-						Functions.Hint(name, service.Players:GetPlayers())
-					end
+				elseif id == "off" or id == "0" then
+					for i, v in pairs(service.Workspace:GetChildren()) do 
+						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
+							v:Destroy()
+						end end	
 				end
 			end
 		};
