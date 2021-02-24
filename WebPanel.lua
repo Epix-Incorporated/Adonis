@@ -10,7 +10,7 @@
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local init = true
 	local HTTP = service.HttpService
 	local Encode = server.Functions.Base64Encode
@@ -224,15 +224,18 @@ return function(Vargs)
 
 			if init then
 				server.Logs:AddLog("Script", "WebPanel Initialization Complete")
+				server.Variables.WebPanel_Initiated = true
 				init = false
 			end
 		else
 			local code, msg = res.StatusCode, res.StatusMessage
-			
-			if code ~= 520 or code ~= 524 then
+
+			if code ~= 520 and code ~= 524 then
 				server.Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
 				server.Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
 				break
+			elseif code == 520 then
+				wait(5) --After the server restarts we want to make sure that it has time to inititate everything
 			end
 		end
 		wait()
