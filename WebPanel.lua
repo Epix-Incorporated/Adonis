@@ -12,6 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local init = true
+	server.Variables.WebPanel_Initiated = false
 	local HTTP = service.HttpService
 	local Encode = server.Functions.Base64Encode
 	local Decode = server.Functions.Base64Decode
@@ -159,13 +160,13 @@ return function(Vargs)
 			end
 
 			--// Trello Data
-			if data.trello.board and data.trello["app-key"] and data.trello.token then
+			if data.trello.board and data.trello["app-key"] and data.trello.token and init then
 				server.Settings.Trello_Enabled = true
 				server.Settings.Trello_Primary = data.trello.board
 				server.Settings.Trello_AppKey = data.trello["app-key"]
 				server.Settings.Trello_Token = data.trello.token
 
-				server.HTTP.Trello.Update()
+				service.StartLoop("TRELLO_UPDATER", server.Settings.HttpWait, server.HTTP.Trello.Update, true)
 			end
 
 			--// Aliases, Perms/Disabling
@@ -175,7 +176,7 @@ return function(Vargs)
 
 				if index and command then
 					if v.disabled then
-						command = nil
+						server.Commands[index] = nil
 					end
 					if v.level ~= "Default" then command.AdminLevel = v.level end
 					for i, alias in ipairs(v.aliases) do
@@ -192,7 +193,6 @@ return function(Vargs)
 
 			--// Load plugins
 			if init then
-				print(unpack(data))
 				for i,v in next,data.Plugins do
 					local func,err = server.Core.Loadstring(Decode(v), getfenv())
 					if func then 
