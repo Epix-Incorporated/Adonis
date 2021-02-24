@@ -10,7 +10,7 @@ logError = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -23,10 +23,10 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		
+
 		Logs:AddLog("Script", "Variables Module Initialized")
 	end;
-	
+
 	server.Variables = {
 		Init = Init;
 		ZaWarudo = false;
@@ -34,9 +34,28 @@ return function(Vargs)
 		FrozenObjects = {};
 		ScriptBuilder = {};
 		CachedDonors = {};
-		BanMessage = "Banned";
-		LockMessage = "Not Whitelisted";
-		DonorPass = {1348327,1990427,1911740,167686,98593};
+		WhitelistData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			List = {};
+			Reason = "This server is whitelisted."
+		};
+		SlockData = {
+			Enabled = false;
+			TimeEnabled = 0;
+			Moderator = {Name = "SERVER"};
+			Reason = "This server is locked."
+		};
+		Messages = {
+			Ban = "";
+			TrelloBan = "";
+			Lock = "";
+			Whitelist = "";
+			TimeBan = "";
+			GameBan = "";
+		};
+		DonorPass = {3497976};
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			OutdoorAmbient = service.Lighting.OutdoorAmbient;
@@ -53,7 +72,7 @@ return function(Vargs)
 			GeographicLatitude = service.Lighting.GeographicLatitude;
 			Name = service.Lighting.Name;
 		};
-		
+
 		OriginalLightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			OutdoorAmbient = service.Lighting.OutdoorAmbient;
@@ -71,27 +90,27 @@ return function(Vargs)
 			Name = service.Lighting.Name;
 			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
-		
+
 		HelpRequests = {};
-		
+
 		Objects = {};
-		
+
 		InsertedObjects = {};
-		
+
 		CommandLoops = {};
-		
+
 		Waypoints = {};
-		
+
 		Cameras = {};
-		
+
 		Jails = {};
-		
+
 		LocalEffects = {};
-		
+
 		SizedCharacters = {};
-		
+
 		BundleCache = {};
-		
+
 		MusicList = {
 			{Name='jericho',ID=292340735};
 			{Name='dieinafire',ID=242222291};
@@ -154,9 +173,9 @@ return function(Vargs)
 			{Name="rickroll",ID=4581203569};
 			{Name="deathbed",ID=4966153470};
 		};
-		
+
 		InsertList = {};
-		
+
 		Capes = {
 			{Name="crossota",Material="Neon",Color="Cyan",ID=420260457},
 			{Name="jamiejr99",Material="Neon",Color="Cashmere",ID=429297485},
@@ -184,10 +203,14 @@ return function(Vargs)
 			{Name="trainer",Material='Plastic',Color="Really black",ID=152298976},
 			{Name="ba",Material='Plastic',Color='White',ID=172528001}
 		};
-		
+
 		Whitelist = {
 			Enabled = server.Settings.WhitelistEnabled;
 			List = server.Settings.Whitelist or {};
 		};
+		
+		TrackTable = {};
+		TeamBindings = {};
+		ForceField = {};
 	};
 end
