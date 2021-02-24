@@ -92,10 +92,10 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"698712377")
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"userid-698712377")
 				end
 			end
-		};--//hello Dr. Sceleratii ~Ender was here
+		};--//Ender was here
 		CustomMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"cm";"custommessage";};
@@ -6029,7 +6029,7 @@ return function(Vargs)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"1237666")
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"userid-1237666")
 				end
 			end
 		};
