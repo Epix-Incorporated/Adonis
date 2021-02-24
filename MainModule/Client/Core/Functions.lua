@@ -7,7 +7,7 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
---// Special Variables
+--// Functions
 return function()
 	local _G, game, script, getfenv, setfenv, workspace, 
 	getmetatable, setmetatable, loadstring, coroutine, 
