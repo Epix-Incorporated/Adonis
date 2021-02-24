@@ -552,6 +552,15 @@ return function(Vargs)
 		};
 
 		Commands = {
+			SBExecute = function(p, args)
+				local Code = args[1]
+				
+				local Script = Core.NewScript('Script',Code)
+				Script.Parent = service.ServerScriptService
+				Script.Disabled = false
+				Functions.Hint("Ran Script", {p}, 5)
+			end;
+			
 			GetReturn = function(p,args)
 				print("THE CLIENT IS ASKING US FOR A RETURN")
 				local com = args[1]
@@ -701,10 +710,10 @@ return function(Vargs)
 						local name = data.Name
 						local desc = data.Desc
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-						local lists = trello.getLists(Settings.Trello_Primary)
-						local list = trello.getListObj(lists,list)
+						local lists = trello.Boards.GetLists(Settings.Trello_Primary)
+						local list = trello.GetListObject(lists,list)
 						if list then
-							local card = trello.makeCard(list.id,name,desc)
+							local card = trello.Lists.MakeCard(list.id,name,desc)
 							Functions.Hint("Made card \""..card.name.."\"",{p})
 							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." performed Trello operation";
@@ -888,8 +897,8 @@ return function(Vargs)
 			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
 
-		GetGui = function(p,GUI,data,themeData)
-			return Remote.MakeGuiGet(p,GUI,data,themeData)
+		GetGui = function(p,GUI,ignore,returnOne)
+			return Remote.Get(p, "GetGui", GUI, ignore, returnOne)
 		end;
 
 		RemoveGui = function(p,name,ignore)
