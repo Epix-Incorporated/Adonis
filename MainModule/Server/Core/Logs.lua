@@ -10,7 +10,8 @@ logError = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-
+	
+	local MaxLogs = 1000
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -23,194 +24,412 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-
-		Logs:AddLog("Script", "Variables Module Initialized")
-	end;
-
-	server.Variables = {
-		Init = Init;
-		ZaWarudo = false;
-		CodeName = math.random();
-		FrozenObjects = {};
-		ScriptBuilder = {};
-		CachedDonors = {};
-		WhitelistData = {
-			Enabled = false;
-			TimeEnabled = 0;
-			Moderator = {Name = "SERVER"};
-			List = {};
-			Reason = "This server is whitelisted."
-		};
-		SlockData = {
-			Enabled = false;
-			TimeEnabled = 0;
-			Moderator = {Name = "SERVER"};
-			Reason = "This server is locked."
-		};
-		Messages = {
-			Ban = "";
-			TrelloBan = "";
-			Lock = "";
-			Whitelist = "";
-			TimeBan = "";
-			GameBan = "";
-		};
-		DonorPass = {3497976};
-		LightingSettings = {
-			Ambient = service.Lighting.Ambient;
-			OutdoorAmbient = service.Lighting.OutdoorAmbient;
-			Brightness = service.Lighting.Brightness;
-			TimeOfDay = service.Lighting.TimeOfDay;
-			FogColor = service.Lighting.FogColor;
-			FogEnd = service.Lighting.FogEnd;
-			FogStart = service.Lighting.FogStart;
-			GlobalShadows = service.Lighting.GlobalShadows;
-			Outlines = service.Lighting.Outlines;
-			ShadowColor = service.Lighting.ShadowColor;
-			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
-			ColorShift_Top = service.Lighting.ColorShift_Top;
-			GeographicLatitude = service.Lighting.GeographicLatitude;
-			Name = service.Lighting.Name;
-		};
-
-		OriginalLightingSettings = {
-			Ambient = service.Lighting.Ambient;
-			OutdoorAmbient = service.Lighting.OutdoorAmbient;
-			Brightness = service.Lighting.Brightness;
-			TimeOfDay = service.Lighting.TimeOfDay;
-			FogColor = service.Lighting.FogColor;
-			FogEnd = service.Lighting.FogEnd;
-			FogStart = service.Lighting.FogStart;
-			GlobalShadows = service.Lighting.GlobalShadows;
-			Outlines = service.Lighting.Outlines;
-			ShadowColor = service.Lighting.ShadowColor;
-			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
-			ColorShift_Top = service.Lighting.ColorShift_Top;
-			GeographicLatitude = service.Lighting.GeographicLatitude;
-			Name = service.Lighting.Name;
-			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
-		};
-
-		HelpRequests = {};
-
-		Objects = {};
-
-		InsertedObjects = {};
-
-		CommandLoops = {};
-
-		Waypoints = {};
-
-		Cameras = {};
-
-		Jails = {};
-
-		LocalEffects = {};
-
-		SizedCharacters = {};
-
-		BundleCache = {};
-
-		MusicList = {
-			{Name='jericho',ID=292340735};
-			{Name='dieinafire',ID=242222291};
-			{Name='beam',ID=165065112};
-			{Name='myswamp',ID=166325648};
-			{Name='skeletons',ID=168983825};
-			{Name='russianmen',ID=173038059};
-			{Name='freedom',ID=130760592};
-			{Name='seatbelt',ID=135625718};
-			{Name='tempest',ID=135554032};
-			{Name="focus",ID=136786547};
-			{Name="azylio",ID=137603138};
-			{Name="caramell",ID=2303479};
-			{Name="epic",ID=27697743};
-			{Name="halo",ID=1034065};
-			{Name="pokemon",ID=1372261};
-			{Name="cursed",ID=1372257};
-			{Name="extreme",ID=11420933};
-			{Name="tacos",ID=142295308};
-			{Name="wakemeup",ID=2599359802};
-			{Name="awaken",ID=27697277};
-			{Name="alone",ID=27697392};
-			{Name="mario",ID=1280470};
-			{Name="choir",ID=1372258};
-			{Name="chrono",ID=1280463};
-			{Name="dotr",ID=11420922};
-			{Name="entertain",ID=27697267};
-			{Name="fantasy",ID=1280473};
-			{Name="final",ID=1280414};
-			{Name="emblem",ID=1372259};
-			{Name="flight",ID=27697719};
-			{Name="gothic",ID=27697743};
-			{Name="hiphop",ID=27697735};
-			{Name="intro",ID=27697707};
-			{Name="mule",ID=1077604};
-			{Name="film",ID=27697713};
-			{Name="nezz",ID=8610025};
-			{Name="resist",ID=27697234};
-			{Name="schala",ID=5985787};
-			{Name="organ",ID=11231513};
-			{Name="tunnel",ID=9650822};
-			{Name="spanish",ID=5982975};
-			{Name="venom",ID=1372262};
-			{Name="wind",ID=1015394};
-			{Name="guitar",ID=5986151};
-			{Name="weapon",ID=142400410};
-			{Name="derezzed",ID=142402620};
-			{Name="sceptics",ID=153251489};
-			{Name="pianoremix",ID=142407859};
-			{Name="antidote",ID=145579822};
-			{Name="overtime",ID=135037991};
-			{Name="fluffyunicorns",ID=141444871};
-			{Name="tsunami",ID=569900517};
-			{Name="finalcountdownremix",ID=145162750};
-			{Name="stereolove",ID=142318819};
-			{Name="minecraftorchestral",ID=148900687};
-			{Name="superbacon",ID=300872612};
-			{Name="alonemarsh",ID=639750143}; -- Alone - Marshmello
-			{Name="crabraveoof",ID=2590490779}; -- Crab rave oof
-			{Name="rickroll",ID=4581203569};
-			{Name="deathbed",ID=4966153470};
-		};
-
-		InsertList = {};
-
-		Capes = {
-			{Name="crossota",Material="Neon",Color="Cyan",ID=420260457},
-			{Name="jamiejr99",Material="Neon",Color="Cashmere",ID=429297485},
-			{Name="new yeller",Material='Fabric',Color="New Yeller"},
-			{Name="pastel blue",Material='Fabric',Color="Pastel Blue"},
-			{Name="dusty rose",Material='Fabric',Color="Dusty Rose"},
-			{Name="cga brown",Material='Fabric',Color="CGA brown"},
-			{Name="random",Material='Fabric',Color=(BrickColor.random()).Name},
-			{Name="shiny",Material='Plastic',Color="Institutional white",Reflectance=1}, 
-			{Name="gold",Material='Plastic',Color="Bright yellow",Reflectance=0.4},
-			{Name="kohl",Material='Fabric',Color="Really black",ID=108597653},
-			{Name="script",Material='Plastic',Color="White",ID=151359194},
-			{Name="batman",Material='Fabric',Color="Institutional white",ID=108597669},
-			{Name="epix",Material='Plastic',Color="Really black",ID=149442745},
-			{Name="superman",Material='Fabric',Color="Bright blue",ID=108597677},
-			{Name="swag",Material='Fabric',Color="Pink",ID=109301474},
-			{Name="donor",Material='Plastic',Color="White",ID=149009184},
-			{Name="starbucks",Material='Plastic',Color="Black",ID=149248066},
-			{Name="gomodern",Material='Plastic',Color="Really black",ID=149438175},
-			{Name="admin",Material='Plastic',Color="White",ID=149092195},
-			{Name="giovannis",Material='Plastic',Color="White",ID=149808729},
-			{Name="godofdonuts",Material='Plastic',Color="Institutional white",ID=151034443},
-			{Name="host",Material='Plastic',Color="Really black",ID=152299000},
-			{Name="cohost",Material='Plastic',Color="Really black",ID=152298950},
-			{Name="trainer",Material='Plastic',Color="Really black",ID=152298976},
-			{Name="ba",Material='Plastic',Color='White',ID=172528001}
-		};
-
-		Whitelist = {
-			Enabled = server.Settings.WhitelistEnabled;
-			List = server.Settings.Whitelist or {};
-		};
 		
-		TrackTable = {};
-		TeamBindings = {};
-		ForceField = {};
+		MaxLogs = Settings.MaxLogs;
+		
+		game:BindToClose(function() 
+			Logs.SaveCommandLogs()
+		end);
+		
+		Logs:AddLog("Script", "Logging Module Initialized");
+	end;
+	
+	server.Logs = {
+		Init = Init;
+		Chats = {};
+		Joins = {};
+		Script = {};
+		Replications = {};
+		NetworkOwners = {};
+		RemoteFires = {};
+		Commands = {};
+		Exploit = {};
+		Errors = {};
+		TempUpdaters = {};
+		
+		TabToType = function(tab)
+			local indToName = {
+				Chats = "Chat";
+				Joins = "Join";
+				Script = "Script";
+				Replications = "Replication";
+				NetworkOwners = "NetworkOwner";
+				RemoteFires = "RemoteFire";
+				Commands = "Command";
+				Exploit = "Exploit";
+				Errors = "Error";
+			}
+			
+			for ind,t in next,server.Logs do
+				if t == tab then
+					return indToName[ind] or ind
+				end
+			end
+		end;
+		
+		AddLog = function(tab, log, misc)
+			if misc then tab = log log = misc end
+			if type(tab) == "string" then
+				tab = Logs[tab]
+			end
+			
+			if type(log) == "string" then
+				log = {
+					Text = log;
+					Desc = log;
+				}
+			end
+			
+			if not log.Time and not log.NoTime then
+				log.Time = service.GetTime() 
+			end
+			
+			table.insert(tab, 1, log)
+			if #tab > tonumber(MaxLogs) then
+				table.remove(tab,#tab)
+			end
+			
+			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
+		end;
+		
+		SaveCommandLogs = function()
+			Core.UpdateData("OldCommandLogs", function(oldLogs)
+				local temp = {}
+			
+				for i,m in ipairs(Logs.Commands) do
+					table.insert(temp, m)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+				end
+				
+				if oldLogs then
+					for i,m in ipairs(service.HttpService:JSONDecode(oldLogs)) do
+						table.insert(temp, m)
+					end
+				end
+				
+				table.sort(temp, function(a, b)
+					return a.Time > b.Time;
+				end)
+				
+				for i,v in ipairs(temp) do
+					if i > MaxLogs then
+						temp[i] = nil;
+					end
+				end
+				
+			 	return service.HttpService:JSONEncode(temp)
+			end)
+		end;
+		
+		ListUpdaters = {
+			TempUpdate = function(plr, data)
+				local updateKey = data.UpdateKey;
+				local updater = Logs.TempUpdaters[updateKey];
+				if updater then
+					return updater(data);
+				end
+			end;
+			
+			ShowTasks = function(plr,arg)
+				if arg then
+					for i,v in next,Functions.GetPlayers(plr, arg) do
+						local temp = {}
+						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
+						
+						table.insert(temp,{
+							Text = "Client Tasks",
+							Desc = "Tasks their client is performing"})
+						
+						for k,t in next,cTasks do 
+							table.insert(temp, {
+								Text = tostring(v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created, 
+								Desc = v.Name;
+							})
+						end
+						
+						return temp
+					end
+				else
+					local tasks = service.GetTasks()
+					local temp = {}
+					local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
+					
+					table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
+					
+					for i,v in next,tasks do
+						table.insert(temp,{
+							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
+							Desc = v.Name
+						})
+					end
+					
+					table.insert(temp," ")
+					table.insert(temp,{
+						Text = "Client Tasks",
+						Desc = "Tasks your client is performing"
+					})
+					
+					for i,v in pairs(cTasks) do 
+						table.insert(temp,{
+							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+							Desc = v.Name
+						})
+					end
+					
+					return temp
+				end
+			end;
+			
+			OldCommandLogs = function()
+				local temp = {}
+				if Core.DataStore then
+					local data = Core.GetData("OldCommandLogs")
+					if data then
+						for i,m in pairs(service.HttpService:JSONDecode(data)) do
+							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+						end
+					end
+				end
+				
+				return temp;
+			end;
+			
+			DonorList = function()
+				local temptable = {}
+				for i,v in pairs(service.Players:children()) do
+					if Admin.CheckDonor(v) then
+						table.insert(temptable,v.Name)
+					end
+				end
+				return temptable
+			end;
+			
+			Errors = function()
+				local tab = {}
+				for i,v in pairs(Logs.Errors) do
+					table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
+				end
+				return tab
+			end;
+			
+			ReplicationLogs = function()
+				local tab = {}
+				for i,v in pairs(Logs.Replications) do
+					table.insert(tab,{Text=v.Player.." "..v.Action.." "..v.ClassName;Desc = v.Path})
+				end
+				return tab
+			end;
+			
+			NetworkOwners = function()
+				local tab = {}
+				for i,v in pairs(Logs.NetworkOwners) do
+					table.insert(tab,{Text = tostring(v.Player).." made "..tostring(v.Part),Desc = v.Path})
+				end
+				return tab
+			end;
+			
+			ExploitLogs = function()
+				--local temp={}
+				--for i,v in pairs(Logs.Errors) do
+				--	table.insert(tab,{Time = v.Time;Text = v.Text..": "..tostring(v.Desc):sub(1,20),Desc = v.Desc})
+				--end
+				return Logs.Exploit
+			end;
+			
+			ChatLogs = function()
+				return Logs.Chats
+			end;
+			
+			JoinLogs = function()
+				return Logs.Joins
+			end;
+			
+			PlayerList = function(p)
+				local plrs={}
+				local playz=Functions.GrabNilPlayers('all')
+				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{p})
+				for i,v in pairs(playz) do
+					cPcall(function()
+						if type(v)=="string" and v=="NoPlayer" then
+							table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
+						else	
+							local ping
+							Routine(function()	
+								ping = Remote.Ping(v).."ms"
+							end)
+							for i=0.1,5,0.1 do
+								if ping then break end
+								wait(0.1)
+							end
+							if v and service.Players:FindFirstChild(v.Name) then
+								local h = ""
+								local mh = ""
+								local ws = ""
+								local jp = ""
+								local hn = ""
+								local hum = Functions.FindClass(v.Character,"Humanoid")
+								if v.Character and hum then
+									h = hum.Health
+									mh = hum.MaxHealth
+									ws = hum.WalkSpeed
+									jp = hum.JumpPower	
+									hn = hum.Name
+								else
+									h = "NO CHARACTER/HUMANOID"
+								end
+								
+								table.insert(plrs,{Text=v.Name.." - "..ping..'s',Desc='Lower: '..v.Name:lower()..' - Health: '..h.." - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name})
+							else
+								table.insert(plrs,{Text='[NIL] '..v.Name,Desc='Lower: '..v.Name:lower()..' - Ping: '..ping})
+							end
+						end
+					end)
+				end
+				
+				for i=0.1,5,0.1 do
+					if Functions.CountTable(plrs)>=Functions.CountTable(playz) then break end
+					wait(0.1)
+				end
+				return plrs
+			end;
+			
+			ServerDetails = function()
+				local det={}
+				local nilplayers=0
+				for i,v in pairs(service.NetworkServer:children()) do
+					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+						nilplayers=nilplayers+1
+					end
+				end
+				if HTTP.CheckHttp() then
+					det.Http='Enabled'
+				else
+					det.Http='Disabled'
+				end
+				if pcall(function() loadstring("local hi = 'test'") end) then
+					det.Loadstring='Enabled'
+				else
+					det.Loadstring='Disabled'
+				end
+				if service.Workspace.FilteringEnabled then
+					det.Filtering="Enabled"
+				else
+					det.Filtering="Disabled"
+				end
+				if service.Workspace.StreamingEnabled then
+					det.Streaming="Enabled"
+				else
+					det.Streaming="Disabled"
+				end
+				det.NilPlayers = nilplayers
+				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
+				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
+				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+				--det.AdminVersion = version
+				det.ServerStartTime = service.GetTime(server.ServerStartTime)
+				local nonnumber=0
+				for i,v in pairs(service.NetworkServer:children()) do
+					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
+						nonnumber=nonnumber+1
+					end
+				end
+				det.NonAdmins=nonnumber
+				local adminnumber=0
+				for i,v in pairs(service.NetworkServer:children()) do
+					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
+						adminnumber=adminnumber+1
+					end
+				end
+				det.CurrentTime=service.GetTime()
+				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
+				det.Admins=adminnumber
+				det.Objects=#Variables.Objects
+				det.Cameras=#Variables.Cameras
+				
+				local tab = {}
+				for i,v in pairs(det) do
+					table.insert(tab,{Text = i..": "..tostring(v),Desc = tostring(v)})
+				end
+				return tab
+			end;
+			
+			CommandLogs = function()
+				local temp = {}
+				
+				for i,m in pairs(Logs.Commands) do
+					table.insert(temp,{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+				end
+				
+		 		return temp
+			end;
+			
+			ScriptLogs = function()
+				return Logs.Script
+			end;
+			
+			RemoteLogs = function(p)
+				if Admin.CheckAdmin(p) or HTTP.Trello.CheckAgent(p) then
+					return Logs.RemoteFires
+				end
+			end;
+				
+			ServerLog = function()
+				local temp = {}
+				local function toTab(str, desc, color)
+					for i,v in next,service.ExtractLines(str) do
+						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+					end
+				end
+				
+				for i,v in next,service.LogService:GetLogHistory() do
+					if v.messageType == Enum.MessageType.MessageOutput then
+						toTab(v.message, "Output: ")
+					elseif v.messageType == Enum.MessageType.MessageWarning then
+						toTab(v.message, "Warning: ", Color3.new(1,1,0))
+					elseif v.messageType == Enum.MessageType.MessageInfo then
+						toTab(v.message, "Info: ", Color3.new(0,0,1))
+					elseif v.messageType == Enum.MessageType.MessageError then
+						toTab(v.message, "Error: ", Color3.new(1,0,0))
+					end
+				end
+				
+				return temp
+			end;
+			
+			ClientLog = function(p, player)
+				local temp = {"Player is currently unreachable"}
+				
+				if player then
+					temp = (player.Parent and Remote.Get(player, "ClientLog")) or temp
+				end
+				
+				return temp
+			end;
+			
+			Instances = function(p, player)
+				if player then
+					local temp = {"Player is currently unreachable"}
+					
+					if player then
+						temp = Remote.Get(player, "InstanceList") or temp
+					end
+					
+					return temp
+				else
+					local objects = service.GetAdonisObjects()
+					local temp = {}
+					
+					for i,v in next,objects do
+						table.insert(temp, {
+							Text = v:GetFullName();
+							Desc = v.ClassName;
+						})
+					end
+					
+					return temp
+				end
+			end;
+		};
 	};
+	
+	Logs = Logs
 end
