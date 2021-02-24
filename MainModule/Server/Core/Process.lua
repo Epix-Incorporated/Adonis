@@ -600,24 +600,25 @@ return function(Vargs)
 				Core.UpdateConnection(p)
 
 				if banned then 
-					p:Kick(Variables.BanMessage)
 					removed = true
 				end
 
-				if Variables.ServerLock and level < 1 and not removed then
-					p:Kick(Variables.LockMessage)
+				if Variables.SlockData.Enabled and level < 1 and not removed then
+					p:Kick(Functions.GetSlockMessage())
 					removed = true
 				end
-
-				if Variables.Whitelist.Enabled and not removed then
+				
+				if Variables.WhitelistData.Enabled and not removed then
 					local listed = false
-					for ind, admin in next,Variables.Whitelist.List do
+					for ind, admin in next,Variables.WhitelistData.List do
 						if Admin.DoCheck(p,admin) then
+							print(p.Name.." is listed!")
 							listed = true
 						end
 					end
 					if not listed and level == 0 then
-						p:Kick(Variables.LockMessage)
+						print(p.Name.." is not listed!")
+						p:Kick(Functions.GetWhitelistMessage())
 						removed = true
 					end
 				end
@@ -626,6 +627,24 @@ return function(Vargs)
 					if Remote.Clients[key] then
 						if not Anti.RLocked(p) then
 							Core.HookClient(p)
+							
+							if not server.Variables.TrackTable[p.UserId] then
+								server.Variables.TrackTable[p.UserId] = {}
+							end
+							p:GetPropertyChangedSignal("TeamColor"):Connect(function()
+								local color = p.TeamColor.Color
+								for _,plr in ipairs(game.Players:GetPlayers()) do
+									if server.Variables.TrackTable[plr.UserId][p.UserId] then
+										server.Commands.Track.Function(plr, {p.Name})
+									end
+								end
+							end)
+							p.CharacterAppearanceLoaded:Connect(function(char)
+								for _,plr in pairs(server.Variables.TrackTable[p.UserId]) do
+									server.Commands.Track.Function(p, {plr.Name})
+								end
+							end)
+							
 							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." joined";
 								Desc = tostring(p).." successfully joined the server";
@@ -897,7 +916,7 @@ return function(Vargs)
 				end
 
 				if Settings.HelpButton then
-					Remote.MakeGui(p,"HelpButton")
+					Remote.MakeGui(p,"HelpButton", {Settings.HelpButtonID})
 				end
 
 				if Settings.CustomChat then
