@@ -81,7 +81,7 @@ return function(Vargs)
 					end
 				end
 
-				Remote.MakeGui(plr,"Commands",
+				Remote.MakeGui(plr,"List",
 					{
 						Title = "Commands";
 						Table = tab;
