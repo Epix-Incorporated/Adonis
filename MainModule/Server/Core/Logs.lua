@@ -244,51 +244,60 @@ return function(Vargs)
 			end;
 			
 			PlayerList = function(p)
-				local plrs={}
-				local playz=Functions.GrabNilPlayers('all')
-				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{p})
+				local plrs = {}
+				local playz = Functions.GrabNilPlayers('all')
+				
 				for i,v in pairs(playz) do
 					cPcall(function()
-						if type(v)=="string" and v=="NoPlayer" then
-							table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
+						if type(v) == "string" and v == "NoPlayer" then
+							table.insert(plrs,{Text = "PLAYERLESS CLIENT", Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
 						else	
 							local ping
+							
 							Routine(function()	
 								ping = Remote.Ping(v).."ms"
 							end)
-							for i=0.1,5,0.1 do
+							
+							for i = 0.1,5,0.1 do
 								if ping then break end
 								wait(0.1)
 							end
+							
+							if not ping then 
+								ping = ">5000ms"
+							end
+							
 							if v and service.Players:FindFirstChild(v.Name) then
 								local h = ""
 								local mh = ""
 								local ws = ""
 								local jp = ""
 								local hn = ""
-								local hum = Functions.FindClass(v.Character,"Humanoid")
+								local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
 								if v.Character and hum then
 									h = hum.Health
 									mh = hum.MaxHealth
 									ws = hum.WalkSpeed
-									jp = hum.JumpPower	
+									jp = hum.JumpPower
 									hn = hum.Name
 								else
 									h = "NO CHARACTER/HUMANOID"
 								end
-								
-								table.insert(plrs,{Text=v.Name.." - "..ping..'s',Desc='Lower: '..v.Name:lower()..' - Health: '..h.." - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name})
+
+								table.insert(plrs,{Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = 'Lower: '..v.Name:lower()..' - Health: '..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
 							else
-								table.insert(plrs,{Text='[NIL] '..v.Name,Desc='Lower: '..v.Name:lower()..' - Ping: '..ping})
+								table.insert(plrs,{Text = '[LOADING] '..v.Name, Desc = 'Lower: '..v.Name:lower()..' - Ping: '..ping})
 							end
 						end
 					end)
 				end
 				
-				for i=0.1,5,0.1 do
-					if Functions.CountTable(plrs)>=Functions.CountTable(playz) then break end
+				for i = 0.1,5,0.1 do
+					if Functions.CountTable(plrs) >= Functions.CountTable(playz) then break end
 					wait(0.1)
 				end
+				
 				return plrs
 			end;
 			

@@ -3510,7 +3510,7 @@ return function(Vargs)
 		PlayerList = {
 			Prefix = Settings.Prefix;
 			Commands = {"players","playerlist"};
-			Args = {};
+			Args = {"autoupdate"};
 			Hidden = false;
 			Description = "Shows you all players currently in-game, including nil ones";
 			Fun = false;
@@ -3519,50 +3519,48 @@ return function(Vargs)
 			Function = function(plr,args)
 				local plrs = {}
 				local playz = Functions.GrabNilPlayers('all')
+				local update = (args[1] ~= "false")
+				
 				Functions.Hint('Pinging players. Please wait. No ping = Ping > 5sec.',{plr})
+				
 				for i,v in pairs(playz) do
-					Routine(function()
-						if type(v)=="string" and v=="NoPlayer" then
-							table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
-						else
-							local ping
-							Routine(function()
-								ping = Remote.Ping(v).."ms"
-							end)
-							for i=0.1,5,0.1 do
-								if ping then break end
-								wait(0.1)
-							end
-							if v and service.Players:FindFirstChild(v.Name) then
-								local h = ""
-								local mh = ""
-								local ws = ""
-								local jp = ""
-								local hn = ""
-								local hum = (function() return service.Iterate(v.Character,function(v) if v:IsA("Humanoid") then return v end end) end)()
-								if v.Character and hum then
-									h=hum.Health
-									mh=hum.MaxHealth
-									ws=hum.WalkSpeed
-									jp=hum.JumpPower
-									hn=hum.Name
-								else
-									h="NO CHARACTER/HUMANOID"
-								end
-
-								table.insert(plrs,{Text=v.Name.." - "..ping..'s',Desc='Lower: '..v.Name:lower()..' - Health: '..h.." - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name})
+					if type(v) == "string" and v == "NoPlayer" then
+						table.insert(plrs,{Text="PLAYERLESS CLIENT",Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
+					else
+						local ping = "..."
+						
+						if v and service.Players:FindFirstChild(v.Name) then
+							local h = ""
+							local mh = ""
+							local ws = ""
+							local jp = ""
+							local hn = ""
+							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+							
+							if v.Character and hum then
+								h = hum.Health
+								mh = hum.MaxHealth
+								ws = hum.WalkSpeed
+								jp = hum.JumpPower
+								hn = hum.Name
 							else
-								table.insert(plrs,{Text='[NIL] '..v.Name,Desc='Lower: '..v.Name:lower()..' - Ping: '..ping})
+								h = "NO CHARACTER/HUMANOID"
 							end
-						end
-					end)
-				end
 
-				for i=0.1,5,0.1 do
-					if Functions.CountTable(plrs)>=Functions.CountTable(playz) then break end
-					wait(0.1)
+							table.insert(plrs,{Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = 'Lower: '..v.Name:lower()..' - Health: '..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
+						else
+							table.insert(plrs,{Text = '[LOADING] '..v.Name, Desc = 'Lower: '..v.Name:lower()..' - Ping: '..ping})
+						end
+					end
 				end
-				Remote.MakeGui(plr,'List',{Title = 'Players', Tab = plrs, Update = "PlayerList"})
+				
+				Remote.MakeGui(plr,'List',{
+					Title = 'Players', 
+					Tab = plrs, 
+					AutoUpdate = update and 1;
+					Update = "PlayerList";
+					UpdateArgs = {};
+				})
 			end
 		};
 

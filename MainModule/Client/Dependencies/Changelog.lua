@@ -1,6 +1,11 @@
 return {
-	"Version: 210";
+	"Version: 211";
 	"*Click and drag edges to expand*";
+	"";
+	"[2.24.2021 14:52 EST]";
+	"*Added displayname-DISPLAYNAMEHERE to player finders (eg, :ff displayname-bob would ff everyone with bob as their displayname)";
+	"*Updated :players/:playerlist command; Now shows DisplayName and handles ping/autoupdating differently";
+	"*New default console; Was originally going to be part of the rounded theme but decided to move it to Default instead";
 	"";
 	"[2.23.2021 18:13 EST]";
 	"*Added :serverlist (just shows servers byu jobid and number of players for now)";

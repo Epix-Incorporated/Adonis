@@ -233,6 +233,25 @@ return function(Vargs)
 					end
 				end;
 			};
+			
+			["displayname-"] = {
+				Match = "displayname-";
+				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+					local matched = tonumber(msg:match("displayname%-(.*)"))
+					local foundNum = 0
+					
+					if matched then
+						for i,v in next,parent:children() do
+							local p = getplr(v)
+							if p and p.DisplayName == matched then
+								table.insert(players,p)
+								plus()
+								foundNum = foundNum+1
+							end
+						end
+					end
+				end;
+			};
 
 			["team-"] = {
 				Match = "team-";
