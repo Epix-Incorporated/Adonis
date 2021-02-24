@@ -12,6 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local init = true
+	server.Variables.WebPanel_Initiated = false
 	local HTTP = service.HttpService
 	local Encode = server.Functions.Base64Encode
 	local Decode = server.Functions.Base64Decode
@@ -175,7 +176,7 @@ return function(Vargs)
 
 				if index and command then
 					if v.disabled then
-						command = nil
+						server.Commands[index] = nil
 					end
 					if v.level ~= "Default" then command.AdminLevel = v.level end
 					for i, alias in ipairs(v.aliases) do
@@ -192,7 +193,6 @@ return function(Vargs)
 
 			--// Load plugins
 			if init then
-				print(unpack(data))
 				for i,v in next,data.Plugins do
 					local func,err = server.Core.Loadstring(Decode(v), getfenv())
 					if func then 
