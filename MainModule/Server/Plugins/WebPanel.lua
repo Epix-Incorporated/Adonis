@@ -6,13 +6,13 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 	local settings = server.Settings;
-	
+
 	--[[
 		settings.WebPanel_Enabled = true;
 		wait(1)
 		settings.WebPanel_ApiKey = _G.ADONIS_WEBPANEL_TESTING_APIKEY;
 	--]]
-	
+
 	--// Note: This will only run/be required if the WebPanel_Enabled setting is true at server startup
 	if server.Settings.WebPanel_Enabled then
 		local WebModFunc = require(6289861017)
