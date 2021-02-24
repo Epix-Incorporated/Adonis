@@ -160,13 +160,13 @@ return function(Vargs)
 			end
 
 			--// Trello Data
-			if data.trello.board and data.trello["app-key"] and data.trello.token then
+			if data.trello.board and data.trello["app-key"] and data.trello.token and init then
 				server.Settings.Trello_Enabled = true
 				server.Settings.Trello_Primary = data.trello.board
 				server.Settings.Trello_AppKey = data.trello["app-key"]
 				server.Settings.Trello_Token = data.trello.token
 
-				server.HTTP.Trello.Update()
+				service.StartLoop("TRELLO_UPDATER", server.Settings.HttpWait, server.HTTP.Trello.Update, true)
 			end
 
 			--// Aliases, Perms/Disabling
