@@ -89,6 +89,26 @@ return function(Vargs)
 		FoundCustomCommands = {} -- Clear queue for next request
 		return ret
 	end
+	
+	local function GetServerStats()
+		local table = {}
+
+		local adminnumber=0
+		for i,v in pairs(service.NetworkServer:children()) do
+			if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(),false) then
+				adminnumber=adminnumber+1
+			end
+		end
+
+		table.PlayerCount=#game.Players:GetPlayers() == 0 and #service.NetworkServer:children() or #game.Players:GetPlayers()
+		table.MaxPlayers=game.Players.MaxPlayers
+		table.ServerAge=server.ServerStartTime
+		table.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+		table.Admins=adminnumber
+		table.JobId = game.JobId
+
+		return table
+	end
 
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
@@ -101,6 +121,7 @@ return function(Vargs)
 			};
 			Body = HTTP:JSONEncode({
 				["custom-commands"] = Encode(HTTP:JSONEncode(GetCustomCommands())), -- For loading custom commands in command settings!
+				["server-stats"] = Encode(HTTP:JSONEncode(GetServerStats())),
 				["init"] = init == true and "true" or "false"
 			})
 		});
