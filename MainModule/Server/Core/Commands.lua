@@ -8194,18 +8194,16 @@ return function(Vargs)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-
-
 				local id = args[1]:lower()
 				local looped = args[2]
 				local pitch = tonumber(args[3]) or 1
 				local mp = service.MarketPlace
 				local volume = tonumber(args[4]) or 1
-				local name = 'Invalid ID '
+				local name = '#Invalid ID'
 
 				if id ~= "0" and id ~= "off" then
 					if looped then
-						if looped=="true" then
+						if looped == "true" then
 							looped = false
 						else
 							looped = true
@@ -8215,20 +8213,22 @@ return function(Vargs)
 					end
 
 					for i,v in pairs(Variables.MusicList) do 
-						if id==v.Name:lower() then 
+						if id == v.Name:lower() then 
 							id = v.ID
+							
 							if v.Pitch then 
 								pitch = v.Pitch 
 							end 
 							if v.Volume then 
-								volume=v.Volume 
+								volume = v.Volume 
 							end 
 						end 
 					end
 
 					for i,v in pairs(HTTP.Trello.Music) do 
-						if id==v.Name:lower() then 
+						if id == v.Name:lower() then 
 							id = v.ID
+							
 							if v.Pitch then 
 								pitch = v.Pitch 
 							end 
@@ -8239,13 +8239,13 @@ return function(Vargs)
 					end
 
 					pcall(function() 
-						if mp:GetProductInfo(id).AssetTypeId == 3 then 
+						if tonumber(id) and mp:GetProductInfo(id).AssetTypeId == 3 then 
 							name = 'Now playing '..mp:GetProductInfo(id).Name 
 						end 
 					end)
 
-					if name == 'Invalid ID ' then
-						Functions.Hint("Invalid ID | Use "..Settings.Prefix.."stopmusic to stop the music",{plr})
+					if name == '#Invalid ID' then
+						Functions.Hint("Invalid audio Name/ID",{plr})
 						return
 					elseif Settings.SongHint then
 						Functions.Hint(name, service.Players:GetPlayers())
@@ -8253,32 +8253,36 @@ return function(Vargs)
 
 					for i, v in pairs(service.Workspace:GetChildren()) do 
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
-
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
-									Question = "There is currently a track paused, do you wish to override it?";})	 	
-								if ans == "No" then return end end
-
+									Question = "There is currently a track paused, do you wish to override it?";
+								})	
+								
+								if ans == "No" then 
+									return 
+								end 
+							end
+							
 							v:Destroy() 
 						end 
 					end
 
 					local s = service.New("Sound") 
 					s.Name = "ADONIS_SOUND"
-					s.Parent = service.Workspace
 					s.SoundId = "http://www.roblox.com/asset/?id=" .. id 
 					s.Volume = volume 
 					s.Pitch = pitch 
 					s.Looped = looped
 					s.Archivable = false
+					s.Parent = service.Workspace
 					wait(0.5)
 					s:Play()
-
 				elseif id == "off" or id == "0" then
 					for i, v in pairs(service.Workspace:GetChildren()) do 
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
 							v:Destroy()
-						end end	
+						end 
+					end	
 				end
 			end
 		};

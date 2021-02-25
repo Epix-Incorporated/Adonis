@@ -1,6 +1,9 @@
 return {
-	"Version: 211";
+	"Version: 212";
 	"*Click and drag edges to expand*";
+	"";
+	"[2.25.2021 18:33 EST]";
+	"*Old console is back by popular demand; New console is now part of the \"Rounded\" theme instead";
 	"";
 	"[2.24.2021 14:52 EST]";
 	"*Added displayname-DISPLAYNAMEHERE to player finders (eg, :ff displayname-bob would ff everyone with bob as their displayname)";
