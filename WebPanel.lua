@@ -112,6 +112,15 @@ return function(Vargs)
 		FoundCustomCommands = {} -- Clear queue for next request
 		return ret
 	end
+	
+	local delta, frames = 0, 0
+	game:GetService("RunService").Stepped:Connect(function(time, step)
+		delta += step
+		frames += 1
+		if delta > 1 then
+			delta, frames = 0, 0
+		end
+	end)
 
 	local function GetServerStats()
 		local stats = {}
@@ -125,11 +134,11 @@ return function(Vargs)
 
 		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:children() or #game.Players:GetPlayers()
 		stats.MaxPlayers = game.Players.MaxPlayers
-		stats.ServerAge = server.ServerStartTime
-		stats.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+		stats.ServerStartTime = server.ServerStartTime
+		stats.ServerSpeed = math.min(frames/60, 1)*100
 		stats.Admins = admins
 		stats.JobId = game.JobId
-		stats.PrivateServer = game.PrivateServerOwnerId > 0
+		stats.PrivateServer = true
 
 		return stats
 	end
@@ -331,7 +340,7 @@ return function(Vargs)
 					end
 				end
 
-				if v and v.server == game.JobId then
+				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v.server == "Roblox Studio") then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
 					elseif v.action == "remoteexecute" then
