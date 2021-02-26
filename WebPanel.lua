@@ -10,7 +10,7 @@
 return function(Vargs)
 	local server = Vargs.Server
 	local service = Vargs.Service
-	
+
 	local HTTP = service.HttpService
 	local Encode = server.Functions.Base64Encode
 	local Decode = server.Functions.Base64Decode
@@ -18,7 +18,7 @@ return function(Vargs)
 	local Settings = server.Settings
 	local Commands = server.Commands
 	local Admin = server.Admin
-	
+
 	Variables.WebPanel_Initiated = false
 
 	--[[
@@ -51,9 +51,9 @@ return function(Vargs)
 	local FoundCustomCommands = {}
 	local CachedAliases = {}
 	local CachedDefaultLevels = {}
-	
+
 	local OverrideQueue = {}
-	
+
 	do -- Create a cache of the default admin levels for all commands
 		for name, command in pairs(Commands) do
 			CachedDefaultLevels[name] = rawget(command, "AdminLevel")
@@ -64,7 +64,7 @@ return function(Vargs)
 			CachedAliases[name] = aliases
 		end
 	end
-	
+
 	do -- Keep track of custom commands added by other plugins
 		local CommandsMetatable = getmetatable(Commands) or {}
 		local ExistingNewIndex = CommandsMetatable.__newindex
@@ -112,10 +112,10 @@ return function(Vargs)
 		FoundCustomCommands = {} -- Clear queue for next request
 		return ret
 	end
-	
+
 	local function GetServerStats()
 		local stats = {}
-		
+
 		local admins = {}
 		for i,v in pairs(service.NetworkServer:GetChildren()) do
 			if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(), false) then
@@ -133,7 +133,7 @@ return function(Vargs)
 
 		return stats
 	end
-	
+
 	local function ResetCommandAdminLevel(index, command)
 		local metatbl = getmetatable(command)
 		if metatbl and metatbl.WebPanel then
@@ -143,21 +143,40 @@ return function(Vargs)
 			end
 		end
 	end
-	
+
+	local function ResetCommandAliases(index, command)
+		if CachedAliases[index] then
+			local aliases = rawget(command, "Commands")
+			local newaliases = {}
+			
+			for _, alias in pairs(aliases) do
+				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+			end
+			
+			for _, alias in ipairs(CachedAliases[index]) do
+				table.insert(newaliases, alias)
+				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+			end
+			
+			command.Commands = newaliases
+		end
+	end
+
 	local function ResetCommands()
 		for index, command in pairs(Commands) do
 			if command.Disabled == "WebPanel" then
 				command.Disabled = nil
 			end
 			ResetCommandAdminLevel(index, command)
+			ResetCommandAliases(index, command)
 		end
 	end
-	
+
 	local function UpdateCommands(data)
 		local didrun = false
 		for i,v in pairs(data.CommandOverrides) do
 			didrun = true
-			
+
 			local index, command = server.Admin.GetCommand(Settings.Prefix..i)
 			if not index or not command then index,command = server.Admin.GetCommand(Settings.PlayerPrefix..i) end
 
@@ -165,13 +184,13 @@ return function(Vargs)
 				command.Disabled = v.disabled and "WebPanel" or nil
 
 				local aliases = rawget(command, "Commands")
-				
+				local newaliases = {}
+
 				-- Remove old aliases from command cache
 				for _, alias in pairs(aliases) do
 					Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
 				end
-				
-				local newaliases = {}
+
 				if CachedAliases[index] then
 					for _, alias in ipairs(CachedAliases[index]) do
 						if not table.find(v.aliases, "-"..alias) then
@@ -186,8 +205,9 @@ return function(Vargs)
 						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
 					end
 				end
-				command.Commands = newaliases
 				
+				command.Commands = newaliases
+
 				if v.level ~= "Default" then
 					rawset(command, "AdminLevel", "WebPanel"..v.level)
 					setmetatable(command, {
@@ -214,7 +234,7 @@ return function(Vargs)
 			ResetCommands()
 		end
 	end
-	
+
 	local function UpdateSettings(data)
 		WebPanel.Bans = data.Levels.Banlist or {};
 		WebPanel.Creators = data.Levels.Creators or {};
@@ -225,7 +245,7 @@ return function(Vargs)
 		WebPanel.Blacklist = data.Levels.Blacklist or {};
 		WebPanel.Whitelist = data.Levels.Whitelist or {};
 		WebPanel.CustomRanks = data.Levels.CustomRanks or {};
-		
+
 		if Variables.MusicList then
 			for i = #Variables.MusicList, 1, -1 do -- Iterating backwards to prevent wonky behavior with table.remove
 				local v = Variables.MusicList[i]
@@ -243,7 +263,7 @@ return function(Vargs)
 			end
 		end
 	end
-	
+
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
 		local success, res = pcall(HTTP.RequestAsync, HTTP, {
@@ -259,7 +279,7 @@ return function(Vargs)
 				["init"] = Variables.WebPanel_Initiated and "false" or "true",
 			})
 		});
-		
+
 		if success and res.Success then
 			local data = HTTP:JSONDecode(res.Body)
 
@@ -274,11 +294,11 @@ return function(Vargs)
 					end
 				end
 			end]]
-			
+
 			if not Variables.WebPanel_Initiated then
 				UpdateCommands(data)
 				UpdateSettings(data)
-				
+
 				if data.trello.board and data.trello["app-key"] and data.trello.token then
 					Settings.Trello_Enabled = true
 					Settings.Trello_Primary = data.trello.board
@@ -302,7 +322,7 @@ return function(Vargs)
 				elseif v.action == "updatesettings" then
 					UpdateSettings(data)
 				end
-				
+
 				if v and v.server == game.JobId then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
