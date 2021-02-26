@@ -241,7 +241,7 @@ return function(Vargs)
 		WebPanel.Admins = data.Levels.Admins or {};
 		WebPanel.Moderators = data.Levels.Moderators or {};
 		WebPanel.Owners = data.Levels.Owners or {};
-		WebPanel.Mutes = data.Levels.Mutes or {};
+		WebPanel.Mutes = data.Levels.Mutelist or {};
 		WebPanel.Blacklist = data.Levels.Blacklist or {};
 		WebPanel.Whitelist = data.Levels.Whitelist or {};
 		WebPanel.CustomRanks = data.Levels.CustomRanks or {};
@@ -321,6 +321,14 @@ return function(Vargs)
 					UpdateCommands(data)
 				elseif v.action == "updatesettings" then
 					UpdateSettings(data)
+
+					for _, p in pairs(service.GetPlayers()) do
+						if server.Admin.CheckBan(p) then 
+							server.Admin.AddBan(p, false) 
+						else
+							Admin.UpdateCachedLevel(p)
+						end
+					end
 				end
 
 				if v and v.server == game.JobId then
