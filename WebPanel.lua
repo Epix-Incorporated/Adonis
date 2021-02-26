@@ -353,6 +353,7 @@ return function(Vargs)
 			if not Variables.WebPanel_Initiated then
 				server.Logs:AddLog("Script", "WebPanel Initialization Complete")
 				Variables.WebPanel_Initiated = true
+				wait(3)
 			end
 		else
 			local code, msg = res.StatusCode, res.StatusMessage
