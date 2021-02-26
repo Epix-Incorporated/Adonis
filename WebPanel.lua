@@ -310,8 +310,6 @@ return function(Vargs)
 		if success and res.Success then
 			local data = HTTP:JSONDecode(res.Body)
 
-			print(res.Body)
-
 			--// Load plugins
 			--[[if init then
 				for i,v in next,data.Plugins do
@@ -359,7 +357,7 @@ return function(Vargs)
 						end
 					end
 				end
-				print(v.server, game.JobId)
+				
 				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v and v.server == "Roblox Studio") then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
