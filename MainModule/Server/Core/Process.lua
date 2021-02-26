@@ -201,74 +201,80 @@ return function(Vargs)
 						end
 
 						if allowed then
-							local cmdArgs = command.Args or command.Arguments
-							local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
-							local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-							local taskName = "Command:: "..tostring(p)..": ("..msg..")"
-							local commandID = "COMMAND_".. math.random()
-							local running = true
+							if not command.Disabled then
+								local cmdArgs = command.Args or command.Arguments
+								local argString = msg:match("^.-"..Settings.SplitKey..'(.+)') or ''
+								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+								local taskName = "Command:: "..tostring(p)..": ("..msg..")"
+								local commandID = "COMMAND_".. math.random()
+								local running = true
 
-							if #args > 0 and not isSystem and command.Filter or opts.Filter then
-								local safe = {
-									plr = true;
-									plrs = true;
-									username = true;
-									usernames = true;
-									players = true;
-									player = true;
-									users = true;
-									user = true;
-									brickcolor = true;
-								}
+								if #args > 0 and not isSystem and command.Filter or opts.Filter then
+									local safe = {
+										plr = true;
+										plrs = true;
+										username = true;
+										usernames = true;
+										players = true;
+										player = true;
+										users = true;
+										user = true;
+										brickcolor = true;
+									}
 
-								for i,arg in next,args do
-									if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
-										args[i] = service.LaxFilter(arg, p)
+									for i,arg in next,args do
+										if not (cmdArgs[i] and safe[cmdArgs[i]:lower()]) then
+											args[i] = service.LaxFilter(arg, p)
+										end
 									end
 								end
-							end
 
-							if opts.CrossServer or (not isSystem and not opts.DontLog) then
-								AddLog("Commands",{
-									Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
-									Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
-									Player = p;
+								if opts.CrossServer or (not isSystem and not opts.DontLog) then
+									AddLog("Commands",{
+										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
+										Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
+										Player = p;
+									})
+
+									if Settings.ConfirmCommands then
+										Functions.Hint('Executed Command: [ '..msg..' ]',{p})
+									end
+								end
+
+								if noYield then
+									taskName = "Thread: "..taskName
+								end
+
+								local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
+								if not opts.IgnoreErrors then
+									if error and type(error) == "string" then 
+										error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
+										if not isSystem then 
+											Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
+										end 
+									elseif error and type(error) ~= "string" then
+										if not isSystem then 
+											Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
+										end 
+									end
+								end
+
+								service.Events.CommandRan:Fire(p,{
+									Message = msg;
+									Matched = matched;
+									Args = args;
+									Command = command;
+									Index = index;
+									Success = ran;
+									Error = error;
+									Options = opts;
+									PlayerData = pDat;
 								})
-
-								if Settings.ConfirmCommands then
-									Functions.Hint('Executed Command: [ '..msg..' ]',{p})
+							else
+								if not isSystem and not opts.NoOutput then
+									Remote.MakeGui(p,'Output',{Title = ''; Message = 'This command has been disabled.'; Color = Color3.new(1,0,0)}) 
 								end
 							end
-
-							if noYield then
-								taskName = "Thread: "..taskName
-							end
-
-							local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
-							if not opts.IgnoreErrors then
-								if error and type(error) == "string" then 
-									error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
-									if not isSystem then 
-										Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
-									end 
-								elseif error and type(error) ~= "string" then
-									if not isSystem then 
-										Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
-									end 
-								end
-							end
-
-							service.Events.CommandRan:Fire(p,{
-								Message = msg;
-								Matched = matched;
-								Args = args;
-								Command = command;
-								Index = index;
-								Success = ran;
-								Error = error;
-								Options = opts;
-								PlayerData = pDat;
-							})
 						else
 							if not isSystem and not opts.NoOutput then
 								Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
