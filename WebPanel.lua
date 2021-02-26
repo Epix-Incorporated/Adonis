@@ -112,7 +112,7 @@ return function(Vargs)
 		FoundCustomCommands = {} -- Clear queue for next request
 		return ret
 	end
-	
+
 	local delta, frames = 0, 0
 	game:GetService("RunService").Stepped:Connect(function(time, step)
 		delta += step
@@ -138,7 +138,7 @@ return function(Vargs)
 		stats.ServerSpeed = math.min(frames/60, 1)*100
 		stats.Admins = admins
 		stats.JobId = game.JobId
-		stats.PrivateServer = true
+		stats.PrivateServer = game.PrivateServerOwnerId > 0
 
 		return stats
 	end
@@ -157,16 +157,16 @@ return function(Vargs)
 		if CachedAliases[index] then
 			local aliases = rawget(command, "Commands")
 			local newaliases = {}
-			
+
 			for _, alias in pairs(aliases) do
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
 			end
-			
+
 			for _, alias in ipairs(CachedAliases[index]) do
 				table.insert(newaliases, alias)
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
 			end
-			
+
 			command.Commands = newaliases
 		end
 	end
@@ -214,7 +214,7 @@ return function(Vargs)
 						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
 					end
 				end
-				
+
 				command.Commands = newaliases
 
 				if v.level ~= "Default" then
@@ -272,6 +272,24 @@ return function(Vargs)
 			end
 		end
 	end
+	
+	service.DataModel:BindToClose(function()
+		if server.Variables.WebPanel_Initiated then
+			local HTTP = game:GetService("HttpService")
+			local success, res = pcall(HTTP.RequestAsync, HTTP, {
+				Url = "https://robloxconnection.adonis.dev/remove";
+				Method = "DELETE";
+				Headers = {
+					["api-key"] = server.Settings.WebPanel_ApiKey,
+					["Content-Type"] = "application/json"
+				};
+				Body = HTTP:JSONEncode({
+					["JobId"] = game.JobId
+				})
+			});
+		end
+		wait(4)
+	end)
 
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
@@ -291,6 +309,8 @@ return function(Vargs)
 
 		if success and res.Success then
 			local data = HTTP:JSONDecode(res.Body)
+
+			print(res.Body)
 
 			--// Load plugins
 			--[[if init then
@@ -339,8 +359,8 @@ return function(Vargs)
 						end
 					end
 				end
-
-				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v.server == "Roblox Studio") then
+				print(v.server, game.JobId)
+				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v and v.server == "Roblox Studio") then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
 					elseif v.action == "remoteexecute" then
