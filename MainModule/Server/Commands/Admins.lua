@@ -5,9 +5,9 @@ return function(Vargs, env)
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		TempModerator = {
 			Prefix = Settings.Prefix;
@@ -64,7 +64,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ShutdownLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
@@ -199,7 +199,7 @@ return function(Vargs, env)
 				Variables.LockMessage = args[1]
 			end
 		};
-		
+
 		SystemMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"sm";"systemmessage";};
@@ -218,7 +218,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcge";"setcore"};
@@ -237,7 +237,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Alert = {
 			Prefix = Settings.Prefix;
 			Commands = {"alert";"alarm";"annoy";};
@@ -251,7 +251,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		LockMap = {
 			Prefix = Settings.Prefix;
 			Commands = {"lockmap";};
@@ -285,7 +285,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		BuildingTools = {
 			Prefix = Settings.Prefix;
 			Commands = {"btools";"buildtools";"buildingtools";"buildertools";};
@@ -313,7 +313,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		NewTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"newteam","createteam","maketeam"};
@@ -349,7 +349,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CreateSoundPart = {
 			Prefix = server.Settings.Prefix;	-- Prefix to use for command
 			Commands = {"createsoundpart","createspart"};	-- Commands
@@ -571,7 +571,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RestoreMap = {
 			Prefix = Settings.Prefix;
 			Commands = {"restoremap";"maprestore";"rmap";};
@@ -624,7 +624,7 @@ return function(Vargs, env)
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
 			end
 		};
-		
+
 		ScriptBuilder = {
 			Prefix = Settings.Prefix;
 			Commands = {"sb"};
@@ -817,7 +817,7 @@ return function(Vargs, env)
 				Functions.Hint("Ran LocalScript",{plr})
 			end
 		};
-		
+
 		Note = {
 			Prefix = Settings.Prefix;
 			Commands = {"note";"writenote";"makenote";};
@@ -963,7 +963,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Crash = {
 			Prefix = Settings.Prefix;
 			Commands = {"crash";};
@@ -1056,7 +1056,7 @@ return function(Vargs, env)
 				Functions.Shutdown(args[1])
 			end
 		};
-		
+
 		Ban = {
 			Prefix = Settings.Prefix;
 			Commands = {"ban";};
@@ -1087,7 +1087,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
@@ -1166,7 +1166,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban";};
@@ -1199,7 +1199,7 @@ return function(Vargs, env)
 				end
 			end;
 		};
-		
+
 		CustomMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"cm";"custommessage";};
@@ -1220,7 +1220,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Nil = {
 			Prefix = Settings.Prefix;
 			Commands = {"nil";};
