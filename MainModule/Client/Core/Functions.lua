@@ -111,15 +111,12 @@ return function()
 		
 		Dizzy = function(speed)
 			service.StopLoop("DizzyLoop")
-			print("dizzy")
 			if speed then
-				print("start")
 				local cam = workspace.CurrentCamera
 				local last = tick()
 				local rot = 0
 				local flip = false
 				service.StartLoop("DizzyLoop","RenderStepped",function()
-					print("in loop")
 					local dt = tick() - last
 					if flip then
 						rot = rot+math.rad(speed*dt)
