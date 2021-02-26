@@ -30,15 +30,15 @@ NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait, 
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn = 
 	_G, game, script, getfenv, setfenv, workspace, 
-getmetatable, setmetatable, loadstring, coroutine, 
-rawequal, typeof, print, math, warn, error,  pcall, 
-xpcall, select, rawset, rawget, ipairs, pairs, 
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-Vector3int16, elapsedTime, require, table, type, wait, 
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
+	getmetatable, setmetatable, loadstring, coroutine, 
+	rawequal, typeof, print, math, warn, error,  pcall, 
+	xpcall, select, rawset, rawget, ipairs, pairs, 
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
+	Vector3int16, elapsedTime, require, table, type, wait, 
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
 
 
 local unique = {}
@@ -140,6 +140,7 @@ local CleanUp = function()
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
 	service.Threads.StopAll()
+	
 	for i,v in next,RbxEvents do 
 		print("Disconnecting event") 
 		v:Disconnect() 
@@ -157,7 +158,8 @@ local CleanUp = function()
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
 	end
-	warn'Unloading complete'
+	
+	warn("Unloading complete")
 end;
 
 server = {
@@ -239,14 +241,7 @@ BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
---// Wrap
-                                                                                                                                                                                                                                                                                                                                                            --[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-                                                                                                                                                                                                                                                                                                                                                            script = service.Wrap(script)
-                                                                                                                                                                                                                                                                                                                                                            Enum = service.Wrap(Enum)
-                                                                                                                                                                                                                                                                                                                                                            game = service.Wrap(game)
-                                                                                                                                                                                                                                                                                                                                                            workspace = service.Wrap(workspace)
-                                                                                                                                                                                                                                                                                                                                                            Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-                                                                                                                                                                                                                                                                                                                                                            require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+--// Wrap                                                                                                                                                                                                                                                                                                                                                    require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual
@@ -254,6 +249,7 @@ rawequal = service.RawEqual
 --Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
+server.CommandModules = Folder.Commands;
 server.Client = Folder.Parent.Client;
 server.Dependencies = Folder.Dependencies;
 server.PluginsFolder = Folder.Plugins;
@@ -453,7 +449,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
 	server.LoadModule = LoadModule
 	server.ServiceSpecific = ServiceSpecific
-			
+
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
 

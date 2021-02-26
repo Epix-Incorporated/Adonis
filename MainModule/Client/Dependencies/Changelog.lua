@@ -1,6 +1,15 @@
 return {
-	"Version: 212";
+	"Version: 213";
 	"*Click and drag edges to expand*";
+	"";
+	"[2.26.2021 15:36 EST]";
+	"*Added a new Server folder named 'Commands'";
+	"*All commands have been broken off into modules inside the new Commands folder";
+	"*This was done to reduce the size of the commands module";
+	"*Git merge:";
+	"(Git/EnderUwU) Fixed :sceleratis and :davey_bones";
+	"(Git/joritochip & Cald-fan) Large webpanel improvements";
+	"(Git/p3tray) Removed left over debug prints from dizzy";
 	"";
 	"[2.25.2021 18:33 EST]";
 	"*Old console is back by popular demand; New console is now part of the \"Rounded\" theme instead";

@@ -24,10 +24,6 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Commands = server.Commands;
-
-		--// Cache Commands
-		Admin.CacheCommands()
-
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
@@ -639,6 +635,7 @@ return function(Vargs)
 					Table = "Banned";
 					Value = p.Name..':'..p.UserId;
 				})
+				
 				Core.CrossServer("Loadstring", [[
 					local player = game:GetService("Players"):FindFirstChild("]]..p.Name..[[")
 					if player then
