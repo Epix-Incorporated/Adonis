@@ -351,7 +351,7 @@ return function(Vargs)
 				local cStr
 
 				for i,v in next,commands do
-					if not v.Hidden then
+					if not v.Hidden and not v.Disabled then
 						if type(v.AdminLevel) == "table" then
 							cStr = ""
 							for k,m in ipairs(v.AdminLevel) do

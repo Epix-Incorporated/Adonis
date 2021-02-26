@@ -288,7 +288,9 @@ return function(Vargs)
 				local commands = Admin.SearchCommands(p,args[1] or "all")
 				local tab = {}
 				for i,v in pairs(commands) do
-					table.insert(tab,Admin.FormatCommand(v))
+					if not v.Hidden and not v.Disabled then
+						table.insert(tab,Admin.FormatCommand(v))
+					end
 				end
 				return tab
 			end;

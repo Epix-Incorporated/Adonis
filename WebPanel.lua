@@ -3,32 +3,32 @@
 	Currently in beta.
 	
 	Author: Cald_fan
-	Contributors: joritochip (Requests/custom commands)
+	Contributors: joritochip (Requests, handling custom commands, command overrides)
 	
 ]]
 
 return function(Vargs)
-	local server = Vargs.Server;
-	local service = Vargs.Service;
-
-	local init = true
-	server.Variables.WebPanel_Initiated = false
+	local server = Vargs.Server
+	local service = Vargs.Service
+	
 	local HTTP = service.HttpService
 	local Encode = server.Functions.Base64Encode
 	local Decode = server.Functions.Base64Decode
+	local Variables = server.Variables
 	local Settings = server.Settings
+	local Commands = server.Commands
+	local Admin = server.Admin
+	
+	Variables.WebPanel_Initiated = false
 
 	--[[
 		settings.WebPanel_Enabled = true;
 		settings.WebPanel_ApiKey = "";
 	]]
 
-
 	local WebPanel = server.HTTP.WebPanel
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
-
-	-- Create a fake player for use in remote execution
 	local fakePlayer = service.Wrap(service.New("Folder"))
 	local data = {
 		Name = "Server";
@@ -46,43 +46,66 @@ return function(Vargs)
 		Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
 		IsA = function(ignore, arg) if arg == "Player" then return true end end;
 	}
-
 	for i,v in next,data do fakePlayer:SetSpecial(i, v) end
 
-	-- Detect custom commands added by other plugins
 	local FoundCustomCommands = {}
+	local CachedAliases = {}
+	local CachedDefaultLevels = {}
+	
 	local OverrideQueue = {}
-	local CommandsMetatable = getmetatable(server.Commands) or {}
-	local ExistingNewIndex = CommandsMetatable.__newindex
-
-	CommandsMetatable.__newindex = function(tab, ind, val)
-		-- Prevent overwriting the existing metatable
-		ExistingNewIndex(tab, ind, val)
-
-		-- Add the new command to a table to send to the web server during the next request
-		FoundCustomCommands[ind] = val
-
-		-- Handle panel overrides where no matching command was found
-		local command = server.Commands[ind]
-
-		for i,v in pairs(OverrideQueue) do
-			if command.Commands and table.find(command.Commands, v.name) then
-				if v.data.disabled then 
-					command.Function = function()
-						error("Command Disabled!")
-					end
-				end
-				if v.data.level ~= "Default" then command.AdminLevel = v.data.level end
-				for i, alias in ipairs(v.data.aliases) do
-					command.Commands[#command.Commands + 1] = alias
-				end
-
-				table.remove(OverrideQueue, i)
+	
+	do -- Create a cache of the default admin levels for all commands
+		for name, command in pairs(Commands) do
+			CachedDefaultLevels[name] = rawget(command, "AdminLevel")
+			local aliases = {}
+			for _, cmd in pairs(rawget(command, "Commands")) do
+				table.insert(aliases, cmd)
 			end
+			CachedAliases[name] = aliases
 		end
 	end
+	
+	do -- Keep track of custom commands added by other plugins
+		local CommandsMetatable = getmetatable(Commands) or {}
+		local ExistingNewIndex = CommandsMetatable.__newindex
 
-	setmetatable(server.Commands, CommandsMetatable)
+		CommandsMetatable.__newindex = function(tab, ind, val)
+			-- Prevent overwriting the existing metatable
+			if ExistingNewIndex then
+				ExistingNewIndex(tab, ind, val)
+			end
+
+			-- Add the new command to a table to send to the web server during the next request
+			FoundCustomCommands[ind] = val
+			CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
+			local aliases = {}
+			for _, cmd in pairs(rawget(val, "Commands")) do
+				table.insert(aliases, cmd)
+			end
+			CachedAliases[ind] = aliases
+
+			-- Handle panel overrides where no matching command was found
+			local command = Commands[ind]
+
+			for i,v in pairs(OverrideQueue) do
+				if command.Commands and table.find(command.Commands, v.name) then
+					if v.data.disabled then 
+						command.Function = function()
+							error("Command Disabled!")
+						end
+					end
+					if v.data.level ~= "Default" then command.AdminLevel = v.data.level end
+					for i, alias in ipairs(v.data.aliases) do
+						command.Commands[#command.Commands + 1] = alias
+					end
+
+					table.remove(OverrideQueue, i)
+				end
+			end
+		end
+
+		setmetatable(Commands, CommandsMetatable)
+	end
 
 	local function GetCustomCommands() 
 		local ret = FoundCustomCommands
@@ -91,25 +114,136 @@ return function(Vargs)
 	end
 	
 	local function GetServerStats()
-		local table = {}
-
-		local adminnumber=0
-		for i,v in pairs(service.NetworkServer:children()) do
-			if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(),false) then
-				adminnumber=adminnumber+1
+		local stats = {}
+		
+		local admins = {}
+		for i,v in pairs(service.NetworkServer:GetChildren()) do
+			if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(), false) then
+				table.insert(admins, v:GetPlayer().Name)
 			end
 		end
 
-		table.PlayerCount=#game.Players:GetPlayers() == 0 and #service.NetworkServer:children() or #game.Players:GetPlayers()
-		table.MaxPlayers=game.Players.MaxPlayers
-		table.ServerAge=server.ServerStartTime
-		table.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
-		table.Admins=adminnumber
-		table.JobId = game.JobId
+		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:children() or #game.Players:GetPlayers()
+		stats.MaxPlayers = game.Players.MaxPlayers
+		stats.ServerAge = server.ServerStartTime
+		stats.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+		stats.Admins = admins
+		stats.JobId = game.JobId
+		stats.PrivateServer = game.PrivateServerOwnerId > 0
 
-		return table
+		return stats
 	end
+	
+	local function ResetCommandAdminLevel(index, command)
+		local metatbl = getmetatable(command)
+		if metatbl and metatbl.WebPanel then
+			setmetatable(command, nil)
+			if string.match(command.AdminLevel, "^WebPanel.+") then
+				command.AdminLevel = CachedDefaultLevels[index] or "Creators" -- in case something borks, fall back to Creators
+			end
+		end
+	end
+	
+	local function ResetCommands()
+		for index, command in pairs(Commands) do
+			if command.Disabled == "WebPanel" then
+				command.Disabled = nil
+			end
+			ResetCommandAdminLevel(index, command)
+		end
+	end
+	
+	local function UpdateCommands(data)
+		local didrun = false
+		for i,v in pairs(data.CommandOverrides) do
+			didrun = true
+			
+			local index, command = server.Admin.GetCommand(Settings.Prefix..i)
+			if not index or not command then index,command = server.Admin.GetCommand(Settings.PlayerPrefix..i) end
 
+			if index and command then
+				command.Disabled = v.disabled and "WebPanel" or nil
+
+				local aliases = rawget(command, "Commands")
+				
+				-- Remove old aliases from command cache
+				for _, alias in pairs(aliases) do
+					Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+				end
+				
+				local newaliases = {}
+				if CachedAliases[index] then
+					for _, alias in ipairs(CachedAliases[index]) do
+						if not table.find(v.aliases, "-"..alias) then
+							table.insert(newaliases, alias)
+							Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+						end
+					end
+				end
+				for _, alias in ipairs(v.aliases) do
+					if string.sub(alias, 1, 1) ~= "-" then
+						table.insert(newaliases, alias)
+						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+					end
+				end
+				command.Commands = newaliases
+				
+				if v.level ~= "Default" then
+					rawset(command, "AdminLevel", "WebPanel"..v.level)
+					setmetatable(command, {
+						WebPanel = true,
+						__index = function(tbl, index)
+							local rawlevel = rawget(command, "AdminLevel")
+							if index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
+								return {AdminLevel = string.sub(rawlevel, 9)}
+							end
+						end,
+					})
+				else
+					ResetCommandAdminLevel(index, command)
+				end
+			else
+				-- The command being overridden was not found, add it to a queue for later
+				table.insert(OverrideQueue, {
+					name = i,
+					data = v
+				})
+			end
+		end
+		if not didrun then
+			ResetCommands()
+		end
+	end
+	
+	local function UpdateSettings(data)
+		WebPanel.Bans = data.Levels.Banlist or {};
+		WebPanel.Creators = data.Levels.Creators or {};
+		WebPanel.Admins = data.Levels.Admins or {};
+		WebPanel.Moderators = data.Levels.Moderators or {};
+		WebPanel.Owners = data.Levels.Owners or {};
+		WebPanel.Mutes = data.Levels.Mutes or {};
+		WebPanel.Blacklist = data.Levels.Blacklist or {};
+		WebPanel.Whitelist = data.Levels.Whitelist or {};
+		WebPanel.CustomRanks = data.Levels.CustomRanks or {};
+		
+		if Variables.MusicList then
+			for i = #Variables.MusicList, 1, -1 do -- Iterating backwards to prevent wonky behavior with table.remove
+				local v = Variables.MusicList[i]
+				if v and v.WebPanel then
+					table.remove(Variables.MusicList, i)
+				end
+			end
+			for ind, music in next,data.Levels.Musiclist or {} do 
+				if music:match('^(.*):(.*)') then
+					local a,b = music:match('^(.*):(.*)')
+					if server.Variables.MusicList then
+						table.insert(server.Variables.MusicList, {Name = a,ID = tonumber(b),WebPanel=true})
+					end
+				end
+			end
+		end
+	end
+	
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
 		local success, res = pcall(HTTP.RequestAsync, HTTP, {
@@ -122,98 +256,15 @@ return function(Vargs)
 			Body = HTTP:JSONEncode({
 				["custom-commands"] = Encode(HTTP:JSONEncode(GetCustomCommands())), -- For loading custom commands in command settings!
 				["server-stats"] = Encode(HTTP:JSONEncode(GetServerStats())),
-				["init"] = init == true and "true" or "false"
+				["init"] = Variables.WebPanel_Initiated and "false" or "true",
 			})
 		});
-
+		
 		if success and res.Success then
 			local data = HTTP:JSONDecode(res.Body)
-			--print(res.Body)
-
-			--// Load table settings (Admins, Creators, Bans, etc)
-			--[[ ?
-			local moderators = {}
-			local admins = {}
-			local owners = {}
-			local creators = {}
-			local mutes = {}
-			local bans = {}
-			local blacklist = {}
-			local whitelist = {}
-			local customRanks = {}
-			
-			for ind, mod in next, data.Levels.Moderators or {} do table.insert(moderators, mod) end
-			for ind, admin in next, data.Levels.Admins or {} do table.insert(admins, admin) end
-			for ind, owner in next, data.Levels.Owners or {} do table.insert(owners, owner) end
-			for ind, creator in next, data.Levels.Creators or {} do table.insert(creators, creator) end
-			for ind, mute in next, data.Levels.Mutelist or {} do table.insert(mutes, mute) end
-			for ind, ban in next, data.Levels.Banlist or {} do table.insert(bans, ban) end
-			for ind, list in next, data.Levels.Blacklist or {} do table.insert(blacklist, list) end
-			for ind, list in next, data.Levels.Whitelist or {} do table.insert(whitelist, list) end
-			
-			if #bans>0 then WebPanel.Bans = bans end
-			if #creators>0 then WebPanel.Creators = creators end
-			if #admins>0 then WebPanel.Admins = admins end
-			if #moderators>0 then WebPanel.Moderators = moderators end
-			if #owners>0 then WebPanel.Owners = owners end
-			if #mutes>0 then WebPanel.Mutes = mutes end
-			if #blacklist>0 then WebPanel.Blacklist = blacklist end
-			if #whitelist>0 then WebPanel.Whitelist = whitelist end
-			--]]
-
-			WebPanel.Bans = data.Levels.Banlist or {};
-			WebPanel.Creators = data.Levels.Creators or {};
-			WebPanel.Admins = data.Levels.Admins or {};
-			WebPanel.Moderators = data.Levels.Moderators or {};
-			WebPanel.Owners = data.Levels.Owners or {};
-			WebPanel.Mutes = data.Levels.Mutes or {};
-			WebPanel.Blacklist = data.Levels.Blacklist or {};
-			WebPanel.Whitelist = data.Levels.Whitelist or {};
-			WebPanel.CustomRanks = data.Levels.CustomRanks or {};
-
-			for ind, music in next,data.Levels.Musiclist or {} do 
-				if music:match('^(.*):(.*)') and init then
-					local a,b = music:match('^(.*):(.*)')
-					if not server.Variables.MusicList then
-						table.insert(server.Variables.MusicList, {Name = a,ID = tonumber(b)})
-					end
-				end
-			end
-
-			--// Trello Data
-			if data.trello.board and data.trello["app-key"] and data.trello.token and init then
-				server.Settings.Trello_Enabled = true
-				server.Settings.Trello_Primary = data.trello.board
-				server.Settings.Trello_AppKey = data.trello["app-key"]
-				server.Settings.Trello_Token = data.trello.token
-
-				service.StartLoop("TRELLO_UPDATER", server.Settings.HttpWait, server.HTTP.Trello.Update, true)
-			end
-
-			--// Aliases, Perms/Disabling
-			for i,v in pairs(data.CommandOverrides) do
-				local index,command = server.Admin.GetCommand(server.Settings.Prefix..i)
-				if not index or not command then index,command = server.Admin.GetCommand(server.Settings.PlayerPrefix..i) end
-
-				if index and command then
-					if v.disabled then
-						server.Commands[index] = nil
-					end
-					if v.level ~= "Default" then command.AdminLevel = v.level end
-					for i, alias in ipairs(v.aliases) do
-						command.Commands[#command.Commands + 1] = alias
-					end
-				else
-					-- The command being overridden was not found, add it to a queue for later
-					table.insert(OverrideQueue, {
-						name = i,
-						data = v
-					})
-				end
-			end
 
 			--// Load plugins
-			if init then
+			--[[if init then
 				for i,v in next,data.Plugins do
 					local func,err = server.Core.Loadstring(Decode(v), getfenv())
 					if func then 
@@ -222,9 +273,23 @@ return function(Vargs)
 						warn("Error Loading Plugin from WebPanel.")
 					end
 				end
+			end]]
+			
+			if not Variables.WebPanel_Initiated then
+				UpdateCommands(data)
+				UpdateSettings(data)
+				
+				if data.trello.board and data.trello["app-key"] and data.trello.token then
+					Settings.Trello_Enabled = true
+					Settings.Trello_Primary = data.trello.board
+					Settings.Trello_AppKey = data.trello["app-key"]
+					Settings.Trello_Token = data.trello.token
+
+					service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, server.HTTP.Trello.Update, true)
+				end
 			end
 
-			--// Load queue
+			--// Handle queue items
 			for i,v in pairs(data.Queue) do
 				if typeof(v.action) ~= "string" then v.action = tostring(v.action) end
 				if typeof(v.server) ~= "string" then v.server = tostring(v.server) end
@@ -232,7 +297,12 @@ return function(Vargs)
 				if v.action == "gameshutdown" then
 					server.Functions.Shutdown("Game Shutdown")
 					break
+				elseif v.action == "updatecommands" then
+					UpdateCommands(data)
+				elseif v.action == "updatesettings" then
+					UpdateSettings(data)
 				end
+				
 				if v and v.server == game.JobId then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
@@ -243,10 +313,9 @@ return function(Vargs)
 				end
 			end
 
-			if init then
+			if not Variables.WebPanel_Initiated then
 				server.Logs:AddLog("Script", "WebPanel Initialization Complete")
-				server.Variables.WebPanel_Initiated = true
-				init = false
+				Variables.WebPanel_Initiated = true
 			end
 		else
 			local code, msg = res.StatusCode, res.StatusMessage
