@@ -70,6 +70,9 @@ return function(Vargs)
 			end
 		end
 		
+		--// Cache commands
+		Admin.CacheCommands();
+		
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
 
