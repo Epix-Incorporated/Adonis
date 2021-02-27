@@ -1,0 +1,41 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="LocalScript" referent="RBXDBF523B9C44A476D9D42FDC21DA925CC">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">Sfling</string>
+			<string name="ScriptGuid">{61F447BE-6192-4214-8938-59EF4489FA89}</string>
+			<ProtectedString name="Source"><![CDATA[wait()
+local cam = workspace.CurrentCamera
+local torso = script.Parent
+local hum = torso.Parent.Humanoid
+local strength = script.Strength.Value
+for i=1,100 do
+  wait(0.1)
+  hum.Sit = true
+  local ex = Instance.new("Explosion",cam)
+  ex.Position = torso.Position+Vector3.new(math.random(-5,5),-10,math.random(-5,5))
+  ex.BlastRadius = 35;
+  ex.BlastPressure = strength;
+  ex.ExplosionType = Enum.ExplosionType.CratersAndDebris;
+  ex.DestroyJointRadiusPercent = 0
+end
+script:Destroy()]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="NumberValue" referent="RBXCB3F5B8FB6D146399BEFF15E8600883C">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Strength</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<double name="Value">0</double>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
