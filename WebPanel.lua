@@ -53,58 +53,17 @@ return function(Vargs)
 	local CachedDefaultLevels = {}
 
 	local OverrideQueue = {}
-
-	do -- Create a cache of the default admin levels for all commands
-		for name, command in pairs(Commands) do
-			CachedDefaultLevels[name] = rawget(command, "AdminLevel")
-			local aliases = {}
-			for _, cmd in pairs(rawget(command, "Commands")) do
-				table.insert(aliases, cmd)
-			end
-			CachedAliases[name] = aliases
-		end
-	end
-
-	do -- Keep track of custom commands added by other plugins
-		local CommandsMetatable = getmetatable(Commands) or {}
-		local ExistingNewIndex = CommandsMetatable.__newindex
-
-		CommandsMetatable.__newindex = function(tab, ind, val)
-			-- Prevent overwriting the existing metatable
-			if ExistingNewIndex then
-				ExistingNewIndex(tab, ind, val)
-			end
-
-			-- Add the new command to a table to send to the web server during the next request
-			FoundCustomCommands[ind] = val
-			CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
-			local aliases = {}
-			for _, cmd in pairs(rawget(val, "Commands")) do
-				table.insert(aliases, cmd)
-			end
-			CachedAliases[ind] = aliases
-
-			-- Handle panel overrides where no matching command was found
-			local command = Commands[ind]
-
-			for i,v in pairs(OverrideQueue) do
-				if command.Commands and table.find(command.Commands, v.name) then
-					if v.data.disabled then 
-						command.Function = function()
-							error("Command Disabled!")
-						end
-					end
-					if v.data.level ~= "Default" then command.AdminLevel = v.data.level end
-					for i, alias in ipairs(v.data.aliases) do
-						command.Commands[#command.Commands + 1] = alias
-					end
-
-					table.remove(OverrideQueue, i)
-				end
+	
+	local function CopyCommand(tbl)
+		local ret = {}
+		for i,v in pairs(tbl) do
+			if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
+				ret[i] = tbl[i]
+			elseif typeof(v) == "table" then
+				ret[i] = CopyCommand(tbl[i])
 			end
 		end
-
-		setmetatable(Commands, CommandsMetatable)
+		return ret
 	end
 
 	local function GetCustomCommands() 
@@ -180,6 +139,50 @@ return function(Vargs)
 			ResetCommandAliases(index, command)
 		end
 	end
+	
+	local function UpdateCommand(index, command, v)
+		command.Disabled = v.disabled and "WebPanel" or nil
+
+		local aliases = rawget(command, "Commands")
+		local newaliases = {}
+
+		-- Remove old aliases from command cache
+		for _, alias in pairs(aliases) do
+			Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+		end
+
+		if CachedAliases[index] then
+			for _, alias in ipairs(CachedAliases[index]) do
+				if not table.find(v.aliases, "-"..alias) then
+					table.insert(newaliases, alias)
+					Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+				end
+			end
+		end
+		for _, alias in ipairs(v.aliases) do
+			if string.sub(alias, 1, 1) ~= "-" then
+				table.insert(newaliases, alias)
+				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+			end
+		end
+
+		command.Commands = newaliases
+
+		if v.level ~= "Default" then
+			rawset(command, "AdminLevel", "WebPanel"..v.level)
+			setmetatable(command, {
+				WebPanel = true,
+				__index = function(tbl, index)
+					local rawlevel = rawget(command, "AdminLevel")
+					if index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
+						return {AdminLevel = string.sub(rawlevel, 9)}
+					end
+				end,
+			})
+		else
+			ResetCommandAdminLevel(index, command)
+		end
+	end
 
 	local function UpdateCommands(data)
 		local didrun = false
@@ -190,47 +193,7 @@ return function(Vargs)
 			if not index or not command then index,command = server.Admin.GetCommand(Settings.PlayerPrefix..i) end
 
 			if index and command then
-				command.Disabled = v.disabled and "WebPanel" or nil
-
-				local aliases = rawget(command, "Commands")
-				local newaliases = {}
-
-				-- Remove old aliases from command cache
-				for _, alias in pairs(aliases) do
-					Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
-				end
-
-				if CachedAliases[index] then
-					for _, alias in ipairs(CachedAliases[index]) do
-						if not table.find(v.aliases, "-"..alias) then
-							table.insert(newaliases, alias)
-							Admin.CommandCache[string.lower(command.Prefix..alias)] = index
-						end
-					end
-				end
-				for _, alias in ipairs(v.aliases) do
-					if string.sub(alias, 1, 1) ~= "-" then
-						table.insert(newaliases, alias)
-						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
-					end
-				end
-
-				command.Commands = newaliases
-
-				if v.level ~= "Default" then
-					rawset(command, "AdminLevel", "WebPanel"..v.level)
-					setmetatable(command, {
-						WebPanel = true,
-						__index = function(tbl, index)
-							local rawlevel = rawget(command, "AdminLevel")
-							if index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
-								return {AdminLevel = string.sub(rawlevel, 9)}
-							end
-						end,
-					})
-				else
-					ResetCommandAdminLevel(index, command)
-				end
+				UpdateCommand(index, command, v)
 			else
 				-- The command being overridden was not found, add it to a queue for later
 				table.insert(OverrideQueue, {
@@ -273,6 +236,50 @@ return function(Vargs)
 		end
 	end
 	
+	do -- Create a cache of the default admin levels for all commands
+		for name, command in pairs(Commands) do
+			CachedDefaultLevels[name] = rawget(command, "AdminLevel")
+			local aliases = {}
+			for _, cmd in pairs(rawget(command, "Commands")) do
+				table.insert(aliases, cmd)
+			end
+			CachedAliases[name] = aliases
+		end
+	end
+
+	do -- Keep track of custom commands added by other plugins
+		local CommandsMetatable = getmetatable(Commands) or {}
+		local ExistingNewIndex = CommandsMetatable.__newindex
+
+		CommandsMetatable.__newindex = function(tab, ind, val)
+			-- Prevent overwriting the existing metatable
+			if ExistingNewIndex then
+				ExistingNewIndex(tab, ind, val)
+			end
+
+			-- Add the new command to a table to send to the web server during the next request
+			FoundCustomCommands[ind] = CopyCommand(val)
+			CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
+			local aliases = {}
+			for _, cmd in pairs(rawget(val, "Commands")) do
+				table.insert(aliases, cmd)
+			end
+			CachedAliases[ind] = aliases
+
+			-- Handle panel overrides where no matching command was found
+			local command = Commands[ind]
+
+			for i,v in pairs(OverrideQueue) do
+				if command.Commands and table.find(command.Commands, v.name) then
+					UpdateCommand(ind, val, v.data)
+					break
+				end
+			end
+		end
+
+		setmetatable(Commands, CommandsMetatable)
+	end
+
 	service.DataModel:BindToClose(function()
 		if server.Variables.WebPanel_Initiated then
 			local HTTP = game:GetService("HttpService")
@@ -357,7 +364,7 @@ return function(Vargs)
 						end
 					end
 				end
-				
+
 				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v and v.server == "Roblox Studio") then
 					if v.action == "shutdown" then
 						server.Functions.Shutdown("Game Shutdown")
