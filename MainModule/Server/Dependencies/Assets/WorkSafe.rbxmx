@@ -1,0 +1,97 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Script" referent="RBX706A80F088394F129C3EB63565E1F6EA">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">WorkSafe</string>
+			<string name="ScriptGuid">{3740FAB3-9C3E-4064-B458-11CDC8ACB310}</string>
+			<ProtectedString name="Source"><![CDATA[local Pcall=function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print('Error: '..error) end end
+local mode=script.Mode.Value
+
+if mode=="AnchorSafe" or mode=="ObjectSafe" then
+	function cover(part)
+		for i,v in pairs(part:children()) do
+			pcall(cover,v)
+		end
+		if part==workspace then return end
+		if not part:IsA("Terrain") and part.Archivable then
+			local anchor=false
+			local parent
+			local orig
+			local pos
+			if (part:IsA("Part") or part:IsA("UnionOperation")) and mode=="AnchorSafe" then
+				if part.Anchored then			
+					anchor=true
+					pos=part.Position
+					--print("ANCHORE 1")
+				end
+			elseif mode=="ObjectSafe" then
+				parent=part.Parent
+				orig=part:Clone()
+				--print("DEL ONE")
+			end
+			local event
+			event=part.Changed:connect(function(p)
+				pcall(function()
+					if anchor and part and part.Parent and mode=="AnchorSafe" then
+						part.Anchored=true
+						part.Position=pos
+						--print("ANCHOR")
+					elseif mode=="ObjectSafe" then
+						if part and part.Parent~=parent and part.Parent~=nil then
+							part.Parent=parent
+						elseif not part or not part.Parent then
+							local new=orig:clone()
+							new.Parent=workspace
+							cover(new)
+							event:disconnect()
+						end
+						--print("DELETE "..part:GetFullName())
+					end
+				end)
+			end)
+		end
+	end
+	pcall(cover,workspace)
+elseif mode=="AntiLeak" then
+	local function noleak(obj) 
+		if obj.ClassName == "StarterPlayerScripts" or obj.ClassName == "OLD.ServerStorage" or obj.ClassName == "Tool" or obj.ClassName == "HopperBin" then return end 
+		obj.Archivable = false 
+		obj.Changed:connect(function(p)
+			obj.Archivable = false
+		end)
+		for i,v in pairs(obj:children()) do 
+			pcall(function() 
+				v.Archivable = false 	
+				v.Changed:connect(function(p)
+					v.Archivable = false
+				end)
+			end) 
+		end 
+	end
+	pcall(noleak,game) 
+	pcall(noleak,workspace)
+	pcall(noleak,game:service("ReplicatedStorage"))
+	--pcall(noleak,game:service("ServerStorage"))
+	pcall(noleak,game:service("ServerScriptService"))
+end
+
+warn("Adonis_WorkSafe Instance Loaded")]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="StringValue" referent="RBX39A3394F5B70434C9D2B3F3CD8F63110">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Mode</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Value"></string>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

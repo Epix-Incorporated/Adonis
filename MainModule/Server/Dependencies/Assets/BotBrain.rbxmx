@@ -1,0 +1,280 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Script" referent="RBX6F6D824EF82D436A8D4BB07C73CC6E4B">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">BotBrain</string>
+			<string name="ScriptGuid">{EC769CAE-59C9-481A-A7E3-856A89C656BD}</string>
+			<ProtectedString name="Source"><![CDATA[local char = script.Parent
+local event = script.Event
+
+local pathService = game:GetService("PathfindingService")
+local players = game:GetService("Players")
+
+local hum = script.Parent.Humanoid
+local head = script.Parent.Head
+local torso = script.Parent:FindFirstChild("HumanoidRootPart") or script.Parent:FindFirstChild("Torso") or script.Parent:FindFirstChild("UpperTorso") 
+local larm = script.Parent:FindFirstChild("Left Arm") or script.Parent:FindFirstChild("LeftLowerArm")
+local rarm = script.Parent:FindFirstChild("Right Arm") or script.Parent:FindFirstChild("RightLowerArm")
+local lleg = script.Parent:FindFirstChild("Left Leg") or script.Parent:FindFirstChild("LeftLowerLeg")
+local rleg = script.Parent:FindFirstChild("Right Leg") or script.Parent:FindFirstChild("RightLowerLeg")
+
+local path = {}
+local current
+local currentInd = 0
+
+local props = {
+	Target = nil;
+	AutoTarget = true;
+	Swarm = false;
+	Damage = 5;
+	Distance = 50;
+	PatrolDist = 50;
+	PatrolZone = torso.Position;
+	Attack = false;
+	TeamColor = nil;
+	CanGiveUp = true;
+	SpawnPoint = torso.CFrame;
+	CanRespawn = false;
+	SpecialKey = "null";
+	AttackBots = false;
+	isDead = false;
+	LastCompute = tick();
+}
+
+function setProp(prop, value)
+	if props[prop] then
+		props[prop] = value
+	end
+end
+
+function getCFrame()
+	local humanoidRootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+	if humanoidRootPart ~= nil and humanoidRootPart:IsA('BasePart') then
+		return humanoidRootPart.CFrame
+	else
+		return CFrame.new()
+	end
+end
+
+function jumpCheck()
+	local cframe = getCFrame()
+	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild('HumanoidRootPart') or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
+	if targ and (targ.Position-cframe.p).magnitude < 1 then
+		--// Do something?
+	else
+		local checkVector = (cframe*CFrame.new(0,0,-3.5)).p
+		local ray = Ray.new(cframe.p,(checkVector - cframe.p).unit)
+		local hit, pos = workspace:FindPartOnRay(ray,char)
+		if hit and (pos-cframe.p).magnitude < 0.7 then
+			hum.Jump = true
+		end
+	end
+end
+
+function findTarget()
+	local closest
+	local prevDist = props.Distance
+	for i,v in next,workspace:GetChildren() do
+		local vTorso = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("Torso") or v:FindFirstChild("UpperTorso")
+		local human = v:FindFirstChildOfClass("Humanoid")
+		if v~=char and v:IsA("Model") and torso and vTorso and human and human.Health>0 then
+			local dist = (torso.Position-vTorso.Position).magnitude
+			if dist < prevDist and validTarget(v) then
+				prevDist = dist
+				closest = v
+			end
+		end
+	end
+	return closest
+end
+
+function canSee(targCFrame)
+	local myPos = getCFrame().p
+	local targetPos = targCFrame.p
+	local ray = Ray.new(myPos, (targetPos - myPos).unit)
+	local hit, pos = workspace:FindPartOnRayWithIgnoreList(ray,{char, props.Target})
+	
+	if hit then
+		return false
+	else
+		return true
+	end
+end
+
+function validTarget(v)
+	local targ = v or props.Target
+	local isBot = targ:FindFirstChild("isBot")
+	local isPlayer = game:GetService("Players"):GetPlayerFromCharacter(targ)
+	local canHurt = (not isBot and not isPlayer) or (isBot and props.AttackBots and (isBot.Value ~= props.SpecialKey or isBot.Value == "null")) or (isPlayer and not (props.Friendly and (isPlayer == props.Creator or isPlayer.TeamColor == props.TeamColor)))
+	if targ and targ ~= char and canHurt then
+		local targetHumanoid = targ:FindFirstChildOfClass("Humanoid")
+		if targetHumanoid ~= nil and targetHumanoid.Health < 999999999 and (targ:FindFirstChild("HumanoidRootPart") or targ:FindFirstChild("Torso") or targ:FindFirstChild("UpperTorso")) then
+			return true
+		else
+			return false
+		end
+	else
+		return false
+	end
+end
+
+function doAttack(v)
+	if props.Attack and not props.isDead and v == props.Target and validTarget(v) then
+		local hum = v:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum:TakeDamage(props.Damage)
+		end
+	end
+end
+
+function checkPath()
+	if props.AutoCompute or tick() - props.LastCompute > 1 then
+		getPath()
+	end
+end
+
+function getPath()
+	local targetPos
+	
+	if props.Target and props.Target.Parent then
+		local target = props.Target:FindFirstChild("HumanoidRootPart") or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")
+		if target then
+			targetPos = target.CFrame
+		else
+			targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
+			wait(0.1)
+		end
+	else
+		targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
+	end
+	
+	if not props.isDead and not props.Computing then
+		if canSee(targetPos) then
+			props.AutoCompute = true
+			path = {getCFrame(), targetPos.p}
+			props.LastCompute = tick()
+			current = nil
+			currentInd = 2
+		else
+			props.Computing = true
+			props.AutoCompute = false
+			
+			local pathf = pathService:ComputeSmoothPathAsync(
+				getCFrame().p,
+				targetPos.p,
+				500
+			)
+			
+			path = {}
+			path = pathf:GetPointCoordinates()
+			props.LastCompute = tick()
+			props.Computing = false
+			current = nil
+			currentInd = 2
+		end
+	end
+end
+
+function walkPath()
+	local myPos = getCFrame().p
+	
+	local coord = path[currentInd]
+	if coord then
+		current = coord
+		currentInd = currentInd+1
+		
+		if hum ~= nil and hum:IsA'Humanoid' then
+			hum:MoveTo(current)
+			
+			jumpCheck()
+			if (current.Y - getCFrame().p.Y) > 2.5 then
+				hum.Jump = true
+			elseif (current.Y - getCFrame().p.Y) < -2.5 then
+				hum:MoveTo(current+Vector3.new(2,0,2))
+			end
+			
+			if #path>2 then
+				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).magnitude < 2.5
+			end
+		end
+		
+		if currentInd == #path then
+			props.AutoCompute = true
+		end
+	end
+end
+
+function updateBot()
+	local targ = findTarget()
+	if targ and props.Swarm then
+		props.Target = targ
+	else
+		props.Target = nil
+	end
+	checkPath()
+	walkPath()
+	wait()
+end
+
+function init()
+	local str = Instance.new("StringValue",char)
+	str.Name = "isBot"
+	str.Value = props.SpecialKey
+	
+	hum.Died:connect(function()
+		wait(1)
+		props.isDead = true
+		char:Destroy()
+	end)
+	
+	while wait() and not props.isDead do
+		if char and hum and not props.isDead then
+			updateBot()
+		else
+			props.isDead = true
+			wait(1)
+			char:Destroy()
+		end
+	end
+end
+
+function doToucher(part)
+	part.Touched:connect(function(hit)
+		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChild("Humanoid") then
+			doAttack(hit.Parent)
+		end
+	end)
+end
+
+doToucher(torso)
+doToucher(head)
+doToucher(lleg)
+doToucher(rleg)
+
+event.Event:connect(function(command,data)
+	if command == "SetSetting" then
+		for i,v in next,data do
+			props[i] = v
+		end
+	elseif command == "Init" then
+		init()
+	end
+end)]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="BindableEvent" referent="RBX611761C20520464BB65A0C347B27791D">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Event</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
