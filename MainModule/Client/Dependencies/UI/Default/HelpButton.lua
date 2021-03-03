@@ -27,7 +27,7 @@ return function(data)
 	toggle.BackgroundTransparency = 1
 	toggle.Position = UDim2.new(1, -45, 1, -45)
 	toggle.Size = UDim2.new(0, 40, 0, 40)
-	toggle.Image = "rbxassetid://357249130"
+	toggle.Image = settings.HelpButtonImage
 	toggle.ImageTransparency = 0.5
 	
 	--if client.UI.Get("Chat") then
