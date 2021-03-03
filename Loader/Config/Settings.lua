@@ -224,7 +224,8 @@ local descs = {}
 	settings.Console = true			-- Command console
 	
 	settings.HelpSystem = true		-- Allows players to call admins for help using !help
-	settings.HelpButton = true		-- Shows a little help button in the bottom right corner
+	settings.HelpButton = true              -- Shows a little help button in the bottom right corner.
+	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this if you want a different image for a help button!
 	
 	settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
 	settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
