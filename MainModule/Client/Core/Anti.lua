@@ -715,7 +715,7 @@ return function()
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
-				if Script and tostring(Script)=='tpircsnaisyle'then
+				if Script and Script=='tpircsnaisyle'then
 					Detected("kick","Elysian")
 				elseif check(Message) or check(Trace) or check(Script) then
 					Detected('crash','Exploit detected; '..Message.." "..Trace.." "..Script)
