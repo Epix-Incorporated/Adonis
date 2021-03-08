@@ -20,6 +20,12 @@ If you find any bugs or come up with useful changes feel free to submit an issue
 However, please do not submit issues caused by changes you made to your personal version of the code. If you are trying to change Adonis' code, you do so at your own risk and anything you break as a result will be on you to debug. 
 
 Feel free to seek guidance in the development channel on our Discord.
+
+## Building from source:
+This project uses Rojo.
+Follow the installation steps outlined here: https://rojo.space/docs/installation/
+
+Once installed, download/clone this repository, enter the repo's directory, and run "rojo build -o Adonis.rbxmx" to build a model file or "rojo build -o Adonis.rbxlx" to build a place file (Note: In the place file, you can find the model in ServerScriptService > Adonis_Rojo)
  
 ## Adonis Loader:
 
