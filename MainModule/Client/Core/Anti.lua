@@ -439,6 +439,7 @@ return function()
 				'gui made by kujo';
 				"tetanus reloaded hooked";
 				--"brackhub";
+				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
 			local files = {
@@ -713,8 +714,11 @@ return function()
 			end)
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
-				if Script and tostring(Script)=='tpircsnaisyle'then
+				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+				if Script and Script=='tpircsnaisyle'then
 					Detected("kick","Elysian")
+				elseif check(Message) or check(Trace) or check(Script) then
+					Detected('crash','Exploit detected; '..Message.." "..Trace.." "..Script)
 				elseif (not Script or ((not Trace or Trace == ""))) then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
@@ -728,7 +732,7 @@ return function()
 						continue = true
 					end
 					if continue then
-						if string.find(tostring(Trace),"CoreGui") or string.find(tostring(Trace),"PlayerScripts") or string.find(tostring(Trace),"Animation_Scripts") or string.match(tostring(Trace),"^(%S*)%.(%S*)") then
+						if string.match(Trace,"CoreGui") or string.match(Trace,"PlayerScripts") or string.match(Trace,"Animation_Scripts") or string.match(Trace,"^(%S*)%.(%S*)") then
 							return
 						else
 							Detected("log","Traceless/Scriptless error")
