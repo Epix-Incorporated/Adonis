@@ -775,15 +775,16 @@ return function(Vargs)
 				local target = args[2]
 				local from = args[3]
 				local message = args[4]
+					
 				Remote.MakeGui(target,"PrivateMessage",{
 					Title = "Reply from ".. p.Name;--title;
 					Player = p;
 					Message = service.Filter(message, p, target);
 				})
-
-				Logs.AddLog(Logs.Script,{
-					Text = p.Name.." replied to "..tostring(target),
-					Desc = message,
+				local Message1 = service.Filter(message, p, target)
+				server.Logs.AddLog(server.Logs.PrivateMessages,{
+					Text =  tostring("["..p.Name.." > "..tostring(target).."] "..Message1:sub(1, 15)) .. " (Mouse over full message)";
+					Desc = Message1;
 					Player = p;
 				})
 			end;
