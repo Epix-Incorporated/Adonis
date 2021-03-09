@@ -54,7 +54,106 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
 			end
 		};
-		
+			
+		Thru = {
+			Prefix = Settings.Prefix;
+			Commands = {"thru";"pass";"through"};
+			Hidden = false;
+			Args = {};
+			Description = "Lets you pass through an object or a wall";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
+
+			end
+		};
+					server.Commands.WisperLogs = {
+		Prefix = server.Settings.Prefix;
+		Commands = {"whisperlogs","whisplogs","whisperspy"};
+		Args = {"autoupdate"};
+		Description = "Displays each player who has whispered to another player.";
+		Hidden = false;
+		Fun = false;
+		Agents = true;
+		AdminLevel = "Admins";
+		Function = function(plr,args)
+			assert(Settings.PMLogs,"PMLogs are disabled; Enable them in Settings")
+			local auto
+			if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+				auto = 1
+			end
+
+			server.Remote.MakeGui(plr, "List", {
+				Title = "Whispers";
+				Tab = server.Logs.Whispers;
+				Dots = true; 
+				Update = "GetWhisperLogs";
+				AutoUpdate = auto;
+			})
+		end
+	}
+						
+	      MassBring = {
+		Prefix = server.Settings.Prefix;
+		Commands = {"massbring";};
+		Args = {"player","lines"};
+		Hidden = false;
+		Description = "Evenly brings and positions players to prevent flinging";
+		Fun = false;
+		AdminLevel = "Moderators";
+		Function = function(plr,args)
+			local players = args[1] and service.GetPlayers(plr, args[1]) or service.GetPlayers(plr, "me")
+			local lines = (tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, #players)) or 1
+			for l = 1, lines do
+				local offsetX = 0
+				if l == 1 then
+					offsetX = 0
+				elseif l % 2 == 1 then
+					offsetX = -(math.ceil((l - 2)/2)*4)
+				else
+					offsetX = (math.ceil(l / 2))*4
+				end
+				for i = (l-1)*math.floor(#players/lines)+1, l*math.floor(#players/lines) do
+					local player = players[i]
+					--if n.Character.Humanoid.Sit then
+					--	n.Character.Humanoid.Sit = false
+					--	wait(0.5)
+					--end
+					player.Character.Humanoid.Jump = true
+					wait()
+					if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+						local offsetZ = ((i-1) - (l-1)*math.floor(#players/lines))*2
+						player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+					end
+				end
+			end
+			if #players%lines ~= 0 then
+				for i = lines*math.floor(#players/lines)+1, lines*math.floor(#players/lines) + #players%lines do
+					local r = i % (lines*math.floor(#players/lines))
+					local offsetX = 0
+					if r == 1 then
+						offsetX = 0
+					elseif r % 2 == 1 then
+						offsetX = -(math.ceil((r - 2)/2)*4)
+					else
+						offsetX = (math.ceil(r / 2))*4
+					end
+					local player = players[i]
+					--if n.Character.Humanoid.Sit then
+					--	n.Character.Humanoid.Sit = false
+					--	wait(0.5)
+					--end
+					player.Character.Humanoid.Jump = true
+					wait()
+					if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+						local offsetZ = (math.floor(#players/lines))*2
+						player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+					end
+				end
+			end
+		end
+	};			
 		Notification = {
 			Prefix = Settings.Prefix;
 			Commands = {"notify","notification"};
