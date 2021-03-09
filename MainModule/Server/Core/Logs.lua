@@ -59,6 +59,7 @@ return function(Vargs)
 				Commands = "Command";
 				Exploit = "Exploit";
 				Errors = "Error";
+				PMLogs = "PMLogs"
 			}
 			
 			for ind,t in next,server.Logs do
@@ -240,7 +241,7 @@ return function(Vargs)
 				return Logs.Chats
 			end;
 			PrivateMessages = function()
-				return Logs.PrivateMessages
+				return Logs.PMLogs
 			end;
 			JoinLogs = function()
 				return Logs.Joins
