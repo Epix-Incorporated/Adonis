@@ -421,138 +421,6 @@ return function(Vargs)
 			--]]
 		end;
 
-		WorkspaceObjectAdded = function(c)
-			if Settings.NetworkOwners and not service.IsAdonisObject(c) then
-				service.Wait()
-				local class = service.GetUserType(c)
-				if (class == "Part" or class == "BasePart" or class == "SpawnLocation" or class == "MeshPart" or class == "CornerWedgePart" or class == "WedgePart" or class == "TrussPart" or class == "VehicleSeat" or class == "Seat") and not c:IsGrounded() and not c.Anchored then
-					local ran,netOwner = pcall(function() return c:GetNetworkOwner() end)
-					if ran and netOwner then
-						Logs.AddLog("NetworkOwners",{
-							Player = netOwner;
-							Part = c;
-							Path = c:GetFullName();
-						})
-					end
-				end
-			end
-		end;
-
-		WorkspaceObjectRemoving = function(c)
-
-		end;
-
-		ObjectAdded = function(c)
-			if Settings.AntiInsert.Enabled and not service.IsAdonisObject(c) then
-				local rlocked = Anti.ObjRLocked(c)
-				local class = Anti.GetClassName(c)
-				if class then
-					local tab = Settings.AntiInsert[class]
-					if tab then
-						if tab.Action == "Delete" or Anti.ObjRLocked(c) then
-							service.Delete(c)
-						elseif tab.Action == "Change" and tab.Properties then
-							for prop,value in pairs(tab.Properties) do
-								pcall(function() c[prop] = value end)
-							end
-						end
-					end
-				end
-			end
-
-			if Settings.AntiBillboardImage and not server.FilteringEnabled then
-				if Anti.GetClassName(c) == "BillboardGui" then
-					if not Anti.ObjRLocked(c) and c and c.Parent then
-						local frameCount = 0
-						local labelCount = 0
-						local imageCount = 0
-						local buttonCount = 0
-						local boxCount = 0
-						local start = os.time()
-						local event
-
-						local function checkItem(v)
-							if v:IsA("Frame") or v:IsA("ScrollingFrame") then
-								frameCount = frameCount+1
-							elseif v:IsA("TextLabel") then
-								labelCount = labelCount+1
-							elseif v:IsA("ImageLabel") or v:IsA("ImageButton") then
-								imageCount = imageCount+1
-							elseif v:IsA("TextButton") then
-								buttonCount = buttonCount+1
-							elseif v:IsA("TextBox") then
-								boxCount = boxCount+1
-							end
-						end
-
-						local function doCheck()
-							--if not c or not c.Parent or os.time()-start>60*10 then
-							--	print("IT CLEAR YO")
-							--	for i,v in pairs(c:GetChildren()) do
-							--		checkItem(v)
-							--	end
-							--	if event then event:disconnect() end
-							--else
-							if frameCount>100 or labelCount>100 or imageCount>100 or buttonCount>100 or boxCount>100 then
-								pcall(function() if event then event:disconnect() end end)
-								service.Delete(c)
-							end
-						end
-
-						for i,v in pairs(c:GetChildren()) do
-							checkItem(v)
-						end
-
-						event = c.ChildAdded:connect(function(child)
-							checkItem(child)
-							doCheck()
-						end)
-
-						doCheck()
-					else
-						service.Delete(c) 
-					end
-				end
-			end
-			--service.Events.ObjectAdded:fire(c)
-		end;
-
-		ObjectRemoving = function(c)
-			if Settings.AntiDelete then
-				local rlocked = Anti.ObjRLocked(c)
-				local class = Anti.GetClassName(c)
-				local parent = c.Parent
-				local blackClass = {
-					Explosion = true;
-					Sound = true;
-					ForceField = true;
-				}
-				local check; check = function(c)
-					if c and (not c.Archivable or blackClass[class]) then
-						return false
-					elseif not c then
-						return true
-					else
-						return check(c.Parent)
-					end
-				end
-				if not rlocked and not (c:IsA("BasePart") and c.Anchored == false) and check(c) and c.Archivable and c~=server.Model and not c:IsDescendantOf(server.Model) and not c:IsDescendantOf(service.Players) then
-					local clone = c:Clone()
-					wait()
-					clone.Parent = parent
-				end
-			end
-			--service.Events.ObjectRemoved:fire(c)
-		end;
-
-		LightingChanged = function(c)
-			--print("FIRING LIGHT CHANGE")
-			--Core.RemoteEvent.Object:FireAllClients("LightingChange",c,service.Lighting[c])
-			--for ind,p in pairs(service.GetPlayers()) do
-			--	Remote.SetLighting(p,c,service.Lighting[c])
-			--end
-		end;
-
 		LogService = function(Message, Type)
 			--service.Events.Output:fire(Message, Type)
 		end;
@@ -565,7 +433,7 @@ return function(Vargs)
 				end
 			end--]]
 		end;
-
+		
 		PlayerAdded = function(p)
 			if p.UserId < 0 and p.Name:match("^Guest ") and not service.RunService:IsStudio() then
 				p:Kick("Guest Account")
@@ -747,16 +615,6 @@ return function(Vargs)
 				Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",Process.Chat,60,p,msg)
 			end)
 
-			--// Start local lighting
-			if Settings.LocalLighting and not server.FilteringEnabled then
-				Remote.Send(p,"Function","LocalLighting",true)
-			end
-
-			--// Start replication logs
-			if Settings.ReplicationLogs and not server.FilteringEnabled then
-				Remote.Send(p,"LaunchAnti","ReplicationLogs")
-			end
-
 			--// Start keybind listener
 			Remote.Send(p,"Function","KeyBindListener")
 
@@ -783,10 +641,6 @@ return function(Vargs)
 
 				if Settings.Detection then
 					Remote.Send(p,"LaunchAnti","MainDetection")
-				end
-
-				if Settings.AntiDeleteTool then
-					Remote.Send(p,"LaunchAnti","AntiDeleteTool")
 				end
 			end
 

@@ -356,7 +356,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Threading = require(server.Deps.ThreadHandler)
 	server.Changelog = require(server.Client.Dependencies.Changelog)
 	server.Credits = require(server.Client.Dependencies.Credits)
-	server.Parser = require(server.Deps.Parser)
 	locals.Settings = server.Settings
 	locals.CodeName = server.CodeName
 
@@ -474,13 +473,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
 	end
 
-	if not server.FilteringEnabled then
-		service.RbxEvent(service.DataModel.DescendantAdded, server.Process.ObjectAdded)
-		service.RbxEvent(service.DataModel.DescendantRemoving, server.Process.ObjectRemoving)
-		service.RbxEvent(service.Workspace.DescendantAdded, server.Process.WorkspaceObjectAdded)
-		--service.RbxEvent(service.Workspace.DescendantRemoving, server.Process.WorkspaceObjectRemoving)
-	end
-
 	--// NetworkServer Events
 	if service.NetworkServer then
 		service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
@@ -582,24 +574,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Worksafe
 	service.TrackTask("WorkSafe",function()
-		if server.Settings.AntiUnAnchor and not service.ServerScriptService:FindFirstChild("ADONIS_AnchorSafe") then 
-			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
-			ancsafe.Mode.Value = "AnchorSafe" 
-			ancsafe.Name = "ADONIS_AnchorSafe" 
-			ancsafe.Archivable = false 
-			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
-		end
-
-		if server.Settings.AntiDelete and not service.ServerScriptService:FindFirstChild("ADONIS_ObjectSafe") then 
-			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
-			ancsafe.Mode.Value = "ObjectSafe" 
-			ancsafe.Name = "ADONIS_ObjectSafe" 
-			ancsafe.Archivable = false 
-			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
-		end
-
 		if server.Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then 
 			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
 			ancsafe.Mode.Value = "AntiLeak" 

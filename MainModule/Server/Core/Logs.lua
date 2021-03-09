@@ -39,8 +39,6 @@ return function(Vargs)
 		Chats = {};
 		Joins = {};
 		Script = {};
-		Replications = {};
-		NetworkOwners = {};
 		RemoteFires = {};
 		Commands = {};
 		Exploit = {};
@@ -52,8 +50,6 @@ return function(Vargs)
 				Chats = "Chat";
 				Joins = "Join";
 				Script = "Script";
-				Replications = "Replication";
-				NetworkOwners = "NetworkOwner";
 				RemoteFires = "RemoteFire";
 				Commands = "Command";
 				Exploit = "Exploit";
@@ -207,22 +203,6 @@ return function(Vargs)
 				local tab = {}
 				for i,v in pairs(Logs.Errors) do
 					table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
-				end
-				return tab
-			end;
-			
-			ReplicationLogs = function()
-				local tab = {}
-				for i,v in pairs(Logs.Replications) do
-					table.insert(tab,{Text=v.Player.." "..v.Action.." "..v.ClassName;Desc = v.Path})
-				end
-				return tab
-			end;
-			
-			NetworkOwners = function()
-				local tab = {}
-				for i,v in pairs(Logs.NetworkOwners) do
-					table.insert(tab,{Text = tostring(v.Player).." made "..tostring(v.Part),Desc = v.Path})
 				end
 				return tab
 			end;
