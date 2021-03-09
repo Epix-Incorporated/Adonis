@@ -46,13 +46,14 @@ return function(Vargs)
 		Exploit = {};
 		Errors = {};
 		TempUpdaters = {};
-		
+		PrivateMessages = {};
 		TabToType = function(tab)
 			local indToName = {
 				Chats = "Chat";
 				Joins = "Join";
 				Script = "Script";
 				Replications = "Replication";
+				PrivateMessages = "PrivateMessages";
 				NetworkOwners = "NetworkOwner";
 				RemoteFires = "RemoteFire";
 				Commands = "Command";
@@ -238,7 +239,9 @@ return function(Vargs)
 			ChatLogs = function()
 				return Logs.Chats
 			end;
-			
+			PrivateMessages = function()
+				return Logs.PrivateMessages
+			end;
 			JoinLogs = function()
 				return Logs.Joins
 			end;
