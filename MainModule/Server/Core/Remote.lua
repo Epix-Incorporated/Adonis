@@ -781,12 +781,14 @@ return function(Vargs)
 					Player = p;
 					Message = service.Filter(message, p, target);
 				})
-				local Message1 = service.Filter(message, p, target)
-				server.Logs.AddLog(server.Logs.PrivateMessages,{
-					Text =  tostring("["..p.Name.." > "..tostring(target).."] "..Message1:sub(1, 15)) .. " (Mouse over full message)";
-					Desc = Message1;
-					Player = p;
-				})
+				if Settings.PMLogs == true then
+					local Message1 = service.Filter(message, p, target)
+					server.Logs.AddLog(server.Logs.PrivateMessages,{
+						Text =  tostring("["..p.Name.." > "..tostring(target).."] "..Message1:sub(1, 15)) .. " (Mouse over full message)";
+						Desc = Message1;
+						Player = p;
+					})
+				end
 			end;
 		};
 
