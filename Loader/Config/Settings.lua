@@ -237,8 +237,6 @@ local descs = {}
 	settings.AntiSpeed = true 			-- Attempts to detect speed exploits
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiParanoid = false		-- Attempts to detect paranoid and kills the player if found
-	settings.AntiDeleteTool = false		-- [May break guns] Attempts to block use of the delete tool and other building tools
-	settings.AntiDelete = false			-- [May cause intense lag] You should enabled Filtering instead! Attempts to prevent deleting of objects in the game (may cause lag; Not recommended for complex games that constantly make/remove things; Should use Filtering instead...)
 	settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
 	
 	---------------------
