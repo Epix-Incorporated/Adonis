@@ -1018,13 +1018,13 @@ return function(Vargs, env)
 			end
 		};
 		
-		PrivateMessage = {
+			PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
 			Args = {"player";"message";};
 			Filter = true;
 			Description = "Send a private message to a player";
-			AdminLevel = "Moderators";
+			AdminLevel = "Players";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing")
 				if Admin.CheckAdmin(plr) then
@@ -1034,6 +1034,13 @@ return function(Vargs, env)
 							Player = plr;
 							Message = service.Filter(args[2],plr,p);
 						})
+					if Settings.PMLogs == true then
+						server.Logs.AddLog(server.Logs.PrivateMessages,{
+							Text =  tostring("["..plr.Name.." > "..tostring(p.Name).."] ".. service.Filter(args[2],plr,p):sub(1, 15)) .. " (Mouse over full message)";
+							Desc =  service.Filter(args[2],plr,p);
+							Player = p;
+						})
+						end
 					end
 				end
 			end
