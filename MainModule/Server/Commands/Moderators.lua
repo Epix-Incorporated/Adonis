@@ -68,31 +68,36 @@ return function(Vargs, env)
 
 			end
 		};
-					server.Commands.WisperLogs = {
-		Prefix = server.Settings.Prefix;
-		Commands = {"whisperlogs","whisplogs","whisperspy"};
-		Args = {"autoupdate"};
-		Description = "Displays each player who has whispered to another player.";
-		Hidden = false;
-		Fun = false;
-		Agents = true;
-		AdminLevel = "Admins";
-		Function = function(plr,args)
-			assert(Settings.PMLogs,"PMLogs are disabled; Enable them in Settings")
-			local auto
-			if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
-				auto = 1
-			end
+				PrivateMessageLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"pmlogs";"privatemessagelogs";"pmspy";};
+			Args = {"autoupdate"};
+			Hidden = false;
+			Description = "Shows all of the private messages between users. Use this at your own risk.";
+			Fun = false;
+			Agents = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(Settings.PMLogs,"PMLogs are disabled; Enable them in Settings")
 
-			server.Remote.MakeGui(plr, "List", {
-				Title = "Whispers";
-				Tab = server.Logs.Whispers;
-				Dots = true; 
-				Update = "GetWhisperLogs";
-				AutoUpdate = auto;
-			})
-		end
-	}
+				local auto
+
+				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+					auto = 1
+				end
+
+			
+
+				Remote.MakeGui(plr,"List",{
+					Title = "Private Messages";
+					Tab = Logs.PrivateMessages;
+					Dots = true;
+					Update = "PrivateMessages";
+					AutoUpdate = auto;
+				
+				})
+			end
+		};
 						
 	      MassBring = {
 		Prefix = server.Settings.Prefix;
