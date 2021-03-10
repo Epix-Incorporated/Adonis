@@ -860,7 +860,7 @@ return function(Vargs, env)
 		};
 
 		PrivateMessage = {
-			Prefix = Settings.Prefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"pm";"privatemessage";};
 			Args = {"Player";"Message";};
 			Filter = true;
@@ -3871,7 +3871,7 @@ return function(Vargs, env)
 			end
 		};
 
-		
+	
 
 		ListServers = {
 			Prefix = Settings.Prefix;
