@@ -206,6 +206,7 @@ settings.PlayerCommands = true 		-- Are players commands enabled?
 settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
+settings.PMLogs = false	-- Logs every private message. Use this at your own risk. Default disabled as this is a violation of privacy. Use this for moderation purposes.
 
 settings.BanMessage = "Banned"				-- Message shown to banned users
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
