@@ -306,7 +306,6 @@ return function(Vargs, env)
 				service.New("StringValue",f3x).Name = Variables.CodeName
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					--Send.Remote(v,"Function","setEffectVal","AntiDeleteTool",false)
 					if v:findFirstChild("Backpack") then
 						f3x:Clone().Parent = v.Backpack
 					end

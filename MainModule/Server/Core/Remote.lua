@@ -184,8 +184,7 @@ return function(Vargs)
 						OnStartup = true;
 						OnSpawn = true;
 						OnJoin = true;
-
-						AntiInsert = true;  -- Not supported yet
+						
 						CustomRanks = true; -- Not supported yet 
 					}
 

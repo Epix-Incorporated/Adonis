@@ -230,9 +230,6 @@ settings.DonorCapes = true 		-- Donors get to show off their capes; Not disrupti
 settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
 settings.LocalCapes = false	 	-- Makes Donor capes local so only the donors see their cape [All players can still disable capes locally]
 
-settings.LocalLighting = true		-- Enables local lighting; Prevents changes to Lighting and enables the ability for player specific lighting changes; Server scripts can set lighting for the server or specific players using _G.Adonis.SetLighting(property,value) or for players _G.Adonis.SetPlayerLighting(player,property,value)		
-settings.ReplicationLogs = false	-- [May cause lag] Attempts to log who makes and deletes objects in the game
-settings.NetworkOwners = false		-- [May cause lag] Logs the first network owners of parts created in workspace; Can be used to see who made parts (only parts) in workspace
 settings.Detection = true			-- Attempts to detect certain known exploits
 settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active	
 
@@ -240,29 +237,7 @@ settings.AntiNil = true				-- Try's to prevent non-admins from hiding in "nil"
 settings.AntiSpeed = true 			-- Attempts to detect speed exploits
 settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
 settings.AntiParanoid = false		-- Attempts to detect paranoid and kills the player if found
-settings.AntiDeleteTool = false		-- [May break guns] Attempts to block use of the delete tool and other building tools
-settings.AntiDelete = false			-- [May cause intense lag] You should enabled Filtering instead! Attempts to prevent deleting of objects in the game (may cause lag; Not recommended for complex games that constantly make/remove things; Should use Filtering instead...)
-settings.AntiUnAnchor = false		-- [May cause lag] Attempts to prevent the unanchoring of parts
-settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
-settings.AntiBillboardImage = false -- Attempts to find billboard images and remove them; These are usually used to insert inappropriate images into the game
-settings.AntiInsert = {				-- Can cause lag; You should enabled Filtering instead! Class names blocked from being added to the game or new properties to set for them; Will alter properties if Action = "Change" or delete the object if Action = "Delete"; Add classes to alter/block
-	Enabled = false; 				-- If AntiInsert is enabled or not
-	Explosion = {        			-- The ClassName to look for; You can add new ClassNames by following the Format provided
-		Action = "None"; 			-- Can be set to "Change" to use the set properties or "Delete" to delete the object if it's added; Set to "None" to disable
-		Properties = {   			-- Properties to use if change is true; The default properties will basically nerf any explosions
-			BlastPressure = 0;
-			BlastRadius = 0;
-			DestroyJoinRadiusPercent = 0;
-			ExplosionType = "NoCraters";
-		} 
-	};
-	Decal = {				-- I included some common classnames to replace settings like AntiDecal, NerfExplosions, and AntiSound
-		Action = "None"; 	-- Set to "Delete" to prevent decals from being added
-	};
-	Sound = {
-		Action = "None"; 	-- Set to "Delete" to prevent new sounds from being added (WARNING THIS IS ALL SOUNDS INCLDING SCRIPT MADE ONES)
-	};
-}							
+settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves						
 
 ---------------------
 -- END OF SETTINGS --
@@ -349,9 +324,6 @@ descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
 descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 
-descs.LocalLighting = [[ Enables local lighting; Prevents changes to Lighting and enables the ability for player specific lighting changes; Server scripts can set lighting for the server or specific players using _G.Adonis.SetLighting(property,value) or for players _G.Adonis.SetPlayerLighting(player,property,value) ]]
-descs.ReplicationLogs = [[ Attempts to log who makes and deletes objects in the game ]]
-descs.NetworkOwners = [[ Logs the first network owners of parts created in workspace; Can be used to see who made parts (only parts) in workspace ]]
 descs.Detection = [[ Attempts to detect certain known exploits ]]
 descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
@@ -359,12 +331,7 @@ descs.AntiNil = [[ Try's to prevent non-admins from hiding in "nil" ]]
 descs.AntiSpeed = [[ Attempted to detect speed exploits ]]
 descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
-descs.AntiDeleteTool = [[ Attempts to block use of the delete tool and other building tools ]]
-descs.AntiDelete = [[ Can cause lag; You should enabled Filtering instead! Attempts to prevent deleting of objects in the game (may cause lag; Not recommended for complex games that constantly make/remove things; Should use Filtering instead...) ]]
-descs.AntiUnAnchor = [[ Attempts to prevent the unanchoring of parts ]]
 descs.AntiLeak = [[ Attempts to prevent place downloading/saving; Do not use if game saves ]]	
-descs.AntiBillboardImage = [[ Attempts to find billboard images and remove them; These are usually used to insert inappropriate images into the game ]]
-descs.AntiInsert = [[ Can cause lag; You should enabled Filtering instead! Class names blocked from being added to the game or new properties to set for them; Will alter properties if Action = "Change" or delete the object if Action = "Delete"; Add classes to alter/block ]]
 
 order = {
 	"HideScript";
@@ -443,9 +410,6 @@ order = {
 	"DonorCapes";
 	"LocalCapes";
 	" ";
-	"LocalLighting";
-	"ReplicationLogs";
-	"NetworkOwners";
 	"Detection";
 	"CheckClients";
 	" ";
@@ -453,12 +417,7 @@ order = {
 	"AntiSpeed";
 	"AntiNoclip";
 	"AntiParanoid";
-	"AntiDeleteTool";
-	"AntiDelete";
-	"AntiUnAnchor";
 	"AntiLeak";
-	"AntiBillboardImage";
-	"AntiInsert";	
 }
 
 return {Settings = settings, Descriptions = descs, Order = order}

@@ -21,7 +21,6 @@ local canEditTables = {
 	OnSpawn = true;
 
 	Allowed_API_Calls = false;
-	AntiInsert = false;
 }
 
 local function tabToString(tab)

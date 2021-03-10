@@ -660,19 +660,6 @@ return function()
 			end
 		end;
 
-		LocalLighting = function(on)
-			if on then
-				service.StartLoop("LocalLighting","RenderStepped",function()
-					for prop,value in next,Variables.LightingSettings do
-						if service.Lighting[prop]~=nil then
-							service.Lighting[prop] = value
-						end
-					end
-				end)
-			else
-				service.StopLoop("LocalLighting")
-			end
-		end;
 
 		ChatMessage = function(msg,color,font,size)
 			local tab = {}
