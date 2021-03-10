@@ -5,14 +5,14 @@ return function(Vargs, env)
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick";};
-			Args = {"player";"optional reason";};
+			Args = {"Player";"optional reason";};
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
@@ -31,7 +31,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		TimeBanList = {
 			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
@@ -54,115 +54,11 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
 			end
 		};
-			
-		Thru = {
-			Prefix = Settings.Prefix;
-			Commands = {"thru";"pass";"through"};
-			Hidden = false;
-			Args = {};
-			Description = "Lets you pass through an object or a wall";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
 
-			end
-		};
-				PrivateMessageLogs = {
-			Prefix = Settings.Prefix;
-			Commands = {"pmlogs";"privatemessagelogs";"pmspy";};
-			Args = {"autoupdate"};
-			Hidden = false;
-			Description = "Shows all of the private messages between users. Use this at your own risk.";
-			Fun = false;
-			Agents = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(Settings.PMLogs,"PMLogs are disabled; Enable them in Settings")
-
-				local auto
-
-				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
-					auto = 1
-				end
-
-			
-
-				Remote.MakeGui(plr,"List",{
-					Title = "Private Messages";
-					Tab = Logs.PrivateMessages;
-					Dots = true;
-					Update = "PrivateMessages";
-					AutoUpdate = auto;
-				
-				})
-			end
-		};
-						
-	      MassBring = {
-		Prefix = server.Settings.Prefix;
-		Commands = {"massbring";};
-		Args = {"player","lines"};
-		Hidden = false;
-		Description = "Evenly brings and positions players to prevent flinging";
-		Fun = false;
-		AdminLevel = "Moderators";
-		Function = function(plr,args)
-			local players = args[1] and service.GetPlayers(plr, args[1]) or service.GetPlayers(plr, "me")
-			local lines = (tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, #players)) or 1
-			for l = 1, lines do
-				local offsetX = 0
-				if l == 1 then
-					offsetX = 0
-				elseif l % 2 == 1 then
-					offsetX = -(math.ceil((l - 2)/2)*4)
-				else
-					offsetX = (math.ceil(l / 2))*4
-				end
-				for i = (l-1)*math.floor(#players/lines)+1, l*math.floor(#players/lines) do
-					local player = players[i]
-					--if n.Character.Humanoid.Sit then
-					--	n.Character.Humanoid.Sit = false
-					--	wait(0.5)
-					--end
-					player.Character.Humanoid.Jump = true
-					wait()
-					if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
-						local offsetZ = ((i-1) - (l-1)*math.floor(#players/lines))*2
-						player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
-					end
-				end
-			end
-			if #players%lines ~= 0 then
-				for i = lines*math.floor(#players/lines)+1, lines*math.floor(#players/lines) + #players%lines do
-					local r = i % (lines*math.floor(#players/lines))
-					local offsetX = 0
-					if r == 1 then
-						offsetX = 0
-					elseif r % 2 == 1 then
-						offsetX = -(math.ceil((r - 2)/2)*4)
-					else
-						offsetX = (math.ceil(r / 2))*4
-					end
-					local player = players[i]
-					--if n.Character.Humanoid.Sit then
-					--	n.Character.Humanoid.Sit = false
-					--	wait(0.5)
-					--end
-					player.Character.Humanoid.Jump = true
-					wait()
-					if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
-						local offsetZ = (math.floor(#players/lines))*2
-						player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
-					end
-				end
-			end
-		end
-	};			
 		Notification = {
 			Prefix = Settings.Prefix;
 			Commands = {"notify","notification"};
-			Args = {"player","message"};
+			Args = {"Player","Message"};
 			Description = "Sends the player a notification";
 			Filter = true;
 			AdminLevel = "Moderators";
@@ -176,7 +72,8 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+	
+	
 		SlowMode = {
 			Prefix = Settings.Prefix;
 			Commands = {"slowmode"};
@@ -222,7 +119,7 @@ return function(Vargs, env)
 		CountdownPM = {
 			Prefix = Settings.Prefix;
 			Commands = {"countdownpm", "timerpm", "cdpm"};
-			Args = {"player";"time";};
+			Args = {"Player";"time";};
 			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -273,7 +170,7 @@ return function(Vargs, env)
 		TimeMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"tm";"timem";"timedmessage";};
-			Args = {"time";"message";};
+			Args = {"Time";"Message";};
 			Filter = true;
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
@@ -293,7 +190,7 @@ return function(Vargs, env)
 		Message = {
 			Prefix = Settings.Prefix;
 			Commands = {"m";"message";};
-			Args = {"message";};
+			Args = {"Message";};
 			Filter = true;
 			Description = "Makes a message";
 			AdminLevel = "Moderators";
@@ -310,11 +207,11 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		MessagePM = {
 			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "Makes a message on the target player(s) screen.";
 			AdminLevel = "Moderators";
@@ -329,7 +226,7 @@ return function(Vargs, env)
 		Notify = {
 			Prefix = Settings.Prefix;
 			Commands = {"n","smallmessage","nmessage","nmsg","smsg","smessage"};
-			Args = {"message";};
+			Args = {"Message";};
 			Filter = true;
 			Description = "Makes a small message";
 			AdminLevel = "Moderators";
@@ -349,7 +246,7 @@ return function(Vargs, env)
 		SystemNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
-			Args = {"message";};
+			Args = {"Message";};
 			Filter = true;
 			Description = "Makes a system small message,";
 			AdminLevel = "Moderators";
@@ -368,7 +265,7 @@ return function(Vargs, env)
 		NotifyPM = {
 			Prefix = Settings.Prefix;
 			Commands = {"npm","smallmessagepm","nmessagepm","nmsgpm","npmmsg","smsgpm","spmmsg", "smessagepm"};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "Makes a small message on the target player(s) screen.";
 			AdminLevel = "Moderators";
@@ -387,7 +284,7 @@ return function(Vargs, env)
 		Hint = {
 			Prefix = Settings.Prefix;
 			Commands = {"h";"hint";};
-			Args = {"message";};
+			Args = {"Message";};
 			Filter = true;
 			Description = "Makes a hint";
 			AdminLevel = "Moderators";
@@ -404,7 +301,7 @@ return function(Vargs, env)
 		Warn = {
 			Prefix = Settings.Prefix;
 			Commands = {"warn","warning"};
-			Args = {"player","message";};
+			Args = {"Player","Message";};
 			Filter = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
@@ -435,7 +332,7 @@ return function(Vargs, env)
 		KickWarn = {
 			Prefix = Settings.Prefix;
 			Commands = {"kickwarn","kwarn","kickwarning"};
-			Args = {"player","message";};
+			Args = {"Player","Message";};
 			Filter = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
@@ -467,7 +364,7 @@ return function(Vargs, env)
 		ShowWarnings = {
 			Prefix = Settings.Prefix;
 			Commands = {"warnings","showwarnings"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Shows warnings a player has";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -493,7 +390,7 @@ return function(Vargs, env)
 		ClearWarnings = {
 			Prefix = Settings.Prefix;
 			Commands = {"clearwarnings"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Clears any warnings on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -534,11 +431,11 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk";"maketalk";};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "Makes a dialog bubble appear over the target player(s) head with the desired message";
 			AdminLevel = "Moderators";
@@ -553,7 +450,7 @@ return function(Vargs, env)
 		ChatNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"chatnotify";"chatmsg";};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "Makes a message in the target player(s)'s chat window";
 			AdminLevel = "Moderators";
@@ -567,7 +464,7 @@ return function(Vargs, env)
 		ForceField = {
 			Prefix = Settings.Prefix;
 			Commands = {"ff";"forcefield";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Gives a force field to the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -580,7 +477,7 @@ return function(Vargs, env)
 		UnForcefield = {
 			Prefix = Settings.Prefix;
 			Commands = {"unff";"unforcefield";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Removes force fields on the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -597,7 +494,7 @@ return function(Vargs, env)
 		Punish = {
 			Prefix = Settings.Prefix;
 			Commands = {"punish";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Removes the target player(s)'s character";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -612,7 +509,7 @@ return function(Vargs, env)
 		UnPunish = {
 			Prefix = Settings.Prefix;
 			Commands = {"unpunish";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "UnPunishes the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -626,7 +523,7 @@ return function(Vargs, env)
 		IceFreeze = {
 			Prefix = Settings.Prefix;
 			Commands = {"ice";"iceage","icefreeze","funfreeze"};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Freezes the target player(s) in a block of ice";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -658,7 +555,7 @@ return function(Vargs, env)
 		Freeze = {
 			Prefix = Settings.Prefix;
 			Commands = {"freeze"};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Freezes the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -677,7 +574,7 @@ return function(Vargs, env)
 		Thaw = {
 			Prefix = Settings.Prefix;
 			Commands = {"thaw";"unfreeze";"unice"};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "UnFreezes the target players, thaws them out";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -723,7 +620,7 @@ return function(Vargs, env)
 		Fire = {
 			Prefix = Settings.Prefix;
 			Commands = {"fire";"makefire";"givefire";};
-			Args = {"player";"color";};
+			Args = {"Player";"color";};
 			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -765,7 +662,7 @@ return function(Vargs, env)
 		UnFire = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfire";"removefire";"extinguish";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Puts out the flames on the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -783,7 +680,7 @@ return function(Vargs, env)
 		Smoke = {
 			Prefix = Settings.Prefix;
 			Commands = {"smoke";"givesmoke";};
-			Args = {"player";"color";};
+			Args = {"Player";"color";};
 			Description = "Makes smoke come from the target player(s) with the desired color";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -816,7 +713,7 @@ return function(Vargs, env)
 		UnSmoke = {
 			Prefix = Settings.Prefix;
 			Commands = {"unsmoke";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Removes smoke from the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -830,67 +727,11 @@ return function(Vargs, env)
 			end
 		};
 
-		Sparkles = {
-			Prefix = Settings.Prefix;
-			Commands = {"sparkles";};
-			Args = {"player";"color";};
-			Description = "Puts sparkles on the target player(s) with the desired color";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local color = Color3.new(1,1,1)
-
-				if args[2] then
-					local str = BrickColor.new('Cyan').Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-				end
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.NewParticle(torso,"Sparkles",{
-							Name = "SPARKLES";
-							SparkleColor = color;
-						})
-						Functions.NewParticle(torso,"PointLight",{
-							Name = "SPARKLES_LIGHT";
-							Color = color;
-							Range = 15;
-							Brightness = 5;
-						})
-					end
-				end
-			end
-		};
-
-		UnSparkles = {
-			Prefix = Settings.Prefix;
-			Commands = {"unsparkles";};
-			Args = {"player";};
-			Description = "Removes sparkles from the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.RemoveParticle(torso,"SPARKLES")
-						Functions.RemoveParticle(torso,"SPARKLES_LIGHT")
-					end
-				end
-			end
-		};
-
+		
 		Animation = {
 			Prefix = Settings.Prefix;
 			Commands = {"animation";"loadanim";"animate";};
-			Args = {"player";"animationID";};
+			Args = {"Player";"animationID";};
 			Description = "Load the animation onto the target";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -908,7 +749,7 @@ return function(Vargs, env)
 		AFK = {
 			Prefix = Settings.Prefix;
 			Commands = {"afk";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -924,7 +765,7 @@ return function(Vargs, env)
 						for k,t in pairs(v.Backpack:children()) do
 							t.Parent=tools
 						end
-						Admin.RunCommand(Settings.Prefix.."name",v.Name,"-AFK-_"..v.Name.."_-AFK-")
+						Admin.RunCommand(Settings.Prefix.."name",v.Name,"[AFK]  "..v.Name.."  [DND]")
 						local torso=v.Character.HumanoidRootPart
 						local pos=torso.CFrame
 						local running=true
@@ -949,7 +790,7 @@ return function(Vargs, env)
 		Heal = {
 			Prefix = Settings.Prefix;
 			Commands = {"heal";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Heals the target player(s) (Regens their health)";
 			Fun = false;
@@ -966,7 +807,7 @@ return function(Vargs, env)
 		God = {
 			Prefix = Settings.Prefix;
 			Commands = {"god";"immortal";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes the target player(s) immortal, makes their health so high that normal non-explosive weapons can't kill them";
 			Fun = false;
@@ -984,7 +825,7 @@ return function(Vargs, env)
 		UnGod = {
 			Prefix = Settings.Prefix;
 			Commands = {"ungod";"mortal";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes the target player(s) mortal again";
 			Fun = false;
@@ -1002,7 +843,7 @@ return function(Vargs, env)
 		RemoveHats = {
 			Prefix = Settings.Prefix;
 			Commands = {"removehats";"nohats";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Removes any hats the target is currently wearing";
 			Fun = false;
@@ -1017,11 +858,11 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
-			PrivateMessage = {
+
+		PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "Send a private message to a player";
 			AdminLevel = "Players";
@@ -1034,13 +875,11 @@ return function(Vargs, env)
 							Player = plr;
 							Message = service.Filter(args[2],plr,p);
 						})
-					if Settings.PMLogs == true then
 						server.Logs.AddLog(server.Logs.PrivateMessages,{
 							Text =  tostring("["..plr.Name.." > "..tostring(p.Name).."] ".. service.Filter(args[2],plr,p):sub(1, 15)) .. " (Mouse over full message)";
 							Desc =  service.Filter(args[2],plr,p);
 							Player = p;
 						})
-						end
 					end
 				end
 			end
@@ -1049,7 +888,7 @@ return function(Vargs, env)
 		ShowChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"chat","customchat"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -1062,7 +901,7 @@ return function(Vargs, env)
 		RemoveChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"unchat","uncustomchat"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -1072,212 +911,8 @@ return function(Vargs, env)
 			end
 		};
 
-		BlurEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"blur";"screenblur";"blureffect"};
-			Args = {"player";"blur size";};
-			Description = "Blur the target player's screen";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local moder = tonumber(args[2]) or 0.5
-				if moder>5 then moder=5 end
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"BlurEffect",{
-						Name = "WINDOW_BLUR",
-						Size = tonumber(args[2]) or 24,
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
-		BloomEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"bloom";"screenbloom";"bloomeffect"};
-			Args = {"player";"intensity";"size";"threshold"};
-			Description = "Give the player's screen the bloom lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"BloomEffect",{
-						Name = "WINDOW_BLOOM",
-						Intensity = tonumber(args[2]) or 0.4,
-						Size = tonumber(args[3]) or 24,
-						Threshold = tonumber(args[4]) or 0.95,
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
-		SunRaysEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"sunrays";"screensunrays";"sunrayseffect"};
-			Args = {"player";"intensity";"spread"};
-			Description = "Give the player's screen the sunrays lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"SunRaysEffect",{
-						Name = "WINDOW_SUNRAYS",
-						Intensity = tonumber(args[2]) or 0.25,
-						Spread = tonumber(args[3]) or 1,
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
-		ColorCorrectionEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"colorcorrect";"colorcorrection";"correctioneffect";"correction";"cce"};
-			Args = {"player";"brightness","contrast","saturation","tint"};
-			Description = "Give the player's screen the sunrays lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local r,g,b = 1,1,1
-				if args[5] and args[5]:match("(.*),(.*),(.*)") then
-					r,g,b = args[5]:match("(.*),(.*),(.*)")
-				end
-				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"ColorCorrectionEffect",{
-						Name = "WINDOW_COLORCORRECTION",
-						Brightness = tonumber(args[2]) or 0,
-						Contrast = tonumber(args[3]) or 0,
-						Saturation = tonumber(args[4]) or 0,
-						TintColor = Color3.new(r,g,b),
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
-		UnColorCorrection = {
-			Prefix = Settings.Prefix;
-			Commands = {"uncolorcorrection";"uncorrection";"uncolorcorrectioneffect"};
-			Args = {"player";};
-			Hidden = false;
-			Description = "UnColorCorrection the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
-				end
-			end
-		};
-
-		UnSunRays = {
-			Prefix = Settings.Prefix;
-			Commands = {"unsunrays"};
-			Args = {"player";};
-			Hidden = false;
-			Description = "UnSunrays the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
-				end
-			end
-		};
-
-		UnBloom = {
-			Prefix = Settings.Prefix;
-			Commands = {"unbloom";"unscreenbloom";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "UnBloom the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
-				end
-			end
-		};
-
-		UnBlur = {
-			Prefix = Settings.Prefix;
-			Commands = {"unblur";"unscreenblur";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "UnBlur the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
-				end
-			end
-		};
-
-		UnLightingEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"unlightingeffect";"unscreeneffect";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Remove admin made lighting effects from the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
-					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
-					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
-					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
-					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
-				end
-			end
-		};
-
-		ThermalVision = {
-			Prefix = Settings.Prefix;
-			Commands = {"thermal","thermalvision","heatvision"};
-			Args = {"player"};
-			Hidden = false;
-			Description = "Looks like heat vision";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"ColorCorrectionEffect",{
-						Name = "WINDOW_THERMAL",
-						Brightness = 1,
-						Contrast = 20,
-						Saturation = 20,
-						TintColor = Color3.new(0.5,0.2,1);
-						Enabled = true,
-					},"Camera")
-					Remote.NewLocal(p,"BlurEffect",{
-						Name = "WINDOW_THERMAL",
-						Size = 24,
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
-		UnThermalVision = {
-			Prefix = Settings.Prefix;
-			Commands = {"unthermal";"unthermalvision";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Removes the thermal effect from the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
-				end
-			end
-		};
+		
+		
 		
 		ShowSBL = {
 			Prefix = Settings.Prefix;
@@ -1294,11 +929,11 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		HandTo = {
 			Prefix = Settings.Prefix;
 			Commands = {"handto";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Hands an item to a player";
 			Fun = false;
@@ -1339,7 +974,7 @@ return function(Vargs, env)
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
 			Commands = {"showtools";"viewtools";"seebackpack";"viewbackpack";"showbackpack";"displaybackpack";"displaytools";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Shows you a list of items currently in the target player(s) backpack";
 			Fun = false;
@@ -1368,7 +1003,7 @@ return function(Vargs, env)
 		PlayerList = {
 			Prefix = Settings.Prefix;
 			Commands = {"players","playerlist"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "Shows you all players currently in-game, including nil ones";
 			Fun = false;
@@ -1421,7 +1056,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		Waypoint = {
 			Prefix = Settings.Prefix;
 			Commands = {"waypoint";"wp";"checkpoint";};
@@ -1560,7 +1195,7 @@ return function(Vargs, env)
 		View = {
 			Prefix = Settings.Prefix;
 			Commands = {"view";"watch";"nsa";"viewplayer";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Makes you view the target player";
 			Agents = true;
 			AdminLevel = "Moderators";
@@ -1576,7 +1211,7 @@ return function(Vargs, env)
 		--[[Viewport = {
 			Prefix = Settings.Prefix;
 			Commands = {"viewport", "cctv"};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Makes a viewport of the target player<s>";
 			Agents = true;
 			AdminLevel = "Moderators";
@@ -1609,7 +1244,7 @@ return function(Vargs, env)
 		GuiView = {
 			Prefix = Settings.Prefix;
 			Commands = {"guiview";"showguis";"viewguis"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Shows you the player's character and any guis in their PlayerGui folder [May take a minute]";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -1640,10 +1275,10 @@ return function(Vargs, env)
 				Remote.Send(plr,"Function","UnLoadGuiData")
 			end;
 		};
-
+	
 		ServerDetails = {
 			Prefix = Settings.Prefix;
-			Commands = {"details";"meters";"gameinfo";"serverinfo";};
+			Commands = {"details";"servertrack";"gameinfo";"serverinfo";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you information about the current server";
@@ -1710,20 +1345,20 @@ return function(Vargs, env)
 				--Remote.Send(plr,'Function','ServerDetails',det)
 			end
 		};
-		
+
 		Clean = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"clean";};
 			Args = {};
 			Hidden = false;
-			Description = "Cleans some useless junk out of service.Workspace";
+			Description = "Cleans and optimizes the workspace.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				Functions.CleanWorkspace()
 			end
 		};
-		
+
 		Repeat = {
 			Prefix = Settings.Prefix;
 			Commands = {"repeat";"loop";};
@@ -1806,7 +1441,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CommandBox = {
 			Prefix = Settings.Prefix;
 			Commands = {"cmdbox", "commandbox"};
@@ -1855,12 +1490,12 @@ return function(Vargs, env)
 				})
 			end;
 		};
-		
+
 		Tasks = {
 			Hidden = true;
 			Prefix = ":";
 			Commands = {"tasks"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Displays running tasks";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -1928,11 +1563,11 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		JoinServer = {
 			Prefix = Settings.Prefix;
 			Commands = {"toserver", "joinserver"};
-			Args = {"player", "jobid"};
+			Args = {"Player", "jobid"};
 			Hidden = false;
 			Description = "Send player(s) to a server using the server's JobId";
 			Fun = false;
@@ -1952,7 +1587,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		AdminList = {
 			Prefix = Settings.Prefix;
 			Commands = {"admins";"adminlist";"owners";"Moderators";};
@@ -2062,7 +1697,7 @@ return function(Vargs, env)
 		Vote = {
 			Prefix = Settings.Prefix;
 			Commands = {"vote";"makevote";"startvote";"question";"survey";};
-			Args = {"player";"anwser1,answer2,etc (NO SPACES)";"question";};
+			Args = {"Player";"anwser1,answer2,etc (NO SPACES)";"question";};
 			Filter = true;
 			Description = "Lets you ask players a question with a list of answers and get the results";
 			AdminLevel = "Moderators";
@@ -2072,7 +1707,7 @@ return function(Vargs, env)
 				local answers = args[2]
 				local anstab = {}
 				local responses = {}
-				local voteKey = "ADONISVOTE".. math.random();
+				local voteKey = "UNITYVOTE".. math.random();
 				local players = service.GetPlayers(plr,args[1])
 				local startTime = os.time();
 
@@ -2195,7 +1830,7 @@ return function(Vargs, env)
 			Commands = {"tools";"toollist";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you a list of tools that can be obtains via the give command";
+			Description = "Shows you a list of tools that can be obtained via the give command";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -2245,22 +1880,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Piano = {
-			Prefix = Settings.Prefix;
-			Commands = {"piano";};
-			Args = {"player"};
-			Hidden = false;
-			Description = "Gives you a playable keyboard piano. Credit to NickPatella.";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in next,service.GetPlayers(plr, args[1]) do
-					local piano = Deps.Assets.Piano:clone()
-					piano.Parent = v:FindFirstChild("PlayerGui") or v.Backpack
-					piano.Disabled = false
-				end
-			end
-		};
 
 		Insert = {
 			Prefix = Settings.Prefix;
@@ -2269,7 +1888,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
 			Fun = false;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local id = args[1]:lower()
 				for i,v in pairs(Variables.InsertList) do
@@ -2401,7 +2020,7 @@ return function(Vargs, env)
 		ShowClientInstances = {
 			Prefix = Settings.Prefix;
 			Commands = {"clientinstances";};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Shows all instances created client-side by Adonis";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -2420,124 +2039,11 @@ return function(Vargs, env)
 			end
 		};
 
-		ClearGUIs = {
-			Prefix = Settings.Prefix;
-			Commands = {"clearguis";"clearmessages";"clearhints";"clrguis";"clrgui";"clearscriptguis";"removescriptguis"};
-			Args = {"player","deleteAll?"};
-			Hidden = false;
-			Description = "Remove script GUIs such as :m and :hint";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
-					if tostring(args[2]):lower() == "yes" or tostring(args[2]):lower() == "true" then
-						Remote.RemoveGui(v,true)
-					else
-						Remote.RemoveGui(v,"Message")
-						Remote.RemoveGui(v,"Hint")
-						Remote.RemoveGui(v,"Notification")
-						Remote.RemoveGui(v,"PM")
-						Remote.RemoveGui(v,"Output")
-						Remote.RemoveGui(v,"Effect")
-						Remote.RemoveGui(v,"Alert")
-					end
-				end
-			end
-		};
-
-		ClearEffects = {
-			Prefix = Settings.Prefix;
-			Commands = {"cleareffects"};
-			Args = {"player"};
-			Hidden = false;
-			Description = "Removes all screen UI effects such as Spooky, Clown, ScreenImage, ScreenVideo, etc.";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
-					Remote.RemoveGui(v,"Effect")
-				end
-			end
-		};
-
-		ResetLighting = {
-			Prefix = Settings.Prefix;
-			Commands = {"fix";"resetlighting";"undisco";"unflash";"fixlighting";};
-			Args = {};
-			Hidden = false;
-			Description = "Reset lighting back to the setting it had on server start";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				service.StopLoop("LightingTask")
-				for i,v in pairs(Variables.OriginalLightingSettings) do
-					if i~="Sky" and service.Lighting[i]~=nil then
-						Functions.SetLighting(i,v)
-					end
-				end
-				for i,v in pairs(service.Lighting:GetChildren()) do
-					if v:IsA("Sky") then
-						service.Delete(v)
-					end
-				end
-				if Variables.OriginalLightingSettings.Sky then
-					Variables.OriginalLightingSettings.Sky:Clone().Parent = service.Lighting
-				end
-			end
-		};
-
-		ClearLighting = {
-			Prefix = Settings.Prefix;
-			Commands = {"fixplayerlighting","rplighting","clearlighting","serverlighting"};
-			Args = {"player"};
-			Hidden = false;
-			Description = "Sets the player's lighting to match the server's";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for prop,val in pairs(Variables.LightingSettings) do
-						Remote.SetLighting(v,prop,val)
-					end
-				end
-			end
-		};
-
-		Freaky = {
-			Prefix = Settings.Prefix;
-			Commands = {"freaky";};
-			Args = {"0-600,0-600,0-600";"optional player"};
-			Hidden = false;
-			Description = "Does freaky stuff to lighting. Like a messed up ambient.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local r,g,b = 100,100,100
-				if args[1] and args[1]:match("(.*),(.*),(.*)") then
-					r,g,b = args[1]:match("(.*),(.*),(.*)")
-				end
-				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
-				local num1,num2,num3 = r,g,b
-				num1="-"..num1.."00000"
-				num2="-"..num2.."00000"
-				num3="-"..num3.."00000"
-				if args[2] then
-					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						Remote.SetLighting(v,"FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-						Remote.SetLighting(v,"FogEnd", 9e9)
-					end
-				else
-					Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
-				end
-			end
-		};
 
 		Info = {
 			Prefix = Settings.Prefix;
-			Commands = {"info";"age";};
-			Args = {"player";"groupid";};
+			Commands = {"info";"age";"inspect";};
+			Args = {"Player";"groupid";};
 			Hidden = false;
 			Description = "Shows you information about the target player";
 			Fun = false;
@@ -2560,11 +2066,11 @@ return function(Vargs, env)
 		ResetStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats","rs"};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Sets target player(s)'s leader stats to 0";
 			Fun = false;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					cPcall(function()
@@ -2578,35 +2084,15 @@ return function(Vargs, env)
 			end
 		};
 
-		Gear = {
-			Prefix = Settings.Prefix;
-			Commands = {"gear";"givegear";};
-			Args = {"player";"id";};
-			Hidden = false;
-			Description = "Gives the target player(s) a gear from the catalog based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local gear = service.Insert(tonumber(args[2]))
-				if gear:IsA("Tool") or gear:IsA("HopperBin") then
-					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
-					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						if v:findFirstChild("Backpack") then
-							gear:Clone().Parent = v.Backpack
-						end
-					end
-				end
-			end
-		};
 
 		Sell = {
 			Prefix = Settings.Prefix;
 			Commands = {"sell";};
-			Args = {"player";"id";};
+			Args = {"Player";"id";};
 			Hidden = false;
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
 			Fun = false;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false)
@@ -2614,178 +2100,15 @@ return function(Vargs, env)
 			end
 		};
 
-		Hat = {
-			Prefix = Settings.Prefix;
-			Commands = {"hat";"givehat";};
-			Args = {"player";"id";};
-			Hidden = false;
-			Description = "Gives the target player(s) a hat based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				if not args[2] then error("Argument missing or nil") end
-				local id = args[2]
-				if not tonumber(id) then
-					local built = {
-						teapot = 1055299;
-					}
-					if built[args[2]:lower()] then
-						id = built[args[2]:lower()]
-					end
-				end
-				if not tonumber(id) then error("Invalid ID") end
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						local obj = service.Insert(id)
-						if obj:IsA("Accoutrement") then
-							obj.Parent = v.Character
-						end
-					end
-				end
-			end
-		};
-
-		Capes = {
-			Prefix = Settings.Prefix;
-			Commands = {"capes";"capelist";};
-			Args = {};
-			Hidden = false;
-			Description = "Shows you the list of capes for the cape command";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local list={}
-				for i,v in pairs(Variables.Capes) do
-					table.insert(list,v.Name)
-				end
-				Remote.MakeGui(plr,'List',{Title = 'Cape List',Tab = list})
-			end
-		};
-
-		Cape = {
-			Prefix = Settings.Prefix;
-			Commands = {"cape";"givecape";};
-			Args = {"player";"name/color";"material";"reflectance";"id";};
-			Hidden = false;
-			Description = "Gives the target player(s) the cape specified, do Settings.Prefixcapes to view a list of available capes ";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local color="White"
-				if pcall(function() return BrickColor.new(args[2]) end) then color = args[2] end
-				local mat = args[3] or "Fabric"
-				local ref = args[4]
-				local id = args[5]
-				if args[2] and not args[3] then
-					for k,cape in pairs(Variables.Capes) do
-						if args[2]:lower()==cape.Name:lower() then
-							color = cape.Color
-							mat = cape.Material
-							ref = cape.Reflectance
-							id = cape.ID
-						end
-					end
-				end
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Cape(v,false,mat,color,id,ref)
-				end
-			end
-		};
-
-		UnCape = {
-			Prefix = Settings.Prefix;
-			Commands = {"uncape";"removecape";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Removes the target player(s)'s cape";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Functions.UnCape(v)
-				end
-			end
-		};
-
-		Slippery = {
-			Prefix = Settings.Prefix;
-			Commands = {"slippery";"iceskate";"icewalk";"slide";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Makes the target player(s) slide when they walk";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local vel = service.New('BodyVelocity')
-				vel.Name = 'ADONIS_IceVelocity'
-				vel.maxForce = Vector3.new(5000,0,5000)
-				local scr = Deps.Assets.Slippery:Clone()
-
-				scr.Name = "ADONIS_IceSkates"
-
-				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local vel = vel:Clone()
-						vel.Parent = v.Character.HumanoidRootPart
-						local new = scr:Clone()
-						new.Parent = v.Character.HumanoidRootPart
-						new.Disabled = false
-					end
-				end
-
-				scr:Destroy()
-			end
-		};
-
-		UnSlippery = {
-			Prefix = Settings.Prefix;
-			Commands = {"unslippery","uniceskate","unslide"};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Get sum friction all up in yo step";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local scr = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceSkates")
-						local vel = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceVelocity")
-						if vel then vel:Destroy() end
-						if scr then scr.Disabled = true scr:Destroy() end
-					end
-				end
-			end
-		};
-
-		NoClip = {
-			Prefix = Settings.Prefix;
-			Commands = {"noclip";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "NoClips the target player(s)";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local clipper = Deps.Assets.Clipper:Clone()
-				clipper.Name = "ADONIS_NoClip"
-
-				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."clip",p.Name)
-					local new = clipper:Clone()
-					new.Parent = p.Character.Humanoid
-					new.Disabled = false
-				end
-			end
-		};
-
+	
 		FlyNoClip = {
 			Prefix = Settings.Prefix;
 			Commands = {"flynoclip";};
-			Args = {"player";"speed";};
+			Args = {"Player";"speed";};
 			Hidden = false;
 			Description = "Flying noclip";
 			Fun = false;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
 					server.Commands.Fly.Function(p, args, true)
@@ -2796,11 +2119,11 @@ return function(Vargs, env)
 		Clip = {
 			Prefix = Settings.Prefix;
 			Commands = {"clip";"unnoclip";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Un-NoClips the target player(s)";
 			Fun = false;
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
 					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
@@ -2821,7 +2144,7 @@ return function(Vargs, env)
 		Jail = {
 			Prefix = Settings.Prefix;
 			Commands = {"jail";"imprison";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Jails the target player(s), removing their tools until they are un-jailed";
 			Fun = false;
@@ -2946,7 +2269,7 @@ return function(Vargs, env)
 		UnJail = {
 			Prefix = Settings.Prefix;
 			Commands = {"unjail";"free";"release";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnJails the target player(s) and returns any tools that were taken from them while jailed";
 			Fun = false;
@@ -2986,7 +2309,7 @@ return function(Vargs, env)
 		BubbleChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"bchat";"dchat";"bubblechat";"dialogchat";};
-			Args = {"player";"color(red/green/blue/off)";};
+			Args = {"Player";"color(red/green/blue/off)";};
 			Description = "Gives the target player(s) a little chat gui, when used will let them chat using dialog bubbles";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3011,7 +2334,7 @@ return function(Vargs, env)
 		Track = {
 			Prefix = Settings.Prefix;
 			Commands = {"track";"trace";"find";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
 			Fun = false;
@@ -3059,7 +2382,7 @@ return function(Vargs, env)
 		UnTrack = {
 			Prefix = Settings.Prefix;
 			Commands = {"untrack";"untrace";"unfind";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
 			Fun = false;
@@ -3079,7 +2402,7 @@ return function(Vargs, env)
 		Glitch = {
 			Prefix = Settings.Prefix;
 			Commands = {"glitch";"glitchdisorient";"glitch1";"glitchy";"gd";};
-			Args = {"player";"intensity";};
+			Args = {"Player";"intensity";};
 			Hidden = false;
 			Description = "Makes the target player(s)'s character teleport back and forth rapidly, quite trippy, makes bricks appear to move as the player turns their character";
 			Fun = true;
@@ -3106,7 +2429,7 @@ return function(Vargs, env)
 		Glitch2 = {
 			Prefix = Settings.Prefix;
 			Commands = {"ghostglitch";"glitch2";"glitchghost";"gg";};
-			Args = {"player";"intensity";};
+			Args = {"Player";"intensity";};
 			Hidden = false;
 			Description = "The same as gd but less trippy, teleports the target player(s) back and forth in the same direction, making two ghost like images of the game";
 			Fun = true;
@@ -3133,7 +2456,7 @@ return function(Vargs, env)
 		Vibrate = {
 			Prefix = Settings.Prefix;
 			Commands = {"vibrate";"glitchvibrate";"gv";};
-			Args = {"player";"intensity";};
+			Args = {"Player";"intensity";};
 			Hidden = false;
 			Description = "Kinda like gd, but teleports the player to four points instead of two";
 			Fun = true;
@@ -3162,7 +2485,7 @@ return function(Vargs, env)
 		UnGlitch = {
 			Prefix = Settings.Prefix;
 			Commands = {"unglitch";"unglitchghost";"ungd";"ungg";"ungv";"unvibrate";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnGlitchs the target player(s)";
 			Fun = true;
@@ -3183,7 +2506,7 @@ return function(Vargs, env)
 		Phase = {
 			Prefix = Settings.Prefix;
 			Commands = {"phase";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes the player(s) character completely local";
 			Fun = false;
@@ -3198,7 +2521,7 @@ return function(Vargs, env)
 		UnPhase = {
 			Prefix = Settings.Prefix;
 			Commands = {"unphase";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnPhases the target player(s)";
 			Fun = false;
@@ -3214,7 +2537,7 @@ return function(Vargs, env)
 		GiveStarterPack = {
 			Prefix = Settings.Prefix;
 			Commands = {"startertools";"starttools";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Gives the target player(s) tools that are in the game's StarterPack";
 			Fun = false;
@@ -3237,7 +2560,7 @@ return function(Vargs, env)
 		Sword = {
 			Prefix = Settings.Prefix;
 			Commands = {"sword";"givesword";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Gives the target player(s) a sword";
 			Fun = false;
@@ -3259,7 +2582,7 @@ return function(Vargs, env)
 		Clone = {
 			Prefix = Settings.Prefix;
 			Commands = {"clone";"cloneplayer";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Clones the target player(s)";
 			Fun = false;
@@ -3288,7 +2611,7 @@ return function(Vargs, env)
 		CopyCharacter = {
 			Prefix = Settings.Prefix;
 			Commands = {"copychar";"copycharacter";"copyplayercharacter"};
-			Args = {"player";"target";};
+			Args = {"Player";"target";};
 			Hidden = false;
 			Description = "Changes specific players' character to the target's character. (i.g. To copy Player1's character, do ':copychar me Player1')";
 			Fun = false;
@@ -3342,7 +2665,7 @@ return function(Vargs, env)
 		ClickTeleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"clickteleport";"teleporttoclick";"ct";"clicktp";"forceteleport";"ctp";"ctt";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Gives you a tool that lets you click where you want the target player to stand, hold r to rotate them";
 			Fun = false;
@@ -3366,7 +2689,7 @@ return function(Vargs, env)
 		ClickWalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"clickwalk";"cw";"ctw";"forcewalk";"walktool";"walktoclick";"clickcontrol";"forcewalk";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Gives you a tool that lets you click where you want the target player to walk, hold r to rotate them";
 			Fun = false;
@@ -3444,7 +2767,7 @@ return function(Vargs, env)
 		Control = {
 			Prefix = Settings.Prefix;
 			Commands = {"control";"takeover";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Lets you take control of the target player";
 			Fun = false;
@@ -3494,7 +2817,7 @@ return function(Vargs, env)
 		Refresh = {
 			Prefix = Settings.Prefix;
 			Commands = {"refresh";"reset";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Refreshes the target player(s)'s character";
 			Fun = false;
@@ -3533,7 +2856,7 @@ return function(Vargs, env)
 		Kill = {
 			Prefix = Settings.Prefix;
 			Commands = {"kill";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Kills the target player(s)";
 			Fun = false;
@@ -3548,7 +2871,7 @@ return function(Vargs, env)
 		Respawn = {
 			Prefix = Settings.Prefix;
 			Commands = {"respawn";"re"};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Respawns the target player(s)"; -- typo fixed
 			Fun = false;
@@ -3564,7 +2887,7 @@ return function(Vargs, env)
 		R6 = {
 			Prefix = Settings.Prefix;
 			Commands = {"r6","classicrig"};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Converts players' character to R6";
 			Fun = false;
@@ -3579,7 +2902,7 @@ return function(Vargs, env)
 		R15 = {
 			Prefix = Settings.Prefix;
 			Commands = {"r15","rthro"};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Converts players' character to R15";
 			Fun = false;
@@ -3594,7 +2917,7 @@ return function(Vargs, env)
 		Trip = {
 			Prefix = Settings.Prefix;
 			Commands = {"trip";};
-			Args = {"player";"angle";};
+			Args = {"Player";"angle";};
 			Hidden = false;
 			Description = "Rotates the target player(s) by 180 degrees or the angle you server";
 			Fun = true;
@@ -3612,7 +2935,7 @@ return function(Vargs, env)
 		Stun = {
 			Prefix = Settings.Prefix;
 			Commands = {"stun";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Stuns the target player(s)";
 			Fun = false;
@@ -3629,7 +2952,7 @@ return function(Vargs, env)
 		UnStun = {
 			Prefix = Settings.Prefix;
 			Commands = {"unstun";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnStuns the target player(s)";
 			Fun = false;
@@ -3646,7 +2969,7 @@ return function(Vargs, env)
 		Jump = {
 			Prefix = Settings.Prefix;
 			Commands = {"jump";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Forces the target player(s) to jump";
 			Fun = false;
@@ -3663,7 +2986,7 @@ return function(Vargs, env)
 		Sit = {
 			Prefix = Settings.Prefix;
 			Commands = {"sit";"seat";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Forces the target player(s) to sit";
 			Fun = false;
@@ -3680,7 +3003,7 @@ return function(Vargs, env)
 		Invisible = {
 			Prefix = Settings.Prefix;
 			Commands = {"invisible";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes the target player(s) invisible";
 			Fun = false;
@@ -3713,7 +3036,7 @@ return function(Vargs, env)
 		Visible = {
 			Prefix = Settings.Prefix;
 			Commands = {"visible";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes the target player(s) visible";
 			Fun = false;
@@ -3746,7 +3069,7 @@ return function(Vargs, env)
 		Lock = {
 			Prefix = Settings.Prefix;
 			Commands = {"lock";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Locks the target player(s)";
 			Fun = false;
@@ -3769,7 +3092,7 @@ return function(Vargs, env)
 		UnLock = {
 			Prefix = Settings.Prefix;
 			Commands = {"unlock";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnLocks the the target player(s), makes it so you can use btools on them";
 			Fun = false;
@@ -3792,7 +3115,7 @@ return function(Vargs, env)
 		Explode = {
 			Prefix = Settings.Prefix;
 			Commands = {"explode";"boom";"boomboom";};
-			Args = {"player";"radius"};
+			Args = {"Player";"radius"};
 			Hidden = false;
 			Description = "Explodes the target player(s)";
 			Fun = true;
@@ -3811,7 +3134,7 @@ return function(Vargs, env)
 		Light = {
 			Prefix = Settings.Prefix;
 			Commands = {"light";};
-			Args = {"player";"color";};
+			Args = {"Player";"color";};
 			Hidden = false;
 			Description = "Makes a PointLight on the target player(s) with the color specified";
 			Fun = false;
@@ -3840,7 +3163,7 @@ return function(Vargs, env)
 		UnLight = {
 			Prefix = Settings.Prefix;
 			Commands = {"unlight";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnLights the target player(s)";
 			Fun = false;
@@ -3857,7 +3180,7 @@ return function(Vargs, env)
 		Paint = {
 			Prefix = Settings.Prefix;
 			Commands = {"paint";};
-			Args = {"player";"brickcolor"};
+			Args = {"Player";"brickcolor"};
 			Hidden = false;
 			Description = "Paints the target player(s)";
 			Fun = true;
@@ -3884,33 +3207,18 @@ return function(Vargs, env)
 			end
 		};
 
-		Oddliest = {
+		
+		Thru = {
 			Prefix = Settings.Prefix;
-			Commands = {"oddliest";};
-			Args = {"player";};
+			Commands = {"thru";"pass";"through"};
 			Hidden = false;
-			Description = "Turns you into the one and only Oddliest";
-			Fun = true;
+			Args = {};
+			Description = "Lets you pass through an object or a wall";
+			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"51310503")
-				end
-			end
-		};
+				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
 
-		Sceleratis = {
-			Prefix = Settings.Prefix;
-			Commands = {"sceleratis";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Turns you into me <3";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"userid-1237666")
-				end
 			end
 		};
 
@@ -4125,7 +3433,7 @@ return function(Vargs, env)
 		StarterGive = {
 			Prefix = Settings.Prefix;
 			Commands = {"startergive";};
-			Args = {"player";"toolname";};
+			Args = {"Player";"toolname";};
 			Hidden = false;
 			Description = "Places the desired tool into the target player(s)'s StarterPack";
 			Fun = false;
@@ -4164,7 +3472,7 @@ return function(Vargs, env)
 		StarterRemove = {
 			Prefix = Settings.Prefix;
 			Commands = {"starterremove";};
-			Args = {"player";"toolname";};
+			Args = {"Player";"toolname";};
 			Hidden = false;
 			Description = "Removes the desired tool from the target player(s)'s StarterPack";
 			Fun = false;
@@ -4187,7 +3495,7 @@ return function(Vargs, env)
 		Give = {
 			Prefix = Settings.Prefix;
 			Commands = {"give";"tool";};
-			Args = {"player";"tool";};
+			Args = {"Player";"tool";};
 			Hidden = false;
 			Description = "Gives the target player(s) the desired tool(s)";
 			Fun = false;
@@ -4249,7 +3557,7 @@ return function(Vargs, env)
 		RemoveGuis = {
 			Prefix = Settings.Prefix;
 			Commands = {"removeguis";"noguis";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Remove the target player(s)'s screen guis";
 			Fun = false;
@@ -4264,7 +3572,7 @@ return function(Vargs, env)
 		RemoveTools = {
 			Prefix = Settings.Prefix;
 			Commands = {"removetools";"notools";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Remove the target player(s)'s tools";
 			Fun = false;
@@ -4282,7 +3590,7 @@ return function(Vargs, env)
 		Rank = {
 			Prefix = Settings.Prefix;
 			Commands = {"rank";"getrank";};
-			Args = {"player";"groupID";};
+			Args = {"Player";"groupID";};
 			Hidden = false;
 			Description = "Shows you what rank the target player(s) are in the group specified by groupID";
 			Fun = false;
@@ -4301,7 +3609,7 @@ return function(Vargs, env)
 		Damage = {
 			Prefix = Settings.Prefix;
 			Commands = {"damage";"hurt";};
-			Args = {"player";"number";};
+			Args = {"Player";"number";};
 			Hidden = false;
 			Description = "Removes <number> HP from the target player(s)";
 			Fun = false;
@@ -4319,7 +3627,7 @@ return function(Vargs, env)
 		SetHealth = {
 			Prefix = Settings.Prefix;
 			Commands = {"health";"sethealth";};
-			Args = {"player";"number";};
+			Args = {"Player";"number";};
 			Hidden = false;
 			Description = "Set the target player(s)'s health to <number>";
 			Fun = false;
@@ -4337,7 +3645,7 @@ return function(Vargs, env)
 		JumpPower = {
 			Prefix = Settings.Prefix;
 			Commands = {"jpower";"jpow";"jumppower";};
-			Args = {"player";"number";};
+			Args = {"Player";"number";};
 			Hidden = false;
 			Description = "Set the target player(s)'s JumpPower to <number>";
 			Fun = false;
@@ -4355,7 +3663,7 @@ return function(Vargs, env)
 		Speed = {
 			Prefix = Settings.Prefix;
 			Commands = {"speed";"setspeed";"walkspeed";"ws"};
-			Args = {"player";"number";};
+			Args = {"Player";"number";};
 			Hidden = false;
 			Description = "Set the target player(s)'s WalkSpeed to <number>";
 			Fun = false;
@@ -4373,7 +3681,7 @@ return function(Vargs, env)
 		SetTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"team";"setteam";"changeteam";};
-			Args = {"player";"team";};
+			Args = {"Player";"team";};
 			Hidden = false;
 			Description = "Set the target player(s)'s team to <team>";
 			Fun = false;
@@ -4453,7 +3761,7 @@ return function(Vargs, env)
 		Unteam = {
 			Prefix = server.Settings.Prefix;
 			Commands = {"unteam","removefromteam", "neutral"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Takes the target player(s) off of a team and sets them to 'Neutral' ";
 			Hidden = false;
 			Fun = false;
@@ -4471,7 +3779,7 @@ return function(Vargs, env)
 		SetFOV = {
 			Prefix = Settings.Prefix;
 			Commands = {"fov";"fieldofview";"setfov"};
-			Args = {"player";"number";};
+			Args = {"Player";"number";};
 			Hidden = false;
 			Description = "Set the target player(s)'s field of view to <number> (min 1, max 120)";
 			Fun = false;
@@ -4487,7 +3795,7 @@ return function(Vargs, env)
 		Place = {
 			Prefix = Settings.Prefix;
 			Commands = {"place";};
-			Args = {"player";"placeID/serverName";};
+			Args = {"Player";"placeID/serverName";};
 			Hidden = false;
 			Description = "Teleport the target player(s) to the place belonging to <placeID> or a reserved server";
 			Fun = false;
@@ -4563,6 +3871,8 @@ return function(Vargs, env)
 			end
 		};
 
+		
+
 		ListServers = {
 			Prefix = Settings.Prefix;
 			Commands = {"servers";"privateservers";};
@@ -4578,26 +3888,6 @@ return function(Vargs, env)
 					table.insert(tab,{Text = i,Desc = "Place: "..v.ID.." | Code: "..v.Code})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Servers",Table = tab})
-			end
-		};
-
-		GRPlaza = {
-			Prefix = Settings.Prefix;
-			Commands = {"grplaza";"grouprecruitingplaza";"groupplaza";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Teleports the target player(s) to the Group Recruiting Plaza to look for potential group members";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.MakeGui(v,"Notification",{
-						Title = "Teleport",
-						Text = "Click to teleport to GRP",
-						Time = 30,
-						OnClick = Core.Bytecode("service.TeleportService:Teleport(6194809)")
-					})
-				end
 			end
 		};
 
@@ -4685,10 +3975,10 @@ return function(Vargs, env)
 			end
 		};
 
-		Bring = {
+	--[[	Bring = {
 			Prefix = Settings.Prefix;
 			Commands = {"bring";"tptome";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Teleport the target(s) to you";
 			Fun = false;
@@ -4698,14 +3988,74 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."tp",v.Name,plr.Name)
 				end
 			end
+		};--]]
+		Bring = {
+			Prefix = server.Settings.Prefix;
+			Commands = {"bring";};
+			Args = {"Players","Rows (Optional)"};
+			Hidden = false;
+			Description = "Evenly brings and positions players to prevent flinging";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local players = args[1] and service.GetPlayers(plr, args[1]) or service.GetPlayers(plr, "me")
+				local lines = (tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, #players)) or 1
+				for l = 1, lines do
+					local offsetX = 0
+					if l == 1 then
+						offsetX = 0
+					elseif l % 2 == 1 then
+						offsetX = -(math.ceil((l - 2)/2)*4)
+					else
+						offsetX = (math.ceil(l / 2))*4
+					end
+					for i = (l-1)*math.floor(#players/lines)+1, l*math.floor(#players/lines) do
+						local player = players[i]
+						--if n.Character.Humanoid.Sit then
+						--	n.Character.Humanoid.Sit = false
+						--	wait(0.5)
+						--end
+						player.Character.Humanoid.Jump = true
+						wait()
+						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+							local offsetZ = ((i-1) - (l-1)*math.floor(#players/lines))*2
+							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+						end
+					end
+				end
+				if #players%lines ~= 0 then
+					for i = lines*math.floor(#players/lines)+1, lines*math.floor(#players/lines) + #players%lines do
+						local r = i % (lines*math.floor(#players/lines))
+						local offsetX = 0
+						if r == 1 then
+							offsetX = 0
+						elseif r % 2 == 1 then
+							offsetX = -(math.ceil((r - 2)/2)*4)
+						else
+							offsetX = (math.ceil(r / 2))*4
+						end
+						local player = players[i]
+						--if n.Character.Humanoid.Sit then
+						--	n.Character.Humanoid.Sit = false
+						--	wait(0.5)
+						--end
+						player.Character.Humanoid.Jump = true
+						wait()
+						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+							local offsetZ = (math.floor(#players/lines))*2
+							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+						end
+					end
+				end
+			end
 		};
-
+		
 		To = {
 			Prefix = Settings.Prefix;
 			Commands = {"to";"tpmeto";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
-			Description = "Teleport you to the target";
+			Description = "Teleports you to the target";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -4718,7 +4068,7 @@ return function(Vargs, env)
 		Change = {
 			Prefix = Settings.Prefix;
 			Commands = {"change";"leaderstat";"stat";};
-			Args = {"player";"stat";"value";};
+			Args = {"Player";"stat";"value";};
 			Filter = true;
 			Description = "Change the target player(s)'s leader stat <stat> value to <value>";
 			AdminLevel = "Moderators";
@@ -4738,7 +4088,7 @@ return function(Vargs, env)
 		AddToStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"add";"addtostat";"addstat";};
-			Args = {"player";"stat";"value";};
+			Args = {"Player";"stat";"value";};
 			Hidden = false;
 			Description = "Add <value> to <stat>";
 			Fun = false;
@@ -4759,7 +4109,7 @@ return function(Vargs, env)
 		SubtractFromStat = {
 			Prefix = Settings.Prefix;
 			Commands = {"subtract";"minusfromstat";"minusstat";"subtractstat";};
-			Args = {"player";"stat";"value";};
+			Args = {"Player";"stat";"value";};
 			Hidden = false;
 			Description = "Subtract <value> from <stat>";
 			Fun = false;
@@ -4780,7 +4130,7 @@ return function(Vargs, env)
 		Shirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"shirt";"giveshirt";};
-			Args = {"player";"ID";};
+			Args = {"Player";"ID";};
 			Hidden = false;
 			Description = "Give the target player(s) the shirt that belongs to <ID>";
 			Fun = false;
@@ -4807,7 +4157,7 @@ return function(Vargs, env)
 		Pants = {
 			Prefix = Settings.Prefix;
 			Commands = {"pants";"givepants";};
-			Args = {"player";"id";};
+			Args = {"Player";"id";};
 			Hidden = false;
 			Description = "Give the target player(s) the pants that belongs to <id>";
 			Fun = false;
@@ -4834,7 +4184,7 @@ return function(Vargs, env)
 		Face = {
 			Prefix = Settings.Prefix;
 			Commands = {"face";"giveface";};
-			Args = {"player";"id";};
+			Args = {"Player";"id";};
 			Hidden = false;
 			Description = "Give the target player(s) the face that belongs to <id>";
 			Fun = false;
@@ -4859,7 +4209,7 @@ return function(Vargs, env)
 		TargetAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"taudio";"localsound";"localaudio";"lsound";"laudio";};
-			Args = {"player", "audioId", "noLoop", "pitch", "volume";};
+			Args = {"Player", "audioId", "noLoop", "pitch", "volume";};
 			Description = "Lets you play an audio on the player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
@@ -4911,7 +4261,7 @@ return function(Vargs, env)
 		UnTargetAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"untaudio";"unlocalsound";"unlocalaudio";"unlsound";"unlaudio";};
-			Args = {"player";};
+			Args = {"Player";};
 			Description = "Lets you stop audio playing on the player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
@@ -4925,7 +4275,7 @@ return function(Vargs, env)
 		CharacterAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"charaudio", "charactermusic", "charmusic"};
-			Args = {"player", "audioId"};
+			Args = {"Player", "audioId"};
 			Description = "Lets you place an audio in the target's character";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -4951,7 +4301,7 @@ return function(Vargs, env)
 		UnCharacterAudio = {
 			Prefix = Settings.Prefix;
 			Commands = {"uncharaudio", "uncharactermusic", "uncharmusic"};
-			Args = {"player"};
+			Args = {"Player"};
 			Description = "Removes audio placed into character via :charaudio command";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -5257,7 +4607,7 @@ return function(Vargs, env)
 		Fly = {
 			Prefix = Settings.Prefix;
 			Commands = {"fly";"flight";};
-			Args = {"player", "speed"};
+			Args = {"Player", "speed"};
 			Hidden = false;
 			Description = "Lets the target player(s) fly";
 			Fun = false;
@@ -5317,7 +4667,7 @@ return function(Vargs, env)
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed";"flightspeed";};
-			Args = {"player", "speed"};
+			Args = {"Player", "speed"};
 			Hidden = false;
 			Description = "Change the target player(s) flight speed";
 			Fun = false;
@@ -5343,7 +4693,7 @@ return function(Vargs, env)
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly";"ground";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Removes the target player(s)'s ability to fly";
 			Fun = false;
@@ -5366,7 +4716,7 @@ return function(Vargs, env)
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Fling the target player(s)";
 			Fun = false;
@@ -5393,7 +4743,7 @@ return function(Vargs, env)
 		SuperFling = {
 			Prefix = Settings.Prefix;
 			Commands = {"sfling";"tothemoon";"superfling";};
-			Args = {"player";"optional strength";};
+			Args = {"Player";"optional strength";};
 			Hidden = false;
 			Description = "Super fling the target player(s)";
 			Fun = false;
@@ -5414,7 +4764,7 @@ return function(Vargs, env)
 		DisplayName = {
 			Prefix = Settings.Prefix;
 			Commands = {"displayname";"dname";};
-			Args = {"player";"name/hide";};
+			Args = {"Player";"name/hide";};
 			Filter = true;
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
@@ -5446,7 +4796,7 @@ return function(Vargs, env)
 		UnDisplayName = {
 			Prefix = Settings.Prefix;
 			Commands = {"undisplayname";"undname";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Put the target player(s)'s back to normal";
 			Fun = false;
@@ -5470,7 +4820,7 @@ return function(Vargs, env)
 		Name = {
 			Prefix = Settings.Prefix;
 			Commands = {"name";"rename";};
-			Args = {"player";"name/hide";};
+			Args = {"Player";"name/hide";};
 			Filter = true;
 			Description = "Name the target player(s) <name> or say hide to hide their character name";
 			AdminLevel = "Moderators";
@@ -5519,7 +4869,7 @@ return function(Vargs, env)
 		UnName = {
 			Prefix = Settings.Prefix;
 			Commands = {"unname";"fixname";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Put the target player(s)'s back to normal";
 			Fun = false;
@@ -5541,7 +4891,7 @@ return function(Vargs, env)
 		RemovePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"removepackage";"nopackage";"rpackage"};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Removes the target player(s)'s Package";
 			Fun = false;
@@ -5580,7 +4930,7 @@ return function(Vargs, env)
 		GivePackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"package", "givepackage", "setpackage", "bundle"};
-			Args = {"player", "id"};
+			Args = {"Player", "id"};
 			Hidden = false;
 			Description = "Gives the target player(s) the desired package (ID MUST BE A NUMBER)";
 			Fun = false;
@@ -5646,7 +4996,7 @@ return function(Vargs, env)
 		Char = {
 			Prefix = Settings.Prefix;
 			Commands = {"char";"character";"appearance";};
-			Args = {"player";"username";};
+			Args = {"Player";"username";};
 			Hidden = false;
 			Description = "Changes the target player(s)'s character appearence to <ID/Name>. If you want to supply a UserId, supply with 'userid-', followed by a number after 'userid'.";
 			Fun = false;
@@ -5687,7 +5037,7 @@ return function(Vargs, env)
 		UnChar = {
 			Prefix = Settings.Prefix;
 			Commands = {"unchar";"uncharacter";"fixappearance";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Put the target player(s)'s character appearence back to normal";
 			Fun = false;
@@ -5714,7 +5064,7 @@ return function(Vargs, env)
 		LoopHeal = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopheal";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Loop heals the target player(s)";
 			Fun = false;
@@ -5731,7 +5081,7 @@ return function(Vargs, env)
 		UnLoopHeal = {
 			Prefix = Settings.Prefix;
 			Commands = {"unloopheal";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnLoop Heal";
 			Fun = false;
@@ -5746,7 +5096,7 @@ return function(Vargs, env)
 		ServerLog = {
 			Prefix = ":";
 			Commands = {"serverlog";"serverlogs";"serveroutput";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View server log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
@@ -5795,7 +5145,7 @@ return function(Vargs, env)
 		LocalLog = {
 			Prefix = ":";
 			Commands = {"locallog";"clientlog";"locallogs";"localoutput";"clientlogs";};
-			Args = {"player","autoupdate"};
+			Args = {"Player","Refresh"};
 			Description = "View local log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
@@ -5820,11 +5170,40 @@ return function(Vargs, env)
 				end
 			end
 		};
+		PrivateMessageLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"pmlogs";"privatemessagelogs";"pmspy";};
+			Args = {"Refresh"};
+			Hidden = false;
+			Description = "Shows all of the private messages between users. Use this at your own risk.";
+			Fun = false;
+			Agents = true;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				assert(Settings.PMLogs,"PMLogs are disabled; Enable them in Settings")
 
+				local auto
+
+				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+					auto = 1
+				end
+
+			
+
+				Remote.MakeGui(plr,"List",{
+					Title = "Private Messages";
+					Tab = Logs.PrivateMessages;
+					Dots = true;
+					Update = "PrivateMessages";
+					AutoUpdate = auto;
+				
+				})
+			end
+		};
 		ReplicationLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"replications";"replicators";"replicationlogs";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "Shows a list of what players are *believed* to have created/destroyed object; Does not always imply exploiting";
 			Fun = false;
@@ -5860,7 +5239,7 @@ return function(Vargs, env)
 		NetworkOwners = {
 			Prefix = Settings.Prefix;
 			Commands = {"createdparts","networkowners","playerparts"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "Shows what players created parts in workspace";
 			Fun = false;
@@ -5896,7 +5275,7 @@ return function(Vargs, env)
 		ErrorLogs = {
 			Prefix = ":";
 			Commands = {"errorlogs";"debuglogs";"errorlog";"errors";"debuglog";"scripterrors";"adminerrors";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "View script error log";
 			Fun = false;
@@ -5925,7 +5304,7 @@ return function(Vargs, env)
 		ExploitLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"exploitlogs"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "View the exploit logs for the server OR a specific player";
 			Fun = false;
@@ -5951,7 +5330,7 @@ return function(Vargs, env)
 		JoinLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"joinlogs","joins","joinhistory"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Hidden = false;
 			Description = "Displays the current join logs for the server";
 			Fun = false;
@@ -5975,7 +5354,7 @@ return function(Vargs, env)
 		ChatLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"chatlogs","chats","chathistory"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "Displays the current chat logs for the server";
 			Agents = true;
 			AdminLevel = "Moderators";
@@ -6001,7 +5380,7 @@ return function(Vargs, env)
 		RemoteLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"remotelogs","rlogs","remotefires","remoterequests"};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
 			Agents = true;
@@ -6025,7 +5404,7 @@ return function(Vargs, env)
 		ScriptLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"scriptlogs","scriptlog","adminlogs";"adminlog";"scriptlogs";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -6048,7 +5427,7 @@ return function(Vargs, env)
 		Logs = {
 			Prefix = Settings.Prefix;
 			Commands = {"logs";"log";"commandlogs";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View the command logs for the server";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -6078,7 +5457,7 @@ return function(Vargs, env)
 		OldLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldlogs";"oldserverlogs";"oldcommandlogs";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View the command logs for previous servers ordered by time";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -6104,7 +5483,7 @@ return function(Vargs, env)
 		ShowLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"showlogs";"showcommandlogs";};
-			Args = {"player","autoupdate"};
+			Args = {"Player","Refresh"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -6118,7 +5497,7 @@ return function(Vargs, env)
 		Mute = {
 			Prefix = Settings.Prefix;
 			Commands = {"mute";"silence";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s) can't talk";
 			Fun = false;
@@ -6145,7 +5524,7 @@ return function(Vargs, env)
 		UnMute = {
 			Prefix = Settings.Prefix;
 			Commands = {"unmute";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";
 			Fun = false;
@@ -6182,7 +5561,7 @@ return function(Vargs, env)
 		Freecam = {
 			Prefix = Settings.Prefix;
 			Commands = {"freecam";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s)'s cam can move around freely (Press Space or Shift+P to toggle freecam)";
 			Fun = false;
@@ -6207,7 +5586,7 @@ return function(Vargs, env)
 		UnFreecam = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfreecam";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "UnFreecam";
 			Fun = false;
@@ -6233,7 +5612,7 @@ return function(Vargs, env)
 		ToggleFreecam = {
 			Prefix = Settings.Prefix;
 			Commands = {"togglefreecam";};
-			Args = {"player";};
+			Args = {"Player";};
 			Hidden = false;
 			Description = "Toggles Freecam";
 			Fun = false;
@@ -6256,7 +5635,7 @@ return function(Vargs, env)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot";"trainingbot"};
-			Args = {"player";"num";"walk";"attack","friendly","health","speed","damage"};
+			Args = {"Player";"num";"walk";"attack","friendly","health","speed","damage"};
 			Hidden = false;
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			Fun = false;
@@ -6356,7 +5735,7 @@ return function(Vargs, env)
 		TextToSpeech = {
 			Prefix = Settings.Prefix;
 			Commands = {"tell";"tts";"texttospeech"};
-			Args = {"player";"message";};
+			Args = {"Player";"Message";};
 			Filter = true;
 			Description = "[WIP] Says the text you give it";
 			AdminLevel = "Moderators";
