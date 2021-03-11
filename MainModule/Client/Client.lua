@@ -479,6 +479,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		G_Access_Key = true;
 		G_Access_Perms = true;
 		Allowed_API_Calls = true;
+		HelpButtonImage = true;
 		Finish_Loading = true;
 		RemoteEvent = true;
 		ScriptCache = true;
