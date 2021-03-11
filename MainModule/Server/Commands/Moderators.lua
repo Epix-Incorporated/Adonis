@@ -31,7 +31,39 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+			Thru = {
+			Prefix = Settings.Prefix;
+			Commands = {"thru";"pass";"through"};
+			Hidden = false;
+			Args = {};
+			Description = "Lets you pass through an object or a wall";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
+
+			end
+		};
+			TimeDate = {
+			Prefix = Settings.Prefix;
+			Commands = {"datetime";"time","date";"timedate";};
+			Args = {};
+			Hidden = false;
+			Description = "Shows you the current time and date.";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				--if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+			--		auto = 1
+			--	end
+				-- Automatic refresh
+			
+
+				Remote.MakeGui(plr,"List",
+					{Title = "Date",Table = Logs.DateTime, Update = 'DateTime', AutoUpdate = 1, Size = {270, 390};})
+			end
+		};
+			
 		TimeBanList = {
 			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
