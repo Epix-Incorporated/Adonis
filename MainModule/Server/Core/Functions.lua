@@ -1007,6 +1007,26 @@ return function(Vargs)
 			Clothing.Name = clothingtype
 			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
 			return Clothing
+		end;
+
+		GetAssetUrlFromIdWithType = function(Type, Id)
+			local function IsAssetType(Id, Type)
+				local Success = pcall()
+				
+			end
+			local NumberedId = tonumber(Id)
+			if Type == "Sound" then
+				return assert(NumberedId and assert(IsAssetType(NumberedId)) or select(1, function()
+					local nam = args[1]
+					if nam then
+						for _,v in next, server.Variables.MusicList do
+							if v.Name:lower() == nam:lower() then
+								return v.ID
+							end
+						end
+					end
+				end)(), "SoundId wasn't provided or wasn't valid")
+			end
 		end
 	};
 end
