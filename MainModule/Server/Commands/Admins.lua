@@ -361,7 +361,7 @@ return function(Vargs, env)
 				local char = assert(plr.Character, "Character not found")
 				local PrimaryPart = assert(char.PrimaryPart, "Head isn't found in your character. How is it going to spawn?")
 
-				local soundid = assert((args[1] and tonumber(args[1])) or select(1, function()
+				local soundid = assert(tonumber(args[1]) or select(1, function()
 					local nam = args[1]
 					if nam then
 						for _,v in next, server.Variables.MusicList do
@@ -376,6 +376,7 @@ return function(Vargs, env)
 				local pitch = (args[3] and tonumber(args[3])) or 1
 				local disco = (args[4] and args[4]:lower() == 'true') or false
 				local showhint = (args[5] and args[5]:lower() == 'true') or false
+				local noloop = (args[6] and args[6]:lower() == 'true') or false
 				local volume = (args[7] and tonumber(args[7])) or 1
 				local changeable = (args[8] and args[8]:lower() == 'true') or false
 				local toggable = (args[9] and args[9]:lower() == 'true') or false
@@ -391,18 +392,17 @@ return function(Vargs, env)
 				assert(did, "Sound Id isn't a sound or doesn't exist.")
 				assert(soundinfo.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
 
-				local spart = toggable and service.New("Part") or service.New("Attachment")
+				local spart = service.New("Attachment")
 				spart.Anchored = true
-				spart.Name = "Adonis_SoundPart"
+				spart.Name = "Adonis_SoundEmitter"
 				spart.Position = char:FindFirstChild("Head").Position
-				spart.Size = Vector3.new(2, 1, 2)
 				table.insert(Variables.InsertedObjects, spart)
 
 				local sound = service.New("Sound", spart)
 				sound.Name = "Part_Sound"
 				sound.Looped = not noloop
 				sound.SoundId = "rbxassetid://"..soundid
-				sond.Volume = volume
+				sound.Volume = volume
 				sound.EmitterSize = soundrange
 				sound.PlaybackSpeed = pitch
 				sound.Archivable = false
@@ -422,14 +422,13 @@ return function(Vargs, env)
 					service.Debris:AddItem(tag, secs or 5)
 				end
 
-				sound.Changed:Connect(function(prot)
-					if prot == "SoundId" then
-						if sound.IsPlaying then
-							sound:Stop()
-						end
 
-						sound.TimePosition = 0
+				sound:GetPropertyChangedSignal("SoundId"):Connect(function(prot)
+					if sound.IsPlaying then
+						sound:Stop()
 					end
+
+					sound.TimePosition = 0
 				end)
 
 				sound.Ended:Connect(function()
@@ -450,25 +449,18 @@ return function(Vargs, env)
 				end
 
 				if toggable then
-					local clickd = service.New("ClickDetector")
+					local clickd = service.New("ProximityPrompt")
 					clickd.Name = "ClickToPlay"
 					clickd.Archivable = false
 					clickd.MaxActivationDistance = rangetotoggle
-					local clicks = 0
-
-					local ownerid = plr.UserId
-					clickd.MouseClick:Connect(function(clicker)
-						if sharetype == "self" and clicker.UserId ~= ownerid then return end
-						if sharetype == "friends" then
-							if clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
-								return
-								end
+					local clicks, ownerid = 0, plr.UserId
+					
+					clickd.Triggered:Connect(function(clicker)
+						if sharetype == "self" and clicker.UserId ~= ownerid or sharetype == "friends" and clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
+							return
 						end
 
 						clicks += 1
-						delay(0.4, function()
-							clicks -= 1
-						end)
 
 						if clicks == 1 then
 							if sound.IsPlaying then
@@ -487,14 +479,13 @@ return function(Vargs, env)
 								createTag("Music replaying by "..clicker.Name, 5)								
 							end
 						elseif clicks == 3 then
-							if discoscript and discoscript.Parent ~= nil then
-								if discoscript.Disabled then
-									discoscript.Disabled = false
-								else
-									discoscript.Disabled = true
-								end
+							if discoscript and discoscript.Parent then
+								discoscript.Disabled = not discoscript.Disabled
 							end
 						end
+						delay(0.5, function()
+							clicks -= 1
+						end)
 					end)
 
 					clickd.Parent = spart
