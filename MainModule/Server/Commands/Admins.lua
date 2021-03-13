@@ -358,19 +358,9 @@ return function(Vargs, env)
 			Fun = true;	-- Is it fun?
 			AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 			Function = function(plr,args)    -- Function to run for command
-				local char = assert(plr.Character, "Character not found")
-				local PrimaryPart = assert(char.PrimaryPart, "Head isn't found in your character. How is it going to spawn?")
+				local PrimaryPart = assert(assert(plr.Character, "Character not found").PrimaryPart, "Head isn't found in your character. How is it going to spawn?")
 
-				local soundid = assert(tonumber(args[1]) or select(1, function()
-					local nam = args[1]
-					if nam then
-						for _,v in next, server.Variables.MusicList do
-							if v.Name:lower() == nam:lower() then
-								return v.ID
-							end
-						end
-					end
-				end)(), "SoundId wasn't provided or wasn't a valid number")
+				local soundid = server.Functions.GetAssetUrlFromIdWithType("Sound", args[1])
 
 				local soundrange = (args[2] and tonumber(args[2])) or 10
 				local pitch = (args[3] and tonumber(args[3])) or 1
@@ -394,14 +384,14 @@ return function(Vargs, env)
 
 				local spart = service.New("Attachment")
 				spart.Anchored = true
-				spart.Name = "Adonis_SoundEmitter"
-				spart.Position = char:FindFirstChild("Head").Position
+				spart.Name = "_Adonis_SoundEmitter"
+				spart.Position = PrimaryPart.Position
 				table.insert(Variables.InsertedObjects, spart)
 
 				local sound = service.New("Sound", spart)
-				sound.Name = "Part_Sound"
 				sound.Looped = not noloop
 				sound.SoundId = "rbxassetid://"..soundid
+				sound.Name = sound.SoundId
 				sound.Volume = volume
 				sound.EmitterSize = soundrange
 				sound.PlaybackSpeed = pitch
@@ -423,7 +413,7 @@ return function(Vargs, env)
 				end
 
 
-				sound:GetPropertyChangedSignal("SoundId"):Connect(function(prot)
+				sound:GetPropertyChangedSignal("SoundId"):Connect(function()
 					if sound.IsPlaying then
 						sound:Stop()
 					end
