@@ -1012,7 +1012,9 @@ return function(Vargs)
 		GetAssetUrlFromIdWithType = function(Type, Id, NoError)
 			local BaseIdUrl = "rbxassetid://%d"
 			local function IsAssetType(Id, Type)
-				local Success = pcall()
+				local Success, Info = pcall(function()
+					return service.MarketplaceService:GetProductInfo(soundid)
+				end)
 				
 			end
 			local NumberedId = tonumber(Id)
