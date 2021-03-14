@@ -1009,24 +1009,20 @@ return function(Vargs)
 			return Clothing
 		end;
 
-		GetAssetUrlFromIdWithType = function(Type, Id)
+		GetAssetUrlFromIdWithType = function(Type, Id, NoError)
+			local BaseIdUrl = "rbxassetid://%d"
 			local function IsAssetType(Id, Type)
 				local Success = pcall()
 				
 			end
 			local NumberedId = tonumber(Id)
-			if Type == "Sound" then
-				return assert(NumberedId and assert(IsAssetType(NumberedId)) or select(1, function()
-					local nam = args[1]
-					if nam then
-						for _,v in next, server.Variables.MusicList do
-							if v.Name:lower() == nam:lower() then
-								return v.ID
-							end
-						end
+			return string.match(Id, "^rbxasset://.+") or string.match(Id, "^rbxassetid://.+") or string.match(Id, "^https?://.+") or NumberedId and (assert(NoError or IsAssetType(NumberedId), "Provided") and string.format(BaseIdUrl, NumberedId)) or select(1, function()
+				for _, v in pairs(Type == "Sound" and server.Variables.MusicList or ) do
+					if string.lower(v.Name) == string.lower(Id) then
+						return string.format(BaseIdUrl, v.ID)
 					end
-				end)(), "SoundId wasn't provided or wasn't valid")
-			end
+				end
+			end)()
 		end
 	};
 end
