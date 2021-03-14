@@ -360,7 +360,7 @@ return function(Vargs, env)
 			Function = function(plr,args)    -- Function to run for command
 				local PrimaryPart = assert(assert(plr.Character, "Character not found").PrimaryPart, "Head isn't found in your character. How is it going to spawn?")
 
-				local soundid = server.Functions.GetAssetUrlFromIdWithType("Sound", args[1])
+				local soundid = assert(server.Functions.GetAssetUrlFromIdWithType("Sound", args[1]), "Provided soundid wasn't valid")
 
 				local soundrange = (args[2] and tonumber(args[2])) or 10
 				local pitch = (args[3] and tonumber(args[3])) or 1
@@ -374,13 +374,6 @@ return function(Vargs, env)
 				local sharetype = (args[11] and args[11]:lower() == 'all' and 'all') or (args[11] and args[11]:lower() == 'self' and 'self') or (args[11] and args[11]:lower() == 'friends' and 'friends') or (args[11] and args[11]:lower() == 'admins' and 'admins') or 'all'
 
 				rangetotoggle, pitch, soundrange = rangetotoggle == 0 and 32 or math.clamp(rangetotoggle, 0, math.huge), math.clamp(pitch, 0, math.huge), math.clamp(soundrange, 0, 100)
-
-				local did,soundinfo = pcall(function()
-					return service.MarketplaceService:GetProductInfo(soundid)
-				end)
-
-				assert(did, "Sound Id isn't a sound or doesn't exist.")
-				assert(soundinfo.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
 
 				local spart = service.New("Attachment")
 				spart.Anchored = true
@@ -408,7 +401,6 @@ return function(Vargs, env)
 					tag.Parent = spart
 					curTag = tag
 
-
 					service.Debris:AddItem(tag, secs or 5)
 				end
 
@@ -432,10 +424,6 @@ return function(Vargs, env)
 					discoscript.Archivable = false
 					server.SyncAPI.TrustScript(discoscript)
 					discoscript.Parent = spart
-				end
-
-				if changeable then
-					spart.Name = tostring(soundid)
 				end
 
 				if toggable then
@@ -481,9 +469,9 @@ return function(Vargs, env)
 					clickd.Parent = spart
 				end
 
-				local prevname = spart.Name
-				spart.Changed:Connect(function(prot)
-					if prot == "Name" and changeable then
+				if changeable then
+					local prevname = spart.Name
+					sound:GetPropertyChangedSignal("Name"):Connect(function()
 						if prevname == spart.Name then return end
 						local suc,prodinfo = pcall(function()
 							return service.MarketplaceService:GetProductInfo(tonumber(spart.Name or 0))
@@ -511,16 +499,14 @@ return function(Vargs, env)
 						if not toggable then
 							sound:Play()
 						end
-					end
-				end)
+					end)
+				end
 
 				if not toggable then
 					sound:Play()
 					createTag("Now playing " ..soundinfo.Name)
 					wait(2)
 					createTag("SoundId "..soundinfo.AssetId)
-				else
-
 				end
 
 				createTag("Sound Name: "..tostring(soundinfo.Name))
