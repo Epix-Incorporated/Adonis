@@ -19,19 +19,19 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local sendLevel = data.PlayerData.Level
-				for _, v in opairs(service.GetPlayers(plr, args[1])) do
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
-					if sendLevel > targLevel then
-						Admin.AddAdmin(v, 1, true)
-						Remote.MakeGui(v, "Notification", {
+					if sendLevel>targLevel then
+						Admin.AddAdmin(v,1,true)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp moderator', {plr})
+						Functions.Hint(v.Name..' is now a temp moderator',{plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
@@ -47,19 +47,19 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local sendLevel = data.PlayerData.Level
-				for _, v in ipairs(service.GetPlayers(plr,args[1])) do
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
-					if sendLevel > targLevel then
-						Admin.AddAdmin(v, 1)
-						Remote.MakeGui(v, "Notification", {
+					if sendLevel>targLevel then
+						Admin.AddAdmin(v,1)
+						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a moderator', {plr})
+						Functions.Hint(v.Name..' is now a moderator',{plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
 			end
@@ -73,13 +73,13 @@ return function(Vargs, env)
 			Description = "Shows who shutdown a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr, args)
+			Function = function(plr,args)
 				local logs = Core.GetData("ShutdownLogs") or {}
-				local tab = {}
-				for _, v in pairs(logs) do
-					table.insert(tab, 1, {Text = v.Time..": "..v.User, Desc = "Reason: "..v.Reason})
+				local tab={}
+				for i,v in pairs(logs) do
+					table.insert(tab,1,{Text=v.Time..": "..v.User,Desc="Reason: "..v.Reason})
 				end
-				Remote.MakeGui(plr, "List", {Title = "Shutdown Logs", Table = tab,Update = "shutdownlogs"})
+				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
 			end
 		};
 
@@ -92,12 +92,12 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not args[1] or (args[1] and (string.lower(args[1]) == "on" or string.lower(args[1]) == "true")) then
+				if not args[1] or (args[1] and (args[1]:lower() == "on" or args[1]:lower() == "true")) then
 					Variables.ServerLock = true
-					Functions.Hint("Server Locked", {plr})
-				elseif string.lower(args[1]) == "off" or string.lower(args[1]) == "false" then
+					Functions.Hint("Server Locked",{plr})
+				elseif args[1]:lower() == "off" or args[1]:lower() == "false" then
 					Variables.ServerLock = false
-					Functions.Hint("Server Unlocked", {plr})
+					Functions.Hint("Server Unlocked",{plr})
 				end
 			end
 		};
@@ -111,29 +111,36 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if string.lower(args[1]) == "on" or string.lower(args[1]) == "enable" then
+				if args[1]:lower()=='on' or args[1]:lower()=='enable' then
 					Variables.Whitelist.Enabled = true
 					Functions.Hint("Server Whitelisted", service.Players:GetPlayers())
-				elseif string.lower(args[1]) == "off" or string.lower(args[1]) == "disable" then
+				elseif args[1]:lower()=='off' or args[1]:lower()=='disable' then
 					Variables.Whitelist.Enabled = false
 					Functions.Hint("Server Unwhitelisted", service.Players:GetPlayers())
-				elseif string.lower(args[1]) == "add" then
-					local plrs = service.GetPlayers(plr, assert(args[2], "Missing name to whitelist"), true)
-					if #plrs > 0 then
-						for _, v in ipairs(plrs) do
-							table.insert(Variables.Whitelist.List, v.Name..":"..v.userId)
-							Functions.Hint("Whitelisted "..v.Name, {plr})
+				elseif args[1]:lower()=="add" then
+					if args[2] then
+						local plrs = service.GetPlayers(plr,args[2],true)
+						if #plrs>0 then
+							for i,v in pairs(plrs) do
+								table.insert(Variables.Whitelist.List,v.Name..":"..v.userId)
+								Functions.Hint("Whitelisted "..v.Name,{plr})
+							end
+						else
+							table.insert(Variables.Whitelist.List,args[2])
 						end
 					else
-						table.insert(Variables.Whitelist.List,args[2])
+						error('Missing name to whitelist')
 					end
-				elseif string.lower(args[1]) == "remove" then
-					assert(args[2], "Missing name to remove from whitelist")
-					for _, v in ipairs(Variables.Whitelist.List) do
-						if string.sub(string.lower(v), 1, #args[2]) == string.lower(args[2]) then
-							table.remove(Variables.Whitelist.List, i)
-							Functions.Hint("Removed "..tostring(v).." from the whitelist", {plr})
+				elseif args[1]:lower()=="remove" then
+					if args[2] then
+						for i,v in pairs(Variables.Whitelist.List) do
+							if v:lower():sub(1,#args[2]) == args[2]:lower() then
+								table.remove(Variables.Whitelist.List,i)
+								Functions.Hint("Removed "..tostring(v).." from the whitelist",{plr})
+							end
 						end
+					else
+						error("Missing name to remove from whitelist")
 					end
 				else
 					error("Invalid action; (on/off/add/remove)")
@@ -530,9 +537,9 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...', service.Players:GetChildren())
+				Functions.Hint('Restoring Map...',service.Players:children())
 
-				for i,v in ipairs(Workspace:GetChildren()()) do
+				for i,v in pairs(service.Workspace:children()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						service.RunService.Heartbeat:Wait()
@@ -541,18 +548,18 @@ return function(Vargs, env)
 
 				local new = Variables.MapBackup:Clone()
 				new:MakeJoints()
-				new.Parent = workspace
+				new.Parent = service.Workspace
 				new:MakeJoints()
 
 				for i,v in pairs(new:GetChildren()) do
-					v.Parent = workspace
+					v.Parent = service.Workspace
 					pcall(function() v:MakeJoints() end)
 				end
 
 				new:Destroy()
 
-				workspace.Terrain:Clear()
-				workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, workspace.Terrain.MaxExtents.Min, true)
+				service.Workspace.Terrain:Clear()
+				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
 				server.Variables.RestoringMap = false
@@ -1183,9 +1190,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local num = tonumber(args[1])
 				if num then
-					workspace.Gravity = num
+					service.Workspace.Gravity = num
 				else
-					workspace.Gravity = 196.2
+					service.Workspace.Gravity = 196.2
 				end
 			end
 		};
