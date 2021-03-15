@@ -513,7 +513,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					v.Character.Parent = service.Workspace
+					v.Character.Parent = workspace
 					v.Character:MakeJoints()
 				end
 			end
@@ -1389,10 +1389,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if plr and plr.Character and plr.Character:FindFirstChild('Head') then
-					if service.Workspace:FindFirstChild('Camera: '..args[1]) then
+					if workspace:FindFirstChild('Camera: '..args[1]) then
 						Functions.Hint(args[1].." Already Exists!",{plr})
 					else
-						local cam = service.New('Part',service.Workspace)
+						local cam = service.New('Part', workspace)
 						cam.Position = plr.Character.Head.Position
 						cam.Anchored = true
 						cam.BrickColor = BrickColor.new('Really black')
@@ -1556,12 +1556,12 @@ return function(Vargs, env)
 				else
 					det.Loadstring='Disabled'
 				end
-				if service.Workspace.FilteringEnabled then
+				if workspace.FilteringEnabled then
 					det.Filtering="Enabled"
 				else
 					det.Filtering="Disabled"
 				end
-				if service.Workspace.StreamingEnabled then
+				if workspace.StreamingEnabled then
 					det.Streaming="Enabled"
 				else
 					det.Streaming="Disabled"
@@ -1569,7 +1569,7 @@ return function(Vargs, env)
 				det.NilPlayers = nilplayers
 				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
 				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
-				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+				det.ServerSpeed = service.Round(workspace:GetRealPhysicsFPS())
 				--det.AdminVersion = version
 				det.ServerStartTime = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
@@ -1605,7 +1605,7 @@ return function(Vargs, env)
 			Commands = {"clean";};
 			Args = {};
 			Hidden = false;
-			Description = "Cleans some useless junk out of service.Workspace";
+			Description = "Cleans some useless junk out of workspace";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -2170,7 +2170,7 @@ return function(Vargs, env)
 				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = service.Workspace
+					obj.Parent = workspace
 					pcall(function() obj:MakeJoints() end)
 					obj:MoveTo(plr.Character:GetModelCFrame().p)
 				end
@@ -2246,7 +2246,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in pairs(workspace:GetChildren()) do
 					if v:IsA('Message') or v:IsA('Hint') then
 						v:Destroy()
 					end
@@ -2721,7 +2721,7 @@ return function(Vargs, env)
 						local cf = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0,1,0))
 						local origpos = v.Character.HumanoidRootPart.Position
 
-						local mod = service.New("Model", service.Workspace)
+						local mod = service.New("Model", workspace)
 						mod.Name = v.Name .. "_ADONISJAIL"
 						local top = service.New("Part", mod)
 						top.Locked = true
@@ -2803,7 +2803,7 @@ return function(Vargs, env)
 						end
 
 						service.TrackTask("Thread: JailLoop"..tostring(ind), function()
-							while wait() and Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
+							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if v.Character then
 										local torso = v.Character:FindFirstChild('HumanoidRootPart')
@@ -3094,8 +3094,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.MoveLocal(v,v.Character.Name,false,service.Workspace)
-					v.Character.Parent = service.Workspace
+					Remote.MoveLocal(v,v.Character.Name,false,workspace)
+					v.Character.Parent = workspace
 				end
 			end
 		};
@@ -3160,7 +3160,7 @@ return function(Vargs, env)
 							v.Character.Archivable = true
 							local cl = v.Character:Clone()
 							table.insert(Variables.Objects,cl)
-							cl.Parent = game.Workspace
+							cl.Parent = workspace
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
 							cl:WaitForChild("Humanoid")
@@ -3687,11 +3687,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for i,v in ipairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local ex = service.New("Explosion", game.Workspace)
-						ex.Position = v.Character.HumanoidRootPart.Position
-						ex.BlastRadius = args[2] or 20
+						local ex = service.New("Explosion")
+						ex.Position, ex.BlastRadius, ex.Archivable = v.Character.HumanoidRootPart.Position, args[2] or 20, false
+						ex.Parent = workspace.Terrain
 					end
 				end
 			end
@@ -4865,7 +4865,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do 
+				for _,v in ipairs(workspace:GetChildren()) do 
 					if v.Name=="ADONIS_SOUND" then 
 						if v.IsPaused == false then
 							v:Pause()
@@ -4886,7 +4886,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do 
+				for _,v in pairs(workspace:GetChildren()) do 
 					if v.Name=="ADONIS_SOUND" then 
 						if v.IsPaused == true then
 							v:Resume()
@@ -4908,7 +4908,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local pitch = args[1]
-				for i,v in pairs(service.Workspace:children()) do 
+				for _,v in pairs(workspace:GetChildren()) do 
 					if v.Name=="ADONIS_SOUND" then 
 						if args[1]:sub(1,1) == "+" then
 							v.Pitch=v.Pitch+tonumber(args[1]:sub(2))
@@ -4930,9 +4930,8 @@ return function(Vargs, env)
 			Description = "Change the volume of the currently playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local volume = tonumber(args[1])
-				assert(volume, "Volume must be a valid number")
-				for i,v in pairs(service.Workspace:children()) do 
+				local volume = assert(tonumber(args[1]), "Volume must be a valid number")
+				for _,v in pairs(workspace:GetChildren()) do 
 					if v.Name=="ADONIS_SOUND" then 
 						if args[1]:sub(1,1) == "+" then
 							v.Volume=v.Volume+tonumber(args[1]:sub(2))
@@ -4982,7 +4981,7 @@ return function(Vargs, env)
 
 					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.Parent = service.Workspace
+					s.Parent = workspace
 					s.Looped = false
 					s.Archivable = false
 
@@ -5070,7 +5069,7 @@ return function(Vargs, env)
 						Functions.Hint(name, service.Players:GetPlayers())
 					end
 
-					for i, v in pairs(service.Workspace:GetChildren()) do 
+					for i, v in pairs(workspace:GetChildren()) do 
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
@@ -5093,11 +5092,11 @@ return function(Vargs, env)
 					s.Pitch = pitch 
 					s.Looped = looped
 					s.Archivable = false
-					s.Parent = service.Workspace
+					s.Parent = workspace
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in pairs(service.Workspace:GetChildren()) do 
+					for i, v in pairs(workspace:GetChildren()) do 
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
 							v:Destroy()
 						end 
@@ -5115,7 +5114,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.Workspace:GetChildren()) do
+				for i, v in pairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						v:Destroy()
 					end
@@ -6123,7 +6122,7 @@ return function(Vargs, env)
 						local isR15 = (hum.RigType == "R15")
 						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
 
-						new.Parent = service.Workspace
+						new.Parent = workspace
 						new.Name = player.Name
 						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0,math.rad((360/num)*i),0)*CFrame.new((num*0.2)+5,0,0)
 
