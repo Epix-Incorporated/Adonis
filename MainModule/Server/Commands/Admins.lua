@@ -19,7 +19,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local sendLevel = data.PlayerData.Level
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in ipairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
 						Admin.AddAdmin(v,1,true)
@@ -47,7 +47,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local sendLevel = data.PlayerData.Level
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in ipairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
 						Admin.AddAdmin(v,1)
@@ -341,7 +341,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				for i,v in pairs(service.Teams:children()) do
+				for i,v in pairs(service.Teams:GetChildren()) do
 					if v:IsA("Team") and v.Name:lower():sub(1,#args[1])==args[1]:lower() then
 						v:Destroy()
 					end
@@ -537,9 +537,9 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:children())
+				Functions.Hint('Restoring Map...',service.Players:GetPlayers())
 
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(workspace:GetChildren()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						service.RunService.Heartbeat:Wait()
@@ -548,18 +548,18 @@ return function(Vargs, env)
 
 				local new = Variables.MapBackup:Clone()
 				new:MakeJoints()
-				new.Parent = service.Workspace
+				new.Parent = workspace
 				new:MakeJoints()
 
 				for i,v in pairs(new:GetChildren()) do
-					v.Parent = service.Workspace
+					v.Parent = workspace
 					pcall(function() v:MakeJoints() end)
 				end
 
 				new:Destroy()
 
-				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				workspace.Terrain:Clear()
+				workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, workspace.Terrain.MaxExtents.Min, true)
 
 				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
 				server.Variables.RestoringMap = false
@@ -1152,7 +1152,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				assert(args[2],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = args[1];
@@ -1190,9 +1190,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local num = tonumber(args[1])
 				if num then
-					service.Workspace.Gravity = num
+					workspace.Gravity = num
 				else
-					service.Workspace.Gravity = 196.2
+					workspace.Gravity = 196.2
 				end
 			end
 		};
