@@ -46,47 +46,24 @@ return function(Vargs, env)
 		};
 			TimeDate = {
 			Prefix = Settings.Prefix;
-			Commands = {"datetime";"time","date";"timedate";};
-			Args = {"Refresh"};
+			Commands = {"timedate";"time","date";"datetime";};
+			Args = {};
 			Hidden = false;
 			Description = "Shows you the current time and date.";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
-					auto = 1
-				end
-			
-	                        local ostime = os.time()
-				local tab = {}
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				--if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+			--		auto = 1
+			--	end
+				
+			-- not lollo here was
 
-				table.insert(tab,{Text = "Date: "..os.date("%x",ostime)})
-				table.insert(tab,{Text = "Time: "..os.date("%H:%M | %I:%M %p",ostime)})
-				table.insert(tab,{Text = "Timezone: "..os.date("%Z",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-
-				table.insert(tab,{Text = "Minute: "..os.date("%M",ostime)})
-				table.insert(tab,{Text = "Hour: "..os.date("%H | %I %p",ostime)})
-				table.insert(tab,{Text = "Day: "..os.date("%d %A",ostime)})
-				table.insert(tab,{Text = "Week (First sunday): "..os.date("%U",ostime)})
-				table.insert(tab,{Text = "Week (First monday): "..os.date("%W",ostime)})
-				table.insert(tab,{Text = "Month: "..os.date("%m %B",ostime)})
-				table.insert(tab,{Text = "Year: "..os.date("%Y",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab,{Text = "Day of the year: "..os.date("%j",ostime)})
-				table.insert(tab,{Text = "Day of the month: "..os.date("%d",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-							
 				Remote.MakeGui(plr,"List",
-					{Title = "Date",Table = tab, Update = 'DateTime', AutoUpdate = auto, Size = {270, 390};})
+					{Title = "Date",Table = Logs.DateTime, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
 			end
 		};
+
 			
 		TimeBanList = {
 			Prefix = Settings.Prefix;
