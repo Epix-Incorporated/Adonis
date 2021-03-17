@@ -1532,69 +1532,80 @@ return function(Vargs, env)
 
 		ServerDetails = {
 			Prefix = Settings.Prefix;
-			Commands = {"details";"meters";"gameinfo";"serverinfo";};
+			Commands = {"serverinfo";"servertrack";"gameinfo";"serverdetails";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you information about the current server";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local det={}
+				
+				
+				local tab={}
 				local nilplayers=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilplayers=nilplayers+1
 					end
 				end
-				if HTTP.CheckHttp() then
-					det.Http='Enabled'
-				else
-					det.Http='Disabled'
-				end
-				if pcall(function() loadstring("local hi = 'test'") end) then
-					det.Loadstring='Enabled'
-				else
-					det.Loadstring='Disabled'
-				end
-				if service.Workspace.FilteringEnabled then
-					det.Filtering="Enabled"
-				else
-					det.Filtering="Disabled"
-				end
-				if service.Workspace.StreamingEnabled then
-					det.Streaming="Enabled"
-				else
-					det.Streaming="Disabled"
-				end
-				det.NilPlayers = nilplayers
-				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
-				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
-				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
-				--det.AdminVersion = version
-				det.ServerStartTime = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
-				det.NonAdmins=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
-				det.CurrentTime=service.GetTime()
-				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
-				det.Admins=adminnumber
-				det.Objects=#Variables.Objects
-				det.Cameras=#Variables.Cameras
-
-				local tab = {}
-				for i,v in pairs(det) do
-					table.insert(tab,{Text = i..": "..tostring(v),Desc = tostring(v)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
+				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"}) 
+				table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
+				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
+				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				if HTTP.CheckHttp() then
+					table.insert(tab,{Text = "HTTPService: [ON]"})
+				else
+					table.insert(tab,{Text = "HTTPService: [OFF]"})
 				end
+				if game.Workspace.AllowThirdPartySales == true then
+					table.insert(tab,{Text = "Third Party Sales: [ON]"})
+				else
+					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
+				end
+
+				if pcall(function() loadstring("local hi = 'test'") end) then
+					table.insert(tab,{Text = "Loadstring: [ON]"})
+
+				else
+					table.insert(tab,{Text = "Loadstring: [OFF]"})
+
+				end
+
+				if service.Workspace.StreamingEnabled == true then
+					table.insert(tab,{Text = "Streaming: [ON]"})
+				else
+					table.insert(tab,{Text = "Streaming: [OFF]"})
+				end
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Admins: "..adminnumber})
+				table.insert(tab,{Text = "Non Admins: "..nonnumber})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Nil Players: "..nilplayers})
+				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
+				table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
+				table.insert(tab,{Text = "Gravity: "..tostring(game.Workspace.Gravity)})
+				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(game.Workspace.FallenPartsDestroyHeight)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				
+				
+				
+				
 				Remote.MakeGui(plr,"List",{Title = "Server Details", Tab = tab, Update = "ServerDetails"})
 				--Remote.Send(plr,'Function','ServerDetails',det)
 			end
@@ -5632,10 +5643,10 @@ return function(Vargs, env)
 			end
 		};
 
-		ServerLog = {
+			ServerLog = {
 			Prefix = ":";
 			Commands = {"serverlog";"serverlogs";"serveroutput";};
-			Args = {"autoupdate"};
+			Args = {"Refresh"};
 			Description = "View server log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
@@ -5653,20 +5664,15 @@ return function(Vargs, env)
 						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
 					end
 				end
-
 				for i,v in next,service.LogService:GetLogHistory() do
-					if v.messageType==Enum.MessageType.MessageOutput then
-						toTab(v.message, "Output: ")
-						--table.insert(temp,{Text=v.message,Desc='Output: '..v.message})
-					elseif v.messageType==Enum.MessageType.MessageWarning then
-						toTab(v.message, "Warning: ", Color3.new(1,1,0))
-						--table.insert(temp,{Text=v.message,Desc='Warning: '..v.message,Color=Color3.new(1,1,0)})
-					elseif v.messageType==Enum.MessageType.MessageInfo then
-						toTab(v.message, "Info: ", Color3.new(0,0,1))
-						--table.insert(temp,{Text=v.message,Desc='Info: '..v.message,Color=Color3.new(0,0,1)})
-					elseif v.messageType==Enum.MessageType.MessageError then
-						toTab(v.message, "Error: ", Color3.new(1,0,0))
-						--table.insert(temp,{Text=v.message,Desc='Error: '..v.message,Color=Color3.new(1,0,0)})
+					if v.messageType == Enum.MessageType.MessageOutput then
+						toTab(v.message, "Output - ")
+					elseif v.messageType == Enum.MessageType.MessageWarning then
+						toTab(v.message, "Warning - ", Color3.new(0.866667, 0.733333, 0.0509804))
+					elseif v.messageType == Enum.MessageType.MessageInfo then
+						toTab(v.message, "Info - ", Color3.new(0.054902, 0.305882, 1))
+					elseif v.messageType == Enum.MessageType.MessageError then
+						toTab(v.message, "Error - ", Color3.new(1, 0.196078, 0.054902))
 					end
 				end
 
@@ -5680,7 +5686,6 @@ return function(Vargs, env)
 				})
 			end
 		};
-
 		LocalLog = {
 			Prefix = ":";
 			Commands = {"locallog";"clientlog";"locallogs";"localoutput";"clientlogs";};
