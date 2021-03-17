@@ -1305,6 +1305,7 @@ return function(Vargs, env)
 					Title = 'Players', 
 					Tab = plrs, 
 					AutoUpdate = update and 1;
+					UpdateOnPlayerAdded = true;
 					Update = "PlayerList";
 					UpdateArgs = {};
 				})
@@ -1938,7 +1939,7 @@ return function(Vargs, env)
 					end)
 				end
 
-				Remote.MakeGui(plr,"List",{Title = 'Admin List',Table = temptable})
+				Remote.MakeGui(plr,"List",{Title = 'Admin List',Table = temptable, UpdateOnPlayerAdded = true,})
 			end
 		};
 
@@ -1968,12 +1969,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local question = args[3]
-				if not question then error("You forgot to supply a question!") end
+				assert(question, "Question not supplied")
 				local answers = args[2]
+				assert(answers, "Answers not supplied")
 				local anstab = {}
 				local responses = {}
 				local voteKey = "ADONISVOTE".. math.random();
 				local players = service.GetPlayers(plr,args[1])
+				assert(args[1], "Players not supplied")
 				local startTime = os.time();
 
 				local function voteUpdate()
