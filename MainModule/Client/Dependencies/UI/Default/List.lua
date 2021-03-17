@@ -7,6 +7,7 @@ return function(data)
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
 	local UpdateArg = data.UpdateArg
+	local UpdateOnPlayerAdded = data.UpdateOnPlayerAdded or false
 	local UpdateArgs = data.UpdateArgs
 	local AutoUpdate = data.AutoUpdate
 	local LoadTime = data.LoadTime
@@ -314,7 +315,13 @@ return function(data)
 	gTable = window.gTable
 	window:Ready()
 	genList(Tab)
-
+	
+	if UpdateOnPlayerAdded == true then 
+		game.Players.PlayerAdded:Connect(function(player)
+			window:Refresh()
+		end)
+	end
+	
 	if Update and AutoUpdate then
 		while gTable.Active do
 			window:Refresh()
