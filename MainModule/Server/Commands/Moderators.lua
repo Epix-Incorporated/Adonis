@@ -1968,10 +1968,7 @@ return function(Vargs, env)
 			Description = "Lets you ask players a question with a list of answers and get the results";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local question = args[3]
-				assert(question, "Question not supplied")
-				local answers = args[2]
-				assert(answers, "Answers not supplied")
+			local question, anwsers = assert(args[3], "Question not supplied"), assert(args[2], "Answers not supplied")
 				local anstab = {}
 				local responses = {}
 				local voteKey = "ADONISVOTE".. math.random();
