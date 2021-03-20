@@ -1572,60 +1572,66 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local det={}
+				local tab={}
 				local nilplayers=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilplayers=nilplayers+1
 					end
 				end
-				if HTTP.CheckHttp() then
-					det["HTTPService"]='[ON]'
-				else
-					det["HTTPService"]='[OFF]'
-				end
-				if pcall(function() loadstring("local hi = 'test'") end) then
-					det["Loadstring"]='[ON]'
-				else
-					det["Loadstring"]='[OFF]'
-				end
-
-				if service.Workspace.StreamingEnabled then
-					det["StreamingEnabled"]="[ON]"
-				else
-					det["StreamingEnabled"]="[OFF]"
-				end
-				det["NilPlayers"] = nilplayers
-				det["Place Name"] = service.MarketPlace:GetProductInfo(game.PlaceId).Name
-				det["Place Owner"] = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
-				det["Server Speed"] = service.Round(service.Workspace:GetRealPhysicsFPS())
-				--det.AdminVersion = version
-				det["Server Start Time"] = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
-				det["Non-Admins"]=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
-				det["Current Time"]=service.GetTime()
-				det["Server Age"]=service.GetTime(os.time()-server.ServerStartTime)
-				det["Admins"]=adminnumber
-				det["Objects"]=#Variables.Objects
-				det["Cameras"]=#Variables.Cameras
-
-				local tab = {}
-				for i,v in pairs(det) do
-					table.insert(tab,{Text = i..": "..tostring(v),Desc = tostring(v)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
+				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"}) 
+				table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
+				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
+				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				if HTTP.CheckHttp() then
+					table.insert(tab,{Text = "HTTPService: [ON]"})
+				else
+					table.insert(tab,{Text = "HTTPService: [OFF]"})
 				end
+				if game.Workspace.AllowThirdPartySales == true then
+					table.insert(tab,{Text = "Third Party Sales: [ON]"})
+				else
+					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
+				end
+				if pcall(function() loadstring("local hi = 'test'") end) then
+					table.insert(tab,{Text = "Loadstring: [ON]"})
+
+				else
+					table.insert(tab,{Text = "Loadstring: [OFF]"})
+
+				end
+				if service.Workspace.StreamingEnabled == true then
+					table.insert(tab,{Text = "Streaming: [ON]"})
+				else
+					table.insert(tab,{Text = "Streaming: [OFF]"})
+				end
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Admins: "..adminnumber})
+				table.insert(tab,{Text = "Non Admins: "..nonnumber})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				table.insert(tab,{Text = "Nil Players: "..nilplayers})
+				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
+				table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
+				table.insert(tab,{Text = "Gravity: "..tostring(game.Workspace.Gravity)})
+				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(game.Workspace.FallenPartsDestroyHeight)})
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				Remote.MakeGui(plr,"List",{Title = "Server Details", Tab = tab, Update = "ServerDetails"})
-				--Remote.Send(plr,'Function','ServerDetails',det)
 			end
 		};
 
