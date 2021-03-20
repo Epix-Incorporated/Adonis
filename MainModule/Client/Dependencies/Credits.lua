@@ -9,7 +9,7 @@ return {
 	{Text = "Coasterteam",				Desc = "Development contributions (Kronos developer)"};
 	{Text = "",		Desc = ""};
 	{Text = "~ GIT CONTRIBUTORS ~",		Desc = ""};
-	{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};	
+	{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
 	{Text = "@GitHub TheCakeChicken", 	Desc = "GitHub Contributor"};
 	{Text = "@GitHub NNickey", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub ItsGJK", 			Desc = "GitHub Contributor"};
@@ -35,9 +35,10 @@ return {
 	{Text = "@GitHub optimisticside",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub NeoInversion",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub imskyyc",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub LolloDev",			Desc = "GitHub Contributor"};
 	{Text = "",		Desc = "Everyone else"};
 	{Text = "~ EVERYONE ELSE ~",		Desc = ""};
-	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	
+	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};
 	{Text = "darkelementallord",		Desc = "Updated some guis"};
 	{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
 	{Text = "Moistality",				Desc = "Helped with finding and patching vulns"};

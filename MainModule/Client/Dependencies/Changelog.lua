@@ -1,6 +1,18 @@
 return {
-	"Version: 213";
+	"Version: 214";
 	"*Drag edges to expand*";
+	"";
+	"[3.20.2021 14:47 EST]";
+	"*Added ban reasons";
+	"*New Output GUI in Rounded theme";
+	"*UI folder moved to Client root (this will break old userpanels)";
+	"*Fixed minor UI issues";
+	"*Notable Git changes: (refer to repo for all commits)";
+	"(Git/LolloDev) Grammar and changelog fixes/optimizations";
+	"(Git/jaydensar) Removed (obsolete) FilteringDisabled specific code (ReplicationLogs, etc)";
+	"(Git/ccuser44) Removed (unused) LocalLighting code";
+	"(Git/DimensionalFusion) Added HelpButtonImage setting";
+	"(Git/ccuser44) AntiCheat updates";
 	"";
 	"[2.26.2021 15:36 EST]";
 	"*New Server folder named 'Commands'";
