@@ -43,6 +43,7 @@ return function(Vargs)
 		Commands = {};
 		Exploit = {};
 		Errors = {};
+		DateTime = {};
 		TempUpdaters = {};
 		
 		TabToType = function(tab)
@@ -54,6 +55,7 @@ return function(Vargs)
 				Commands = "Command";
 				Exploit = "Exploit";
 				Errors = "Error";
+				DateTime = "DateTime";
 			}
 			
 			for ind,t in next,server.Logs do
@@ -281,7 +283,37 @@ return function(Vargs)
 				return plrs
 			end;
 			
-			ServerDetails = function()
+			DateTime = function()
+
+				local ostime = os.time()
+				local tab = {}
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+
+				table.insert(tab,{Text = "Date: "..os.date("%x",ostime)})
+				table.insert(tab,{Text = "Time: "..os.date("%H:%M | %I:%M %p",ostime)})
+				table.insert(tab,{Text = "Timezone: "..os.date("%Z",ostime)})
+
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+
+
+				table.insert(tab,{Text = "Minute: "..os.date("%M",ostime)})
+				table.insert(tab,{Text = "Hour: "..os.date("%H | %I %p",ostime)})
+				table.insert(tab,{Text = "Day: "..os.date("%d %A",ostime)})
+				table.insert(tab,{Text = "Week (First sunday): "..os.date("%U",ostime)})
+				table.insert(tab,{Text = "Week (First monday): "..os.date("%W",ostime)})
+				table.insert(tab,{Text = "Month: "..os.date("%m %B",ostime)})
+				table.insert(tab,{Text = "Year: "..os.date("%Y",ostime)})
+
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+
+				table.insert(tab,{Text = "Day of the year: "..os.date("%j",ostime)})
+				table.insert(tab,{Text = "Day of the month: "..os.date("%d",ostime)})
+
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				return tab
+			end;
+			
+ServerDetails = function()
 				local det={}
 				local nilplayers=0
 				for i,v in pairs(service.NetworkServer:children()) do
@@ -290,49 +322,45 @@ return function(Vargs)
 					end
 				end
 				if HTTP.CheckHttp() then
-					det.Http='Enabled'
+					det["HTTPService"]='[ON]'
 				else
-					det.Http='Disabled'
+					det["HTTPService"]='[OFF]'
 				end
 				if pcall(function() loadstring("local hi = 'test'") end) then
-					det.Loadstring='Enabled'
+					det["Loadstring"]='[ON]'
 				else
-					det.Loadstring='Disabled'
+					det["Loadstring"]='[OFF]'
 				end
-				if service.Workspace.FilteringEnabled then
-					det.Filtering="Enabled"
-				else
-					det.Filtering="Disabled"
-				end
+			
 				if service.Workspace.StreamingEnabled then
-					det.Streaming="Enabled"
+					det["StreamingEnabled"]="[ON]"
 				else
-					det.Streaming="Disabled"
+					det["StreamingEnabled"]="[OFF]"
 				end
-				det.NilPlayers = nilplayers
-				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
-				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
-				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+				det["NilPlayers"] = nilplayers
+				det["Place Name"] = service.MarketPlace:GetProductInfo(game.PlaceId).Name
+				det["Place Owner"] = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
+				det["Server Speed"] = service.Round(service.Workspace:GetRealPhysicsFPS())
 				--det.AdminVersion = version
-				det.ServerStartTime = service.GetTime(server.ServerStartTime)
+				det["Server Start Time"] = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
-				det.NonAdmins=nonnumber
+				det["Non-Admins"]=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
-				det.CurrentTime=service.GetTime()
-				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
-				det.Admins=adminnumber
-				det.Objects=#Variables.Objects
-				det.Cameras=#Variables.Cameras
+				det["Current Time"]=service.GetTime()
+				det["Server Age"]=service.GetTime(os.time()-server.ServerStartTime)
+				det["Admins"]=adminnumber
+				det["Objects"]=#Variables.Objects
+				det["Cameras"]=#Variables.Cameras
 				
 				local tab = {}
 				for i,v in pairs(det) do

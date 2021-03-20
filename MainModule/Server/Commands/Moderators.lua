@@ -32,6 +32,39 @@ return function(Vargs, env)
 			end
 		};
 
+    Thru = {
+			Prefix = Settings.Prefix;
+			Commands = {"thru";"pass";"through"};
+			Hidden = false;
+			Args = {};
+			Description = "Lets you pass through an object or a wall";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
+			end
+		};
+		
+    TimeDate = {
+			Prefix = Settings.Prefix;
+			Commands = {"timedate";"time","date";"datetime";};
+			Args = {};
+			Hidden = false;
+			Description = "Shows you the current time and date.";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				--if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
+			--		auto = 1
+			--	end
+				
+			-- not lollo here was
+
+				Remote.MakeGui(plr,"List",
+					{Title = "Date",Table = Logs.DateTime, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
+			end
+		};
+    
 		TimeBanList = {
 			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
@@ -1532,7 +1565,7 @@ return function(Vargs, env)
 
 		ServerDetails = {
 			Prefix = Settings.Prefix;
-			Commands = {"details";"meters";"gameinfo";"serverinfo";};
+			Commands = {"serverinfo";"servertrack";"gameinfo";"serverdetails";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you information about the current server";
@@ -1547,49 +1580,45 @@ return function(Vargs, env)
 					end
 				end
 				if HTTP.CheckHttp() then
-					det.Http='Enabled'
+					det["HTTPService"]='[ON]'
 				else
-					det.Http='Disabled'
+					det["HTTPService"]='[OFF]'
 				end
 				if pcall(function() loadstring("local hi = 'test'") end) then
-					det.Loadstring='Enabled'
+					det["Loadstring"]='[ON]'
 				else
-					det.Loadstring='Disabled'
+					det["Loadstring"]='[OFF]'
 				end
-				if service.Workspace.FilteringEnabled then
-					det.Filtering="Enabled"
-				else
-					det.Filtering="Disabled"
-				end
+
 				if service.Workspace.StreamingEnabled then
-					det.Streaming="Enabled"
+					det["StreamingEnabled"]="[ON]"
 				else
-					det.Streaming="Disabled"
+					det["StreamingEnabled"]="[OFF]"
 				end
-				det.NilPlayers = nilplayers
-				det.PlaceName = service.MarketPlace:GetProductInfo(game.PlaceId).Name
-				det.PlaceOwner = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
-				det.ServerSpeed = service.Round(service.Workspace:GetRealPhysicsFPS())
+				det["NilPlayers"] = nilplayers
+				det["Place Name"] = service.MarketPlace:GetProductInfo(game.PlaceId).Name
+				det["Place Owner"] = service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name
+				det["Server Speed"] = service.Round(service.Workspace:GetRealPhysicsFPS())
 				--det.AdminVersion = version
-				det.ServerStartTime = service.GetTime(server.ServerStartTime)
+				det["Server Start Time"] = service.GetTime(server.ServerStartTime)
 				local nonnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
 						nonnumber=nonnumber+1
 					end
 				end
-				det.NonAdmins=nonnumber
+				det["Non-Admins"]=nonnumber
 				local adminnumber=0
 				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
 						adminnumber=adminnumber+1
 					end
 				end
-				det.CurrentTime=service.GetTime()
-				det.ServerAge=service.GetTime(os.time()-server.ServerStartTime)
-				det.Admins=adminnumber
-				det.Objects=#Variables.Objects
-				det.Cameras=#Variables.Cameras
+				det["Current Time"]=service.GetTime()
+				det["Server Age"]=service.GetTime(os.time()-server.ServerStartTime)
+				det["Admins"]=adminnumber
+				det["Objects"]=#Variables.Objects
+				det["Cameras"]=#Variables.Cameras
 
 				local tab = {}
 				for i,v in pairs(det) do
