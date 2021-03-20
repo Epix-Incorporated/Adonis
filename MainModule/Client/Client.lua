@@ -315,7 +315,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	Folder = folder:Clone()
 
 	setfenv(1,setmetatable({}, {__metatable = unique}))
-
+	client.UIFolder = Folder.UI
 	client.Loader = data.Loader
 	client.Module = data.Module
 	client.DepsName = depsName
