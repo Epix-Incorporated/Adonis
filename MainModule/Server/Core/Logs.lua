@@ -43,6 +43,7 @@ return function(Vargs)
 		Commands = {};
 		Exploit = {};
 		Errors = {};
+		ServerDetails = {};
 		DateTime = {};
 		TempUpdaters = {};
 		
@@ -55,6 +56,7 @@ return function(Vargs)
 				Commands = "Command";
 				Exploit = "Exploit";
 				Errors = "Error";
+				ServerDetails = "ServerDetails";
 				DateTime = "DateTime";
 			}
 			
