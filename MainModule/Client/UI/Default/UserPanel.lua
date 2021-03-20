@@ -1159,7 +1159,7 @@ return function(data)
 					Entry = "DropDown";
 					Setting = "CustomTheme";
 					Value = client.Variables.CustomTheme or "Game Theme";
-					Options = (function() local themes = {"Game Theme"} for i,v in next,client.Deps.UI:GetChildren() do table.insert(themes, v.Name) end return themes end)();
+					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do table.insert(themes, v.Name) end return themes end)();
 					Function = function(selection)
 						if selection == "Game Theme" then
 							client.Variables.CustomTheme = nil

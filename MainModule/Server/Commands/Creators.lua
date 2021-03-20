@@ -3,19 +3,21 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		DirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
-			Args = {"player";};
+			Args = {"player", "reason"};
 			Description = "DirectBans the player (Saves)";
 			AdminLevel = "Creators";
 			Function = function(plr,args,data)
+				local reason = args[2] or "No reason provided";
+
 				for i in string.gmatch(args[1], "[^,]+") do
 					local userid = service.Players:GetUserIdFromNameAsync(i)
 
@@ -25,7 +27,7 @@ return function(Vargs, env)
 					end
 
 					if userid then
-						Admin.AddBan({UserId = userId, Name = i}, true)
+						Admin.AddBan({UserId = userId, Name = i}, reason, true)
 						Functions.Hint("Direct banned "..i, {plr})
 					end
 				end
@@ -54,7 +56,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		GlobalPlace = {
 			Prefix = Settings.Prefix;
 			Commands = {"globalplace","gplace"};
@@ -71,7 +73,7 @@ return function(Vargs, env)
 				end
 			end;
 		};
-		
+
 		ForcePlace = {
 			Prefix = Settings.Prefix;
 			Commands = {"forceplace";};
@@ -98,7 +100,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		GivePlayerPoints = {
 			Prefix = Settings.Prefix;
 			Commands = {"giveppoints";"giveplayerpoints";"sendplayerpoints";};
@@ -121,7 +123,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Settings = {
 			Prefix = "";
 			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "scriptsettings"};
@@ -134,7 +136,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Settings"})
 			end
 		};
-		
+
 		Owner = {
 			Prefix = Settings.Prefix;
 			Commands = {"owner","oa","headadmin"};
@@ -162,7 +164,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Sudo = {
 			Prefix = Settings.Prefix;
 			Commands = {"sudo"};
@@ -205,7 +207,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"Terminal")
 			end
 		};
-		
+
 		--[[
 		TaskManager = { --// Unfinished
 			Prefix = Settings.Prefix;

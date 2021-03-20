@@ -3,11 +3,11 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
@@ -86,18 +86,20 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		GameBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"gameban", "saveban", "databan"};
-			Args = {"player";};
+			Args = {"player", "reason"};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "Owners";
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
+				local reason = args[2] or "No reason provided";
+
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddBan(v, true)
+						Admin.AddBan(v, reason, true)
 						Functions.Hint("Game banned "..tostring(v),{plr})
 					end
 				end
@@ -117,7 +119,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Admin = {
 			Prefix = Settings.Prefix;
 			Commands = {"permadmin","pa","padmin","fulladmin","realadmin"};
@@ -145,7 +147,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CustomRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"customrank","ca","crank"};
@@ -210,7 +212,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"List",{Title = "Custom Ranks";Table = tab})
 			end
 		};
-		
+
 		GlobalMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"globalmessage","gm","globalannounce"};
@@ -225,9 +227,9 @@ return function(Vargs, env)
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
-			end;	
+			end;
 		};
-		
+
 		MakeList = {
 			Prefix = Settings.Prefix;
 			Commands = {"makelist";"newlist";"newtrellolist";"maketrellolist";};
@@ -278,7 +280,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"CreateCard")
 			end
 		};
-		
+
 		FullClear = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullclear";"clearinstances";"fullclr";};
@@ -298,7 +300,7 @@ return function(Vargs, env)
 				--end
 			end
 		};
-		
+
 		BackupMap = {
 			Prefix = Settings.Prefix;
 			Commands = {"backupmap";"mapbackup";"bmap";};
@@ -377,7 +379,7 @@ return function(Vargs, env)
 				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
 			end
 		};
-		
+
 		--[[FullShutdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown"};

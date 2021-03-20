@@ -9,7 +9,7 @@ return {
 	{Text = "Coasterteam",				Desc = "Development contributions (Kronos developer)"};
 	{Text = "",		Desc = ""};
 	{Text = "~ GIT CONTRIBUTORS ~",		Desc = ""};
-	{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};	
+	{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
 	{Text = "@GitHub TheCakeChicken", 	Desc = "GitHub Contributor"};
 	{Text = "@GitHub NNickey", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub ItsGJK", 			Desc = "GitHub Contributor"};
@@ -18,9 +18,9 @@ return {
 	{Text = "@GitHub GeneralScripter", 	Desc = "GitHub Contributor"};
 	{Text = "@GitHub moo1210", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub kent911t", 		Desc = "GitHub Contributor"};
-	{Text = "@GitHub Kan18", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub crywink", 			Desc = "GitHub Contributor"};
 	{Text = "@GitHub jaydensar", 		Desc = "GitHub Contributor"};
+	{Text = "@GitHub ccuser44",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 	{Text = "@GitHub TheLegendarySpark",Desc = "GitHub Contributor"};
 	{Text = "@GitHub joritochip",		Desc = "GitHub Contributor"};
@@ -30,9 +30,15 @@ return {
 	{Text = "@GitHub enescglyn",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub EpicFazbear",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub p3tray",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub okgabe",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub fxeP1",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub optimisticside",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub NeoInversion",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub imskyyc",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub LolloDev",			Desc = "GitHub Contributor"};
 	{Text = "",		Desc = "Everyone else"};
 	{Text = "~ EVERYONE ELSE ~",		Desc = ""};
-	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};	
+	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};
 	{Text = "darkelementallord",		Desc = "Updated some guis"};
 	{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
 	{Text = "Moistality",				Desc = "Helped with finding and patching vulns"};

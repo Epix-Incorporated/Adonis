@@ -3,11 +3,11 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		Kick = {
 			Prefix = Settings.Prefix;
@@ -31,7 +31,8 @@ return function(Vargs, env)
 				end
 			end
 		};
-			Thru = {
+
+    Thru = {
 			Prefix = Settings.Prefix;
 			Commands = {"thru";"pass";"through"};
 			Hidden = false;
@@ -41,10 +42,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
-
 			end
 		};
-			TimeDate = {
+		
+    TimeDate = {
 			Prefix = Settings.Prefix;
 			Commands = {"timedate";"time","date";"datetime";};
 			Args = {};
@@ -63,8 +64,7 @@ return function(Vargs, env)
 					{Title = "Date",Table = Logs.DateTime, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
 			end
 		};
-
-			
+    
 		TimeBanList = {
 			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
@@ -87,7 +87,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
 			end
 		};
-		
+
 		Notification = {
 			Prefix = Settings.Prefix;
 			Commands = {"notify","notification"};
@@ -239,7 +239,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		MessagePM = {
 			Prefix = Settings.Prefix;
 			Commands = {"mpm";"messagepm";};
@@ -463,7 +463,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk";"maketalk";};
@@ -946,7 +946,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
@@ -1200,7 +1200,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ShowSBL = {
 			Prefix = Settings.Prefix;
 			Commands = {"sbl";"syncedbanlist";"globalbanlist";"trellobans";"trellobanlist";};
@@ -1216,7 +1216,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		HandTo = {
 			Prefix = Settings.Prefix;
 			Commands = {"handto";};
@@ -1335,15 +1335,15 @@ return function(Vargs, env)
 				end
 
 				Remote.MakeGui(plr,'List',{
-					Title = 'Players', 
-					Tab = plrs, 
+					Title = 'Players',
+					Tab = plrs,
 					AutoUpdate = update and 1;
 					Update = "PlayerList";
 					UpdateArgs = {};
 				})
 			end
 		};
-		
+
 		Waypoint = {
 			Prefix = Settings.Prefix;
 			Commands = {"waypoint";"wp";"checkpoint";};
@@ -1628,7 +1628,7 @@ return function(Vargs, env)
 				--Remote.Send(plr,'Function','ServerDetails',det)
 			end
 		};
-		
+
 		Clean = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"clean";};
@@ -1641,7 +1641,7 @@ return function(Vargs, env)
 				Functions.CleanWorkspace()
 			end
 		};
-		
+
 		Repeat = {
 			Prefix = Settings.Prefix;
 			Commands = {"repeat";"loop";};
@@ -1663,7 +1663,7 @@ return function(Vargs, env)
 
 				Variables.CommandLoops[name..command] = true
 				Functions.Hint("Running "..command.." "..amount.." times every "..timer.." seconds.",{plr})
-				for i = 1,amount do										
+				for i = 1,amount do
 					if not Variables.CommandLoops[name..command] then break end
 					Process.Command(plr,command,{Check = false;})
 					wait(timer)
@@ -1715,7 +1715,7 @@ return function(Vargs, env)
 					if Variables.CommandLoops[name..args[2]] then
 						Variables.CommandLoops[name..args[2]] = nil
 					else
-						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No loops relating to your search'}) 											
+						Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No loops relating to your search'})
 					end
 				else
 					for i,v in ipairs(Variables.CommandLoops) do
@@ -1724,7 +1724,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CommandBox = {
 			Prefix = Settings.Prefix;
 			Commands = {"cmdbox", "commandbox"};
@@ -1773,7 +1773,7 @@ return function(Vargs, env)
 				})
 			end;
 		};
-		
+
 		Tasks = {
 			Hidden = true;
 			Prefix = ":";
@@ -1846,7 +1846,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		JoinServer = {
 			Prefix = Settings.Prefix;
 			Commands = {"toserver", "joinserver"};
@@ -1870,7 +1870,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		AdminList = {
 			Prefix = Settings.Prefix;
 			Commands = {"admins";"adminlist";"owners";"Moderators";};
@@ -1971,8 +1971,25 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local tab = {}
 				for i,v in pairs(Settings.Banned) do
-					table.insert(tab,{Text = tostring(v),Desc = tostring(v)})
+					local entry = type(v) == "string" and v;
+					local reason = "No reason provided";
+
+					if type(v) == "table" then
+						if v.Name and v.UserId then
+							entry = v.Name .. ":" .. v.UserId;
+						elseif v.UserId then
+							entry = "ID: ".. v.UserId;
+						elseif v.Name then
+							entry = v.Name;
+						end
+
+						if v.Reason then
+							reason = v.Reason;
+						end
+					end
+					table.insert(tab,{Text = tostring(v), Desc = reason})
 				end
+
 				Remote.MakeGui(plr,"List",{Title = 'Ban List', Tab = tab})
 			end
 		};
@@ -2046,7 +2063,7 @@ return function(Vargs, env)
 				end
 
 				Remote.MakeGui(plr,"List",{
-					Title = 'Results', 
+					Title = 'Results',
 					Tab = voteUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = voteKey}},
@@ -2062,7 +2079,7 @@ return function(Vargs, env)
 						table.insert(anstab,ans)
 					end
 				end
-				
+
 				local responses = {}
 				local players = service.GetPlayers(plr,args[1])
 
@@ -4789,28 +4806,28 @@ return function(Vargs, env)
 				local pitch = 1 --tonumber(args[4]) or 1
 				local loop = true
 
-				for i,v in pairs(Variables.MusicList) do 
-					if id==v.Name:lower() then 
+				for i,v in pairs(Variables.MusicList) do
+					if id==v.Name:lower() then
 						id = v.ID
-						if v.Pitch then 
-							pitch = v.Pitch 
-						end 
-						if v.Volume then 
-							volume=v.Volume 
-						end 
-					end 
+						if v.Pitch then
+							pitch = v.Pitch
+						end
+						if v.Volume then
+							volume=v.Volume
+						end
+					end
 				end
 
-				for i,v in pairs(HTTP.Trello.Music) do 
-					if id==v.Name:lower() then 
+				for i,v in pairs(HTTP.Trello.Music) do
+					if id==v.Name:lower() then
 						id = v.ID
-						if v.Pitch then 
-							pitch = v.Pitch 
-						end 
-						if v.Volume then 
-							volume = v.Volume 
-						end 
-					end 
+						if v.Pitch then
+							pitch = v.Pitch
+						end
+						if v.Volume then
+							volume = v.Volume
+						end
+					end
 				end
 
 				if args[3] and args[3] == "true" then loop = false end
@@ -4894,8 +4911,8 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do 
-					if v.Name=="ADONIS_SOUND" then 
+				for i,v in pairs(service.Workspace:children()) do
+					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
 							Functions.Hint("Music is now paused | Run "..Settings.Prefix.."resume to resume playback",{plr})
@@ -4903,7 +4920,7 @@ return function(Vargs, env)
 							Functions.Hint("Music is already paused | Run "..Settings.Prefix.."resume to resume",{plr})
 						end
 
-					end 
+					end
 				end
 			end
 		};
@@ -4915,8 +4932,8 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do 
-					if v.Name=="ADONIS_SOUND" then 
+				for i,v in pairs(service.Workspace:children()) do
+					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
 							Functions.Hint("Resuming Playback...",{plr})
@@ -4924,7 +4941,7 @@ return function(Vargs, env)
 							Functions.Hint("Music is not paused",{plr})
 						end
 
-					end 
+					end
 				end
 			end
 		};
@@ -4937,17 +4954,17 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local pitch = args[1]
-				for i,v in pairs(service.Workspace:children()) do 
-					if v.Name=="ADONIS_SOUND" then 
+				for i,v in pairs(service.Workspace:children()) do
+					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Pitch=v.Pitch+tonumber(args[1]:sub(2))
 						elseif args[1]:sub(1,1) == "-" then
 							v.Pitch=v.Pitch-tonumber(args[1]:sub(2))
 						else
-							v.Pitch = pitch 
+							v.Pitch = pitch
 						end
 
-					end 
+					end
 				end
 			end
 		};
@@ -4961,14 +4978,14 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i,v in pairs(service.Workspace:children()) do 
-					if v.Name=="ADONIS_SOUND" then 
+				for i,v in pairs(service.Workspace:children()) do
+					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Volume=v.Volume+tonumber(args[1]:sub(2))
 						elseif args[1]:sub(1,1) == "-" then
 							v.Volume=v.Volume-tonumber(args[1]:sub(2))
 						else
-							v.Volume = volume 
+							v.Volume = volume
 						end
 					end
 				end
@@ -5060,36 +5077,36 @@ return function(Vargs, env)
 						looped = true
 					end
 
-					for i,v in pairs(Variables.MusicList) do 
-						if id == v.Name:lower() then 
+					for i,v in pairs(Variables.MusicList) do
+						if id == v.Name:lower() then
 							id = v.ID
 
-							if v.Pitch then 
-								pitch = v.Pitch 
-							end 
-							if v.Volume then 
-								volume = v.Volume 
-							end 
-						end 
+							if v.Pitch then
+								pitch = v.Pitch
+							end
+							if v.Volume then
+								volume = v.Volume
+							end
+						end
 					end
 
-					for i,v in pairs(HTTP.Trello.Music) do 
-						if id == v.Name:lower() then 
+					for i,v in pairs(HTTP.Trello.Music) do
+						if id == v.Name:lower() then
 							id = v.ID
 
-							if v.Pitch then 
-								pitch = v.Pitch 
-							end 
-							if v.Volume then 
-								volume = v.Volume 
-							end 
-						end 
+							if v.Pitch then
+								pitch = v.Pitch
+							end
+							if v.Volume then
+								volume = v.Volume
+							end
+						end
 					end
 
-					pcall(function() 
-						if tonumber(id) and mp:GetProductInfo(id).AssetTypeId == 3 then 
-							name = 'Now playing '..mp:GetProductInfo(id).Name 
-						end 
+					pcall(function()
+						if tonumber(id) and mp:GetProductInfo(id).AssetTypeId == 3 then
+							name = 'Now playing '..mp:GetProductInfo(id).Name
+						end
 					end)
 
 					if name == '#Invalid ID' then
@@ -5099,38 +5116,38 @@ return function(Vargs, env)
 						Functions.Hint(name, service.Players:GetPlayers())
 					end
 
-					for i, v in pairs(service.Workspace:GetChildren()) do 
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
+					for i, v in pairs(service.Workspace:GetChildren()) do
+						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
 									Question = "There is currently a track paused, do you wish to override it?";
-								})	
+								})
 
-								if ans == "No" then 
-									return 
-								end 
+								if ans == "No" then
+									return
+								end
 							end
 
-							v:Destroy() 
-						end 
+							v:Destroy()
+						end
 					end
 
-					local s = service.New("Sound") 
+					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.SoundId = "http://www.roblox.com/asset/?id=" .. id 
-					s.Volume = volume 
-					s.Pitch = pitch 
+					s.SoundId = "http://www.roblox.com/asset/?id=" .. id
+					s.Volume = volume
+					s.Pitch = pitch
 					s.Looped = looped
 					s.Archivable = false
 					s.Parent = service.Workspace
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in pairs(service.Workspace:GetChildren()) do 
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then 
+					for i, v in pairs(service.Workspace:GetChildren()) do
+						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
-						end 
-					end	
+						end
+					end
 				end
 			end
 		};
@@ -5466,30 +5483,30 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then 
+						if humanoid then
 							local rigType = humanoid.RigType
-							if rigType == Enum.HumanoidRigType.R6 then 
+							if rigType == Enum.HumanoidRigType.R6 then
 								for _,x in pairs(v.Character:GetChildren()) do
-									if x:IsA("CharacterMesh") then 
+									if x:IsA("CharacterMesh") then
 										x:Destroy()
-									end 
+									end
 								end
-							elseif rigType == Enum.HumanoidRigType.R15 then 
+							elseif rigType == Enum.HumanoidRigType.R15 then
 								local rig = server.Deps.Assets.RigR15
-								local rigHumanoid = rig.Humanoid 
+								local rigHumanoid = rig.Humanoid
 								local validParts = {}
-								for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do 
-									validParts[x.Name] = x.Value 
+								for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do
+									validParts[x.Name] = x.Value
 								end
-								for _,x in pairs(rig:GetChildren()) do 
+								for _,x in pairs(rig:GetChildren()) do
 									if x:IsA("BasePart") and validParts[x.Name] then
 										humanoid:ReplaceBodyPartR15(validParts[x.Name], x:Clone())
-									end 
+									end
 								end
 							end
-						end 
+						end
 					end
 				end
 			end
@@ -5575,27 +5592,27 @@ return function(Vargs, env)
 
 				local target = tonumber(args[2]:match("^userid%-(%d*)"))
 				if not target then
-					-- Grab id from name 
+					-- Grab id from name
 					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[2])
-					if success then 
-						target = id 
+					if success then
+						target = id
 					else
 						error("Unable to find target user")
-					end 
-				end 
+					end
+				end
 
-				if target then 
+				if target then
 					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
 
 					if success then
 						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							v.CharacterAppearanceId = target
 
-							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then 
+							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 								v.Character.Humanoid:ApplyDescription(desc)
 							end
 						end
-					else 
+					else
 						error("Unable to get avatar for target user")
 					end
 				end
@@ -5615,10 +5632,10 @@ return function(Vargs, env)
 					Routine(function()
 						v.CharacterAppearanceId = v.UserId
 
-						if v.Character and v.Character:FindFirstChild("Humanoid") then 
+						if v.Character and v.Character:FindFirstChild("Humanoid") then
 							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
 
-							if success then 
+							if success then
 								v.Character.Humanoid:ApplyDescription(desc)
 							end
 						end
@@ -5682,21 +5699,10 @@ return function(Vargs, env)
 						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
 					end
 				end
-
+				
 				for i,v in next,service.LogService:GetLogHistory() do
-					if v.messageType==Enum.MessageType.MessageOutput then
-						toTab(v.message, "Output: ")
-						--table.insert(temp,{Text=v.message,Desc='Output: '..v.message})
-					elseif v.messageType==Enum.MessageType.MessageWarning then
-						toTab(v.message, "Warning: ", Color3.new(1,1,0))
-						--table.insert(temp,{Text=v.message,Desc='Warning: '..v.message,Color=Color3.new(1,1,0)})
-					elseif v.messageType==Enum.MessageType.MessageInfo then
-						toTab(v.message, "Info: ", Color3.new(0,0,1))
-						--table.insert(temp,{Text=v.message,Desc='Info: '..v.message,Color=Color3.new(0,0,1)})
-					elseif v.messageType==Enum.MessageType.MessageError then
-						toTab(v.message, "Error: ", Color3.new(1,0,0))
-						--table.insert(temp,{Text=v.message,Desc='Error: '..v.message,Color=Color3.new(1,0,0)})
-					end
+					local mType = v.messageType
+					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 				end
 
 				Remote.MakeGui(plr,'List',{
