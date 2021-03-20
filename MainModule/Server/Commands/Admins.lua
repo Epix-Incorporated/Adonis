@@ -3,7 +3,7 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
@@ -498,7 +498,7 @@ return function(Vargs, env)
 									createTag("Music paused by "..clicker.Name, 5)
 								else
 									sound:Resume()
-									createTag("Music resumed by "..clicker.Name, 5)								
+									createTag("Music resumed by "..clicker.Name, 5)
 								end
 							elseif clicks == 2 then
 								if sound.IsPlaying then
@@ -506,7 +506,7 @@ return function(Vargs, env)
 									createTag("Music stopped by "..clicker.Name, 5)
 								else
 									sound:Play()
-									createTag("Music replaying by "..clicker.Name, 5)								
+									createTag("Music replaying by "..clicker.Name, 5)
 								end
 							elseif clicks == 3 then
 								if discoscript and discoscript.Parent ~= nil then
@@ -1059,14 +1059,15 @@ return function(Vargs, env)
 		Ban = {
 			Prefix = Settings.Prefix;
 			Commands = {"ban";};
-			Args = {"player";};
+			Args = {"player", "reason"};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
+				local reason = args[2] or "No reason provided";
 				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddBan(v)
+						Admin.AddBan(v, reason)
 						Functions.Hint("Server banned "..tostring(v),{plr})
 					end
 				end

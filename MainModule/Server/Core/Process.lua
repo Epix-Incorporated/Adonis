@@ -89,13 +89,13 @@ return function(Vargs)
 								end
 
 								AddLog("RemoteFires", {
-									Text = tostring(p).." requested key from server", 
+									Text = tostring(p).." requested key from server",
 									Desc = "Player requested key from server",
 									Player = p;
 								})
 							elseif UnEncrypted[com] then
 								AddLog("RemoteFires", {
-									Text = tostring(p).." fired "..tostring(com), 
+									Text = tostring(p).." fired "..tostring(com),
 									Desc = "Player fired unencrypted remote command "..com,
 									Player = p;
 								})
@@ -106,12 +106,12 @@ return function(Vargs)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]), 
+									Text = tostring(p).." fired "..tostring(comString).."; Arg1: "..tostring(args[1]),
 									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args),
 									Player = p;
 								})
 
-								if command then 
+								if command then
 									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									keys.LastUpdate = tick()
 									if not rets[1] then
@@ -158,14 +158,14 @@ return function(Vargs)
 							wait(tonumber(num))
 						end
 					else
-						Process.Command(p, cmd, opts, false) 
+						Process.Command(p, cmd, opts, false)
 					end
 				end
 			else
 				local pData = opts.PlayerData or (p and Core.GetPlayer(p));
 				local msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg;
 				if msg:match(Settings.BatchKey) then
-					Process.Command(p, msg, opts, false) 
+					Process.Command(p, msg, opts, false)
 				else
 					local index,command,matched = Admin.GetCommand(msg)
 
@@ -183,7 +183,7 @@ return function(Vargs)
 							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 						}
 
-						if opts.isSystem or p == "SYSTEM" then 
+						if opts.isSystem or p == "SYSTEM" then
 							isSystem = true
 							allowed = true
 							p = p or "SYSTEM"
@@ -247,15 +247,15 @@ return function(Vargs)
 
 								local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
 								if not opts.IgnoreErrors then
-									if error and type(error) == "string" then 
+									if error and type(error) == "string" then
 										error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
-										if not isSystem then 
-											Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)}) 
-										end 
+										if not isSystem then
+											Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
+										end
 									elseif error and type(error) ~= "string" then
-										if not isSystem then 
-											Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)}) 
-										end 
+										if not isSystem then
+											Remote.MakeGui(p,'Output',{Title = ''; Message = "There was an error but the error was not a string? "..tostring(error); Color = Color3.new(1,0,0)})
+										end
 									end
 								end
 
@@ -272,12 +272,12 @@ return function(Vargs)
 								})
 							else
 								if not isSystem and not opts.NoOutput then
-									Remote.MakeGui(p,'Output',{Title = ''; Message = 'This command has been disabled.'; Color = Color3.new(1,0,0)}) 
+									Remote.MakeGui(p,'Output',{Title = ''; Message = 'This command has been disabled.'; Color = Color3.new(1,0,0)})
 								end
 							end
 						else
 							if not isSystem and not opts.NoOutput then
-								Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)}) 
+								Remote.MakeGui(p,'Output',{Title = ''; Message = 'You are not allowed to run '..msg; Color = Color3.new(1,0,0)})
 							end
 						end
 					end
@@ -416,7 +416,7 @@ return function(Vargs)
 					service.TrackTask(tostring(p)..": CharacterAdded", Process.CharacterAdded, p)
 				end
 			end
-			
+
 			-- Moved to PlayerAdded handler
 			--]]
 		end;
@@ -433,7 +433,7 @@ return function(Vargs)
 				end
 			end--]]
 		end;
-		
+
 		PlayerAdded = function(p)
 			if p.UserId < 0 and p.Name:match("^Guest ") and not service.RunService:IsStudio() then
 				p:Kick("Guest Account")
@@ -443,10 +443,10 @@ return function(Vargs)
 				local key = tostring(p.userId)
 				local keyData = {
 					Player = p;
-					Key = Functions:GetRandom(); 
+					Key = Functions:GetRandom();
 					Decoy1 = Functions:GetRandom();
 					Decoy2 = Functions:GetRandom();
-					Cache = {};				
+					Cache = {};
 					Sent = 0;
 					Received = 0;
 					LastUpdate = tick();
@@ -470,15 +470,15 @@ return function(Vargs)
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
-				local banned = Admin.CheckBan(p)
+				local banned,reason = Admin.CheckBan(p)
 				local removed = false
 
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
 				Core.UpdateConnection(p)
 
-				if banned then 
-					p:Kick(Variables.BanMessage)
+				if banned then
+					p:Kick(Variables.BanMessage .. " |  Reason: "..(reason or "No reason provided"))
 					removed = true
 				end
 
@@ -517,7 +517,7 @@ return function(Vargs)
 							wait(60*10)
 							if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
 								Logs.AddLog("Script", {
-									Text = tostring(p).." Failed to Load", 
+									Text = tostring(p).." Failed to Load",
 									Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
 									Player = p;
 								});
@@ -539,7 +539,7 @@ return function(Vargs)
 			--Remote.Clients[key] = nil
 			service.Events.PlayerRemoving:fire(p)
 			local level = (p and Admin.GetLevel(p)) or 0
-			if Settings.AntiNil and level < 1 then 
+			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
@@ -551,9 +551,9 @@ return function(Vargs)
 		end;
 
 		NetworkAdded = function(cli)
-			wait(0.25) 
+			wait(0.25)
 			local tim = service.GetTime()
-			local p = cli:GetPlayer() 
+			local p = cli:GetPlayer()
 			if p then
 				Logs.AddLog(Logs.Script,{
 					Time = tim;
@@ -633,10 +633,10 @@ return function(Vargs)
 
 			--// Load admin or non-admin specific things
 			if level<1 then
-				if Settings.AntiSpeed then 
+				if Settings.AntiSpeed then
 					Remote.Send(p,"LaunchAnti","Speed",{
 						Speed = tostring(60.5+math.random(9e8)/9e8)
-					}) 
+					})
 				end
 
 				if Settings.Detection then
@@ -684,11 +684,11 @@ return function(Vargs)
 										Size = {700,300};
 										Icon = "rbxassetid://357249130";
 									})
-									
+
 									window:Add("ImageLabel",{
 										Image = "rbxassetid://1059543904";
 									})
-									
+
 									window:Ready()
 								]]);
 							})
@@ -703,13 +703,13 @@ return function(Vargs)
 				--// Run OnJoin commands
 				for i,v in next,Settings.OnJoin do
 					Logs.AddLog("Script",{
-						Text = "OnJoin: Executed "..tostring(v); 
+						Text = "OnJoin: Executed "..tostring(v);
 						Desc = "Executed OnJoin command; "..tostring(v)
 					})
 					Admin.RunCommandAsPlayer(v, p)
 				end
 
-				--// REF_1_ALBRT - 57s_Dxl - 100392_659; 
+				--// REF_1_ALBRT - 57s_Dxl - 100392_659;
 				--// COMP[[CHAR+OFFSET] < INT[0]]
 				--// EXEC[[BYTE[N]+BYTE[x]] + ABS[CHAR+OFFSET]]
 				--// ELSE[[BYTE[A]+BYTE[x]] + ABS[CHAR+OFFSET]]
@@ -797,7 +797,7 @@ return function(Vargs)
 				--// Run OnSpawn commands
 				for i,v in next,Settings.OnSpawn do
 					Logs.AddLog("Script",{
-						Text = "OnSpawn: Executed "..tostring(v); 
+						Text = "OnSpawn: Executed "..tostring(v);
 						Desc = "Executed OnSpawn command; "..tostring(v)
 					})
 					Admin.RunCommandAsPlayer(v,p)
