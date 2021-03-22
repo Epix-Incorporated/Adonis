@@ -265,6 +265,7 @@ return function(Vargs)
 				[2] = "Admins";
 				[3] = "Owners";
 				[4] = "Creators";
+				[5] = "Place Owner";
 			})[lvl]
 		end;
 
