@@ -71,7 +71,7 @@ return function(Vargs, env)
 			Args = {"Message";};
 			Filter = true;
 			Description = "Makes a message in the chat window";
-			AdminLevel = "Moderators";
+			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,"all") do
 					Remote.Send(v,"Function","ChatMessage","["..Settings.SystemTitle.."] "..service.Filter(args[1],plr,v),Color3.new(1,64/255,77/255))
