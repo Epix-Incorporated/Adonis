@@ -44,7 +44,7 @@ return function(Vargs, env)
 				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
 			end
 		};
-		
+
     TimeDate = {
 			Prefix = Settings.Prefix;
 			Commands = {"timedate";"time","date";"datetime";};
@@ -57,14 +57,14 @@ return function(Vargs, env)
 				--if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
 			--		auto = 1
 			--	end
-				
+
 			-- not lollo here was
 
 				Remote.MakeGui(plr,"List",
 					{Title = "Date",Table = Logs.DateTime, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
 			end
 		};
-    
+
 		TimeBanList = {
 			Prefix = Settings.Prefix;
 			Commands = {"timebanlist";"timebanned";"timebans";};
@@ -1987,7 +1987,8 @@ return function(Vargs, env)
 							reason = v.Reason;
 						end
 					end
-					table.insert(tab,{Text = tostring(v), Desc = reason})
+
+					table.insert(tab,{Text = tostring(entry), Desc = reason})
 				end
 
 				Remote.MakeGui(plr,"List",{Title = 'Ban List', Tab = tab})
@@ -5699,7 +5700,7 @@ return function(Vargs, env)
 						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
 					end
 				end
-				
+
 				for i,v in next,service.LogService:GetLogHistory() do
 					local mType = v.messageType
 					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))

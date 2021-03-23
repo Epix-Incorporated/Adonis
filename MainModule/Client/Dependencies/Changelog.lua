@@ -1,6 +1,9 @@
 return {
-	"Version: 214";
+	"Version: 214.1";
 	"*Drag edges to expand*";
+	"";
+	"[3.23.2021 16:18 EST]";
+	"*Banlist hotfix";
 	"";
 	"[3.20.2021 14:47 EST]";
 	"*Added ban reasons";

@@ -654,7 +654,7 @@ return function(Vargs)
 			if not service.Players:FindFirstChild(p.Name) then
 				Remote.Send(p,'Function','KillClient')
 			else
-				if p then pcall(function() p:Kick(Variables.BanMessage .. " |  Reason: "..(value.Reason or "No reason provided")) end) end
+				if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
 			end
 		end;
 
