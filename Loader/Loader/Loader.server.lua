@@ -9,88 +9,130 @@
 
 
 ----------------------------------------------------------------------------------------
---                                  Adonis Loader                                     --
+--					Adonis Loader					--
 ----------------------------------------------------------------------------------------
---		   	  Epix Incorporated. Not Everything is so Black and White.		   		  --
+--		Epix Incorporated. Not Everything is so Black and White.		--
 ----------------------------------------------------------------------------------------
---	    Edit settings in-game or using the settings module in the Config folder	      --
+--		Edit settings in-game or using the settings module in the Config folder	--
 ----------------------------------------------------------------------------------------
---	                  This is not designed to work in solo mode                       --
+--		This is not designed to work in solo mode.				--
 ----------------------------------------------------------------------------------------
 
-warn(":: Adonis :: Loading...");
+local print = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: INFO: "..tostring(v)) end end
+local error = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: ERROR: "..tostring(v).."; Traceback:\n"..debug.traceback()) end end
+local warn = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader:: WARN: "..tostring(v)) end end
+local pcall = function(func, ...) local ran, rerror = pcall(func, ...) if not ran then error(rerror) end return ran, rerror end
+local AbortLoad = function(Reason) warn("Adonis aborted loading. Reason: "..tostring(Reason)) if script then script:Destroy() end return false end
 
-if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
-	warn("\n-----------------------------------------------"
+if _G.__Adonis_MUTEX and type(_G.__Adonis_MUTEX)=="string" then
+	return AbortLoad("\n-----------------------------------------------"
 		.."\nAdonis is already running! Aborting..."
-		.."\nRunning Location: ".._G["__Adonis_MUTEX"]
+		.."\nRunning Location: ".._G.__Adonis_MUTEX
 		.."\nThis Location: "..script:GetFullName()
 		.."\n-----------------------------------------------")
-	--script:Destroy()
-else
-	_G["__Adonis_MUTEX"] = script:GetFullName()
+end
+
+--// Root Folder Instances
+local Model = script.Parent.Parent
+local Config = Model.Config
+local Core = Model.Loader
+local Backup = Model:Clone()
+local OrigName = Model.Name
+
+--// Core Instances
+local Dropper = Core.Dropper
+local Loader = Core.Loader
+local Runner = script
+
+--// Get Configuration Instances
+local Settings = Config.Settings
+local Plugins = Config.Plugins
+local Themes = Config.Themes
+
+--// Define valid Plugin Types
+local PluginTypes = {"server:";"server-";"client-";"client:"}
+
+local Data = {
+	Settings = {};
+	Descriptions = {};
+	Order = {};
+	ServerPlugins = {};
+	ClientPlugins = {};
+	Themes = {};
+	StartTime = tick();
 	
-	local model = script.Parent.Parent
-	local config = model.Config
-	local core = model.Loader
+	Model = Model;
+	Config = Config;
+	Core = Core;
 	
-	local dropper = core.Dropper
-	local loader = core.Loader
-	local runner = script
-	
-	local settings = config.Settings
-	local plugins = config.Plugins
-	local themes = config.Themes
-	
-	local backup = model:Clone()
-	
-	local data = {
-		Settings = {};
-		Descriptions = {};
-		ServerPlugins = {};
-		ClientPlugins = {};
-		Themes = {};
-		
-		Model = model;
-		Config = config;
-		Core = core;
-		
-		Loader = loader;
-		Dopper = dropper;
-		Runner = runner;
-		
+	Loader = Loader;
+	Dropper = Dropper;
+	Runner = Runner;
+
 		ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
-		LoaderID = tonumber('23735'..'05175');
-		
-		DebugMode = true;
-	}
-	
-	--// Init
-	script:Destroy()
-	model.Name = math.random()
-	local moduleId = data.ModuleID
-	local a,setTab = pcall(require,settings)
-	if not a then
-		warn'::Adonis:: Settings module errored while loading; Using defaults;'
-		setTab = {}
-	end
-	data.Settings, data.Descriptions, data.Order = setTab.Settings,setTab.Descriptions,setTab.Order
-	for _,Plugin in next,plugins:GetChildren()do if Plugin.Name:lower():sub(1,7)=="client:" or Plugin.Name:lower():sub(1,7) == "client-" then table.insert(data.ClientPlugins,Plugin) elseif Plugin.Name:lower():sub(1,7)=="server:" or Plugin.Name:lower():sub(1,7)=="server-" then table.insert(data.ServerPlugins,Plugin) else warn("Unknown Plugin Type for "..tostring(Plugin)) end end
-	for _,Theme in next,themes:GetChildren()do table.insert(data.Themes,Theme) end
-	if data.DebugMode then moduleId = model.Parent.MainModule end
-	local module = require(moduleId)
-	local response = module(data)
-	if response == "SUCCESS" then
-		if (data.Settings and data.Settings.HideScript) and not data.DebugMode then
-			model.Parent = nil
-			game:BindToClose(function() model.Parent = game:GetService("ServerScriptService") model.Name = "Adonis_Loader" end)
+	LoaderID = tonumber('23735'..'05175');
+}
+
+local LoadPlugins = function()
+	for _, Plugin in pairs(Plugins:GetChildren()) do
+		local Type = tostring(Plugin.Name):lower():sub(1,7)
+		if Plugin:IsA("ModuleScript") and table.find(PluginTypes, Type) then
+			if Type:match("client") then
+				table.insert(Data.ClientPlugins, Plugin)
+			elseif Type:match("server") then
+				table.insert(Data.ServerPlugins, Plugin)
+			else
+				warn("Unknown Plugin Type for: "..tostring(Plugin))
+			end
 		end
-		model.Name = "Adonis_Loader"
-	else
-		error("MainModule failed to load")
 	end
 end
 
+local LoadThemes = function()
+	for _, Theme in pairs(Themes:GetChildren()) do
+		table.insert(Data.Themes, Theme)
+	end
+end
+
+local Load = function()
+	warn("Loading...")
+	
+	_G.__Adonis_MUTEX = script:GetFullName()
+	script:Destroy()
+	
+	Model.Name = math.random()
+	
+	--// Init
+	local ModuleID = Data.ModuleID
+	local success, settings = pcall(require, Settings)
+
+	if not success then
+		warn("Settings module failed to load; Using defaults;")
+		settings = {}
+	end
+
+	Data.Settings, Data.Descriptions, Data.Order = settings.Settings, settings.Descriptions, settings.Order
+	LoadPlugins()
+	LoadThemes()
+
+	local Adonis = require(ModuleID)
+	local Loaded, Response = Adonis(Data)
+
+	if Loaded == true then
+		if (Data.Settings and Data.Settings.HideScript) and not Data.Settings.Debug then
+			Model.Parent = nil
+			game:BindToClose(function()
+				Model.Parent = game:GetService("ServerScriptService")
+				Model.Name = OrigName
+			end)
+		end
+		Model.Name = OrigName
+	else
+		return AbortLoad("MainModule failed to load. Responded with: "..tostring(Response))
+	end
+		return Loaded
+end
+pcall(load)
 																																																							--[[
 --___________________________________________________________________________________________--
 --___________________________________________________________________________________________--
