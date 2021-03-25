@@ -60,6 +60,9 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 	main = server or client
 	ErrorHandler = errorHandler
+	server = nil
+	client = nil
+	
 	local Kill = main.Kill
 	local service;
 	local WaitingEvents = {}
