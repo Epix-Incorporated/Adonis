@@ -686,12 +686,18 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return new or "Filter Error"
 		end;
 		MetaFunc = function(func)
-			return service.NewProxy {
-				__call = function(tab,...)
-					return func(...)
-				end
-			}
-		end;
+	    return service.NewProxy {
+	        __call = function(tab,...)
+	            local args = {pcall(func, ...)}
+	            local success = args[1]
+	            if not success then
+	                warn(args[2])
+	            else
+	                return unpack(args, 2)
+	            end
+	        end
+	    }
+	end;
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
