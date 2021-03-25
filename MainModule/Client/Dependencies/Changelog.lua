@@ -1,6 +1,10 @@
 return {
-	"Version: 214.1";
+	"Version: 214.2";
 	"*Drag edges to expand*";
+	"";
+	"[3.25.2021 13:40 EST]";
+	"*Security patch";
+	"*Fixed a credit";
 	"";
 	"[3.23.2021 16:18 EST]";
 	"*Banlist hotfix";
