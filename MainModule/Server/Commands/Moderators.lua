@@ -1613,7 +1613,7 @@ return function(Vargs, env)
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
 				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"}) 
+				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
 				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
 				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
@@ -5917,7 +5917,7 @@ return function(Vargs, env)
 					Dots = true;
 					Update = "ScriptLogs";
 					AutoUpdate = auto;
-					Santize = true;
+					Sanitize = true;
 					Stacking = true;
 				})
 			end
