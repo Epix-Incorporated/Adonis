@@ -6244,5 +6244,41 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		Inspect = {
+			Prefix = Settings.Prefix;
+			Commands = {"inspect";"playerinfo"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Moderator";
+			Function = function(plr,args)
+				local function checkSafeChat(player)
+					local textToFilter = "1234"
+					if game:GetService("TextService"):FilterStringAsync(textToFilter, player.UserId):GetNonChatStringForUserAsync(player.UserId) == textToFilter then
+						return false
+					else
+						return true
+					end
+				end
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local isMuted = false
+					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
+						isMuted = true
+					else
+						isMuted = false
+					end
+					local isBanned = false
+					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
+						isBanned = true
+					else
+						isBanned = false
+					end
+					Remote.MakeGui(plr,"Inspect",{Target=v;SafeChat=checkSafeChat(v);AdminLevel="["..server.Admin.GetLevel(v).."] "..Admin.LevelToListName(Admin.GetLevel(v));IsDonor=service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);IsMuted=isMuted;IsBanned=isBanned;Code=game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";})
+				end
+			end
+		};
+	
 	}
 end
