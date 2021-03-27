@@ -917,5 +917,31 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
 			end
 		};
+		
+		Invite = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"invite";"invitefriends"};
+			Args = {};
+			Description = "Invite your friends into the game";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Player";
+			Function = function(plr,args)
+				game:GetService("SocialService"):PromptGameInvite(plr)
+			end
+		};
+	
+		OnlineFriends = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"onlinefriends";"friendsonline";};
+			Args = {};
+			Description = "Shows a list of your friends who are currently online";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Player";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"Friends")
+			end
+		};
 	}
 end
