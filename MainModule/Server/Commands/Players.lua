@@ -956,5 +956,52 @@ return function(Vargs, env)
 				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
 			end
 		};
+		
+		AddFriend = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"addfriend";"friendrequest";"sendfriendrequest";};
+			Args = {"player"};
+			Description = "Sends a friend request to the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					assert(v~=plr, "Cannot friend yourself!")
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",v)]])
+				end
+			end
+		};
+	
+		UnFriend = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"unfriend";"removefriend";};
+			Args = {"player"};
+			Description = "Unfriends the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					assert(v~=plr, "Cannot unfriend yourself!")
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",v)]])
+				end
+			end
+		};
+	
+		DevConsole = {
+			Prefix = Settings.Prefix;
+			Commands = {"devconsole";"developerconsole";"opendevconsole";};
+			Args = {};
+			Description = "Opens the Roblox developer console";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
+				end
+			end
+		};
 	}
 end
