@@ -6275,7 +6275,7 @@ return function(Vargs, env)
 					else
 						isBanned = false
 					end
-					Remote.MakeGui(plr,"Inspect",{Target=v;SafeChat=checkSafeChat(v);AdminLevel="["..server.Admin.GetLevel(v).."] "..Admin.LevelToListName(Admin.GetLevel(v));IsDonor=service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);IsMuted=isMuted;IsBanned=isBanned;Code=game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";})
+					server.Remote.MakeGui(plr,"Inspect",{Target=v;SafeChat=checkSafeChat(v);CanChat=game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";AdminLevel="["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));IsDonor=service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);IsMuted=isMuted;IsBanned=isBanned;Code=game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";SourcePlace=v:GetJoinData().SourcePlaceId or "N/A";})
 				end
 			end
 		};
