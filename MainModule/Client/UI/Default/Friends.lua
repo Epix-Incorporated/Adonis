@@ -1,5 +1,6 @@
 -- Expertcoder2
--- 26/03/2021
+-- Created: 26/03/2021
+-- Updated: 28/03/2021
 
 
 client = nil
@@ -39,7 +40,7 @@ return function(data)
 
 		table.sort(sortedFriends)
 		
-		local i = 2
+		local i = 1
 		local friendCount = 0
 		for _, friendName in ipairs(sortedFriends) do
 			friendCount = friendCount + 1
@@ -74,13 +75,7 @@ return function(data)
 			end)
 			i = i + 1
 		end
-		
-		window:Add("TextLabel", {
-			Size = UDim2.new(1, -10, 0, 25);
-			Position = UDim2.new(0, 5, 0, 5);
-			BackgroundTransparency = 0.5;
-			Text = friendCount.." friends are currently online.";
-		})
+		window:SetTitle("Online Friends ("..friendCount..")")
 	end
 
 	window:ResizeCanvas(false, true, false, false, 5, 5)
