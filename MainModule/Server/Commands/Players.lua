@@ -984,6 +984,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
+					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
 					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",v)]])
 				end
 			end
