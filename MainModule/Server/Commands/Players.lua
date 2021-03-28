@@ -943,5 +943,18 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"Friends")
 			end
 		};
+		
+		GetPremium = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
+			Args = {};
+			Description = "Lets you to purchase Roblox Premium";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
+			end
+		};
 	}
 end
