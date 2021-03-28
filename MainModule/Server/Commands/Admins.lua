@@ -1268,5 +1268,20 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		PromptPremiumPurchase = {
+			Prefix = Settings.Prefix;
+			Commands = {"promptpremiumpurchase";"premiumpurchaseprompt";};
+			Args = {"player"};
+			Description = "Opens the Roblox Premium purchase prompt for the target player(s)";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					game:GetService("MarketplaceService"):PromptPremiumPurchase(v)
+				end
+			end
+		}
 	}
 end
