@@ -123,7 +123,7 @@ return function(data)
 
 		addGeneralEntry("Username:", player.Name, "The player's Roblox username")
 		addGeneralEntry("User ID:", player.UserId, "The player's unique Roblox user ID")
-		addGeneralEntry("Account Age:", player.AccountAge, "How long (in days) the player has been registered on Roblox")
+		addGeneralEntry("Account Age:", player.AccountAge .. " ("..string.format("%.2f", player.AccountAge/365).." years)", "How long (in days) the player has been registered on Roblox")
 		addGeneralEntry("Membership:", msTypeToStr(player.MembershipType), "The player's Roblox membership type")
 		i = i + 1
 		addGeneralEntry("Safe Chat Enabled:", boolToStr(data.SafeChat), "Does the player have safe chat enabled?")
@@ -152,9 +152,9 @@ return function(data)
 
 			i = i + 1
 		end
-		
+
 		local humDesc = game:GetService("Players"):GetHumanoidDescriptionFromUserId(player.UserId)
-		
+
 		addAvatarEntry("Head Shot Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);})
 		addAvatarEntry("Avatar Bust Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size48x48);})
 		addAvatarEntry("Avatar Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size48x48);})

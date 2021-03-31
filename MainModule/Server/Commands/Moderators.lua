@@ -6244,7 +6244,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Inspect = {
 			Prefix = Settings.Prefix;
 			Commands = {"inspect";"playerinfo"};
@@ -6262,6 +6262,7 @@ return function(Vargs, env)
 						return true
 					end
 				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local isMuted = false
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
@@ -6269,16 +6270,28 @@ return function(Vargs, env)
 					else
 						isMuted = false
 					end
+
 					local isBanned = false
 					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
 						isBanned = true
 					else
 						isBanned = false
 					end
-					server.Remote.MakeGui(plr,"Inspect",{Target=v;SafeChat=checkSafeChat(v);CanChat=game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";AdminLevel="["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));IsDonor=service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);IsMuted=isMuted;IsBanned=isBanned;Code=game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";SourcePlace=v:GetJoinData().SourcePlaceId or "N/A";})
+
+					server.Remote.MakeGui(plr,"Inspect",{
+						Target = v;
+						SafeChat = checkSafeChat(v);
+						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
+						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
+						IsMuted = isMuted;
+						IsBanned = isBanned;
+						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
+						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
+					})
 				end
 			end
 		};
-	
+
 	}
 end
