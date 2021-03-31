@@ -253,7 +253,7 @@ return function(Vargs)
 			return ({
 				[1] = Settings.Moderators;
 				[2] = Settings.Admins;
-				[3] = Settings.Owners;
+				[3] = Settings.HeadAdmins;
 				[4] = Settings.Creators;
 			})[lvl]
 		end;
@@ -263,7 +263,7 @@ return function(Vargs)
 				[0] = "Players";
 				[1] = "Moderators";
 				[2] = "Admins";
-				[3] = "Owners";
+				[3] = "HeadAdmins";
 				[4] = "Creators";
 				[5] = "Place Owner";
 			})[lvl]
@@ -330,12 +330,12 @@ return function(Vargs)
 					}
 				};
 
-				{ --// Owners
+				{ --// HeadAdmins
 					Level = 3;
 					Tables = {
-						Settings.Owners;
-						HTTP.Trello.Owners;
-						HTTP.WebPanel.Owners;
+						Settings.HeadAdmins;
+						HTTP.Trello.HeadAdmins;
+						HTTP.WebPanel.HeadAdmins;
 					}
 				};
 
@@ -474,7 +474,7 @@ return function(Vargs)
 					if Settings.SaveAdmins then
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = "Owners";
+							Table = "HeadAdmins";
 							Value = check;
 						})
 					end
@@ -502,7 +502,7 @@ return function(Vargs)
 
 			removeFromTable(Settings.Moderators,1)
 			removeFromTable(Settings.Admins,2)
-			removeFromTable(Settings.Owners,3)
+			removeFromTable(Settings.HeadAdmins,3)
 			removeFromTable(Settings.Creators,4)
 			Admin.UpdateCachedLevel(p)
 		end;
@@ -548,11 +548,11 @@ return function(Vargs)
 					})
 				end
 			elseif level == 3 then
-				table.insert(Settings.Owners,value)
+				table.insert(Settings.HeadAdmins,value)
 				if Settings.SaveAdmins and not temp then
 					Core.DoSave({
 						Type = "TableAdd";
-						Table = "Owners";
+						Table = "HeadAdmins";
 						Value = value
 					})
 				end
@@ -900,7 +900,7 @@ return function(Vargs)
 				return true
 			elseif adminLevel >= 2 and isComLevel("Admins", comLevel) then
 				return true
-			elseif adminLevel >= 3 and isComLevel("Owners", comLevel) then
+			elseif adminLevel >= 3 and isComLevel("HeadAdmins", comLevel) then
 				return true
 			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
 				return true

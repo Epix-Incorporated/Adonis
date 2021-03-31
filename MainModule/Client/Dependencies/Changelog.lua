@@ -1,6 +1,9 @@
 return {
-	"Version: 214.2";
+	"Version: 215";
 	"*Drag edges to expand*";
+	"";
+	"[TBD (WIP)]";
+	"*Owners are now HeadAdmins; This change was done as Owners don't really \"Own\" anything and thus makes no sense";
 	"";
 	"[3.25.2021 13:40 EST]";
 	"*Security patch";
@@ -140,7 +143,7 @@ return {
 	"*server.Events.CommandRan has been changed, it now only has two args passed to it: Player, and a table containing information about the whole command 'transaction'";
 	"*Commands now have a third param passed to them: a table containing data such as the player's level and other info like command options (from the Process function caller)";
 	"*Cross server will now pass the player's current admin level and will only run commands they have permission to, and will pass their current level to the command when it runs";
-	"*Cross server is now usable by Owners+ instead of Creators only";
+	"*Cross server is now usable by HeadAdmins+ instead of Creators only";
 	"*Commands using GetLevel(plr) have been updated to use data.PlayerData.Level (passed from the command processor)";
 	"";
 	"[11.28.2020 19:38 EST]";
@@ -1083,7 +1086,7 @@ return {
 	"*Adonis created scripts now use the default script/localscript name instead of assigning one";
 	"";
 	"1.0.70b";
-	"+Added :networkowners & settings.NetworkOwners";
+	"+Added :NetworkOwners & settings.NetworkOwners";
 	"+Added :setbanmessage & settings.BanMessage";
 	"+Added :setlockmessage & settings.LockMessage";
 	"*Fixed people who are in more than one admin table showing up as the lowest level";

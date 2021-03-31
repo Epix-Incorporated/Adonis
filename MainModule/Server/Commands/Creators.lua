@@ -229,7 +229,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Data persistent ban the target player(s); Undone using :undataban";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
 					if not Admin.CheckAdmin(v) then
@@ -258,7 +258,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes any data persistence bans (timeban or permban)";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 

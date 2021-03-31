@@ -4,7 +4,7 @@ service = nil
 
 local canEditTables = {
 	Admins = true;
-	Owners = true;
+	HeadAdmins = true;
 	Moderators = true;
 	Banned = true;
 	Muted = true;

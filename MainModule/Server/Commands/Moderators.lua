@@ -1898,7 +1898,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"owners";"Moderators";};
+			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -1911,8 +1911,8 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Creator")
 				end
 
-				for i,v in pairs(Settings.Owners) do
-					table.insert(temptable,v .. " - Owner")
+				for i,v in pairs(Settings.HeadAdmins) do
+					table.insert(temptable,v .. " - Supervisor")
 				end
 
 				for i,v in pairs(Settings.Admins) do
@@ -1935,7 +1935,7 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Admin [Trello]")
 				end
 
-				for i,v in pairs(HTTP.Trello.Owners) do
+				for i,v in pairs(HTTP.Trello.HeadAdmins) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
 
@@ -1951,7 +1951,7 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Admin [WebPanel]")
 				end
 
-				for i,v in pairs(HTTP.WebPanel.Owners) do
+				for i,v in pairs(HTTP.WebPanel.HeadAdmins) do
 					table.insert(temptable,v .. " - Owner [WebPanel]")
 				end
 

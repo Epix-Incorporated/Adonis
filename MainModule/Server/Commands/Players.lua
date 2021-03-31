@@ -858,7 +858,7 @@ return function(Vargs, env)
 					'Multiple Commands at a time - '..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim';
 					'You can add a wait if you want; '..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds';
 					''..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim';
-					'Place owners can edit some settings in-game via the '..Settings.Prefix..'settings command';
+					'Place HeadAdmins can edit some settings in-game via the '..Settings.Prefix..'settings command';
 					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
 				}
 				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage})
