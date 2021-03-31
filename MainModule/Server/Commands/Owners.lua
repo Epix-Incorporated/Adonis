@@ -379,6 +379,21 @@ return function(Vargs, env)
 				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
 			end
 		};
+																		
+		PromptInvite = {
+			Prefix = Settings.Prefix;
+			Commands = {"promptinvite";"inviteprompt";"forceinvite"};
+			Args = {"player"};
+			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Owners";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					game:GetService("SocialService"):PromptGameInvite(v)
+				end
+			end
+		};
 
 		--[[FullShutdown = {
 			Prefix = Settings.Prefix;

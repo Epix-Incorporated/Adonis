@@ -917,5 +917,92 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
 			end
 		};
+		
+		Invite = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"invite";"invitefriends"};
+			Args = {};
+			Description = "Invite your friends into the game";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Player";
+			Function = function(plr,args)
+				game:GetService("SocialService"):PromptGameInvite(plr)
+			end
+		};
+	
+		OnlineFriends = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"onlinefriends";"friendsonline";};
+			Args = {};
+			Description = "Shows a list of your friends who are currently online";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Player";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"Friends")
+			end
+		};
+		
+		GetPremium = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
+			Args = {};
+			Description = "Lets you to purchase Roblox Premium";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
+			end
+		};
+		
+		AddFriend = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"addfriend";"friendrequest";"sendfriendrequest";};
+			Args = {"player"};
+			Description = "Sends a friend request to the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					assert(v~=plr, "Cannot friend yourself!")
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",v)]])
+				end
+			end
+		};
+	
+		UnFriend = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"unfriend";"removefriend";};
+			Args = {"player"};
+			Description = "Unfriends the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					assert(v~=plr, "Cannot unfriend yourself!")
+					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",v)]])
+				end
+			end
+		};
+	
+		DevConsole = {
+			Prefix = Settings.Prefix;
+			Commands = {"devconsole";"developerconsole";"opendevconsole";};
+			Args = {};
+			Description = "Opens the Roblox developer console";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
+				end
+			end
+		};
 	}
 end
