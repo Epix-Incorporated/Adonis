@@ -137,12 +137,12 @@ return function(Vargs, env)
 			end
 		};
 
-		Owner = {
+		MakeHeadAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"owner","oa","headadmin"};
+			Commands = {"headadmin","owner","hadmin","oa"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Makes the target player(s) an owner; Saves";
+			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr, args, data)
