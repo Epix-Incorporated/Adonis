@@ -847,7 +847,6 @@ return function(Vargs, env)
 					Settings.SpecialPrefix..'others - Runs command on everyone BUT you';
 					Settings.SpecialPrefix..'random - Runs command on a random person';
 					Settings.SpecialPrefix..'friends - Runs command on anyone on your friends list';
-					Settings.SpecialPrefix..'besties - Runs command on anyone on your best friends list';
 					'%TEAMNAME - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
 					'$GROUPID - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
 					'-PLAYERNAME - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
