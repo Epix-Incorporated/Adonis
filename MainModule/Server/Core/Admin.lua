@@ -735,8 +735,8 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = adminLvl;
-					isAgent = HTTP.Trello.CheckAgent(p) or false;
-					isDonor = (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors)) or false;
+					isAgent = HTTP.Trello.CheckAgent(plr) or false;
+					isDonor = (Admin.CheckDonor(plr) and (Settings.DonorCommands or com.AllowDonors)) or false;
 				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then
