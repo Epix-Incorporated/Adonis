@@ -1590,26 +1590,22 @@ return function(Vargs, env)
 			Description = "Shows you information about the current server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local tab={}
-				local nilplayers=0
-				for i,v in pairs(service.NetworkServer:children()) do
+			Function = function(plr)
+				local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
+
+				for i,v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilplayers=nilplayers+1
+						nilplayers+=1
 					end
 				end
-				local nonnumber=0
-				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
-						nonnumber=nonnumber+1
+				for i,v in pairs(service.Players:GetPlayers()) do
+					if Admin.CheckAdmin(v,false) then
+						adminnumber+=1
+					else
+						nonnumber+=1
 					end
 				end
-				local adminnumber=0
-				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
-						adminnumber=adminnumber+1
-					end
-				end
+				
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
 				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
@@ -1618,31 +1614,22 @@ return function(Vargs, env)
 				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
 				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				if HTTP.CheckHttp() then
-					table.insert(tab,{Text = "HTTPService: [ON]"})
-				else
-					table.insert(tab,{Text = "HTTPService: [OFF]"})
-				end
-				if game.Workspace.AllowThirdPartySales == true then
+
+--[[
+
+				if workspace.AllowThirdPartySales == true then
 					table.insert(tab,{Text = "Third Party Sales: [ON]"})
 				else
 					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
 				end
-				if pcall(function() loadstring("local hi = 'test'") end) then
-					table.insert(tab,{Text = "Loadstring: [ON]"})
+]]
+				table.insert(tab,{Text = "LoadstringEnabled: [".. tostring(pcall(loadstring, "")) .."]"})
+				table.insert(tab,{Text = "StreamingEnabled: [".. tostring(workspace.StreamingEnabled) .."]"})
+				table.insert(tab,{Text = "HttpEnabled: [".. tostring(HTTP.CheckHttp()) .."]"})
 
-				else
-					table.insert(tab,{Text = "Loadstring: [OFF]"})
-
-				end
-				if service.Workspace.StreamingEnabled == true then
-					table.insert(tab,{Text = "Streaming: [ON]"})
-				else
-					table.insert(tab,{Text = "Streaming: [OFF]"})
-				end
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Admins: "..adminnumber})
-				table.insert(tab,{Text = "Non Admins: "..nonnumber})
+				table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
+				table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Nil Players: "..nilplayers})
 				table.insert(tab,{Text = "Objects: "..#Variables.Objects})

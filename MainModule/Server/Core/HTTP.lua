@@ -30,12 +30,9 @@ return function(Vargs)
 	server.HTTP = {
 		Init = Init;
 		Service = service.HttpService;
+
 		CheckHttp = function()
-			local y,n = pcall(function()
-				local hs = service.HttpService
-				local get = hs:GetAsync('http://google.com')
-			end)
-			if y and not n then return true end
+			return pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com") == true
 		end;
 
 		WebPanel = {
