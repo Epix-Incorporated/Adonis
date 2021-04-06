@@ -18,11 +18,24 @@
 --		This is not designed to work in solo mode.				--
 ----------------------------------------------------------------------------------------
 
-local print = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: INFO: "..tostring(v)) end end
-local error = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader :: ERROR: "..tostring(v).."; Traceback:\n"..debug.traceback()) end end
-local warn = function(...) for i,v in pairs({...}) do warn(":: Adonis ServerLoader:: WARN: "..tostring(v)) end end
-local pcall = function(func, ...) local ran, rerror = pcall(func, ...) if not ran then error(rerror) end return ran, rerror end
-local AbortLoad = function(Reason) warn("Adonis aborted loading. Reason: "..tostring(Reason)) if script then script:Destroy() end return false end
+local function outputMessage(outputType, outputMessage)
+    return warn(string.format(":: Adonis ServerLoader :: %s: %s"), outputType, outputMessage)
+end
+
+local function pcall(testFunction, ...)
+    local success, returnValue = pcall(testFunction, ...)
+
+    if not success then
+        return outputMessage("ERROR", returnValue)
+    end
+
+    return success, returnValue
+end
+
+local function initiateAbort(abortReason)
+    outputMessage("ABORTING", string.format("With the reason of %s", abortReason))
+    return script:Destroy()
+end
 
 if _G.__Adonis_MUTEX and type(_G.__Adonis_MUTEX)=="string" then
 	return AbortLoad("\n-----------------------------------------------"
@@ -154,7 +167,6 @@ pcall(load)
 --___________________________________________________________________________________________--
 --___________________________________________________________________________________________--
 																																																							--]]
-
 
 
 
