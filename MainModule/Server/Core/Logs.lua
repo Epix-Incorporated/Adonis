@@ -340,17 +340,21 @@ return function(Vargs)
 				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 
---[[
-
+				--[[
 				if workspace.AllowThirdPartySales == true then
 					table.insert(tab,{Text = "Third Party Sales: [ON]"})
 				else
 					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
 				end
-]]
-				table.insert(tab,{Text = "LoadstringEnabled: [".. tostring(pcall(loadstring, "")) .."]"})
-				table.insert(tab,{Text = "StreamingEnabled: [".. tostring(workspace.StreamingEnabled) .."]"})
-				table.insert(tab,{Text = "HttpEnabled: [".. tostring(HTTP.CheckHttp()) .."]"})
+				]]
+				
+				local LoadstringEnabled = pcall(loadstring, "") and "ON" or "OFF"
+				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
+				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
+
+				table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
+				table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
+				table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
 
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
