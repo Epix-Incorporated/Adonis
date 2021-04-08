@@ -22,6 +22,8 @@ local function outputMessage(outputType, outputMessage)
     return warn(string.format(":: Adonis ServerLoader :: %s: %s"), outputType, outputMessage)
 end
 
+local OldWarn = warn local warn = function(...) OldWarn(:: Adonis ServerLoader:: WARN: ", ...) end
+
 local function pcall(testFunction, ...)
     local success, returnValue = pcall(testFunction, ...)
 
@@ -33,7 +35,7 @@ local function pcall(testFunction, ...)
 end
 
 local function initiateAbort(abortReason)
-    outputMessage("ABORTING", string.format("With the reason of %s", abortReason))
+    outputMessage("ABORTING", string.format("Reason: %s", abortReason))
     return script:Destroy()
 end
 
@@ -82,7 +84,7 @@ local Data = {
 	Dropper = Dropper;
 	Runner = Runner;
 
-		ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
+	ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
 	LoaderID = tonumber('23735'..'05175');
 }
 
