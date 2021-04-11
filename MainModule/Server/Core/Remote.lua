@@ -115,11 +115,11 @@ return function(Vargs)
 					DataStore = true;
 					DataStoreKey = true;
 
-					Trello_Enabled = true;	
+					Trello_Enabled = true;
 					Trello_PrimaryBoard = true;
 					Trello_SecondaryBoards = true;
 					Trello_AppKey = true;
-					Trello_Token = true; 
+					Trello_Token = true;
 
 					--G_Access = true;
 					--G_Access_Key = true;
@@ -130,12 +130,12 @@ return function(Vargs)
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Settings[set] and not (blocked[set] and not level>=5) then 
+						if Settings[set] and not (blocked[set] and not level>=5) then
 							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Settings[setting] and not (blocked[setting] and not level>=5) then 
+					if Settings[setting] and not (blocked[setting] and not level>=5) then
 						ret = Settings[setting]
 					end
 				end
@@ -169,7 +169,7 @@ return function(Vargs)
 						DataStoreKey = true;
 						DataStoreEnabled = true;
 
-						--Trello_Enabled = true;	
+						--Trello_Enabled = true;
 						--Trello_PrimaryBoard = true;
 						--Trello_SecondaryBoards = true;
 						Trello_AppKey = true;
@@ -184,8 +184,8 @@ return function(Vargs)
 						OnStartup = true;
 						OnSpawn = true;
 						OnJoin = true;
-						
-						CustomRanks = true; -- Not supported yet 
+
+						CustomRanks = true; -- Not supported yet
 					}
 
 					for setting,value in pairs(sets.Settings) do
@@ -251,20 +251,20 @@ return function(Vargs)
 				end
 				return resp
 			end;
-			
+
 			UpdateAliases = function(p, args)
 				local aliases = args[1] or {};
-				
+
 				if type(aliases) == "table" then
 					local data = Core.GetPlayer(p)
-					
+
 					--// check for stupid stuff
 					for i,v in next,aliases do
 						if type(i) ~= "string" or type(v) ~= "string" then
 							aliases[i] = nil
 						end
 					end
-					
+
 					data.Aliases = aliases;
 				end
 			end;
@@ -401,7 +401,7 @@ return function(Vargs)
 						})
 
 						local func,err = Core.Loadstring(args[1], newenv)
-						if func then 
+						if func then
 							func()
 						else
 							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(err:match(":(.*)") or err))
@@ -512,36 +512,6 @@ return function(Vargs)
 		};
 
 		UnEncrypted = {
-			AddReplication = function(p,action,obj,data)
-				local na = "_SERVER"
-				local datat
-
-				if p then na = p.Name end
-				if action == "Created" then
-					--local obj = data.obj
-					local name = data.name
-					local class = data.class
-					local parent = data.parent
-					local path = data.path
-					if not obj then
-						datat = {Action=action,Parent=parent,ClassName=class,Player=na,Object=obj,Name=name,Path=path}
-					end
-				elseif action == "Destroyed" then
-					--local obj = data.obj
-					local name = data.name
-					local class = data.class
-					local parent = data.parent
-					local path = data.path
-					if obj and obj.Parent then
-						datat = {Action=action,Parent=parent,ClassName=class,Player=na,Object=obj,Name=name,Path=path}
-					end
-				end
-
-				if datat then
-					Logs.AddLog(Logs.Replications,datat)
-				end
-			end;
-
 			TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
@@ -605,7 +575,7 @@ return function(Vargs)
 				service.Events[tostring(args[1])..p.userId]:Fire(unpack(args,2))
 			end;
 
-			SaveTableAdd = function(p,args) 
+			SaveTableAdd = function(p,args)
 				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
@@ -621,7 +591,7 @@ return function(Vargs)
 				end
 			end;
 
-			SaveTableRemove = function(p,args) 
+			SaveTableRemove = function(p,args)
 				if Admin.GetLevel(p)>=4 then
 					local tab = args[1]
 					local value = args[2]
@@ -637,7 +607,7 @@ return function(Vargs)
 				end
 			end;
 
-			SaveSetSetting = function(p,args) 
+			SaveSetSetting = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local setting = args[1]
 					local value = args[2]
@@ -663,14 +633,14 @@ return function(Vargs)
 				end
 			end;
 
-			ClearSavedSettings = function(p,args) 
+			ClearSavedSettings = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings",{p})
 				end
 			end;
 
-			SetSetting = function(p,args) 
+			SetSetting = function(p,args)
 				if Admin.GetLevel(p) >= 4 then
 					local setting = args[1]
 					local value = args[2]
@@ -751,7 +721,7 @@ return function(Vargs)
 
 			ProcessCommand = function(p,args)
 				if Process.RateLimit(p, "Command") then
-					Process.Command(p,args[1],{Check=true})	
+					Process.Command(p,args[1],{Check=true})
 				elseif Process.RateLimit(p, "RateLog") then
 					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
@@ -801,7 +771,7 @@ return function(Vargs)
 		Send = function(p,com,...)
 			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
 			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
+			if keys and keys.RemoteReady == true then
 				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 			end
 		end;
@@ -817,7 +787,7 @@ return function(Vargs)
 
 		Get = function(p,com,...)
 			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
+			if keys and keys.RemoteReady == true then
 				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
 				if type(ret) == "table" then
 					return unpack(ret);
@@ -829,7 +799,7 @@ return function(Vargs)
 
 		OldGet = function(p, com, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
-			if keys and keys.RemoteReady == true then 
+			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = Functions:GetRandom()
 				local waiter = service.New("BindableEvent") -- issue with service.Events:Wait()??????
@@ -867,7 +837,7 @@ return function(Vargs)
 		CheckClient = function(p)
 			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
 			if ran and ret == Remote.Clients[tostring(p.UserId)].Special then
-				return true 
+				return true
 			else
 				return false
 			end
@@ -974,7 +944,7 @@ return function(Vargs)
 			Remote.KillSession(p,type)
 			Remote.Sessions[index] = data
 		end;
-		
+
 		GetSession = function(p,type)
 			for i,v in pairs(Remote.Sessions) do
 				if v.Type == type and v.Player == p then
@@ -982,7 +952,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		KillSession = function(p,type)
 			for i,v in pairs(Remote.Sessions) do
 				if v.Type == type and v.Player == p then
@@ -1001,7 +971,7 @@ return function(Vargs)
 
 		Encrypt = function(str, key, cache)
 			local cache = cache or Remote.EncodeCache or {}
-			if not key or not str then 
+			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
@@ -1028,8 +998,8 @@ return function(Vargs)
 
 		Decrypt = function(str, key, cache)
 			local cache = cache or Remote.DecodeCache or {}
-			if not key or not str then 
-				return str 
+			if not key or not str then
+				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
@@ -1057,7 +1027,7 @@ return function(Vargs)
 		--// Moldy
 		Encrypt = function(str, key, cache)
 			local cache = cache or Remote.EncodeCache or {}
-			if not key or not str then 
+			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
@@ -1072,7 +1042,7 @@ return function(Vargs)
 				local byte = function(str, pos)
 					return tobyte(sub(str, pos, pos))
 				end
-				
+
 				for i = 1,len(str) do
 					if i%len(str) > 0 then
 						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
@@ -1088,18 +1058,18 @@ return function(Vargs)
 						end
 					end
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
 			end
 		end;
-		
+
 		Decrypt = function(str, key, cache)
 			local cache = cache or Remote.DecodeCache or {}
-			if not key or not str then 
-				return str 
+			if not key or not str then
+				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
@@ -1113,7 +1083,7 @@ return function(Vargs)
 				local byte = function(str, pos)
 					return tobyte(sub(str, pos, pos))
 				end
-				
+
 				for i = 1,len(str) do
 					if i%len(str) > 0 then
 						if byte(str, i) + byte(key, (i%len(key))+1) > 255 then
@@ -1129,7 +1099,7 @@ return function(Vargs)
 						end
 					end
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
