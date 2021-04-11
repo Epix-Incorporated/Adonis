@@ -80,7 +80,13 @@ return function(Vargs, env)
 
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				Remote.MakeGui(plr,"List",
-					{Title = "Date",Table = tab, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
+					{
+						Title = "Date",
+						Table = tab,
+						Update = 'DateTime',
+						AutoUpdate = 59,
+						Size = {270, 390};
+					})
 			end
 		};
 
@@ -6252,7 +6258,7 @@ return function(Vargs, env)
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Moderator";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local function checkSafeChat(player)
 					local textToFilter = "1234"

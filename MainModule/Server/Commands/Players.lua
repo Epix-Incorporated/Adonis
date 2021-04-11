@@ -3,11 +3,11 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		ViewCommands = {
 			Prefix = Settings.Prefix;
@@ -47,7 +47,7 @@ return function(Vargs, env)
 				)
 			end
 		};
-		
+
 		Notepad = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notepad","stickynote"};
@@ -101,7 +101,7 @@ return function(Vargs, env)
 				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
 			end
 		};
-		
+
 		ClientTab = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"client";"clientsettings","playersettings"};
@@ -598,7 +598,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
-		
+
 		GetScript = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getscript";"getadonis"};
@@ -765,7 +765,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Agents = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"agents";"trelloagents";"showagents";};
@@ -798,7 +798,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		ChangeLog = {
 			Prefix = Settings.Prefix;
 			Commands = {"changelog";"changes";};
@@ -813,7 +813,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		Quote = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"quote";"inspiration";"randomquote";};
@@ -825,7 +825,7 @@ return function(Vargs, env)
 				Functions.Message('Random Quote',quotes[math.random(1,#quotes)],{plr})
 			end
 		};
-		
+
 		Usage = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"usage";};
@@ -891,7 +891,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ScriptInfo = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"info";"about";"userpanel";};
@@ -917,7 +917,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
 			end
 		};
-		
+
 		Invite = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"invite";"invitefriends"};
@@ -925,12 +925,12 @@ return function(Vargs, env)
 			Description = "Invite your friends into the game";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Player";
+			AdminLevel = "Players";
 			Function = function(plr,args)
 				game:GetService("SocialService"):PromptGameInvite(plr)
 			end
 		};
-	
+
 		OnlineFriends = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"onlinefriends";"friendsonline";};
@@ -938,12 +938,12 @@ return function(Vargs, env)
 			Description = "Shows a list of your friends who are currently online";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Player";
+			AdminLevel = "Players";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"Friends")
 			end
 		};
-		
+
 		GetPremium = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
@@ -956,7 +956,7 @@ return function(Vargs, env)
 				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
 			end
 		};
-		
+
 		AddFriend = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"addfriend";"friendrequest";"sendfriendrequest";};
@@ -972,7 +972,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-	
+
 		UnFriend = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unfriend";"removefriend";};
@@ -989,9 +989,9 @@ return function(Vargs, env)
 				end
 			end
 		};
-	
+
 		DevConsole = {
-			Prefix = Settings.Prefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"devconsole";"developerconsole";"opendevconsole";};
 			Args = {};
 			Description = "Opens the Roblox developer console";
@@ -999,9 +999,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
-				end
+				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
 	}
