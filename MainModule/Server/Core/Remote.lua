@@ -524,7 +524,6 @@ return function(Vargs)
 
 		Commands = {
 			GetReturn = function(p,args)
-				print("THE CLIENT IS ASKING US FOR A RETURN")
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
@@ -534,15 +533,12 @@ return function(Vargs)
 					logError(p,retable[2])
 					Remote.Send(p, "GiveReturn", key, "__ADONIS_RETURN_ERROR", retable[2])
 				else
-					print("SENT THEM A RETURN")
 					Remote.Send(p, "GiveReturn", key, unpack(retable,2))
 				end
 			end;
 
 			GiveReturn = function(p,args)
-				print("THE CLIENT GAVE US A RETURN");
 				if Remote.PendingReturns[args[1]] then
-					print("VALID PENDING RETURN");
 					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
