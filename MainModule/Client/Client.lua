@@ -439,12 +439,12 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			delay(5, function() service.StartLoop("ClientCheck",30,client.Core.CheckClient,true) end)
 
 			--wait()
-			local settings = client.Remote.Get("Setting",{"G_API","G_Access","G_Access_Key","G_Access_Perms","Allowed_API_Calls","HelpButtonImage"})
+			local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
 			if settings then
 				client.G_API = settings.G_API
-				client.G_Access = settings.G_Access
-				client.G_Access_Key = settings.G_Access_Key
-				client.G_Access_Perms = settings.G_Access_Perms
+				--client.G_Access = settings.G_Access
+				--client.G_Access_Key = settings.G_Access_Key
+				--client.G_Access_Perms = settings.G_Access_Perms
 				client.Allowed_API_Calls = settings.Allowed_API_Calls
 				client.HelpButtonImage = settings.HelpButtonImage
 			else
