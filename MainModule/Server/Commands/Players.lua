@@ -263,14 +263,14 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if plr.Character then
 					for k,p in pairs(plr.Character:children()) do
-						if p:IsA("Part") then
+						if p:IsA("BasePart") then
 							if args[1] then
 								local str = BrickColor.new('Institutional white').Color
 								local teststr = args[1]
 								if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
 								p.BrickColor = str
 							end
-							p.Material = "Neon"
+							p.Material = Enum.Material.Neon
 						end
 					end
 				end
