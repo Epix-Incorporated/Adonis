@@ -7,6 +7,7 @@ return {
 	"*Disabled AutoLocalization for Adonis UI elements";
 	"*Removed some debug prints and debug/old code";
 	"*Fixed some typos";
+	"*Minor bug/security changes";
 	"(Git/happyman090) Fixed donor neon command";
 	"(Git/Expertcoderz) Removed 'besties' from !usage";
 	"(Git/fxeP1) Updated ServerInfo command, HTTP.CheckHttp, and RunCommandAsPlayer";
