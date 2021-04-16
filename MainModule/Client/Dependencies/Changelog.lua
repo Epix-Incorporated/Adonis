@@ -1,9 +1,19 @@
 return {
-	"Version: 215";
+	"Version: 216";
 	"*Drag edges to expand*";
 	"";
-	"[TBD (WIP)]";
+	"[4.16.2021 14:55 EST]";
 	"*Owners are now HeadAdmins; This change was done as Owners don't really \"Own\" anything and thus makes no sense";
+	"*Disabled AutoLocalization for Adonis UI elements";
+	"*Removed some debug prints and debug/old code";
+	"*Fixed some typos";
+	"(Git/happyman090) Fixed donor neon command";
+	"(Git/Expertcoderz) Removed 'besties' from !usage";
+	"(Git/fxeP1) Updated ServerInfo command, HTTP.CheckHttp, and RunCommandAsPlayer";
+	"(Git/Expercoderz) Added :promptpremiumpurchase <player>";
+	"(Git/Expertcoderz) Added :inspect <player>";
+	"(Git/Expertcoderz) Added :promptinvite <player>";
+	"(Git/Expertcoderz) Added !invite, !onlinefriends, !getpremium, !addfriend <player>, !unfriend <player>, !devconsole";
 	"";
 	"[3.25.2021 13:40 EST]";
 	"*Security patch";
