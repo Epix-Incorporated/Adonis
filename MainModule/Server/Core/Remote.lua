@@ -122,7 +122,7 @@ return function(Vargs)
 					Trello_Token = true;
 
 					--G_Access = true;
-					--G_Access_Key = true;
+					G_Access_Key = true;
 					--G_Access_Perms = true;
 					--Allowed_API_Calls = true;
 				}
