@@ -2,10 +2,10 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX687CA832DD2B48748F2570E0504A7C1A">
+	<Item class="ScreenGui" referent="RBX742561C0545F4502AF868EFE62490EEF">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
-			<bool name="AutoLocalize">true</bool>
+			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">true</bool>
 			<bool name="IgnoreGuiInset">false</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="TextLabel" referent="RBX68BD55159D1C4B7C94B15C1E48CB648E">
+		<Item class="TextLabel" referent="RBX6DB08F076E4A45619819847844F16A1D">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -24,7 +24,7 @@
 					<Y>0</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
+				<bool name="AutoLocalize">false</bool>
 				<token name="AutomaticSize">0</token>
 				<Color3 name="BackgroundColor3">
 					<R>0.380392194</R>
@@ -44,6 +44,7 @@
 				<token name="Font">1</token>
 				<int name="LayoutOrder">0</int>
 				<float name="LineHeight">1</float>
+				<int name="MaxVisibleGraphemes">-1</int>
 				<string name="Name">TextLabel</string>
 				<Ref name="NextSelectionDown">null</Ref>
 				<Ref name="NextSelectionLeft">null</Ref>
@@ -92,7 +93,7 @@
 				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBX2998BD9BC8C94C55A12673D7B9E95BC6">
+		<Item class="Frame" referent="RBXB816145E4641409D82AF39ACA9572C3C">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -100,7 +101,7 @@
 					<Y>0</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
+				<bool name="AutoLocalize">false</bool>
 				<token name="AutomaticSize">0</token>
 				<Color3 name="BackgroundColor3">
 					<R>0</R>
@@ -147,19 +148,19 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX7358EF04FCAF437DA61FC8B6308F5FD1">
+		<Item class="Folder" referent="RBX136D05355B414424AEC622E6E2A89905">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXD1185F137A6D463994153EC415A7A036">
+			<Item class="ModuleScript" referent="RBXF6F922249BE84733870BAC811AB31A2E">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{29D46FEA-F544-40D0-A6D5-AD88010AF0C8}</string>
+					<string name="ScriptGuid"></string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -213,7 +214,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX178AB55324354305B6DCE1FDC715E343">
+			<Item class="BoolValue" referent="RBX414A292551D7457FBF25F7F5719B6794">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -222,7 +223,7 @@ end]]></ProtectedString>
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX1E2AF911C8E743A086726BE46B99B90D">
+			<Item class="BoolValue" referent="RBX7F58C43D511645E4B98F10D73D93B03D">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
