@@ -1,8 +1,3 @@
--- Expertcoder2
--- Created 20/03/2021
--- Updated 28/03/2021
-
-
 client = nil
 service = nil
 
@@ -89,6 +84,10 @@ return function(data)
 
 	local friendstab = tabFrame:NewTab("Friends", {
 		Text = "Friends"
+	})
+	
+	local groupstab = tabFrame:NewTab("Friends", {
+		Text = "Groups"
 	})
 
 	local adonistab = tabFrame:NewTab("Adonis", {
@@ -262,10 +261,66 @@ return function(data)
 			Size = UDim2.new(1, -10, 0, 25);
 			Position = UDim2.new(0, 5, 0, 5);
 			BackgroundTransparency = 0.5;
-			Text = friendCount.." Friends | "..onlineCount.." Online";
+			Text = friendCount.." Friend(s) | "..onlineCount.." Online";
 		})
 
 		friendstab:ResizeCanvas(false, true, false, false, 5, 5)
+	end
+	
+	do
+
+		local rawGroups = data.Groups
+		local sortedGroups = {}
+		local groupInfoRef = {}
+		for _, groupInfo in pairs(rawGroups) do
+			table.insert(sortedGroups, groupInfo.Name)
+			groupInfoRef[groupInfo.Name] = {Id=groupInfo.Id;Rank=groupInfo.Rank;Role=groupInfo.Role;IsPrimary=groupInfo.IsPrimary;EmblemUrl=groupInfo.EmblemUrl}
+		end
+		table.sort(sortedGroups)
+		
+		local i = 2
+		local groupCount = 0
+		local ownCount = 0
+		for _, groupName in ipairs(sortedGroups) do
+			local groupInfo = groupInfoRef[groupName]
+			groupCount = groupCount + 1
+			if groupInfo.Rank == 255 then
+				ownCount = ownCount + 1
+			end
+			local entry = groupstab:Add("TextLabel", {
+				Text = "             "..groupName.." ";
+				ToolTip = "ID: "..groupInfo.Id.." | Rank: "..groupInfo.Rank.." | Is Primary Group: "..boolToStr(groupInfo.IsPrimary);
+				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+				Size = UDim2.new(1, -10, 0, 30);
+				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+				TextXAlignment = "Left";
+			})
+			entry:Add("TextLabel", {
+				Text = " "..groupInfo.Role.."  ";
+				BackgroundTransparency = 1;
+				Size = UDim2.new(0, 120, 1, 0);
+				Position = UDim2.new(1, -120, 0, 0);
+				TextXAlignment = "Right";
+			})
+			spawn(function()
+				entry:Add("ImageLabel", {
+					Image = groupInfo.EmblemUrl;
+					BackgroundTransparency = 1;
+					Size = UDim2.new(0, 30, 0, 30);
+					Position = UDim2.new(0, 0, 0, 0);
+				})
+			end)
+			i = i + 1
+		end
+
+		groupstab:Add("TextLabel", {
+			Size = UDim2.new(1, -10, 0, 25);
+			Position = UDim2.new(0, 5, 0, 5);
+			BackgroundTransparency = 0.5;
+			Text = "Member of "..#sortedGroups-ownCount.." groups | Owner of "..ownCount.." groups";
+		})
+
+		groupstab:ResizeCanvas(false, true, false, false, 5, 5)
 	end
 
 	do
