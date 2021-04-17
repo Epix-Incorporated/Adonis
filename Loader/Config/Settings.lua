@@ -56,7 +56,7 @@ local descs = {}
 		settings.Moderators = {"Group:1029943:134","BobJenkins123"}
 
 
-		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/owners ;p
+		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/HeadAdmins ;p
 
 
 		--// Admins
@@ -66,7 +66,7 @@ local descs = {}
 				   or is in group 181 in the rank 255, or owns the item belonging to the ID 1234567 a moderator
 
 				If I wanted to give the rank 121 in group 181 Owner admin I would do:
-				   settings.Owners = {"Group:181:121"}
+				   settings.HeadAdmins = {"Group:181:121"}
 				   See? Not so hard is it?
 
 				If I wanted to add group 181 and all ranks in it to the :slock whitelist I would do;
@@ -79,9 +79,9 @@ local descs = {}
 		--// Command Permissions
 
 			You can set the permission level for specific commands using setting.Permissions
-			If I wanted to make it so only owners+ can use :ff player then I would do:
+			If I wanted to make it so only HeadAdmins+ can use :ff player then I would do:
 
-				settings.Permissions = {":ff:Owners"}
+				settings.Permissions = {":ff:HeadAdmins"}
 
 				:ff is the Command ":ff scel" and 3 is the NewLevel
 
@@ -89,7 +89,7 @@ local descs = {}
 					Players
 					Moderators
 					Admins
-					Owners
+					HeadAdmins
 					Creators
 
 				Note that when changing command permissions you MUST include the prefix;
@@ -118,7 +118,7 @@ local descs = {}
 			Lists:
 				Moderators			- Card Format: Same as settings.Moderators
 				Admins				- Card Format: Same as settings.Admins
-				Owners				- Card Format: Same as settings.Owners
+				HeadAdmins				- Card Format: Same as settings.HeadAdmins
 				Creators			- Card Format: Same as settings.Creators
 				Agents				- Card Format: Same as settings.Admins
 				Banlist				- Card Format: Same as settings.Banned
@@ -147,7 +147,7 @@ local descs = {}
 
 	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Owners = {}       	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.HeadAdmins = {}   -- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -257,7 +257,7 @@ local descs = {}
 
 	descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Admins = [[ Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
-	descs.Owners = [[ Head Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
+	descs.HeadAdmins = [[ Head Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Banned = [[ List of people banned from the game; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Muted = [[ List of people muted; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -346,7 +346,7 @@ local descs = {}
 		" ";
 		"Moderators";
 		"Admins";
-		"Owners";
+		"HeadAdmins";
 		"Creators";
 		"Banned";
 		"Muted";

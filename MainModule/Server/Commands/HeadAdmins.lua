@@ -16,7 +16,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :undataban";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
 				local time = args[2] or '60'
 				assert(args[1] and args[2], "Argument missing or nil")
@@ -67,7 +67,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "UnBan";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1], "Argument missing or nil")
 				local timebans = Core.Variables.TimeBans or {}
@@ -92,7 +92,7 @@ return function(Vargs, env)
 			Commands = {"gameban", "saveban", "databan"};
 			Args = {"player", "reason"};
 			Description = "Bans the player from the game (Saves)";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -111,7 +111,7 @@ return function(Vargs, env)
 			Commands = {"ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1], true)
 				if ret then
@@ -127,7 +127,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr, args, data)
 				local sendLevel = data.PlayerData.Level
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -155,7 +155,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Adds the player to a custom rank set in settings.CustomRanks; Does not save";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
 
@@ -178,7 +178,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes the player from a custom rank set in settings.CustomRanks; Does not save";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
 
@@ -203,7 +203,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows custom ranks";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local tab = {}
 				service.Iterate(Settings.CustomRanks,function(rank,tab)
@@ -218,7 +218,7 @@ return function(Vargs, env)
 			Commands = {"globalmessage","gm","globalannounce"};
 			Args = {"message"};
 			Description = "Sends a global message to all servers";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Filter = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
@@ -237,7 +237,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
@@ -253,7 +253,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Views the specified Trello list from the board set in Settings.";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
@@ -275,7 +275,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"CreateCard")
 			end
@@ -286,7 +286,7 @@ return function(Vargs, env)
 			Commands = {"fullclear";"clearinstances";"fullclr";};
 			Args = {};
 			Description = "Removes any instance created server-side by Adonis; May break things";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local objects = service.GetAdonisObjects()
 
@@ -308,7 +308,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Changes the backup for the restore map command to the map's current state";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if plr then
 					Functions.Hint('Updating Map Backup...',{plr})
@@ -363,7 +363,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Lets you explore the game, kinda like a file browser";
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"Explorer")
 			end
@@ -374,12 +374,12 @@ return function(Vargs, env)
 			Commands = {"dex";"dexexplorer";"dexexplorer"};
 			Args = {};
 			Description = "Lets you explore the game using Dex [Credit to Raspberry Pi/Raspy_Pi/raspymgx/OpenOffset(?)][Useless buttons disabled]";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
 			end
 		};
-																		
+
 		PromptInvite = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptinvite";"inviteprompt";"forceinvite"};
@@ -401,7 +401,7 @@ return function(Vargs, env)
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if not Core.PanicMode then
 					local logs = Core.GetData("ShutdownLogs") or {}

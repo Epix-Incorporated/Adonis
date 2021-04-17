@@ -359,6 +359,11 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	locals.Settings = server.Settings
 	locals.CodeName = server.CodeName
 
+	--// Old loader compatability
+	if server.Settings.Owners and not server.Settings.HeadAdmins then
+		server.Settings.HeadAdmins = server.Settings.Owners;
+	end
+
 	if server.Settings.HideScript and data.Model then
 		data.Model.Parent = nil
 		script:Destroy()
@@ -504,7 +509,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.UI end
 
 	--// Prepare the client loader
-	--server.Core.PrepareClient()	
+	--server.Core.PrepareClient()
 
 	--// Add existing players in case some are already in the server
 	for index,player in next,service.Players:GetPlayers() do

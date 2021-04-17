@@ -2,10 +2,10 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX817A509DFB9547E4B93310E43A62D5B2">
+	<Item class="ScreenGui" referent="RBX76AC839D4C20408F9434176F9716A162">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
-			<bool name="AutoLocalize">true</bool>
+			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">true</bool>
 			<bool name="IgnoreGuiInset">false</bool>
@@ -16,14 +16,14 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX5642AC460FED4BD99AC18014C9A64712">
+		<Item class="Folder" referent="RBX57876111A42848DCA6EF71D00619A189">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBX03340B00F5DA4601AED90F87DAECABF3">
+			<Item class="BoolValue" referent="RBXA100D6DFE6E848D3A6F417D39D9440D1">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -32,12 +32,12 @@
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX24FD196C7F434A62BEC76EFC768D90E0">
+			<Item class="ModuleScript" referent="RBX1F243214746C4578B03608DBF86108F2">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{A21B3479-1EBC-4F88-AE64-37422ADAE7E6}</string>
+					<string name="ScriptGuid"></string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -425,7 +425,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX372D97B3954349E29BBBA8ECF933D4A5">
+			<Item class="BoolValue" referent="RBX92FCE1380F724FADA3329E282F8424D6">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -435,7 +435,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX563FF90E8E01435385C25A6994891765">
+		<Item class="Frame" referent="RBX5B120FC335084D58A2060FE4ACB32AA1">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -443,7 +443,7 @@ end]]></ProtectedString>
 					<Y>0</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
+				<bool name="AutoLocalize">false</bool>
 				<token name="AutomaticSize">0</token>
 				<Color3 name="BackgroundColor3">
 					<R>1</R>
@@ -489,7 +489,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX1D0BD776F7C249FF857CD3DCE3955520">
+			<Item class="Frame" referent="RBX31D94CEB574F48A08B801116D574E57D">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -497,7 +497,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>0.141176477</R>
@@ -543,7 +543,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBX3BC138DA70C24636B20675421F44E5E6">
+				<Item class="ScrollingFrame" referent="RBXBA8D3DAF7F7C4169B8302C5FD04E96EA">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -551,7 +551,7 @@ end]]></ProtectedString>
 							<Y>0</Y>
 						</Vector2>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">true</bool>
+						<bool name="AutoLocalize">false</bool>
 						<token name="AutomaticCanvasSize">0</token>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
@@ -624,7 +624,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX2C760022714541448501B94D285BC235">
+				<Item class="Frame" referent="RBX5D3F816243984C939F5BCFECBFC14FED">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -632,7 +632,7 @@ end]]></ProtectedString>
 							<Y>0</Y>
 						</Vector2>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">true</bool>
+						<bool name="AutoLocalize">false</bool>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
 							<R>0.639215708</R>
@@ -679,7 +679,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX07F83F5B5E6145BE855CA2CFD273B3E1">
+				<Item class="ImageLabel" referent="RBXBDB9306923AC4508AF643B85B3663EB1">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -687,7 +687,7 @@ end]]></ProtectedString>
 							<Y>0</Y>
 						</Vector2>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">true</bool>
+						<bool name="AutoLocalize">false</bool>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
 							<R>0.639215708</R>
@@ -768,7 +768,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX47EAA26A16C7413FA8C0D01379762FA6">
+		<Item class="Frame" referent="RBXE1C86480894442588CFDD7DE28D9B0EB">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -776,7 +776,7 @@ end]]></ProtectedString>
 					<Y>0</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
+				<bool name="AutoLocalize">false</bool>
 				<token name="AutomaticSize">0</token>
 				<Color3 name="BackgroundColor3">
 					<R>1</R>
@@ -822,7 +822,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBXA7283E28CE584969958C99DC3B29A85E">
+			<Item class="TextLabel" referent="RBXCE602A8C7C2D48F88ABF31950146A41A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -830,7 +830,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>1</R>
@@ -850,6 +850,7 @@ end]]></ProtectedString>
 					<token name="Font">3</token>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
 					<string name="Name">Stat</string>
 					<Ref name="NextSelectionDown">null</Ref>
 					<Ref name="NextSelectionLeft">null</Ref>
@@ -898,7 +899,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX419D9900FFD14FD68186A287BC56FC4E">
+			<Item class="TextLabel" referent="RBX6EE2D567BDAA44A3A6C6724EE6DA8A52">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -906,7 +907,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>1</R>
@@ -926,6 +927,7 @@ end]]></ProtectedString>
 					<token name="Font">3</token>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
 					<string name="Name">Nameb</string>
 					<Ref name="NextSelectionDown">null</Ref>
 					<Ref name="NextSelectionLeft">null</Ref>
@@ -974,7 +976,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBX1CBEADD70CD34B43BC7F3D4FF9A31CEE">
+			<Item class="ImageLabel" referent="RBX79E7E7584AFD4B9E97FD61E5016BCF2D">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -982,7 +984,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>1</R>
@@ -1061,7 +1063,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXC0E79D6F20CC4C3AAE8E7F7AC85F08D9">
+			<Item class="Frame" referent="RBXE842183B4733402C94D219B9ABD16C60">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1069,7 +1071,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>1</R>

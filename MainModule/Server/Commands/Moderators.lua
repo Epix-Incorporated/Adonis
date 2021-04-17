@@ -80,7 +80,13 @@ return function(Vargs, env)
 
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				Remote.MakeGui(plr,"List",
-					{Title = "Date",Table = tab, Update = 'DateTime', AutoUpdate = 59, Size = {270, 390};})
+					{
+						Title = "Date",
+						Table = tab,
+						Update = 'DateTime',
+						AutoUpdate = 59,
+						Size = {270, 390};
+					})
 			end
 		};
 
@@ -1590,26 +1596,22 @@ return function(Vargs, env)
 			Description = "Shows you information about the current server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local tab={}
-				local nilplayers=0
-				for i,v in pairs(service.NetworkServer:children()) do
+			Function = function(plr)
+				local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
+
+				for i,v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilplayers=nilplayers+1
+						nilplayers+=1
 					end
 				end
-				local nonnumber=0
-				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and not Admin.CheckAdmin(v:GetPlayer(),false) then
-						nonnumber=nonnumber+1
+				for i,v in pairs(service.Players:GetPlayers()) do
+					if Admin.CheckAdmin(v,false) then
+						adminnumber+=1
+					else
+						nonnumber+=1
 					end
 				end
-				local adminnumber=0
-				for i,v in pairs(service.NetworkServer:children()) do
-					if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(),false) then
-						adminnumber=adminnumber+1
-					end
-				end
+				
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
 				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
@@ -1618,31 +1620,26 @@ return function(Vargs, env)
 				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
 				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				if HTTP.CheckHttp() then
-					table.insert(tab,{Text = "HTTPService: [ON]"})
-				else
-					table.insert(tab,{Text = "HTTPService: [OFF]"})
-				end
-				if game.Workspace.AllowThirdPartySales == true then
+
+				--[[
+				if workspace.AllowThirdPartySales == true then
 					table.insert(tab,{Text = "Third Party Sales: [ON]"})
 				else
 					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
 				end
-				if pcall(function() loadstring("local hi = 'test'") end) then
-					table.insert(tab,{Text = "Loadstring: [ON]"})
+				]]
+				
+				local LoadstringEnabled = pcall(loadstring, "") and "ON" or "OFF"
+				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
+				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
+				
+				table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
+				table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
+				table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
 
-				else
-					table.insert(tab,{Text = "Loadstring: [OFF]"})
-
-				end
-				if service.Workspace.StreamingEnabled == true then
-					table.insert(tab,{Text = "Streaming: [ON]"})
-				else
-					table.insert(tab,{Text = "Streaming: [OFF]"})
-				end
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Admins: "..adminnumber})
-				table.insert(tab,{Text = "Non Admins: "..nonnumber})
+				table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
+				table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Nil Players: "..nilplayers})
 				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
@@ -1898,7 +1895,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"owners";"Moderators";};
+			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -1911,8 +1908,8 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Creator")
 				end
 
-				for i,v in pairs(Settings.Owners) do
-					table.insert(temptable,v .. " - Owner")
+				for i,v in pairs(Settings.HeadAdmins) do
+					table.insert(temptable,v .. " - Supervisor")
 				end
 
 				for i,v in pairs(Settings.Admins) do
@@ -1935,7 +1932,7 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Admin [Trello]")
 				end
 
-				for i,v in pairs(HTTP.Trello.Owners) do
+				for i,v in pairs(HTTP.Trello.HeadAdmins) do
 					table.insert(temptable,v .. " - Owner [Trello]")
 				end
 
@@ -1951,7 +1948,7 @@ return function(Vargs, env)
 					table.insert(temptable,v .. " - Admin [WebPanel]")
 				end
 
-				for i,v in pairs(HTTP.WebPanel.Owners) do
+				for i,v in pairs(HTTP.WebPanel.HeadAdmins) do
 					table.insert(temptable,v .. " - Owner [WebPanel]")
 				end
 
@@ -6244,7 +6241,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Inspect = {
 			Prefix = Settings.Prefix;
 			Commands = {"inspect";"playerinfo"};
@@ -6252,7 +6249,7 @@ return function(Vargs, env)
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Moderator";
+			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local function checkSafeChat(player)
 					local textToFilter = "1234"
@@ -6262,6 +6259,7 @@ return function(Vargs, env)
 						return true
 					end
 				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local isMuted = false
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
@@ -6269,16 +6267,28 @@ return function(Vargs, env)
 					else
 						isMuted = false
 					end
+
 					local isBanned = false
 					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
 						isBanned = true
 					else
 						isBanned = false
 					end
-					server.Remote.MakeGui(plr,"Inspect",{Target=v;SafeChat=checkSafeChat(v);CanChat=game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";AdminLevel="["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));IsDonor=service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);IsMuted=isMuted;IsBanned=isBanned;Code=game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";SourcePlace=v:GetJoinData().SourcePlaceId or "N/A";})
+
+					server.Remote.MakeGui(plr,"Inspect",{
+						Target = v;
+						SafeChat = checkSafeChat(v);
+						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
+						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
+						IsMuted = isMuted;
+						IsBanned = isBanned;
+						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
+						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
+					})
 				end
 			end
 		};
-	
+
 	}
 end

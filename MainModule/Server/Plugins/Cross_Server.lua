@@ -126,7 +126,7 @@ return function(Vargs)
 		Commands = {"crossserver","cross","allservers"};
 		Args = {"command"};
 		Description = "Runs the specified command string on all servers";
-		AdminLevel = "Owners";
+		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		Function = function(plr,args)
 			if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, args[1]) then

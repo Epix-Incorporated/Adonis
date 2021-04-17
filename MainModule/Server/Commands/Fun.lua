@@ -1186,7 +1186,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Call on the KFC dark prophet powers of chicken";
 			Fun = true;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr, args)
 				local hats = {}
 				local tempHats = {}
@@ -1238,7 +1238,7 @@ return function(Vargs, env)
 			Commands = {"tornado";"twister";};
 			Args = {"player";"optional time";};
 			Description = "Makes a tornado on the target player(s)";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -1337,7 +1337,7 @@ return function(Vargs, env)
 			Commands = {"nuke";};
 			Args = {"player";};
 			Description = "Nuke the target player(s)";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
 				local nukes = {}
@@ -1405,7 +1405,7 @@ return function(Vargs, env)
 			Commands = {"stopwildfire", "removewildfire", "unwildfire";};
 			Args = {};
 			Description = "Stops :wildfire from spreading further";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
 				Variables.WildFire = nil
@@ -1417,7 +1417,7 @@ return function(Vargs, env)
 			Commands = {"wildfire";};
 			Args = {"player";};
 			Description = "Starts a fire at the target player(s); Ignores locked parts and parts named 'BasePlate' or 'Baseplate'";
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
 				local finished = false
