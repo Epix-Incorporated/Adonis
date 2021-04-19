@@ -6,13 +6,13 @@
 --																																				  				 --
 -- Token Link:   			 	https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE     --
 -- Replace "YOUR_APP_KEY_HERE" with the App Key from https://trello.com/app-key																					 --
--- Trello API Remade by imskyyc for Kronos - original by Sceleratis / Davey_Bones for Adonis.																	 --
+-- Trello API Remade by imskyyc for Kronos and Adonis - original by Sceleratis / Davey_Bones for Adonis.																	 --
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) for i,v in pairs({...}) do warn("[Kronos TrelloAPI]: INFO: "..tostring(v)) end end
-local error = function(...) for i,v in pairs({...}) do warn("[Kronos TrelloAPI]: ERROR: "..tostring(v)) end end
-local warn = function(...) for i,v in pairs({...}) do warn("[Kronos TrelloAPI]: WARN: "..tostring(v)) end end
+local print = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: INFO: "..tostring(v)) end end
+local error = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: ERROR: "..tostring(v)) end end
+local warn = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: WARN: "..tostring(v)) end end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
