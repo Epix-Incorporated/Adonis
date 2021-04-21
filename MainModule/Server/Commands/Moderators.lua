@@ -6285,6 +6285,7 @@ return function(Vargs, env)
 						IsBanned = isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
 						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
 					})
 				end
 			end
