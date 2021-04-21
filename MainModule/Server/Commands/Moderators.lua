@@ -3498,6 +3498,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hum = v.Character:FindFirstChildWhichIsA("Humanoid")
+					if hum then
+						hum.Health = 0
+					end
 					v.Character:BreakJoints()
 				end
 			end
