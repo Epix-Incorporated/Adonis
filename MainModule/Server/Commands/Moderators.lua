@@ -1546,6 +1546,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if args[1] then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						Remote.Send(v,'Function','SetView','reset')
 					end
 				else
 					Remote.Send(plr,'Function','SetView','reset')
@@ -3558,7 +3559,7 @@ return function(Vargs, env)
 			Commands = {"trip";};
 			Args = {"player";"angle";};
 			Hidden = false;
-			Description = "Rotates the target player(s) by 180 degrees or the angle you server";
+			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
