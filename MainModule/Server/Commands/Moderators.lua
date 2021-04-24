@@ -3229,6 +3229,17 @@ return function(Vargs, env)
 							v.Character.Archivable = true
 							local cl = v.Character:Clone()
 							table.insert(Variables.Objects,cl)
+							local anim = cl:FindFirstChild("Animate")
+							if anim then
+								local Animate = v.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								Animate:ClearAllChildren()
+								for _,v in ipairs(anim:GetChildren()) do
+									v.Parent = Animate
+								end
+								Animate.Parent = cl
+								Animate.Disabled = false
+								anim:Destroy()
+							end
 							cl.Parent = game.Workspace
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
