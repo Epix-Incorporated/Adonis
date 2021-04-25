@@ -111,15 +111,12 @@ return function()
 		
 		Dizzy = function(speed)
 			service.StopLoop("DizzyLoop")
-			print("dizzy")
 			if speed then
-				print("start")
 				local cam = workspace.CurrentCamera
 				local last = tick()
 				local rot = 0
 				local flip = false
 				service.StartLoop("DizzyLoop","RenderStepped",function()
-					print("in loop")
 					local dt = tick() - last
 					if flip then
 						rot = rot+math.rad(speed*dt)
@@ -663,19 +660,6 @@ return function()
 			end
 		end;
 
-		LocalLighting = function(on)
-			if on then
-				service.StartLoop("LocalLighting","RenderStepped",function()
-					for prop,value in next,Variables.LightingSettings do
-						if service.Lighting[prop]~=nil then
-							service.Lighting[prop] = value
-						end
-					end
-				end)
-			else
-				service.StopLoop("LocalLighting")
-			end
-		end;
 
 		ChatMessage = function(msg,color,font,size)
 			local tab = {}
@@ -921,6 +905,12 @@ return function()
 				Variables.localSounds[tostring(audioId)]:Stop() 
 				Variables.localSounds[tostring(audioId)]:Destroy() 
 				Variables.localSounds[tostring(audioId)] = nil 
+			elseif audioId == "all" then
+				for i,v in pairs(Variables.localSounds) do
+					Variables.localSounds[i]:Stop() 
+					Variables.localSounds[i]:Destroy() 
+					Variables.localSounds[i] = nil 
+				end
 			end
 		end;
 

@@ -63,7 +63,7 @@ return function(Vargs)
 			warn("MODS NOW HAVE ACCESS TO PANIC COMMANDS SUCH AS :SHUTDOWN")
 
 			--[[
-			for i,v in pairs(service.Players:GetPlayers()) do 
+			for i,v in pairs(service.Players:GetPlayers()) do
 				cPcall(function()
 					v.Chatted:connect(function(msg)
 						Process.Chat(v,msg)
@@ -263,8 +263,8 @@ return function(Vargs)
 		PrepareClient = function()
 			if service.NetworkServer and server.Running then
 				local ran,err = pcall(function()
-					if Core.ClientLoader then 
-						pcall(function() Core.ClientLoaderEvent:Disconnect() service.Delete(Core.ClientLoader) end) 
+					if Core.ClientLoader then
+						pcall(function() Core.ClientLoaderEvent:Disconnect() service.Delete(Core.ClientLoader) end)
 					end
 
 					local loader = Deps.ClientLoader:Clone()
@@ -274,12 +274,12 @@ return function(Vargs)
 
 					loader.Parent = service.ReplicatedFirst
 					Core.ClientLoader = loader
-					Core.ClientLoaderEvent = loader.Changed:connect(function() 
+					Core.ClientLoaderEvent = loader.Changed:connect(function()
 						Core.PrepareClient()
 					end)
 				end)
 
-				if err or not ran then 
+				if err or not ran then
 					Core.Panic("Cannot load ClientLoader "..tostring(err))
 				end
 			end
@@ -303,7 +303,7 @@ return function(Vargs)
 				if not p.Parent then
 					return false
 				elseif not playerGui then
-					p:Kick("Loading Error: PlayerGui Missing (Waited 10 Minutes)") 
+					p:Kick("Loading Error: PlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
 
@@ -339,7 +339,7 @@ return function(Vargs)
 				end)
 
 				if not Core.PanicMode and not ok then
-					p:Kick("Loading Error [HookClient Error: "..tostring(err).."]") 
+					p:Kick("Loading Error [HookClient Error: "..tostring(err).."]")
 					return false
 				else
 					return true
@@ -467,7 +467,7 @@ return function(Vargs)
 					Code = data.Code;
 					Source = data.Source;
 					noCache = data.noCache;
-					runLimit = data.runLimit;	
+					runLimit = data.runLimit;
 				}
 			end)
 
@@ -498,9 +498,9 @@ return function(Vargs)
 			local ScriptType
 			local execCode = Functions.GetRandom()
 
-			if type == 'Script' then 
+			if type == 'Script' then
 				ScriptType = Deps.ScriptBase:Clone()
-			elseif type == 'LocalScript' then 
+			elseif type == 'LocalScript' then
 				ScriptType = Deps.LocalScriptBase:Clone()
 			end
 
@@ -548,7 +548,7 @@ return function(Vargs)
 
 				Core.UpdateData("SavedTables", function(sets)
 					sets = sets or {}
-					for i,v in next,sets do 
+					for i,v in next,sets do
 						if tab == v.Table then
 							if Functions.CheckMatch(v.Value,value) then
 								table.remove(sets,i)
@@ -562,14 +562,14 @@ return function(Vargs)
 				end)
 
 
-				Core.CrossServer("TableRemove", data);
+				Core.CrossServer("LoadData", "SavedTables");
 			elseif type == "TableAdd" then
 				local tab = data.Table
 				local value = data.Value
 				data.Time = os.time()
 				Core.UpdateData("SavedTables", function(sets)
 					sets = sets or {}
-					for i,v in next,sets do 
+					for i,v in next,sets do
 						if tab == v.Table then
 							if Functions.CheckMatch(v.Value,value) then
 								table.remove(sets,i)
@@ -581,7 +581,7 @@ return function(Vargs)
 					return sets
 				end)
 
-				Core.CrossServer("TableAdd", data);
+				Core.CrossServer("LoadData", "SavedTables");
 			end
 
 			Logs.AddLog(Logs.Script,{
@@ -672,14 +672,14 @@ return function(Vargs)
 			local ran,store = pcall(function() return service.DataStoreService:GetDataStore(Settings.DataStore:sub(1,50),"Adonis") end)
 
 			--[[
-			
+
 			--// Todo:
 			--// Implement reru's idea
 			--// AutoAssign a server to handle datastore updates
 			--// Cache all datastore updates
-			--// Update everything using one UpdateAsync per server every 30-60 seconds 
-			--// Have main server handle check for new data and update datastore keys accordingly			
-			
+			--// Update everything using one UpdateAsync per server every 30-60 seconds
+			--// Have main server handle check for new data and update datastore keys accordingly
+
 			if ran and store then
 				local original = store:GetObject()
 				local prepareTable; prepareTable = function(tab)
@@ -689,52 +689,52 @@ return function(Vargs)
 						for i,v in next,tab do
 							tab[i] = prepareTable(v)
 						end
-						
+
 						return setmetatable(tab,{
 							__newindex = function(old, ind, val)
 								table.insert(tabUpdates,{
-									
+
 								})
 							end
 						}), tabUpdates
 					else
 						return tab
 					end
-				end		
-				
+				end
+
 				store:SetSpecial("SetAsync", function(wrapped, key, value)
 					table.insert(updateCache, {
 						Key = key;
 						Time = os.time;
 						Value = value;
 					})
-					
+
 					keyCache[key] = value
 				end)
-				
+
 				store:SetSpecial("UpdateAsync", function(wrapped, key, func)
 					original:UpdateAsync(key, function(data)
 						local metaTab,tabUpdates = prepareTable(data)
 						local returns = func(metaTab)
 						if type(data) == "table" and tabUpdates then
-							 
+
 						end
 					end)
 				end)
-				
+
 				store:SetSpecial("GetAsync", function(wrapped, key)
 					if not keyCache[key] then
 						keyCache[key] = original:GetAsync(key)
 					end
-					
+
 					return keyCache[key]
 				end)
-				
+
 				store:SetSpecial("Update", function(wrapped)
 					lastUpdate = os.time()
 					keyCache = {}
 				end)
-				
+
 				service.StartLoop("DataUpdate",30,store.Update,true)
 			end--]]
 
@@ -769,7 +769,7 @@ return function(Vargs)
 		UpdateData = function(key, func)
 			if Core.DataStore then
 				local didUpdate = false;
-				local err = false; 
+				local err = false;
 
 				delay(120, function() didUpdate = true err = "Took too long" end)
 				service.Queue("DataStoreUpdateData".. tostring(key), function()
@@ -825,14 +825,14 @@ return function(Vargs)
 				end
 
 				if not key and not data then
-					if not SavedSettings then 
-						SavedSettings = {} 
-						Core.SaveData("SavedSettings",{}) 
+					if not SavedSettings then
+						SavedSettings = {}
+						Core.SaveData("SavedSettings",{})
 					end
 
-					if not SavedTables then 
-						SavedTables = {} 
-						Core.SaveData("SavedTables",{}) 
+					if not SavedTables then
+						SavedTables = {}
+						Core.SaveData("SavedTables",{})
 					end
 				end
 
@@ -853,8 +853,13 @@ return function(Vargs)
 					end
 				end
 
-				if SavedTables then	
+				if SavedTables then
 					for ind,tab in next,SavedTables do
+						--// Owners to HeadAdmins compatability
+						if tab.Table == "Owners" then
+							tab.Table = "HeadAdmins"
+						end
+
 						local parentTab = (tab.Parent == "Variables" and Core.Variables) or Settings
 						if (not Blacklist[tab.Table]) and parentTab[tab.Table] ~= nil then
 							if tab.Action == "Add" then
@@ -961,8 +966,8 @@ return function(Vargs)
 					local ind = args[2]
 					local targ
 
-					if API_Specific[ind] then 
-						targ = API_Specific[ind] 
+					if API_Specific[ind] then
+						targ = API_Specific[ind]
 					elseif server[ind] and Settings.Allowed_API_Calls[ind] then
 						targ = server[ind]
 					end
@@ -1033,8 +1038,8 @@ return function(Vargs)
 							if not exists then
 								module = require(Deps.Loadstring.FiOne:Clone())
 								table.insert(Core.ScriptCache,{
-									Script = rawget(getfenv(2), "script"); 
-									Source = data.Source; 
+									Script = rawget(getfenv(2), "script");
+									Source = data.Source;
 									Loadstring = module;
 									noCache = data.noCache;
 									runLimit = data.runLimit;
@@ -1055,9 +1060,9 @@ return function(Vargs)
 					end;
 				}, nil, nil, true);
 
-				CheckAdmin = service.MetaFunc(Admin.CheckAdmin); 
-				
-				IsMuted = service.MetaFunc(Admin.IsMuted); 
+				CheckAdmin = service.MetaFunc(Admin.CheckAdmin);
+
+				IsMuted = service.MetaFunc(Admin.IsMuted);
 
 				CheckDonor = service.MetaFunc(Admin.CheckDonor);
 

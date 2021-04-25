@@ -1,0 +1,21 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="ModuleScript" referent="RBXD82E4AFECF51405C8142C922539543B3">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">README</string>
+			<string name="ScriptGuid">{ED4805A5-4DFA-4CD0-9EB8-6FC6A1A3DA26}</string>
+			<ProtectedString name="Source"><![CDATA[--[[
+	This is just a placeholder file so GitHub doesn't ignore the Themes folder. 
+	
+	Current Documentation:
+	https://github.com/Sceleratis/Adonis/wiki
+--]]]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+	</Item>
+</roblox>

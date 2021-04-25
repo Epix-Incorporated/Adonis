@@ -29,7 +29,8 @@ return function()
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
 		Vector3int16, elapsedTime, require, table, type, wait, 
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
-		
+	
+	local UIFolder = client.UIFolder
 	local script = script
 	local service = service
 	local client = client
@@ -131,11 +132,11 @@ return function()
 			
 			function func(theme, name, depth)
 				local depth = (depth or 11) - 1
-				local folder = Deps.UI:FindFirstChild(theme) or Deps.UI.Default
+				local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = (baseValue and folder:FindFirstChild(name)) or Deps.UI.Default:FindFirstChild(name)
+					local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
 					
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
@@ -210,7 +211,7 @@ return function()
 			local defaults = {Desktop = "Default"; Mobile = "Mobilius"}
 			local themeData = themeData or Variables.LastServerTheme or defaults
 			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
-			local folder = Deps.UI:FindFirstChild(theme) or Deps.UI.Default
+			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 			local newGui, folder2, foundConf = UI.GetNew(theme, name)
 			
 			if newGui then

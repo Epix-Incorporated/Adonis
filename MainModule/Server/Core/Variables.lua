@@ -37,6 +37,7 @@ return function(Vargs)
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
 		DonorPass = {1348327,1990427,1911740,167686,98593};
+		WebPanel_Initiated = false;
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			OutdoorAmbient = service.Lighting.OutdoorAmbient;

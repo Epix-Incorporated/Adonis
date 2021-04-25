@@ -2,10 +2,10 @@
 -- Adonis Server --
 -------------------
 																																																																																						  --[[
-If you find bugs, typos, or ways to improve something please message me (Sceleratis/Davey_Bones) with 
-what you found so the script can be better. 
+If you find bugs, typos, or ways to improve something please message me (Sceleratis/Davey_Bones) with
+what you found so the script can be better.
 
-Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.	
+Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
 																																																																																							]]
 math.randomseed(os.time())
 
@@ -18,27 +18,27 @@ math.randomseed(os.time())
 --//   ...
 --//   "Hi." - Me
 
---// Holiday roooaaAaaoooAaaooOod 
-local _G, game, script, getfenv, setfenv, workspace, 
-getmetatable, setmetatable, loadstring, coroutine, 
-rawequal, typeof, print, math, warn, error,  pcall, 
-xpcall, select, rawset, rawget, ipairs, pairs, 
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-Vector3int16, elapsedTime, require, table, type, wait, 
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn = 
-	_G, game, script, getfenv, setfenv, workspace, 
-getmetatable, setmetatable, loadstring, coroutine, 
-rawequal, typeof, print, math, warn, error,  pcall, 
-xpcall, select, rawset, rawget, ipairs, pairs, 
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-Vector3int16, elapsedTime, require, table, type, wait, 
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
+--// Holiday roooaaAaaoooAaaooOod
+local _G, game, script, getfenv, setfenv, workspace,
+getmetatable, setmetatable, loadstring, coroutine,
+rawequal, typeof, print, math, warn, error,  pcall,
+xpcall, select, rawset, rawget, ipairs, pairs,
+next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+Vector3int16, elapsedTime, require, table, type, wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn =
+	_G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, elapsedTime, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
 
 
 local unique = {}
@@ -50,7 +50,7 @@ local service = {}
 local RbxEvents = {}
 local Debounces = {}
 local LoopQueue = {}
-local ErrorLogs = {} 
+local ErrorLogs = {}
 local RealMethods = {}
 local RunningLoops = {}
 local HookedEvents = {}
@@ -78,7 +78,7 @@ local GetEnv; GetEnv = function(env, repl)
 		__metatable = unique;
 	})
 	if repl and type(repl)=="table" then
-		for ind, val in next,repl do 
+		for ind, val in next,repl do
 			scriptEnv[ind] = val
 		end
 	end
@@ -140,10 +140,11 @@ local CleanUp = function()
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
 	service.Threads.StopAll()
-	for i,v in next,RbxEvents do 
-		print("Disconnecting event") 
-		v:Disconnect() 
-		table.remove(RbxEvents, i) 
+
+	for i,v in next,RbxEvents do
+		print("Disconnecting event")
+		v:Disconnect()
+		table.remove(RbxEvents, i)
 	end
 	--loader.Archivable = false
 	--loader.Disabled = true
@@ -157,7 +158,8 @@ local CleanUp = function()
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
 		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
 	end
-	warn'Unloading complete'
+
+	warn("Unloading complete")
 end;
 
 server = {
@@ -205,10 +207,10 @@ service = setfenv(require(Folder.Core.Service), GetEnv(nil, {server = server}))(
 		--print("Task error")
 		logError("Task", msg)
 	end
-end, function(c, parent, tab) 
+end, function(c, parent, tab)
 	if not isModule(c) and c ~= server.Loader and c ~= server.Dropper and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
 		tab.UnHook()
-	end 
+	end
 end, ServiceSpecific)
 
 --// Localize
@@ -239,14 +241,7 @@ BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
---// Wrap
-                                                                                                                                                                                                                                                                                                                                                            --[[for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val) end end
-                                                                                                                                                                                                                                                                                                                                                            script = service.Wrap(script)
-                                                                                                                                                                                                                                                                                                                                                            Enum = service.Wrap(Enum)
-                                                                                                                                                                                                                                                                                                                                                            game = service.Wrap(game)
-                                                                                                                                                                                                                                                                                                                                                            workspace = service.Wrap(workspace)
-                                                                                                                                                                                                                                                                                                                                                            Instance = {new = function(obj, parent) return service.Wrap(oldInstNew(obj, service.UnWrap(parent))) end}
-                                                                                                                                                                                                                                                                                                                                                            require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+--// Wrap                                                                                                                                                                                                                                                                                                                                                    require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual
@@ -254,6 +249,7 @@ rawequal = service.RawEqual
 --Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
+server.CommandModules = Folder.Commands;
 server.Client = Folder.Parent.Client;
 server.Dependencies = Folder.Dependencies;
 server.PluginsFolder = Folder.Plugins;
@@ -336,7 +332,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		_G["__Adonis_MODULE_MUTEX"] = "Running"
 	end
 
-	if not data or not data.Loader then 
+	if not data or not data.Loader then
 		warn("WARNING: MainModule loaded without using the loader;")
 	end
 
@@ -360,25 +356,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Threading = require(server.Deps.ThreadHandler)
 	server.Changelog = require(server.Client.Dependencies.Changelog)
 	server.Credits = require(server.Client.Dependencies.Credits)
-	server.Parser = require(server.Deps.Parser)
 	locals.Settings = server.Settings
 	locals.CodeName = server.CodeName
+
+	--// Old loader compatability
+	if server.Settings.Owners and not server.Settings.HeadAdmins then
+		server.Settings.HeadAdmins = server.Settings.Owners;
+	end
 
 	if server.Settings.HideScript and data.Model then
 		data.Model.Parent = nil
 		script:Destroy()
 	end
 
-	for setting,value in next,setTab.Settings do 
-		if server.Settings[setting] == nil then 
-			server.Settings[setting] = value 
-		end 
+	for setting,value in next,setTab.Settings do
+		if server.Settings[setting] == nil then
+			server.Settings[setting] = value
+		end
 	end
 
-	for desc,value in next,setTab.Descriptions do 
-		if server.Descriptions[desc] == nil then 
-			server.Descriptions[desc] = value 
-		end 
+	for desc,value in next,setTab.Descriptions do
+		if server.Descriptions[desc] == nil then
+			server.Descriptions[desc] = value
+		end
 	end
 
 	--// Load services
@@ -401,7 +401,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		"TestService";
 		"HttpService";
 		"InsertService";
-		"NetworkServer"		
+		"NetworkServer"
 		}do local temp = service[serv] end
 
 	--// Module LoadOrder List
@@ -419,11 +419,11 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	}
 
 	--// Load core modules
-	for ind,load in next,LoadingOrder do 
-		local modu = Folder.Core:FindFirstChild(load) 
-		if modu then 
+	for ind,load in next,LoadingOrder do
+		local modu = Folder.Core:FindFirstChild(load)
+		if modu then
 			LoadModule(modu,true,{script = script}, true) --noenv
-		end 
+		end
 	end
 
 	--// Initialize Cores
@@ -453,7 +453,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
 	server.LoadModule = LoadModule
 	server.ServiceSpecific = ServiceSpecific
-			
+
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
 
@@ -478,13 +478,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
 	end
 
-	if not server.FilteringEnabled then
-		service.RbxEvent(service.DataModel.DescendantAdded, server.Process.ObjectAdded)
-		service.RbxEvent(service.DataModel.DescendantRemoving, server.Process.ObjectRemoving)
-		service.RbxEvent(service.Workspace.DescendantAdded, server.Process.WorkspaceObjectAdded)
-		--service.RbxEvent(service.Workspace.DescendantRemoving, server.Process.WorkspaceObjectRemoving)
-	end
-
 	--// NetworkServer Events
 	if service.NetworkServer then
 		service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
@@ -496,27 +489,27 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		LoadModule(plugin, false, {script = plugin}, true); --noenv
 	end
 
-	for index,plugin in next,(data.ServerPlugins or {}) do 
+	for index,plugin in next,(data.ServerPlugins or {}) do
 		LoadModule(plugin, false, {script = plugin});
 	end
 
 	--// RemoteEvent Handling
-	server.Core.MakeEvent()	
+	server.Core.MakeEvent()
 	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-	service.JointsService.ChildRemoved:Connect(function(c) 
-		if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then 
+	service.JointsService.ChildRemoved:Connect(function(c)
+		if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
 			wait();
-			server.Core.MakeEvent() 
-		end 
+			server.Core.MakeEvent()
+		end
 	end)
 
 	--// Do some things
 	for com in next,server.Remote.Commands do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
 	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
-	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.Dependencies.UI end
+	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.UI end
 
 	--// Prepare the client loader
-	--server.Core.PrepareClient()	
+	--server.Core.PrepareClient()
 
 	--// Add existing players in case some are already in the server
 	for index,player in next,service.Players:GetPlayers() do
@@ -555,9 +548,9 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		for ind, music in next,server.Settings.MusicList or {} do table.insert(server.Variables.MusicList,music) end
 		for ind, music in next,server.Settings.InsertList or {} do table.insert(server.Variables.InsertList,music) end
 		for ind, cape in next,server.Settings.CapeList or {} do table.insert(server.Variables.Capes,cape) end
-		for ind, cmd in next,server.Settings.Permissions or {} do 
-			local com,level = cmd:match("^(.*):(.*)") 
-			if com and level then 
+		for ind, cmd in next,server.Settings.Permissions or {} do
+			local com,level = cmd:match("^(.*):(.*)")
+			if com and level then
 				if level:find(",") then
 					local newLevels = {}
 					for lvl in level:gmatch("[^%,]+") do
@@ -567,16 +560,16 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 				else
 					server.Admin.SetPermission(com, level)
 				end
-			end 
+			end
 		end
-		pcall(function() service.Workspace.AllowThirdPartySales = true end)	
+		pcall(function() service.Workspace.AllowThirdPartySales = true end)
 		server.Functions.GetOldDonorList()
 	end)
 
 	--// Backup Map
 	if server.Settings.AutoBackup then
 		service.TrackTask("Thread: Initial Map Backup", server.Admin.RunCommand, server.Settings.Prefix.."backupmap")
-	end 
+	end
 	--service.Threads.RunTask("Initial Map Backup",server.Admin.RunCommand,server.Settings.Prefix.."backupmap")
 
 	--// AutoClean
@@ -586,31 +579,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Worksafe
 	service.TrackTask("WorkSafe",function()
-		if server.Settings.AntiUnAnchor and not service.ServerScriptService:FindFirstChild("ADONIS_AnchorSafe") then 
-			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
-			ancsafe.Mode.Value = "AnchorSafe" 
-			ancsafe.Name = "ADONIS_AnchorSafe" 
-			ancsafe.Archivable = false 
-			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
-		end
-
-		if server.Settings.AntiDelete and not service.ServerScriptService:FindFirstChild("ADONIS_ObjectSafe") then 
-			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
-			ancsafe.Mode.Value = "ObjectSafe" 
-			ancsafe.Name = "ADONIS_ObjectSafe" 
-			ancsafe.Archivable = false 
-			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
-		end
-
-		if server.Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then 
-			local ancsafe = server.Deps.Assets.WorkSafe:clone() 
-			ancsafe.Mode.Value = "AntiLeak" 
-			ancsafe.Name = "ADONIS_AntiLeak" 
-			ancsafe.Archivable = false 
-			ancsafe.Parent = service.ServerScriptService 
-			ancsafe.Disabled = false 
+		if server.Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
+			local ancsafe = server.Deps.Assets.WorkSafe:clone()
+			ancsafe.Mode.Value = "AntiLeak"
+			ancsafe.Name = "ADONIS_AntiLeak"
+			ancsafe.Archivable = false
+			ancsafe.Parent = service.ServerScriptService
+			ancsafe.Disabled = false
 		end
 	end)
 

@@ -233,6 +233,25 @@ return function(Vargs)
 					end
 				end;
 			};
+			
+			["displayname-"] = {
+				Match = "displayname-";
+				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+					local matched = tonumber(msg:match("displayname%-(.*)"))
+					local foundNum = 0
+					
+					if matched then
+						for i,v in next,parent:children() do
+							local p = getplr(v)
+							if p and p.DisplayName == matched then
+								table.insert(players,p)
+								plus()
+								foundNum = foundNum+1
+							end
+						end
+					end
+				end;
+			};
 
 			["team-"] = {
 				Match = "team-";
@@ -650,17 +669,17 @@ return function(Vargs)
 				Remote.Send(player,"Function","PlayAnimation",animId)
 			end
 		end;
-		
+
 		ApplyBodyPart = function(character, model)
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then 
 				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
 				local part = model:FindFirstChild(rigType)
-				
+
 				if not part and rigType == "R15" then 
 					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
 				end
-				
+
 				if part then 
 					if rigType == "R6" then 
 						local children = character:GetChildren()
@@ -686,7 +705,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		GetJoints = function(character)
 			local temp = {}
 			for _,v in pairs(character:GetDescendants()) do
@@ -946,7 +965,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		--// Couldn't merge due to "conflicts" so just added manually.
 		ConvertPlayerCharacterToRig = function(p, rigType)
 			rigType = rigType or "R15"
@@ -982,7 +1001,7 @@ return function(Vargs)
 				human.RigType = Enum.HumanoidRigType[rigType]
 			end
 		end;
-		
+
 		CreateClothingFromImageId = function(clothingtype, Id)
 			local Clothing = Instance.new(clothingtype)
 			Clothing.Name = clothingtype

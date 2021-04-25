@@ -1,0 +1,114 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="LocalScript" referent="RBXAAF4C51880154B279D5B17D331D3B51D">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">ClickTeleport</string>
+			<string name="ScriptGuid">{BDAA343E-7C81-459C-A2DB-06B5F4C8C90A}</string>
+			<ProtectedString name="Source"><![CDATA[wait()
+local mode = script.Mode.Value--"Teleport"
+local name = script.Target.Value
+local localplayer = game.Players.LocalPlayer
+local mouse = localplayer:GetMouse()
+local tool = script.Parent
+local use = false
+local holding = false
+local target = game.Players:WaitForChild(name)
+local char = target.Character
+local hum = char:FindFirstChild('Humanoid')
+if not hum then tool:Destroy() end
+
+hum.Died:connect(function() tool:Destroy() end)
+tool.Name = mode..' '..target.Name
+
+function onButton1Down(mouse)
+  if not target.Character or not target.Character:FindFirstChild('Humanoid') then return end
+  if mode=='Teleport' then
+    local torso=target.Character:FindFirstChild('HumanoidRootPart')
+    if not torso then return end
+    local pos=mouse.Hit.p
+    torso.CFrame=CFrame.new(Vector3.new(pos.x, pos.y + 4, pos.z))
+  elseif mode=='Walk' then
+    hum:MoveTo(mouse.Hit.p)
+  end
+end
+
+function rotate()
+  local char=target.Character
+  local torso=char:FindFirstChild('HumanoidRootPart')
+  if not torso then return end
+  repeat
+    torso.CFrame=CFrame.new(torso.Position,Vector3.new(mouse.Hit.p.X,torso.Position.Y,mouse.Hit.p.Z))
+    wait()
+  until not holding or not use
+end
+
+mouse.KeyDown:connect(function(key)
+if key:lower()=='r' and use then
+  rotate()
+end
+if key:lower()=='x' then
+  tool:Destroy()
+end
+end)
+
+mouse.KeyUp:connect(function(key)
+if key:lower()=='r' then
+  holding = false
+end
+end)
+
+function onEquipped(mouse)
+  use = true
+  mouse.Icon = "rbxasset://textures\\ArrowCursor.png"
+  mouse.Button1Down:connect(function() onButton1Down(mouse) end)
+end
+
+game:service("UserInputService").InputBegan:connect(function(InputObject)
+if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
+  if InputObject.KeyCode == Enum.KeyCode.R then
+    holding = true
+    rotate()
+  elseif InputObject.KeyCode == Enum.KeyCode.X then
+    tool:Destroy()
+  end
+end
+end)
+
+game:service("UserInputService").InputEnded:connect(function(InputObject)
+if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
+  if InputObject.KeyCode == Enum.KeyCode.R then
+    holding = false
+  end
+end
+end)
+
+tool.Equipped:connect(onEquipped)
+tool.Unequipped:connect(function() use=false holding=false end)]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="StringValue" referent="RBXAA3C530DC98D4B77911122AEA92AD4F8">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Mode</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Value"></string>
+			</Properties>
+		</Item>
+		<Item class="StringValue" referent="RBXEE5A1345AE3941D3B3D5301F030D5D77">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Target</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Value"></string>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
