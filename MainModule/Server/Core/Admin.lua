@@ -749,6 +749,25 @@ return function(Vargs)
 				end
 			end
 		end;
+		
+		RunCommandAsNonAdmin = function(coma,plr,...)
+			local ind,com = Admin.GetCommand(coma)
+			if com then
+				local cmdArgs = com.Args or com.Arguments
+				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
+					Player = plr;
+					Level = 0;
+					isAgent = false;
+					isDonor = false;
+				}})
+				if error then
+					error = error:match(":(.+)$") or "Unknown error"
+					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
+				end
+			end
+		end;
+	
 
 		CacheCommands = function()
 			local tempTable = {}

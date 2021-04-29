@@ -1089,6 +1089,8 @@ return function(Vargs)
 				Hint = service.MetaFunc(Functions.Hint);
 
 				Message = service.MetaFunc(Functions.Message);
+				
+				RunCommandAsNonAdmin = service.MetaFunc(server.Admin.RunCommandAsNonAdmin);
 			}
 
 			local AdonisGTable = service.NewProxy({
