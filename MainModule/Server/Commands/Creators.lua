@@ -19,15 +19,15 @@ return function(Vargs, env)
 				local reason = args[2] or "No reason provided";
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local userid = service.Players:GetUserIdFromNameAsync(i)
+					local UserId = service.Players:GetUserIdFromNameAsync(i)
 
-					if userid == plr.UserId then
+					if UserId == plr.UserId then
 						error("You cannot ban yourself or the creator of the game", 2)
 						return
 					end
 
-					if userid then
-						Admin.AddBan({UserId = userId, Name = i}, reason, true)
+					if UserId then
+						Admin.AddBan({UserId = UserId, Name = i}, reason, true)
 						Functions.Hint("Direct banned "..i, {plr})
 					end
 				end
@@ -42,6 +42,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr,args,data)
 				for i in string.gmatch(args[1], "[^,]+") do
+
 					local userid = service.Players:GetUserIdFromNameAsync(i)
 
 					if userid then
@@ -61,7 +62,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"globalplace","gplace"};
 			Args = {"placeid"};
-			Description = "Sends a global message to all servers";
+			Description = "Force all game-players to teleport to a desired place";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
 			Function = function(plr,args)
