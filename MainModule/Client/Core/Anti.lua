@@ -105,7 +105,7 @@ return function()
 
 					local Success, Error = pcall(function() return 10 + false % true + 5 * 9e9 + false ^ true / false * 5 - true end)
 
-					if not rawequal(Success == OldSuccess) or not Success == OldSuccess or not OldError == Error then
+					if not Success == OldSuccess or not OldError == Error then
 						Detected("kick", "Methamethod tampering 456456")
 					end
 				end
