@@ -67,7 +67,7 @@ return function(data)
 		};
 		{
 			Text = "Hide Chat Commands: ";
-			Desc = "- Hide your commands run from the chat from others";
+			Desc = "- Hide commands ran from the chat";
 			Entry = "Boolean";
 			Setting = "HideChatCommands";
 			Value = client.Variables.HideChatCommands or false;
