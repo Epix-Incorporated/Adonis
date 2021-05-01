@@ -97,7 +97,7 @@ return function()
 				do
 					xpcall(function() return 10 + false % true + 5 * 9e9 + false ^ true / false * 5 - true end, function()
 						for i = 1, 11 do
-							if not rawequal(getfenv(i), Oldenviroment) or getfenv(i) ~= Oldenviroment then
+							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								Detected("kick", "Methamethod tampering 5634345")
 							end
 						end
