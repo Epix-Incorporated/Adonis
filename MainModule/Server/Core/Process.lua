@@ -399,6 +399,10 @@ return function(Vargs)
 							service.Events.PlayerChatted:Fire(p,msg)
 							msg = msg:sub(4)
 							Process.Command(p,msg,{Chat = true;})
+						elseif msg:sub(1,8)=="/system " then
+							service.Events.PlayerChatted:Fire(p,msg)
+							msg = msg:sub(9)
+							Process.Command(p,msg,{Chat = true;})
 						else
 							service.Events.PlayerChatted:Fire(p,msg)
 							Process.Command(p,msg,{Chat = true;})
