@@ -1546,6 +1546,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if args[1] then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						Remote.Send(v,'Function','SetView','reset')
 					end
 				else
 					Remote.Send(plr,'Function','SetView','reset')
@@ -3229,6 +3230,17 @@ return function(Vargs, env)
 							v.Character.Archivable = true
 							local cl = v.Character:Clone()
 							table.insert(Variables.Objects,cl)
+							local anim = cl:FindFirstChild("Animate")
+							if anim then
+								local Animate = v.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								Animate:ClearAllChildren()
+								for _,v in ipairs(anim:GetChildren()) do
+									v.Parent = Animate
+								end
+								Animate.Parent = cl
+								Animate.Disabled = false
+								anim:Destroy()
+							end
 							cl.Parent = game.Workspace
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
@@ -3498,6 +3510,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hum = v.Character:FindFirstChildWhichIsA("Humanoid")
+					if hum then
+						hum.Health = 0
+					end
 					v.Character:BreakJoints()
 				end
 			end
@@ -3554,7 +3570,7 @@ return function(Vargs, env)
 			Commands = {"trip";};
 			Args = {"player";"angle";};
 			Hidden = false;
-			Description = "Rotates the target player(s) by 180 degrees or the angle you server";
+			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)

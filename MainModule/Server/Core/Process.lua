@@ -435,9 +435,7 @@ return function(Vargs)
 		end;
 
 		PlayerAdded = function(p)
-			if p.UserId < 0 and p.Name:match("^Guest ") and not service.RunService:IsStudio() then
-				p:Kick("Guest Account")
-			elseif Anti.UserSpoofCheck(p) then
+			if Anti.UserSpoofCheck(p) then
 				Anti.Detected(p, "kick", "Username Spoofing");
 			else
 				local key = tostring(p.userId)
@@ -457,13 +455,14 @@ return function(Vargs)
 				Remote.PlayerData[key] = nil
 				Remote.Clients[key] = keyData
 
-				spawn(function()
+				Routine(function()
 					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
 					if playerGui then
-						playerGui.Changed:Connect(function()
-							if playerGui.Name ~= "PlayerGui" then
-								playerGui.Name = "PlayerGui";
-							end
+						if playerGui.Name ~= "PlayerGui" then
+							playerGui.Name = "PlayerGui"
+						end
+						playerGui:GetPropertyChangedSignal("Name"):Connect(function()
+							playerGui.Name = "PlayerGui"
 						end)
 					end
 				end)
@@ -527,7 +526,7 @@ return function(Vargs)
 							Anti.Detected(p, "kick", "Roblox Locked")
 						end
 					else
-						pcall(function() p:Kick("Loading Error [Missing player, keys, or removed]") end)
+						pcall(function() p:Kick(":: Adonis :: Loading Error [Missing player, keys, or removed]") end)
 					end
 				end
 			end
@@ -728,16 +727,16 @@ return function(Vargs)
 				pcall(Anti.CheckNameID, p)
 
 				--// Character Child Santization
-				local function SanitizeCharacter()
-					if Anti.RLocked(p.Character) then
-						Anti.Detected(p, "Kick", "Character Locked")
-					else
-						Anti.Sanitize(p.Character,{
-							"Backpack";
-							"PlayerGui";
-						})
-					end
-				end
+				--local function SanitizeCharacter()
+				--	if Anti.RLocked(p.Character) then
+				--		Anti.Detected(p, "Kick", "Character Locked")
+				--	else
+				--		Anti.Sanitize(p.Character,{
+				--			"Backpack";
+				--			"PlayerGui";
+				--		})
+				--	end
+				--end
 
 				--SanitizeCharacter()
 				--p.Character.DescendantAdded:connect(function(child)
@@ -746,7 +745,7 @@ return function(Vargs)
 
 				--// Wait for UI stuff to finish
 				wait(1);
-				p:WaitForChild("PlayerGui");
+				p:WaitForChild("PlayerGui", 9e9);
 				Remote.Get(p,"UIKeepAlive");
 
 				--//GUI loading

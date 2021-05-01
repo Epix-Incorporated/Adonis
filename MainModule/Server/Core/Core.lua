@@ -152,14 +152,14 @@ return function(Vargs)
 					func.OnServerInvoke = Process.Remote
 
 					service.RbxEvent(decoy1.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.userId)]
+						local keys = Remote.Clients[tostring(p.UserId)]
 						if keys and com == "TrustCheck" and modu == keys.Module then
 							decoy1:FireClient(p,"TrustCheck",keys.Decoy1)
 						end
 					end)
 
 					service.RbxEvent(decoy2.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.userId)]
+						local keys = Remote.Clients[tostring(p.UserId)]
 						if keys and com == "TrustCheck" and modu == keys.Module then
 							decoy1:FireClient(p,"TrustCheck",keys.Decoy2)
 						end
@@ -196,7 +196,7 @@ return function(Vargs)
 						if Anti.ObjRLocked(p) then
 							Anti.Detected(p, "Log", "RobloxLocked")
 						else
-							local client = Remote.Clients[tostring(p.userId)]
+							local client = Remote.Clients[tostring(p.UserId)]
 							if client and client.LoadingStatus == "READY" then
 								local lastTime = client.LastUpdate
 								if lastTime and tick()-lastTime > 60*5 then
@@ -238,18 +238,18 @@ return function(Vargs)
 		end;
 
 		SetupEvent = function(p)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
 			if keys and keys.EventName and p and not Anti.ObjRLocked(p) then
 				local event = Instance.new("RemoteEvent")
 				event.Name = keys.EventName
-				event.Changed:connect(function()
+				event.Changed:Connect(function()
 					if Anti.RLocked(event) or not event or event.Parent ~= p then
 						service.Delete(event)
 						Core.SetupEvent(p)
 					end
 				end)
-				event.OnServerEvent:connect(function(np,...)
+				event.OnServerEvent:Connect(function(np,...)
 					if np == p then
 						Process.Remote(np,...)
 					end
@@ -274,7 +274,7 @@ return function(Vargs)
 
 					loader.Parent = service.ReplicatedFirst
 					Core.ClientLoader = loader
-					Core.ClientLoaderEvent = loader.Changed:connect(function()
+					Core.ClientLoaderEvent = loader.Changed:Connect(function()
 						Core.PrepareClient()
 					end)
 				end)
@@ -286,7 +286,7 @@ return function(Vargs)
 		end;
 
 		HookClient = function(p)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
 			if keys then
 				local depsName = Functions:GetRandom()
@@ -371,7 +371,7 @@ return function(Vargs)
 					if not starterScripts then
 						starterScripts = service.New("StarterPlayerScripts", service.StarterPlayer)
 						starterScripts.Name = Core.Name
-						starterScripts.Changed:connect(function(p)
+						starterScripts.Changed:Connect(function(p)
 							if p=="Parent" then
 								Core.MakeClient()
 							elseif p=="Name" then
@@ -381,7 +381,7 @@ return function(Vargs)
 							end
 						end)
 
-						starterScripts.ChildAdded:connect(function(c)
+						starterScripts.ChildAdded:Connect(function(c)
 							if c.Name ~= Core.Name then
 								wait(0.5)
 								c:Destroy()
@@ -398,7 +398,7 @@ return function(Vargs)
 							if Anti.ObjRLocked(cli.Object) then
 								Core.Panic("Client RobloxLocked")
 							else
-								Core.Client.Security:disconnect()
+								Core.Client.Security:Disconnect()
 								pcall(function() Core.Client.Object:Destroy() end)
 							end
 						end
@@ -409,7 +409,7 @@ return function(Vargs)
 						client.Parent = starterScripts
 						client.Disabled = false
 						Core.Client.Object = client
-						Core.Client.Security = client.Changed:connect(function(p)
+						Core.Client.Security = client.Changed:Connect(function(p)
 							if p == "Parent" or p == "RobloxLocked" then
 								Core.MakeClient()
 							end
@@ -591,7 +591,7 @@ return function(Vargs)
 		end;
 
 		SavePlayer = function(p,data)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			Remote.PlayerData[key] = data
 		end;
 
@@ -617,7 +617,7 @@ return function(Vargs)
 		end;
 
 		GetPlayer = function(p)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			local PlayerData = Core.DefaultData(p)
 
 			if not Remote.PlayerData[key] then
@@ -641,11 +641,11 @@ return function(Vargs)
 		end;
 
 		ClearPlayer = function(p)
-			Remote.PlayerData[tostring(p.userId)] = Core.DefaultData(p);
+			Remote.PlayerData[tostring(p.UserId)] = Core.DefaultData(p);
 		end;
 
 		SavePlayerData = function(p)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			local data = Remote.PlayerData[key]
 			if data and Core.DataStore then
 				data.LastChat = nil
@@ -1089,6 +1089,8 @@ return function(Vargs)
 				Hint = service.MetaFunc(Functions.Hint);
 
 				Message = service.MetaFunc(Functions.Message);
+				
+				RunCommandAsNonAdmin = service.MetaFunc(server.Admin.RunCommandAsNonAdmin);
 			}
 
 			local AdonisGTable = service.NewProxy({
