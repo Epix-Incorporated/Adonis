@@ -66,6 +66,21 @@ return function(data)
 			end
 		};
 		{
+			Text = "Hide Chat Commands: ";
+			Desc = "- Hide commands ran from the chat";
+			Entry = "Boolean";
+			Setting = "HideChatCommands";
+			Value = client.Variables.HideChatCommands or false;
+			Function = function(enabled, toggle)
+				client.Variables.HideChatCommands = enabled
+
+				local text = toggle.Text
+				toggle.Text = "Saving.."
+				client.Remote.Get("UpdateClient","HideChatCommands",enabled)
+				toggle.Text = text
+			end
+		};
+		{
 			Text = "Console Key: ";
 			Desc = "Key used to open the console";
 			Entry = "Button";

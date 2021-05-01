@@ -57,6 +57,7 @@ return function()
 		KeybindsEnabled = true;
 		ParticlesEnabled = true;
 		CapesEnabled = true;
+		HideChatCommands = false;
 		Particles = {};
 		KeyBinds = {};
 		Aliases = {};

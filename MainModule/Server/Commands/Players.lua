@@ -967,7 +967,8 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",service.Players:FindFirstChild("]].. v ..[["))]])
+					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",game:GetService("Players").]]..v.Name..[[)]])
 				end
 			end
 		};
@@ -984,7 +985,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",service.Players:FindFirstChild("]].. v ..[["))]])
+					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",game:GetService("Players").]]..v.Name..[[)]])
 				end
 			end
 		};

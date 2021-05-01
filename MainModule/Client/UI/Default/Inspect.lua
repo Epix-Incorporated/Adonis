@@ -86,7 +86,7 @@ return function(data)
 		Text = "Friends"
 	})
 	
-	local groupstab = tabFrame:NewTab("Friends", {
+	local groupstab = tabFrame:NewTab("Groups", {
 		Text = "Groups"
 	})
 

@@ -364,6 +364,13 @@ return function(Vargs)
 			end
 		end;
 
+		require(game:GetService("ServerScriptService"):WaitForChild("ChatServiceRunner"):WaitForChild("ChatService")):RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message, channelName)
+			if service.Players:FindFirstChild(speakerName) and Remote.Get(service.Players[speakerName],"Function","ChatCmdsHidden") == true and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix) then
+				return true
+			end
+			return false
+		end);
+
 		Chat = function(p, msg)
 			if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
 				Anti.Detected(p, "kick", "Talking guest")
@@ -384,14 +391,24 @@ return function(Vargs)
 						Player = p;
 					})
 
-					service.Events.PlayerChatted:Fire(p,msg)
-
 					if Settings.ChatCommands then
-						if msg:sub(1,3)=="/e " then
+						if Remote.Get(p,"Function","ChatCmdsHidden") == true and (msg:sub(1,1) == Settings.Prefix or msg:sub(1,1) == Settings.PlayerPrefix) then
+							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
+							Process.Command(p,msg,{Chat = true;})
+						elseif msg:sub(1,3)=="/e " then
+							service.Events.PlayerChatted:Fire(p,msg)
 							msg = msg:sub(4)
+							Process.Command(p,msg,{Chat = true;})
+						elseif msg:sub(1,8)=="/system " then
+							service.Events.PlayerChatted:Fire(p,msg)
+							msg = msg:sub(9)
+							Process.Command(p,msg,{Chat = true;})
+						else
+							service.Events.PlayerChatted:Fire(p,msg)
+							Process.Command(p,msg,{Chat = true;})
 						end
-
-						Process.Command(p,msg,{Chat = true;})
+					else
+						service.Events.PlayerChatted:Fire(p,msg)
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
