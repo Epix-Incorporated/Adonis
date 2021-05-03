@@ -452,10 +452,12 @@ return function(Vargs)
 		end;
 
 		PlayerAdded = function(p)
-			if Anti.UserSpoofCheck(p) then
+			if Anti.RLocked(p) then
+				Anti.Detected(p, "kick", "Roblox Locked")
+			elseif Anti.UserSpoofCheck(p) then
 				Anti.Detected(p, "kick", "Username Spoofing");
 			else
-				local key = tostring(p.userId)
+				local key = tostring(p.UserId)
 				local keyData = {
 					Player = p;
 					Key = Functions:GetRandom();
@@ -468,10 +470,10 @@ return function(Vargs)
 					FinishedLoading = false;
 					LoadingStatus = "WAITING_FOR_KEY";
 				}
-
+				
 				Remote.PlayerData[key] = nil
 				Remote.Clients[key] = keyData
-
+				
 				Routine(function()
 					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
 					if playerGui then
@@ -484,67 +486,65 @@ return function(Vargs)
 					end
 				end)
 
-				local PlayerData = Core.GetPlayer(p)
-				local level = Admin.GetLevel(p)
-				local banned,reason = Admin.CheckBan(p)
-				local removed = false
-
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
 				Core.UpdateConnection(p)
+				
+				local PlayerData = Core.GetPlayer(p)
+				local level = Admin.GetLevel(p)
+				local banned, reason = Admin.CheckBan(p)
 
 				if banned then
-					p:Kick(Variables.BanMessage .. " |  Reason: "..(reason or "No reason provided"))
-					removed = true
+					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
+					return
 				end
 
-				if Variables.ServerLock and level < 1 and not removed then
+				if Variables.ServerLock and level < 1 then
 					p:Kick(Variables.LockMessage)
-					removed = true
+					return
 				end
 
-				if Variables.Whitelist.Enabled and not removed then
+				if Variables.Whitelist.Enabled then
 					local listed = false
+
 					for ind, admin in next,Variables.Whitelist.List do
 						if Admin.DoCheck(p,admin) then
 							listed = true
+							break
 						end
 					end
+
 					if not listed and level == 0 then
 						p:Kick(Variables.LockMessage)
-						removed = true
+						return
 					end
 				end
 
-				if not removed then
-					if Remote.Clients[key] then
-						if not Anti.RLocked(p) then
-							Core.HookClient(p)
-							Logs.AddLog(Logs.Script,{
-								Text = tostring(p).." joined";
-								Desc = tostring(p).." successfully joined the server";
-								Player = p;
-							})
+				if Remote.Clients[key] then
+					Core.HookClient(p)
 
-							p.CharacterAdded:Connect(function(c)
-								service.TrackTask(tostring(p)..": CharacterAdded", Process.CharacterAdded, p)
-							end)
+					Logs.AddLog(Logs.Script,{
+						Text = p.Name .. " joined";
+						Desc = p.Name .. " successfully joined the server";
+						Player = p;
+					})
 
-							wait(60*10)
-							if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
-								Logs.AddLog("Script", {
-									Text = tostring(p).." Failed to Load",
-									Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
-									Player = p;
-								});
-								--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
-							end
-						else
-							Anti.Detected(p, "kick", "Roblox Locked")
-						end
-					else
-						pcall(function() p:Kick(":: Adonis :: Loading Error [Missing player, keys, or removed]") end)
+					p.CharacterAdded:Connect(function()
+						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
+					end)
+
+					wait(60*10)
+
+					if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
+						Logs.AddLog("Script", {
+							Text = p.Name .. " Failed to Load",
+							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+							Player = p;
+						});
+						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
+				else
+					Anti.RemovePlayer(p, ":: Adonis :: Loading Error [Missing player, keys, or removed]")
 				end
 			end
 		end;
