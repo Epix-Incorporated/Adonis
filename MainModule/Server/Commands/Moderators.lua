@@ -1546,6 +1546,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if args[1] then
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
+						Remote.Send(v,'Function','SetView','reset')
 					end
 				else
 					Remote.Send(plr,'Function','SetView','reset')
@@ -1590,64 +1591,43 @@ return function(Vargs, env)
 
 		ServerDetails = {
 			Prefix = Settings.Prefix;
-			Commands = {"serverinfo";"servertrack";"gameinfo";"serverdetails";};
+			Commands = {"serverinfo";"serverdetails";"gameinfo";"gamedetails";};
 			Args = {};
+			Description = "Opens the server information window";
 			Hidden = false;
-			Description = "Shows you information about the current server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr)
-				local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
-
-				for i,v in pairs(service.NetworkServer:GetChildren()) do
+			Function = function(plr,args)
+				local adminDictionary = {}
+				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+					adminDictionary[v.Name] = Admin.LevelToListName(Admin.GetLevel(v))
+				end
+				local donorList = {}
+				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]) then
+						table.insert(donorList, v.Name)
+					end
+				end
+				local nilPlayers = 0
+				for i,v in pairs(service.NetworkServer:children()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilplayers+=1
+						nilPlayers = nilPlayers + 1
 					end
 				end
-				for i,v in pairs(service.Players:GetPlayers()) do
-					if Admin.CheckAdmin(v,false) then
-						adminnumber+=1
-					else
-						nonnumber+=1
-					end
-				end
-				
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
-				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
-				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
-				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				--[[
-				if workspace.AllowThirdPartySales == true then
-					table.insert(tab,{Text = "Third Party Sales: [ON]"})
-				else
-					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
-				end
-				]]
-				
-				local LoadstringEnabled = pcall(loadstring, "") and "ON" or "OFF"
-				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
-				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
-				
-				table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
-				table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
-				table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
-				table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Nil Players: "..nilplayers})
-				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
-				table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
-				table.insert(tab,{Text = "Gravity: "..tostring(game.Workspace.Gravity)})
-				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(game.Workspace.FallenPartsDestroyHeight)})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				Remote.MakeGui(plr,"List",{Title = "Server Details", Tab = tab, Update = "ServerDetails"})
+				Remote.MakeGui(plr,"ServerDetails",{
+					CreatorId = game.CreatorId;
+					PrivateServerId = game.PrivateServerId;
+					PrivateServerOwnerId = game.PrivateServerOwnerId;
+					ServerStartTime = service.GetTime(server.ServerStartTime);
+					ServerAge = service.GetTime(os.time()-server.ServerStartTime);
+					HttpEnabled = server.HTTP.CheckHttp();
+					LoadstringEnabled = pcall(function() loadstring("local hi = 'test'") end);
+					Admins = adminDictionary;
+					Donors = donorList;
+					ObjectCount = #Variables.Objects;
+					CameraCount = #Variables.Cameras;
+					NilPlayerCount = nilPlayers;
+				})
 			end
 		};
 
@@ -3229,6 +3209,17 @@ return function(Vargs, env)
 							v.Character.Archivable = true
 							local cl = v.Character:Clone()
 							table.insert(Variables.Objects,cl)
+							local anim = cl:FindFirstChild("Animate")
+							if anim then
+								local Animate = v.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								Animate:ClearAllChildren()
+								for _,v in ipairs(anim:GetChildren()) do
+									v.Parent = Animate
+								end
+								Animate.Parent = cl
+								Animate.Disabled = false
+								anim:Destroy()
+							end
 							cl.Parent = game.Workspace
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
@@ -3558,7 +3549,7 @@ return function(Vargs, env)
 			Commands = {"trip";};
 			Args = {"player";"angle";};
 			Hidden = false;
-			Description = "Rotates the target player(s) by 180 degrees or the angle you server";
+			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)

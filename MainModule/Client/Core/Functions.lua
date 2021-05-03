@@ -1424,5 +1424,9 @@ return function()
 			audio:Stop()
 			audio2:Stop()
 		end;
+
+		ChatCmdsHidden = function(args)
+			return Variables.HideChatCommands or false
+		end;
 	};
 end

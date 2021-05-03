@@ -48,7 +48,7 @@ return function(data)
 			if friendName == friendInfo[friendName].displayName then
 				entryText = friendName
 			else
-				entryText = friendName.." ("..friendInfo[friendName].displayName..")"
+				entryText = friendInfo[friendName].displayName.." (@"..friendName..")"
 			end
 			local entry = window:Add("TextLabel", {
 				Text = "             "..entryText;
