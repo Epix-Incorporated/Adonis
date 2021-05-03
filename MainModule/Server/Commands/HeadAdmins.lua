@@ -89,7 +89,7 @@ return function(Vargs, env)
 
 		GameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"gameban", "saveban", "databan"};
+			Commands = {"gameban", "saveban", "databan", "pban"};
 			Args = {"player", "reason"};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "HeadAdmins";
