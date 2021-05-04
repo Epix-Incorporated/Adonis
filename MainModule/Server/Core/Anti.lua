@@ -154,11 +154,11 @@ return function(Vargs)
 		end;
 
 		RLocked = function(obj)
-			return not pcall(obj.GetFullName, obj)
+			return not pcall(function() return obj.GetFullName(obj) end)
 		end;
 
 		ObjRLocked = function(obj)
-			return not pcall(obj.GetFullName, obj)
+			return not pcall(function() return obj.GetFullName(obj) end)
 		end;
 
 		AssignName = function()
