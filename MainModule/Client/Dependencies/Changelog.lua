@@ -2,7 +2,7 @@ return {
 	"Version: 217";
 	"*Drag edges to expand*";
 	"";
-	"[WIP]";
+	"[v217 WIP]";
 	"*Bug fixes";
 	"*Changes to how module and module related stuff is loaded (more modular?)";
 	"(Git/imskyyc) Updated TrelloAPI";
