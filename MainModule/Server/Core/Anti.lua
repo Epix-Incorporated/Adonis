@@ -24,11 +24,24 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 
+		--// Client check
+		service.StartLoop("ClientCheck",30, Anti.CheckAllClients, true)
+
+		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
-	end;
+	end
+
+	local function RunAfterPlugins(data)
+		--// Fake finder
+		service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
+
+		Anti.RunAfterPlugins = nil;
+		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
+	end
 
 	server.Anti = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
@@ -44,6 +57,33 @@ return function(Vargs)
 				Text = "Server removed "..tostring(p);
 				Desc = info;
 			})
+		end;
+
+		CheckAllClients = function()
+			if Settings.CheckClients and (not Core.PanicMode) and server.Running then
+				Logs.AddLog(Logs.Script,{
+					Text = "Checking Clients";
+					Desc = "Making sure all clients are active";
+				})
+
+				local parent = service.NetworkServer or service.Players
+				local net = service.NetworkServer or false
+				for ind,p in next,parent:GetChildren() do
+					if net then p = p:GetPlayer() end
+					if p then
+						if Anti.ObjRLocked(p) then
+							Anti.Detected(p, "Log", "Player RobloxLocked")
+						else
+							local client = Remote.Clients[tostring(p.UserId)]
+							if client and client.LastUpdate then
+								if os.time() - lastTime > 60*5 then
+									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >5 minutes]")
+								end
+							end
+						end
+					end
+				end
+			end
 		end;
 
 		UserSpoofCheck = function(p)

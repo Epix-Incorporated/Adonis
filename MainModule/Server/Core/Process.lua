@@ -32,8 +32,29 @@ return function(Vargs)
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 
+		--// NetworkServer Events
+		if service.NetworkServer then
+			service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
+			service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
+		end
+
+		Process.Init = nil;
 		Logs:AddLog("Script", "Processing Module Initialized")
 	end;
+
+	local function RunAfterPlugins(data)
+		--// Events
+		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
+		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
+		service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
+		service.RbxEvent(service.LogService.MessageOut, Process.LogService)
+		service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
+
+		Process.RunAfterPlugins = nil;
+		Logs:AddLog("Script", "Process Module RunAfterPlugins Finished");
+	end
+
+
 
 	local RateLimiter = {
 		Remote = {};
@@ -55,6 +76,7 @@ return function(Vargs)
 
 	server.Process = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 		RateLimit = RateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
@@ -113,7 +135,8 @@ return function(Vargs)
 
 								if command then
 									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
-									keys.LastUpdate = tick()
+									keys.LastUpdate = os.time()
+
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
 									else
@@ -466,14 +489,14 @@ return function(Vargs)
 					Cache = {};
 					Sent = 0;
 					Received = 0;
-					LastUpdate = tick();
+					LastUpdate = os.time();
 					FinishedLoading = false;
 					LoadingStatus = "WAITING_FOR_KEY";
 				}
-				
+
 				Remote.PlayerData[key] = nil
 				Remote.Clients[key] = keyData
-				
+
 				Routine(function()
 					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
 					if playerGui then
@@ -489,7 +512,7 @@ return function(Vargs)
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
 				Core.UpdateConnection(p)
-				
+
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)

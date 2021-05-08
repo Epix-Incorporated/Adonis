@@ -4,7 +4,7 @@ return {
 	"";
 	"[WIP]";
 	"*Bug fixes";
-	"*Minor changes";
+	"*Changes to how module and module related stuff is loaded (more modular?)";
 	"(Git/imskyyc) Updated TrelloAPI";
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";

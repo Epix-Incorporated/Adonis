@@ -10,7 +10,7 @@ logError = nil
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -23,12 +23,29 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		
+
+		Variables.BanMessage = Settings.BanMessage
+		Variables.LockMessage = Settings.LockMessage
+
+
+		for ind, music in next, Settings.MusicList or {} do table.insert(Variables.MusicList, music) end
+		for ind, music in next, Settings.InsertList or {} do table.insert(Variables.InsertList, music) end
+		for ind, cape in next, Settings.CapeList or {} do table.insert(Variables.Capes, cape) end
+
+		Variables.Init = nil;
 		Logs:AddLog("Script", "Variables Module Initialized")
 	end;
-	
+
+	local function AfterInit(data)
+		server.Variables.CodeName = server.Functions:GetRandom()
+
+		Variables.RunAfterInit = nil;
+		Logs:AddLog("Script", "Finished Variables AfterInit");
+	end
+
 	server.Variables = {
 		Init = Init;
+		RunAfterInit = AfterInit;
 		ZaWarudo = false;
 		CodeName = math.random();
 		FrozenObjects = {};
@@ -54,7 +71,7 @@ return function(Vargs)
 			GeographicLatitude = service.Lighting.GeographicLatitude;
 			Name = service.Lighting.Name;
 		};
-		
+
 		OriginalLightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			OutdoorAmbient = service.Lighting.OutdoorAmbient;
@@ -72,27 +89,27 @@ return function(Vargs)
 			Name = service.Lighting.Name;
 			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
-		
+
 		HelpRequests = {};
-		
+
 		Objects = {};
-		
+
 		InsertedObjects = {};
-		
+
 		CommandLoops = {};
-		
+
 		Waypoints = {};
-		
+
 		Cameras = {};
-		
+
 		Jails = {};
-		
+
 		LocalEffects = {};
-		
+
 		SizedCharacters = {};
-		
+
 		BundleCache = {};
-		
+
 		MusicList = {
 			{Name='jericho',ID=292340735};
 			{Name='dieinafire',ID=242222291};
@@ -155,9 +172,9 @@ return function(Vargs)
 			{Name="rickroll",ID=4581203569};
 			{Name="deathbed",ID=4966153470};
 		};
-		
+
 		InsertList = {};
-		
+
 		Capes = {
 			{Name="crossota",Material="Neon",Color="Cyan",ID=420260457},
 			{Name="jamiejr99",Material="Neon",Color="Cashmere",ID=429297485},
@@ -166,7 +183,7 @@ return function(Vargs)
 			{Name="dusty rose",Material='Fabric',Color="Dusty Rose"},
 			{Name="cga brown",Material='Fabric',Color="CGA brown"},
 			{Name="random",Material='Fabric',Color=(BrickColor.random()).Name},
-			{Name="shiny",Material='Plastic',Color="Institutional white",Reflectance=1}, 
+			{Name="shiny",Material='Plastic',Color="Institutional white",Reflectance=1},
 			{Name="gold",Material='Plastic',Color="Bright yellow",Reflectance=0.4},
 			{Name="kohl",Material='Fabric',Color="Really black",ID=108597653},
 			{Name="script",Material='Plastic',Color="White",ID=151359194},
@@ -185,7 +202,7 @@ return function(Vargs)
 			{Name="trainer",Material='Plastic',Color="Really black",ID=152298976},
 			{Name="ba",Material='Plastic',Color='White',ID=172528001}
 		};
-		
+
 		Whitelist = {
 			Enabled = server.Settings.WhitelistEnabled;
 			List = server.Settings.Whitelist or {};

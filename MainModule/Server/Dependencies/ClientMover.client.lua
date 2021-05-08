@@ -1,5 +1,7 @@
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
+local DebugMode = false;
+
 local wait = wait;
 local tick = tick;
 local pcall = pcall;
@@ -16,7 +18,6 @@ local module = folder:WaitForChild("Client");
 local target = player;
 local realPrint = print;
 local realWarn = warn;
-local DebugMode = false;
 local start = tick();
 
 local function print(...)
@@ -33,7 +34,7 @@ end
 
 local function Kill(info)
 	if DebugMode then warn(info) return end
-	pcall(function() Kick(player, info) end) 
+	pcall(function() Kick(player, info) end)
 	wait(1)
 	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
 end
@@ -92,37 +93,37 @@ if module and module:IsA("ModuleScript") then
 	local origName
 	local depsFolder
 	local clientModule
-	
+
 	warn("Waiting for Client & Special")
 	nameVal = folder:WaitForChild("Special", 30)
-	
+
 	warn("Checking Client & Special")
 	--callCheck(nameVal)
 	--callCheck(clientModule)
-	
+
 	warn("Getting origName")
 	origName = (nameVal and nameVal.Value) or folder.Name
 	warn("Got name: "..tostring(origName))
-	
+
 	warn("Changing child parent...")
 	folder.Parent = nil
-		
+
 	warn("Destroying parent...")
-	
+
 	print("Debug: Loading the client?")
 	local meta = require(module)
 	warn("Got metatable: "..tostring(meta))
 	if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
 		local ran,ret = pcall(meta,{
-			Module = module, 
+			Module = module,
 			Start = start,
 			Loader = script,
-			Name = origName, 
+			Name = origName,
 			LoadingTime = loadingTime,
 			CallCheck = callCheck,
 			Kill = Kill
 		})
-				
+
 		warn("Got return: "..tostring(ret))
 		if ret ~= "SUCCESS" then
 			warn(ret)
@@ -131,7 +132,7 @@ if module and module:IsA("ModuleScript") then
 			print("Debug: The client was found and loaded?")
 			warn("Client Loaded")
 			--folder.Parent = nil
-			
+
 			if container and container:IsA("ScreenGui") then
 				container:Destroy();
 			end

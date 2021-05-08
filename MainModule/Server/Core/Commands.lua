@@ -14,7 +14,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
-	
+
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -47,20 +47,20 @@ return function(Vargs)
 				end
 			end;
 		})
-		
+
 		Logs:AddLog("Script", "Loading Command Modules...")
-		
+
 		--// Load command modules
 		if server.CommandModules then
 			for i,module in next,server.CommandModules:GetChildren() do
 				local func = require(module)
 				local ran,tab = pcall(func, Vargs, getfenv())
-				
+
 				if ran and tab and type(tab) == "table" then
 					for ind,cmd in next,tab do
 						Commands[ind] = cmd;
 					end
-					
+
 					Logs:AddLog("Script", "Loaded Command Module: ".. module.Name)
 				elseif not ran then
 					warn("CMDMODULE ".. module.Name .. " failed to load:")
@@ -69,10 +69,11 @@ return function(Vargs)
 				end
 			end
 		end
-		
+
 		--// Cache commands
 		Admin.CacheCommands();
 		
+		Commands.Init = nil;
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
 

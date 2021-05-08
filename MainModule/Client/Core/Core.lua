@@ -9,27 +9,27 @@ logError = nil
 
 --// Core
 return function()
-	local _G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
-		_G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
+	local _G, game, script, getfenv, setfenv, workspace,
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, elapsedTime, require, table, type, wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, elapsedTime, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
-		
+
 	local script = script
 	local service = service
 	local client = client
@@ -42,30 +42,85 @@ return function()
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+
+		Core.Name = "\0"
+		Core.Special = client.DepsName
+		Core.MakeGui = UI.Make;
+		Core.GetGui = UI.Get;
+		Core.RemoveGui = UI.Remove;
+
+		Core.Init = nil;
 	end
-	
+
+	local function RunAfterPlugins(data)
+		Core.GetEvent()
+
+		Core.RunAfterPlugins = nil;
+	end
+
+	local function RunLast()
+		--// API
+		if service.NetworkClient then
+			service.TrackTask("Thread: API Manager", Core.StartAPI)
+			--service.Threads.RunTask("_G API Manager",client.Core.StartAPI)
+		end
+
+		client = service.ReadOnly(client, {
+				[client.Variables] = true;
+				[client.Handlers] = true;
+				G_API = true;
+				G_Access = true;
+				G_Access_Key = true;
+				G_Access_Perms = true;
+				Allowed_API_Calls = true;
+				HelpButtonImage = true;
+				Finish_Loading = true;
+				RemoteEvent = true;
+				ScriptCache = true;
+				Returns = true;
+				PendingReturns = true;
+				EncodeCache = true;
+				DecodeCache = true;
+				Received = true;
+				Sent = true;
+				Service = true;
+				Holder = true;
+				GUIs = true;
+				LastUpdate = true;
+				RateLimits = true;
+
+				Init = true;
+				RunLast = true;
+				RunAfterInit = true;
+				RunAfterLoaded = true;
+				RunAfterPlugins = true;
+			}, true)--]]
+
+			Core.RunLast = nil
+		end
+
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
-	
+
 	client.Core = {
 		Init = Init;
+		RunLast = RunLast;
+		RunAfterLoaded = RunAfterLoaded;
+		RunAfterPlugins = RunAfterPlugins;
 		Name = script.Name;
 		Special = script.Name;
-		MakeGui = client.UI.Make;
-		GetGui = client.UI.Get;
-		RemoveGui = client.UI.Remove;
 		ScriptCache = {};
-		
+
 		GetEvent = function()
 			if Core.RemoteEvent then
 				Core.RemoteEvent.Event:Disconnect()
 				Core.RemoteEvent.Security:Disconnect()
 				Core.RemoteEvent = nil
 			end
-			
+
 			Core.RemoteEvent = {}
-			
+
 			local rindex = 0
 			local firstSearch
 			local timer = 1
@@ -73,36 +128,36 @@ return function()
 			local start = os.time()
 			local events = {}
 			local found
-			
+
 			local function finishEvent(event)
 				if event then
 					local rFunc = event:FindFirstChildOfClass("RemoteFunction")
 					if rFunc then
 						Core.RemoteEvent.Object = event
-						
+
 						Core.RemoteEvent.Function = rFunc
 						rFunc.OnClientInvoke = Process.Remote;
-						
+
 						Core.RemoteEvent.FireServer = event.FireServer
 						Core.RemoteEvent.Event = event.OnClientEvent:Connect(Process.Remote)--]]
 						Core.RemoteEvent.Security = event.Changed:Connect(function(p)
 							if Core.RemoteEvent.Function then
 								Core.RemoteEvent.Function.OnClientInvoke = Process.Remote;
 							end
-							
+
 							if p == "RobloxLocked" and Anti.RLocked(event) then
 								client.Kill("RemoteEvent Locked")
 							elseif not event or not event.Parent then
 								Core.GetEvent()
 							end
 						end)
-							
+
 						rFunc.Changed:Connect(function()
 							rFunc.OnClientInvoke = Process.Remote;
 						end)
-						
+
 						--SetFireServer(service.MetaFunc(event.FireServer))
-						
+
 						if not Core.Key then
 							Remote.Fire(client.DepsName.."GET_KEY")
 						end
@@ -113,7 +168,7 @@ return function()
 					client.Kill("RemoteEvent not found")
 				end
 			end
-			
+
 			local function search()
 				local children = {}
 				for i,child in next,service.JointsService:GetChildren() do
@@ -121,11 +176,11 @@ return function()
 						table.insert(children, child)
 					end
 				end
-				
-				for ind,e in next,events do 
+
+				for ind,e in next,events do
 					e.Event:Disconnect() events[ind] = nil
 				end
-				
+
 				for i,child in next,children do
 					if not Anti.ObjRLocked(child) and child:IsA("RemoteEvent") and child:FindFirstChildOfClass("RemoteFunction") then
 						local index = rindex+1
@@ -137,7 +192,7 @@ return function()
 										found = child
 										Core.RemoteEvent.Event = eventTab.Event
 										finishEvent(child)
-										for ind,e in next,events do 
+										for ind,e in next,events do
 											if ind ~= child then
 												e.Event:Disconnect() events[ind] = nil
 											end
@@ -150,57 +205,44 @@ return function()
 							}
 							events[child] = eventTab
 						end
-						
+
 						child:FireServer(client.Module, "TrustCheck")
 					end
 				end
 			end
-			
-			repeat 
-				if os.time() > prevTime then 
-					prevTime = os.time() 
-					timer = timer+1 
-					if timer%10 == 0 or not firstSearch then 
+
+			repeat
+				if os.time() > prevTime then
+					prevTime = os.time()
+					timer = timer+1
+					if timer%10 == 0 or not firstSearch then
 						firstSearch = true
 						local event = service.JointsService:FindFirstChild(client.RemoteName)
 						if event then
 							found = event
 							finishEvent(event)
 						end
-						--search() 
-					end 
-				end 
-				
+						--search()
+					end
+				end
+
 			until found or not wait(0.01)
 		end;
-		
+
 		LoadPlugin = function(plugin)
 			local plug = require(plugin)
 			local func = setfenv(plug,GetEnv(getfenv(plug)))
 			cPcall(func)
 		end;
-		
+
 		LoadBytecode = function(str, env)
 			return require(client.Deps.FiOne)(str, env)
 		end;
-		
+
 		LoadCode = function(str, env)
 			return Core.LoadBytecode(str, env)
 		end;
-		
-		CheckClient = function()
-			if tick() - Core.LastUpdate >= 55 then
-				wait(math.random()) --// De-sync everyone's client checks
-				local returner = math.random()
-				local ret = Remote.Send("ClientCheck", {Sent = 0;--[[Remote.Sent]] Received = Remote.Received}, client.DepsName, returner)
-				--[[if ret and ret == returner then
-					Core.LastUpdate = tick()
-				else
-					client.Kill("Client check failed")
-				end--]]
-			end
-		end;
-		
+
 		StartAPI = function()
 			local ScriptCache = Core.ScriptCache
 			local FiOne = client.Deps.FiOne
@@ -233,14 +275,14 @@ return function()
 			local client = client
 			local Routine = Routine
 			local cPcall = cPcall
-			
+
 			--// Get Settings
 			local API_Special = {
-				
+
 			}
-			
+
 			setfenv(1,setmetatable({}, {__metatable = getmetatable(getfenv())}))
-			
+
 			local API_Specific = {
 				API_Specific = {
 					Test = function()
@@ -249,7 +291,7 @@ return function()
 				};
 				Service = service;
 			}
-			
+
 			local API = {
 				Access = ReadOnly({}, nil, nil, true);
 				--[[
@@ -258,15 +300,15 @@ return function()
 					local key = args[1]
 					local ind = args[2]
 					local targ
-					
+
 					setfenv(1,setmetatable({}, {__metatable = getmetatable(getfenv())}))
-					
-					if API_Specific[ind] then 
-						targ = API_Specific[ind] 
+
+					if API_Specific[ind] then
+						targ = API_Specific[ind]
 					elseif client[ind] and client.Allowed_API_Calls[ind] then
 						targ = client[ind]
 					end
-					
+
 					if client.G_Access and key == client.G_Access_Key and targ and client.Allowed_API_Calls[ind] then
 						if type(targ) == "table" then
 							return service.NewProxy {
@@ -294,30 +336,30 @@ return function()
 					end
 				end);
 				--]]
-				
+
 				Scripts = ReadOnly({
 					ExecutePermission = MetaFunc(function(code)
 						local exists;
-						
+
 						for i,v in next,ScriptCache do
 							if UnWrap(v.Script) == getfenv(2).script then
 								exists = v
 							end
 						end
-						
+
 						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions <= exists.runLimit)) then
 							exists.Executions = exists.Executions+1
 							return exists.Source, exists.Loadstring
 						end
-						
+
 						local data = Get("ExecutePermission",UnWrap(getfenv(3).script), code, true)
 						if data and data.Source then
 							local module;
 							if not exists then
 								module = require(FiOne:Clone())
 								table.insert(ScriptCache,{
-									Script = getfenv(2).script; 
-									Source = data.Source; 
+									Script = getfenv(2).script;
+									Source = data.Source;
 									Loadstring = module;
 									noCache = data.noCache;
 									runLimit = data.runLimit;
@@ -330,7 +372,7 @@ return function()
 							return data.Source, module
 						end
 					end);
-					
+
 					ReportLBI = MetaFunc(function(scr, origin)
 						if origin == "Local" then
 							return true
@@ -338,7 +380,7 @@ return function()
 					end);
 				}, nil, nil, true);
 			}
-			
+
 			AdonisGTable = NewProxy{
 				__index = function(tab,ind)
 					if ind == "Scripts" then
@@ -358,7 +400,7 @@ return function()
 				end;
 				__metatable = "API";
 			}
-			
+
 			if not _G.Adonis then
 				rawset(_G,"Adonis",AdonisGTable)
 				StartLoop("APICheck",1,function()

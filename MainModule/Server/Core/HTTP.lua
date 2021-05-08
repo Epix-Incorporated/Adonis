@@ -24,6 +24,14 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 
+		HTTP.Trello.API = require(server.Deps.TrelloAPI)
+
+		--// Trello updater
+		if Settings.Trello_Enabled then
+			service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
+		end
+
+		HTTP.Init = nil;
 		Logs:AddLog("Script", "HTTP Module Initialized")
 	end;
 

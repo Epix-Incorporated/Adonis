@@ -13,7 +13,7 @@ return function(Vargs)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
 
-	local function Init()
+	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
 		Anti = server.Anti;
@@ -26,11 +26,56 @@ return function(Vargs)
 		Settings = server.Settings;
 		Deps = server.Deps
 
+		--// Core variables
+		Core.Themes = data.Themes or {}
+		Core.Plugins = data.Plugins or {}
+		Core.ModuleID = data.ModuleID or 2373501710
+		Core.LoaderID = data.LoaderID or 2373505175
+		Core.DebugMode = data.DebugMode or false
+		Core.Name = server.Functions:GetRandom()
+		Core.Loadstring = require(Deps.Loadstring)
+
+		Core.Init = nil;
 		Logs:AddLog("Script", "Core Module Initialized")
 	end;
 
+	local function RunAfterPlugins(data)
+		--// RemoteEvent Handling
+		server.Core.MakeEvent()
+		service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
+		service.JointsService.ChildRemoved:Connect(function(c)
+			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
+				wait();
+				server.Core.MakeEvent()
+			end
+		end)
+
+		--// Load data
+		Core.DataStore = server.Core.GetDataStore()
+		if Core.DataStore then
+			service.TrackTask("Thread: DSLoadAndHook", function()
+				pcall(server.Core.LoadData)
+			end)
+		end
+
+		--// Start API
+		if service.NetworkServer then
+			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
+			service.TrackTask("Thread: API Manager", server.Core.StartAPI)
+		end
+
+		--// Add existing players in case some are already in the server
+		for index,player in next,service.Players:GetPlayers() do
+			service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), server.Core.LoadExistingPlayer, player);
+		end
+
+		Core.RunAfterPlugins = nil;
+		Logs:AddLog("Script", "Core Module RunAfterPlugins Finished");
+	end
+
 	server.Core = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 		DataQueue = {};
 		DataCache = {};
 		CrossServerCommands = {};
@@ -179,33 +224,6 @@ return function(Vargs)
 			if error then
 				warn(error)
 				Core.Panic("Error while making RemoteEvent")
-			end
-		end;
-
-		CheckAllClients = function()
-			if Settings.CheckClients and not Core.PanicMode and server.Running then
-				Logs.AddLog(Logs.Script,{
-					Text = "Checking Clients";
-					Desc = "Making sure all clients are active";
-				})
-				local parent = service.NetworkServer or service.Players
-				local net = service.NetworkServer or false
-				for ind,p in next,parent:GetChildren() do
-					if net then p = p:GetPlayer() end
-					if p then
-						if Anti.ObjRLocked(p) then
-							Anti.Detected(p, "Log", "RobloxLocked")
-						else
-							local client = Remote.Clients[tostring(p.UserId)]
-							if client and client.LoadingStatus == "READY" then
-								local lastTime = client.LastUpdate
-								if lastTime and tick()-lastTime > 60*5 then
-									Anti.Detected(p, "Log","Client Not Responding [Client hasn't checked in >5 minutes]")
-								end
-							end
-						end
-					end
-				end
 			end
 		end;
 
@@ -1089,7 +1107,7 @@ return function(Vargs)
 				Hint = service.MetaFunc(Functions.Hint);
 
 				Message = service.MetaFunc(Functions.Message);
-				
+
 				RunCommandAsNonAdmin = service.MetaFunc(server.Admin.RunCommandAsNonAdmin);
 			}
 

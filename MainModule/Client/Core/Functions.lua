@@ -9,27 +9,27 @@ logError = nil
 
 --// Special Variables
 return function()
-	local _G, game, script, getfenv, setfenv, workspace, 
-	getmetatable, setmetatable, loadstring, coroutine, 
-	rawequal, typeof, print, math, warn, error,  pcall, 
-	xpcall, select, rawset, rawget, ipairs, pairs, 
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-	Vector3int16, elapsedTime, require, table, type, wait, 
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
-		_G, game, script, getfenv, setfenv, workspace, 
-	getmetatable, setmetatable, loadstring, coroutine, 
-	rawequal, typeof, print, math, warn, error,  pcall, 
-	xpcall, select, rawset, rawget, ipairs, pairs, 
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-	Vector3int16, elapsedTime, require, table, type, wait, 
+	local _G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, elapsedTime, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, elapsedTime, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
-	
+
 	local script = script
 	local service = service
 	local client = client
@@ -42,6 +42,43 @@ return function()
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+
+		Functions.Init = nil;
+	end
+
+	local function RunLast()
+		client = service.ReadOnly(client, {
+				[client.Variables] = true;
+				[client.Handlers] = true;
+				G_API = true;
+				G_Access = true;
+				G_Access_Key = true;
+				G_Access_Perms = true;
+				Allowed_API_Calls = true;
+				HelpButtonImage = true;
+				Finish_Loading = true;
+				RemoteEvent = true;
+				ScriptCache = true;
+				Returns = true;
+				PendingReturns = true;
+				EncodeCache = true;
+				DecodeCache = true;
+				Received = true;
+				Sent = true;
+				Service = true;
+				Holder = true;
+				GUIs = true;
+				LastUpdate = true;
+				RateLimits = true;
+
+				Init = true;
+				RunLast = true;
+				RunAfterInit = true;
+				RunAfterLoaded = true;
+				RunAfterPlugins = true;
+			}, true)--]]
+
+			Functions.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -50,6 +87,7 @@ return function()
 
 	client.Functions = {
 		Init = Init;
+		RunLast = RunLast;
 		Kill = client.Kill;
 
 		GetRandom = function(pLen)
@@ -59,7 +97,7 @@ return function()
 				Res[Idx] = string.format('%02x', math.random(255));
 			end;
 			return table.concat(Res)
-		end; 
+		end;
 
 		Round = function(num)
 			return math.floor(num + 0.5)
@@ -67,14 +105,14 @@ return function()
 
 		SetView = function(ob)
 			if ob=='reset' then
-				workspace.CurrentCamera.CameraType = 'Custom' 
+				workspace.CurrentCamera.CameraType = 'Custom'
 				workspace.CurrentCamera.CameraSubject = service.Player.Character.Humanoid
 				workspace.CurrentCamera.FieldOfView = 70
 			else
 				workspace.CurrentCamera.CameraSubject = ob
 			end
 		end;
-		
+
 		AddAlias = function(alias, command)
 			Variables.Aliases[alias:lower()] = command;
 			Remote.Get("UpdateAliases", Variables.Aliases)
@@ -83,10 +121,10 @@ return function()
 					Time = 5;
 					Title = "Notification";
 					Message = "Alias added";
-				}) 
+				})
 			end)
 		end;
-		
+
 		RemoveAlias = function(alias)
 			if client.Variables.Aliases[alias:lower()] then
 				Variables.Aliases[alias:lower()] = nil;
@@ -108,7 +146,7 @@ return function()
 				end)
 			end
 		end;
-		
+
 		Dizzy = function(speed)
 			service.StopLoop("DizzyLoop")
 			if speed then
@@ -135,7 +173,7 @@ return function()
 
 		Base64Encode = function(data)
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			return ((data:gsub('.', function(x) 
+			return ((data:gsub('.', function(x)
 				local r,b='',string.byte(x)
 				for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
 				return r;
@@ -280,7 +318,7 @@ return function()
 				local gui = service.New(props.ClassName)
 
 				for i,v in next,props do
-					pcall(function() 
+					pcall(function()
 						gui[i] = v
 					end)
 				end
@@ -457,13 +495,13 @@ return function()
 				local isR15 = (torso.Name == "UpperTorso")
 				if torso then
 					local p = service.New("Part")
-					p.Name = "ADONIS_CAPE" 
+					p.Name = "ADONIS_CAPE"
 					p.Anchored = false
 					p.Position = torso.Position
 					p.Transparency = 0
 					p.Material = material
 					p.CanCollide = false
-					p.TopSurface = 0 
+					p.TopSurface = 0
 					p.BottomSurface = 0
 					p.Size = Vector3.new(2,4,0.1)
 					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
@@ -480,16 +518,16 @@ return function()
 					motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
 					motor1.C1 = CFrame.new(0,1-((isR15 and 0.2) or 0),(torso.Size.Z/2))*CFrame.Angles(0,math.rad(90),0)
 
-					local msh = service.New("BlockMesh", p) 
+					local msh = service.New("BlockMesh", p)
 					msh.Scale = Vector3.new(0.9,0.87,0.1)
 
-					local dec 
+					local dec
 					if decal and decal ~= 0 then
-						dec = service.New("Decal", p) 
+						dec = service.New("Decal", p)
 						dec.Name = "Decal"
-						dec.Face = 2 
-						dec.Texture = "http://www.roblox.com/asset/?id="..decal 
-						dec.Transparency = 0 
+						dec.Face = 2
+						dec.Texture = "http://www.roblox.com/asset/?id="..decal
+						dec.Transparency = 0
 					end
 
 					local index = Functions.GetRandom()
@@ -587,13 +625,13 @@ return function()
 								end
 
 								local ang = 0.1
-								if wave then 
+								if wave then
 									if torso.Velocity.magnitude > 1 then
-										ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05 
+										ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
 									end
-									v.Wave = false 
-								else 
-									v.Wave = true 
+									v.Wave = false
+								else
+									v.Wave = true
 								end
 								ang = ang + math.min(torso.Velocity.magnitude/11, .8)
 								motor.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + 0.002
@@ -602,8 +640,8 @@ return function()
 								else
 									motor.CurrentAngle = -ang -- bugs
 								end
-								if motor.CurrentAngle < -.2 and motor.DesiredAngle > -.2 then 
-									motor.MaxVelocity = .04 
+								if motor.CurrentAngle < -.2 and motor.DesiredAngle > -.2 then
+									motor.MaxVelocity = .04
 								end
 							else
 								part.Transparency = 1
@@ -696,7 +734,7 @@ return function()
 			service.StopLoop("SetFPS")
 			local fps = tonumber(fps)
 			if fps then
-				service.StartLoop("SetFPS",0.1,function() 
+				service.StartLoop("SetFPS",0.1,function()
 					local ender = tick()+1/fps
 					repeat until tick()>=ender
 				end)
@@ -709,8 +747,8 @@ return function()
 
 		Crash = function()
 			--[[
-			local load = function(f) return f() end 
-			local s = string.rep("\n", 2^24) 
+			local load = function(f) return f() end
+			local s = string.rep("\n", 2^24)
 			print(load(function() return s end))--]]
 			--print(string.find(string.rep("a", 2^20), string.rep(".?", 2^20)))
 			--[[while true do
@@ -763,8 +801,8 @@ return function()
 					print("((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)")
 					local f = service.New('Frame',gui)
 					f.Size = UDim2.new(1,0,1,0)
-					spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)	
-					rem:FireServer("Hiiiiiiiiiiiiiiii")	
+					spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)
+					rem:FireServer("Hiiiiiiiiiiiiiiii")
 					spawn(function()
 						spawn(function()
 							spawn(function()
@@ -825,7 +863,7 @@ return function()
 				local key = tostring(input.KeyCode.Value)
 				local textbox = service.UserInputService:GetFocusedTextBox()
 
-				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then 
+				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
 					if (tick() - timer > 5 or isAdmin) and pcall(string.char, key) then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
@@ -877,7 +915,7 @@ return function()
 			else
 				for i,v in next,workspace.CurrentCamera:GetChildren()do
 					if v.Name == "ADONIS_WINDOW_FUNC_BLUR" then
-						v:Destroy() 
+						v:Destroy()
 					end
 				end
 			end
@@ -891,7 +929,7 @@ return function()
 			if volume then sound.Volume = volume end
 			if pitch then sound.Pitch = pitch end
 			sound.Name = "ADONI_LOCAL_SOUND "..audioId
-			sound.Parent = service.LocalContainer()	
+			sound.Parent = service.LocalContainer()
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
 			wait(1)
@@ -901,15 +939,15 @@ return function()
 		end;
 
 		StopAudio = function(audioId)
-			if Variables.localSounds[tostring(audioId)] then 
-				Variables.localSounds[tostring(audioId)]:Stop() 
-				Variables.localSounds[tostring(audioId)]:Destroy() 
-				Variables.localSounds[tostring(audioId)] = nil 
+			if Variables.localSounds[tostring(audioId)] then
+				Variables.localSounds[tostring(audioId)]:Stop()
+				Variables.localSounds[tostring(audioId)]:Destroy()
+				Variables.localSounds[tostring(audioId)] = nil
 			elseif audioId == "all" then
 				for i,v in pairs(Variables.localSounds) do
-					Variables.localSounds[i]:Stop() 
-					Variables.localSounds[i]:Destroy() 
-					Variables.localSounds[i] = nil 
+					Variables.localSounds[i]:Stop()
+					Variables.localSounds[i]:Destroy()
+					Variables.localSounds[i] = nil
 				end
 			end
 		end;
@@ -966,29 +1004,29 @@ return function()
 			local torso = service.Player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
 				local p = service.New("Part",service.LocalContainer())
-				p.Name = "::Adonis::Cape" 
+				p.Name = "::Adonis::Cape"
 				p.Anchored = true
 				p.Transparency=0.1
 				p.Material=material
-				p.CanCollide = false 
-				p.TopSurface = 0 
-				p.BottomSurface = 0 
-				if type(color)=="table" then 
-					color = Color3.new(color[1],color[2],color[3]) 
+				p.CanCollide = false
+				p.TopSurface = 0
+				p.BottomSurface = 0
+				if type(color)=="table" then
+					color = Color3.new(color[1],color[2],color[3])
 				end
 				p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
 				if reflect then
 					p.Reflectance=reflect
-				end 
+				end
 				if decal and decal~=0 then
-					local dec = service.New("Decal", p) 
-					dec.Face = 2 
-					dec.Texture = "http://www.roblox.com/asset/?id="..decal 
-					dec.Transparency=0 
+					local dec = service.New("Decal", p)
+					dec.Face = 2
+					dec.Texture = "http://www.roblox.com/asset/?id="..decal
+					dec.Transparency=0
 				end
 				p.formFactor = "Custom"
 				p.Size = Vector3.new(.2,.2,.2)
-				local msh = service.New("BlockMesh", p) 
+				local msh = service.New("BlockMesh", p)
 				msh.Scale = Vector3.new(9,17.5,.5)
 				wait(0.1)
 				p.Anchored=false
@@ -1003,25 +1041,25 @@ return function()
 					local ang = 0.1
 					local oldmag = torso.Velocity.magnitude
 					local mv = .002
-					if wave then ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05 
-						wave = false 
-					else 
-						wave = true 
+					if wave then ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
+						wave = false
+					else
+						wave = true
 					end
 					ang = ang + math.min(torso.Velocity.magnitude/11, .5)
 					motor1.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + mv
 					motor1.DesiredAngle = -ang
-					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then 
-						motor1.MaxVelocity = .04 
+					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then
+						motor1.MaxVelocity = .04
 					end
 
 					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.magnitude - oldmag) >=(torso.Velocity.magnitude/10) + 1
 
-					if torso.Velocity.magnitude < .1 then 
-						wait(.1) 
+					if torso.Velocity.magnitude < .1 then
+						wait(.1)
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()
-			end 
+			end
 		end;
 
 		TextToSpeech = function(str)
@@ -1088,7 +1126,7 @@ return function()
 				{
 					str='the';
 					func={25, 15}; --th, u
-				}; 
+				};
 				{
 					str='th';
 					func={32, 0.2395}
@@ -1108,7 +1146,7 @@ return function()
 					func={21,38};--c,w
 				};
 				{
-					str='ee'; 
+					str='ee';
 					func={1}
 				}; --(sheep)
 				{
@@ -1117,7 +1155,7 @@ return function()
 					func={19}
 				}; --(I)
 				{
-					str='ea'; 
+					str='ea';
 					func={1}
 				}; --(read)
 				{
@@ -1196,7 +1234,7 @@ return function()
 					func={1} --ee
 				};
 				{
-					str='ii'; 
+					str='ii';
 					func={19}
 				}; --(ii?)
 				{
@@ -1222,7 +1260,7 @@ return function()
 				{
 					str='s';
 					func={23}
-				}; --(see)	
+				}; --(see)
 
 				{
 					str='e';
@@ -1333,7 +1371,7 @@ return function()
 				{
 					str='!';
 					func="wait";
-				};		
+				};
 				{
 					str='?';
 					func="wait";

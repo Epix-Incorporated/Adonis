@@ -9,27 +9,27 @@ logError = nil
 
 --// Remote
 return function()
-	local _G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay = 
-		_G, game, script, getfenv, setfenv, workspace, 
-		getmetatable, setmetatable, loadstring, coroutine, 
-		rawequal, typeof, print, math, warn, error,  pcall, 
-		xpcall, select, rawset, rawget, ipairs, pairs, 
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3, 
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, 
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, 
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16, 
-		Vector3int16, elapsedTime, require, table, type, wait, 
+	local _G, game, script, getfenv, setfenv, workspace,
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, elapsedTime, require, table, type, wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, elapsedTime, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
-		
+
 	local script = script
 	local service = service
 	local client = client
@@ -42,34 +42,109 @@ return function()
 		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
+
+		Remote.Init = nil;
 	end
-	
+
+	local function RunAfterLoaded()
+		--// Report client finished loading
+		client.Remote.Send("ClientLoaded")
+
+		--// Ping loop
+		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
+
+		--// Get settings
+		local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
+		if settings then
+			client.G_API = settings.G_API
+			--client.G_Access = settings.G_Access
+			--client.G_Access_Key = settings.G_Access_Key
+			--client.G_Access_Perms = settings.G_Access_Perms
+			client.Allowed_API_Calls = settings.Allowed_API_Calls
+			client.HelpButtonImage = settings.HelpButtonImage
+		else
+			warn("FAILED TO GET SETTINGS FROM SERVER");
+		end
+
+		Remote.RunAfterLoaded = nil;
+	end
+
+	local function RunLast()
+		client = service.ReadOnly(client, {
+				[client.Variables] = true;
+				[client.Handlers] = true;
+				G_API = true;
+				G_Access = true;
+				G_Access_Key = true;
+				G_Access_Perms = true;
+				Allowed_API_Calls = true;
+				HelpButtonImage = true;
+				Finish_Loading = true;
+				RemoteEvent = true;
+				ScriptCache = true;
+				Returns = true;
+				PendingReturns = true;
+				EncodeCache = true;
+				DecodeCache = true;
+				Received = true;
+				Sent = true;
+				Service = true;
+				Holder = true;
+				GUIs = true;
+				LastUpdate = true;
+				RateLimits = true;
+
+				Init = true;
+				RunLast = true;
+				RunAfterInit = true;
+				RunAfterLoaded = true;
+				RunAfterPlugins = true;
+			}, true)--]]
+
+			Remote.RunLast = nil;
+	end
+
 	getfenv().client = nil
 	getfenv().service = nil
 	getfenv().script = nil
-	
+
 	client.Remote = {
 		Init = Init;
+		RunLast = RunLast;
+		RunAfterLoaded = RunAfterLoaded;
 		Returns = {};
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
 		Received = 0;
 		Sent = 0;
-		
+
+		CheckClient = function()
+			if tick() - Core.LastUpdate >= 55 then
+				wait(math.random()) --// De-sync everyone's client checks slightly
+				local returner = math.random()
+				local ret = Remote.Send("ClientCheck", {Sent = 0;--[[Remote.Sent]] Received = Remote.Received}, client.DepsName, returner)
+				--[[if ret and ret == returner then
+					Core.LastUpdate = tick()
+				else
+					client.Kill("Client check failed")
+				end--]]
+			end
+		end;
+
 		Returnables = {
 			Test = function(args)
 				return "HELLO FROM THE CLIENT SIDE :)! ", unpack(args)
 			end;
-			
+
 			Ping = function(args)
 				return Remote.Ping()
 			end;
-			
+
 			ClientHooked = function(args)
 				return Core.Special
 			end;
-			
+
 			TaskManager = function(args)
 				local action = args[1]
 				if action == "GetTasks" then
@@ -87,7 +162,7 @@ return function()
 					return tab
 				end
 			end;
-			
+
 			LoadCode = function(args)
 				local code = args[1]
 				local func = Core.LoadCode(code, GetEnv())
@@ -95,21 +170,21 @@ return function()
 					return func()
 				end
 			end;
-			
+
 			Function = function(args)
 				local func = client.Functions[args[1]]
 				if func and type(func) == "function" then
 					return func(unpack(args, 2))
 				end
 			end;
-				
+
 			Handler = function(args)
 				local handler = client.Handlers[args[1]]
 				if handler and type(handler) == "function" then
 					return handler(unpack(args, 2))
 				end
 			end;
-			
+
 			UIKeepAlive = function(args)
 				if Variables.UIKeepAlive then
 					for ind,g in next,client.GUIs do
@@ -119,24 +194,24 @@ return function()
 							elseif g.Class == "TextLabel" then
 								g.Object.Parent = UI.GetHolder()
 							end
-						
+
 							g.KeepAlive = false
 						end
 					end
 				end
-				
+
 				return true;
 			end;
-			
+
 			UI = function(args)
 				local guiName = args[1]
 				local themeData = args[2]
 				local guiData = args[3]
-				
+
 				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
 				return UI.Make(guiName, guiData, themeData)
 			end;
-			
+
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
@@ -148,7 +223,7 @@ return function()
 				end
 				return temp
 			end;
-			
+
 			ClientLog = function(args)
 				local temp={}
 				local function toTab(str, desc, color)
@@ -156,16 +231,16 @@ return function()
 						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
 					end
 				end
-				
+
 				for i,v in next,service.LogService:GetLogHistory() do
 					local mType = v.messageType
 					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 				end
-				
+
 				return temp
 			end
 		};
-		
+
 		UnEncrypted = {
 			LightingChange = function(prop,val)
 				print(prop,"TICKLE ME!?")
@@ -180,7 +255,7 @@ return function()
 				end
 			end
 		};
-		
+
 		Commands = {
 			GetReturn = function(args)
 				print("THE SERVER IS ASKING US FOR A RETURN");
@@ -197,7 +272,7 @@ return function()
 					Remote.Send("GiveReturn", key, unpack(retable,2))
 				end
 			end;
-			
+
 			GiveReturn = function(args)
 				print("SERVER GAVE US A RETURN")
 				if Remote.PendingReturns[args[1]] then
@@ -206,34 +281,34 @@ return function()
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
 			end;
-			
+
 			SetVariables = function(args)
 				local vars = args[1]
 				for var,val in next,vars do
 					Variables[var] = val
 				end
 			end;
-			
+
 			Print = function(args)
 				print(unpack(args))
 			end;
-			
+
 			FireEvent = function(args)
 				service.FireEvent(unpack(args))
 			end;
-			
+
 			Test = function(args)
 				print("OK WE GOT COMMUNICATION!  ORGL: "..tostring(args[1]))
 			end;
-			
+
 			TestError = function(args)
 				error("THIS IS A TEST ERROR")
 			end;
-			
+
 			TestEvent = function(args)
 				Remote.PlayerEvent(args[1],unpack(args,2))
 			end;
-			
+
 			LoadCode = function(args)
 				local code = args[1]
 				local func = Core.LoadCode(code, GetEnv())
@@ -241,24 +316,24 @@ return function()
 					return func()
 				end
 			end;
-			
+
 			LaunchAnti = function(args)
 				Anti.Launch(args[1],args[2])
 			end;
-			
+
 			UI = function(args)
 				local guiName = args[1]
 				local themeData = args[2]
 				local guiData = args[3]
-				
+
 				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
 				UI.Make(guiName,guiData,themeData)
 			end;
-			
+
 			RemoveUI = function(args)
 				UI.Remove(args[1],args[2])
 			end;
-			
+
 			StartLoop = function(args)
 				local name = args[1]
 				local delay = args[2]
@@ -268,18 +343,18 @@ return function()
 					service.StartLoop(name,delay,func)
 				end
 			end;
-			
+
 			StopLoop = function(args)
 				service.StopLoop(args[1])
 			end;
-			
+
 			Function = function(args)
 				local func = client.Functions[args[1]]
 				if func and type(func) == "function" then
 					Pcall(func,unpack(args,2))
 				end
 			end;
-			
+
 			Handler = function(args)
 				local handler = client.Handlers[args[1]]
 				if handler and type(handler) == "function" then
@@ -287,13 +362,13 @@ return function()
 				end
 			end
 		};
-		
+
 		Fire = function(...)
 			local limits = Process.RateLimits
 			local limit = (limits and limits.Remote) or 0.01;
 			local RemoteEvent = Core.RemoteEvent;
 			local extra = {...};
-			
+
 			if RemoteEvent and RemoteEvent.Object then
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
@@ -302,22 +377,22 @@ return function()
 				end)
 			end
 		end;
-		
+
 		Send = function(com,...)
 			Core.LastUpdate = tick()
 			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
 		end;
-		
+
 		GetFire = function(...)
 			local RemoteEvent = Core.RemoteEvent;
 			local limits = Process.RateLimits;
 			local limit = (limits and limits.Remote) or 0.02;
 			local extra = {...};
 			local returns;
-			
+
 			if RemoteEvent and RemoteEvent.Function then
 				local event = service.New("BindableEvent");
-				
+
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
 					spawn(function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
@@ -326,18 +401,18 @@ return function()
 					end)
 					wait(limit)
 				end)
-				
+
 				if not returns then
 					event.Event:Wait();
 					event:Destroy();
 				end
-				
+
 				if returns then
 					return unpack(returns)
 				end
 			end
 		end;
-		
+
 		Get = function(com,...)
 			Core.LastUpdate = tick()
 			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
@@ -347,22 +422,22 @@ return function()
 				return ret;
 			end
 		end;
-		
+
 		OldGet = function(com,...)
 			local returns
 			local key = Functions:GetRandom()
 			local waiter = service.New("BindableEvent");
 			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
-			
+
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)
 			print(string.format("GETTING RETURNS? %s", tostring(returns)))
 			--returns = returns or {event:Wait()}
 			waiter.Event:Wait();
 			print(string.format("WE GOT IT! %s", tostring(returns)))
-			
+
 			event:Disconnect()
-			
+
 			if returns then
 				if returns[1] == "__ADONIS_RETURN_ERROR" then
 					error(returns[2])
@@ -373,7 +448,7 @@ return function()
 				return nil
 			end
 		end;
-		
+
 		Ping = function()
 			local t = tick()
 			local ping = Remote.Get("Ping")
@@ -383,14 +458,14 @@ return function()
 			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*100)
 			return ms
 		end;
-		
+
 		PlayerEvent = function(event,...)
 			Remote.Send("PlayerEvent",event,...)
 		end;
-		
+
 		Encrypt = function(str, key, cache)
 			local cache = cache or Remote.EncodeCache or {}
-			if not key or not str then 
+			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
@@ -402,23 +477,23 @@ return function()
 				local len = string.len
 				local char = string.char
 				local endStr = {}
-				
+
 				for i = 1,len(str) do
 					local keyPos = (i%len(key))+1
 					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
 				return endStr
 			end
 		end;
-		
+
 		Decrypt = function(str, key, cache)
 			local cache = cache or Remote.DecodeCache or {}
-			if not key or not str then 
-				return str 
+			if not key or not str then
+				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
@@ -429,12 +504,12 @@ return function()
 				local len = string.len
 				local char = string.char
 				local endStr = {}
-				
+
 				for i = 1,len(str) do
 					local keyPos = (i%len(key))+1
 					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr

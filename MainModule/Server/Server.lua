@@ -9,11 +9,30 @@ Also just be aware that I'm a very messy person, so a lot of this may or may not
 																																																																																							]]
 math.randomseed(os.time())
 
+--// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
+local LoadingOrder = {
+	--// Nearly all modules rely on these to function
+	"Logs";
+	"Variables";
+	"Functions";
+
+	--// Core functionality
+	"Core";
+	"Remote";
+	"Process";
+
+	--// Misc
+	"Admin";
+	"HTTP";
+	"Anti";
+	"Commands";
+}
+
 --// Todo:
 --//   Fix a loooootttttttt of bugged commands
 --//   Probably a lot of other stuff idk
 --//   Transform from Sceleratis into Dr. Sceleratii; Evil alter-ego; Creator of bugs, destroyer of all code that is good
---//   Maybe add a celery command at some point
+--//   Maybe add a celery command at some point (wait didn't we do this?)
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
@@ -40,6 +59,27 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn =
 	Vector3int16, elapsedTime, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
 
+local ServicesWeUse = {
+	"Workspace";
+	"Players";
+	"Lighting";
+	"ServerStorage";
+	"ReplicatedStorage";
+	"JointsService";
+	"ReplicatedFirst";
+	"ScriptContext";
+	"ServerScriptService";
+	"LogService";
+	"Teams";
+	"SoundService";
+	"StarterGui";
+	"StarterPack";
+	"StarterPlayers";
+	"TestService";
+	"HttpService";
+	"InsertService";
+	"NetworkServer"
+}
 
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
@@ -109,13 +149,17 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
 				warn(tostring(err))
+			else
+				return err;
 			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),GetVargTable())
+			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Module encountered an error while loading: "..tostring(plugin))
 				warn(tostring(err))
+			else
+				return err;
 			end
 		end
 	else
@@ -351,72 +395,58 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Dropper = data.Dropper or service.New("Script")
 	server.Loader = data.Loader or service.New("Script")
 	server.Runner = data.Runner or service.New("Script")
+	server.LoadModule = LoadModule
+	server.ServiceSpecific = ServiceSpecific
+
 	server.ServerPlugins = data.ServerPlugins
 	server.ClientPlugins = data.ClientPlugins
-	server.Threading = require(server.Deps.ThreadHandler)
-	server.Changelog = require(server.Client.Dependencies.Changelog)
-	server.Credits = require(server.Client.Dependencies.Credits)
+	server.Client = Folder.Parent.Client
+
 	locals.Settings = server.Settings
 	locals.CodeName = server.CodeName
+
+	--// THIS NEEDS TO BE DONE **BEFORE** ANY EVENTS ARE CONNECTED
+	if server.Settings.HideScript and data.Model then
+		data.Model.Parent = nil
+		script:Destroy()
+	end
+
+	--// Prepare client themes and plugins
+	for index,plugin in next,(data.ClientPlugins or {}) do
+		plugin:Clone().Parent = server.Client.Plugins
+	end
+
+	for index,theme in next,(data.Themes or {}) do
+		theme:Clone().Parent = server.Client.UI
+	end
 
 	--// Old loader compatability
 	if server.Settings.Owners and not server.Settings.HeadAdmins then
 		server.Settings.HeadAdmins = server.Settings.Owners;
 	end
 
-	if server.Settings.HideScript and data.Model then
-		data.Model.Parent = nil
-		script:Destroy()
-	end
-
-	for setting,value in next,setTab.Settings do
+	for setting,value in next, server.Defaults.Settings do
 		if server.Settings[setting] == nil then
 			server.Settings[setting] = value
 		end
 	end
 
-	for desc,value in next,setTab.Descriptions do
+	for desc,value in next, server.Defaults.Descriptions do
 		if server.Descriptions[desc] == nil then
 			server.Descriptions[desc] = value
 		end
 	end
 
-	--// Load services
-	for ind, serv in next,{
-		"Workspace";
-		"Players";
-		"Lighting";
-		"ServerStorage";
-		"ReplicatedStorage";
-		"JointsService";
-		"ReplicatedFirst";
-		"ScriptContext";
-		"ServerScriptService";
-		"LogService";
-		"Teams";
-		"SoundService";
-		"StarterGui";
-		"StarterPack";
-		"StarterPlayers";
-		"TestService";
-		"HttpService";
-		"InsertService";
-		"NetworkServer"
-		}do local temp = service[serv] end
+	--// Bind cleanup
+	service.DataModel:BindToClose(CleanUp)
 
-	--// Module LoadOrder List
-	local LoadingOrder = {
-		"Logs";
-		"Variables";
-		"Core";
-		"Remote";
-		"Functions";
-		"Process";
-		"Admin";
-		"HTTP";
-		"Anti";
-		"Commands";
-	}
+	--// Require some dependencies
+	server.Threading = require(server.Deps.ThreadHandler)
+	server.Changelog = require(server.Client.Dependencies.Changelog)
+	server.Credits = require(server.Client.Dependencies.Credits)
+
+	--// Load services
+	for ind, serv in next,ServicesWeUse do local temp = service[serv] end
 
 	--// Load core modules
 	for ind,load in next,LoadingOrder do
@@ -426,62 +456,44 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		end
 	end
 
-	--// Initialize Cores
-	for i,name in next,LoadingOrder do
-		local core = server[name]
-		if core and type(core) == "table" and core.Init then
-			core.Init()
-			core.Init = nil
-		elseif type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table" and core.Init then
-			core.Init()
-		end
-	end
-
-	--// More Variable Initialization
-	server.Variables.CodeName = server.Functions:GetRandom()
-	server.Remote.MaxLen = 0
-	server.Logs.Errors = ErrorLogs
-	server.Client = Folder.Parent.Client
-	server.Core.Name = server.Functions:GetRandom()
-	server.Core.Themes = data.Themes or {}
-	server.Core.Plugins = data.Plugins or {}
-	server.Core.ModuleID = data.ModuleID or 2373501710
-	server.Core.LoaderID = data.LoaderID or 2373505175
-	server.Core.DebugMode = data.DebugMode or false
-	server.Core.DataStore = server.Core.GetDataStore()
-	server.Core.Loadstring = require(server.Deps.Loadstring)
-	server.HTTP.Trello.API = require(server.Deps.TrelloAPI)
-	server.LoadModule = LoadModule
-	server.ServiceSpecific = ServiceSpecific
-
-	--// Bind cleanup
-	service.DataModel:BindToClose(CleanUp)
-
 	--// Server Specific Service Functions
 	ServiceSpecific.GetPlayers = server.Functions.GetPlayers
 
-	--// Load data
-	if server.Core.DataStore then
-		service.TrackTask("Thread: DSLoadAndHook", function()
-			pcall(server.Core.LoadData)
+	--// Initialize Cores
+	local runLast = {}
+	local runAfterInit = {}
+	local runAfterPlugins = {}
 
-			--// Occasionally the below line causes a script execution timeout error, so lets just pcall the whole thing and hope loading doesn't break yolo(?)
-			local ds = server.Core.DataStore;
-			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat) -- WE NEED TO UPGRADE THIS TO THAT CROSS SERVER MESSAGE SERVICE THING. This is big bad currently.
-			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
-			--pcall(ds.OnUpdate, ds, server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
-		end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("CrossServerChat"), server.Process.CrossServerChat)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedSettings"), function(data) server.Process.DataStoreUpdated("SavedSettings",data) end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedTables"), function(data) server.Process.DataStoreUpdated("SavedTables",data) end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("SavedVariables"), function(data) server.Process.DataStoreUpdated("SavedVariables",data) end)
-		--server.Core.DataStore:OnUpdate(server.Core.DataStoreEncode("FullShutdown"), function(data) if data then local id,user,reason = data.ID,data.User,data.Reason if id == game.PlaceId then server.Functions.Shutdown(reason) end end end)
+	for i,name in next,LoadingOrder do
+		local core = server[name]
+
+		if core then
+			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
+				if core.Init then
+					core.Init(data)
+				end
+
+				if core.RunLast then
+					table.insert(runLast, core.RunLast);
+				end
+
+				if core.RunAfterInit then
+					table.insert(runAfterInit, core.RunAfterInit);
+				end
+
+				if core.RunAfterPlugins then
+					table.insert(runAfterPlugins, core.RunAfterPlugins);
+				end
+			end
+		end
 	end
 
-	--// NetworkServer Events
-	if service.NetworkServer then
-		service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
-		service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
+	--// Variables that rely on core modules being initialized
+	server.Logs.Errors = ErrorLogs
+
+	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
+	for i,f in next,runAfterInit do
+		f(data);
 	end
 
 	--// Load Plugins
@@ -493,117 +505,41 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		LoadModule(plugin, false, {script = plugin});
 	end
 
-	--// RemoteEvent Handling
-	server.Core.MakeEvent()
-	service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-	service.JointsService.ChildRemoved:Connect(function(c)
-		if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
-			wait();
-			server.Core.MakeEvent()
-		end
-	end)
+	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
+	for i,f in next,runAfterPlugins do
+		f(data);
+	end
 
-	--// Do some things
-	for com in next,server.Remote.Commands do if string.len(com)>server.Remote.MaxLen then server.Remote.MaxLen = string.len(com) end end
-	for index,plugin in next,(data.ClientPlugins or {}) do plugin:Clone().Parent = server.Client.Plugins end
-	for index,theme in next,(data.Themes or {}) do theme:Clone().Parent = server.Client.UI end
+	--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
+	server.AllModulesLoaded = true;
+	service.Events.AllModulesLoaded:Fire(os.time());
 
 	--// Prepare the client loader
 	--server.Core.PrepareClient()
 
-	--// Add existing players in case some are already in the server
-	for index,player in next,service.Players:GetPlayers() do
-		service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), server.Core.LoadExistingPlayer, player);
-	end
-
-	--// Events
-	service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", server.Process.PlayerAdded))
-	service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", server.Process.PlayerRemoving))
-	service.RbxEvent(service.Workspace.ChildAdded, server.Process.WorkspaceChildAdded)
-	service.RbxEvent(service.LogService.MessageOut, server.Process.LogService)
-	service.RbxEvent(service.ScriptContext.Error, server.Process.ErrorMessage)
-
-	--// Fake finder
-	service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
-
-	--// Start API
-	if service.NetworkServer then
-		--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
-		service.TrackTask("Thread: API Manager", server.Core.StartAPI)
-	end
-
 	--// Queue handler
 	--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
-	--// Client check
-	service.StartLoop("ClientCheck",30,server.Core.CheckAllClients,true)
-
-	--// Trello updater
-	if server.Settings.Trello_Enabled then
-		service.StartLoop("TRELLO_UPDATER",server.Settings.HttpWait,server.HTTP.Trello.Update,true)
+	--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
+	for i,f in next,runLast do
+		f(data);
 	end
-
-	--// Load minor stuff
-	server.Threading.NewThread(function()
-		for ind, music in next,server.Settings.MusicList or {} do table.insert(server.Variables.MusicList,music) end
-		for ind, music in next,server.Settings.InsertList or {} do table.insert(server.Variables.InsertList,music) end
-		for ind, cape in next,server.Settings.CapeList or {} do table.insert(server.Variables.Capes,cape) end
-		for ind, cmd in next,server.Settings.Permissions or {} do
-			local com,level = cmd:match("^(.*):(.*)")
-			if com and level then
-				if level:find(",") then
-					local newLevels = {}
-					for lvl in level:gmatch("[^%,]+") do
-						table.insert(newLevels, service.Trim(lvl))
-					end
-					server.Admin.SetPermission(com, newLevels)
-				else
-					server.Admin.SetPermission(com, level)
-				end
-			end
-		end
-		pcall(function() service.Workspace.AllowThirdPartySales = true end)
-		server.Functions.GetOldDonorList()
-	end)
-
-	--// Backup Map
-	if server.Settings.AutoBackup then
-		service.TrackTask("Thread: Initial Map Backup", server.Admin.RunCommand, server.Settings.Prefix.."backupmap")
-	end
-	--service.Threads.RunTask("Initial Map Backup",server.Admin.RunCommand,server.Settings.Prefix.."backupmap")
-
-	--// AutoClean
-	if server.Settings.AutoClean then
-		service.StartLoop("AUTO_CLEAN",server.Settings.AutoCleanDelay,server.Functions.CleanWorkspace,true)
-	end
-
-	--// Worksafe
-	service.TrackTask("WorkSafe",function()
-		if server.Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
-			local ancsafe = server.Deps.Assets.WorkSafe:clone()
-			ancsafe.Mode.Value = "AntiLeak"
-			ancsafe.Name = "ADONIS_AntiLeak"
-			ancsafe.Archivable = false
-			ancsafe.Parent = service.ServerScriptService
-			ancsafe.Disabled = false
-		end
-	end)
-
-	--// Finished loading
-	server.Variables.BanMessage = server.Settings.BanMessage
-	server.Variables.LockMessage = server.Settings.LockMessage
-	for i,v in next,server.Settings.OnStartup do server.Logs.AddLog("Script",{Text = "Startup: Executed "..tostring(v); Desc = "Executed startup command; "..tostring(v)}) server.Threading.NewThread(server.Admin.RunCommand, v) end
-
-	server.Logs.AddLog(server.Logs.Script,{
-		Text = "Finished Loading";
-		Desc = "Adonis finished loading";
-	})
 
 	if data.Loader then
 		warn("Loading Complete; Required by "..tostring(data.Loader:GetFullName()))
 	else
-		warn("Loading Complete;")
+		warn("Loading Complete; No loader location provided")
 	end
 
+	if server.Logs then
+		server.Logs.AddLog(server.Logs.Script, {
+			Text = "Finished Loading";
+			Desc = "Adonis finished loading";
+		})
+	else
+		warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+	end
+
+	service.Events.ServerInitialized:Fire();
 	return "SUCCESS"
 end})

@@ -25,11 +25,26 @@ return function(Vargs)
 		Settings = server.Settings;
 		Commands = server.Commands
 
+		Remote.Init = nil;
 		Logs:AddLog("Script", "Remote Module Initialized")
 	end;
 
+	local function RunAfterPlugins(data)
+		for com in next, Remote.Commands do
+			if string.len(com) > Remote.MaxLen then
+				Remote.MaxLen = string.len(com)
+			end
+		end
+
+		Remote.RunAfterPlugins = nil;
+		Logs:AddLog("Script", "Remote Module RunAfterPlugins Finished");
+	end
+
 	server.Remote = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
+
+		MaxLen = 0;
 		Clients = {};
 		Returns = {};
 		Sessions = {};

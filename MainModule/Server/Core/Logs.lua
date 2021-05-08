@@ -31,6 +31,7 @@ return function(Vargs)
 			Logs.SaveCommandLogs()
 		end);
 
+		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");
 	end;
 
@@ -330,7 +331,7 @@ return function(Vargs)
 						nonnumber+=1
 					end
 				end
-				
+
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
 				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
@@ -347,7 +348,7 @@ return function(Vargs)
 					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
 				end
 				]]
-				
+
 				local LoadstringEnabled = pcall(loadstring, "") and "ON" or "OFF"
 				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
 				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"

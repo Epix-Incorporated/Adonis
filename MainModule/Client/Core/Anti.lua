@@ -31,13 +31,6 @@ return function()
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local Anti, Process, UI, Variables
-	local function Init()
-		UI = client.UI;
-		Anti = client.Anti;
-		Variables = client.Variables;
-		Process = client.Process;
-	end
-
 	local script = script
 	local service = service
 	local client = client
@@ -52,6 +45,63 @@ return function()
 	local Player = service.Players.LocalPlayer
 	local Kick = Player.Kick
 	local toget = tostring(getfenv)
+
+	local function Init()
+		UI = client.UI;
+		Anti = client.Anti;
+		Variables = client.Variables;
+		Process = client.Process;
+
+		Anti.Init = nil;
+	end
+
+	local function RunAfterLoaded()
+		service.Player.Changed:Connect(function()
+			if service.Player.Parent ~= service.Players then
+				wait(5)
+				Anti.Detected("kick", "Parent not players", true)
+			elseif Anti.RLocked(service.Player) then
+				Anti.Detected("kick","Roblox Locked")
+			end
+		end)
+
+		Anti.RunAfterLoaded = nil;
+	end
+
+	local function RunLast()
+		client = service.ReadOnly(client, {
+				[client.Variables] = true;
+				[client.Handlers] = true;
+				G_API = true;
+				G_Access = true;
+				G_Access_Key = true;
+				G_Access_Perms = true;
+				Allowed_API_Calls = true;
+				HelpButtonImage = true;
+				Finish_Loading = true;
+				RemoteEvent = true;
+				ScriptCache = true;
+				Returns = true;
+				PendingReturns = true;
+				EncodeCache = true;
+				DecodeCache = true;
+				Received = true;
+				Sent = true;
+				Service = true;
+				Holder = true;
+				GUIs = true;
+				LastUpdate = true;
+				RateLimits = true;
+
+				Init = true;
+				RunLast = true;
+				RunAfterInit = true;
+				RunAfterLoaded = true;
+				RunAfterPlugins = true;
+			}, true)--]]
+
+			Anti.RunLast = nil;
+	end
 
 	getfenv().client = nil
 	getfenv().service = nil
@@ -102,7 +152,7 @@ return function()
 							end
 						end
 					end)
-						
+
 					if Success then
 						Detected("crash", "Tamper Protection 906287")
 						wait(1)
@@ -674,6 +724,8 @@ return function()
 		};
 
 		Init = Init;
+		RunLast = RunLast;
+		RunAfterLoaded = RunAfterLoaded;
 		Launch = Launch;
 		Detected = Detected;
 		Detectors = Detectors;
@@ -728,7 +780,7 @@ return function()
 				end
 			end
 		end;
-	}, false, true)
+	}, {[Init] = true, [RunAfterLoaded] = true}, true)
 
 	client.Anti = Anti
 

@@ -4,6 +4,22 @@
 
 math.randomseed(os.time())
 
+--// Load Order List
+local LoadingOrder = {
+	--// Required by most modules
+	"Variables";
+	"Functions";
+
+	--// Core functionality
+	"Core";
+	"Remote";
+	"UI";
+	"Process";
+
+	--// Misc
+	"Anti";
+}
+
 --// Loccalllsssss
 local _G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
@@ -25,6 +41,25 @@ local _G, game, script, getfenv, setfenv, workspace,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, elapsedTime, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn;
+
+local ServicesWeUse = {
+	"Workspace";
+	"Players";
+	"Lighting";
+	"ReplicatedStorage";
+	"ReplicatedFirst";
+	"ScriptContext";
+	"JointsService";
+	"LogService";
+	"Teams";
+	"SoundService";
+	"StarterGui";
+	"StarterPack";
+	"StarterPlayers";
+	"TestService";
+	"NetworkClient";
+};
+
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local origWarn = warn
@@ -323,65 +358,17 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.LoadingTime = data.LoadingTime
 	client.RemoteName = remoteName
 
+	--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
+	for ind,obj in next,Folder.Dependencies:GetChildren() do client.Deps[obj.Name] = obj end
+
+	--// Do this before we start hooking up events
 	folder:Destroy()
 	script:Destroy()
 
 	--// Intial setup
-	for ind, serv in next,{
-		"Workspace";
-		"Players";
-		"Lighting";
-		"ReplicatedStorage";
-		"ReplicatedFirst";
-		"ScriptContext";
-		"JointsService";
-		"LogService";
-		"Teams";
-		"SoundService";
-		"StarterGui";
-		"StarterPack";
-		"StarterPlayers";
-		"TestService";
-		"NetworkClient";
-	}do local temp = service[serv] end
+	for ind, serv in next,ServicesWeUse do local temp = service[serv] end
 
-	--// Load Order List
-	local LoadOrder = {
-		"Variables";
-		"UI";
-		"Core";
-		"Remote";
-		"Functions";
-		"Process";
-		"Anti";
-	}
-
-	--// Load Core Modules
-	for ind,load in next,LoadOrder do
-		local modu = Folder.Core:FindFirstChild(load)
-		if modu then
-			LoadModule(modu,true,{script = script})
-		end
-	end
-
-	--// Initialize Cores
-	for i, name in next,LoadOrder do
-		local core = client[name]
-		if core and type(core) == "table" and core.Init then
-			core.Init()
-			core.Init = nil
-		elseif type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table" and core.Init then
-			core.Init()
-		end
-	end
-
-	for ind,obj in next,Folder.Dependencies:GetChildren() do client.Deps[obj.Name] = obj end
-
-	--// Load Plugins
-	for index,plugin in next,Folder.Plugins:GetChildren() do
-		LoadModule(plugin, nil, {script = plugin})
-	end
-
+	--// Client specific service variables/functions
 	ServiceSpecific.Player = service.Players.LocalPlayer;
 	ServiceSpecific.PlayerGui = service.Player:FindFirstChild("PlayerGui");
 	ServiceSpecific.SafeTweenSize = function(obj,...) pcall(obj.TweenSize,obj,...) end;
@@ -415,62 +402,87 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		return client.Variables.LocalContainer
 	end;
 
+	--// Load Core Modules
+	for ind,load in next,LoadingOrder do
+		local modu = Folder.Core:FindFirstChild(load)
+		if modu then
+			LoadModule(modu, true, {script = script})
+		end
+	end
+
+	--// Start of module loading and server connection process
+	local runLast = {}
+	local runAfterInit = {}
+	local runAfterLoaded = {}
+	local runAfterPlugins = {}
+
 	--// Loading Finisher
 	client.Finish_Loading = function()
 		if client.Core.Key then
-			--// Events
-			--service.NetworkClient.ChildRemoved:Connect(function() wait(30) client.Anti.Detected("crash", "Network client disconnected") end)
-			--service.NetworkClient.ChildAdded:Connect(function() client.Anti.Detected("crash", "Network client reconnected?") end)
-			service.Player.Changed:Connect(function() if service.Player.Parent ~= service.Players then wait(5) client.Anti.Detected("kick", "Parent not players", true) elseif client.Anti.RLocked(service.Player) then client.Anti.Detected("kick","Roblox Locked") end end)
-			service.Player.Chatted:Connect(service.EventTask("Event: ProcessChat", client.Process.Chat))
-			service.Player.CharacterRemoving:Connect(service.EventTask("Event: CharacterRemoving", client.Process.CharacterRemoving))
-			service.Player.CharacterAdded:Connect(service.Threads.NewEventTask("Event: CharacterAdded", client.Process.CharacterAdded))
-			service.LogService.MessageOut:Connect(client.Process.LogService) --service.Threads.NewEventTask("EVENT:MessageOut",client.Process.LogService,60))
-			service.ScriptContext.Error:Connect(client.Process.ErrorMessage) --service.Threads.NewEventTask("EVENT:ErrorMessage",client.Process.ErrorMessage,60))
-
-			--// Get RateLimits
-			client.Process.RateLimits = client.Remote.Get("RateLimits") or client.Process.RateLimits;
-
-			--// Get CodeName
-			client.Variables.CodeName = client.Remote.Get("Variable", "CodeName")
-
-			--// Ping loop
-			client.Remote.Send("ClientLoaded")
-			delay(5, function() service.StartLoop("ClientCheck",30,client.Core.CheckClient,true) end)
-
-			--wait()
-			local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
-			if settings then
-				client.G_API = settings.G_API
-				--client.G_Access = settings.G_Access
-				--client.G_Access_Key = settings.G_Access_Key
-				--client.G_Access_Perms = settings.G_Access_Perms
-				client.Allowed_API_Calls = settings.Allowed_API_Calls
-				client.HelpButtonImage = settings.HelpButtonImage
-			else
-				warn("FAILED TO GET SETTINGS FROM SERVER");
+			--// Run anything from core modules that needs to be done after the client has finished loading
+			for i,f in next,runAfterLoaded do
+				f(data);
 			end
 
-			--// API
-			if service.NetworkClient then
-				service.TrackTask("Thread: API Manager", client.Core.StartAPI)
-				--service.Threads.RunTask("_G API Manager",client.Core.StartAPI)
+			--// Stuff to run after absolutely everything else
+			for i,f in next,runLast do
+				f(data);
 			end
 
 			--// Finished loading
 			clientLocked = true
 			client.Finish_Loading = function() end
 			client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
+			service.Events.FinishedLoading:Fire(os.time())
 		else
 			client.Kill()("Missing remote key")
 		end
 	end
 
-	--// Core
-	Fire = client.Remote.Fire
-	Detected = client.Anti.Detected
-	client.Core.Name = "\0"
-	client.Core.Special = depsName
+	--// Initialize Cores
+	for i,name in next,LoadingOrder do
+		local core = client[name]
+
+		if core then
+			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
+				if core.Init then
+					core.Init(data)
+				end
+
+				if core.RunAfterInit then
+					table.insert(runAfterInit, core.RunAfterInit);
+				end
+
+				if core.RunAfterPlugins then
+					table.insert(runAfterPlugins, core.RunAfterPlugins);
+				end
+
+				if core.RunAfterLoaded then
+					table.insert(runAfterLoaded, core.RunAfterLoaded)
+				end
+			end
+		end
+	end
+
+	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
+	for i,f in next,runAfterInit do
+		f(data);
+	end
+
+	--// Load Plugins
+	for index,plugin in next,Folder.Plugins:GetChildren() do
+		LoadModule(plugin, false, {script = plugin}); --noenv
+	end
+
+	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
+	for i,f in next,runAfterPlugins do
+		f(data);
+	end
+
+	--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
+	client.AllModulesLoaded = true;
+	service.Events.AllModulesLoaded:Fire(os.time());
+
 	client = service.ReadOnly(client, {
 		[client.Variables] = true;
 		[client.Handlers] = true;
@@ -494,13 +506,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		GUIs = true;
 		LastUpdate = true;
 		RateLimits = true;
+
+		Init = true;
+		RunAfterInit = true;
+		RunAfterLoaded = true;
+		RunAfterPlugins = true;
 	}, true)
-	--[[client.UI = service.ReadOnly(client.UI, true)
-	client.Core = service.ReadOnly(client.Core, true, {RemoteEvent = true, Key = true, LastUpdate = true})
-	client.Anti = service.ReadOnly(client.Anti, true)
-	client.Remote = service.ReadOnly(client.Remote, true)
-	client.Functions = service.ReadOnly(client.Functions, true)
-	client.Processing = service.ReadOnly(client.Processing, true)--]]
-	client.Core.GetEvent()
+
+	service.Events.ClientInitialized:Fire();
 	return "SUCCESS"
 end})

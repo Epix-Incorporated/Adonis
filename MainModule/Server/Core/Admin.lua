@@ -50,12 +50,48 @@ return function(Vargs)
 			Logs:AddLog("Script", "ChatService Handler Loaded")
 		end)
 
+		Admin.Init = nil;
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
 
+	local function RunAfterPlugins(data)
+		--// Change command permissions based on settings
+		for ind, cmd in next, Settings.Permissions or {} do
+			local com,level = cmd:match("^(.*):(.*)")
+			if com and level then
+				if level:find(",") then
+					local newLevels = {}
+					for lvl in level:gmatch("[^%,]+") do
+						table.insert(newLevels, service.Trim(lvl))
+					end
+					Admin.SetPermission(com, newLevels)
+				else
+					Admin.SetPermission(com, level)
+				end
+			end
+		end
+
+		--// Backup Map
+		if Settings.AutoBackup then
+			service.TrackTask("Thread: Initial Map Backup", Admin.RunCommand, Settings.Prefix.."backupmap")
+		end
+
+		--// Run OnStartup Commands
+		for i,v in next,Settings.OnStartup do
+			server.Threading.NewThread(Admin.RunCommand, v)
+			Logs:AddLog("Script",{
+				Text = "Startup: Executed "..tostring(v);
+				Desc = "Executed startup command; "..tostring(v)
+			})
+		end
+
+		Admin.RunAfterPlugins = nil;
+		Logs:AddLog("Script", "Admin Module RunAfterPlugins Finished");
+	end
+
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
 		if Variables and player.Parent and id == 1348327 and purchased then
-			Variables.CachedDonors[tostring(player.UserId)] = tick()
+			Variables.CachedDonors[tostring(player.UserId)] = os.time()
 		end
 	end)
 
@@ -91,6 +127,7 @@ return function(Vargs)
 
 	server.Admin = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 		PrefixCache = {};
 		CommandCache = {};
 		SpecialLevels = {};
@@ -584,14 +621,6 @@ return function(Vargs)
 						return true
 					end
 				end
-				--[[
-				for ind,old in pairs(Variables.OldDonorList) do
-					if p.Name==old.Name or p.userId==old.Id then
-						Variables.CachedDonors[key] = tick()
-						return true
-					end
-				end
-				--]]
 			end
 		end;
 
@@ -652,7 +681,7 @@ return function(Vargs)
 					end
 				]])
 			end
-			
+
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
 					Remote.Send(p,'Function','KillClient')
@@ -749,7 +778,7 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		RunCommandAsNonAdmin = function(coma,plr,...)
 			local ind,com = Admin.GetCommand(coma)
 			if com then
@@ -767,7 +796,7 @@ return function(Vargs)
 				end
 			end
 		end;
-	
+
 
 		CacheCommands = function()
 			local tempTable = {}
