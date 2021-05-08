@@ -59,7 +59,7 @@ return function()
 
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
-			pcall(Send,"Detected",action,info)
+			pcall(Send, "Detected", action, info)
 			wait(0.5)
 			if action == "kick" then
 				if not service.RunService:IsStudio() then
@@ -76,21 +76,58 @@ return function()
 		return true
 	end;
 
-	Routine(function()
-		while wait(5) do
-			if not Detected("_", "_", true) then -- detects the current bypass
-				while true do end
-			end
+	do
+		local OldEnviroment = getfenv()
+		local OldSuccess, OldError = pcall(function() return game:________() end)
+		Routine(function()
+			while wait(5) do
+				if not Detected("_", "_", true) then -- detects the current bypass
+					while true do end
+				end
 
-			-- this part you can choose whether or not you wanna use
-			for _,v in pairs({"SentinelSpy", "ScriptDumper"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
-				local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
-				if object then
-					Detected("log", "Malicious Object?: " .. v)
+				if OldSuccess or not rawequal(OldSuccess, OldSuccess) or not rawequal(OldError, OldError) or rawequal(OldError, "new") or not OldError == OldError or OldError == "new" or rawequal(OldEnviroment, {1}) or OldEnviroment == {1} or not OldEnviroment == OldEnviroment then
+					Detected("crash", "Tamper Protection 658947")
+					wait(1)
+					pcall(Disconnect, "Adonis_658947")
+					pcall(Kill, "Adonis_658947")
+					pcall(Kick, Player, "Adonis_658947")
+				end
+
+				-- Detects all skidded exploits which do not have newcclosure
+				do
+					local Success = xpcall(function() return game:________() end, function()
+						for i = 0, 11 do
+							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
+								Detected("kick", "Methamethod tampering 5634345")
+							end
+						end
+					end)
+						
+					if Success then
+						Detected("crash", "Tamper Protection 906287")
+						wait(1)
+						pcall(Disconnect, "Adonis_906287")
+						pcall(Kill, "Adonis_906287")
+						pcall(Kick, Player, "Adonis_906287")
+					end
+
+					local Success, Error = pcall(function() return game:________() end)
+
+					if not Success == OldSuccess or not OldError == Error then
+						Detected("kick", "Methamethod tampering 456456")
+					end
+				end
+
+				-- this part you can choose whether or not you wanna use
+				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
+					if object then
+						Detected("log", "Malicious Object?: " .. v)
+					end
 				end
 			end
-		end
-	end)
+		end)
+	end
 
 	local CheckEnv = function()
 		if tostring(getfenv) ~= toget or type(getfenv) ~= "function" then
