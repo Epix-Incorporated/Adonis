@@ -78,7 +78,7 @@ return function()
 
 	do
 		local OldEnviroment = getfenv()
-		local OldSuccess, OldError = pcall(function() return 10 + false % true + 5 * 9e9 + false ^ true / false * 5 - true end)
+		local OldSuccess, OldError = pcall(function() return game:________() end)
 		Routine(function()
 			while wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
@@ -95,7 +95,7 @@ return function()
 
 				-- Detects all skidded exploits which do not have newcclosure
 				do
-					xpcall(function() return 10 + false % true + 5 * 9e9 + false ^ true / false * 5 - true end, function()
+					xpcall(function() return game:________() end, function()
 						for i = 1, 11 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								Detected("kick", "Methamethod tampering 5634345")
@@ -103,7 +103,7 @@ return function()
 						end
 					end)
 
-					local Success, Error = pcall(function() return 10 + false % true + 5 * 9e9 + false ^ true / false * 5 - true end)
+					local Success, Error = pcall(function() return game:________() end)
 
 					if not Success == OldSuccess or not OldError == Error then
 						Detected("kick", "Methamethod tampering 456456")
