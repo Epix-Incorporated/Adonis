@@ -9,7 +9,7 @@ return {
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";
 	"(Git/happyman090) Character animations for clones";
-	"(Git/p3tray) Added :pban and :unpban as aliases for :gameban and :ungameban";
+	"(Git/p3tray & pbstFusion) Added :pban and :unpban as aliases for :gameban and :ungameban";
 	"(Git/p3tray) Added _G.Adonis.RunCommandAsNonAdmin(command, playerToRunCommandAs)";
 	"(Git/Expertcoderz) Revamped server details UI";
 	"(Git/Expertcoderz) New client setting to auto-hide commands ran via chat";
