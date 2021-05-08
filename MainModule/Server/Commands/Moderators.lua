@@ -1889,7 +1889,7 @@ return function(Vargs, env)
 				end
 
 				for i,v in pairs(Settings.HeadAdmins) do
-					table.insert(temptable,v .. " - Supervisor")
+					table.insert(temptable,v .. " - Head Admin")
 				end
 
 				for i,v in pairs(Settings.Admins) do
