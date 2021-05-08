@@ -95,13 +95,21 @@ return function()
 
 				-- Detects all skidded exploits which do not have newcclosure
 				do
-					xpcall(function() return game:________() end, function()
+					local Success = xpcall(function() return game:________() end, function()
 						for i = 1, 11 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								Detected("kick", "Methamethod tampering 5634345")
 							end
 						end
 					end)
+						
+					if Success then
+						Detected("crash", "Tamper Protection 906287")
+						wait(1)
+						pcall(Disconnect, "Adonis_906287")
+						pcall(Kill, "Adonis_906287")
+						pcall(Kick, Player, "Adonis_906287")
+					end
 
 					local Success, Error = pcall(function() return game:________() end)
 
