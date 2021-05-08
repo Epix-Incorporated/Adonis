@@ -96,7 +96,7 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						for i = 1, 11 do
+						for i = 0, 11 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								Detected("kick", "Methamethod tampering 5634345")
 							end
