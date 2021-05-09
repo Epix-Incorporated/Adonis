@@ -252,11 +252,9 @@ return function(data)
 	
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
-	if notif then
-		container.Position = UDim2.new(0,0,0,30-35)
-	else
-		container.Position = UDim2.new(0,0,0,-35)
-	end
+	local topbar = client.UI.Get("TopBar")
+	
+	container.Position = UDim2.new(0,0,0,((notif and 30) or 0) + ((topbar and 40) or 0) - 35)
 	
 	local children = container:children()
 	
