@@ -644,11 +644,14 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return strs
 		end;
-		Filter = function(str,from,to)
+		Filter = function(str, from, to)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
 			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId) end)
+			for i = 1, #lines do
+				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i], from.UserId):GetChatForUserAsync(to.UserId) end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
@@ -658,10 +661,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return new or "Filter Error"
 		end;
-		LaxFilter = function(str,from,cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
+		LaxFilter = function(str, from, cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
 			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
+				if not utf8.len(str) then
+					return "Filter Error"
+				end
 				if cmd and #service.GetPlayers(from, str, true) > 0 then
 					return str
 				else
@@ -671,11 +677,14 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return str
 			end
 		end;
-		BroadcastFilter = function(str,from)
+		BroadcastFilter = function(str, from)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
 			local new = ""
 			local lines = service.ExtractLines(str)
-			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetNonChatStringForBroadcastAsync() end)
+			for i = 1, #lines do
+				local ran, newl = pcall(function() return service.TextService:FilterStringAsync(lines[i], from.UserId):GetNonChatStringForBroadcastAsync() end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
@@ -686,18 +695,18 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return new or "Filter Error"
 		end;
 		MetaFunc = function(func)
-	    return service.NewProxy {
-	        __call = function(tab,...)
-	            local args = {pcall(func, ...)}
-	            local success = args[1]
-	            if not success then
-	                warn(args[2])
-	            else
-	                return unpack(args, 2)
-	            end
-	        end
-	    }
-	end;
+			return service.NewProxy {
+			__call = function(tab,...)
+				local args = {pcall(func, ...)}
+				local success = args[1]
+					if not success then
+						warn(args[2])
+					else
+						return unpack(args, 2)
+					end
+				end
+			}
+		end;
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
