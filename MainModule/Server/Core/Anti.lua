@@ -209,7 +209,7 @@ return function(Vargs)
 		Detected = function(player,action,info)
 			local info = string.gsub(tostring(info), "\n", "")
 
-			if Core.DebugMode or service.RunService:IsStudio() then
+			if service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
