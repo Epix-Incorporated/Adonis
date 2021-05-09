@@ -13,13 +13,13 @@ return {
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
 	"(Git/LolloDev5123) :admins now correctly shows \"Head Admin\" instead of \"Supervisor\"";
 	"(Git/happyman090) Character animations for clones";
+	"(Git/happyman090) Modified behaviour of kill command";
 	"(Git/p3tray & pbstFusion) Added :pban and :unpban as aliases for :gameban and :ungameban";
 	"(Git/p3tray) Added _G.Adonis.RunCommandAsNonAdmin(command, playerToRunCommandAs)";
 	"(Git/Expertcoderz) Revamped server details UI";
 	"(Git/Expertcoderz) New client setting to auto-hide commands ran via chat";
 	"(Git/Expertcoderz) Fixed(?) !addfriend and !unfriend";
 	"(Git/Expertcoderz) Minor stuff (typos)";
-	"(Git/Expertcoderz) Modified behaviour of kill command";
 	"(Git/Expertcoderz) Groups list tab for player inspection window";
 	"(Git/fxeP1) Update Process.lua CharacterAdded/PlayerAdded";
 	"(Git/fxeP1) AntiExploit updates";
