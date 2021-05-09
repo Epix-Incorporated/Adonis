@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Frame" referent="RBXD88CDC860ADE4C9FB3173AE671F7BA7E">
+	<Item class="Frame" referent="RBX4C1462BEE56E488C80687F578ECBAE5D">
 		<Properties>
 			<bool name="Active">false</bool>
 			<Vector2 name="AnchorPoint">
@@ -56,7 +56,7 @@
 			<bool name="Visible">true</bool>
 			<int name="ZIndex">1</int>
 		</Properties>
-		<Item class="Frame" referent="RBXABA31CD746B14AF5969F0EE515FF8CC5">
+		<Item class="Frame" referent="RBX66A76A13DE3345DF87044394A41C0DA1">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -110,7 +110,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBXD70BDF1486DA4F148B529BF1E0630EA8">
+			<Item class="TextLabel" referent="RBXEDD69E8087124B44A1FF063FB3079076">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -188,19 +188,19 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBXEABD6A82E586496E80E2C8F4F5528191">
+		<Item class="Folder" referent="RBX0436791F738C4378A07EE52792EAF4EC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX442E5002802944BEA6E012D082543851">
+			<Item class="ModuleScript" referent="RBX60F4336A15F94FA1BA321D030DB76158">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid"></string>
+					<string name="ScriptGuid">{934968C2-F3D4-468E-9A04-F2C76AA7760A}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -253,9 +253,9 @@ return function(data)
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
 	if notif then
-		container.Position = UDim2.new(0,0,0,30)
+		container.Position = UDim2.new(0,0,0,30-35)
 	else
-		container.Position = UDim2.new(0,0,0,0)
+		container.Position = UDim2.new(0,0,0,-35)
 	end
 	
 	local children = container:children()
@@ -303,7 +303,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX60D39D15B2A74BE69B3CFA88A6C354C2">
+			<Item class="BoolValue" referent="RBXFBCFE2A585B7468BA4B30F65CDEC9EEC">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -312,7 +312,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX27AF3C591E5447E0881ECEB8E194790B">
+			<Item class="BoolValue" referent="RBX5346EA9F08684D4E9B7DCC065A147285">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
