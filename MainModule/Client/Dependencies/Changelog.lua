@@ -2,10 +2,12 @@ return {
 	"Version: 217";
 	"*Drag edges to expand*";
 	"";
-	"[v217 WIP]";
+	"[v217 5.9.2021 19:15 EST]";
 	"*Random bug fixes & changes";
-	"*Fixed an issue that caused :ls to not work which might have also caused other bugs";
+	"*Fixed a queue issue that caused :ls to not work which might have also caused other bugs";
 	"*Disabled a recently merged detection that seems to be spamming false positives";
+	"*Hints & notif now appear from the top edge of the window rather than below roblox's invisible top bar";
+	"*Added TopBarShift setting to revert the above mentioned hint/notif positioning change (for custom top bars)";
 	"*Changes to how module and module related stuff is loaded (more modular?)";
 	"(Git/imskyyc) Updated TrelloAPI";
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
