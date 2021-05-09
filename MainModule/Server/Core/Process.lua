@@ -803,6 +803,10 @@ return function(Vargs)
 					Remote.MakeGui(p,"HelpButton")
 				end
 
+				if Settings.TopBarShift then
+					Remote.MakeGui(p, "TopBar")
+				end
+
 				if Settings.CustomChat then
 					Remote.MakeGui(p,"Chat")
 				end

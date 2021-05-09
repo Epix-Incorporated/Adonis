@@ -147,7 +147,7 @@ local descs = {}
 
 	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.HeadAdmins = {}       	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.HeadAdmins = {}   -- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -214,6 +214,7 @@ local descs = {}
 	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
+	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
@@ -309,6 +310,7 @@ local descs = {}
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
+	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
 	descs.AutoClean = [[ Will auto clean service.Workspace of things like hats and tools ]]
 	descs.AutoBackup = [[ Run a map backup command when the server starts, this usually can be false if the server is FE, which means exploits are mostly prevented to require :restoremap ]]
@@ -396,6 +398,7 @@ local descs = {}
 		"MaxLogs";
 		"Notification";
 		"SongHint";
+		"TopBarShift";
 		"";
 		"AutoClean";
 		"AutoCleanDelay";

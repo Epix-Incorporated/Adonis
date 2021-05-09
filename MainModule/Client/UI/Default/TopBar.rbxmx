@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX742561C0545F4502AF868EFE62490EEF">
+	<Item class="ScreenGui" referent="RBX29C85DAA21B94171981DFF82595B7465">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="TextLabel" referent="RBX6DB08F076E4A45619819847844F16A1D">
+		<Item class="TextLabel" referent="RBX575C7E6986DF4593979BBD742E4F96CA">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -54,7 +54,7 @@
 					<XS>0</XS>
 					<XO>0</XO>
 					<YS>0</YS>
-					<YO>0</YO>
+					<YO>-35</YO>
 				</UDim2>
 				<bool name="RichText">false</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
@@ -89,11 +89,11 @@
 				<bool name="TextWrapped">true</bool>
 				<token name="TextXAlignment">2</token>
 				<token name="TextYAlignment">1</token>
-				<bool name="Visible">true</bool>
+				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBXB816145E4641409D82AF39ACA9572C3C">
+		<Item class="Frame" referent="RBXBDB09E614D17472899D1E234FF7EFEEE">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -148,19 +148,19 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX136D05355B414424AEC622E6E2A89905">
+		<Item class="Folder" referent="RBX2BFAAC20462A47FE9C77EFEB38001361">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXF6F922249BE84733870BAC811AB31A2E">
+			<Item class="ModuleScript" referent="RBXA3BE11C2B8F542CB8D60E2A0D85CA16A">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid"></string>
+					<string name="ScriptGuid">{1F9FE329-5DF6-4125-B448-8F52B3CB078B}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -207,14 +207,14 @@ return function(data)
 	end
 	--]]
 	
-	bar.Position=UDim2.new(0,0,0,-40)
+	--bar.Position=UDim2.new(0,0,0,-35)
 	gTable:Ready()
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX414A292551D7457FBF25F7F5719B6794">
+			<Item class="BoolValue" referent="RBX618BE40DE84A41B0A1452A8E54714E46">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -223,7 +223,7 @@ end]]></ProtectedString>
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX7F58C43D511645E4B98F10D73D93B03D">
+			<Item class="BoolValue" referent="RBX0FF855DF6A624002984BB49520C53DF4">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
