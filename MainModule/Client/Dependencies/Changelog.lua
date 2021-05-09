@@ -3,7 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v217 WIP]";
-	"*Bug fixes";
+	"*Random bug fixes & changes";
+	"*Fixed an issue that caused :ls to not work which might have also caused other bugs";
+	"*Disabled a recently merged detection that seems to be spamming false positives";
 	"*Changes to how module and module related stuff is loaded (more modular?)";
 	"(Git/imskyyc) Updated TrelloAPI";
 	"(Git/ccuser44) Added unprotected metatable detection with tamper protection";
