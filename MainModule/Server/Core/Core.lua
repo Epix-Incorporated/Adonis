@@ -523,7 +523,7 @@ return function(Vargs)
 			end
 
 			if ScriptType then
-				ScriptType.Name = type
+				ScriptType.Name = "[Adonis] ".. type
 
 				if allowCodes then
 					local exec = Instance.new("StringValue",ScriptType)
@@ -1032,7 +1032,7 @@ return function(Vargs)
 				end);
 
 				Scripts = service.ReadOnly({
-					ExecutePermission = function(code)
+					ExecutePermission = function(srcScript, code)
 						local exists;
 
 						if not Settings.CodeExecution then
@@ -1040,7 +1040,7 @@ return function(Vargs)
 						end
 
 						for i,v in pairs(Core.ScriptCache) do
-							if v.Script == rawget(getfenv(2), "script") then
+							if v.Script == srcScript then
 								exists = v
 							end
 						end
@@ -1050,13 +1050,13 @@ return function(Vargs)
 							return exists.Source, exists.Loadstring
 						end
 
-						local data = Core.ExecutePermission(rawget(getfenv(2), "script"),code)
+						local data = Core.ExecutePermission(srcScript, code)
 						if data and data.Source then
 							local module;
 							if not exists then
 								module = require(Deps.Loadstring.FiOne:Clone())
 								table.insert(Core.ScriptCache,{
-									Script = rawget(getfenv(2), "script");
+									Script = srcScript;
 									Source = data.Source;
 									Loadstring = module;
 									noCache = data.noCache;

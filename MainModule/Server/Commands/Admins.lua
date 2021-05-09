@@ -78,7 +78,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-				
+
 		ShutdownLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
@@ -809,8 +809,10 @@ return function(Vargs, env)
 			NoFilter = true;
 			Function = function(plr,args)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				local cl = Core.NewScript('Script',args[1])
+				local cl = Core.NewScript('Script', args[1], true)
+				cl.Name = "[Adonis] Script"
 				cl.Parent = service.ServerScriptService
+				wait()
 				cl.Disabled = false
 				Functions.Hint("Ran Script",{plr})
 			end
@@ -824,10 +826,34 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				local cl = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1])
+				local cl = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
+				cl.Name = "[Adonis] LocalScript"
+				cl.Disabled = true
 				cl.Parent = plr.Backpack
+				wait()
 				cl.Disabled = false
 				Functions.Hint("Ran LocalScript",{plr})
+			end
+		};
+
+		LoadLocalScript = {
+			Prefix = Settings.Prefix;
+			Commands = {"cs";"cscr";"clientscript";};
+			Args = {"player";"code";};
+			Description = "Lets you run a localscript on the target player(s)";
+			AdminLevel = "Admins";
+			NoFilter = true;
+			Function = function(plr,args)
+				local new = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2], true)
+				for i,v in next,service.GetPlayers(plr,args[1]) do
+					local cl = new:Clone()
+					cl.Name = "[Adonis] LocalScript"
+					cl.Disabled = true
+					cl.Parent = v.Backpack
+					wait()
+					cl.Disabled = false
+					Functions.Hint("Ran LocalScript on "..v.Name,{plr})
+				end
 			end
 		};
 
@@ -955,24 +981,6 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","RestoreFPS")
-				end
-			end
-		};
-
-		LoadLocalScript = {
-			Prefix = Settings.Prefix;
-			Commands = {"cs";"cscr";"clientscript";};
-			Args = {"player";"code";};
-			Description = "Lets you run a localscript on the target player(s)";
-			AdminLevel = "Admins";
-			NoFilter = true;
-			Function = function(plr,args)
-				local new = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2])
-				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local cl = new:Clone()
-					cl.Parent = v.Backpack
-					cl.Disabled = false
-					Functions.Hint("Ran LocalScript on "..v.Name,{plr})
 				end
 			end
 		};
@@ -1268,7 +1276,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		PromptPremiumPurchase = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptpremiumpurchase";"premiumpurchaseprompt";};

@@ -65,7 +65,7 @@ return function()
 			--service.Threads.RunTask("_G API Manager",client.Core.StartAPI)
 		end
 
-		client = service.ReadOnly(client, {
+		--[[client = service.ReadOnly(client, {
 				[client.Variables] = true;
 				[client.Handlers] = true;
 				G_API = true;
@@ -94,10 +94,10 @@ return function()
 				RunAfterInit = true;
 				RunAfterLoaded = true;
 				RunAfterPlugins = true;
-			}, true)--]]
+		}, true)--]]
 
-			Core.RunLast = nil
-		end
+		Core.RunLast = nil
+	end
 
 	getfenv().client = nil
 	getfenv().service = nil
@@ -247,6 +247,7 @@ return function()
 			local ScriptCache = Core.ScriptCache
 			local FiOne = client.Deps.FiOne
 			local Get = Remote.Get
+			local GetFire = Remote.GetFire
 			local G_API = client.G_API
 			local Allowed_API_Calls = client.Allowed_API_Calls
 			local NewProxy = service.NewProxy
@@ -338,11 +339,11 @@ return function()
 				--]]
 
 				Scripts = ReadOnly({
-					ExecutePermission = MetaFunc(function(code)
+					ExecutePermission = (function(srcScript, code)
 						local exists;
 
 						for i,v in next,ScriptCache do
-							if UnWrap(v.Script) == getfenv(2).script then
+							if UnWrap(v.Script) == srcScript then
 								exists = v
 							end
 						end
@@ -352,13 +353,13 @@ return function()
 							return exists.Source, exists.Loadstring
 						end
 
-						local data = Get("ExecutePermission",UnWrap(getfenv(3).script), code, true)
+						local data = Get("ExecutePermission", srcScript, code, true)
 						if data and data.Source then
 							local module;
 							if not exists then
 								module = require(FiOne:Clone())
 								table.insert(ScriptCache,{
-									Script = getfenv(2).script;
+									Script = srcScript;
 									Source = data.Source;
 									Loadstring = module;
 									noCache = data.noCache;

@@ -69,7 +69,7 @@ return function()
 	end
 
 	local function RunLast()
-		client = service.ReadOnly(client, {
+	--[[	client = service.ReadOnly(client, {
 				[client.Variables] = true;
 				[client.Handlers] = true;
 				G_API = true;
@@ -146,11 +146,12 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						for i = 0, 11 do
+						--[[for i = 0, 11 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
-								Detected("kick", "Methamethod tampering 5634345")
+								warn("detected????")
+								--Detected("kick", "Metamethod tampering 5634345")
 							end
-						end
+						end--]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
 					end)
 
 					if Success then
@@ -780,7 +781,7 @@ return function()
 				end
 			end
 		end;
-	}, {[Init] = true, [RunAfterLoaded] = true}, true)
+	}, {[Init] = true, [RunLast] = true, [RunAfterLoaded] = true}, true)
 
 	client.Anti = Anti
 

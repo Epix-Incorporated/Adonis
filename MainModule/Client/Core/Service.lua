@@ -760,10 +760,11 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					return "Processing"
 				else
 					local stepped = service.RunService.RenderStepped;
+					local function count() local num = 0; for i,v in next,queue do num = num+1 end return num end;
 
 					queue.__PROCESSING = true
 
-					while wait() and #queue > 0 do
+					while wait() and count() > 0 do
 						for i,v in next,queue do
 							if i ~= "__PROCESSING" then
 								if v.Running then

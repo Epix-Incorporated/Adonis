@@ -449,6 +449,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 					core.Init(data)
 				end
 
+				if core.RunLast then
+					table.insert(runLast, core.RunLast);
+				end
+
 				if core.RunAfterInit then
 					table.insert(runAfterInit, core.RunAfterInit);
 				end
@@ -483,7 +487,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.AllModulesLoaded = true;
 	service.Events.AllModulesLoaded:Fire(os.time());
 
-	client = service.ReadOnly(client, {
+	--[[client = service.ReadOnly(client, {
 		[client.Variables] = true;
 		[client.Handlers] = true;
 		G_API = true;
@@ -511,7 +515,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		RunAfterInit = true;
 		RunAfterLoaded = true;
 		RunAfterPlugins = true;
-	}, true)
+	}, true)--]]
 
 	service.Events.ClientInitialized:Fire();
 	return "SUCCESS"

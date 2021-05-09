@@ -70,7 +70,7 @@ return function()
 	end
 
 	local function RunLast()
-		client = service.ReadOnly(client, {
+		--[[client = service.ReadOnly(client, {
 				[client.Variables] = true;
 				[client.Handlers] = true;
 				G_API = true;
@@ -392,10 +392,9 @@ return function()
 
 			if RemoteEvent and RemoteEvent.Function then
 				local event = service.New("BindableEvent");
-
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
-					spawn(function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
+					delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
 						returns = {RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra))}
 						event:Fire();
 					end)
@@ -413,8 +412,17 @@ return function()
 			end
 		end;
 
+		RawGet = function(...)
+			local extra = {...};
+			local RemoteEvent = Core.RemoteEvent;
+			if RemoteEvent and RemoteEvent.Function then
+				Remote.Sent = Remote.Sent+1;
+				return RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
+			end
+		end;
+
 		Get = function(com,...)
-			Core.LastUpdate = tick()
+			Core.LastUpdate = os.time()
 			local ret = Remote.GetFire(Remote.Encrypt(com,Core.Key),...)
 			if type(ret) == "table" then
 				return unpack(ret);

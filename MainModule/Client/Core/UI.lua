@@ -49,7 +49,7 @@ return function()
 	end
 
 	local function RunLast()
-		client = service.ReadOnly(client, {
+		--[[client = service.ReadOnly(client, {
 				[client.Variables] = true;
 				[client.Handlers] = true;
 				G_API = true;
