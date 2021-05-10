@@ -254,9 +254,8 @@ return function(Vargs)
 
 								if opts.CrossServer or (not isSystem and not opts.DontLog) then
 									AddLog("Commands",{
-										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "").. p.Name,
-										Desc = matched.. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
-										Player = p;
+										Text = string.format("%s%s", (opts.CrossServer and "[CRS_SERVER] ") or "", p.Name),
+										Desc = matched .. Settings.SplitKey.. table.concat(args, Settings.SplitKey),
 									})
 
 									if Settings.ConfirmCommands then
