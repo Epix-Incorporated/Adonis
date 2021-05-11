@@ -218,7 +218,7 @@ local descs = {}
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
-	settings.AutoBackup = false -- (not recommended) Run a map backup command when the server starts, this is mustly useless as clients cannot modify the server. To restore the map run :restoremap
+	settings.AutoBackup = false -- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist
@@ -313,7 +313,7 @@ local descs = {}
 	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
 	descs.AutoClean = [[ Will auto clean service.Workspace of things like hats and tools ]]
-	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mustly useless as clients cannot modify the server. To restore the map run :restoremap ]]
+	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
 
 	descs.CustomChat = [[ Custom chat ]]
