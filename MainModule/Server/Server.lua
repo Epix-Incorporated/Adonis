@@ -100,30 +100,30 @@ local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
-local isModule = function(module)for ind,modu in next,server.Modules do if module == modu then return true end end end
-local logError = function(plr,err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr),Desc = err,Player=plr}) end end
-local message = function(...) game:GetService("TestService"):Message(...) end
-local print = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else print(':: Adonis :: '..tostring(v)) end end  end
-local warn = function(...)for i,v in next,{...}do if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::"..tostring(v)) else warn(':: Adonis :: '..tostring(v)) end end end
-local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = pcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
-local Pcall = function(func,...) local ran,error = pcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
-local Routine = function(func,...)  coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
-local GetEnv; GetEnv = function(env, repl)
-	local scriptEnv = setmetatable({},{
-		__index = function(tab,ind)
+local isModule = function(module) for ind, modu in next, server.Modules do if module == modu then return true end end end
+local logError = function(plr, err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr), Desc = err, Player = plr}) end end
+--local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
+local print = function(...) --[[if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::", ...) else]] print(":: Adonis ::", ...) --[[end]] end
+local warn = function(...) --[[if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::", ...) else]] warn(":: Adonis ::", ...) --[[end]] end
+local cPcall = function(func, ...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = pcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
+local Pcall = function(func, ...) local ran,error = pcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
+local Routine = function(func, ...) coroutine.resume(coroutine.create(func),...) end
+local sortedPairs = function(t, f) local a = {} for n in next, t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local GetEnv, GetEnv = function(env, repl)
+	local scriptEnv = setmetatable({}, {
+		__index = function(tab, ind)
 			return (locals[ind] or (env or origEnv)[ind])
 		end;
 
 		__metatable = unique;
 	})
-	if repl and type(repl)=="table" then
-		for ind, val in next,repl do
+	if repl and type(repl) == "table" then
+		for ind, val in next, repl do
 			scriptEnv[ind] = val
 		end
 	end
 	return scriptEnv
-end;
+end
 
 local GetVargTable = function()
 	return {
