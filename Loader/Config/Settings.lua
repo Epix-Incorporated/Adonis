@@ -218,7 +218,7 @@ local descs = {}
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
-	settings.AutoBackup = not workspace.FilteringEnabled -- Run a map backup command when the server starts, this usually can be false if the server is FE, which means exploits are mostly prevented to require :restoremap.
+	settings.AutoBackup = false -- (not recommended) Run a map backup command when the server starts, this is mustly useless as clients cannot modify the server. To restore the map run :restoremap.
 
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist
