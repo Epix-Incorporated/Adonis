@@ -109,7 +109,7 @@ local cPcall = function(func, ...) local function cour(...) coroutine.resume(cor
 local Pcall = function(func, ...) local ran,error = pcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
 local Routine = function(func, ...) coroutine.resume(coroutine.create(func),...) end
 local sortedPairs = function(t, f) local a = {} for n in next, t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
-local GetEnv, GetEnv = function(env, repl)
+local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({}, {
 		__index = function(tab, ind)
 			return (locals[ind] or (env or origEnv)[ind])
