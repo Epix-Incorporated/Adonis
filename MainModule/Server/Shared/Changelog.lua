@@ -1,6 +1,13 @@
 return {
-	"Version: 217";
+	"Version: 218";
 	"*Drag edges to expand*";
+	"";
+	"[v218 WIP]";
+	"*Moved shared client & server resources/modules (like Service.lua, changelog, credits, etc) to a new 'Shared' folder";
+	"*Updated how queues work; Should be more efficient/less prone to issues";
+	"*Player data will now save every 30 seconds; Saving is queued & timed to prevent DataStore issues";
+	"*Fixed :clearplayerdata";
+	"*Added service.Yield";
 	"";
 	"[v217 5.9.2021 19:15 EST]";
 	"*Random bug fixes & changes";

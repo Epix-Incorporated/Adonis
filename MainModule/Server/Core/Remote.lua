@@ -812,8 +812,8 @@ return function(Vargs)
 			if keys and keys.RemoteReady == true then
 				local returns, finished
 				local key = Functions:GetRandom()
-				local waiter = service.New("BindableEvent") -- issue with service.Events:Wait()??????
-				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
+				local Yield = service.Yield();
+				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
 
 				Remote.PendingReturns[key] = true
 				Remote.Send(p,"GetReturn",com,key,...)
@@ -824,7 +824,9 @@ return function(Vargs)
 					delay(600, function() if not finished then event:Fire() end end)
 					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
 					--returns = returns or {event:Wait()}
-					waiter.Event:Wait();
+					Yield:Wait();
+					Yield:Destroy();
+
 					print(string.format("WE GOT IT! %s", tostring(returns)));
 					pEvent:Disconnect()
 				end

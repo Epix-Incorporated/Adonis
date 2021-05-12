@@ -98,7 +98,15 @@ return function(Vargs)
 				local temp = {}
 
 				for i,m in ipairs(Logs.Commands) do
-					table.insert(temp, m)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					local newTab = (type(m) == "table" and service.CLoneTable(m)) or m;
+					if type(m) == "table" and newTab.Player then
+						local p = newTab.Player;
+						newTab.Player = {
+							Name = p.Name;
+							UserId = p.UserId;
+						}
+					end
+					table.insert(temp, newTab)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
 				end
 
 				if oldLogs then

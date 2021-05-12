@@ -391,20 +391,32 @@ return function()
 			local returns;
 
 			if RemoteEvent and RemoteEvent.Function then
-				local event = service.New("BindableEvent");
+				local Yield = service.Yield();
+
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
 					delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
-						returns = {RemoteEvent.Function:InvokeServer({Mode = "Get", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra))}
-						event:Fire();
+						returns = {
+							RemoteEvent.Function:InvokeServer({
+								Mode = "Get",
+								Module = client.Module,
+								Loader = client.Loader,
+								Sent = Remote.Sent,
+								Received = Remote.Received
+							}, unpack(extra))
+						}
+
+						Yield:Release(returns);
 					end)
+
 					wait(limit)
 				end)
 
 				if not returns then
-					event.Event:Wait();
-					event:Destroy();
+					Yield:Wait();
 				end
+
+				Yield:Destroy();
 
 				if returns then
 					return unpack(returns)

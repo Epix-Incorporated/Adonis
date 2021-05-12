@@ -183,25 +183,27 @@ local CleanUp = function()
 	server.Model.Parent = service.ServerScriptService
 	server.Model.Name = "Adonis_Loader"
 	server.Running = false
-	service.Threads.StopAll()
 
-	for i,v in next,RbxEvents do
-		print("Disconnecting event")
-		v:Disconnect()
-		table.remove(RbxEvents, i)
-	end
+	pcall(service.Threads.StopAll)
+	pcall(function()
+		for i,v in next,RbxEvents do
+			print("Disconnecting event")
+			v:Disconnect()
+			table.remove(RbxEvents, i)
+		end
+	end)
 	--loader.Archivable = false
 	--loader.Disabled = true
 	--loader:Destroy()
-	if server.Core.RemoteEvent then
-		server.Core.RemoteEvent.Security:Disconnect()
-		server.Core.RemoteEvent.Event:Disconnect()
-		server.Core.RemoteEvent.DecoySecurity1:Disconnect()
-		server.Core.RemoteEvent.DecoySecurity2:Disconnect()
-		pcall(service.Delete,server.Core.RemoteEvent.Object)
-		pcall(service.Delete,server.Core.RemoteEvent.Decoy1)
-		pcall(service.Delete,server.Core.RemoteEvent.Decoy2)
+	if server.Core and server.Core.RemoteEvent then
+		pcall(server.Core.DisconnectEvent);
 	end
+
+	--[[delay(0, function()
+		for i,v in next,server do
+			server[i] = nil; --// Try to break it to prevent any potential hanging issues; Not very graceful...
+		end
+	--end)--]]
 
 	warn("Unloading complete")
 end;
@@ -235,7 +237,7 @@ locals = {
 	Pcall = Pcall;
 }
 
-service = setfenv(require(Folder.Core.Service), GetEnv(nil, {server = server}))(function(eType, msg, desc, ...)
+service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {server = server}))(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
@@ -398,6 +400,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.LoadModule = LoadModule
 	server.ServiceSpecific = ServiceSpecific
 
+	server.Shared = Folder.Shared
 	server.ServerPlugins = data.ServerPlugins
 	server.ClientPlugins = data.ClientPlugins
 	server.Client = Folder.Parent.Client
@@ -411,13 +414,22 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		script:Destroy()
 	end
 
-	--// Prepare client themes and plugins
+	--// Copy client themes, plugins, and shared modules to the client folder
+	local shared = service.New("Folder", {
+		Name = "Shared";
+		Parent = server.Client;
+	})
+
+	for index, module in next,Folder.Shared:GetChildren() do
+		module:Clone().Parent = shared;
+	end
+
 	for index,plugin in next,(data.ClientPlugins or {}) do
-		plugin:Clone().Parent = server.Client.Plugins
+		plugin:Clone().Parent = server.Client.Plugins;
 	end
 
 	for index,theme in next,(data.Themes or {}) do
-		theme:Clone().Parent = server.Client.UI
+		theme:Clone().Parent = server.Client.UI;
 	end
 
 	--// Old loader compatability
@@ -442,8 +454,8 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Require some dependencies
 	server.Threading = require(server.Deps.ThreadHandler)
-	server.Changelog = require(server.Client.Dependencies.Changelog)
-	server.Credits = require(server.Client.Dependencies.Credits)
+	server.Changelog = require(server.Shared.Changelog)
+	server.Credits = require(server.Shared.Credits)
 
 	--// Load services
 	for ind, serv in next,ServicesWeUse do local temp = service[serv] end

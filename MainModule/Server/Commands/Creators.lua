@@ -183,15 +183,19 @@ return function(Vargs, env)
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
 			Commands = {"clearplayerdata"};
-			Arguments = {"userId"};
-			Description = "Clears player data for target";
+			Arguments = {"UserId"};
+			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
-				local id = tonumber(args[1]) or plr.UserId
-				Core.PlayerData[id] = Core.DefaultData()
+				local id = tonumber(args[1]);
+				assert(id, "Must supply valid UserId");
+
+				Core.RemoveData(tostring(id));
+				Core.PlayerData[tostring(id)] = nil;
+
 				Remote.MakeGui(plr,"Notification",{
 					Title = "Notification";
-					Message = "Cleared data";
+					Message = "Cleared data for ".. id;
 					Time = 10;
 				})
 			end;

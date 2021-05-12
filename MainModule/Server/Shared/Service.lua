@@ -740,59 +740,92 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		Queue = function(key,func)
-			if not Queues[key] then Queues[key] = {} end
+		Queue = function(key, func, timeout)
+			if not Queues[key] then
+				Queues[key] = {
+					Processing = false;
+					Functions = {};
+				}
+			end
+
 			local queue = Queues[key]
-			local tab = {}
+			local tab = {
+				Time = os.time();
+				Running = false;
+				Function = func;
+				Timeout = timeout;
+			}
 
-			tab.Time = tick();
-			tab.Running = false;
-			tab.Function = func;
+			table.insert(queue.Functions, tab);
 
-			table.insert(queue, tab);
-
-			service.ProcessQueue(queue);
+			if not queue.Processing then
+				service.TrackTask("Thread: QueueProcessor_"..tostring(key), service.ProcessQueue(queue, key));
+			end
 		end;
 
-		ProcessQueue = function(queue)
+		ProcessQueue = function(queue, key)
 			if queue then
-				if queue.__PROCESSING then
+				if queue.Processing then
 					return "Processing"
 				else
-					local stepped = service.RunService.RenderStepped;
-					local function count() local num = 0; for i,v in next,queue do num = num+1 end return num end;
+					local funcs = queue.Functions;
+					local Yield = service.Yield();
+					local function pop()
+						local n = funcs[1]
+						table.remove(funcs, 1)
+						return n
+					end;
 
-					queue.__PROCESSING = true
+					queue.Processing = true
 
-					while wait() and count() > 0 do
-						for i,v in next,queue do
-							if i ~= "__PROCESSING" then
-								if v.Running then
-									repeat stepped:wait() until not v.Running or not queue[i]
-								else
-									v.Running = true
-									pcall(v.Function)
-									v.Running = false
-									table.remove(queue,i)
-								end
+					while funcs[1] ~= nil do
+						local func = pop();
+						func.Running = true;
+
+						if func.Timeout then
+							delay(func.Timeout, function()
+								Yield:Release();
+								warn("Queue Timeout Reached for ".. tostring(key or "Unknown"))
+							end)
+						end
+
+						service.TrackTask("Thread: ".. tostring(key or "Unknown") .."_QueuedFunction", function()
+							local r,e = pcall(func.Function);
+							if not r then
+								func.Error = e;
+								warn("Queue Error: ".. tostring(e))
 							end
+
+							func.Running = false;
+							Yield:Release();
+						end)
+
+						if func.Running then
+							Yield:Wait();
 						end
 					end
 
-					queue.__PROCESSING = false
+					Yield:Destroy();
+					queue.Processing = false;
+					
+					if key then
+						Queues[key] = nil;
+					end
 				end
-			else
-				for ind,data in next,LoopQueue do
-					if not data.LastRun or (data.LastRun and tick()-data.LastRun>data.Delay) then
-						if data.MaxRuns and data.NumRuns and data.MaxRuns<=data.NumRuns then
-							LoopQueue[ind] = nil
-						else
-							if data.MaxRuns and data.NumRuns then
-								data.NumRuns = data.NumRuns+1
-							end
-							Pcall(data.Function)
-							data.LastRun = tick()
+			end
+		end;
+
+		ProcessLoopQueue = function()
+			for ind,data in next,LoopQueue do
+				if not data.LastRun or (data.LastRun and tick()-data.LastRun>data.Delay) then
+					if data.MaxRuns and data.NumRuns and data.MaxRuns<=data.NumRuns then
+						LoopQueue[ind] = nil
+					else
+						if data.MaxRuns and data.NumRuns then
+							data.NumRuns = data.NumRuns+1
 						end
+						Pcall(data.Function)
+						data.LastRun = tick()
 					end
 				end
 			end
@@ -840,6 +873,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 			return new
 		end;
+
 		Iterate = function(tab,func)
 			if tab and type(tab) == "table" then
 				for ind,val in next,tab do
@@ -859,6 +893,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				error("Invalid table")
 			end
 		end;
+
 		GetTime = function(optTime)
 			local tim=optTime or os.time()
 			local hour = math.floor((tim%86400)/60/60)
@@ -867,9 +902,11 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if hour < 10 then hour = "0"..hour end
 			return hour..":"..min
 		end;
+
 		OwnsAsset = function(p,id)
 			return service.MarketPlace:PlayerOwnsAsset(p,id)
 		end;
+
 		MaxLen = function(message,length)
 			if #message>length then
 				return message:sub(1,length).."..."
@@ -877,6 +914,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return message
 			end
 		end;
+
 		Round = function(num)
 			if num >= 0.5 then
 				return math.ceil(num)
@@ -884,6 +922,17 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return math.floor(num)
 			end
 		end;
+
+		Yield = function()
+			local event = service.New("BindableEvent");
+			return {
+				Release = function(...) event:Fire(...) end;
+				Wait = function(...) return event.Event:Wait(...) end;
+				Destroy = function() event:Destroy() end;
+				Event = event;
+			}
+		end;
+
 		StartLoop = function(name,delay,func,noYield)
 			local tab = {
 				Name = name;

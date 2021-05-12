@@ -213,7 +213,7 @@ return function(data)
 		local playerData   = client.Remote.Get("PlayerData")
 		local chatMod 	   = client.Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		local settingsData = client.Remote.Get("AllSettings")
-		
+
 		client.Variables.Aliases = playerData.Aliases or {};
 
 		local tabFrame = window:Add("TabFrame",{
@@ -268,7 +268,7 @@ return function(data)
 		do
 			infoTab:Add("TextLabel", {
 				Text = "Adonis is a system created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
-				TextWrapped = true; 
+				TextWrapped = true;
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
 			})
@@ -294,7 +294,7 @@ return function(data)
 					MouseButton1Down = function()
 						client.UI.Make("List", {
 							Title = "Changelog";
-							Table = require(client.Deps.Changelog);
+							Table = require(client.Shared.Changelog);
 						})
 					end
 				}
@@ -309,7 +309,7 @@ return function(data)
 					MouseButton1Down = function()
 						client.UI.Make("List", {
 							Title = "Credits";
-							Table = require(client.Deps.Credits);
+							Table = require(client.Shared.Credits);
 						})
 					end
 				}
@@ -351,7 +351,7 @@ return function(data)
 			if type(currentColor) == "table" then
 				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
 			else
-				currentColor = BrickColor.new(currentColor).Color	
+				currentColor = BrickColor.new(currentColor).Color
 			end
 
 			local dStatus = donorTab:Add("TextLabel", {
@@ -595,7 +595,7 @@ return function(data)
 				for i,v in ipairs(cmdPerks) do
 					table.insert(donorPerks, v)
 				end
-			else 
+			else
 				table.insert(donorPerks, "Donor commands are disabled here")
 			end
 
@@ -874,7 +874,7 @@ return function(data)
 
 			getBinds()
 		end
-		
+
 		--// Alias tab (basically a copy-paste of keyTab stuff with edits don't hurt me their functionality is so similar and I'm lazy)
 		do
 			local doneKey
@@ -887,7 +887,7 @@ return function(data)
 			local inputBlock = false
 			local commandBox
 			local aliasBox
-			
+
 			local aliases = aliasTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -908,7 +908,7 @@ return function(data)
 							if selected then
 								selected.Button.BackgroundTransparency = 0
 							end
-							
+
 							button.BackgroundTransparency = 0.5
 							selected = {
 								Alias = i;
@@ -953,12 +953,12 @@ return function(data)
 							inputBlock = true
 							if alias ~= "" and commandBox.Text ~= "" then
 								aliasBox.Text = "Saving..."
-								
+
 								if editOldAlias then
 									client.Functions.RemoveAlias(editOldAlias)
 									editOldAlias = nil
 								end
-								
+
 								client.Functions.AddAlias(alias, commandBox.Text)
 								currentAlias = nil
 							end
@@ -1290,7 +1290,7 @@ return function(data)
 								TextLabel = {
 									Text = "Cannot Change";
 									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0); 
+									Position = UDim2.new(1, -100, 0, 0);
 									TextTransparency = 0.5;
 									BackgroundTransparency = 1;
 								}
@@ -1328,7 +1328,7 @@ return function(data)
 								Boolean = {
 									Enabled = value;
 									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0); 
+									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									OnToggle = function(enabled, button)
 										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
@@ -1349,7 +1349,7 @@ return function(data)
 								TextBox = {
 									Text = value;
 									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0); 
+									Position = UDim2.new(1, -100, 0, 0);
 									BackgroundTransparency = 1;
 									TextChanged = function(text, enter, new)
 										if enter then

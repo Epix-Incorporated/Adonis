@@ -33,7 +33,8 @@ return function(Vargs)
 		Core.LoaderID = data.LoaderID or 2373505175
 		Core.DebugMode = data.DebugMode or false
 		Core.Name = server.Functions:GetRandom()
-		Core.Loadstring = require(Deps.Loadstring)
+		Core.LoadstringObj = Core.GetLoadstring()
+		Core.Loadstring = require(Core.LoadstringObj)
 
 		Core.Init = nil;
 		Logs:AddLog("Script", "Core Module Initialized")
@@ -61,13 +62,16 @@ return function(Vargs)
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
-			service.TrackTask("Thread: API Manager", server.Core.StartAPI)
+			service.TrackTask("Thread: API Manager", Core.StartAPI)
 		end
 
 		--// Add existing players in case some are already in the server
 		for index,player in next,service.Players:GetPlayers() do
-			service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), server.Core.LoadExistingPlayer, player);
+			service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), Core.LoadExistingPlayer, player);
 		end
+
+		--// Occasionally save all player data to the datastore to prevent data loss if the server abruptly crashes
+		service.StartLoop("SaveAllPlayerData", Core.DS_AllPlayerDataSaveInterval, Core.SaveAllPlayerData, true)
 
 		Core.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Core Module RunAfterPlugins Finished");
@@ -93,14 +97,21 @@ return function(Vargs)
 			TimeBans = {};
 		};
 
-		DS_RESET_SALTS = { --// Used to change/"reset" specific datastore keys
+		--// Datastore update/queue timers/delays
+		DS_SetDataQueueDelay = 0.5;
+		DS_UpdateQueueDelay = 1;
+		DS_AllPlayerDataSaveInterval = 30;
+		DS_AllPlayerDataSaveQueueDelay = 0.5;
+
+		--// Used to change/"reset" specific datastore keys
+		DS_RESET_SALTS = {
 			SavedSettings = "32K5j4";
 			SavedTables = 	"32K5j4";
 		};
 
 		Panic = function(reason)
 			local hint = Instance.new("Hint", service.Workspace)
-			hint.Text = "-= Adonis PanicMode Enabled: "..tostring(reason).." =~"
+			hint.Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~"
 			Core.PanicMode = true;
 
 			warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;")
@@ -144,7 +155,7 @@ return function(Vargs)
 		MakeEvent = function()
 			local ran,error = pcall(function()
 				if Anti.RLocked(service.JointsService) then
-					Core.Panic("JointsService RobloxLocked")
+					Core.Panic("JointsService RobloxLocked/Unusable")
 				elseif server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent")
@@ -504,8 +515,13 @@ return function(Vargs)
 			return data.Wrapped
 		end;
 
-		Loadstring = function(str, env)
-			return require(Deps.Loadstring:Clone())(str, env)
+		GetLoadstring = function()
+			local newLoad = Deps.Loadstring:Clone();
+			local lbi = server.Shared.FiOne:Clone();
+
+			lbi.Parent = newLoad
+
+			return newLoad;
 		end;
 
 		Bytecode = function(str)
@@ -614,7 +630,7 @@ return function(Vargs)
 			Core.PlayerData[key] = data
 		end;
 
-		DefaultData = function(p)
+		DefaultPlayerData = function(p)
 			return {
 				Donor = {
 					Cape = {
@@ -637,7 +653,7 @@ return function(Vargs)
 
 		GetPlayer = function(p)
 			local key = tostring(p.UserId)
-			local PlayerData = Core.DefaultData(p)
+			local PlayerData = Core.DefaultPlayerData(p)
 
 			if not Core.PlayerData[key] then
 				Core.PlayerData[key] = PlayerData
@@ -663,99 +679,53 @@ return function(Vargs)
 			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p);
 		end;
 
-		SavePlayerData = function(p)
-			local key = tostring(p.UserId)
-			local data = Core.PlayerData[key]
-			if data and Core.DataStore then
-				data.LastChat = nil
-				data.AdminLevel = nil
-				data.LastLevelUpdate = nil
+		SavePlayerData = function(p, customData)
+			local key = tostring(p.UserId);
+			local pData = customData or Core.PlayerData[key];
 
-				data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
-				data.Warnings = Functions.DSKeyNormalize(data.Warnings)
+			if Core.DataStore then
+				if pData then
+					local data = service.CloneTable(pData);
 
-				Core.SetData(key, data)
-				Core.PlayerData[key] = nil
-				Logs.AddLog(Logs.Script,{
-					Text = "Saved data for "..tostring(p);
-					Desc = "Player data was saved to the datastore";
-				})
+					data.LastChat = nil
+					data.AdminLevel = nil
+					data.LastLevelUpdate = nil
+					data.LastDataSave = nil
+
+					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
+					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
+
+					Core.SetData(key, data)
+					Core.PlayerData[key] = nil
+					Logs.AddLog(Logs.Script,{
+						Text = "Saved data for "..tostring(p);
+						Desc = "Player data was saved to the datastore";
+					})
+
+					pData.LastDataSave = os.time();
+				elseif pData == false then
+					Core.SetData(key, nil);
+				end
+			end
+		end;
+
+		SaveAllPlayerData = function(queueWaitTime)
+			for i,p in next,service.Players:GetPlayers() do
+				local pdata = Core.PlayerData[tostring(p.UserId)];
+				--// Only save player's data if it has not been saved within the last INTERVAL (default 30s)
+				if pdata and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval) then
+					service.Queue("SavePlayerData", function()
+						Core.SavePlayerData(p)
+						wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
+					end)
+				end
 			end
 		end;
 
 		GetDataStore = function()
-			local lastUpdate = 0
-			local keyCache = {}
-			local saveCache = {}
-			local updateCache = {}
-			local ran,store = pcall(function() return service.DataStoreService:GetDataStore(Settings.DataStore:sub(1,50),"Adonis") end)
-
-			--[[
-
-			--// Todo:
-			--// Implement reru's idea
-			--// AutoAssign a server to handle datastore updates
-			--// Cache all datastore updates
-			--// Update everything using one UpdateAsync per server every 30-60 seconds
-			--// Have main server handle check for new data and update datastore keys accordingly
-
-			if ran and store then
-				local original = store:GetObject()
-				local prepareTable; prepareTable = function(tab)
-					if true then return tab end
-					if type(tab) == "table" then
-						local tabUpdates = {}
-						for i,v in next,tab do
-							tab[i] = prepareTable(v)
-						end
-
-						return setmetatable(tab,{
-							__newindex = function(old, ind, val)
-								table.insert(tabUpdates,{
-
-								})
-							end
-						}), tabUpdates
-					else
-						return tab
-					end
-				end
-
-				store:SetSpecial("SetAsync", function(wrapped, key, value)
-					table.insert(updateCache, {
-						Key = key;
-						Time = os.time;
-						Value = value;
-					})
-
-					keyCache[key] = value
-				end)
-
-				store:SetSpecial("UpdateAsync", function(wrapped, key, func)
-					original:UpdateAsync(key, function(data)
-						local metaTab,tabUpdates = prepareTable(data)
-						local returns = func(metaTab)
-						if type(data) == "table" and tabUpdates then
-
-						end
-					end)
-				end)
-
-				store:SetSpecial("GetAsync", function(wrapped, key)
-					if not keyCache[key] then
-						keyCache[key] = original:GetAsync(key)
-					end
-
-					return keyCache[key]
-				end)
-
-				store:SetSpecial("Update", function(wrapped)
-					lastUpdate = os.time()
-					keyCache = {}
-				end)
-
-				service.StartLoop("DataUpdate",30,store.Update,true)
-			end--]]
+			local ran,store = pcall(function()
+				return service.DataStoreService:GetDataStore(Settings.DataStore:sub(1,50),"Adonis")
+			end)
 
 			return ran and store
 		end;
@@ -772,38 +742,54 @@ return function(Vargs)
 			return Core.SetData(...)
 		end;
 
+		RemoveData = function(key)
+			return pcall(Core.DataStore.RemoveAsync, Core.DataStore, Core.DataStoreEncode(key))
+		end;
+
 		SetData = function(key, value)
 			if Core.DataStore then
-				service.Queue("DataStoreSetData".. tostring(key), function()
-					local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
-					if ran then
-						Core.DataCache[key] = value
-					else
-						logError("DataStore SetAsync Failed: ".. tostring(ret))
-					end
-				end)
+				if value == nil then
+					return Core.RemoveData(key)
+				else
+					service.Queue("DataStoreSetData".. tostring(key), function()
+						local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
+						if ran then
+							Core.DataCache[key] = value
+						else
+							logError("DataStore SetAsync Failed: ".. tostring(ret))
+						end
+
+						wait(Core.DS_SetDataQueueDelay)
+					end)
+				end
 			end
 		end;
 
 		UpdateData = function(key, func)
 			if Core.DataStore then
-				local didUpdate = false;
 				local err = false;
+				local Yield = service.Yield();
 
-				delay(120, function() didUpdate = true err = "Took too long" end)
+				delay(120, function() Finish() err = "Took too long" end)
+
 				service.Queue("DataStoreUpdateData".. tostring(key), function()
 					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
 
 					if ran then
 						--return ret
 					else
+						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
 					end
 
-					wait(5)
-					didUpdate = true
+					wait(Core.DS_UpdateQueueDelay)
+
+					Yield.Release();
 				end)
-				repeat wait() until didUpdate
+
+				Yield.Wait();
+				Yield.Destroy();
+
 				return err
 			end
 		end;
@@ -1055,7 +1041,7 @@ return function(Vargs)
 						if data and data.Source then
 							local module;
 							if not exists then
-								module = require(Deps.Loadstring.FiOne:Clone())
+								module = require(server.Shared.FiOne:Clone())
 								table.insert(Core.ScriptCache,{
 									Script = srcScript;
 									Source = data.Source;

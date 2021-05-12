@@ -236,7 +236,7 @@ return function()
 		end;
 
 		LoadBytecode = function(str, env)
-			return require(client.Deps.FiOne)(str, env)
+			return require(client.Shared.FiOne)(str, env)
 		end;
 
 		LoadCode = function(str, env)
@@ -245,7 +245,7 @@ return function()
 
 		StartAPI = function()
 			local ScriptCache = Core.ScriptCache
-			local FiOne = client.Deps.FiOne
+			local FiOne = client.Shared.FiOne
 			local Get = Remote.Get
 			local GetFire = Remote.GetFire
 			local G_API = client.G_API

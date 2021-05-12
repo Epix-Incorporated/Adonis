@@ -211,7 +211,7 @@ locals = {
 	origEnv = origEnv;
 }
 
-service = setfenv(require(script.Parent.Core.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
+service = setfenv(require(script.Parent.Shared.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" and service.Detected then
 		Kill()("Shananigans denied")
@@ -351,6 +351,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	client.UIFolder = Folder.UI
+	client.Shared = Folder.Shared
 	client.Loader = data.Loader
 	client.Module = data.Module
 	client.DepsName = depsName
