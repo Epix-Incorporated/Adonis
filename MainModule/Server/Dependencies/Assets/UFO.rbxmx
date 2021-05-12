@@ -45,22 +45,6 @@
 			<Ref name="PrimaryPart">RBXBFCFE79F595F42CDBE2D2BBED99B5B20</Ref>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<OptionalCoordinateFrame name="WorldPivotData">
-				<CFrame>
-					<X>146.923355</X>
-					<Y>21.9334183</Y>
-					<Z>33.5397148</Z>
-					<R00>-1</R00>
-					<R01>0</R01>
-					<R02>0</R02>
-					<R10>0</R10>
-					<R11>1</R11>
-					<R12>0</R12>
-					<R20>0</R20>
-					<R21>0</R21>
-					<R22>-1</R22>
-				</CFrame>
-			</OptionalCoordinateFrame>
 		</Properties>
 		<Item class="Part" referent="RBX8590AD88FDAF4042B152FD1D04DF379F">
 			<Properties>
@@ -1463,7 +1447,7 @@ for i,v in next,parts do
 		local tween = tweenService:Create(v, info, {
 			Orientation = Vector3.new(0, 180*(math.random(-1, 1)), 0)
 		})
-		
+
 		tween:Play()
 	end
 end]]></ProtectedString>
