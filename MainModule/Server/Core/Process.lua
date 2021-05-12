@@ -494,7 +494,7 @@ return function(Vargs)
 					LoadingStatus = "WAITING_FOR_KEY";
 				}
 
-				Remote.PlayerData[key] = nil
+				Core.PlayerData[key] = nil
 				Remote.Clients[key] = keyData
 
 				Routine(function()

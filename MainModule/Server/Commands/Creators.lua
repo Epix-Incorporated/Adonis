@@ -188,7 +188,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				local id = tonumber(args[1]) or plr.UserId
-				Remote.PlayerData[id] = Core.DefaultData()
+				Core.PlayerData[id] = Core.DefaultData()
 				Remote.MakeGui(plr,"Notification",{
 					Title = "Notification";
 					Message = "Cleared data";

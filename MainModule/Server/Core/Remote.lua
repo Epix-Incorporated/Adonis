@@ -48,7 +48,6 @@ return function(Vargs)
 		Clients = {};
 		Returns = {};
 		Sessions = {};
-		PlayerData = {};
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};

@@ -78,6 +78,7 @@ return function(Vargs)
 		RunAfterPlugins = RunAfterPlugins;
 		DataQueue = {};
 		DataCache = {};
+		PlayerData = {};
 		CrossServerCommands = {};
 		CrossServer = function() return false end;
 		ExecuteScripts = {};
@@ -610,7 +611,7 @@ return function(Vargs)
 
 		SavePlayer = function(p,data)
 			local key = tostring(p.UserId)
-			Remote.PlayerData[key] = data
+			Core.PlayerData[key] = data
 		end;
 
 		DefaultData = function(p)
@@ -638,8 +639,8 @@ return function(Vargs)
 			local key = tostring(p.UserId)
 			local PlayerData = Core.DefaultData(p)
 
-			if not Remote.PlayerData[key] then
-				Remote.PlayerData[key] = PlayerData
+			if not Core.PlayerData[key] then
+				Core.PlayerData[key] = PlayerData
 				if Core.DataStore then
 					local data = Core.GetData(key)
 					if data and type(data) == "table" then
@@ -652,19 +653,19 @@ return function(Vargs)
 					end
 				end
 			else
-				PlayerData = Remote.PlayerData[key]
+				PlayerData = Core.PlayerData[key]
 			end
 
 			return PlayerData
 		end;
 
 		ClearPlayer = function(p)
-			Remote.PlayerData[tostring(p.UserId)] = Core.DefaultData(p);
+			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p);
 		end;
 
 		SavePlayerData = function(p)
 			local key = tostring(p.UserId)
-			local data = Remote.PlayerData[key]
+			local data = Core.PlayerData[key]
 			if data and Core.DataStore then
 				data.LastChat = nil
 				data.AdminLevel = nil
@@ -674,7 +675,7 @@ return function(Vargs)
 				data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
 				Core.SetData(key, data)
-				Remote.PlayerData[key] = nil
+				Core.PlayerData[key] = nil
 				Logs.AddLog(Logs.Script,{
 					Text = "Saved data for "..tostring(p);
 					Desc = "Player data was saved to the datastore";
