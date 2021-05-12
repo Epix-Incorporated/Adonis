@@ -59,9 +59,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>39.5073318</Y>
-					<Z>-0.530075014</Z>
+					<X>-1.05723572</X>
+					<Y>38.5073242</Y>
+					<Z>-65.1143188</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -215,9 +215,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>40.0689087</Y>
-					<Z>-0.000285999995</Z>
+					<X>-1.05723572</X>
+					<Y>39.0689011</Y>
+					<Z>-64.5845261</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -232,7 +232,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -262,7 +262,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -335,9 +335,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.0541873351</X>
-					<Y>22.267868</Y>
-					<Z>-0.649869978</Z>
+					<X>-1.00640547</X>
+					<Y>21.2678623</Y>
+					<Z>-65.2341156</Z>
 					<R00>-0.99984771</R00>
 					<R01>0</R01>
 					<R02>0.0174524579</R02>
@@ -352,7 +352,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4281679743</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -382,7 +382,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-100</float>
+				<float name="Reflectance">-2</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -491,9 +491,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>42.1880798</Y>
-					<Z>-0.000285999995</Z>
+					<X>-1.05723572</X>
+					<Y>41.1880722</Y>
+					<Z>-64.5845261</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -508,7 +508,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -538,7 +538,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -611,9 +611,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>43.2476692</Y>
-					<Z>-0.000285999995</Z>
+					<X>-1.05723572</X>
+					<Y>42.2476616</Y>
+					<Z>-64.5845261</Z>
 					<R00>0.707106829</R00>
 					<R01>0</R01>
 					<R02>0.707106829</R02>
@@ -628,7 +628,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -658,7 +658,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -731,9 +731,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>39.5391159</Y>
-					<Z>-0.530075014</Z>
+					<X>-1.05723572</X>
+					<Y>38.5391083</Y>
+					<Z>-65.1143188</Z>
 					<R00>0.707106829</R00>
 					<R01>0</R01>
 					<R02>-0.707106829</R02>
@@ -748,7 +748,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -778,7 +778,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -851,9 +851,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>44.8370514</Y>
-					<Z>-0.000285999995</Z>
+					<X>-1.05723572</X>
+					<Y>43.8370438</Y>
+					<Z>-64.5845261</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -868,7 +868,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -898,7 +898,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -971,9 +971,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.00335699995</X>
-					<Y>41.1284866</Y>
-					<Z>-0.000285999995</Z>
+					<X>-1.05723572</X>
+					<Y>40.128479</Y>
+					<Z>-64.5845261</Z>
 					<R00>0.707106829</R00>
 					<R01>0</R01>
 					<R02>-0.707106829</R02>
@@ -988,7 +988,7 @@
 				<bool name="CanTouch">true</bool>
 				<bool name="CastShadow">true</bool>
 				<int name="CollisionGroupId">0</int>
-				<Color3uint8 name="Color3uint8">4279526550</Color3uint8>
+				<Color3uint8 name="Color3uint8">4279308561</Color3uint8>
 				<PhysicalProperties name="CustomPhysicalProperties">
 					<CustomPhysics>false</CustomPhysics>
 				</PhysicalProperties>
@@ -1018,7 +1018,7 @@
 					<R21>0</R21>
 					<R22>1</R22>
 				</CoordinateFrame>
-				<float name="Reflectance">-1000</float>
+				<float name="Reflectance">-5</float>
 				<float name="RightParamA">-0.5</float>
 				<float name="RightParamB">0.5</float>
 				<token name="RightSurface">0</token>
@@ -1091,9 +1091,9 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.175583005</X>
-					<Y>4.75287294</Y>
-					<Z>-0.647750974</Z>
+					<X>-0.885009766</X>
+					<Y>3.75286674</Y>
+					<Z>-65.2319946</Z>
 					<R00>-1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -1219,12 +1219,12 @@
 				<token name="BottomSurface">0</token>
 				<token name="BottomSurfaceInput">0</token>
 				<CoordinateFrame name="CFrame">
-					<X>0.253356993</X>
-					<Y>40.6283264</Y>
-					<Z>-0.780075014</Z>
+					<X>-0.807235777</X>
+					<Y>39.6283188</Y>
+					<Z>-65.3643188</Z>
 					<R00>1</R00>
 					<R01>0</R01>
-					<R02>-0</R02>
+					<R02>0</R02>
 					<R10>0</R10>
 					<R11>0</R11>
 					<R12>1</R12>
