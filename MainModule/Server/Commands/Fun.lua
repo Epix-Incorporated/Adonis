@@ -3,11 +3,11 @@ return function(Vargs, env)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps = 
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	if env then setfenv(1, env) end
-	
+
 	return {
 		SetFPS = {
 			Prefix = Settings.Prefix;
@@ -40,7 +40,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		wat = { --// wat??
 			Prefix = "!";
 			Commands = {"wat";};
@@ -54,7 +54,7 @@ return function(Vargs, env)
 				Remote.Send(plr,"Function","PlayAudio",wot[math.random(1,#wot)])
 			end
 		};
-		
+
 		LowRes = {
 			Prefix = Settings.Prefix;
 			Commands = {"lowres","pixelrender","pixel","pixelize"};
@@ -75,7 +75,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ZaWarudo = {
 			Prefix = Settings.Prefix;
 			Commands = {"zawarudo","stoptime"};
@@ -160,7 +160,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Dizzy = {
 			Prefix = Settings.Prefix;
 			Commands = {"dizzy";};
@@ -192,7 +192,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Davey = {
 			Prefix = Settings.Prefix;
 			Commands = {"Davey_Bones";};
@@ -228,7 +228,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Infect = {
 			Prefix = Settings.Prefix;
 			Commands = {"infect";"zombify";};
@@ -745,7 +745,7 @@ return function(Vargs, env)
 
 		ifoundyou = {
 			Prefix = server.Settings.Prefix;
-			Commands = {"ufo","abduct","space","fromanotherworld","newmexico","area51","rockwell"};
+			Commands = {"theycome","fromanotherworld","ufo","abduct","space","newmexico","area51","rockwell"};
 			Args = {"player"};
 			Description = "A world unlike our own.";
 			Fun = true;
@@ -920,7 +920,7 @@ return function(Vargs, env)
 										bg.BackgroundColor3 = Color3.new(0,0,0)
 										bg.Size = UDim2.new(2,0,2,0)
 										bg.Position = UDim2.new(-0.5,0,-0.5,0)
-										if p and p.Parent == service.Players then service.TeleportService:Teleport(527443962,p,nil,bg) end
+										if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116,p,nil,bg) end
 										wait(0.5)
 										pcall(function() gui:Destroy() end)
 									end
@@ -997,7 +997,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Forest = {
 			Prefix = Settings.Prefix;
 			Commands = {"forest";"sendtotheforest";"intothewoods";};
@@ -1031,7 +1031,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ClownYoink = {
 			Prefix = server.Settings.Prefix; 					-- Someone's always watching me
 			Commands = {"clown","yoink","youloveme","van"};   	-- Someone's always there
@@ -1177,7 +1177,7 @@ return function(Vargs, env)
 				end
 			end;
 		};
-		
+
 
 		Chik3n = {
 			Prefix = Settings.Prefix;
@@ -1232,7 +1232,7 @@ return function(Vargs, env)
 				end
 			end;
 		};
-		
+
 		Tornado = {
 			Prefix = Settings.Prefix;
 			Commands = {"tornado";"twister";};
@@ -1493,7 +1493,7 @@ return function(Vargs, env)
 				partsHit = nil
 			end
 		};
-		
+
 
 		Swagify = {
 			Prefix = Settings.Prefix;
@@ -1859,7 +1859,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		HatPets = {
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets";};
@@ -1962,7 +1962,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RestoreGravity = {
 			Prefix = Settings.Prefix;
 			Commands = {"grav";"bringtoearth";};
@@ -2046,7 +2046,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		BunnyHop = {
 			Prefix = Settings.Prefix;
 			Commands = {"bunnyhop";"bhop"};
@@ -2086,7 +2086,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		FreeFall = {
 			Prefix = Settings.Prefix;
 			Commands = {"freefall";"skydive";};
@@ -2103,7 +2103,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Stickify = {
 			Prefix = Settings.Prefix;
 			Commands = {"stickify";"stick";"stickman";};
@@ -2262,7 +2262,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Disco = {
 			Prefix = Settings.Prefix;
 			Commands = {"disco";};
@@ -2391,7 +2391,7 @@ return function(Vargs, env)
 							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
 
 							st.CFrame = torso.CFrame
-							st.Parent = char 	
+							st.Parent = char
 
 							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
 
@@ -2910,7 +2910,7 @@ return function(Vargs, env)
 					local human = char:FindFirstChildOfClass("Humanoid")
 
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						if human:FindFirstChild("BodyDepthScale") then 
+						if human:FindFirstChild("BodyDepthScale") then
 							human.BodyDepthScale.Value = 0.1
 						end
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
@@ -3159,11 +3159,11 @@ return function(Vargs, env)
 					hat:Clone().Parent = v.Character
 				end
 				if #players > 0 then
-					-- This is done outside of the for loop above as the Package command inserts all package items each time the command is run 
+					-- This is done outside of the for loop above as the Package command inserts all package items each time the command is run
 					-- By only running it once, it's only inserting the items once and therefore reducing overhead
 					local t = {}
-					for _,v in pairs(players) do 
-						table.insert(t, v.Name) 
+					for _,v in pairs(players) do
+						table.insert(t, v.Name)
 					end
 					Admin.RunCommand(Settings.Prefix.."package "..table.concat(t,",").." 295")
 				end
@@ -3189,38 +3189,38 @@ return function(Vargs, env)
 							if v.Character:findFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
 							if v.Character:findFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
 
-							if joints["Neck"] then 
+							if joints["Neck"] then
 								joints["Neck"].C0 = isR15 and CFrame.new(0, 1, 0) or (CFrame.new(0,1,0) * CFrame.Angles(math.rad(90),math.rad(180),0))
 							end
 
 							local rarm = isR15 and joints["RightShoulder"] or joints["Right Shoulder"]
-							if rarm then 
+							if rarm then
 								rarm.C0 = isR15 and CFrame.new(-1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(90),0))
 							end
 
 							local larm = isR15 and joints["LeftShoulder"] or joints["Left Shoulder"]
-							if larm then 
+							if larm then
 								larm.C0 = isR15 and CFrame.new(1, -1.5, -0.5) or (CFrame.new(0,-1.5,-.5) * CFrame.Angles(0,math.rad(-90),0))
-							end 
+							end
 
 							local rleg = isR15 and joints["RightHip"] or joints["Right Hip"]
-							if rleg then 
+							if rleg then
 								rleg.C0 = isR15 and (CFrame.new(-0.5,-0.5,0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(90),0))
-							end 
+							end
 
 							local lleg = isR15 and joints["LeftHip"] or joints["Left Hip"]
 							if lleg then
 								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5,0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(-90),0))
-							end 
+							end
 
-							for a, part in pairs(v.Character:children()) do 
-								if part:IsA("BasePart") then 
-									part.BrickColor = BrickColor.new("Bright green") 
-									if part.Name == "FAKETORSO" then 
-										part:Destroy() 
-									end 
-								elseif part:findFirstChild("NameTag") then 
-									part.Head.BrickColor = BrickColor.new("Bright green") 
+							for a, part in pairs(v.Character:children()) do
+								if part:IsA("BasePart") then
+									part.BrickColor = BrickColor.new("Bright green")
+									if part.Name == "FAKETORSO" then
+										part:Destroy()
+									end
+								elseif part:findFirstChild("NameTag") then
+									part.Head.BrickColor = BrickColor.new("Bright green")
 								end
 							end
 						end
@@ -3243,16 +3243,16 @@ return function(Vargs, env)
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid");
 
-						if human then 
-							if human.RigType == Enum.HumanoidRigType.R6 then 
+						if human then
+							if human.RigType == Enum.HumanoidRigType.R6 then
 								v.Character.Head.Mesh.Scale = Vector3.new(1.75,1.75,1.75)
 								v.Character.Torso.Neck.C0 = CFrame.new(0,1.3,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
-							else 
+							else
 								local scale = human and human:FindFirstChild("HeadScale");
 								if scale then
 									scale.Value = tonumber(args[2]) or 1.5;
 								end
-							end 
+							end
 						end
 					end
 				end
@@ -3273,16 +3273,16 @@ return function(Vargs, env)
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid");
 
-						if human then 
-							if human.RigType == Enum.HumanoidRigType.R6 then 
+						if human then
+							if human.RigType == Enum.HumanoidRigType.R6 then
 								v.Character.Head.Mesh.Scale = Vector3.new(.75,.75,.75)
 								v.Character.Torso.Neck.C0 = CFrame.new(0,.8,0) * CFrame.Angles(math.rad(90),math.rad(180),0)
-							else 
+							else
 								local scale = human and human:FindFirstChild("HeadScale");
 								if scale then
 									scale.Value = tonumber(args[2]) or 0.5;
 								end
-							end 
+							end
 						end
 					end
 				end
@@ -3367,7 +3367,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Seizure = {
 			Prefix = Settings.Prefix;
 			Commands = {"seizure";};
@@ -3429,7 +3429,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RightLeg = {
 			Prefix = Settings.Prefix;
 			Commands = {"rleg";"rightleg";"rightlegpackage";};
@@ -3448,7 +3448,7 @@ return function(Vargs, env)
 				local model = service.Insert(args[2], true)
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						Functions.ApplyBodyPart(v.Character, model)
 					end
 				end
@@ -3475,7 +3475,7 @@ return function(Vargs, env)
 				local model = service.Insert(args[2], true)
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						Functions.ApplyBodyPart(v.Character, model)
 					end
 				end
@@ -3502,7 +3502,7 @@ return function(Vargs, env)
 				local model = service.Insert(args[2], true)
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						Functions.ApplyBodyPart(v.Character, model)
 					end
 				end
@@ -3529,7 +3529,7 @@ return function(Vargs, env)
 				local model = service.Insert(args[2], true)
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						Functions.ApplyBodyPart(v.Character, model)
 					end
 				end
@@ -3556,7 +3556,7 @@ return function(Vargs, env)
 				local model = service.Insert(args[2], true)
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character then 
+					if v.Character then
 						Functions.ApplyBodyPart(v.Character, model)
 					end
 				end
@@ -3564,7 +3564,7 @@ return function(Vargs, env)
 				model:Destroy()
 			end
 		};
-		
+
 		LoopFling = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopfling";};
@@ -3596,7 +3596,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Deadlands = {
 			Prefix = Settings.Prefix;
 			Commands = {"deadlands","farlands","renderingcyanide"};
