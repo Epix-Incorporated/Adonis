@@ -89,9 +89,9 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local logs = Core.GetData("ShutdownLogs") or {}
-				local tab={}
+				local tab = {}
 				for i,v in pairs(logs) do
-					table.insert(tab,1,{Text=v.Time..": "..v.User,Desc="Reason: "..v.Reason})
+					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
 			end
@@ -1065,7 +1065,7 @@ return function(Vargs, env)
 				if Core.DataStore and not Core.PanicMode then
 					Core.UpdateData("ShutdownLogs", function(logs)
 						if plr then
-							table.insert(logs,1,{
+							table.insert(logs, 1, {
 								User = plr.Name,
 								Time = service.GetTime(),
 								Reason = args[1] or "N/A"

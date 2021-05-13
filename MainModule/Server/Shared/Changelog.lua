@@ -2,14 +2,14 @@ return {
 	"Version: 218";
 	"*Drag edges to expand*";
 	"";
-	"[v218 WIP]";
+	"[v218 5.13.2021 18:18 EST]";
 	"* Moved shared client & server resources/modules (like Service.lua, changelog, credits, etc) to a new 'Shared' folder";
 	"* Updated how queues work; Should be more efficient/less prone to issues";
 	"* Player data will now save every 30 seconds; Saving is queued & timed to prevent DataStore issues";
 	"* Fixed :clearplayerdata";
 	"* Added service.Yield";
 	"* New UFO model & destination";
-	"* Hopefully fixed some bugs";
+	"* Hopefully fixed some bugs and improved overall system performance & stability";
 	"(Git/ccuser44) Made print and warn work properly. Also fixed some indentation.";
 	"(Git/ccuser44) Removed unnecessary references to filtering enabled.";
 	"(Git/ccuser44) Fixed iuncorrect string literals";
