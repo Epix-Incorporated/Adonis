@@ -349,7 +349,7 @@ return function()
 			}
 
 			local files = {
-				["C:\RC7\rc7.dat"] = true;
+				["C:\\RC7\\rc7.dat"] = true;
 			}
 
 			local function check(Message)
