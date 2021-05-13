@@ -3450,31 +3450,37 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local pos = v.Character.HumanoidRootPart.CFrame
+					local pos = v.Character and (v.Character:FindFirstChild('HumanoidRootPart') or (v:FindFirstChildWhichIsA("Humanoid") and v:FindFirstChildWhichIsA("Humanoid").RootPart))
+					assert(pos,'RootPart could not be found')
+					pos = pos.CFrame
 					local temptools = {}
 
-					pcall(function() v.Character.Humanoid:UnequipTools() end)
-					for k,t in pairs(v.Backpack:children()) do
+					pcall(function() v.Character:FindFirstChildWhichIsA('Humanoid'):UnequipTools() end)
+					for k,t in ipairs(v.Backpack:GetChildren()) do
 						if t:IsA('Tool') or t:IsA('HopperBin') then
 							table.insert(temptools,t)
 							t.Parent = nil;
 						end
 					end
 
+					local con; con = v.CharacterAdded:Connect(function(c)
+						con:Disconnect()
+						con:Destroy()
+						c:WaitForChild("HumanoidRootPart").CFrame = pos
+
+						for d,f in pairs(c:GetChildren()) do
+							if f:IsA('ForceField') then f:Destroy() end
+						end
+
+						v:WaitForChild("Backpack")
+						v.Backpack:ClearAllChildren()
+
+						for l,m in pairs(temptools) do
+							m.Parent = v.Backpack
+						end
+					end)
+					
 					v:LoadCharacter()
-					wait(0.1)
-					v.Character.HumanoidRootPart.CFrame = pos
-
-					for d,f in pairs(v.Character:children()) do
-						if f:IsA('ForceField') then f:Destroy() end
-					end
-
-					v:WaitForChild("Backpack")
-					v.Backpack:ClearAllChildren()
-
-					for l,m in pairs(temptools) do
-						m.Parent = v.Backpack
-					end
 				end
 			end
 		};
