@@ -13,22 +13,22 @@ return function(data)
 	local mode = data.Mode
 	local gTable = client.UI.Register(gui, {Name = "Effect"})
 	local BindEvent = gTable.BindEvent
-	
+
 	client.UI.Remove("Effect", gui)
 	gTable:Ready()
-	
+
 	if mode == "Off" or not mode then
 		gTable:Destroy()
 	elseif mode == "Pixelize" then
 		local frame = Instance.new("Frame",gui)
 		local camera = workspace.CurrentCamera
 		local pixels = {}
-		
+
 		local resY = data.Resolution or 20
 		local resX = data.Resolution or 20
 		local depth = 0
 		local distance = data.Distance or 80
-		
+
 		local function renderScreen()
 			for i,pixel in pairs(pixels) do
 				local ray = camera:ScreenPointToRay(pixel.X,pixel.Y,depth)
@@ -40,7 +40,7 @@ return function(data)
 				end
 			end
 		end
-		
+
 		frame.Size = UDim2.new(1,0,1,40)
 		frame.Position = UDim2.new(0,0,0,-35)
 		for y = 0,gui.AbsoluteSize.Y+50,resY do
@@ -55,48 +55,60 @@ return function(data)
 				table.insert(pixels,{Pixel = pixel,X = x, Y = y})
 			end
 		end
-		
-		while wait() and not gTable.Destroyed and gui.Parent do 
+
+		while wait() and not gTable.Destroyed and gui.Parent do
 			if not gTable.Destroyed and not gTable.Active then
 				wait(5)
 			else
 				renderScreen()
 			end
 		end
-		
+
 		gTable:Destroy()
 	elseif mode == "FadeOut" then
-		service.StarterGui:SetCore("TopbarEnabled",false)
+		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 		service.UserInputService.MouseIconEnabled = false
-		for i,v in pairs(service.PlayerGui:GetChildren()) do 
-			pcall(function() if v~=gui then v:Destroy() end end) 
+
+		for i,v in pairs(service.PlayerGui:GetChildren()) do
+			pcall(function() if v~=gui then v:Destroy() end end)
 		end
-		local bg = Instance.new("Frame", gui)
-		bg.BackgroundTransparency = 1
-		bg.BackgroundColor3 = Color3.new(0,0,0)
-		bg.Size = UDim2.new(2,0,2,0)
-		bg.Position = UDim2.new(-0.5,0,-0.5,0)
+
+		local blur = service.New("BlurEffect", {
+			Name = "Adonis_FadeOut_Blur";
+			Parent = service.Lighting;
+			Size = 0;
+		})
+
+		local bg = service.New("Frame", {
+			Parent = gui;
+			BackgroundTransparency = 1;
+			BackgroundColor3 = Color3.new(0,0,0);
+			Size = UDim2.new(2,0,2,0);
+			Position = UDim2.new(-0.5,0,-0.5,0);
+		})
+
 		for i = 1,0,-0.01 do
 			bg.BackgroundTransparency = i
+			blur.Size = 56 * (1 - i);
 			wait(0.1)
 		end
+
 		bg.BackgroundTransparency = 0
-		client.Functions.BrickBlur(true,0,BrickColor.new("Really black"))
 	elseif mode == "Trippy" then
 		local v = service.Player
-		local bg = Instance.new("Frame", gui) 
-		
-		bg.BackgroundColor3 = Color3.new(0,0,0) 
-		bg.BackgroundTransparency = 0 
-		bg.Size = UDim2.new(10,0,10,0) 
-		bg.Position = UDim2.new(-5,0,-5,0) 
+		local bg = Instance.new("Frame", gui)
+
+		bg.BackgroundColor3 = Color3.new(0,0,0)
+		bg.BackgroundTransparency = 0
+		bg.Size = UDim2.new(10,0,10,0)
+		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
-		
-		while gui and gui.Parent do 
-			wait(1/44) 
-			bg.BackgroundColor3 = Color3.new(math.random(255)/255,math.random(255)/255,math.random(255)/255) 
+
+		while gui and gui.Parent do
+			wait(1/44)
+			bg.BackgroundColor3 = Color3.new(math.random(255)/255,math.random(255)/255,math.random(255)/255)
 		end
-		
+
 		if gui then gui:Destroy() end
 	elseif mode == "Spooky" then
 		local frame = Instance.new("Frame",gui)
@@ -127,12 +139,12 @@ return function(data)
 			299735361;
 			299735379;
 		}
-		
+
 		local sound = Instance.new("Sound",gui)
 		sound.SoundId = "rbxassetid://174270407"
 		sound.Looped = true
 		sound:Play()
-		
+
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
@@ -177,58 +189,58 @@ return function(data)
 			299733663;
 			299733674;
 			299733694;
-			
+
 		}
 		local sound = Instance.new("Sound",gui)
 		sound.SoundId = "rbxassetid://172906410"
 		sound.Looped = true
 		sound:Play()
-		
+
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
 				wait(0.1)
 			end
 		end
-		
+
 		sound:Stop()
 	elseif mode == "Strobe" then
-		local bg = Instance.new("Frame", gui) 
-		bg.BackgroundColor3 = Color3.new(0,0,0) 
-		bg.BackgroundTransparency = 0 
-		bg.Size = UDim2.new(10,0,10,0) 
+		local bg = Instance.new("Frame", gui)
+		bg.BackgroundColor3 = Color3.new(0,0,0)
+		bg.BackgroundTransparency = 0
+		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
-		
+
 		while gui and gui.Parent do
-			wait(1/44) 
-			bg.BackgroundColor3 = Color3.new(1,1,1) 
-			wait(1/44) 
-			bg.BackgroundColor3 = Color3.new(0,0,0) 
+			wait(1/44)
+			bg.BackgroundColor3 = Color3.new(1,1,1)
+			wait(1/44)
+			bg.BackgroundColor3 = Color3.new(0,0,0)
 		end
 		if gui then gui:Destroy() end
 	elseif mode == "Blind" then
-		local bg = Instance.new("Frame", gui) 
-		bg.BackgroundColor3 = Color3.new(0,0,0) 
-		bg.BackgroundTransparency = 0 
-		bg.Size = UDim2.new(10,0,10,0) 
-		bg.Position = UDim2.new(-5,0,-5,0) 
+		local bg = Instance.new("Frame", gui)
+		bg.BackgroundColor3 = Color3.new(0,0,0)
+		bg.BackgroundTransparency = 0
+		bg.Size = UDim2.new(10,0,10,0)
+		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
 	elseif mode == "ScreenImage" then
-		local bg = Instance.new("ImageLabel", gui) 
+		local bg = Instance.new("ImageLabel", gui)
 		bg.Image="rbxassetid://"..data.Image
-		bg.BackgroundColor3 = Color3.new(0,0,0) 
-		bg.BackgroundTransparency = 0 
-		bg.Size = UDim2.new(1,0,1,0) 
-		bg.Position = UDim2.new(0,0,0,0) 
+		bg.BackgroundColor3 = Color3.new(0,0,0)
+		bg.BackgroundTransparency = 0
+		bg.Size = UDim2.new(1,0,1,0)
+		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
 	elseif mode == "ScreenVideo" then
-		local bg = Instance.new("VideoFrame", gui) 
+		local bg = Instance.new("VideoFrame", gui)
 		bg.Video="rbxassetid://"..data.Video
-		bg.BackgroundColor3 = Color3.new(0,0,0) 
-		bg.BackgroundTransparency = 0 
-		bg.Size = UDim2.new(1,0,1,0) 
-		bg.Position = UDim2.new(0,0,0,0) 
+		bg.BackgroundColor3 = Color3.new(0,0,0)
+		bg.BackgroundTransparency = 0
+		bg.Size = UDim2.new(1,0,1,0)
+		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
 		bg:Play()
 	end

@@ -860,20 +860,12 @@ return function(Vargs)
 				wait(1)
 			end
 
-			service.Players.PlayerAdded:connect(function(p)
+			service.Players.PlayerAdded:Connect(function(p)
 				p:Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
 			end)
 
-			for i,v in pairs(service.NetworkServer:children()) do
-				service.Routine(function()
-					if v and v:GetPlayer() then
-						v:GetPlayer():Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
-						wait(30)
-						if v.Parent and v:GetPlayer() then
-							Remote.Send(v:GetPlayer(),'Function','KillClient')
-						end
-					end
-				end)
+			for i,p in next,service.Players:GetPlayers() do
+				p:Kick("Game shutdown: " .. tostring(reason or "No Reason Given"))
 			end
 		end;
 

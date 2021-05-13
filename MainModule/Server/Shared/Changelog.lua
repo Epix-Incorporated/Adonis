@@ -9,6 +9,7 @@ return {
 	"* Fixed :clearplayerdata";
 	"* Added service.Yield";
 	"* New UFO model & destination";
+	"* Hopefully fixed some bugs";
 	"(Git/ccuser44) Made print and warn work properly. Also fixed some indentation.";
 	"(Git/ccuser44) Removed unnecessary references to filtering enabled.";
 	"(Git/ccuser44) Fixed iuncorrect string literals";

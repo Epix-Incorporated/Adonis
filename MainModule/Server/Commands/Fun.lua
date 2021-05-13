@@ -812,11 +812,14 @@ return function(Vargs, env)
 								local idle = light.Idle
 								local beamSound = light.Beam
 
+								local origBeamTrans = beam.Transparency
+
 								local tPos = torso.CFrame
 								local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
 
 								humanoid.Name = "NoResetForYou"
 								humanoid.WalkSpeed = 0
+
 								ufo.Name = "ADONIS_UFO"
 								ufo.PrimaryPart = primary
 								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
@@ -843,7 +846,7 @@ return function(Vargs, env)
 									wait(1)
 									spotLight.Enabled = true
 									particles.Enabled = true
-									beam.Transparency = 0.5
+									beam.Transparency = origBeamTrans
 									beamSound:Play()
 
 									local tween = service.TweenService:Create(torso, info, {

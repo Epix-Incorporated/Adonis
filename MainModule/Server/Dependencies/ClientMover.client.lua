@@ -77,16 +77,6 @@ local function doPcall(func, ...)
 	end
 end
 
---script:Destroy();
-folder.Parent = nil;
-spawn(function()
-	wait(0.5)
-	if folder.Parent ~= nil and folder.Parent ~= player then
-		folder.Parent = nil;
-	end
-end)
-
-
 if module and module:IsA("ModuleScript") then
 	warn("Loading Folder...")
 	local nameVal
@@ -105,8 +95,10 @@ if module and module:IsA("ModuleScript") then
 	origName = (nameVal and nameVal.Value) or folder.Name
 	warn("Got name: "..tostring(origName))
 
+	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	warn("Changing child parent...")
-	folder.Parent = nil
+	wait(0.01)
+	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	warn("Destroying parent...")
 

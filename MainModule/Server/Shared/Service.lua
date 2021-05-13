@@ -608,7 +608,9 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return new
 		end;
+
 		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
+
 		Timer = function(t,func,check)
 			local start = tick()
 			local event; event = service.RunService.RenderStepped:connect(function()
@@ -618,15 +620,18 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end)
 		end;
+
 		Unpack = function(tab,ind,limit)
 			if (not limit and tab[ind or 1] ~= nil) or (limit and (ind or 1) <= limit) then
 				return tab[ind or 1], service.Unpack(tab,(ind or 1)+1,limit)
 			end
 		end;
+
 		AltUnpack = function(args,shift)
 			if shift then shift = shift-1 end
 			return args[1+(shift or 0)],args[2+(shift or 0)],args[3+(shift or 0)],args[4+(shift or 0)],args[5+(shift or 0)],args[6+(shift or 0)],args[7+(shift or 0)],args[8+(shift or 0)],args[9+(shift or 0)],args[10+(shift or 0)]
 		end;
+
 		ExtractLines = function(str)
 			local strs = {}
 			local new = ""
@@ -644,6 +649,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return strs
 		end;
+
 		Filter = function(str,from,to)
 			local new = ""
 			local lines = service.ExtractLines(str)
@@ -658,6 +664,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return new or "Filter Error"
 		end;
+
 		LaxFilter = function(str,from,cmd)  	-- @Roblox; If this function violates the filtering rules please note that this is currently the only way
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
@@ -671,6 +678,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return str
 			end
 		end;
+
 		BroadcastFilter = function(str,from)
 			local new = ""
 			local lines = service.ExtractLines(str)
@@ -685,6 +693,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return new or "Filter Error"
 		end;
+
 		MetaFunc = function(func)
 	    return service.NewProxy {
 	        __call = function(tab,...)
@@ -697,7 +706,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	            end
 	        end
 	    }
-	end;
+		end;
+
 		NewProxy = function(meta)
 			local newProxy = newproxy(true)
 			local metatable = getmetatable(newProxy)
@@ -705,6 +715,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			for i,v in next,meta do metatable[i] = v end
 			return newProxy
 		end;
+
 		GetUserType = function(obj)
 			local ran,err = pcall(function() local temp = obj[math.random()] end)
 			if ran then
@@ -713,6 +724,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return err:match("%S+$")
 			end
 		end;
+
 		CountTable = function(tab)
 			local num = 0
 			for i in next,tab do
@@ -720,6 +732,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return num
 		end;
+
 		Debounce = function(key,func)
 			local env = getfenv(2)
 			local Debounces = (env and env._ADONIS_DEBOUNCES) or Debounces or {}
@@ -740,7 +753,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		Queue = function(key, func, timeout)
+		Queue = function(key, func, timeout, doYield)
 			if not Queues[key] then
 				Queues[key] = {
 					Processing = false;
@@ -754,12 +767,22 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				Running = false;
 				Function = func;
 				Timeout = timeout;
+
+				Finished = false;
+				Yield = doYield and service.Yield();
 			}
 
 			table.insert(queue.Functions, tab);
 
 			if not queue.Processing then
-				service.TrackTask("Thread: QueueProcessor_"..tostring(key), service.ProcessQueue(queue, key));
+				local ran, err = service.TrackTask("Thread: QueueProcessor_"..tostring(key), service.ProcessQueue, queue, key);
+				if not ran or err then
+					warn("Queue Error: ".. tostring(err))
+				end
+			end
+
+			if doYield and not tab.Finished then
+				return tab.Yield:Wait();
 			end
 		end;
 
@@ -784,19 +807,32 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 						if func.Timeout then
 							delay(func.Timeout, function()
-								Yield:Release();
-								warn("Queue Timeout Reached for ".. tostring(key or "Unknown"))
+								if not func.Finished then
+									Yield:Release();
+									warn("Queue Timeout Reached for ".. tostring(key or "Unknown"))
+
+									if func.Yield then
+										func.Yield:Release(false, "Timeout Reached");
+									end
+								end
 							end)
 						end
 
 						service.TrackTask("Thread: ".. tostring(key or "Unknown") .."_QueuedFunction", function()
 							local r,e = pcall(func.Function);
+
 							if not r then
 								func.Error = e;
 								warn("Queue Error: ".. tostring(e))
 							end
 
 							func.Running = false;
+							func.Finished = true
+
+							if func.Yield then
+								func.Yield:Release(r, e)
+							end
+
 							Yield:Release();
 						end)
 
@@ -807,7 +843,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 					Yield:Destroy();
 					queue.Processing = false;
-					
+
 					if key then
 						Queues[key] = nil;
 					end

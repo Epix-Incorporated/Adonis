@@ -1062,18 +1062,30 @@ return function(Vargs, env)
 			Filter = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not Core.PanicMode then
-					local logs = Core.GetData("ShutdownLogs") or {}
-					if plr then
-						table.insert(logs,1,{User = plr.Name, Time = service.GetTime(), Reason = args[1] or "N/A"})
-					else
-						table.insert(logs,1,{User = "Server/Trello", Time = service.GetTime(), Reason = args[1] or "N/A"})
-					end
-					if #logs>1000 then
-						table.remove(logs,#logs)
-					end
-					Core.SaveData("ShutdownLogs",logs)
+				if Core.DataStore and not Core.PanicMode then
+					Core.UpdateData("ShutdownLogs", function(logs)
+						if plr then
+							table.insert(logs,1,{
+								User = plr.Name,
+								Time = service.GetTime(),
+								Reason = args[1] or "N/A"
+							})
+						else
+							table.insert(logs,1,{
+								User = "[Server]",
+								Time = service.GetTime(),
+								Reason = args[1] or "N/A"
+							})
+						end
+
+						if #logs > 1000 then
+							table.remove(logs,#logs)
+						end
+
+						return logs
+					end)
 				end
+
 				Functions.Shutdown(args[1])
 			end
 		};

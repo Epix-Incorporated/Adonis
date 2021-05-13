@@ -24,6 +24,7 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Commands = server.Commands;
+
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
@@ -83,6 +84,12 @@ return function(Vargs)
 				Text = "Startup: Executed "..tostring(v);
 				Desc = "Executed startup command; "..tostring(v)
 			})
+		end
+
+		--// Check if Shutdownlogs is set and if not then set it
+		if Core.DataStore and not Core.GetData("ShutdownLogs") then
+			print("set shutdownlogs first time")
+			Core.SetData("ShutdownLogs", {})
 		end
 
 		Admin.RunAfterPlugins = nil;

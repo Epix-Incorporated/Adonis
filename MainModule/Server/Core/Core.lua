@@ -356,7 +356,6 @@ return function(Vargs)
 				keys.Module = client
 
 				acli.Parent = folder;
-				acli.Disabled = false;
 
 				--[[service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
 					if container.Parent == playerGui then
@@ -366,6 +365,7 @@ return function(Vargs)
 
 				local ok,err = pcall(function()
 					container.Parent = playerGui
+					acli.Disabled = false;
 				end)
 
 				if not Core.PanicMode and not ok then
@@ -751,7 +751,7 @@ return function(Vargs)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					service.Queue("DataStoreSetData".. tostring(key), function()
+					local ran2, err2 = service.Queue("DataStoreSetData".. tostring(key), function()
 						local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
@@ -760,7 +760,11 @@ return function(Vargs)
 						end
 
 						wait(Core.DS_SetDataQueueDelay)
-					end)
+					end, 300, true)
+
+					if not ran2 then
+						warn("DataStore UpdateData Failed: ".. tostring(err2))
+					end
 				end
 			end
 		end;
@@ -768,27 +772,20 @@ return function(Vargs)
 		UpdateData = function(key, func)
 			if Core.DataStore then
 				local err = false;
-				local Yield = service.Yield();
-
-				delay(120, function() Finish() err = "Took too long" end)
-
-				service.Queue("DataStoreUpdateData".. tostring(key), function()
+				local ran2, err2 = service.Queue("DataStoreUpdateData".. tostring(key), function()
 					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
 
-					if ran then
-						--return ret
-					else
+					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
 					end
 
 					wait(Core.DS_UpdateQueueDelay)
+				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
-					Yield.Release();
-				end)
-
-				Yield.Wait();
-				Yield.Destroy();
+				if not ran2 then
+					warn("DataStore UpdateData Failed: ".. tostring(err2))
+				end
 
 				return err
 			end
