@@ -6325,7 +6325,7 @@ return function(Vargs, env)
 						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						IsContributor = v:GetRankInGroup(886423) == 10
+						IsContributor = v:GetRankInGroup(886423) == 10;
 						IsMuted = _isMuted;
 						IsBanned = _isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
