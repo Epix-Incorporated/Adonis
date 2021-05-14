@@ -42,6 +42,7 @@ return function(Vargs)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
+		ClientTimeoutLimit = 120; --// Two minutes without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
@@ -76,8 +77,8 @@ return function(Vargs)
 						else
 							local client = Remote.Clients[tostring(p.UserId)]
 							if client and client.LastUpdate then
-								if os.time() - lastTime > 60*5 then
-									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >5 minutes]")
+								if os.time() - lastTime > Anti.ClientTimeoutLimit then
+									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >".. Anti.ClientTimeoutLimit .." seconds]")
 								end
 							end
 						end

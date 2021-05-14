@@ -6305,9 +6305,10 @@ return function(Vargs, env)
 					local _isMuted = false
 					local _isContributor = false
 					local _isBanned = false
-					if v:GetRankInGroup(886423) = 10 then
+					if v:GetRankInGroup(886423) == 10 then
 					        _isContributor = true -- You shall make this a function in the shared service blah blah for now this is enough that is needed
-                                        end
+          end
+
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
 						_isMuted = true
 					else
@@ -6327,7 +6328,7 @@ return function(Vargs, env)
 						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						isContributor = _isContributor
+						isContributor = _isContributor;
 						IsMuted = _isMuted;
 						IsBanned = _isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
