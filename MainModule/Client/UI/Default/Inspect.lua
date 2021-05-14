@@ -345,7 +345,8 @@ return function(data)
 		end
 
 		addAdonisEntry("Admin Level:", data.AdminLevel, "The player's Adonis rank")
-		addAdonisEntry("Donor:", boolToStr(data.IsDonor), "Is the player an Adonis donor?")
+		addAdonisEntry("Donor:", boolToStr(data.IsDonor), "Is the player an Adonis Donor?")
+		addAdonisEntry("Contributor:", boolToStr(data.IsContributor), "Is the player an Adonis Contributor (Github)?")
 		addAdonisEntry("Muted:", boolToStr(data.IsMuted), "Is the player muted? (IGNORES TRELLO MUTELIST)")
 		addAdonisEntry("Banned:", boolToStr(data.IsBanned), "Is the player banned? (IGNORES TRELLO BANLIST)")
 
