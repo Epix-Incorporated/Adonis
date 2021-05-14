@@ -3442,65 +3442,84 @@ return function(Vargs, env)
 
 		Refresh = {
 			Prefix = Settings.Prefix;
-			Commands = {"refresh";"reset";};
+			Commands = {"refresh"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Refreshes the target player(s)'s character";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local vCharacter = v.Character
+				for i,p in next,service.GetPlayers(plr, args[1]) do
+					local oChar = p.Character;
+					local oTools, pBackpack, oHumanoid, oPrimary, oPos;
 
-					if vCharacter then
-						local Humanoid = vCharacter:FindFirstChildOfClass("Humanoid")
+					if oChar then
+						oHumanoid = oChar:FindFirstChildOfClass("Humanoid");
+						oPrimary = oChar.PrimaryPart or (oHumanoid and oHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
 
-						local PrimaryPart = vCharacter.PrimaryPart or Humanoid and Humanoid.RootPart or vCharacter:FindFirstChild("Head")
+						if oPrimary then
+							oPos = oPrimary.CFrame;
+						end
+					end
 
-						if PrimaryPart then
-							local cachedCFrame = PrimaryPart.CFrame
-							local savedTools = {}
+					--// Handle tool saving
+					pBackpack = p:FindFirstChildOfClass("Backpack")
 
-							if Humanoid then
-								Humanoid:UnequipTools()
+					if pBackpack then
+						oTools = {};
+
+						pBackpack.ChildAdded:Connect(function(c)
+							table.insert(oTools, c);
+							c.Parent = nil;
+						end)
+
+						if oHumanoid then
+							oHumanoid:UnequipTools()
+						end
+
+						for i,c in next,pBackpack:GetChildren() do
+							table.insert(oTools, c);
+							c.Parent = nil;
+						end
+					end
+
+					--// Handle respawn and repositioning
+					local newChar, newHumanoid, newPrimary;
+
+					delay(0.1, function() p:LoadCharacter() end);
+
+					--// Reposition if possible
+					if oPos then
+						if not p.Character or p.Character == oChar then
+							newChar = p.CharacterAdded:Wait();
+						else
+							newChar = p.Character;
+						end
+
+						if newChar then
+							wait(); -- Let it finish loading character contents
+
+							newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
+							newPrimary = newChar.PrimaryPart or (Humanoid and Humanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
+
+							local forcefield = newChar:FindFirstChildOfClass("ForceField");
+							if forcefield then
+								forcefield:Destroy()
 							end
 
-							service.RunService.Heartbeat:Wait()
-
-							if v:FindFirstChildOfClass("Backpack") then
-								for _, Tool in pairs(v:FindFirstChildOfClass("Backpack"):GetChildren()) do
-									table.insert(savedTools, Tool)
-									Tool.Parent = nil
-								end
+							if newPrimary then
+								newPrimary.CFrame = oPos;
+							else
+								newChar:MoveTo(oPos.Position)
 							end
+						end
+					end
 
-							local vTempCharacterAdded; vTempCharacterAdded = v.CharacterAdded:Connect(function(Character)
-								vTempCharacterAdded:Disconnect()
-								vTempCharacterAdded = nil
-								service.RunService.Heartbeat:Wait()
-
-								if Character.PrimaryPart then
-									Character:SetPrimaryPartCFrame(cachedCFrame)
-								else
-									Character:MoveTo(cachedCFrame.Position)
-								end
-
-								for _, ForceField in pairs(Character:GetChildren()) do
-									if ForceField:IsA("ForceField") then ForceField:Destroy() end
-								end
-
-								local newBackpack = v:WaitForChild("Backpack",9e9)
-
-								if newBackpack then
-									newBackpack:ClearAllChildren()
-
-									for _, Tool in pairs(savedTools) do
-										Tool.Parent = newBackpack
-									end
-								end
-							end)
-
-							v:LoadCharacter()
+					--// Bring previous tools back
+					if pBackpack and oTools then
+						pBackpack:ClearAllChildren();
+						for i,t in next,oTools do
+							t.Parent = pBackpack;
 						end
 					end
 				end
@@ -3528,7 +3547,7 @@ return function(Vargs, env)
 
 		Respawn = {
 			Prefix = Settings.Prefix;
-			Commands = {"respawn";"re"};
+			Commands = {"respawn";"re";"reset"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Respawns the target player(s)"; -- typo fixed

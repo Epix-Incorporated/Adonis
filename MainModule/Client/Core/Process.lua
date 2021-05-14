@@ -170,7 +170,7 @@ return function()
 			if Variables.UIKeepAlive then
 				for ind,g in next,client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
-						if g.CanKeepAlive and not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) then
+						if not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) and g.CanKeepAlive then
 							g.KeepAlive = true
 							g.KeepParent = g.Object.Parent
 							g.Object.Parent = nil
