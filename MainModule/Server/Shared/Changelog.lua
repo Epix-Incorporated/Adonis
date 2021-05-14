@@ -1,6 +1,9 @@
 return {
-	"Version: 218.1";
+	"Version: 218.2";
 	"*Drag edges to expand*";
+	"";
+	"[v218.2 (HOTFIX) 5.14.2021 17:29 EST]";
+	"* Disabled the 'Events stopped' crash due to issues with the Windows store version of Roblox when minimized";
 	"";
 	"[v218.1 (HOTFIX) 5.14.2021 14:52 EST]";
 	"* Rewrote :refresh";
