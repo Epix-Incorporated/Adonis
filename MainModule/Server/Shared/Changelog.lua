@@ -5,6 +5,7 @@ return {
 	"[v218.1 (HOTFIX) 5.14.2021 14:52 EST]";
 	"* Rewrote :refresh";
 	"(Git/fxeP1) Fixed Refresh, Logs typo fixed.";
+	"(Git/LolloDev5123) Serverside Inspect Changes + Contributor Group Role Check";
 	"";
 	"[v218 5.13.2021 18:18 EST]";
 	"* Moved shared client & server resources/modules (like Service.lua, changelog, credits, etc) to a new 'Shared' folder";
