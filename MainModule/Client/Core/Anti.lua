@@ -652,7 +652,7 @@ return function()
 				client.Kill("Client disconnected from server")
 			end)
 
-			service.RunService.Stepped:connect(function()
+			service.RunService.Stepped:Connect(function()
 				lastUpdate = tick()
 			end)
 
@@ -672,7 +672,8 @@ return function()
 			service.StartLoop("Detection",10,function()
 				--// Prevent event stopping
 				if tick()-lastUpdate > 60 then
-					Detected("crash","Events stopped")
+					--Detected("crash","Events stopped")
+					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
 				end
 
 				--// Check player parent
