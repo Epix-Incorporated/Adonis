@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXA3836ABC60A04F1BB5D4A23D9BA43841">
+	<Item class="ScreenGui" referent="RBX935CEF36616F4DFEA51F9B69F7562CFE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
-			<bool name="Enabled">true</bool>
+			<bool name="Enabled">false</bool>
 			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Console</string>
 			<bool name="ResetOnSpawn">true</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBX66D0AF517A9F4D999B6544C072B73AC4">
+		<Item class="Frame" referent="RBX90EDA7F5875445F1A7D4676AFFBE7E17">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -70,7 +70,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ScrollingFrame" referent="RBXE80B5934ED2449F58177E5F12C6C018C">
+			<Item class="ScrollingFrame" referent="RBX360A20D5FD664619AA8E0F53E7762B7F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -151,7 +151,7 @@
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextBox" referent="RBX4773D3406A514883B32E18E7E5686376">
+			<Item class="TextBox" referent="RBXEF6FA90BA1064DC28DC683452D100ED8">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -238,7 +238,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX1BC091F3104D4891861E44C0286A2F95">
+			<Item class="Frame" referent="RBXE1395B9B384D4DA2AB8B895145DB17F6">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -293,7 +293,7 @@
 					<int name="ZIndex">5</int>
 				</Properties>
 			</Item>
-			<Item class="ScrollingFrame" referent="RBXB4AC6F9930544771B375144C0077E9CD">
+			<Item class="ScrollingFrame" referent="RBX7CA1CFBAB016440892B9BB46EC8C1C25">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -375,7 +375,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBX3974570991064364954ECC9C846FEB34">
+		<Item class="TextButton" referent="RBX2A3CBD2DD82D497594D7827D335F64FB">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -456,14 +456,14 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX3533C906EA2E47FC8E4E6257C49E275C">
+		<Item class="Folder" referent="RBXA61B5D037E1F45399A4206CC007ABB3B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBXAA7A1FDAB9D148A5897146FDA495BBE3">
+			<Item class="BoolValue" referent="RBXE6C5E6FB06794D86A1F49010A413BDCA">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -472,7 +472,7 @@
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX79DB77F8D8D54237AB1EA50456C4B7D8">
+			<Item class="ModuleScript" referent="RBX823B2CCB65CA43B4BD574AAD0D57A33A">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -732,7 +732,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX6E40AC1C5D6C45A6A41720CBB518F881">
+			<Item class="BoolValue" referent="RBX09E36347657A473AB079BD5A3E69FFDB">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>

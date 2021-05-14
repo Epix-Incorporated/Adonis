@@ -2,14 +2,14 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBX64E8153E6E3B4D1CA03F0E727A2609BF">
+	<Item class="Folder" referent="RBXA4C00C9E616B474EA2E706FF980FBC46">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">BasicAdmin</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="StringValue" referent="RBX471DE8A927634C85958CB57DEBC5042D">
+		<Item class="StringValue" referent="RBX1B037F84D8344A568DED0626BCF655B7">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
@@ -18,12 +18,12 @@
 				<string name="Value">Default</string>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBX1FF964D4781749B9ABB38785C84CDAE0">
+		<Item class="ScreenGui" referent="RBX7DA8CC4A881541858B79DDA8FF277582">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
 				<int name="DisplayOrder">0</int>
-				<bool name="Enabled">true</bool>
+				<bool name="Enabled">false</bool>
 				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">Message</string>
 				<bool name="ResetOnSpawn">false</bool>
@@ -32,14 +32,14 @@
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBX57781021D0C64E25A6E55FCE136D2D23">
+			<Item class="Folder" referent="RBXCF0AAB4F3CA24C7696D3003AEEDE6A41">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX9BD5F93FD6084DC0AE110243C9C10D77">
+				<Item class="ModuleScript" referent="RBXA20A090976B848F7BC05A0448BB37F76">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -196,7 +196,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXB43134684A884FED963E9161C857944F">
+				<Item class="BoolValue" referent="RBXFE4B9FC3B50447A9B36B12844C7949FF">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -205,7 +205,7 @@ end]]></ProtectedString>
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX662BFAD7FE0B4E89BEEADFD90527F765">
+				<Item class="BoolValue" referent="RBXFFE4FE12CD2A401882F4BD1679B1AAAC">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -214,7 +214,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXBD511FA7E2624146AC4ECBB6701D7A95">
+				<Item class="BoolValue" referent="RBX3173873C048A4E899F2F3BA758DCBB77">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CloseFirst</string>
@@ -224,7 +224,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX6CB4D4C73FB14DE0AAF3F49C6FAB651E">
+			<Item class="Frame" referent="RBXD13E6EF3362A45FC8F810B31F0E380C5">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -278,7 +278,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBXF73425F9C23C43959CFEBAA88EEAE55C">
+				<Item class="Frame" referent="RBXC11D368A54FB4B4EB0388ADD8EF0768D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -332,7 +332,7 @@ end]]></ProtectedString>
 						<bool name="Visible">false</bool>
 						<int name="ZIndex">10</int>
 					</Properties>
-					<Item class="Frame" referent="RBX1FAAB2FE4375473FAB1A2992002A017B">
+					<Item class="Frame" referent="RBX9AF95498010B4183A01F58B6DACF2B00">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -386,7 +386,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">10</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXE5CB4B0194434FF5A1F3CD44CD5AAA0E">
+						<Item class="TextLabel" referent="RBX5DC9DA632CD94CAAAFADF8C2C793A215">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -463,7 +463,7 @@ end]]></ProtectedString>
 								<int name="ZIndex">10</int>
 							</Properties>
 						</Item>
-						<Item class="TextLabel" referent="RBX47CF1B5247644D058AAB5394A42FC644">
+						<Item class="TextLabel" referent="RBX248802DC528B49D1AC1497C8A39CCD12">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -540,7 +540,7 @@ end]]></ProtectedString>
 								<int name="ZIndex">10</int>
 							</Properties>
 						</Item>
-						<Item class="TextLabel" referent="RBX62D2E6F490884579A3849715393E036E">
+						<Item class="TextLabel" referent="RBXD001F8A3329F468BB6065BCA8038600C">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -618,7 +618,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="Frame" referent="RBXD02DAF62ECC0494393DC452B05692003">
+					<Item class="Frame" referent="RBX513A4A87A2BB4E0583B3180B91921D2F">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -672,7 +672,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">10</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXF6C2DED480CA4553890407D8ABE8784A">
+						<Item class="TextLabel" referent="RBXD7679700C061496CBB9B9CFC2EE4C326">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -750,7 +750,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX5549A0DC47214201B20D1D7B33AFAF1B">
+					<Item class="TextButton" referent="RBXE9CC7463FCF044F1A7E4FA872CA326BC">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -834,12 +834,12 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXD00A23BA39774A30A5C36B6AC8BA3C3C">
+		<Item class="ScreenGui" referent="RBX133EC8849A9F434EA5794627CA511C7A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
 				<int name="DisplayOrder">0</int>
-				<bool name="Enabled">true</bool>
+				<bool name="Enabled">false</bool>
 				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">Hint</string>
 				<bool name="ResetOnSpawn">false</bool>
@@ -848,14 +848,14 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBXCE82CA8BDEAC42D48A2AD9F2491B2DA9">
+			<Item class="Folder" referent="RBX25CDCF858371496AB887AB1F16AF4B6E">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXCCB92718E62A4169882D95AAFC1B7E14">
+				<Item class="ModuleScript" referent="RBX2BECC95058904EB8A0FB81C6D026993B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -944,7 +944,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX96C89120E7BC4D7ABCB65248CDB549D2">
+				<Item class="BoolValue" referent="RBX1AAAFBB53C504946B6E21E58DFB33319">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -953,7 +953,7 @@ end]]></ProtectedString>
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX1B61B131BC6747BBA17D5E97D04CCB22">
+				<Item class="BoolValue" referent="RBXAADB7AAAF1CC486392A514E6FF2FE90E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -962,7 +962,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX63166DE5E3C6460986E2B91E7F2B729A">
+				<Item class="BoolValue" referent="RBX061C25C1DB6A4FDBBFB44B77A21CBDBC">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CloseFirst</string>
@@ -972,7 +972,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXB4F45E2800034021A0A6E33BB9B804E5">
+			<Item class="Frame" referent="RBXCCC22BC0D19B44448F2AA7906938E41A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1026,7 +1026,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX90C5A0DA3D494D938DC224B1619177FD">
+				<Item class="Frame" referent="RBX40A923FF80884961B7929C5F0B0E4DD1">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1080,7 +1080,7 @@ end]]></ProtectedString>
 						<bool name="Visible">false</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX353B216CFED74D60B9F648670EF886A5">
+					<Item class="Frame" referent="RBX01A58948381D4A3FBD89C96B085AB6DB">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1134,7 +1134,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXC39B463BD753444A88D1C059FDE2BEE7">
+						<Item class="TextLabel" referent="RBX7C71501A2BFB417ABD0E351787AED9FB">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1212,7 +1212,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="Frame" referent="RBX0FD7641343DC4DFD821B43577CE89553">
+					<Item class="Frame" referent="RBXDB6C73AFEA7B4CEDB1FD166C04C319B8">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1266,7 +1266,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXD8BB2A6CDF334E40A098F6079D2BE017">
+						<Item class="TextLabel" referent="RBX83052E55DAAF42C187BB4B80E766111D">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1344,7 +1344,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX4A263DEAAE3E4C34AA9782F598A8A3E6">
+					<Item class="TextButton" referent="RBXF31992672344472DA46D1E0F6BBD6983">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -1428,12 +1428,12 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXE2069179E67346F3A4BA8248BA20361A">
+		<Item class="ScreenGui" referent="RBX16663A531EA345A4A8079DB706DC1524">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
 				<int name="DisplayOrder">0</int>
-				<bool name="Enabled">true</bool>
+				<bool name="Enabled">false</bool>
 				<bool name="IgnoreGuiInset">true</bool>
 				<string name="Name">YesNoPrompt</string>
 				<bool name="ResetOnSpawn">false</bool>
@@ -1442,14 +1442,14 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBX7B9CA7C1BFA64A95BD4766A95EA78943">
+			<Item class="Folder" referent="RBX21731A7CD6124FF9A5EFBE55177693D2">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX1A626C83A52845D2BEEB68E96C39E616">
+				<Item class="ModuleScript" referent="RBX327D628E7FD8492EAA2FFF1EA0BF00AB">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -1550,7 +1550,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX0B9909E8683D43FF98B8AF148E45DD03">
+				<Item class="BoolValue" referent="RBX815D88DC0D6242A8BF3DBD0AE8A826FF">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1559,7 +1559,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXBC5F87341EE9450A97FE68D1DD814621">
+				<Item class="BoolValue" referent="RBX36BEF4821797415ABFA5734B622DFADC">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1568,7 +1568,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX71A35ED3E8F14C46806FD0B2EBE4F054">
+				<Item class="BoolValue" referent="RBX346411422CBA446FB42573A361A32D9B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CloseFirst</string>
@@ -1578,7 +1578,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX5C6E9422CC854D49A0148D9023C8ED19">
+			<Item class="Frame" referent="RBX649ABFB204124FF89A0BE3FE06AE8D31">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1632,7 +1632,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX678A5363AC02435382F29719F71DC3D3">
+				<Item class="Frame" referent="RBXDC405A2717604040879BF4A8C072E4AE">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1686,7 +1686,7 @@ end]]></ProtectedString>
 						<bool name="Visible">false</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX4A7DBE9DDBEF4009B01E217E83AADF41">
+					<Item class="Frame" referent="RBXFD81F1072840470F816BFF13DA11D6EE">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1740,7 +1740,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX71A4A75DE1AF4899A4CD6DCEDFD68585">
+						<Item class="TextLabel" referent="RBXCBBA9C0CEE144F269629F99DF6A645D7">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1818,7 +1818,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="Frame" referent="RBX9CA02065FC2642829ED354FDCDF77155">
+					<Item class="Frame" referent="RBX2610E82B85AC4209AED1AEEBE5A82C05">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1872,7 +1872,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX6B697D6056B141CB91E884FDEC5ECE3E">
+						<Item class="TextLabel" referent="RBXED2E4C92A0924F83BA2A0F76F44AA379">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1949,7 +1949,7 @@ end]]></ProtectedString>
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="Frame" referent="RBX6A9638E837A54ACC9FD8EF97F00701FB">
+						<Item class="Frame" referent="RBXE48AEC83E88F48138DE886ECDE03DB5D">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2003,7 +2003,7 @@ end]]></ProtectedString>
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="TextButton" referent="RBX4B24D274481F44BD81B6C9B470703D56">
+							<Item class="TextButton" referent="RBXEAA00F5219394E96B95A8931B882014C">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -2084,7 +2084,7 @@ end]]></ProtectedString>
 									<int name="ZIndex">2</int>
 								</Properties>
 							</Item>
-							<Item class="TextButton" referent="RBX1B9DD392284E4351A25FD1B69DE75A1F">
+							<Item class="TextButton" referent="RBX029F61328D144FFEA9FBC0F52939376B">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -2166,7 +2166,7 @@ end]]></ProtectedString>
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBX23EA965A8027490C80083E67124F8044">
+						<Item class="TextLabel" referent="RBX5D02A547930C44C4ADBB30CF014F7C6B">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">

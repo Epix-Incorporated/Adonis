@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXB918606A38CD4AB591707243E17F05E6">
+	<Item class="ScreenGui" referent="RBXD4BFD5E0C2AB47F1A1DF977F923D5319">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
-			<bool name="Enabled">true</bool>
+			<bool name="Enabled">false</bool>
 			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Notif</string>
 			<bool name="ResetOnSpawn">true</bool>
@@ -16,14 +16,14 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX7E755E6E36CA4A52B4C4AB81B714C73C">
+		<Item class="Folder" referent="RBXDBE0BDC0BCD441DDA4E4FD2F030897AC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX3897FB95944C41EBA0752A38F44A7A31">
+			<Item class="ModuleScript" referent="RBXD4BA6893DCA7419DB2FD93754BE528AA">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -59,7 +59,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX69B166DD3BB246738E6037E748244629">
+			<Item class="BoolValue" referent="RBX093434AAFD874436888873CBD108982F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -68,7 +68,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXF8DC2CFC8AFE4379ABA4C4C9C78BE55C">
+			<Item class="BoolValue" referent="RBXB6290CDE11884167A821665B157E9529">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -78,7 +78,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBXEC6D1D883EFC4E94AA8608CBC1881610">
+		<Item class="TextLabel" referent="RBX7835B17AA2F141AEA9F9FF5B4631E0D3">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">

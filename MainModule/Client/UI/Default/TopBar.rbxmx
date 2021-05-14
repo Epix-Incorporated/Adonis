@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX29C85DAA21B94171981DFF82595B7465">
+	<Item class="ScreenGui" referent="RBX91F8300DF184423A99629219B4D323E9">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
-			<bool name="Enabled">true</bool>
+			<bool name="Enabled">false</bool>
 			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">TopBar</string>
 			<bool name="ResetOnSpawn">true</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="TextLabel" referent="RBX575C7E6986DF4593979BBD742E4F96CA">
+		<Item class="TextLabel" referent="RBX5649229A3E45457A840CA469702FE922">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -93,7 +93,7 @@
 				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
-		<Item class="Frame" referent="RBXBDB09E614D17472899D1E234FF7EFEEE">
+		<Item class="Frame" referent="RBXEB3AB5BE72F94702ADA4D94618BA5296">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -148,14 +148,14 @@
 				<int name="ZIndex">3</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX2BFAAC20462A47FE9C77EFEB38001361">
+		<Item class="Folder" referent="RBX2218FC5EBD544140B58233812D614BA8">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXA3BE11C2B8F542CB8D60E2A0D85CA16A">
+			<Item class="ModuleScript" referent="RBX476F57F5A4D54D7CBA93E1A58550A29F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -214,7 +214,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX618BE40DE84A41B0A1452A8E54714E46">
+			<Item class="BoolValue" referent="RBX953E1F58A2B24F34AE7EDAE82B8BC292">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -223,7 +223,7 @@ end]]></ProtectedString>
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX0FF855DF6A624002984BB49520C53DF4">
+			<Item class="BoolValue" referent="RBXD5B469CEABCC4B538EB2501FE1E384F8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
