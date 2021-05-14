@@ -6301,20 +6301,24 @@ return function(Vargs, env)
 						return true
 					end
 				end
-
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local isMuted = false
+					local _isMuted = false
+					local _isContributor = false
+					local _isBanned = false
+					if v:GetRankInGroup(886423) = 10 then
+					        _isContributor = true -- You shall make this a function in the shared service blah blah for now this is enough that is needed
+                                        end
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
-						isMuted = true
+						_isMuted = true
 					else
-						isMuted = false
+						_isMuted = false
 					end
 
 					local isBanned = false
 					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
-						isBanned = true
+						_isBanned = true
 					else
-						isBanned = false
+						_isBanned = false
 					end
 
 					server.Remote.MakeGui(plr,"Inspect",{
@@ -6323,8 +6327,9 @@ return function(Vargs, env)
 						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						IsMuted = isMuted;
-						IsBanned = isBanned;
+						isContributor = _isContributor
+						IsMuted = _isMuted;
+						IsBanned = _isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
 						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
