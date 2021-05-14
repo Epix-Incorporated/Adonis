@@ -3450,37 +3450,59 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local pos = v.Character and (v.Character:FindFirstChild('HumanoidRootPart') or (v:FindFirstChildWhichIsA("Humanoid") and v:FindFirstChildWhichIsA("Humanoid").RootPart))
-					assert(pos,'RootPart could not be found')
-					pos = pos.CFrame
-					local temptools = {}
+					local vCharacter = v.Character
 
-					pcall(function() v.Character:FindFirstChildWhichIsA('Humanoid'):UnequipTools() end)
-					for k,t in ipairs(v.Backpack:GetChildren()) do
-						if t:IsA('Tool') or t:IsA('HopperBin') then
-							table.insert(temptools,t)
-							t.Parent = nil;
+					if vCharacter then
+						local Humanoid = vCharacter:FindFirstChildOfClass("Humanoid")
+
+						local PrimaryPart = vCharacter.PrimaryPart or Humanoid and Humanoid.RootPart or vCharacter:FindFirstChild("Head")
+
+						if PrimaryPart then
+							local cachedCFrame = PrimaryPart.CFrame
+							local savedTools = {}
+
+							if Humanoid then
+								Humanoid:UnequipTools()
+							end
+
+							service.RunService.Heartbeat:Wait()
+
+							if v:FindFirstChildOfClass("Backpack") then
+								for _, Tool in pairs(v:FindFirstChildOfClass("Backpack"):GetChildren()) do
+									table.insert(savedTools, Tool)
+									Tool.Parent = nil
+								end
+							end
+
+							local vTempCharacterAdded; vTempCharacterAdded = v.CharacterAdded:Connect(function(Character)
+								vTempCharacterAdded:Disconnect()
+								vTempCharacterAdded = nil
+								service.RunService.Heartbeat:Wait()
+
+								if Character.PrimaryPart then
+									Character:SetPrimaryPartCFrame(cachedCFrame)
+								else
+									Character:MoveTo(cachedCFrame.Position)
+								end
+
+								for _, ForceField in pairs(Character:GetChildren()) do
+									if ForceField:IsA("ForceField") then ForceField:Destroy() end
+								end
+
+								local newBackpack = v:WaitForChild("Backpack",9e9)
+
+								if newBackpack then
+									newBackpack:ClearAllChildren()
+
+									for _, Tool in pairs(savedTools) do
+										Tool.Parent = newBackpack
+									end
+								end
+							end)
+
+							v:LoadCharacter()
 						end
 					end
-
-					local con; con = v.CharacterAdded:Connect(function(c)
-						con:Disconnect()
-						con:Destroy()
-						c:WaitForChild("HumanoidRootPart").CFrame = pos
-
-						for d,f in pairs(c:GetChildren()) do
-							if f:IsA('ForceField') then f:Destroy() end
-						end
-
-						v:WaitForChild("Backpack")
-						v.Backpack:ClearAllChildren()
-
-						for l,m in pairs(temptools) do
-							m.Parent = v.Backpack
-						end
-					end)
-					
-					v:LoadCharacter()
 				end
 			end
 		};
