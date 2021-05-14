@@ -3467,7 +3467,7 @@ return function(Vargs, env)
 
 					if pBackpack then
 						oTools = {};
-						
+
 						if oHumanoid then
 							oHumanoid:UnequipTools()
 						end
@@ -6304,11 +6304,7 @@ return function(Vargs, env)
 				end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local _isMuted = false
-					local _isContributor = false
 					local _isBanned = false
-					if v:GetRankInGroup(886423) == 10 then
-					        _isContributor = true -- You shall make this a function in the shared service blah blah for now this is enough that is needed
-          end
 
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
 						_isMuted = true
@@ -6329,7 +6325,7 @@ return function(Vargs, env)
 						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						isContributor = _isContributor;
+						IsContributor = v:GetRankInGroup(886423) == 10
 						IsMuted = _isMuted;
 						IsBanned = _isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
