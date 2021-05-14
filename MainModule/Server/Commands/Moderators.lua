@@ -3467,15 +3467,15 @@ return function(Vargs, env)
 
 					if pBackpack then
 						oTools = {};
+						
+						if oHumanoid then
+							oHumanoid:UnequipTools()
+						end
 
 						pBackpack.ChildAdded:Connect(function(c)
 							table.insert(oTools, c);
 							c.Parent = nil;
 						end)
-
-						if oHumanoid then
-							oHumanoid:UnequipTools()
-						end
 
 						for i,c in next,pBackpack:GetChildren() do
 							table.insert(oTools, c);
@@ -3516,10 +3516,11 @@ return function(Vargs, env)
 					end
 
 					--// Bring previous tools back
-					if pBackpack and oTools then
-						pBackpack:ClearAllChildren();
+					local newBackpack = p:FindFirstChildOfClass("Backpack")
+					if newBackpack and oTools then
+						newBackpack:ClearAllChildren();
 						for i,t in next,oTools do
-							t.Parent = pBackpack;
+							t.Parent = newBackpack;
 						end
 					end
 				end
