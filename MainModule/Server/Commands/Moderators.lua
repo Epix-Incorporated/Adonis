@@ -6264,8 +6264,8 @@ return function(Vargs, env)
 					local _isMuted = false
 					local _isContributor = false
 					local _isBanned = false
-					if v.GetRankInGroup(886423) = 10 then
-					        _isContributor = true
+					if v:GetRankInGroup(886423) = 10 then
+					        _isContributor = true -- You shall make this a function in the shared service blah blah for now this is enough that is needed
                                         end
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
 						_isMuted = true
