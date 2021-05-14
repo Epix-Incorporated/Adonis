@@ -4,7 +4,7 @@ return {
 	"";
 	"[v219 WIP]";
 	"(Git/GalacticInspired) IsA('HopperBin') patch";
-	"":
+	"";
 	"[v218.2 (HOTFIX) 5.14.2021 17:29 EST]";
 	"* Disabled the 'Events stopped' crash due to issues with the Windows store version of Roblox when minimized";
 	"* Fixed :refresh (again)";
