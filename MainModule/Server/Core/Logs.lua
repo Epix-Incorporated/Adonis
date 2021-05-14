@@ -98,7 +98,7 @@ return function(Vargs)
 				local temp = {}
 
 				for i,m in ipairs(Logs.Commands) do
-					local newTab = (type(m) == "table" and service.CLoneTable(m)) or m;
+					local newTab = (type(m) == "table" and service.CloneTable(m)) or m;
 					if type(m) == "table" and newTab.Player then
 						local p = newTab.Player;
 						newTab.Player = {
