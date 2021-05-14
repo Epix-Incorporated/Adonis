@@ -1,8 +1,8 @@
 return {
-	"Version: 218.3";
+	"Version: 218.4";
 	"*Drag edges to expand*";
 	"";
-	"[v218.3 (HOTFIX) 5.14.2021 18:10 EST]";
+	"[v218.3 & 218.4 (HOTFIX) 5.14.2021 18:10 EST]";
 	"* Fixed an issue where all of Adonis's ScreenGuis would flash on screen while loading the client";
 	"(Git/GalacticInspired) IsA('HopperBin') patch";
 	"";
