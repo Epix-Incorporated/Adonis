@@ -27,28 +27,35 @@ return function(Vargs)
 
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
-			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
 
-			ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
-				local slowCache = Admin.SlowCache;
-				local speaker = ChatService:GetSpeaker(speakerName)
-				local player = speaker:GetPlayer()
-				if player and Admin.IsMuted(player) then
-					speaker:SendSystemMessage("You are muted!", channelName)
-					return true
-				elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-					speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
-					return true
-				end
+			if chatMod then
+				local ChatService = require(chatMod);
+				ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+					local slowCache = Admin.SlowCache;
+					local speaker = ChatService:GetSpeaker(speakerName)
+					local player = speaker:GetPlayer()
+					if player and Admin.IsMuted(player) then
+						speaker:SendSystemMessage("You are muted!", channelName)
+						return true
+					elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+						speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+						return true
+					end
 
-				if Admin.SlowMode then
-					slowCache[player] = os.time()
-				end
+					if Admin.SlowMode then
+						slowCache[player] = os.time()
+					end
 
-				return false
-			end)
+					return false
+				end)
 
-			Logs:AddLog("Script", "ChatService Handler Loaded")
+				Logs:AddLog("Script", "ChatService Handler Loaded")
+			else
+				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
+				Logs:AddLog("Script", "ChatService Handler Not Found")
+			end
 		end)
 
 		Admin.Init = nil;

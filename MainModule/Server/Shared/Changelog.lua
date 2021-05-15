@@ -1,6 +1,9 @@
 return {
-	"Version: 218.5";
+	"Version: 218.6";
 	"*Drag edges to expand*";
+	"";
+	"[v218.6 (HOTFIX) 5.15.2021 16:53 EST]";
+	"* Fixed an error that would occur in games with the vanilla ChatService disabled/removed";
 	"";
 	"[v218.5 (HOTFIX) 5.15.2021 15:14 EST]";
 	"* Keybind editor now correctly handles special keys (like Control, shift, function keys, etc)";
