@@ -4,6 +4,7 @@ return {
 	"";
 	"[v218.5 (HOTFIX) 5.15.2021 15:14 EST]";
 	"* Keybind editor now correctly handles special keys (like Control, shift, function keys, etc)";
+	"* No longer crashes the client 30s after disconnect";
 	"";
 	"[v218.3 & 218.4 (HOTFIX) 5.14.2021 18:10 EST]";
 	"* Fixed an issue where all of Adonis's ScreenGuis would flash on screen while loading the client";
