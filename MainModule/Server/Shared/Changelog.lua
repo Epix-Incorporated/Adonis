@@ -1,6 +1,18 @@
 return {
-	"Version: 218.1";
+	"Version: 218.5";
 	"*Drag edges to expand*";
+	"";
+	"[v218.5 (HOTFIX) 5.15.2021 15:14 EST]";
+	"* Keybind editor now correctly handles special keys (like Control, shift, function keys, etc)";
+	"* No longer crashes the client 30s after disconnect";
+	"";
+	"[v218.3 & 218.4 (HOTFIX) 5.14.2021 18:10 EST]";
+	"* Fixed an issue where all of Adonis's ScreenGuis would flash on screen while loading the client";
+	--"(Git/GalacticInspired) IsA('HopperBin') patch"; --Lets just say, that wasn't the issue.
+	"";
+	"[v218.2 (HOTFIX) 5.14.2021 17:29 EST]";
+	"* Disabled the 'Events stopped' crash due to issues with the Windows store version of Roblox when minimized";
+	"* Fixed :refresh (again)";
 	"";
 	"[v218.1 (HOTFIX) 5.14.2021 14:52 EST]";
 	"* Rewrote :refresh";
