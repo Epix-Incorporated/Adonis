@@ -158,9 +158,7 @@ return function(Vargs)
 		BlankPrefix = false;
 
 		DoHideChatCmd = function(p, message, data)
-			print("do the check")
 			local pData = data or Core.GetPlayer(p);
-			print("is enabled? ".. tostring(pData.Client.HideChatCommands));
 			if pData.Client.HideChatCommands
 					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
 					and message:sub(2,2) ~= message:sub(1,1) then
