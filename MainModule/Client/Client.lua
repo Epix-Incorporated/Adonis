@@ -177,8 +177,8 @@ client = setmetatable({
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
-		wait(30)
-		client.Kill()(info)
+		--wait(30)
+		--client.Kill()(info)
 	end;
 
 	--Kill = Kill;

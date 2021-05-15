@@ -225,13 +225,14 @@ return function(Vargs)
 				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
 				local resp = "OK"
-				if type(binds)=="table" then
+				if type(binds) == "table" then
 					playerData.Keybinds = binds
 					Core.SavePlayer(p,playerData)
 					resp = "Updated"
 				else
 					resp = "Error"
 				end
+				
 				return resp
 			end;
 

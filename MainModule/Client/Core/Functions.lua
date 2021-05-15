@@ -854,9 +854,22 @@ return function()
 			client.Kill("KillClient called")
 		end;
 
+		KeyCodeToName = function(keyVal)
+			local keyVal = tonumber(keyVal);
+			if keyVal then
+				for i,e in next,Enum.KeyCode:GetEnumItems() do
+					if e.Value == tonumber(keyVal) then
+						return e.Name;
+					end
+				end
+			end
+			return "UNKNOWN";
+		end;
+
 		KeyBindListener = function()
 			if not Variables then wait() end;
 			local timer = 0
+			
 			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
@@ -865,10 +878,10 @@ return function()
 
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
-					if (tick() - timer > 5 or isAdmin) and pcall(string.char, key) then
+					if (tick() - timer > 5 or isAdmin) then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = "[Ran] Key: "..string.char(key).." | Command: "..tostring(Variables.KeyBinds[key])
+							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])
 						})
 					end
 					timer = tick()
@@ -877,20 +890,23 @@ return function()
 		end;
 
 		AddKeyBind = function(key, command)
+			local key = tostring(key);
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			UI.Make("Hint",{
-				Message = 'Bound "'..string.char(key)..'" to '..command
+				Message = 'Bound "'..Functions.KeyCodeToName(key)..'" to '..command
 			})
 		end;
 
 		RemoveKeyBind = function(key)
+			local key = tostring(key);
+
 			if Variables.KeyBinds[tostring(key)] ~= nil then
 				Variables.KeyBinds[tostring(key)] = nil
 				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
 					UI.Make("Hint",{
-						Message = 'Removed "'..string.char(key)..'" from key binds'
+						Message = 'Removed "'..Functions.KeyCodeToName(key)..'" from key binds'
 					})
 				end)
 			end

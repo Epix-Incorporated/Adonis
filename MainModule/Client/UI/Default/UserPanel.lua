@@ -690,11 +690,14 @@ return function(data)
 			local inputBlock = false
 			local commandBox
 			local keyBox
+			local keyCodeToName = client.Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
 			})
+
+
 
 			local function getBinds()
 				local num = 0
@@ -702,27 +705,25 @@ return function(data)
 				binds:ClearAllChildren();
 
 				for i,v in next,client.Variables.KeyBinds do
-					if pcall(string.char, i) then
-						binds:Add("TextButton", {
-							Text = "Key: ".. string.upper(string.char(i)) .." | Command: "..v;
-							Size = UDim2.new(1, 0, 0, 25);
-							Position = UDim2.new(0, 0, 0, num*25);
-							OnClicked = function(button)
-								if selected then
-									selected.Button.BackgroundTransparency = 0
-								end
-
-								button.BackgroundTransparency = 0.5
-								selected = {
-									Key = i;
-									Command = v;
-									Button = button;
-								}
+					binds:Add("TextButton", {
+						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
+						Size = UDim2.new(1, 0, 0, 25);
+						Position = UDim2.new(0, 0, 0, num*25);
+						OnClicked = function(button)
+							if selected then
+								selected.Button.BackgroundTransparency = 0
 							end
-						})
 
-						num = num + 1
-					end
+							button.BackgroundTransparency = 0.5
+							selected = {
+								Key = i;
+								Command = v;
+								Button = button;
+							}
+						end
+					})
+
+					num = num + 1
 				end
 
 				binds:ResizeCanvas(false, true)
@@ -813,11 +814,13 @@ return function(data)
 						local textbox = service.UserInputService:GetFocusedTextBox()
 						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
-							button.Text = string.upper(string.char(currentKey.Value))
-							client.Variables.WaitingForBind = false
-							if keyInputHandler then
-								keyInputHandler:Disconnect()
-								keyInputHandler = nil
+							if currentKey then
+								button.Text = string.upper(keyCodeToName(currentKey.Value))
+								client.Variables.WaitingForBind = false
+								if keyInputHandler then
+									keyInputHandler:Disconnect()
+									keyInputHandler = nil
+								end
 							end
 						end
 					end)
@@ -850,7 +853,7 @@ return function(data)
 					if selected and not inputBlock then
 						currentKey = nil
 						editOldKeybind = selected.Key
-						keyBox.Text = string.upper(string.char(selected.Key))
+						keyBox.Text = string.upper(keyCodeToName(selected.Key))
 						commandBox.Text = selected.Command
 						binderBox.Visible = true
 					end
