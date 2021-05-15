@@ -1138,10 +1138,10 @@ return function(data)
 					Value = client.Variables.HideChatCommands or false;
 					Function = function(enabled, toggle)
 						client.Variables.HideChatCommands = enabled
-
+						
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","HideChatCommands",enabled)
+						client.Remote.Get("UpdateClient","HideChatCommands", enabled)
 						toggle.Text = text
 					end
 				};

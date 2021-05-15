@@ -359,6 +359,15 @@ return function(Vargs)
 			};
 		};
 
+		GetChatService = function()
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
+
+			if chatMod then
+				return require(chatMod);
+			end
+		end;
+		
 		IsClass = function(obj, classList)
 			for _,class in next,classList do
 				if obj:IsA(class) then

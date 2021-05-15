@@ -27,11 +27,17 @@ return function(Vargs)
 
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
+			local chatService = Functions.GetChatService();
 
-			if chatMod then
-				local ChatService = require(chatMod);
+			if chatService then
+				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message, channelName)
+					if server.Admin.DoHideChatCmd(service.Players:FindFirstChild(speakerName), message) then
+						return true
+					end
+
+					return false
+				end);
+
 				ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
 					local slowCache = Admin.SlowCache;
 					local speaker = ChatService:GetSpeaker(speakerName)
@@ -150,6 +156,18 @@ return function(Vargs)
 		SlowCache = {};
 		UserIdCache = {};
 		BlankPrefix = false;
+
+		DoHideChatCmd = function(p, message, data)
+			print("do the check")
+			local pData = data or Core.GetPlayer(p);
+			print("is enabled? ".. tostring(pData.Client.HideChatCommands));
+			if pData.Client.HideChatCommands
+					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
+					and message:sub(2,2) ~= message:sub(1,1) then
+						print("do")
+				return true;
+			end
+		end;
 
 		GetTrueRank = function(p, group)
 			local localRank = Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)
