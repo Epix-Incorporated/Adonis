@@ -226,27 +226,27 @@ return function()
 		AntiTools = function(data)
 			if service.Player:WaitForChild("Backpack", 120) then
 				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
-				local tools = data.AntiTools --Remote.Get("Setting","AntiTools")
-				local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")
+				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
+				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
 					if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) then
-						if client.AntiBuildingTools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
+						if btools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.GameTool) or rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.Script)) then
 							t.Active = false
-							t:Destroy()
-							Detected("log","Building tools detected")
+							t.Parent = nil
+							Detected('log','HopperBin detected (Building Tools)')
 						end
-						if tools then
-							local good = false
-							for i,v in pairs(client.AllowedToolsList) do
-								if t.Name==v then
-									good = true
-								end
-							end
-							if not good then
-								t:Destroy()
-								Detected("log","Tool detected")
-							end
-						end
+						--if tools then
+						--	local good = false
+						--	for i,v in pairs(client.AllowedToolsList) do
+						--		if t.Name==v then
+						--			good = true								\
+						--		end											 |- code disabled since someone removed the required stuff for it smh
+						--	end												 |- there was no intention to have it removed
+						--	if not good then								/
+						--		t:Destroy()
+						--		Detected("log","Tool detected")
+						--	end
+						--end
 					end
 				end
 
@@ -562,8 +562,8 @@ return function()
 
 			local function checkTool(t)
 				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
-					if t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("log","Building tools detected; "..tostring(t.BinType))
+					if t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.GameTool) or rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.Script)) then
+						Detected("log","HopperBin detected (Building Tools); "..tostring(t.BinType))
 					end
 				end
 			end
