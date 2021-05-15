@@ -232,7 +232,7 @@ return function()
 					if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) then
 						if btools and t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.GameTool) or rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.Script)) then
 							t.Active = false
-							t.Parent = nil
+							t:Destroy()
 							Detected('log','HopperBin detected (Building Tools)')
 						end
 
