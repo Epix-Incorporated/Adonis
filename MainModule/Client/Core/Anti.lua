@@ -235,18 +235,19 @@ return function()
 							t.Parent = nil
 							Detected('log','HopperBin detected (Building Tools)')
 						end
-						--if tools then
-						--	local good = false
-						--	for i,v in pairs(client.AllowedToolsList) do
-						--		if t.Name==v then
-						--			good = true								\
-						--		end											 |- code disabled since someone removed the required stuff for it smh
-						--	end												 |- there was no intention to have it removed
-						--	if not good then								/
-						--		t:Destroy()
-						--		Detected("log","Tool detected")
-						--	end
-						--end
+
+						--[[if tools then
+							local good = false
+							for i,v in pairs(client.AllowedToolsList) do
+								if t.Name==v then
+									good = true
+								end
+							end
+							if not good then
+								t:Destroy()
+								Detected("log","Tool detected")
+							end
+						end--]]
 					end
 				end
 
@@ -646,12 +647,11 @@ return function()
 					end
 				end
 			end)
-
-			service.NetworkClient.ChildRemoved:connect(function(child)
+			
+			--[[service.NetworkClient.ChildRemoved:connect(function(child)
 				wait(30)
-				--client.Kill("Client disconnected from server")
-				service.Player:Kick("Client disconnected from server")
-			end)
+				client.Kill("Client disconnected from server")
+			end)--]]
 
 			service.RunService.Stepped:connect(function()
 				lastUpdate = tick()
