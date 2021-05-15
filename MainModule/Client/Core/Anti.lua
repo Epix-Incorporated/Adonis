@@ -647,10 +647,10 @@ return function()
 				end
 			end)
 
-			service.NetworkClient.ChildRemoved:connect(function(child)
+			--[[service.NetworkClient.ChildRemoved:connect(function(child)
 				wait(30)
 				client.Kill("Client disconnected from server")
-			end)
+			end)--]]
 
 			service.RunService.Stepped:Connect(function()
 				lastUpdate = tick()
