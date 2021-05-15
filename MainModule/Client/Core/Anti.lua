@@ -649,7 +649,8 @@ return function()
 
 			service.NetworkClient.ChildRemoved:connect(function(child)
 				wait(30)
-				client.Kill("Client disconnected from server")
+				--client.Kill("Client disconnected from server")
+				service.Player:Kick("Client disconnected from server")
 			end)
 
 			service.RunService.Stepped:connect(function()
