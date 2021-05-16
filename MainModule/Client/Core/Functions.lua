@@ -869,7 +869,7 @@ return function()
 		KeyBindListener = function()
 			if not Variables then wait() end;
 			local timer = 0
-			
+
 			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
@@ -1479,8 +1479,24 @@ return function()
 			audio2:Stop()
 		end;
 
-		ChatCmdsHidden = function(args)
-			return Variables.HideChatCommands or false
+		IsValidTexture = function(id)
+			local id = tonumber(id)
+			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
+
+			if ran and info and info.AssetTypeId == 1 then
+				return true;
+			else
+				return false;
+			end
+		end;
+
+		GetTexture = function(id)
+			local id = tonumber(id);
+			if id and Functions.IsValidTexture(id) then
+				return id;
+			else
+				return 6825455804;
+			end
 		end;
 	};
 end

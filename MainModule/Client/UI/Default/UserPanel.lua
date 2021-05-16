@@ -41,6 +41,7 @@ end
 
 return function(data)
 	local gTable
+	local Functions = client.Functions;
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
@@ -517,23 +518,32 @@ return function(data)
 
 								local img = pWindow:Add("ImageLabel", {
 									BackgroundTransparency = 1;
-									Image = "rbxassetid://"..currentTexture;
+									Image = "rbxassetid://".. Functions.GetTexture(currentTexture);
 									Size = UDim2.new(1, -10, 1, -80);
 									Position = UDim2.new(0, 5, 0, 35);
 								})
 
+								local lastChange = 0;
 								pWindow:Add("TextBox", {
 									Text = currentTexture;
 									Size = UDim2.new(1, -10, 0, 30);
 									Position = UDim2.new(0, 5, 0, 5);
 									TextChanged = function(text, enter, new)
-										local num = tonumber(text)
-										if num then
-											lastValid = num
-											img.Image = "rbxassetid://"..num;
-										else
-											new.Text = lastValid
-										end
+										local lastVal = math.random();
+
+										lastChange = lastVal;
+
+										delay(0.5, function()
+											if lastChange == lastVal then --// So we only do the update when they finish typing
+												local num = tonumber(text)
+												if num then
+													lastValid = num
+													img.Image = "rbxassetid://".. Functions.GetTexture(num);
+												else
+													new.Text = lastValid
+												end
+											end
+										end)
 									end
 								})
 
@@ -1138,7 +1148,7 @@ return function(data)
 					Value = client.Variables.HideChatCommands or false;
 					Function = function(enabled, toggle)
 						client.Variables.HideChatCommands = enabled
-						
+
 						local text = toggle.Text
 						toggle.Text = "Saving.."
 						client.Remote.Get("UpdateClient","HideChatCommands", enabled)

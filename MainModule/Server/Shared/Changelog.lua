@@ -1,6 +1,12 @@
 return {
-	"Version: 218.7";
+	"Version: 219";
 	"*Drag edges to expand*";
+	"";
+	"[v219 5.16.2021 15:30 EST]";
+	"* Minor UI changes";
+	"* Adonis will now display an error texture instead of (poorly) trying to find a decal's texture ID";
+	"* Fixed some bugs";
+	
 	"";
 	"[v218.6 & v218.7 (HOTFIX) 5.15.2021 16:53 EST]";
 	"* Fixed an error that would occur in games with the vanilla ChatService disabled/removed";

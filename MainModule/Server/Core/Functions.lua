@@ -367,7 +367,7 @@ return function(Vargs)
 				return require(chatMod);
 			end
 		end;
-		
+
 		IsClass = function(obj, classList)
 			for _,class in next,classList do
 				if obj:IsA(class) then
@@ -787,28 +787,42 @@ return function(Vargs)
 			return num
 		end;
 
-		GetTexture = function(ID)
-			ID = Functions.Trim(tostring(ID))
-			local created
+		GetTextureUsingHttp = function(id)
+			if service.HttpService.HttpEnabled then
+				local id = tonumber(id);
 
-			if not tonumber(ID) then
-				return false
-			else
-				ID = tonumber(ID)
-			end
-
-			if not pcall(function() updated=service.MarketPlace:GetProductInfo(ID).Created:match("%d+-%d+-%S+:%d+") end) then
-				return false
-			end
-
-			for i = 0,10 do
-				local info
-				local ran,error = pcall(function() info = service.MarketPlace:GetProductInfo(ID-i) end)
-				if ran then
-					if info.AssetTypeId == 1 and info.Created:match("%d+-%d+-%S+:%d+") == updated then
-						return ID-i
+				if id then
+					if Functions.IsValidTexture(id) then
+						if info.AssetTypeId == 1 then
+							return id;
+						else
+						--// do http stuff?????
+							return 6825455804;
+						end
 					end
+				else
+					error("Invalid assetid provided");
 				end
+			end
+		end;
+
+		IsValidTexture = function(id)
+			local id = tonumber(id)
+			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
+
+			if ran and info and info.AssetTypeId == 1 then
+				return true;
+			else
+				return false;
+			end
+		end;
+
+		GetTexture = function(id)
+			local id = tonumber(id);
+			if id and Functions.IsValidTexture(id) then
+				return id;
+			else
+				return 6825455804;
 			end
 		end;
 

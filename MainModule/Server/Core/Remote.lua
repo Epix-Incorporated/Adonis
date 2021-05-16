@@ -254,7 +254,6 @@ return function(Vargs)
 				local donor = args[1]
 				local resp = "OK"
 				if type(donor) == "table" and donor.Cape and type(donor.Cape) == "table" then
-					print(donor.Cape.Image)
 					playerData.Donor = donor
 					Core.SavePlayer(p, playerData)
 					if donor.Enabled then

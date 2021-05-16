@@ -432,7 +432,7 @@ return function(Vargs, env)
 					Functions.RemoveParticle(torso,"DONOR_PARTICLE")
 					Functions.NewParticle(torso,"ParticleEmitter",{
 						Name = "DONOR_PARTICLE";
-						Texture = 'rbxassetid://'..args[1]; --Functions.GetTexture(args[1]);
+						Texture = 'rbxassetid://'..Functions.GetTexture(args[1]);
 						Size = NumberSequence.new({
 							NumberSequenceKeypoint.new(0,0);
 							NumberSequenceKeypoint.new(.1,.25,.25);

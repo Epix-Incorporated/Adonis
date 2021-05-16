@@ -38,9 +38,9 @@ return function(Vargs)
 					return false
 				end);
 
-				ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+				chatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
 					local slowCache = Admin.SlowCache;
-					local speaker = ChatService:GetSpeaker(speakerName)
+					local speaker = chatService:GetSpeaker(speakerName)
 					local player = speaker:GetPlayer()
 					if player and Admin.IsMuted(player) then
 						speaker:SendSystemMessage("You are muted!", channelName)
@@ -101,7 +101,6 @@ return function(Vargs)
 
 		--// Check if Shutdownlogs is set and if not then set it
 		if Core.DataStore and not Core.GetData("ShutdownLogs") then
-			print("set shutdownlogs first time")
 			Core.SetData("ShutdownLogs", {})
 		end
 
@@ -162,7 +161,6 @@ return function(Vargs)
 			if pData.Client.HideChatCommands
 					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
 					and message:sub(2,2) ~= message:sub(1,1) then
-						print("do")
 				return true;
 			end
 		end;

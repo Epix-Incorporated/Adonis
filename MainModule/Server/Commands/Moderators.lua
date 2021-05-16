@@ -4841,17 +4841,26 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
+				local asset = service.Insert(faceId)
+
+				if not asset then
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = Functions.GetTexture(faceId);
+					});
+				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					--local image=GetTexture(args[2])
+					local clone = asset:Clone();
 					if not v.Character:FindFirstChild("Head") then
 						return
 					end
-
 					if v.Character and v.Character:findFirstChild("Head") and v.Character.Head:findFirstChild("face") then
 						v.Character.Head:findFirstChild("face"):Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
 					end
-
-					service.Insert(tonumber(args[2])).Parent = v.Character:FindFirstChild("Head")
+					clone.Parent = v.Character:FindFirstChild("Head")
 				end
 			end
 		};
