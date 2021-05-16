@@ -6,7 +6,7 @@ return {
 	"* Minor UI changes";
 	"* Adonis will now display an error texture instead of (poorly) trying to find a decal's texture ID";
 	"* Fixed some bugs";
-	
+
 	"";
 	"[v218.6 & v218.7 (HOTFIX) 5.15.2021 16:53 EST]";
 	"* Fixed an error that would occur in games with the vanilla ChatService disabled/removed";
@@ -18,7 +18,6 @@ return {
 	"";
 	"[v218.3 & 218.4 (HOTFIX) 5.14.2021 18:10 EST]";
 	"* Fixed an issue where all of Adonis's ScreenGuis would flash on screen while loading the client";
-	"(Git/GalacticInspired) IsA('HopperBin') patch";
 	"";
 	"[v218.2 (HOTFIX) 5.14.2021 17:29 EST]";
 	"* Disabled the 'Events stopped' crash due to issues with the Windows store version of Roblox when minimized";
