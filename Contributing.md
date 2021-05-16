@@ -27,8 +27,8 @@ When I handle the merge, I will also add you to the credits as "@GitHub YourGitH
 
 Once I finish merging changes, I'll do some quick minor testing to make sure everything still works correctly. Once that's done, I'll upload the updated models, after which all new servers will be running the latest version. 
 
-## How do I get the "GitHub Contributor" role on Discord?
-After your contribution is accepted, message me on the server and I'll give you the role.
+## How do I get the "GitHub Contributor" roles?
+After your contribution is accepted, message me on the server and I'll give you the role. If you'd like the role in the Epix Inc group, make sure to tell me your username on Roblox, and you should get ranked.
 
 
 ### That's all, folks!
