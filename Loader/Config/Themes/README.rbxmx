@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXD82E4AFECF51405C8142C922539543B3">
+	<Item class="ModuleScript" referent="RBX3BFDFFDC8DD64F77BE968ECFE4E7E289">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
@@ -13,7 +13,9 @@
 	
 	Current Documentation:
 	https://github.com/Sceleratis/Adonis/wiki
---]]]]></ProtectedString>
+--]]
+return function() end;
+]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
