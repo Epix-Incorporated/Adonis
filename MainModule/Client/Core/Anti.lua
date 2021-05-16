@@ -235,7 +235,7 @@ return function()
 							t:Destroy()
 							Detected('log','HopperBin detected (Building Tools)')
 						end
-
+							
 						--[[if tools then
 							local good = false
 							for i,v in pairs(client.AllowedToolsList) do
@@ -562,9 +562,9 @@ return function()
 			end
 
 			local function checkTool(t)
-				if (t:IsA("Tool") or t:IsA("HopperBin")) and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
-					if t:IsA("HopperBin") and (rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.GameTool) or rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.Script)) then
-						Detected("log","HopperBin detected (Building Tools); "..tostring(t.BinType))
+				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
+					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
+						Detected("log","Building tools detected; "..tostring(t.BinType))
 					end
 				end
 			end
@@ -647,13 +647,13 @@ return function()
 					end
 				end
 			end)
-			
+
 			--[[service.NetworkClient.ChildRemoved:connect(function(child)
 				wait(30)
 				client.Kill("Client disconnected from server")
 			end)--]]
 
-			service.RunService.Stepped:connect(function()
+			service.RunService.Stepped:Connect(function()
 				lastUpdate = tick()
 			end)
 
@@ -673,7 +673,8 @@ return function()
 			service.StartLoop("Detection",10,function()
 				--// Prevent event stopping
 				if tick()-lastUpdate > 60 then
-					Detected("crash","Events stopped")
+					--Detected("crash","Events stopped")
+					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
 				end
 
 				--// Check player parent
