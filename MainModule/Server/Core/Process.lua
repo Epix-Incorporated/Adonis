@@ -674,6 +674,10 @@ return function(Vargs)
 				if Settings.Detection then
 					Remote.Send(p,"LaunchAnti","MainDetection")
 				end
+				
+				if Settings.AntiBuildingTools then
+					Remote.Send(p,"LaunchAnti","AntiTools", {BTools = true})
+				end
 			end
 
 			--// Finish things up

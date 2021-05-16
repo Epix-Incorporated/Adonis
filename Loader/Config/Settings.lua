@@ -239,6 +239,7 @@ local descs = {}
 	settings.AntiSpeed = true 			-- Attempts to detect speed exploits
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiParanoid = false		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiBuildingTools = true	-- Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
 
 	---------------------
@@ -334,6 +335,7 @@ local descs = {}
 	descs.AntiSpeed = [[ Attempted to detect speed exploits ]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
+	descs.AntiBuildingTools = [[ Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 	descs.AntiLeak = [[ Attempts to prevent place downloading/saving; Do not use if game saves ]]
 
 	order = {
@@ -421,6 +423,7 @@ local descs = {}
 		"AntiSpeed";
 		"AntiNoclip";
 		"AntiParanoid";
+		"AntiBuildingTools";
 		"AntiLeak";
 	}
 

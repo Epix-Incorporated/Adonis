@@ -226,16 +226,17 @@ return function()
 		AntiTools = function(data)
 			if service.Player:WaitForChild("Backpack", 120) then
 				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
-				local tools = data.AntiTools --Remote.Get("Setting","AntiTools")
-				local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")
+				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
+				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
 					if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) then
 						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 							t.Active = false
 							t:Destroy()
-							Detected("log","Building tools detected")
+							Detected('log','HopperBin detected (Building Tools)')
 						end
-						if tools then
+							
+						--[[if tools then
 							local good = false
 							for i,v in pairs(client.AllowedToolsList) do
 								if t.Name==v then
@@ -246,7 +247,7 @@ return function()
 								t:Destroy()
 								Detected("log","Tool detected")
 							end
-						end
+						end--]]
 					end
 				end
 
