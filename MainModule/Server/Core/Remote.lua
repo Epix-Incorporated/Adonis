@@ -225,13 +225,14 @@ return function(Vargs)
 				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
 				local resp = "OK"
-				if type(binds)=="table" then
+				if type(binds) == "table" then
 					playerData.Keybinds = binds
 					Core.SavePlayer(p,playerData)
 					resp = "Updated"
 				else
 					resp = "Error"
 				end
+
 				return resp
 			end;
 
@@ -240,9 +241,11 @@ return function(Vargs)
 				local setting = args[1]
 				local value = args[2]
 				local data = playerData.Client or {}
+
 				data[setting] = value
 				playerData.Client = data
-				Core.SavePlayer(p,playerData)
+				Core.SavePlayer(p, playerData)
+
 				return "Updated"
 			end;
 
@@ -251,7 +254,6 @@ return function(Vargs)
 				local donor = args[1]
 				local resp = "OK"
 				if type(donor) == "table" and donor.Cape and type(donor.Cape) == "table" then
-					print(donor.Cape.Image)
 					playerData.Donor = donor
 					Core.SavePlayer(p, playerData)
 					if donor.Enabled then

@@ -379,6 +379,7 @@ return function()
 					if pcall(function()
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
 							gTable.Object.Parent = service.PlayerGui
+							gTable.Object.Enabled = true
 						else
 							gTable.Object.Parent = UI.GetHolder()
 						end
@@ -390,6 +391,7 @@ return function()
 						gTable:Destroy()
 					end
 				end,
+
 				BindEvent = function(event, func)
 					local signal = event:connect(func)
 					local origDisc = signal.Disconnect
@@ -414,11 +416,13 @@ return function()
 						wait = service.CheckProperty(signal, "wait") and signal.wait
 					}, signal
 				end,
+
 				ClearEvents = function()
 					for i,v in next,gTable.Events do
 						v:Remove()
 					end
 				end,
+
 				Destroy = function()
 					pcall(function()
 						if gTable.CustomDestroy then
@@ -432,14 +436,16 @@ return function()
 					client.GUIs[gIndex] = nil
 					gTable.ClearEvents()
 				end,
+
 				UnRegister = function()
 					client.GUIs[gIndex] = nil
 					if gTable.AncestryEvent then
 						gTable.AncestryEvent:Disconnect()
 					end
 				end,
+
 				Register = function(tab,new)
-					if not new then new=tab end
+					if not new then new = tab end
 
 					new:SetSpecial("Destroy", gTable.Destroy)
 					gTable.Object = service.Wrap(new)

@@ -3468,14 +3468,14 @@ return function(Vargs, env)
 					if pBackpack then
 						oTools = {};
 
+						if oHumanoid then
+							oHumanoid:UnequipTools()
+						end
+
 						pBackpack.ChildAdded:Connect(function(c)
 							table.insert(oTools, c);
 							c.Parent = nil;
 						end)
-
-						if oHumanoid then
-							oHumanoid:UnequipTools()
-						end
 
 						for i,c in next,pBackpack:GetChildren() do
 							table.insert(oTools, c);
@@ -3516,10 +3516,11 @@ return function(Vargs, env)
 					end
 
 					--// Bring previous tools back
-					if pBackpack and oTools then
-						pBackpack:ClearAllChildren();
+					local newBackpack = p:FindFirstChildOfClass("Backpack")
+					if newBackpack and oTools then
+						newBackpack:ClearAllChildren();
 						for i,t in next,oTools do
-							t.Parent = pBackpack;
+							t.Parent = newBackpack;
 						end
 					end
 				end
@@ -4840,17 +4841,26 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
+				local asset = service.Insert(faceId)
+
+				if not asset then
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = Functions.GetTexture(faceId);
+					});
+				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					--local image=GetTexture(args[2])
+					local clone = asset:Clone();
 					if not v.Character:FindFirstChild("Head") then
 						return
 					end
-
 					if v.Character and v.Character:findFirstChild("Head") and v.Character.Head:findFirstChild("face") then
 						v.Character.Head:findFirstChild("face"):Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
 					end
-
-					service.Insert(tonumber(args[2])).Parent = v.Character:FindFirstChild("Head")
+					clone.Parent = v.Character:FindFirstChild("Head")
 				end
 			end
 		};
@@ -6303,11 +6313,7 @@ return function(Vargs, env)
 				end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local _isMuted = false
-					local _isContributor = false
 					local _isBanned = false
-					if v:GetRankInGroup(886423) == 10 then
-					        _isContributor = true -- You shall make this a function in the shared service blah blah for now this is enough that is needed
-          end
 
 					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
 						_isMuted = true
@@ -6328,7 +6334,7 @@ return function(Vargs, env)
 						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						isContributor = _isContributor;
+						IsContributor = v:GetRankInGroup(886423) == 10;
 						IsMuted = _isMuted;
 						IsBanned = _isBanned;
 						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";

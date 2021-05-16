@@ -324,10 +324,12 @@ return function(Vargs)
 				local folder = server.Client:Clone()
 				local acli = server.Deps.ClientMover:Clone();
 				local client = folder.Client
-				local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
 
-				if playerGui and playerGui.ClassName ~= "PlayerGui" then
-					playerGui = p:FindFirstChildOfClass("PlayerGui");
+				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
+				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
+
+				if playerGui and playerGui.ClassName ~= parentTo then
+					playerGui = p:FindFirstChildOfClass(parentTo);
 				end
 
 				if not p.Parent then

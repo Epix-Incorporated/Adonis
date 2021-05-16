@@ -27,28 +27,41 @@ return function(Vargs)
 
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
-			local ChatService = require(service.ServerScriptService:WaitForChild("ChatServiceRunner"):WaitForChild("ChatService"))
+			local chatService = Functions.GetChatService();
 
-			ChatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
-				local slowCache = Admin.SlowCache;
-				local speaker = ChatService:GetSpeaker(speakerName)
-				local player = speaker:GetPlayer()
-				if player and Admin.IsMuted(player) then
-					speaker:SendSystemMessage("You are muted!", channelName)
-					return true
-				elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-					speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
-					return true
-				end
+			if chatService then
+				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message, channelName)
+					if server.Admin.DoHideChatCmd(service.Players:FindFirstChild(speakerName), message) then
+						return true
+					end
 
-				if Admin.SlowMode then
-					slowCache[player] = os.time()
-				end
+					return false
+				end);
 
-				return false
-			end)
+				chatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+					local slowCache = Admin.SlowCache;
+					local speaker = chatService:GetSpeaker(speakerName)
+					local player = speaker:GetPlayer()
+					if player and Admin.IsMuted(player) then
+						speaker:SendSystemMessage("You are muted!", channelName)
+						return true
+					elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+						speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+						return true
+					end
 
-			Logs:AddLog("Script", "ChatService Handler Loaded")
+					if Admin.SlowMode then
+						slowCache[player] = os.time()
+					end
+
+					return false
+				end)
+
+				Logs:AddLog("Script", "ChatService Handler Loaded")
+			else
+				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
+				Logs:AddLog("Script", "ChatService Handler Not Found")
+			end
 		end)
 
 		Admin.Init = nil;
@@ -88,7 +101,6 @@ return function(Vargs)
 
 		--// Check if Shutdownlogs is set and if not then set it
 		if Core.DataStore and not Core.GetData("ShutdownLogs") then
-			print("set shutdownlogs first time")
 			Core.SetData("ShutdownLogs", {})
 		end
 
@@ -143,6 +155,15 @@ return function(Vargs)
 		SlowCache = {};
 		UserIdCache = {};
 		BlankPrefix = false;
+
+		DoHideChatCmd = function(p, message, data)
+			local pData = data or Core.GetPlayer(p);
+			if pData.Client.HideChatCommands
+					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
+					and message:sub(2,2) ~= message:sub(1,1) then
+				return true;
+			end
+		end;
 
 		GetTrueRank = function(p, group)
 			local localRank = Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)

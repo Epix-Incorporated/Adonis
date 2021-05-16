@@ -241,7 +241,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.makeList(Settings.Trello_Primary,args[1])
+				local list = trello.MakeList(Settings.Trello_Primary,args[1])
 				Functions.Hint("Made list "..list.name,{plr})
 			end
 		};
@@ -257,9 +257,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.getList(Settings.Trello_Primary,args[1])
+				local list = trello.GetList(Settings.Trello_Primary,args[1])
 				if not list then error("List not found.") end
-				local cards = trello.getCards(list.id)
+				local cards = trello.GetCards(list.id)
 				local temp = {}
 				for i,v in pairs(cards) do
 					table.insert(temp,{Text=v.name,Desc=v.desc})

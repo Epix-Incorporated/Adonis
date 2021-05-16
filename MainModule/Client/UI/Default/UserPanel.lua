@@ -41,6 +41,7 @@ end
 
 return function(data)
 	local gTable
+	local Functions = client.Functions;
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
@@ -517,23 +518,32 @@ return function(data)
 
 								local img = pWindow:Add("ImageLabel", {
 									BackgroundTransparency = 1;
-									Image = "rbxassetid://"..currentTexture;
+									Image = "rbxassetid://".. Functions.GetTexture(currentTexture);
 									Size = UDim2.new(1, -10, 1, -80);
 									Position = UDim2.new(0, 5, 0, 35);
 								})
 
+								local lastChange = 0;
 								pWindow:Add("TextBox", {
 									Text = currentTexture;
 									Size = UDim2.new(1, -10, 0, 30);
 									Position = UDim2.new(0, 5, 0, 5);
 									TextChanged = function(text, enter, new)
-										local num = tonumber(text)
-										if num then
-											lastValid = num
-											img.Image = "rbxassetid://"..num;
-										else
-											new.Text = lastValid
-										end
+										local lastVal = math.random();
+
+										lastChange = lastVal;
+
+										delay(0.5, function()
+											if lastChange == lastVal then --// So we only do the update when they finish typing
+												local num = tonumber(text)
+												if num then
+													lastValid = num
+													img.Image = "rbxassetid://".. Functions.GetTexture(num);
+												else
+													new.Text = lastValid
+												end
+											end
+										end)
 									end
 								})
 
@@ -690,11 +700,14 @@ return function(data)
 			local inputBlock = false
 			local commandBox
 			local keyBox
+			local keyCodeToName = client.Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
 				BackgroundTransparency = 0.5;
 			})
+
+
 
 			local function getBinds()
 				local num = 0
@@ -702,27 +715,25 @@ return function(data)
 				binds:ClearAllChildren();
 
 				for i,v in next,client.Variables.KeyBinds do
-					if pcall(string.char, i) then
-						binds:Add("TextButton", {
-							Text = "Key: ".. string.upper(string.char(i)) .." | Command: "..v;
-							Size = UDim2.new(1, 0, 0, 25);
-							Position = UDim2.new(0, 0, 0, num*25);
-							OnClicked = function(button)
-								if selected then
-									selected.Button.BackgroundTransparency = 0
-								end
-
-								button.BackgroundTransparency = 0.5
-								selected = {
-									Key = i;
-									Command = v;
-									Button = button;
-								}
+					binds:Add("TextButton", {
+						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
+						Size = UDim2.new(1, 0, 0, 25);
+						Position = UDim2.new(0, 0, 0, num*25);
+						OnClicked = function(button)
+							if selected then
+								selected.Button.BackgroundTransparency = 0
 							end
-						})
 
-						num = num + 1
-					end
+							button.BackgroundTransparency = 0.5
+							selected = {
+								Key = i;
+								Command = v;
+								Button = button;
+							}
+						end
+					})
+
+					num = num + 1
 				end
 
 				binds:ResizeCanvas(false, true)
@@ -813,11 +824,13 @@ return function(data)
 						local textbox = service.UserInputService:GetFocusedTextBox()
 						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
-							button.Text = string.upper(string.char(currentKey.Value))
-							client.Variables.WaitingForBind = false
-							if keyInputHandler then
-								keyInputHandler:Disconnect()
-								keyInputHandler = nil
+							if currentKey then
+								button.Text = string.upper(keyCodeToName(currentKey.Value))
+								client.Variables.WaitingForBind = false
+								if keyInputHandler then
+									keyInputHandler:Disconnect()
+									keyInputHandler = nil
+								end
 							end
 						end
 					end)
@@ -850,7 +863,7 @@ return function(data)
 					if selected and not inputBlock then
 						currentKey = nil
 						editOldKeybind = selected.Key
-						keyBox.Text = string.upper(string.char(selected.Key))
+						keyBox.Text = string.upper(keyCodeToName(selected.Key))
 						commandBox.Text = selected.Command
 						binderBox.Visible = true
 					end
@@ -1138,7 +1151,7 @@ return function(data)
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","HideChatCommands",enabled)
+						client.Remote.Get("UpdateClient","HideChatCommands", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1174,7 +1187,7 @@ return function(data)
 					Entry = "DropDown";
 					Setting = "CustomTheme";
 					Value = client.Variables.CustomTheme or "Game Theme";
-					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do table.insert(themes, v.Name) end return themes end)();
+					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
 						if selection == "Game Theme" then
 							client.Variables.CustomTheme = nil
