@@ -364,7 +364,7 @@ return function(Vargs, env)
 		};
 
 		CreateSoundPart = {
-			Prefix = server.Settings.Prefix;	-- Prefix to use for command
+			Prefix = Settings.Prefix;	-- Prefix to use for command
 			Commands = {"createsoundpart","createspart"};	-- Commands
 			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "disco (default: false)", "showhint (default: false)", "noloop (default: false)", "volume (default: 1)", "changeable (default: false)", "clicktotoggle (default: false)" ,"rangetotoggle (default: 10) (required: clicktotoggle)","share type (default: everyone)"};	-- Command arguments
 			Description = "Creates a sound part";	-- Command Description
