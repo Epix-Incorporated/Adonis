@@ -670,7 +670,7 @@ return function()
 			end
 
 			--// Detection Loop
-			service.StartLoop("Detection",10,function()
+			service.StartLoop("Detection", 10, function()
 				--// Prevent event stopping
 				if tick()-lastUpdate > 60 then
 					--Detected("crash","Events stopped")
@@ -679,19 +679,29 @@ return function()
 
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
-					Detected("crash","Parent not players")
+					Detected("crash", "Parent not players")
 				end
 
 				--// Stuff
-				local ran,err = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
+				local ran, err = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
-					Detected("log","ScriptContext error?")
+					Detected("log", "ScriptContext error?")
 				end
 
 				--// Check Log History
-				for i,v in next,service.LogService:GetLogHistory() do
-					if check(v.message) then
-						Detected('crash','Exploit detected')
+				do
+					local Logs = service.LogService:GetLogHistory()
+					local First = Logs[1]
+					if #Logs == 1 and (not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "string") or not rawequal(type(First.timeStamp), "number") or ) then
+						Detected("crash", "Bypass detected 5435345")
+					end
+					if #Logs <= 1 then
+						Detected("log", "Suspicious log amount detected 5435345")
+					end
+					for _, v in ipairs(Logs) do
+						if check(v.message) then
+							Detected("crash", "Exploit detected")
+						end
 					end
 				end
 
