@@ -55,39 +55,7 @@ return function(Vargs, env)
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				Remote.MakeGui(plr,"Window",{
-					Name = "Notepad";
-					Title = "Notepad";
-					CanvasSize = UDim2.new(0,0,10,0);
-					Ready = true;
-					--Menu = {
-					--	{
-					--		Class = "TextButton";
-					--		Size = UDim2.new(0,50,1,0);
-					--		Text = "File";
-					--	};
-					--};
-
-					Content = {
-
-						{
-							Class = "TextBox";
-							Size = UDim2.new(1,-5,1,0);
-							Position = UDim2.new(0,0,0,0);
-							BackgroundColor3 = Color3.new(1,1,1);
-							TextColor3 = Color3.new(0,0,0);
-							Font = "Code";
-							FontSize = "Size18";
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							TextWrapped = true;
-							TextScaled = false;
-							ClearTextOnFocus = false;
-							MultiLine = true;
-							Text = "";
-						};
-					}
-				})
+				Remote.MakeGui(plr,"Notepad",{})
 			end
 		};
 
