@@ -223,6 +223,9 @@ end
 
 listenConnection(part.DescendantRemoving, function(Inst)
 	if Inst == bPos or Inst == bGyro or Inst == speedVal or Inst == noclip then
+		if conn then
+				conn:Disconnect()
+		end
 
 		for _, Signal in pairs(RBXConnections) do
 			Signal:Disconnect()
