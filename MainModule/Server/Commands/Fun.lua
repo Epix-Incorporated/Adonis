@@ -604,7 +604,7 @@ return function(Vargs, env)
 		};
 
 		Thanos = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"thanos", "thanossnap","balancetheserver", "snap"};
 			Args = {"(opt)player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
@@ -744,7 +744,7 @@ return function(Vargs, env)
 		};
 
 		ifoundyou = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"theycome","fromanotherworld","ufo","abduct","space","newmexico","area51","rockwell"};
 			Args = {"player"};
 			Description = "A world unlike our own.";
@@ -1036,7 +1036,7 @@ return function(Vargs, env)
 		};
 
 		ClownYoink = {
-			Prefix = server.Settings.Prefix; 					-- Someone's always watching me
+			Prefix = Settings.Prefix; 					-- Someone's always watching me
 			Commands = {"clown","yoink","youloveme","van"};   	-- Someone's always there
 			Args = {"player"}; 									-- When I'm sleeping he just waits
 			Description = "Clowns."; 							-- And he stares

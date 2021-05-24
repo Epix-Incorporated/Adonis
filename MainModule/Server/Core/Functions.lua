@@ -81,7 +81,7 @@ return function(Vargs)
 				Match = "@everyone";
 				Absolute = true;
 				Function = function(...)
-					return Functions.PlayerMatchers.all.Function(...)
+					return Functions.PlayerFinders.all.Function(...)
 				end
 			};
 

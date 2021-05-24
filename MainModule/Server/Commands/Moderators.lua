@@ -211,7 +211,7 @@ return function(Vargs, env)
 		};
 
 		StopCountdown = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"stopcountdown", "stopcd"};
 			Args = {};
 			Description = "Stops all currently running countdowns";
@@ -4452,7 +4452,7 @@ return function(Vargs, env)
 
 
 		Unteam = {
-			Prefix = server.Settings.Prefix;
+			Prefix = Settings.Prefix;
 			Commands = {"unteam","removefromteam", "neutral"};
 			Args = {"player"};
 			Description = "Takes the target player(s) off of a team and sets them to 'Neutral' ";
