@@ -6,7 +6,7 @@ NOTE: Adonis is constantly changing. Whether it be new features, improvements, o
 
 By default, the releases on this GitHub have DebugMode enabled, meaning the MainModule will be loaded from the parent folder of the Loader model. To disable it and instead retreive updates from the currently uploaded MainModule, open Adonis_Loader > Loader > Loader.lua and change DebugMode = true to DebugMode = false in the "data" table.
 
-Quick Start: https://youtu.be/XnhWcfoAJ_o
+Quick Start: https://youtu.be/1f9x9gdxLjw
 
 
 ## How to load a custom version:
