@@ -1,6 +1,14 @@
 return {
-	"Version: 219";
+	"Version: 220";
 	"*Drag edges to expand*";
+	"";
+	"[v220 5.23.2021 20:51 EST]";
+	"* Fixed :viewlist and some other Trello stuff";
+	"(Git/Expertcoderz #355) Enhanced notepad + !addfriend & !unfriend fix";
+	"(Git/fxeP1 #354) Update Fly.client.lua & /Server/Core/Functions.lua";
+	"(Git/GalacticInspired #353) Changed 'server.Settings.Prefix' to 'Settings.Prefix'";
+	"(Git/GalacticInspired #348) Added AntiBuildingTools; Updated AntiTools";
+	"(Git/pbstFusion #350) GitHub contibutors are labeled as such in :inspect";
 	"";
 	"[v219 5.16.2021 15:30 EST]";
 	"* Minor UI changes";

@@ -241,7 +241,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.MakeList(Settings.Trello_Primary,args[1])
+				local list = trello.Boards.MakeList(Settings.Trello_Primary,args[1])
 				Functions.Hint("Made list "..list.name,{plr})
 			end
 		};
@@ -251,15 +251,15 @@ return function(Vargs, env)
 			Commands = {"viewlist";"viewtrellolist";};
 			Args = {"name";};
 			Hidden = false;
-			Description = "Views the specified Trello list from the board set in Settings.";
+			Description = "Views the specified Trello list from the primary board set in Settings.";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
-				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.GetList(Settings.Trello_Primary,args[1])
+				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
+				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
 				if not list then error("List not found.") end
-				local cards = trello.GetCards(list.id)
+				local cards = trello.Lists.GetCards(list.id)
 				local temp = {}
 				for i,v in pairs(cards) do
 					table.insert(temp,{Text=v.name,Desc=v.desc})

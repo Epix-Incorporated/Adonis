@@ -186,21 +186,21 @@ return function(Vargs)
 		end;
 
 		IsMuted = function(player)
-			for _,v in next,server.Settings.Muted do
-				if server.Admin.DoCheck(player, v) then
+			for _,v in next,Settings.Muted do
+				if Admin.DoCheck(player, v) then
 					return true
 				end
 			end
 
-			for _,v in next,server.HTTP.Trello.Mutes do
-				if server.Admin.DoCheck(player, v) then
+			for _,v in next,HTTP.Trello.Mutes do
+				if Admin.DoCheck(player, v) then
 					return true
 				end
 			end
 
 			if HTTP.WebPanel.Mutes then
-				for _,v in next,server.HTTP.WebPanel.Mutes do
-					if server.Admin.DoCheck(player, v) then
+				for _,v in next,HTTP.WebPanel.Mutes do
+					if Admin.DoCheck(player, v) then
 						return true
 					end
 				end

@@ -147,7 +147,7 @@ local descs = {}
 
 	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.HeadAdmins = {}   -- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.HeadAdmins = {}  	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -225,8 +225,8 @@ local descs = {}
 	settings.Console = true			-- Command console
 
 	settings.HelpSystem = true		-- Allows players to call admins for help using !help
-	settings.HelpButton = true              -- Shows a little help button in the bottom right corner.
-	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this if you want a different image for a help button!
+	settings.HelpButton = true    	-- Shows a little help button in the bottom right corner.
+	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
 
 	settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
 	settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
