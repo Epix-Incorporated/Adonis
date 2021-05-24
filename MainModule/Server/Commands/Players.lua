@@ -55,39 +55,7 @@ return function(Vargs, env)
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				Remote.MakeGui(plr,"Window",{
-					Name = "Notepad";
-					Title = "Notepad";
-					CanvasSize = UDim2.new(0,0,10,0);
-					Ready = true;
-					--Menu = {
-					--	{
-					--		Class = "TextButton";
-					--		Size = UDim2.new(0,50,1,0);
-					--		Text = "File";
-					--	};
-					--};
-
-					Content = {
-
-						{
-							Class = "TextBox";
-							Size = UDim2.new(1,-5,1,0);
-							Position = UDim2.new(0,0,0,0);
-							BackgroundColor3 = Color3.new(1,1,1);
-							TextColor3 = Color3.new(0,0,0);
-							Font = "Code";
-							FontSize = "Size18";
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							TextWrapped = true;
-							TextScaled = false;
-							ClearTextOnFocus = false;
-							MultiLine = true;
-							Text = "";
-						};
-					}
-				})
+				Remote.MakeGui(plr,"Notepad",{})
 			end
 		};
 
@@ -926,7 +894,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("SocialService"):PromptGameInvite(plr)
+				service.SocialService:PromptGameInvite(plr)
 			end
 		};
 
@@ -952,7 +920,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
+				service.MarketplaceService:PromptPremiumPurchase(plr)
 			end
 		};
 
@@ -968,7 +936,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,[[game:GetService("StarterGui"):SetCore("PromptSendFriendRequest",game:GetService("Players").]]..v.Name..[[)]])
 				end
 			end
 		};
@@ -985,7 +953,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,[[game:GetService("StarterGui"):SetCore("PromptUnfriend",game:GetService("Players").]]..v.Name..[[)]])
 				end
 			end
 		};
