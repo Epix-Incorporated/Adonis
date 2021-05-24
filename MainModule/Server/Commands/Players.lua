@@ -894,7 +894,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("SocialService"):PromptGameInvite(plr)
+				service.SocialService:PromptGameInvite(plr)
 			end
 		};
 
@@ -920,7 +920,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
+				service.MarketplaceService:PromptPremiumPurchase(plr)
 			end
 		};
 
