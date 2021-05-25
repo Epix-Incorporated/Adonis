@@ -200,7 +200,7 @@ return function(data)
 				showItems()
 			else
 				items:Add("TextLabel", {
-					Text = "Cannot edit this table in the experience";
+					Text = "Cannot edit this table while in an experience";
 					Size = UDim2.new(1, 0, 0, 25);
 					Position = UDim2.new(0, 0, 0, 0);
 				})
