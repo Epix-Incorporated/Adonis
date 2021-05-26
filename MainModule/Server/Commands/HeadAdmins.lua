@@ -225,6 +225,10 @@ return function(Vargs, env)
 				assert(args[1], "Argument #1 must be supplied")
 
 				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
 					for i,v in pairs(service.Players:GetPlayers()) do
 						Remote.RemoveGui(v, "Message")
 						Remote.MakeGui(v, "Message", {
