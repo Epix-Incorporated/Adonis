@@ -200,7 +200,7 @@ return function(data)
 				showItems()
 			else
 				items:Add("TextLabel", {
-					Text = "Cannot edit this table while in an experience";
+					Text = "Cannot edit this table while in a place";
 					Size = UDim2.new(1, 0, 0, 25);
 					Position = UDim2.new(0, 0, 0, 0);
 				})
@@ -243,7 +243,7 @@ return function(data)
 		})
 
 		local gameTab = tabFrame:NewTab("Game",{
-			Text = "Experience";
+			Text = "Place";
 		})
 
 		if data.Tab then
@@ -1186,10 +1186,10 @@ return function(data)
 					Desc = "- Allows you to set the Adonis UI theme";
 					Entry = "DropDown";
 					Setting = "CustomTheme";
-					Value = client.Variables.CustomTheme or "Experience Theme";
-					Options = (function() local themes = {"Experience Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
+					Value = client.Variables.CustomTheme or "Main Theme";
+					Options = (function() local themes = {"Main Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
-						if selection == "Experience Theme" then
+						if selection == "Main Theme" then
 							client.Variables.CustomTheme = nil
 							client.Remote.Get("UpdateClient","CustomTheme",nil)
 						else
