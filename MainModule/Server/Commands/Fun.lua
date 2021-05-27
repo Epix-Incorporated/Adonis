@@ -55,6 +55,18 @@ return function(Vargs, env)
 			end
 		};
 
+		YouBeenTrolled = {
+			Prefix = "?";
+			Commands = {"trolled";"freebobuc";"freedonor";"?free-creator-powers?";};--//add more :)
+			Args = {};
+			Fun = true;
+			Hidden = true;
+			Description = "You've Been Trolled You've Been Trolled";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"Effect",{Mode = "trolling"})
+			end
+		};
 		LowRes = {
 			Prefix = Settings.Prefix;
 			Commands = {"lowres","pixelrender","pixel","pixelize"};
