@@ -204,7 +204,7 @@ return function(data)
 		end
 
 		sound:Stop()
-		elseif mode == "trolling" then
+	elseif mode == "trolling" then
 		local frame = Instance.new("Frame",gui)
 		frame.BackgroundColor3 = Color3.new(0,0,0)
 		frame.Size = UDim2.new(1,0,1,50)
