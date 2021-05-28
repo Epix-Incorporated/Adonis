@@ -1168,11 +1168,11 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		EventService = EventService;
 		ThreadService = ThreadService;
 		HelperService = HelperService;
-		MarketPlace = game:service("MarketplaceService");
-		GamepassService = game:service("GamePassService");
-		ChatService = game:service("Chat");
-		Gamepasses = game:service("GamePassService");
-		Delete = function(obj,num) game:service("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
+		MarketPlace = game:GetService("MarketplaceService");
+		GamepassService = game:GetService("GamePassService");
+		ChatService = game:GetService("Chat");
+		Gamepasses = game:GetService("GamePassService");
+		Delete = function(obj,num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
 		RbxEvent = function(signal, func) local event = signal:connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
@@ -1184,14 +1184,19 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		CheckProperty = function(obj,prop) return pcall(function() return obj[prop] end) end;
 		NewWaiter = function() local event = service.New("BindableEvent") return {Wait = event.wait; Finish = event.Fire} end;
 	},{
-		__index = function(tab,index)
+		__index = function(tab, index)
 			local found = (fenceSpecific and fenceSpecific[index]) or Wrapper[index] or Events[index] or Helpers[index]
-			if found ~= nil then
+
+			if found then
 				return found
 			else
-				local ran,serv = pcall(function() return (client ~= nil and service.Wrap(game:GetService(index), true)) or game:GetService(index) end)
+				local ran, serv = pcall(function()
+					local gameservice = game:GetService(index)
+					return (client ~= nil and service.Wrap(gameservice, true)) or gameservice
+				end)
+
 				if ran and serv then
-					service[tostring(serv)] = serv
+					service[index] = serv
 					return serv
 				end
 			end
