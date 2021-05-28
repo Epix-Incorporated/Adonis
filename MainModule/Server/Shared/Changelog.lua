@@ -1,6 +1,10 @@
 return {
-	"Version: 220";
+	"Version: 220.1";
 	"*Drag edges to expand*";
+	"";
+	"[v220.1 5.28.2021 19:21 EST]";
+	"* New logos!";
+	"* New group store donor shirt is now accepted by Adonis in place of the usual gamepass";
 	"";
 	"[v220 5.23.2021 20:51 EST]";
 	"* Fixed :viewlist and some other Trello stuff";
