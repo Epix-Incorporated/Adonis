@@ -647,9 +647,7 @@ return function(Vargs)
 					if type(pass) == "number" then
 						ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
 					elseif type(pass) == "string" and tonumber(pass) then
-						print(pass)
 						ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, tonumber(pass)) end)
-						print(tostring(ran) .. ":" .. tostring(ret))
 					end
 
 					if ran and ret then
