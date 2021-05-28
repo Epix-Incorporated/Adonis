@@ -53,7 +53,7 @@ return function(Vargs)
 		CachedDonors = {};
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
-		DonorPass = {1348327,1990427,1911740,167686,98593};
+		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605"}; --// Strings are items, numbers are gamepasses
 		WebPanel_Initiated = false;
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;

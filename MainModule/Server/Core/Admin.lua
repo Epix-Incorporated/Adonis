@@ -643,7 +643,13 @@ return function(Vargs)
 			else
 				if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				for ind,pass in next,Variables.DonorPass do
-					local ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
+					local ran, ret;
+					if type(pass) == "number" then
+						ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
+					elseif type(p) == "userdata" and type(pass) == "string" and tonumber(pass) then
+						ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, tonumber(pass)) end)
+					end
+
 					if ran and ret then
 						Variables.CachedDonors[key] = os.time()
 						return true
