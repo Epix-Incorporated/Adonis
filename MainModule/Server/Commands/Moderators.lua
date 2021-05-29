@@ -2569,8 +2569,9 @@ return function(Vargs, env)
 					local built = {
 						teapot = 1055299;
 					}
-					if built[args[2]:lower()] then
-						id = built[args[2]:lower()]
+
+					if built[string.lower(args[2])] then
+						id = built[string.lower(args[2])]
 					end
 				end
 
