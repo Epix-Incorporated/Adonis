@@ -2562,7 +2562,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if not args[2] then error("Argument missing or nil") end
+
 				local id = args[2]
+
 				if not tonumber(id) then
 					local built = {
 						teapot = 1055299;
@@ -2571,13 +2573,12 @@ return function(Vargs, env)
 						id = built[args[2]:lower()]
 					end
 				end
+
 				if not tonumber(id) then error("Invalid ID") end
+
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						local obj = service.Insert(id)
-						if obj:IsA("Accoutrement") then
-							obj.Parent = v.Character
-						end
+						Commands.DonorHat.Function(v, {id})
 					end
 				end
 			end
@@ -4842,25 +4843,39 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
-				local asset = service.Insert(faceId)
+				local faceAssetTypeId = service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId
+				local asset;
 
-				if not asset then
+				if faceAssetTypeId == 1 then
 					asset = service.New("Decal", {
 						Name = "face";
 						Face = "Front";
-						Texture = Functions.GetTexture(faceId);
+						Texture = "rbxassetid://" .. args[2];
 					});
+				elseif faceAssetTypeId == 13 and Functions.GetTexture(faceId) ~= 6825455804 then -- just incase GetTexture actually works?
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. tostring(Functions.GetTexture(faceId));
+					});
+				elseif faceAssetTypeId == 18 then
+					asset = service.Insert(faceId)
+				else
+					error("Invalid face(Image/robloxFace)",0)
 				end
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local clone = asset:Clone();
-					if not v.Character:FindFirstChild("Head") then
-						return
+					local Head = v.Character and v.Character:FindFirstChild("Head")
+					local face = Head and Head:FindFirstChild("face")
+
+					if Head then
+						if face then
+							face:Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
+						end
+
+						local clone = asset:Clone();
+						clone.Parent = v.Character:FindFirstChild("Head")
 					end
-					if v.Character and v.Character:findFirstChild("Head") and v.Character.Head:findFirstChild("face") then
-						v.Character.Head:findFirstChild("face"):Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
-					end
-					clone.Parent = v.Character:FindFirstChild("Head")
 				end
 			end
 		};
