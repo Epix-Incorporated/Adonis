@@ -1,6 +1,5 @@
 ![](https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=280)
-
-
+=
 Adonis is a server moderation and management system created for use on the Roblox platform.
 
 Uploaded to GitHub for collaboration and issue tracking.
@@ -8,8 +7,6 @@ Uploaded to GitHub for collaboration and issue tracking.
 NOTE: Adonis is constantly changing. Whether it be new features, improvements, or the removal or modification of existing features when necessary. If a plugin you've been using suddenly stops working, something it relied on was likely changed. Adonis is updated whenever new changes are made, as opposed to other softwares that have "stable" and "nightly" branches/releases, Adonis' model on ROBLOX will always be on the most current release, so if you have important plugins that are essential to the operation of your game, I advise that you either fork Adonis or use the version that can be found in the releases on this GitHub. If you go this route you will have to manually update to get future changes but there won't be any risk of a future update breaking or changing something you rely on. 
 
 By default, the releases on this GitHub have DebugMode enabled, meaning the MainModule will be loaded from the parent folder of the Loader model. To disable it and instead retreive updates from the currently uploaded MainModule, open Adonis_Loader > Loader > Loader.lua and change DebugMode = true to DebugMode = false in the "data" table.
-
-Quick Start: https://youtu.be/1f9x9gdxLjw
 
 
 ## How to load a custom version:
@@ -30,6 +27,9 @@ Follow the installation steps outlined here: https://rojo.space/docs/installatio
 
 Once installed, download/clone this repository, enter the repo's directory, and run "rojo build -o Adonis.rbxmx" to build a model file or "rojo build -o Adonis.rbxlx" to build a place file (Note: In the place file, you can find the model in ServerScriptService > Adonis_Rojo)
  
+Quick Start: https://youtu.be/1f9x9gdxLjw
+=
+
 ## Adonis Loader:
 
 https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
