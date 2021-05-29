@@ -224,7 +224,23 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 
-				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
+				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
+					for i,v in pairs(service.Players:GetPlayers()) do
+						Remote.RemoveGui(v, "Message")
+						Remote.MakeGui(v, "Message", {
+							Title = "Global Message from %s";
+							Message = "%s";
+							Scroll = true;
+							Time = (#("%s") / 19) + 2.5;
+						})
+					end
+				]], plr.Name, args[1], args[1])
+
+				if not Core.CrossServer("Loadstring", globalMessage) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;
