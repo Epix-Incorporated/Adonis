@@ -212,7 +212,7 @@ return function(Vargs, env)
 					humandescrip.Face = id
 				end
 
-				if info.AssetTypeId == 8 then
+				if info.AssetTypeId == 18 then
 					if plr.Character:FindFirstChild("Head") then
 						local face = service.Insert(args[1])
 						if face then
