@@ -200,7 +200,7 @@ return function(data)
 				showItems()
 			else
 				items:Add("TextLabel", {
-					Text = "Cannot edit this table while in a place";
+					Text = "Cannot edit this table in-game";
 					Size = UDim2.new(1, 0, 0, 25);
 					Position = UDim2.new(0, 0, 0, 0);
 				})
@@ -243,7 +243,7 @@ return function(data)
 		})
 
 		local gameTab = tabFrame:NewTab("Game",{
-			Text = "Place";
+			Text = "Game";
 		})
 
 		if data.Tab then
@@ -268,7 +268,7 @@ return function(data)
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a system created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox experience servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
+				Text = "Adonis is a system created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
 				TextWrapped = true;
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -648,7 +648,7 @@ return function(data)
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					service.MarketPlace:PromptgamePassPurchase(service.Players.LocalPlayer, 5212076)
+					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212076)
 				end
 			})
 
@@ -1186,10 +1186,10 @@ return function(data)
 					Desc = "- Allows you to set the Adonis UI theme";
 					Entry = "DropDown";
 					Setting = "CustomTheme";
-					Value = client.Variables.CustomTheme or "Main Theme";
-					Options = (function() local themes = {"Main Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
+					Value = client.Variables.CustomTheme or "Game Theme";
+					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
-						if selection == "Main Theme" then
+						if selection == "Game Theme" then
 							client.Variables.CustomTheme = nil
 							client.Remote.Get("UpdateClient","CustomTheme",nil)
 						else
