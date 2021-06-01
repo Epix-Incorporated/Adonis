@@ -16,23 +16,23 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
-			Function = function(plr,args,data)
+			Function = function(plr, args, data)
 				local plrLevel = data.PlayerData.Level
-				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
+				for _,  in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
 					local targLevel = Admin.GetLevel(v)
-					if plrLevel>targLevel then
+					if plrLevel > targLevel then
 						if not service.Players:FindFirstChild(v.Name) then
-							Remote.Send(v,'Function','Kill')
+							Remote.Send(v, "Function", "Kill")
 						else
 							v:Kick(args[2])
 						end
-						Functions.Hint("Kicked "..tostring(v),{plr})
+						Functions.Hint("Kicked "..tostring(v), {plr})
 					end
 				end
 			end
 		};
 
-    Thru = {
+		Thru = {
 			Prefix = Settings.Prefix;
 			Commands = {"thru";"pass";"through"};
 			Hidden = false;
@@ -40,12 +40,12 @@ return function(Vargs, env)
 			Description = "Lets you pass through an object or a wall";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				Admin.RunCommand(Settings.Prefix.."tp",plr.Name,plr.Name)
+			Function = function(plr, args)
+				Admin.RunCommand(Settings.Prefix.."tp", plr.Name, plr.Name)
 			end
 		};
 
-    TimeDate = {
+		TimeDate = {
 			Prefix = Settings.Prefix;
 			Commands = {"timedate";"time","date";"datetime";};
 			Args = {};
@@ -53,40 +53,39 @@ return function(Vargs, env)
 			Description = "Shows you the current time and date.";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr,args)
-					local ostime = os.time()
+			Function = function(plr, args)
+				local ostime = os.time()
 				local tab = {}
+				table.insert(tab, {Text = "―――――――――――――――――――――――"})
+
+				table.insert(tab, {Text = "Date: "..os.date("%x", ostime)})
+				table.insert(tab, {Text = "Time: "..os.date("%H:%M | %I:%M %p", ostime)})
+				table.insert(tab, {Text = "Timezone: "..os.date("%Z", ostime)})
+
+				table.insert(tab, {Text = "―――――――――――――――――――――――"})
+
+
+				table.insert(tab, {Text = "Minute: "..os.date("%M", ostime)})
+				table.insert(tab, {Text = "Hour: "..os.date("%H | %I %p" ,ostime)})
+				table.insert(tab, {Text = "Day: "..os.date("%d %A", ostime)})
+				table.insert(tab, {Text = "Week (First sunday): "..os.date("%U", ostime)})
+				table.insert(tab, {Text = "Week (First monday): "..os.date("%W", ostime)})
+				table.insert(tab, {Text = "Month: "..os.date("%m %B", ostime)})
+				table.insert(tab, {Text = "Year: "..os.date("%Y", ostime)})
+
+				table.insert(tab, {Text = "―――――――――――――――――――――――"})
+
+				table.insert(tab, {Text = "Day of the year: "..os.date("%j", ostime)})
+				table.insert(tab, {Text = "Day of the month: "..os.date("%d", ostime)})
+
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab,{Text = "Date: "..os.date("%x",ostime)})
-				table.insert(tab,{Text = "Time: "..os.date("%H:%M | %I:%M %p",ostime)})
-				table.insert(tab,{Text = "Timezone: "..os.date("%Z",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-
-				table.insert(tab,{Text = "Minute: "..os.date("%M",ostime)})
-				table.insert(tab,{Text = "Hour: "..os.date("%H | %I %p",ostime)})
-				table.insert(tab,{Text = "Day: "..os.date("%d %A",ostime)})
-				table.insert(tab,{Text = "Week (First sunday): "..os.date("%U",ostime)})
-				table.insert(tab,{Text = "Week (First monday): "..os.date("%W",ostime)})
-				table.insert(tab,{Text = "Month: "..os.date("%m %B",ostime)})
-				table.insert(tab,{Text = "Year: "..os.date("%Y",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab,{Text = "Day of the year: "..os.date("%j",ostime)})
-				table.insert(tab,{Text = "Day of the month: "..os.date("%d",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				Remote.MakeGui(plr,"List",
-					{
-						Title = "Date",
-						Table = tab,
-						Update = 'DateTime',
-						AutoUpdate = 59,
-						Size = {270, 390};
-					})
+				Remote.MakeGui(plr, "List", {
+					Title = "Date",
+					Table = tab,
+					Update = 'DateTime',
+					AutoUpdate = 59,
+					Size = {270, 390};
+				})
 			end
 		};
 
@@ -100,16 +99,16 @@ return function(Vargs, env)
 				local tab = {}
 				local variables = Core.Variables
 				local timeBans = Core.Variables.TimeBans or {}
-				for i,v in next,timeBans do
-					local timeLeft = v.EndTime-os.time()
-					local minutes = Functions.RoundToPlace(timeLeft/60, 2)
+				for _, v in ipairs(timeBans) do
+					local timeLeft = v.EndTime - os.time()
+					local minutes = Functions.RoundToPlace(timeLeft / 60, 2)
 					if timeLeft <= 0 then
 						table.remove(Core.Variables.TimeBans, i)
 					else
-						table.insert(tab,{Text = tostring(v.Name)..":"..tostring(v.UserId),Desc = "Minutes Left: "..tostring(minutes)})
+						table.insert(tab, {Text = tostring(v.Name)..":"..tostring(v.UserId), Desc = "Minutes Left: "..tostring(minutes)})
 					end
 				end
-				Remote.MakeGui(plr,"List",{Title = 'Time Bans', Tab = tab})
+				Remote.MakeGui(plr, "List", {Title = 'Time Bans', Tab = tab})
 			end
 		};
 
@@ -120,12 +119,12 @@ return function(Vargs, env)
 			Description = "Sends the player a notification";
 			Filter = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.MakeGui(v,"Notification",{
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument missing or nil")
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.MakeGui(v ,"Notification", {
 						Title = "Notification";
-						Message = service.Filter(args[2],plr,v);
+						Message = service.Filter(args[2], plr, v);
 					})
 				end
 			end
@@ -137,9 +136,8 @@ return function(Vargs, env)
 			Args = {"seconds or \"disable\""};
 			Description = "Chat Slow Mode";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
-				if not args[1] then error("Argument 1 missing") end
+			Function = function(plr, args)
+				local num = tonumber(assert(args[1], "Argument 1 missing")) --math.min(tonumber(args[1]),120)
 
 				if num then
 					Admin.SlowMode = num;
@@ -157,10 +155,9 @@ return function(Vargs, env)
 			Args = {"time";};
 			Description = "Countdown";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = tonumber(args[1]) --math.min(tonumber(args[1]),120)
-				if not args[1] then error("Argument 1 missing") end
-				for i,v in next,service.GetPlayers() do
+			Function = function(plr, args)
+				local num = tonumber(assert(args[1], "Argument 1 missing")) --math.min(tonumber(args[1]),120)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = num;
 					})
@@ -179,10 +176,10 @@ return function(Vargs, env)
 			Args = {"player";"time";};
 			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr, args)
 				local num = tonumber(args[2]) --math.min(tonumber(args[1]),120)
-				assert(args[1] and args[2],"Argument missing or nil")
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+				assert(args[1] and args[2], "Argument missing or nil")
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = num;
 					})
@@ -196,8 +193,8 @@ return function(Vargs, env)
 			Args = {"time";};
 			Description = "Hint Countdown";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = math.min(tonumber(args[1]),120)
+			Function = function(plr, args)
+				local num = math.min(tonumber(args[1]), 120)
 				local loop
 				loop = service.StartLoop("HintCountdown", 1, function()
 					if num < 1 then
@@ -216,8 +213,8 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Stops all currently running countdowns";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					server.Remote.RemoveGui(v, "Countdown")
 				end
 				service.StopLoop("HintCountdown")
@@ -231,11 +228,11 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1] and args[2] and tonumber(args[1]),"Argument missing or invalid")
-				for i,v in pairs(service.Players:GetPlayers()) do
-					Remote.RemoveGui(v,"Message")
-					Remote.MakeGui(v,"Message",{
+			Function = function(plr, args)
+				assert(args[1] and args[2] and tonumber(args[1]), "Argument missing or invalid")
+				for _, v in ipairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v, "Message")
+					Remote.MakeGui(v, "Message", {
 						Title = "Message from " .. plr.Name;
 						Message = args[2];
 						Time = tonumber(args[1]);
@@ -251,15 +248,15 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-				for i,v in next,service.Players:GetPlayers() do
-					Remote.RemoveGui(v,"Message")
-					Remote.MakeGui(v,"Message",{
+			Function = function(plr, args)
+				assert(args[1], "Argument missing or nil")
+				for _, v in ipairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v, "Message")
+					Remote.MakeGui(v, "Message", {
 						Title = "Message from " .. plr.Name;
 						Message = args[1];--service.Filter(args[1],plr,v);
 						Scroll = true;
-						Time = (#tostring(args[1])/19)+2.5;
+						Time = (#tostring(args[1]) / 19) + 2.5;
 					})
 				end
 			end
@@ -272,10 +269,10 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message on the target player(s) screen.";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Message("Message from "..plr.Name,service.Filter(args[2],plr,v),{v})
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument missing or nil")
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Functions.Message("Message from "..plr.Name, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -287,13 +284,13 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a small message";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetPlayers()) do
-					Remote.RemoveGui(v,"Notify")
-					Remote.MakeGui(v,"Notify",{
+			Function = function(plr, args)
+				assert(args[1], "Argument missing or nil")
+				for _, v in ipairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
 						Title = "Message from " .. plr.Name;
-						Message = service.Filter(args[1],plr,v);
+						Message = service.Filter(args[1], plr, v);
 					})
 				end
 			end
@@ -307,13 +304,13 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a system small message,";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetPlayers()) do
-					Remote.RemoveGui(v,"Notify")
-					Remote.MakeGui(v,"Notify",{
+			Function = function(plr, args)
+				assert(args[1], "Argument missing or nil")
+				for _, v in ipairs(service.Players:GetPlayers()) do
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
 						Title = Settings.SystemTitle;
-						Message = service.Filter(args[1],plr,v);
+						Message = service.Filter(args[1], plr, v);
 					})
 				end
 			end
@@ -326,13 +323,13 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a small message on the target player(s) screen.";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveGui(v,"Notify")
-					Remote.MakeGui(v,"Notify",{
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument missing or nil")
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
 						Title = "Message from " .. plr.Name;
-						Message = service.Filter(args[2],plr,v);
+						Message = service.Filter(args[2], plr, v);
 					})
 				end
 			end
@@ -345,11 +342,11 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a hint";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetPlayers()) do
-					Remote.MakeGui(v,"Hint",{
-						Message = tostring(plr or "")..": "..service.Filter(args[1],plr,v);
+			Function = function(plr, args)
+				assert(args[1], "Argument missing or nil")
+				for _, v in ipairs(service.Players:GetPlayers()) do
+					Remote.MakeGui(v, "Hint", {
+						Message = tostring(plr or "")..": "..service.Filter(args[1], plr, v);
 					})
 				end
 			end
@@ -362,22 +359,22 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
-			Function = function(plr,args,data)
-				assert(args[1] and args[2],"Argument missing or nil")
+			Function = function(plr, args, data)
+				assert(args[1] and args[2], "Argument missing or nil")
 				local plrLevel = data.PlayerData.Level
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
-					if plrLevel>targLevel then
+					if plrLevel > targLevel then
 						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						Remote.RemoveGui(v,"Notify")
-						Remote.MakeGui(v,"Notify",{
+						Remote.RemoveGui(v, "Notify")
+						Remote.MakeGui(v, "Notify", {
 							Title = "Warning from "..tostring(plr);
 							Message = args[2];
 						})
 
 						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr,"Hint",{
+							Remote.MakeGui(plr, "Hint", {
 								Message = "Warned "..tostring(v);
 							})
 						end
@@ -393,23 +390,23 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
-			Function = function(plr,args,data)
-				assert(args[1] and args[2],"Argument missing or nil")
+			Function = function(plr, args, data)
+				assert(args[1] and args[2], "Argument missing or nil")
 				local plrLevel = data.PlayerData.Level
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
 						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						v:Kick(tostring("[Warning from "..tostring(plr).."]\n"..args[2]))
-						Remote.RemoveGui(v,"Notify")
-						Remote.MakeGui(v,"Notify",{
+						v:Kick("[Warning from "..tostring(plr).."]\n"..args[2])
+						Remote.RemoveGui(v, "Notify")
+						Remote.MakeGui(v, "Notify", {
 							Title = "Warning from "..tostring(plr);
 							Message = args[2];
 						})
 
 						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr,"Hint",{
+							Remote.MakeGui(plr, "Hint", {
 								Message = "Warned "..tostring(v);
 							})
 						end
@@ -426,12 +423,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					local tab = {}
 
 					if data.Warnings then
-						for k,m in next,data.Warnings do
+						for k, m in pairs(data.Warnings) do
 							table.insert(tab,{Text = "["..k.."] "..m.Message,Desc = "Given by: "..m.From.."; "..m.Message})
 						end
 					end
@@ -452,11 +449,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					data.Warnings = {}
 					if plr and type(plr) == "userdata" then
-						Remote.MakeGui(plr,"Hint",{
+						Remote.MakeGui(plr, "Hint", {
 							Message = "Cleared warnings for "..tostring(v);
 						})
 					end
@@ -470,21 +467,21 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Tells you how many players are in the server";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr, args)
 				local num = 0
 				local nilNum = 0
-				for i,v in pairs(service.GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					if v.Parent ~= service.Players then
-						nilNum = nilNum+1
+						nilNum += 1
 					end
 
-					num = num+1
+					num += 1
 				end
 
 				if nilNum > 0 then
-					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading",{plr})
+					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading", {plr})
 				else
-					Functions.Hint("There are "..tostring(num).." players",{plr})
+					Functions.Hint("There are "..tostring(num).." players", {plr})
 				end
 			end
 		};
@@ -498,8 +495,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local message = args[2]
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					service.ChatService:Chat(p.Character.Head,message,Enum.ChatColor.Blue)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					service.ChatService:Chat(v.Character.Head, message, Enum.ChatColor.Blue)
 				end
 			end
 		};
@@ -511,9 +508,9 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Makes a message in the target player(s)'s chat window";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in next,service.GetPlayers(plr,args[1]) do
-					Remote.Send(v,"Function","ChatMessage",service.Filter(args[2],plr,v),Color3.new(1,64/255,77/255))
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v),Color3.new(1, 64/255, 77/255))
 				end
 			end
 		};
@@ -524,8 +521,8 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "Gives a force field to the target player(s)";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then service.New("ForceField", v.Character) end
 				end
 			end
@@ -537,11 +534,11 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "Removes force fields on the target player(s)";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character then
-							for z, cl in pairs(v.Character:children()) do if cl:IsA("ForceField") then cl:Destroy() end end
+							for z, cl in ipairs(v.Character:children()) do if cl:IsA("ForceField") then cl:Destroy() end end
 						end
 					end)
 				end
@@ -554,8 +551,8 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "Removes the target player(s)'s character";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						v.Character.Parent = service.UnWrap(Settings.Storage);
 					end
@@ -569,8 +566,8 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "UnPunishes the target player(s)";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					v.Character.Parent = service.Workspace
 					v.Character:MakeJoints()
 				end
@@ -584,25 +581,25 @@ return function(Vargs, env)
 			Description = "Freezes the target player(s) in a block of ice";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-							for a, obj in pairs(v.Character:children()) do
-								if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" then obj.Anchored = true end
+							for _, obj in ipairs(v.Character:children()) do
+								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
-							local ice=service.New("Part",v.Character)
-							ice.BrickColor=BrickColor.new("Steel blue")
-							ice.Material="Ice"
-							ice.Name="Adonis_Ice"
-							ice.Anchored=true
+							local ice = service.New("Part", v.Character)
+							ice.BrickColor = BrickColor.new("Steel blue")
+							ice.Material = "Ice"
+							ice.Name = "Adonis_Ice"
+							ice.Anchored = true
 							--ice.CanCollide=false
-							ice.TopSurface="Smooth"
-							ice.BottomSurface="Smooth"
-							ice.FormFactor="Custom"
-							ice.Size=Vector3.new(5, 6, 5)
-							ice.Transparency=0.3
-							ice.CFrame=v.Character.HumanoidRootPart.CFrame
+							ice.TopSurface = "Smooth"
+							ice.BottomSurface = "Smooth"
+							ice.FormFactor = "Custom"
+							ice.Size = Vector3.new(5, 6, 5)
+							ice.Transparency = 0.3
+							ice.CFrame = v.Character.HumanoidRootPart.CFrame
 						end
 					end)
 				end
@@ -615,12 +612,12 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "Freezes the target player(s)";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character then
-							for a, obj in pairs(v.Character:children()) do
-								if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" then obj.Anchored = true end
+							for a, obj in ipairs(v.Character:children()) do
+								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
 						end
 					end)
@@ -634,37 +631,37 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "UnFreezes the target players, thaws them out";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
-						if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
+						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							local ice = v.Character:FindFirstChild("Adonis_Ice")
 							local plate
 							if ice then
-								plate = service.New("Part",v.Character)
-								local mesh = service.New("CylinderMesh",plate)
+								plate = service.New("Part", v.Character)
+								local mesh = service.New("CylinderMesh", plate)
 								plate.FormFactor = "Custom"
 								plate.TopSurface = "Smooth"
 								plate.BottomSurface = "Smooth"
-								plate.Size = Vector3.new(0.2,0.2,0.2)
+								plate.Size = Vector3.new(0.2, 0.2, 0.2)
 								plate.BrickColor = BrickColor.new("Steel blue")
 								plate.Name = "[EISS] Water"
 								plate.Anchored = true
 								plate.CanCollide = false
-								plate.CFrame = v.Character.HumanoidRootPart.CFrame*CFrame.new(0,-3,0)
+								plate.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -3, 0)
 								plate.Transparency = ice.Transparency
 
-								for i = 0.2,3,0.2 do
-									ice.Size = Vector3.new(5,ice.Size.Y-i,5)
-									ice.CFrame = v.Character.HumanoidRootPart.CFrame*CFrame.new(0,-i,0)
-									plate.Size = Vector3.new(i+5,0.2,i+5)
+								for i = 0.2, 3, 0.2 do
+									ice.Size = Vector3.new(5, ice.Size.Y - i, 5)
+									ice.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -i, 0)
+									plate.Size = Vector3.new(i + 5, 0.2, i + 5)
 									wait()
 								end
 								ice:Destroy()
 							end
 
-							for a, obj in pairs(v.Character:children()) do
-								if obj:IsA("BasePart") and obj.Name~="HumanoidRootPart" and obj~=plate then obj.Anchored = false end
+							for a, obj in ipairs(v.Character:children()) do
+								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" and obj ~= plate then obj.Anchored = false end
 							end
 							wait(3)
 							pcall(function() plate:Destroy() end)
@@ -681,12 +678,12 @@ return function(Vargs, env)
 			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local color = Color3.new(1,1,1)
-				local secondary = Color3.new(1,0,0)
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
+				local secondary = Color3.new(1, 0, 0)
 
 				if args[2] then
-					local str = BrickColor.new('Bright orange').Color
+					local str = BrickColor.new("Bright orange").Color
 					local teststr = args[2]
 
 					if BrickColor.new(teststr) ~= nil then
@@ -697,15 +694,15 @@ return function(Vargs, env)
 					secondary = str
 				end
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.NewParticle(torso,"Fire",{
+						Functions.NewParticle(torso, "Fire", {
 							Name = "FIRE";
 							Color = color;
 							SecondaryColor = secondary;
 						})
-						Functions.NewParticle(torso,"PointLight",{
+						Functions.NewParticle(torso, "PointLight", {
 							Name = "FIRE_LIGHT";
 							Color = color;
 							Range = 15;
@@ -724,11 +721,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.RemoveParticle(torso,"FIRE")
-						Functions.RemoveParticle(torso,"FIRE_LIGHT")
+						Functions.RemoveParticle(torso, "FIRE")
+						Functions.RemoveParticle(torso, "FIRE_LIGHT")
 					end
 				end
 			end
@@ -741,11 +738,11 @@ return function(Vargs, env)
 			Description = "Makes smoke come from the target player(s) with the desired color";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local color = Color3.new(1,1,1)
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
 
 				if args[2] then
-					local str = BrickColor.new('White').Color
+					local str = BrickColor.new("White").Color
 					local teststr = args[2]
 
 					if BrickColor.new(teststr) ~= nil then
@@ -755,10 +752,10 @@ return function(Vargs, env)
 					color = str
 				end
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.NewParticle(torso,"Smoke",{
+						Functions.NewParticle(torso, "Smoke", {
 							Name = "SMOKE";
 							Color = color;
 						})
@@ -774,11 +771,11 @@ return function(Vargs, env)
 			Description = "Removes smoke from the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.RemoveParticle(torso,"SMOKE")
+						Functions.RemoveParticle(torso, "SMOKE")
 					end
 				end
 			end
@@ -791,8 +788,8 @@ return function(Vargs, env)
 			Description = "Puts sparkles on the target player(s) with the desired color";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local color = Color3.new(1,1,1)
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
 
 				if args[2] then
 					local str = BrickColor.new('Cyan').Color
@@ -805,14 +802,14 @@ return function(Vargs, env)
 					color = str
 				end
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.NewParticle(torso,"Sparkles",{
+						Functions.NewParticle(torso, "Sparkles", {
 							Name = "SPARKLES";
 							SparkleColor = color;
 						})
-						Functions.NewParticle(torso,"PointLight",{
+						Functions.NewParticle(torso, "PointLight", {
 							Name = "SPARKLES_LIGHT";
 							Color = color;
 							Range = 15;
@@ -830,12 +827,12 @@ return function(Vargs, env)
 			Description = "Removes sparkles from the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						Functions.RemoveParticle(torso,"SPARKLES")
-						Functions.RemoveParticle(torso,"SPARKLES_LIGHT")
+						Functions.RemoveParticle(torso, "SPARKLES")
+						Functions.RemoveParticle(torso, "SPARKLES_LIGHT")
 					end
 				end
 			end
@@ -848,13 +845,13 @@ return function(Vargs, env)
 			Description = "Load the animation onto the target";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr, args)
 				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
 
-				assert(tonumber(args[2]),tostring(args[2]).." is not a valid ID")
+				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.PlayAnimation(v,args[2])
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Functions.PlayAnimation(v ,args[2])
 				end
 			end
 		};
@@ -865,22 +862,22 @@ return function(Vargs, env)
 			Args = {"player";};
 			Description = "FFs, Gods, Names, Freezes, and removes the target player's tools until they jump.";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
-						local ff=service.New("ForceField",v.Character)
-						local hum=v.Character.Humanoid
-						local orig=hum.MaxHealth
-						local tools=service.New("Model")
-						hum.MaxHealth=math.huge
+						local ff = service.New("ForceField", v.Character)
+						local hum = v.Character.Humanoid
+						local orig = hum.MaxHealth
+						local tools = service.New("Model")
+						hum.MaxHealth = math.huge
 						wait()
-						hum.Health=hum.MaxHealth
-						for k,t in pairs(v.Backpack:children()) do
-							t.Parent=tools
+						hum.Health = hum.MaxHealth
+						for k, t in pairs(v.Backpack:children()) do
+							t.Parent = tools
 						end
-						Admin.RunCommand(Settings.Prefix.."name",v.Name,"-AFK-_"..v.Name.."_-AFK-")
-						local torso=v.Character.HumanoidRootPart
-						local pos=torso.CFrame
+						Admin.RunCommand(Settings.Prefix.."name", v.Name, "-AFK-_"..v.Name.."_-AFK-")
+						local torso = v.Character.HumanoidRootPart
+						local pos = torso.CFrame
 						local running=true
 						local event
 						event = v.Character.Humanoid.Jumping:connect(function()
@@ -888,7 +885,7 @@ return function(Vargs, env)
 							ff:Destroy()
 							hum.Health = orig
 							hum.MaxHealth = orig
-							for k,t in pairs(tools:children()) do
+							for k, t in ipairs(tools:children()) do
 								t.Parent = v.Backpack
 							end
 							Admin.RunCommand(Settings.Prefix.."unname",v.Name)
@@ -908,9 +905,9 @@ return function(Vargs, env)
 			Description = "Heals the target player(s) (Regens their health)";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:findFirstChild("Humanoid") then
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
 					end
 				end
@@ -925,9 +922,9 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) immortal, makes their health so high that normal non-explosive weapons can't kill them";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.MaxHealth = math.huge
 						v.Character.Humanoid.Health = 9e9
 					end
@@ -943,9 +940,9 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) mortal again";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:findFirstChild("Humanoid") then
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.MaxHealth = 100
 						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
 					end
@@ -961,9 +958,9 @@ return function(Vargs, env)
 			Description = "Removes any hats the target is currently wearing";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for k,p in pairs(service.GetPlayers(plr,args[1])) do
-					for i,v in pairs(p.Character:children()) do
+			Function = function(plr, args)
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					for _, v in ipairs(p.Character:children()) do
 						if v:IsA("Accoutrement") then
 							v:Destroy()
 						end
@@ -979,14 +976,14 @@ return function(Vargs, env)
 			Filter = true;
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing")
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument missing")
 				if Admin.CheckAdmin(plr) then
-					for i,p in pairs(service.GetPlayers(plr, args[1])) do
-						Remote.MakeGui(p,"PrivateMessage",{
+					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+						Remote.MakeGui(v, "PrivateMessage", {
 							Title = "Message from "..plr.Name;
 							Player = plr;
-							Message = service.Filter(args[2],plr,p);
+							Message = service.Filter(args[2], plr, v);
 						})
 					end
 				end
@@ -1000,8 +997,8 @@ return function(Vargs, env)
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.MakeGui(v,"Chat",{KeepChat = true})
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.MakeGui(v, "Chat", {KeepChat = true})
 				end
 			end
 		};
@@ -1013,8 +1010,8 @@ return function(Vargs, env)
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Remote.RemoveGui(v,"Chat")
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveGui(v, "Chat")
 				end
 			end
 		};
@@ -1028,13 +1025,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local moder = tonumber(args[2]) or 0.5
-				if moder>5 then moder=5 end
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"BlurEffect",{
+				if moder > 5 then moder = 5 end
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "BlurEffect", {
 						Name = "WINDOW_BLUR",
 						Size = tonumber(args[2]) or 24,
 						Enabled = true,
-					},"Camera")
+					}, "Camera")
 				end
 			end
 		};
@@ -1046,15 +1043,15 @@ return function(Vargs, env)
 			Description = "Give the player's screen the bloom lighting effect";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"BloomEffect",{
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "BloomEffect", {
 						Name = "WINDOW_BLOOM",
 						Intensity = tonumber(args[2]) or 0.4,
 						Size = tonumber(args[3]) or 24,
 						Threshold = tonumber(args[4]) or 0.95,
 						Enabled = true,
-					},"Camera")
+					}, "Camera")
 				end
 			end
 		};
@@ -1066,14 +1063,14 @@ return function(Vargs, env)
 			Description = "Give the player's screen the sunrays lighting effect";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"SunRaysEffect",{
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "SunRaysEffect", {
 						Name = "WINDOW_SUNRAYS",
 						Intensity = tonumber(args[2]) or 0.25,
 						Spread = tonumber(args[3]) or 1,
 						Enabled = true,
-					},"Camera")
+					}, "Camera")
 				end
 			end
 		};
@@ -1085,14 +1082,14 @@ return function(Vargs, env)
 			Description = "Give the player's screen the sunrays lighting effect";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
+			Function = function(plr, args)
 				local r,g,b = 1,1,1
 				if args[5] and args[5]:match("(.*),(.*),(.*)") then
 					r,g,b = args[5]:match("(.*),(.*),(.*)")
 				end
 				r,g,b = tonumber(r),tonumber(g),tonumber(b)
 				if not r or not g or not b then error("Invalid Input") end
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(p,"ColorCorrectionEffect",{
 						Name = "WINDOW_COLORCORRECTION",
 						Brightness = tonumber(args[2]) or 0,
@@ -1113,9 +1110,9 @@ return function(Vargs, env)
 			Description = "UnColorCorrection the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(p, "WINDOW_COLORCORRECTION", "Camera")
 				end
 			end
 		};
@@ -1128,9 +1125,9 @@ return function(Vargs, env)
 			Description = "UnSunrays the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_SUNRAYS", "Camera")
 				end
 			end
 		};
@@ -1143,9 +1140,9 @@ return function(Vargs, env)
 			Description = "UnBloom the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_BLOOM", "Camera")
 				end
 			end
 		};
@@ -1158,9 +1155,9 @@ return function(Vargs, env)
 			Description = "UnBlur the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_BLUR", "Camera")
 				end
 			end
 		};
@@ -1173,13 +1170,13 @@ return function(Vargs, env)
 			Description = "Remove admin made lighting effects from the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_BLUR","Camera")
-					Remote.RemoveLocal(p,"WINDOW_BLOOM","Camera")
-					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
-					Remote.RemoveLocal(p,"WINDOW_SUNRAYS","Camera")
-					Remote.RemoveLocal(p,"WINDOW_COLORCORRECTION","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_BLUR", "Camera")
+					Remote.RemoveLocal(v, "WINDOW_BLOOM", "Camera")
+					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
+					Remote.RemoveLocal(v, "WINDOW_SUNRAYS", "Camera")
+					Remote.RemoveLocal(v, "WINDOW_COLORCORRECTION", "Camera")
 				end
 			end
 		};
@@ -1192,21 +1189,21 @@ return function(Vargs, env)
 			Description = "Looks like heat vision";
 			Fun = true;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"ColorCorrectionEffect",{
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "ColorCorrectionEffect", {
 						Name = "WINDOW_THERMAL",
 						Brightness = 1,
 						Contrast = 20,
 						Saturation = 20,
-						TintColor = Color3.new(0.5,0.2,1);
+						TintColor = Color3.new(0.5, 0.2, 1);
 						Enabled = true,
-					},"Camera")
-					Remote.NewLocal(p,"BlurEffect",{
+					}, "Camera")
+					Remote.NewLocal(v, "BlurEffect", {
 						Name = "WINDOW_THERMAL",
 						Size = 24,
 						Enabled = true,
-					},"Camera")
+					}, "Camera")
 				end
 			end
 		};
@@ -1219,9 +1216,9 @@ return function(Vargs, env)
 			Description = "Removes the thermal effect from the target player's screen";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,p in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(p,"WINDOW_THERMAL","Camera")
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
 				end
 			end
 		};
@@ -1234,8 +1231,8 @@ return function(Vargs, env)
 			Description = "Shows Trello bans";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				Remote.MakeGui(plr,"List",{
+			Function = function(plr, args)
+				Remote.MakeGui(plr ,"List", {
 					Title = "Synced Ban List";
 					Tab = HTTP.Trello.Bans;
 				})
@@ -3220,7 +3217,7 @@ return function(Vargs, env)
 								Animate.Disabled = false
 								anim:Destroy()
 							end
-							cl.Parent = game.Workspace
+							cl.Parent = workspace
 							cl:MoveTo(v.Character:GetModelCFrame().p)
 							cl:MakeJoints()
 							cl:WaitForChild("Humanoid")
@@ -3799,11 +3796,13 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local ex = service.New("Explosion", game.Workspace)
-						ex.Position = v.Character.HumanoidRootPart.Position
-						ex.BlastRadius = args[2] or 20
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character.PrimaryPart then
+						local Explosion = service.New("Explosion")
+						Explosion.Position = v.Character.PrimaryPart.Position
+						Explosion.BlastRadius = args[2] or 20
+						Explosion.Archivable = false
+						Explosion.Parent = workspace.Terrain
 					end
 				end
 			end
