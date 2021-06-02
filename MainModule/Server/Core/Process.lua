@@ -560,7 +560,7 @@ return function(Vargs)
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				else
-					Anti.RemovePlayer(p, ":: Adonis :: Loading Error [Missing player, keys, or removed]")
+					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 				end
 			end
 		end;
@@ -674,7 +674,7 @@ return function(Vargs)
 				if Settings.Detection then
 					Remote.Send(p,"LaunchAnti","MainDetection")
 				end
-				
+
 				if Settings.AntiBuildingTools then
 					Remote.Send(p,"LaunchAnti","AntiTools", {BTools = true})
 				end

@@ -401,7 +401,7 @@ return function(Vargs, env)
 					if plrLevel>targLevel then
 						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						v:Kick(tostring("[Warning from "..tostring(plr).."]\n"..args[2]))
+						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
 						Remote.RemoveGui(v,"Notify")
 						Remote.MakeGui(v,"Notify",{
 							Title = "Warning from "..tostring(plr);
@@ -1890,7 +1890,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers()) do
 					local level = Admin.GetLevel(v);
 					local rankList, rankName, rankData = Admin.LevelToList(level);
-					
+
 					table.insert(unsorted, {
 						Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
 						Desc = "Rank: ".. (rankName or "Unknown") .."; Permission Level: ".. level;

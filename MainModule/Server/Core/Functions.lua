@@ -913,11 +913,11 @@ return function(Vargs)
 			end
 
 			service.Players.PlayerAdded:Connect(function(p)
-				p:Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
 			for i,p in next,service.Players:GetPlayers() do
-				p:Kick("Game shutdown: " .. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
 

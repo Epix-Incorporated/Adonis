@@ -335,7 +335,7 @@ return function(Vargs)
 				if not p.Parent then
 					return false
 				elseif not playerGui then
-					p:Kick("Loading Error: PlayerGui Missing (Waited 10 Minutes)")
+					p:Kick("Loading Error \nPlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
 
@@ -371,13 +371,13 @@ return function(Vargs)
 				end)
 
 				if not Core.PanicMode and not ok then
-					p:Kick("Loading Error [HookClient Error: "..tostring(err).."]")
+					p:Kick("Loading Error \n[HookClient Error: "..tostring(err).."]")
 					return false
 				else
 					return true
 				end
 			else
-				if p then p:Kick("Loading Error [HookClient: Keys Missing]") end
+				if p then p:Kick("Loading Error \n[HookClient: Keys Missing]") end
 			end
 		end;
 

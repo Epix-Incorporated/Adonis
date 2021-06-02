@@ -112,7 +112,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		SetFPS = {
 			Prefix = Settings.Prefix;
 			Commands = {"setfps";};
@@ -840,7 +840,7 @@ return function(Vargs, env)
 						end
 
 						wait(1)
-						p:Kick("\"I don't feel so good\"")
+						p:Kick("\n\n\"I don't feel so good\"\n")
 					end)
 				end
 			end;

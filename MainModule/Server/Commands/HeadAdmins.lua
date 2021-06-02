@@ -52,7 +52,7 @@ return function(Vargs, env)
 							Value = data;
 						})
 
-						v:Kick("Banned until "..endTime)
+						v:Kick("\nBanned until "..endTime)
 						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
 					end
 				end
