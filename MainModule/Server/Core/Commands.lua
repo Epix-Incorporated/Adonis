@@ -70,9 +70,24 @@ return function(Vargs)
 			end
 		end
 
+		--// Update existing permissions to new levels
+		for i,cmd in next,Commands do
+			if type(cmd) == "table" and cmd.AdminLevel then
+				local lvl = cmd.AdminLevel;
+				if type(lvl) == "string" then
+					cmd.AdminLevel = Admin.StringToComLevel(lvl);
+					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
+				elseif type(lvl) == "table" then
+					for b,v in next,lvl do
+						lvl[b] = Admin.StringToComLevel(v);
+					end
+				end
+			end
+		end
+
 		--// Cache commands
 		Admin.CacheCommands();
-		
+
 		Commands.Init = nil;
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;

@@ -218,6 +218,26 @@ return function(Vargs)
 		WebPanel.Whitelist = data.Levels.Whitelist or {};
 		WebPanel.CustomRanks = data.Levels.CustomRanks or {};
 
+		Settings.Ranks["[WebPanel] Creators"] = {
+			Level = 900;
+			Users = WebPanel.Creators;
+		}
+
+		Settings.Ranks["[WebPanel] HeadAdmins"] = {
+			Level = 300;
+			Users = WebPanel.HeadAdmins;
+		}
+
+		Settings.Ranks["[WebPanel] Admins"] = {
+			Level = 200;
+			Users = WebPanel.Admins;
+		}
+
+		Settings.Ranks["[WebPanel] Moderators"] = {
+			Level = 100;
+			Users = WebPanel.Moderators;
+		}
+
 		if Variables.MusicList then
 			for i = #Variables.MusicList, 1, -1 do -- Iterating backwards to prevent wonky behavior with table.remove
 				local v = Variables.MusicList[i]

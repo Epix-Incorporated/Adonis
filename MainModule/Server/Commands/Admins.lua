@@ -9,6 +9,71 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
+		SetRank = {
+			Prefix = Settings.Prefix;
+			Commands = {"setrank", "setadminrank"};
+			Args = {"player", "level"};
+			Description = "Sets the target player(s) permission level";
+			AdminLevel = "Admins";
+			Function = function(plr, args, data)
+				local senderLevel = data.PlayerData.Level;
+				local newRank = assert(Ranks[args[2]], "Rank not found");
+				local newLevel = newRank.Level;
+
+				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
+
+				for i,p in next,sevrice.GetPlayers(plr, args[1]) do
+					local targetLevel = Admin.GetLevel(p);
+
+					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
+
+					if targetLevel < senderLevel then
+						Admin.AddAdmin(v, newLevel, true)
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "You are an administrator. Click to view commands.";
+							Time = 10;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+						})
+
+						Functions.Hint(v.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
+					end
+				end
+			end;
+		};
+
+		SetLevel = {
+			Prefix = Settings.Prefix;
+			Commands = {"setlevel", "setadminlevel"};
+			Args = {"player", "level"};
+			Description = "Sets the target player(s) permission level";
+			AdminLevel = "Admins";
+			Function = function(plr, args, data)
+				local senderLevel = data.PlayerData.Level;
+				local newLevel = assert(tonumber(args[2]), "Level must be a number");
+
+				assert(newLevel < senderLevel, "Level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
+
+				for i,p in next,sevrice.GetPlayers(plr, args[1]) do
+					local targetLevel = Admin.GetLevel(p);
+
+					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
+
+					if targetLevel < senderLevel then
+						Admin.SetLevel(v, newLevel)
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "You are an administrator. Click to view commands.";
+							Time = 10;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+						})
+
+						Functions.Hint(v.Name..' is now permission level '.. newLevel, {plr})
+					end
+				end
+			end;
+		};
+
 		TempModerator = {
 			Prefix = Settings.Prefix;
 			Commands = {"admin","tempadmin","ta","temp","helper";};
@@ -22,7 +87,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						Admin.AddAdmin(v,1,true)
+						Admin.AddAdmin(v, "Moderators", true)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -50,7 +115,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						Admin.AddAdmin(v,1)
+						Admin.AddAdmin(v, "Moderators")
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";

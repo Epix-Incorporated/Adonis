@@ -22,19 +22,26 @@ return function(Vargs, env)
 
 				for i,v in next,commands do
 					if not v.Hidden and not v.Disabled then
-						if type(v.AdminLevel) == "table" then
+						local lvl = v.AdminLevel;
+						if type(lvl) == "table" then
 							cStr = ""
-							for k,m in ipairs(v.AdminLevel) do
+							for k,m in ipairs(lvl) do
+								if type(m) == "number" then m = Admin.LevelToList(m) or m end
 								cStr = cStr..m..", "
 							end
-						else
-							cStr = tostring(v.AdminLevel)
+						elseif type(lvl) == "number" then
+							local list, name, data = Admin.LevelToList(lvl);
+							--print(tostring(list), tostring(name), tostring(data))
+							cStr = (name or "No Rank") .."; Level ".. lvl;
+						elseif type(lvl) == "string" then
+							local numLvl = Admin.StringToComLevel(lvl);
+							cStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
 						end
 
 						table.insert(tab, {
 							Text = Admin.FormatCommand(v),
 							Desc = "["..cStr.."] "..v.Description,
-							Filter = v.AdminLevel
+							Filter = cStr
 						})
 					end
 				end
@@ -103,7 +110,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Remove donor cape";
 			Fun = false;
-			AllowDonors = true;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				Functions.UnCape(plr)
@@ -117,7 +124,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Get donor cape";
 			Fun = false;
-			AllowDonors = true;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				Functions.Donor(plr)
@@ -131,6 +138,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Give you the shirt that belongs to <ID>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
@@ -162,6 +170,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Give you the pants that belongs to <id>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
@@ -195,6 +204,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you the face that belongs to <id>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character and plr.Character:findFirstChild("Head") and plr.Character.Head:findFirstChild("face") then
@@ -227,6 +237,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
@@ -252,6 +263,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you fire with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -294,6 +306,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you sparkles with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -334,6 +347,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -368,6 +382,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Put a custom particle emitter on your character";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
@@ -431,6 +446,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor particles on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -445,6 +461,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor fire on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -460,6 +477,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor sparkles on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -475,6 +493,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor light on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -489,6 +508,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you the hat specified by <ID>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local id = tonumber(args[1])
@@ -544,6 +564,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes any hats you are currently wearing";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				for i,v in pairs(plr.Character:children()) do

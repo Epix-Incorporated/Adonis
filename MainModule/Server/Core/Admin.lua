@@ -64,6 +64,41 @@ return function(Vargs)
 			end
 		end)
 
+		--// Make sure the default ranks are always present for compatability with existing commands
+		for rank,data in next,server.Defaults.Settings.Ranks do
+			if not server.Settings.Ranks[rank] then
+				server.Settings.Ranks[rank] = data;
+			end
+		end
+
+		--// Old setting backwards compatability
+		if Settings.Owners then
+			Settings.Ranks.HeadAdmins.Users = Settings.Owners;
+		end
+
+		if Settings.HeadAdmins then
+			Settings.Ranks.HeadAdmins.Users = Settings.HeadAdmins;
+		end
+
+		if Settings.Admins then
+			Settings.Ranks.Admins.Users = Settings.HeadAdmins;
+		end
+
+		if Settings.Moderators then
+			Settings.Ranks.Moderators.Users = Settings.Moderators;
+		end
+
+		if Settings.CustomRanks then
+			for name,users in next,Settings.CustomRanks do
+				if not Settings.Ranks[name] then
+					Settings.Ranks[name] = {
+						Level = 1;
+						Users = users;
+					};
+				end
+			end
+		end
+
 		Admin.Init = nil;
 		Logs:AddLog("Script", "Admin Module Initialized")
 	end;
@@ -315,23 +350,22 @@ return function(Vargs)
 		end;
 
 		LevelToList = function(lvl)
-			return ({
-				[1] = Settings.Moderators;
-				[2] = Settings.Admins;
-				[3] = Settings.HeadAdmins;
-				[4] = Settings.Creators;
-			})[lvl]
+			local lvl = tonumber(lvl);
+			if not lvl then return nil end;
+			for i,v in next,Settings.Ranks do
+				if lvl == v.Level then
+					return v.Users, i, v;
+				end
+			end
 		end;
 
 		LevelToListName = function(lvl)
-			return ({
-				[0] = "Players";
-				[1] = "Moderators";
-				[2] = "Admins";
-				[3] = "HeadAdmins";
-				[4] = "Creators";
-				[5] = "Place Owner";
-			})[lvl]
+			if lvl > 999 then return "Place Owner" end
+			for i,v in next,Settings.Ranks do
+				if v.Level == lvl then
+					return i
+				end
+			end
 		end;
 
 		GetLevel = function(p)
@@ -340,7 +374,7 @@ return function(Vargs)
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
 
-			if clients[tostring(p.userId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
+			if clients[tostring(p.UserId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
 					if data.AdminLevel < level then
@@ -359,7 +393,7 @@ return function(Vargs)
 			local doCheck = Admin.DoCheck
 
 			if Admin.IsPlaceOwner(p) then
-				return 5
+				return 1000
 			end
 
 			for ind,admin in next,Admin.SpecialLevels do
@@ -368,79 +402,19 @@ return function(Vargs)
 				end
 			end
 
-			local levels = {
-				{ --// Blacklist
-					Level = 0;
-					Tables = {
-						Settings.Blacklist;
-						HTTP.Trello.Blacklist;
-						HTTP.WebPanel.Blacklist;
-					};
-				};
-				--[[
-				{ --// Banlist
-					Level = -1;
-					Tables = {
-						Settings.Banned;
-						HTTP.Trello.Bans;
-					}
-				};
-				--]]
-				{ --// Creators
-					Level = 4;
-					Tables = {
-						Settings.Creators;
-						HTTP.Trello.Creators;
-						HTTP.WebPanel.Creators;
-					}
-				};
-
-				{ --// HeadAdmins
-					Level = 3;
-					Tables = {
-						Settings.HeadAdmins;
-						HTTP.Trello.HeadAdmins;
-						HTTP.WebPanel.HeadAdmins;
-					}
-				};
-
-				{ --// Admins
-					Level = 2;
-					Tables = {
-						Settings.Admins;
-						HTTP.Trello.Admins;
-						HTTP.WebPanel.Admins;
-					}
-				};
-
-				{ --//Moderators
-					Level = 1;
-					Tables = {
-						Settings.Moderators;
-						HTTP.Trello.Moderators;
-						HTTP.WebPanel.Moderators;
-					}
-				};
-			}
-
-			for i = 1,#levels do --service.CountTable(levels) do
-				local level = levels[i]
-				if level then
-					for ind,tab in next,level.Tables do
-						if checkTable(p,tab) then
-							return level.Level
+			local highest = 0
+			for rank,data in next,Settings.Ranks do
+				if data.Level > highest then
+					for i,v in ipairs(data.Users) do
+						if doCheck(p, v) then
+							highest = data.Level;
+							break;
 						end
 					end
 				end
 			end
 
-			for i,v in next,Settings.CustomRanks do
-				if checkTable(p, v) then
-					return 0.5
-				end
-			end
-
-			return 0
+			return highest
 		end;
 
 		IsPlaceOwner = function(p)
@@ -464,7 +438,7 @@ return function(Vargs)
 					end
 				end
 
-				if Core.DebugMode and p.userId == -1 then
+				if p.userId == -1 then
 					return true
 				end
 			end
@@ -472,18 +446,19 @@ return function(Vargs)
 
 		CheckAdmin = function(p)
 			local level = Admin.GetLevel(p)
-			if level>0 then
+			if level > 0 then
 				return true
 			else
 				return false
 			end
 		end;
 
-		SetLevel = function(p,level)
+		SetLevel = function(p, level)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
+
 			if tonumber(level) then
-				if current>4 then
+				if current >= 999 then
 					return false
 				else
 					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.userId, Level = level}
@@ -504,7 +479,7 @@ return function(Vargs)
 
 		RemoveAdmin = function(p,temp,override)
 			local current = Admin.GetLevel(p)
-			local list = Admin.LevelToList(current)
+			local list, listName, listData = Admin.LevelToList(current)
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
 
 			if isTemp then
@@ -519,114 +494,64 @@ return function(Vargs)
 			if type(p) == "userdata" then
 				Admin.SetLevel(p,0)
 			end
+			if list then
+				for ind,check in ipairs(list) do
+					if Admin.DoCheck(p, check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
+						table.remove(list, ind)
 
-			local function doRemove(level,check)
-				if level == 1 then
-					Core.DoSave({
-						Type = "TableRemove";
-						Table = "Moderators";
-						Value = check;
-					})
-				elseif level == 2 then
-					if Settings.SaveAdmins then
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = "Admins";
-							Value = check;
-						})
-					end
-				elseif level == 3 then
-					if Settings.SaveAdmins then
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = "HeadAdmins";
-							Value = check;
-						})
-					end
-				elseif level == 4 then
-					if Settings.SaveAdmins then
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = "Creators";
-							Value = check;
-						})
-					end
-				end
-			end
-
-			local function removeFromTable(list,level)
-				for ind,check in pairs(list) do
-					if Admin.DoCheck(p,check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
-						table.remove(list,ind)
 						if not temp and Settings.SaveAdmins then
-							doRemove(level,check)
+							Core.DoSave({
+								Type = "TableRemove";
+								Table = {"Settings", "Ranks", listName, "Users"};
+								Value = check;
+							});
 						end
 					end
 				end
 			end
-
-			removeFromTable(Settings.Moderators,1)
-			removeFromTable(Settings.Admins,2)
-			removeFromTable(Settings.HeadAdmins,3)
-			removeFromTable(Settings.Creators,4)
 			Admin.UpdateCachedLevel(p)
 		end;
 
-		AddAdmin = function(p,level,temp)
+		AddAdmin = function(p, level, temp)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
 
-			Admin.RemoveAdmin(p,temp)
-			Admin.SetLevel(p,level)
-			if temp then table.insert(Admin.TempAdmins,p) end
+			if type(level) == "string" then
+				level = StringToComLevel(level) or level;
+			end
 
-			if list and type(list)=="table" then
+			Admin.RemoveAdmin(p, temp)
+			Admin.SetLevel(p, level)
+
+			if temp then
+				table.insert(Admin.TempAdmins,p)
+			end
+
+			if list and type(list) == "table" then
 				local index,value
-				for ind,ent in pairs(list) do
+
+				for ind,ent in ipairs(list) do
 					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or ent:lower()==p.Name:lower() or ent:lower()==(p.Name..":"..p.userId):lower()) then
 						index = ind
 						value = ent
 					end
 				end
+
 				if index and value then
-					table.remove(list,index)
+					table.remove(list, index)
 				end
 			end
 
 			local value = p.Name..":"..p.userId
-			if level == 1 then
-				table.insert(Settings.Moderators,value)
+			local newList,newListName = Admin.LevelToList(level);
+
+			if newList then
+				table.insert(newList,value)
+
 				if Settings.SaveAdmins and not temp then
 					Core.DoSave({
 						Type = "TableAdd";
-						Table = "Moderators";
-						Value = value
-					})
-				end
-			elseif level == 2 then
-				table.insert(Settings.Admins,value)
-				if Settings.SaveAdmins and not temp then
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = "Admins";
-						Value = value
-					})
-				end
-			elseif level == 3 then
-				table.insert(Settings.HeadAdmins,value)
-				if Settings.SaveAdmins and not temp then
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = "HeadAdmins";
-						Value = value
-					})
-				end
-			elseif level == 4 then
-				table.insert(Settings.Creators,value)
-				if Settings.SaveAdmins and not temp then
-					Core.DoSave({
-						Type = "TableAdd";
-						Table = "Creators";
+						Table = {"Settings", "Ranks", newListName, "Users"};
 						Value = value
 					})
 				end
@@ -959,7 +884,30 @@ return function(Vargs)
 			--print("No Match")
 		end;
 
-		CheckPermission = function(pDat,cmd)
+		StringToComLevel = function(str)
+			if type(str) == "number" then return str end;
+
+			local lvl = Settings.Ranks[str];
+			return (lvl and lvl.Level) or tonumber(str);
+		end;
+
+		CheckComLevel = function(plrAdminLevel, comLevel)
+			if type(comLevel) == "string" then
+				comLevel = Admin.StringToComLevel(comLevel);
+			end
+
+			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
+				return true;
+			elseif type(comLevel) == "table" then
+				for i,level in next, comLevel do
+					if plrAdminLevel == level then
+						return true;
+					end
+				end
+			end
+		end;
+
+		CheckPermission = function(pDat, cmd)
 			local allowed = false
 			local p = pDat.Player
 			local adminLevel = pDat.Level
@@ -969,44 +917,18 @@ return function(Vargs)
 			local funAllowed = Settings.FunCommands
 			local isComLevel = Admin.IsComLevel
 
-			if adminLevel >= 4 then
+			if adminLevel >= 999 then
 				return true
-			elseif cmd.Fun and not (funAllowed or adminLevel >= 4) then
+			elseif cmd.Fun and not funAllowed then
 				return false
+			elseif cmd.Donors and isDonor then
+				return true
 			elseif cmd.Agents and isAgent then
 				return true
-			elseif Core.PanicMode and adminLevel >= 1 and (comLevel == "Helper" or comLevel == "Moderator" or comLevel == "Admin") then
+			elseif comLevel == 0 and Settings.PlayerCommands then
 				return true
-			elseif (Settings.PlayerCommands or adminLevel >= 1) and isComLevel("Players", comLevel) then
+			elseif Admin.CheckComLevel(adminLevel, comLevel) then
 				return true
-			elseif isDonor and isComLevel("Donors", comLevel)then
-				return true
-			elseif adminLevel >= 1 and isComLevel("Moderators", comLevel) then
-				return true
-			elseif adminLevel >= 2 and isComLevel("Admins", comLevel) then
-				return true
-			elseif adminLevel >= 3 and isComLevel("HeadAdmins", comLevel) then
-				return true
-			elseif adminLevel >= 4 and isComLevel("Creators", comLevel) then
-				return true
-			elseif adminLevel > 0 and (isComLevel(Settings.CustomRanks, comLevel) or (HTTP.WebPanel.CustomRanks and isComLevel(HTTP.WebPanel.CustomRanks, comLevel))) then
-				if adminLevel >= 1 then
-					return true
-				else
-					for i,v in next,Settings.CustomRanks do
-						if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
-							return true
-						end
-					end
-
-					if HTTP.WebPanel.CustomRanks then
-						for i,v in next,HTTP.WebPanel.CustomRanks do
-							if isComLevel(i, comLevel) and Admin.CheckTable(p, v) then
-								return true
-							end
-						end
-					end
-				end
 			end
 
 			return false

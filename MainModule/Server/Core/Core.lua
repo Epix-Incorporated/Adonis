@@ -562,71 +562,6 @@ return function(Vargs)
 			end
 		end;
 
-		DoSave = function(data)
-			local type = data.Type
-			if type == "ClearSettings" then
-				Core.SetData("SavedSettings",{});
-				Core.SetData("SavedTables",{});
-				Core.CrossServer("LoadData");
-			elseif type == "SetSetting" then
-				local setting = data.Setting
-				local value = data.Value
-
-				Core.UpdateData("SavedSettings", function(settings)
-					settings[setting] = value
-					return settings
-				end)
-
-				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
-			elseif type == "TableRemove" then
-				local tab = data.Table
-				local value = data.Value
-				data.Time = os.time()
-
-				Core.UpdateData("SavedTables", function(sets)
-					sets = sets or {}
-					for i,v in next,sets do
-						if tab == v.Table then
-							if Functions.CheckMatch(v.Value,value) then
-								table.remove(sets,i)
-							end
-						end
-					end
-
-					data.Action = "Remove"
-					table.insert(sets,data)
-					return sets
-				end)
-
-
-				Core.CrossServer("LoadData", "SavedTables");
-			elseif type == "TableAdd" then
-				local tab = data.Table
-				local value = data.Value
-				data.Time = os.time()
-				Core.UpdateData("SavedTables", function(sets)
-					sets = sets or {}
-					for i,v in next,sets do
-						if tab == v.Table then
-							if Functions.CheckMatch(v.Value,value) then
-								table.remove(sets,i)
-							end
-						end
-					end
-					data.Action = "Add"
-					table.insert(sets,data)
-					return sets
-				end)
-
-				Core.CrossServer("LoadData", "SavedTables");
-			end
-
-			Logs.AddLog(Logs.Script,{
-				Text = "Saved setting change to datastore";
-				Desc = "A setting change was issued and saved";
-			})
-		end;
-
 		SavePlayer = function(p,data)
 			local key = tostring(p.UserId)
 			Core.PlayerData[key] = data
@@ -806,6 +741,94 @@ return function(Vargs)
 			end
 		end;
 
+		IndexPathToTable = function(tableAncestry)
+			if type(tableAncestry) == "string" then
+				return server.Settings[tableAncestry], tableAncestry;
+			elseif type(tableAncestry) == "table" then
+				local curTable = server;
+				local curName = "Server";
+
+				for i,ind in ipairs(tableAncestry) do
+					curTable = curTable[ind];
+					curName = ind;
+
+					if not curTable then
+						--warn(tostring(ind) .." could not be found");
+						return nil;
+					end
+				end
+
+				return curTable, curName;
+			end
+		end;
+
+		DoSave = function(data)
+			local type = data.Type
+			if type == "ClearSettings" then
+				Core.SetData("SavedSettings",{});
+				Core.SetData("SavedTables",{});
+				Core.CrossServer("LoadData");
+			elseif type == "SetSetting" then
+				local setting = data.Setting
+				local value = data.Value
+
+				Core.UpdateData("SavedSettings", function(settings)
+					settings[setting] = value
+					return settings
+				end)
+
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
+			elseif type == "TableRemove" then
+				local tab = data.Table
+				local value = data.Value
+
+				data.Time = os.time()
+
+				Core.UpdateData("SavedTables", function(sets)
+					sets = sets or {}
+
+					for i,v in next,sets do
+						if Functions.CheckMatch(tab, v.Table) and Functions.CheckMatch(v.Value, value) then
+							table.remove(sets,i)
+						end
+					end
+
+					data.Action = "Remove"
+					table.insert(sets, data)
+					return sets
+				end)
+
+
+				Core.CrossServer("LoadData", "SavedTables");
+			elseif type == "TableAdd" then
+				local tab = data.Table
+				local value = data.Value
+
+				data.Time = os.time()
+
+				Core.UpdateData("SavedTables", function(sets)
+					sets = sets or {}
+
+					for i,v in next,sets do
+						if Functions.CheckMatch(tab, v.Table) and Functions.CheckMatch(v.Value, value) then
+							table.remove(sets,i)
+						end
+					end
+
+					data.Action = "Add"
+					table.insert(sets,data)
+					return sets
+				end)
+
+				Core.CrossServer("LoadData", "SavedTables");
+			end
+
+			Logs.AddLog(Logs.Script,{
+				Text = "Saved setting change to datastore";
+				Desc = "A setting change was issued and saved";
+			})
+		end;
+
 		LoadData = function(key, data)
 			local SavedSettings
 			local SavedTables
@@ -859,40 +882,44 @@ return function(Vargs)
 
 				if SavedTables then
 					for ind,tab in next,SavedTables do
-						--// Owners to HeadAdmins compatability
-						if tab.Table == "Owners" then
-							tab.Table = "HeadAdmins"
+						local indList = tab.Table;
+						local nameRankComp = {--// Old settings backwards compatability
+							Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
+							Creators = {"Settings", "Ranks", "Creators", "Users"};
+							HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
+							Admins = {"Settings", "Ranks", "Admins", "Users"};
+							Moderators = {"Settings", "Ranks", "Moderators", "Users"};
+						}
+
+						if type(indList) == "string" and nameRankComp[indList] then
+							indList = nameRankComp[indList];
 						end
 
-						local parentTab = (tab.Parent == "Variables" and Core.Variables) or Settings
-						if (not Blacklist[tab.Table]) and parentTab[tab.Table] ~= nil then
-							if tab.Action == "Add" then
-								local tabl = parentTab[tab.Table]
-								if tabl then
-									for i,v in next,tabl do
-										if Functions.CheckMatch(v,tab.Value) then
-											table.remove(parentTab[tab.Table],i)
-										end
-									end
-								end
+						local realTable,tableName = Core.IndexPathToTable(indList);
+						local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-								Logs.AddLog("Script",{
-									Text = "Added to "..tostring(tab.Table);
-									Desc = "Added "..tostring(tab.Value).." to "..tostring(tab.Table).." from datastore";
-								})
-								table.insert(parentTab[tab.Table],tab.Value)
-							elseif tab.Action == "Remove" then
-								local tabl = parentTab[tab.Table]
-								if tabl then
-									for i,v in next,tabl do
-										if Functions.CheckMatch(v,tab.Value) then
-											Logs.AddLog("Script",{
-												Text = "Removed from "..tostring(tab.Table);
-												Desc = "Removed "..tostring(tab.Value).." from "..tostring(tab.Table).." from datastore";
-											})
-											table.remove(parentTab[tab.Table],i)
-										end
-									end
+						if realTable and tab.Action == "Add" then
+							for i,v in next,realTable do
+								if Functions.CheckMatch(v,tab.Value) then
+									table.remove(realTable, i)
+								end
+							end
+
+							Logs.AddLog("Script",{
+								Text = "Added value to ".. displayName;
+								Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+							})
+
+							table.insert(realTable, tab.Value)
+						elseif realTable and tab.Action == "Remove" then
+							for i,v in next,realTable do
+								if Functions.CheckMatch(v, tab.Value) then
+									Logs.AddLog("Script",{
+										Text = "Removed value from ".. displayName;
+										Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
+									})
+
+									table.remove(realTable, i)
 								end
 							end
 						end
@@ -904,8 +931,7 @@ return function(Vargs)
 								table.remove(Core.Variables.TimeBans, i)
 								Core.DoSave({
 									Type = "TableRemove";
-									Table = "TimeBans";
-									Parent = "Variables";
+									Table = {"Variables", "TimeBans"};
 									Value = v;
 								})
 							end

@@ -1882,83 +1882,66 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local temptable = {}
+				local temptable = {};
+				local unsorted = {};
 
-				for i,v in pairs(Settings.Creators) do
-					table.insert(temptable,v .. " - Creator")
+				table.insert(temptable,'<b><font color="rgb(60, 180, 0)">==== Admins In-Game ====</font></b>')
+
+				for i,v in pairs(service.GetPlayers()) do
+					local level = Admin.GetLevel(v);
+					local rankList, rankName, rankData = Admin.LevelToList(level);
+					
+					table.insert(unsorted, {
+						Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
+						Desc = "Rank: ".. (rankName or "Unknown") .."; Permission Level: ".. level;
+						SortLevel = level;
+					})
 				end
 
-				for i,v in pairs(Settings.HeadAdmins) do
-					table.insert(temptable,v .. " - Head Admin")
-				end
-
-				for i,v in pairs(Settings.Admins) do
-					table.insert(temptable,v .. " - Admin")
-				end
-
-				for i,v in pairs(Settings.Moderators) do
-					table.insert(temptable,v .. " - Mod")
-				end
-
-				for i,v in pairs(HTTP.Trello.Creators) do
-					table.insert(temptable,v .. " - Creator [Trello]")
-				end
-
-				for i,v in pairs(HTTP.Trello.Moderators) do
-					table.insert(temptable,v .. " - Mod [Trello]")
-				end
-
-				for i,v in pairs(HTTP.Trello.Admins) do
-					table.insert(temptable,v .. " - Admin [Trello]")
-				end
-
-				for i,v in pairs(HTTP.Trello.HeadAdmins) do
-					table.insert(temptable,v .. " - Owner [Trello]")
-				end
-
-				for i,v in pairs(HTTP.WebPanel.Creators) do
-					table.insert(temptable,v .. " - Creator [WebPanel]")
-				end
-
-				for i,v in pairs(HTTP.WebPanel.Moderators) do
-					table.insert(temptable,v .. " - Mod [WebPanel]")
-				end
-
-				for i,v in pairs(HTTP.WebPanel.Admins) do
-					table.insert(temptable,v .. " - Admin [WebPanel]")
-				end
-
-				for i,v in pairs(HTTP.WebPanel.HeadAdmins) do
-					table.insert(temptable,v .. " - Owner [WebPanel]")
-				end
-
-				service.Iterate(Settings.CustomRanks,function(rank,tab)
-					service.Iterate(tab,function(ind,admin)
-						table.insert(temptable,tostring(admin).." - "..rank)
-					end)
+				table.sort(unsorted, function(one, two)
+					return one.SortLevel > two.SortLevel;
 				end)
 
-				table.insert(temptable,'==== Admins In-Game ====')
-				for i,v in pairs(service.GetPlayers()) do
-					local level = Admin.GetLevel(v)
-					if level>=4 then
-						table.insert(temptable,v.Name..' - Creator')
-					elseif level>=3 then
-						table.insert(temptable,v.Name..' - Owner')
-					elseif level>=2 then
-						table.insert(temptable,v.Name..' - Admin')
-					elseif level>=1 then
-						table.insert(temptable,v.Name..' - Mod')
-					end
-
-					service.Iterate(Settings.CustomRanks,function(rank,tab)
-						if Admin.CheckTable(v,tab) then
-							table.insert(temptable,v.Name.." - "..rank)
-						end
-					end)
+				for i,v in ipairs(unsorted) do
+					v.SortLevel = nil;
+					table.insert(temptable, v)
 				end
 
-				Remote.MakeGui(plr,"List",{Title = 'Admin List',Table = temptable})
+				unsorted = {};
+
+				table.insert(temptable,"")
+				table.insert(temptable,'<b><font color="rgb(180, 60, 0)">==== All Admins ====</font></b>')
+
+				for rank,data in next,Settings.Ranks do
+					table.insert(unsorted, {
+						Text = "<b><font color='rgb(77,77,255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
+						Desc = "";
+						SortLevel = data.Level + 1;
+					});
+
+					for i,user in ipairs(data.Users) do
+						table.insert(unsorted, {
+							Text = "  ".. user;
+							Desc = "Rank: ".. rank .."; Level: ".. data.Level;
+							SortLevel = data.Level;
+						});
+					end
+				end;
+
+				table.sort(unsorted, function(one, two)
+					return one.SortLevel > two.SortLevel;
+				end)
+
+				for i,v in ipairs(unsorted) do
+					v.SortLevel = nil;
+					table.insert(temptable, v)
+				end
+
+				Remote.MakeGui(plr, "List", {
+					Title = 'Admin List';
+					Table = temptable;
+					RichText = true;
+				})
 			end
 		};
 
@@ -3009,110 +2992,6 @@ return function(Vargs, env)
 				else
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						Remote.RemoveLocal(plr,v.Name..'Tracker')
-					end
-				end
-			end
-		};
-
-		Glitch = {
-			Prefix = Settings.Prefix;
-			Commands = {"glitch";"glitchdisorient";"glitch1";"glitchy";"gd";};
-			Args = {"player";"intensity";};
-			Hidden = false;
-			Description = "Makes the target player(s)'s character teleport back and forth rapidly, quite trippy, makes bricks appear to move as the player turns their character";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = tostring(args[2] or 15)
-				local scr = Deps.Assets.Glitcher:Clone()
-				scr.Num.Value = num
-				scr.Type.Value = "trippy"
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local new = scr:Clone()
-					if v.Character then
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						if torso then
-							new.Parent = torso
-							new.Name = "Glitchify"
-							new.Disabled = false
-						end
-					end
-				end
-			end
-		};
-
-		Glitch2 = {
-			Prefix = Settings.Prefix;
-			Commands = {"ghostglitch";"glitch2";"glitchghost";"gg";};
-			Args = {"player";"intensity";};
-			Hidden = false;
-			Description = "The same as gd but less trippy, teleports the target player(s) back and forth in the same direction, making two ghost like images of the game";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = tostring(args[2] or 150)
-				local scr = Deps.Assets.Glitcher:Clone()
-				scr.Num.Value = num
-				scr.Type.Value = "ghost"
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local new = scr:Clone()
-					if v.Character then
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						if torso then
-							new.Parent = torso
-							new.Name = "Glitchify"
-							new.Disabled = false
-						end
-					end
-				end
-			end
-		};
-
-		Vibrate = {
-			Prefix = Settings.Prefix;
-			Commands = {"vibrate";"glitchvibrate";"gv";};
-			Args = {"player";"intensity";};
-			Hidden = false;
-			Description = "Kinda like gd, but teleports the player to four points instead of two";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local num = tostring(args[2] or 0.1)
-				local scr = Deps.Assets.Glitcher:Clone()
-				scr.Num.Value = num
-				scr.Type.Value = "vibrate"
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local new = scr:Clone()
-					if v.Character then
-						local torso = v.Character:FindFirstChild("HumanoidRootPart")
-						if torso then
-							local scr = torso:FindFirstChild("Glitchify")
-							if scr then scr:Destroy() end
-							new.Parent = torso
-							new.Name = "Glitchify"
-							new.Disabled = false
-						end
-					end
-				end
-			end
-		};
-
-		UnGlitch = {
-			Prefix = Settings.Prefix;
-			Commands = {"unglitch";"unglitchghost";"ungd";"ungg";"ungv";"unvibrate";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "UnGlitchs the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						local scr = torso:FindFirstChild("Glitchify")
-						if scr then
-							scr:Destroy()
-						end
 					end
 				end
 			end
