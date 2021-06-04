@@ -91,6 +91,14 @@ return function(Vargs)
 					local blacklist = {}
 					local whitelist = {}
 
+					local oldListObj = trello.getListObj;
+					trello.getListObj = function(...)
+						return select(2, service.Queue("TrelloCall", function()
+							wait(10/60)
+							return oldListObj(...)
+						end, true))
+					end
+
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 						local lists = trello.getLists(board)
@@ -105,8 +113,8 @@ return function(Vargs)
 						local permList = trello.getListObj(lists,{"Permissions","Permission List","Permlist"})
 						local muteList = trello.getListObj(lists,{"Mutelist","Mute List"})
 						local agentList = trello.getListObj(lists,{"Agents","Agent List","Agentlist"})
-						local bList = trello.getListObj(lists,"Blacklist")
-						local wList = trello.getListObj(lists,"Whitelist")
+						local bList = trello.getListObj(lists,{"Blacklist"})
+						local wList = trello.getListObj(lists,{"Whitelist"})
 
 						if banList then
 							local cards = trello.getCards(banList.id)
@@ -262,6 +270,9 @@ return function(Vargs)
 						Level = 100;
 						Users = mods or {};
 					}
+
+					Variables.Blacklist.Trello = blacklist;
+					Variables.Whitelist.Trello = whitelist;
 
 					for i,v in pairs(service.GetPlayers()) do
 						if Admin.CheckBan(v) then

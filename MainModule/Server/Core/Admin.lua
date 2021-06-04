@@ -907,6 +907,14 @@ return function(Vargs)
 			end
 		end;
 
+		IsBlacklisted = function(p)
+			for i,list in next,Variables.Blacklist.Lists do
+				if Admin.CheckTable(p, list) then
+					return true
+				end
+			end
+		end;
+
 		CheckPermission = function(pDat, cmd)
 			local allowed = false
 			local p = pDat.Player

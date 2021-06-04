@@ -165,6 +165,10 @@ return function(Vargs)
 			local Logs = Logs
 			local opts = opts or {}
 
+			if Admin.IsBlacklisted(p) then
+				return false
+			end
+
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit);
 			end
@@ -523,8 +527,9 @@ return function(Vargs)
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-					for ind, admin in next,Variables.Whitelist.List do
-						if Admin.DoCheck(p,admin) then
+
+					for listName, list in next,Variables.Whitelist.Lists do
+						if Admin.CheckList(p, list) then
 							listed = true
 							break
 						end

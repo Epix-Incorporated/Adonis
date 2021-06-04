@@ -203,9 +203,18 @@ return function(Vargs)
 			{Name="ba",Material='Plastic',Color='White',ID=172528001}
 		};
 
+		Blacklist = {
+			Enabled = (server.Settings.BlacklistEnabled ~= nil and server.Settings.BlacklistEnabled) or true;
+			Lists = {
+				Settings = server.Settings.Blacklist
+			};
+		};
+
 		Whitelist = {
 			Enabled = server.Settings.WhitelistEnabled;
-			List = server.Settings.Whitelist or {};
+			Lists = {
+				Settings = server.Settings.Whitelist
+			};
 		};
 	};
 end
