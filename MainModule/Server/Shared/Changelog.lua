@@ -6,6 +6,7 @@ return {
 	"*Completely revamped how permissions/ranks/customranks work";
 	"*Note: Old settings should remain compatible, however existing plugins might not";
 	"*Admin list is now sorted by level";
+	"*Whitelist/Blacklist code changes & bug fixes";
 	"";
 	"[v220.1 5.28.2021 19:21 EST]";
 	"* New logos!";
