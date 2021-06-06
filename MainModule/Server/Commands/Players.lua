@@ -222,8 +222,13 @@ return function(Vargs, env)
 					humandescrip.Face = id
 				end
 
-				if info.AssetTypeId == 18 or info.AssetTypeId == 9 then
-					service.Insert(args[1]).Parent = plr.Character:FindFirstChild("Head")
+				if info.AssetTypeId == 18 then
+					if plr.Character:FindFirstChild("Head") then
+						local face = service.Insert(args[1])
+						if face then
+							face.Parent = plr.Character:FindFirstChild("Head")
+						end
+					end
 				else
 					error("Invalid face ID")
 				end
