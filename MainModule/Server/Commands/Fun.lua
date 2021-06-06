@@ -154,7 +154,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local wot = {227499602,153622804,196917825,217714490,130872377,142633540,130936426,130783238,151758509,259702986}
+				local wot = {3657191505,754995791,160715357,4881542521,4608323236,227499602,217714490,130872377,142633540,259702986}
 				Remote.Send(plr,"Function","PlayAudio",wot[math.random(1,#wot)])
 			end
 		};
