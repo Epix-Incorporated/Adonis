@@ -372,8 +372,8 @@ return function(Vargs)
 				table.insert(tab,{Text = "Nil Players: "..nilplayers})
 				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
 				table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
-				table.insert(tab,{Text = "Gravity: "..tostring(game.Workspace.Gravity)})
-				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(game.Workspace.FallenPartsDestroyHeight)})
+				table.insert(tab,{Text = "Gravity: "..tostring(workspace.Gravity)})
+				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(workspace.FallenPartsDestroyHeight)})
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				return tab
 			end;
