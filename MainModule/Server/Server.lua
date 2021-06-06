@@ -432,11 +432,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		theme:Clone().Parent = server.Client.UI;
 	end
 
-	--// Old loader compatability
-	if server.Settings.Owners and not server.Settings.HeadAdmins then
-		server.Settings.HeadAdmins = server.Settings.Owners;
-	end
-
 	for setting,value in next, server.Defaults.Settings do
 		if server.Settings[setting] == nil then
 			server.Settings[setting] = value

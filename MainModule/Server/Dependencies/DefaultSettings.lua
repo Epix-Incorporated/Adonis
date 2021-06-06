@@ -145,10 +145,47 @@ local descs = {}
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
 
-	settings.Moderators = {}	-- Mods;									  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Admins = {}  		-- Admins; 						              Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.HeadAdmins = {}  	-- Head Admins;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Creators = {}      -- Place Owner;								  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+																																																																																				--[[
+	**HOW TO ADD ADMINISTRATORS:**
+		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
+		Simply place users into the respective "Users" table for whatever level/rank you want to give them.
+
+		Format Example:
+			settings.Ranks = {
+				["Moderators"] = {
+					Level = 100;
+					Users = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+				}
+			}
+
+		If you use custom ranks, existing custom ranks will be imported with a level of 1.
+		Add all new CustomRanks to the table below with the respective level you want them to be.
+
+	NOTE: Changing the level of built in ranks (Moderators, Admins, HeadAdmins, Creators)
+				will also change the permission level for any built-in commands associated with that rank. 																																				-			-]]
+
+	settings.Ranks = {
+		["Moderators"] = {
+			Level = 100;
+			Users = {};
+		};
+
+		["Admins"] = {
+			Level = 200;
+			Users = {};
+		};
+
+		["HeadAdmins"] = {
+			Level = 300;
+		 	Users = {};
+		};
+
+		["Creators"] = {
+			Level = 900; --// Anything 900 or higher will be considered a creator and will bypass all perms & be allowed to edit settings in-game.
+			Users = {};
+		};
+	};
+
 	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Blacklist = {}		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -157,7 +194,6 @@ local descs = {}
 	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}
 	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
 	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
-	settings.CustomRanks = {};	-- List of custom AdminLevel ranks			  Format: {RankName = {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";};}
 
 	settings.OnStartup = {};	-- List of commands ran at server start								Format: {":notif TestNotif"}
 	settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
@@ -257,6 +293,7 @@ local descs = {}
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
 
+	descs.Ranks = [[ All admin permission level ranks; ]];
 	descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Admins = [[ Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.HeadAdmins = [[ Head Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -348,17 +385,19 @@ local descs = {}
 		"Theme";
 		"MobileTheme";
 		" ";
-		"Moderators";
-		"Admins";
-		"HeadAdmins";
-		"Creators";
+		"Ranks";
+		--"Moderators";
+		--"Admins";
+		--"HeadAdmins";
+		--"Creators";
+		" ";
 		"Banned";
 		"Muted";
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
 		"CapeList";
-		"CustomRanks";
+		--"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";

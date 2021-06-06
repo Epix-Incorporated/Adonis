@@ -9,6 +9,110 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
+		Glitch = {
+			Prefix = Settings.Prefix;
+			Commands = {"glitch";"glitchdisorient";"glitch1";"glitchy"};
+			Args = {"player";"intensity";};
+			Hidden = false;
+			Description = "Makes the target player(s)'s character teleport back and forth rapidly, quite trippy, makes bricks appear to move as the player turns their character";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local num = tostring(args[2] or 15)
+				local scr = Deps.Assets.Glitcher:Clone()
+				scr.Num.Value = num
+				scr.Type.Value = "trippy"
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local new = scr:Clone()
+					if v.Character then
+						local torso = v.Character:FindFirstChild("HumanoidRootPart")
+						if torso then
+							new.Parent = torso
+							new.Name = "Glitchify"
+							new.Disabled = false
+						end
+					end
+				end
+			end
+		};
+
+		Glitch2 = {
+			Prefix = Settings.Prefix;
+			Commands = {"ghostglitch";"glitch2";"glitchghost"};
+			Args = {"player";"intensity";};
+			Hidden = false;
+			Description = "The same as gd but less trippy, teleports the target player(s) back and forth in the same direction, making two ghost like images of the game";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local num = tostring(args[2] or 150)
+				local scr = Deps.Assets.Glitcher:Clone()
+				scr.Num.Value = num
+				scr.Type.Value = "ghost"
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local new = scr:Clone()
+					if v.Character then
+						local torso = v.Character:FindFirstChild("HumanoidRootPart")
+						if torso then
+							new.Parent = torso
+							new.Name = "Glitchify"
+							new.Disabled = false
+						end
+					end
+				end
+			end
+		};
+
+		Vibrate = {
+			Prefix = Settings.Prefix;
+			Commands = {"vibrate";"glitchvibrate";};
+			Args = {"player";"intensity";};
+			Hidden = false;
+			Description = "Kinda like gd, but teleports the player to four points instead of two";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local num = tostring(args[2] or 0.1)
+				local scr = Deps.Assets.Glitcher:Clone()
+				scr.Num.Value = num
+				scr.Type.Value = "vibrate"
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local new = scr:Clone()
+					if v.Character then
+						local torso = v.Character:FindFirstChild("HumanoidRootPart")
+						if torso then
+							local scr = torso:FindFirstChild("Glitchify")
+							if scr then scr:Destroy() end
+							new.Parent = torso
+							new.Name = "Glitchify"
+							new.Disabled = false
+						end
+					end
+				end
+			end
+		};
+
+		UnGlitch = {
+			Prefix = Settings.Prefix;
+			Commands = {"unglitch";"unglitchghost";"ungd";"ungg";"ungv";"unvibrate";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "UnGlitchs the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						local scr = torso:FindFirstChild("Glitchify")
+						if scr then
+							scr:Destroy()
+						end
+					end
+				end
+			end
+		};
+
 		SetFPS = {
 			Prefix = Settings.Prefix;
 			Commands = {"setfps";};
@@ -736,7 +840,7 @@ return function(Vargs, env)
 						end
 
 						wait(1)
-						p:Kick("\"I don't feel so good\"")
+						p:Kick("\n\n\"I don't feel so good\"\n")
 					end)
 				end
 			end;

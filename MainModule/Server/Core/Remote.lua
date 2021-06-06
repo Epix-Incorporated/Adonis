@@ -95,7 +95,7 @@ return function(Vargs)
 			end;
 
 			TaskManager = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local action = args[1]
 					if action == "GetTasks" then
 						local tab = {}
@@ -166,7 +166,7 @@ return function(Vargs)
 			end;
 
 			AllSettings = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local sets = {}
 
 					sets.Settings = {}
@@ -311,7 +311,7 @@ return function(Vargs)
 			end;
 
 			TerminalData = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local entry = Remote.Terminal.Data[tostring(p.UserId)]
 					if not entry then
 						Remote.Terminal.Data[tostring(p.UserId)] = {
@@ -335,7 +335,7 @@ return function(Vargs)
 			end;
 
 			Terminal = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local data = args[2]
 					local message = args[1]
 					local command = message:match("(.-) ") or message
@@ -588,39 +588,42 @@ return function(Vargs)
 			end;
 
 			SaveTableAdd = function(p,args)
-				if Admin.GetLevel(p)>=4 then
-					local tab = args[1]
-					local value = args[2]
+				if Admin.GetLevel(p) >= 900 then
+					local tabName = args[1];
+					local value = args[2];
+					local tab = Core.IndexPathToTable(tabName);
 
-					table.insert(Settings[tab],value)
+					table.insert(tab, value);
 
 					Core.DoSave({
 						Type = "TableAdd";
-						Table = tab;
+						Table = tabName;
 						Value = value;
 					})
-
 				end
 			end;
 
 			SaveTableRemove = function(p,args)
-				if Admin.GetLevel(p)>=4 then
-					local tab = args[1]
-					local value = args[2]
-					local ind = Functions.GetIndex(Settings[tab],value)
+				if Admin.GetLevel(p) >= 900 then
+					local tabName = args[1];
+					local value = args[2];
+					local tab = Core.IndexPathToTable(tabName);
+					local ind = Functions.GetIndex(tab, value);
 
-					if ind then table.remove(Settings[tab],ind) end
+					if ind then
+						table.remove(tab, ind);
+					end
 
 					Core.DoSave({
 						Type = "TableRemove";
-						Table = tab;
+						Table = tabName;
 						Value = value;
 					})
 				end
 			end;
 
 			SaveSetSetting = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local setting = args[1]
 					local value = args[2]
 
@@ -646,14 +649,14 @@ return function(Vargs)
 			end;
 
 			ClearSavedSettings = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings",{p})
 				end
 			end;
 
 			SetSetting = function(p,args)
-				if Admin.GetLevel(p) >= 4 then
+				if Admin.GetLevel(p) >= 900 then
 					local setting = args[1]
 					local value = args[2]
 

@@ -126,7 +126,7 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if Admin.CheckAdmin(p,false) then
 							table.insert(players, p)
@@ -141,7 +141,7 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if not Admin.CheckAdmin(p,false) then
 							table.insert(players,p)
@@ -156,11 +156,30 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if p:IsFriendsWith(plr.userId) then
 							table.insert(players,p)
 							plus()
+						end
+					end
+				end;
+			};
+
+			["@username"] = {
+				Match = "@";
+				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+					local matched = tonumber(msg:match("@(.*)"))
+					local foundNum = 0
+
+					if matched then
+						for i,v in next,parent:GetChildren() do
+							local p = getplr(v)
+							if p and p.Name == matched then
+								table.insert(players,p)
+								plus()
+								foundNum = foundNum+1
+							end
 						end
 					end
 				end;
@@ -440,11 +459,21 @@ return function(Vargs)
 						if matchFunc then
 							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
 						else
-							for i,v in next,parent:children() do
+							for i,v in next,parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.Name:lower():sub(1,#s)==s:lower() then
+								if p and p:IsA("Player") and p.DisplayName:lower():sub(1,#s) == s:lower() then
 									table.insert(players,p)
 									plus()
+								end
+							end
+
+							if plrs == 0 then
+								for i,v in next,parent:GetChildren() do
+									local p = getplr(v)
+									if p and p:IsA("Player") and p.Name:lower():sub(1,#s) == s:lower() then
+										table.insert(players,p)
+										plus()
+									end
 								end
 							end
 
@@ -884,11 +913,11 @@ return function(Vargs)
 			end
 
 			service.Players.PlayerAdded:Connect(function(p)
-				p:Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
 			for i,p in next,service.Players:GetPlayers() do
-				p:Kick("Game shutdown: " .. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
 

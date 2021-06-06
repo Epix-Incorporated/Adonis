@@ -91,6 +91,14 @@ return function(Vargs)
 					local blacklist = {}
 					local whitelist = {}
 
+					local oldListObj = trello.getListObj;
+					trello.getListObj = function(...)
+						return select(2, service.Queue("TrelloCall", function()
+							wait(10/60)
+							return oldListObj(...)
+						end, true))
+					end
+
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 						local lists = trello.getLists(board)
@@ -98,15 +106,15 @@ return function(Vargs)
 						local commandList = trello.getListObj(lists,{"Commands","Command List"})
 						local adminList = trello.getListObj(lists,{"Admins","Admin List","Adminlist"})
 						local modList = trello.getListObj(lists,{"Moderators","Moderator List","Moderatorlist","Modlist","Mod List","Mods"})
-						local creatorList = trello.getListObj(lists,{"Creators","Creator List","Creatorlist","Place HeadAdmins"})
+						local creatorList = trello.getListObj(lists,{"Creators","Creator List","Creatorlist","Place Owners"})
 						local ownerList = trello.getListObj(lists,{"Owners", "HeadAdmins","Owner List","Ownerlist"})
 						local musicList = trello.getListObj(lists,{"Music","Music List","Musiclist","Songs"})
 						local insertList = trello.getListObj(lists,{"InsertList","Insert List","Insertlist","Inserts","ModelList","Model List","Modellist","Models"})
 						local permList = trello.getListObj(lists,{"Permissions","Permission List","Permlist"})
 						local muteList = trello.getListObj(lists,{"Mutelist","Mute List"})
 						local agentList = trello.getListObj(lists,{"Agents","Agent List","Agentlist"})
-						local bList = trello.getListObj(lists,"Blacklist")
-						local wList = trello.getListObj(lists,"Whitelist")
+						local bList = trello.getListObj(lists,{"Blacklist"})
+						local wList = trello.getListObj(lists,{"Whitelist"})
 
 						if banList then
 							local cards = trello.getCards(banList.id)
@@ -242,6 +250,29 @@ return function(Vargs)
 					if #agents>0 then HTTP.Trello.Agents = agents end
 					if #blacklist>0 then HTTP.Trello.Blacklist = blacklist end
 					if #whitelist>0 then HTTP.Trello.Whitelist = whitelist end
+
+					Settings.Ranks["[Trello] Creators"] = {
+						Level = 900;
+						Users = creators or {};
+					}
+
+					Settings.Ranks["[Trello] HeadAdmins"] = {
+						Level = 300;
+						Users = HeadAdmins or {};
+					}
+
+					Settings.Ranks["[Trello] Admins"] = {
+						Level = 200;
+						Users = admins or {};
+					}
+
+					Settings.Ranks["[Trello] Moderators"] = {
+						Level = 100;
+						Users = mods or {};
+					}
+
+					Variables.Blacklist.Trello = blacklist;
+					Variables.Whitelist.Trello = whitelist;
 
 					for i,v in pairs(service.GetPlayers()) do
 						if Admin.CheckBan(v) then

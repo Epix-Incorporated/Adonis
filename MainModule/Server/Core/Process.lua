@@ -165,6 +165,10 @@ return function(Vargs)
 			local Logs = Logs
 			local opts = opts or {}
 
+			if Admin.IsBlacklisted(p) then
+				return false
+			end
+
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit);
 			end
@@ -523,8 +527,9 @@ return function(Vargs)
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-					for ind, admin in next,Variables.Whitelist.List do
-						if Admin.DoCheck(p,admin) then
+
+					for listName, list in next,Variables.Whitelist.Lists do
+						if Admin.CheckList(p, list) then
 							listed = true
 							break
 						end
@@ -560,7 +565,7 @@ return function(Vargs)
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				else
-					Anti.RemovePlayer(p, ":: Adonis :: Loading Error [Missing player, keys, or removed]")
+					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 				end
 			end
 		end;
@@ -674,7 +679,7 @@ return function(Vargs)
 				if Settings.Detection then
 					Remote.Send(p,"LaunchAnti","MainDetection")
 				end
-				
+
 				if Settings.AntiBuildingTools then
 					Remote.Send(p,"LaunchAnti","AntiTools", {BTools = true})
 				end

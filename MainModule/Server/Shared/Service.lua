@@ -1103,7 +1103,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 							ErrorHandler("ReadError", "Tampering with Client [write wt0005]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 						end
 
-						error("Read-only")
+						warn("Something attempted to set index ".. tostring(ind) .." in a read-only table.")
 					else
 						rawset(tabl, ind, new)
 					end

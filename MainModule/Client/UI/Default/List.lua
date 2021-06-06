@@ -4,6 +4,7 @@ service = nil
 
 return function(data)
 	local Title = data.Title
+	local Tabs = data.Tabs
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
 	local UpdateArg = data.UpdateArg
@@ -27,29 +28,29 @@ return function(data)
 	local lastPageButton, nextPageButton, pageCounterLabel;
 	local currentListTab
 	local pageDebounce
-	
+
 	function getPage(tab, pageNum)
-		if not PagesEnabled then 
+		if not PagesEnabled then
 			return tab;
 		end
-		
+
 		local pageNum = pageNum or 1;
 		local startPos = (pageNum-1) * PageSize;
 		local endPos = pageNum *PageSize;
 		local pageList = {};
-		
+
 		for i = startPos, endPos do
 			if tab[i] ~= nil then
 				table.insert(pageList, tab[i]);
 			end
 		end
-		
+
 		return pageList;
 	end
-	
+
 	function getListTab(Tab)
 		local newTab = {}
-		
+
 		for i,v in next,Tab do
 			if type(v) == "table" then
 				newTab[i] = {
@@ -67,7 +68,7 @@ return function(data)
 				}
 			end
 		end
-		
+
 		if Stacking then
 			local oldNewTab = newTab;
 			newTab = {}
@@ -88,22 +89,22 @@ return function(data)
 				end
 			end
 		end
-		
+
 		for i,v in next,newTab do
 			v.Text = (data.Sanitize and service.SanitizeString(v.Text)) or v.Text
-			
+
 			if v.Duplicates then
 				v.Text = "(x"..v.Duplicates..") "..v.Text
 			end
-			
-			if v.Time then 
+
+			if v.Time then
 				v.Text = "["..v.Time.."] "..v.Text
 			end
 		end
-		
+
 		return newTab
 	end
-	
+
 	function doSearch(tab, text)
 		local found = {}
 		text = tostring(text):lower()
@@ -112,13 +113,13 @@ return function(data)
 				table.insert(found, v)
 			end
 		end
-		
+
 		return found
 	end
-	
+
 	function genList(Tab)
 		local gotList = Tab;
-		
+
 		if search.Text ~= "Search" and search.Text ~= "" then
 			PageCounter = 1;
 			gotList = getListTab(doSearch(Tab, search.Text));
@@ -127,13 +128,13 @@ return function(data)
 			search.Text = "Search"
 			gotList = getListTab(Tab);
 		end
-		
+
 		if PagesEnabled and #gotList > PageSize then
 			scroller.Size = UDim2.new(1,-10,1,-60);
 			nextPageButton.Visible = true;
 			pageCounterLabel.Visible = true;
 			pageCounterLabel.Text = "Page: ".. PageCounter;
-			
+
 			if PageCounter > 1 then
 				lastPageButton.Visible = true;
 			else
@@ -145,15 +146,15 @@ return function(data)
 			lastPageButton.Visible = false;
 			pageCounterLabel.Visible = false;
 		end
-		
+
 		for i,v in next,scroller:GetChildren() do
 			v:Destroy()
 		end
-		
+
 		currentListTab = gotList;
 		scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText;});
 	end
-	
+
 	window = client.UI.Make("Window",{
 		Name  = "List";
 		Title = Title;
@@ -165,10 +166,10 @@ return function(data)
 				genList(Tab)
 			end
 		end;
-		
+
 		RichTextSupport = data.RichTextSupport or data.SupportRichText or false;
 	})
-	
+
 	scroller = window:Add("ScrollingFrame",{
 		List = {};
 		ScrollBarThickness = 2;
@@ -179,7 +180,7 @@ return function(data)
 		--	TextXAlignment = "Left";
 		--}
 	})
-	
+
 	pageCounterLabel = window:Add("TextLabel", {
 		Size = UDim2.new(0, 60, 0, 20);
 		Position = UDim2.new(0.5, -30, 1, -25);
@@ -190,7 +191,7 @@ return function(data)
 		ClipsDescendants = false;
 		TextXAlignment = "Center";
 	})
-	
+
 	nextPageButton = window:Add("TextButton", {
 		Size = UDim2.new(0, 50, 0, 20);
 		Position = UDim2.new(1, -60, 1, -25);
@@ -202,46 +203,46 @@ return function(data)
 				pageDebounce = true;
 				local origLTrans = nextPageButton.BackgroundTransparency;
 				lastPageButton.BackgroundTransparency = origLTrans+0.35;
-				
+
 				local origNTrans = nextPageButton.BackgroundTransparency;
 				nextPageButton.BackgroundTransparency = origNTrans+0.35;
-				
+
 				lastPageButton.TextTransparency = 0.8;
 				nextPageButton.TextTransparency = 0.8;
-				
+
 				if currentListTab then
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter+1, 1, maxPages);
-					
+
 					pageCounterLabel.Text = "Page: ".. PageCounter;
-					
+
 					if PageCounter > 1 then
 						lastPageButton.Visible = true;
 					end
-					
+
 					if PageCounter == maxPages then
 						nextPageButton.Visible = false;
 					end
-					
+
 					for i,v in next,scroller:GetChildren() do
 						v:Destroy()
 					end
-					
+
 					scroller.CanvasPosition = Vector2.new(0, 0);
 					scroller:GenerateList(getPage(currentListTab, PageCounter));
 				end
-				
+
 				lastPageButton.BackgroundTransparency = origLTrans;
 				nextPageButton.BackgroundTransparency = origNTrans;
-				
+
 				lastPageButton.TextTransparency = 0;
 				nextPageButton.TextTransparency = 0;
-				
+
 				pageDebounce = false;
 			end
 		end
 	})
-	
+
 	lastPageButton = window:Add("TextButton", {
 		Size = UDim2.new(0, 50, 0, 20);
 		Position = UDim2.new(0, 10, 1, -25);
@@ -253,48 +254,48 @@ return function(data)
 				pageDebounce = true;
 				local origLTrans = nextPageButton.BackgroundTransparency;
 				lastPageButton.BackgroundTransparency = origLTrans+0.2;
-				
+
 				local origNTrans = nextPageButton.BackgroundTransparency;
 				nextPageButton.BackgroundTransparency = origNTrans+0.2;
-				
+
 				lastPageButton.TextTransparency = 0.8;
 				nextPageButton.TextTransparency = 0.8;
-				
+
 				if currentListTab then
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter-1, 1, maxPages);
-					
+
 					pageCounterLabel.Text = "Page: ".. PageCounter;
-					
+
 					if PageCounter == 1 then
 						lastPageButton.Visible = false;
 					end
-					
+
 					if PageCounter == maxPages then
 						nextPageButton.Visible = false;
 					else
 						nextPageButton.Visible = true;
 					end
-					
+
 					for i,v in next,scroller:GetChildren() do
 						v:Destroy()
 					end
-					
+
 					scroller.CanvasPosition = Vector2.new(0, 0);
 					scroller:GenerateList(getPage(currentListTab, PageCounter));
 				end
-				
+
 				lastPageButton.BackgroundTransparency = origLTrans;
 				nextPageButton.BackgroundTransparency = origNTrans;
-				
+
 				lastPageButton.TextTransparency = 0;
 				nextPageButton.TextTransparency = 0;
-				
+
 				pageDebounce = false;
 			end
 		end
 	})
-	
+
 	search = window:Add("TextBox", {
 		Size = UDim2.new(1, -10, 0, 20);
 		Position = UDim2.new(0, 5, 0, 5);
@@ -305,16 +306,16 @@ return function(data)
 		PlaceholderText = "Search";
 		TextStrokeTransparency = 0.8;
 	})
-	
+
 	search.FocusLost:connect(function(enter)
 		genList(Tab)
 	end)
-	
+
 	--window:SetPosition(UDim2.new(0.25, 0, 0.5, -window.AbsoluteSize.Y/2))
 	gTable = window.gTable
 	window:Ready()
 	genList(Tab)
-	
+
 	if Update and AutoUpdate then
 		while gTable.Active and wait(AutoUpdate) do
 			window:Refresh()

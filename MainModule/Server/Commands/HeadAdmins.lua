@@ -48,12 +48,11 @@ return function(Vargs, env)
 						table.insert(timebans, data)
 						Core.DoSave({
 							Type = "TableAdd";
-							Table = "TimeBans";
-							Parent = "Variables";
+							Table = {"Variables", "TimeBans"};
 							Value = data;
 						})
 
-						v:Kick("Banned until "..endTime)
+						v:Kick("\nBanned until "..endTime)
 						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
 					end
 				end
@@ -133,8 +132,8 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						Admin.AddAdmin(v,2)
-						Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v, "Admins")
+						Remote.MakeGui(v, "Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
@@ -403,7 +402,7 @@ return function(Vargs, env)
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					game:GetService("SocialService"):PromptGameInvite(v)
