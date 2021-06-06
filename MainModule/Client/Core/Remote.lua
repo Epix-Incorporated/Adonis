@@ -475,7 +475,7 @@ return function()
 			if not ping then return false end
 			local t2 = tick()
 			local mult = 10^3
-			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*100)
+			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
 			return ms
 		end;
 
