@@ -18,7 +18,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args, data)
 				local plrLevel = data.PlayerData.Level
-				for _,  in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
+				for _,v in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						if not service.Players:FindFirstChild(v.Name) then
@@ -397,10 +397,10 @@ return function(Vargs, env)
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
 						local data = Core.GetPlayer(v)
-						
+
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
 						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
-						
+
 						if plr and type(plr) == "userdata" then
 							Remote.MakeGui(plr, "Hint", {
 								Message = "Warned "..tostring(v);
