@@ -1048,7 +1048,9 @@ return function(Vargs)
 
 				Scripts = service.ReadOnly({
 					ExecutePermission = function(srcScript, code)
-						assert(Settings.CodeExecution, "Settings.CodeExecution is disabled.")
+						if Settings and assert then
+							assert(Settings.CodeExecution, "Settings.CodeExecution is disabled.")
+						end
 
 						local exists;
 
