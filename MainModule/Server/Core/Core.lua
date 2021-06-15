@@ -1048,10 +1048,6 @@ return function(Vargs)
 
 				Scripts = service.ReadOnly({
 					ExecutePermission = function(srcScript, code)
-						if Settings and assert then
-							assert(Settings.CodeExecution, "Settings.CodeExecution is disabled.")
-						end
-
 						local exists;
 
 						for i,v in pairs(Core.ScriptCache) do
