@@ -950,7 +950,7 @@ return function(Vargs, env)
 			end
 		};
 
-		AddFriend = {
+		--[[AddFriend = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"addfriend";"friendrequest";"sendfriendrequest";};
 			Args = {"player"};
@@ -962,7 +962,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr,[[game:GetService("StarterGui"):SetCore("PromptSendFriendRequest",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,"service.StarterGui:SetCore("PromptSendFriendRequest",service.Players."..v.Name..")")
 				end
 			end
 		};
@@ -979,10 +979,10 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr,[[game:GetService("StarterGui"):SetCore("PromptUnfriend",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,"service.StarterGui:SetCore("PromptUnfriend",service.Players."..v.Name..")")
 				end
 			end
-		};
+		};]]
 
 		DevConsole = {
 			Prefix = Settings.PlayerPrefix;
