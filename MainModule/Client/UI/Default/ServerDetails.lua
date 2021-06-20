@@ -92,7 +92,7 @@ return function(data)
 			addOverviewEntry("Genre:", tostring(game.Genre))
 		end]]
 		i = i + 1
-		addOverviewEntry("Job ID:", game.JobId)
+		addOverviewEntry("Job ID:", game.JobId or "[Error]")
 		addOverviewEntry("Server Type:", getServerType())
 		if getServerType() == "Reserved" then
 			addOverviewEntry("Private Server ID:", data.PrivateServerId)
