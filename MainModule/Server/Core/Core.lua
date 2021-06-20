@@ -456,10 +456,13 @@ return function(Vargs)
 		end;
 
 		ExecutePermission = function(scr, code, isLocal)
-			for i,val in next,Core.ExecuteScripts do
+			local fixscr = service.UnWrap(scr)
+
+			for _, val in pairs(Core.ExecuteScripts) do
 				if not isLocal or (isLocal and val.Type == "LocalScript") then
-					if (service.UnWrap(val.Script) == service.UnWrap(scr) or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
+					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions = val.Executions+1
+
 						return {
 							Source = val.Source;
 							noCache = val.noCache;
@@ -472,7 +475,7 @@ return function(Vargs)
 		end;
 
 		GetScript = function(scr,code)
-			for i,val in next,Core.ExecuteScripts do
+			for i,val in pairs(Core.ExecuteScripts) do
 				if val.Script == scr or code == val.Code then
 					return val,i
 				end
@@ -480,7 +483,7 @@ return function(Vargs)
 		end;
 
 		UnRegisterScript = function(scr)
-			for i,dat in next,Core.ExecuteScripts do
+			for i,dat in pairs(Core.ExecuteScripts) do
 				if dat.Script == scr or dat == scr then
 					table.remove(Core.ExecuteScripts, i)
 					return dat
@@ -503,7 +506,7 @@ return function(Vargs)
 				}
 			end)
 
-			for ind,scr in next,Core.ExecuteScripts do
+			for ind,scr in pairs(Core.ExecuteScripts) do
 				if scr.Script == data.Script then
 					return scr.Wrapped or scr.Script
 				end
@@ -1046,10 +1049,6 @@ return function(Vargs)
 				Scripts = service.ReadOnly({
 					ExecutePermission = function(srcScript, code)
 						local exists;
-
-						if not Settings.CodeExecution then
-							return nil
-						end
 
 						for i,v in pairs(Core.ScriptCache) do
 							if v.Script == srcScript then
