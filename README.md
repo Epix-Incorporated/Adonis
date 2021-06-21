@@ -25,7 +25,7 @@ Feel free to seek guidance in the development channel on our Discord.
 This project uses Rojo.
 Follow the installation steps outlined here: https://rojo.space/docs/installation/
 
-Once installed, download/clone this repository, enter the repo's directory, and run "rojo build -o Adonis.rbxmx" to build a model file or "rojo build -o Adonis.rbxlx" to build a place file (Note: In the place file, you can find the model in ServerScriptService > Adonis_Rojo)
+Once installed, download/clone this repository, enter the repo's directory, and run "rojo build AdonisSourceFolderPathHere -o Adonis.rbxmx" to build a model file or "rojo build -o Adonis.rbxlx" to build a place file (Note: In the place file, you can find the model in ServerScriptService > Adonis_Rojo)
  
 Quick Start: https://youtu.be/1f9x9gdxLjw
 =
