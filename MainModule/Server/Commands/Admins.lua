@@ -17,7 +17,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
-				local newRank = assert(Ranks[args[2]], "Rank not found");
+				local newRank = assert(Settings.Ranks[args[2]], "Rank not found");
 				local newLevel = newRank.Level;
 
 				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
@@ -28,15 +28,15 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.AddAdmin(v, newLevel, true)
-						Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(p, newLevel, true)
+						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(v.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(p.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
 					end
 				end
 			end;
@@ -60,15 +60,15 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.SetLevel(v, newLevel)
-						Remote.MakeGui(v,"Notification",{
+						Admin.SetLevel(p, newLevel)
+						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(v.Name..' is now permission level '.. newLevel, {plr})
+						Functions.Hint(p.Name..' is now permission level '.. newLevel, {plr})
 					end
 				end
 			end;
