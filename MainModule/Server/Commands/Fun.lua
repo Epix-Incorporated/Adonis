@@ -161,7 +161,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled";"freebobuc";"freedonor";"?free-creator-powers?";};--//add more :)
+			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -2700,7 +2700,7 @@ return function(Vargs, env)
 
 					Admin.RunCommand(Settings.Prefix.."removehats",v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible",v.Name)
-					
+
 					local headMesh = v.Character.Head:FindFirstChild("Mesh")
 					if headMesh then
 						v.Character.Head.Transparency = 0.9
