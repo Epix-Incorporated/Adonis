@@ -965,6 +965,53 @@ return function(Vargs, env)
 			end
 		};
 
+		PrivateChat = {
+			Prefix = Settings.Prefix;
+			Commands = {"pc", "dm", "privatechat"};
+			Args = {"player"};
+			Filter = true;
+			Hidden = true; --// This command is WIP
+			Description = "Send a private message to a player";
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				assert(args[1], "Argument missing")
+				
+				local newSession = Remote.NewSession("PrivateChat");
+				local eventConnection = newSession.SessionEvent.Event:Connect(function(p, ...)
+					local args = {...};
+					local cmd = args[1];
+
+					if cmd == "SendMessage" then
+						if newSession.Users[p] then
+							table.insert(newSession.Users[p].Messages, args[2]);
+						end
+
+						newSession.SendToUsers("PlayerSentMessage", p, args[2]);
+					elseif cmd == "LeaveSession" then
+						newSession.Users[p] = nil;
+						newSession.SendToUsers("PlayerLeftSession", p);
+					elseif cmd == "EndSession" and p == plr then
+						newSession.End();
+					end
+				end)
+
+				for i,v in ipairs(service.GetPlayers(plr, args[1])) do
+					newSession.AddUser(v, {
+						Messages = {};
+					});
+
+					Remote.MakeGui(v, "PrivateChat", {
+						Owner = plr;
+						SessionKey = newSession.SessionKey;
+					})
+
+					-- testing stuff below
+					wait(2)
+					newSession.SendToUsers("PlayerSentMessage", plr, "this is a test message");
+				end
+			end
+		};
+
 		PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
@@ -993,8 +1040,12 @@ return function(Vargs, env)
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local newSession = Remote.NewSession("PrivateChat");
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.MakeGui(v, "Chat", {KeepChat = true})
+					newSessions.Add(v);
+					Remote.MakeGui(v, "PrivateChat", {
+						SessionKey = newSession.SessionKey;
+					});
 				end
 			end
 		};

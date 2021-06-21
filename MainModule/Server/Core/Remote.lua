@@ -560,12 +560,21 @@ return function(Vargs)
 				end
 			end;
 
-			Session = function(p,args)
+		--[[Session = function(p,args)
 				local type = args[1]
 				local data = args[2]
 				local handler = Remote.SessionHandlers[type]
 				if handler then
-					handler(p,data)
+					return handler(p, data)
+				end
+			end;--]]
+
+			Session = function(p, args)
+				local sessionKey = args[1];
+				local session = sessionKey and Remote.GetSession(sessionKey);
+
+				if session then
+					session.SessionEvent.Event:Fire(p, unpack(args, 2));
 				end
 			end;
 
@@ -772,6 +781,44 @@ return function(Vargs)
 				})
 			end;
 		};
+
+		NewSession = function(sessionType)
+			local event = service.New("BindableEvent");
+			local session = {}
+			local sessionKey = Functions.GetRandom();
+
+			session.Users = {};
+			session.SessionType = sessionType;
+			session.SessionKey = sessionKey;
+			session.SessionEvent = event;
+			session.AddUser = function(p, defaultData)
+				session.Users[p] = defaultData or {};
+			end;
+
+			session.SendToUsers = function(...)
+				for p in next,session.Users do
+					Remote.Send(p, "SessionData", sessionKey, ...)
+				end;
+			end;
+
+			session.FireEvent = function(...)
+				sessionEvent:Fire(...);
+			end;
+
+			session.End = function()
+				session.SendToUsers("SessionEnded");
+				sessionEvent:Destroy();
+				Remote.Sessions[sessionKey] = nil;
+			end
+
+			Remote.Sessions[sessionKey] = session;
+
+			return session;
+		end;
+
+		GetSession = function(sessionKey)
+			return Remote.Sessions[sessionKey];
+		end;
 
 		Fire = function(p, ...)
 			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")

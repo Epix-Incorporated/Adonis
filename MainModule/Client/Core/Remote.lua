@@ -282,6 +282,13 @@ return function()
 				end
 			end;
 
+			SessionData = function(args)
+				local sessionKey = args[1];
+				if sessionKey then
+					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2));
+				end
+			end;
+
 			SetVariables = function(args)
 				local vars = args[1]
 				for var,val in next,vars do
