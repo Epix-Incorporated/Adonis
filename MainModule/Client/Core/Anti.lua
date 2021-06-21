@@ -235,7 +235,7 @@ return function()
 							t:Destroy()
 							Detected('log','HopperBin detected (Building Tools)')
 						end
-							
+
 						--[[if tools then
 							local good = false
 							for i,v in pairs(client.AllowedToolsList) do

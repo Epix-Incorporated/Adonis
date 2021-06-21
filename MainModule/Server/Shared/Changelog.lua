@@ -7,6 +7,17 @@ return {
 	"*Note: Old settings should remain compatible, however existing plugins might not";
 	"*Admin list is now sorted by level";
 	"*Whitelist/Blacklist code changes & bug fixes";
+	"*ToolTip now correctly supports RichText";
+	"*Changes to how settings.Permissions is handled";
+	"*Added settings.Commands for user-defined commands";
+	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
+	"(Git/Expertcoderz) Mistake fixing + Aero theme";
+	"(Git/fxeP1) Loadstring Updates. [Core.Lua/FiOne.lua]";
+	"(Git/fxeP1) Improved Hat/Face/DonorFace command.";
+	"(Git/P3trau) Added tab completion to the Default theme";
+	"(Git/GalacticInspired) Removed content deleted audios from !wat";
+	"(Git/ccuser44) Some code improvements";
+	"(Git/flgx16) Correct math in ping measurement";
 	"";
 	"[v220.1 5.28.2021 19:21 EST]";
 	"* New logos!";

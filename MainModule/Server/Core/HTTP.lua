@@ -93,9 +93,10 @@ return function(Vargs)
 
 					local oldListObj = trello.getListObj;
 					trello.getListObj = function(...)
+						local vargs = {...}
 						return select(2, service.Queue("TrelloCall", function()
 							wait(10/60)
-							return oldListObj(...)
+							return oldListObj(table.unpack(vargs))
 						end, true))
 					end
 

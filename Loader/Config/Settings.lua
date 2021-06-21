@@ -1,6 +1,11 @@
-local settings = {}
-local descs = {}
-
+----------------------------------------------
+--- 			Scroll down for settings  			 ---
+--- Do not alter the three variables below ---
+----------------------------------------------
+local settings = {};				--// The settings table which contains all settings
+local Settings = settings; 	--// For lazily copy-pasted custom commands
+local descs = {};						--// Contains settings descriptions
+----------------------------------------------
 
 			--------------
 			-- SETTINGS --
@@ -81,16 +86,16 @@ local descs = {}
 			You can set the permission level for specific commands using setting.Permissions
 			If I wanted to make it so only HeadAdmins+ can use :ff player then I would do:
 
-				settings.Permissions = {":ff:HeadAdmins"}
+				settings.Permissions = {"ff:HeadAdmins"}
 
-				:ff is the Command ":ff scel" and 3 is the NewLevel
+				ff is the Command ":ff scel" and HeadAdmins is the NewLevel
 
-				Permissions Levels:
-					Players
-					Moderators
-					Admins
-					HeadAdmins
-					Creators
+				Built-In Permissions Levels:
+					Players - 0
+					Moderators - 100
+					Admins - 200
+					HeadAdmins - 300
+					Creators - 900
 
 				Note that when changing command permissions you MUST include the prefix;
 				So if you change the prefix to $ you would need to do $ff instead of :ff
@@ -167,30 +172,66 @@ local descs = {}
 	settings.Ranks = {
 		["Moderators"] = {
 			Level = 100;
-			Users = {};
+			Users = {
+				--// Add users here
+			};
 		};
 
 		["Admins"] = {
 			Level = 200;
-			Users = {};
+			Users = {
+				--// Add users here
+			};
 		};
 
 		["HeadAdmins"] = {
 			Level = 300;
-		 	Users = {};
+		 	Users = {
+				--// Add users here
+			};
 		};
 
 		["Creators"] = {
 			Level = 900; --// Anything 900 or higher will be considered a creator and will bypass all perms & be allowed to edit settings in-game.
-			Users = {};
+			Users = {
+				--// Add users here (Also, don't forget quotations and all that)
+			};
 		};
 	};
 
-	settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Muted = {}			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Blacklist = {}		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Permissions = {}	-- Command permissions; 					  Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
+	--// Use the below table to set command permissions; Commented commands are included for example purposes
+	settings.Permissions = {
+		-- "ff:HeadAdmins"; --// Changes :ff to HeadAdmins and higher (HeadAdmins = Level 300 by default)
+		-- "kill:300"; --// Changes :kill to level 300 and higher (Level 300 = HeadAdmins by default)
+		-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
+	};	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
+
+	--// Easily add new custom commands below (without needing to create a plugin module)
+	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module)
+	settings.Commands = {
+		SomeNewCommand = {								--// The index & table of the command
+			Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
+			Commands = {"examplecommand"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
+			Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
+			Description = "Example command";--// The description of the command
+			AdminLevel = 100; -- Moderators	--// The commands minimum admin level; This can also be a table containing specific levels rather than a minimum level: {124, 152, "HeadAdmins", etc};
+			-- Alternative option: AdminLevel = "Moderators"
+			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
+			Hidden = true;									--// Should this command be hidden from the command list?
+			Function = function(plr, args)	--// The command's function; This is the actual code of the command which runs when you run the command
+				--// "plr" is the player running the command
+				--// "args" is a table containing command arguments supplied by the user
+				print("This is 'arg1': ".. tostring(arg[1]));
+				print("This is 'arg2': ".. tostring(arg[2]));
+				print("This is 'etc'(arg 3): ".. tostring(arg[3]));
+			end
+		};
+	}
+
+	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Muted = {};			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Blacklist = {};		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Whitelist = {};		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}
 	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
 	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
@@ -298,11 +339,13 @@ local descs = {}
 	descs.Admins = [[ Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.HeadAdmins = [[ Head Admins; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
+
+	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
+	descs.Commands = [[ Custom commands ]]
 	descs.Banned = [[ List of people banned from the game; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Muted = [[ List of people muted; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Blacklist = [[ List of people banned from using admin; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";}	]]
 	descs.Whitelist = [[ People who can join if whitelist enabled; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
-	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
 	descs.MusicList = [[ List of songs to appear in the script; Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
 	descs.CapeList = [[ List of capes; Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}} ]]
 	descs.InsertList = [[ List of models to appear in the script; Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}} ]]
@@ -390,6 +433,9 @@ local descs = {}
 		--"Admins";
 		--"HeadAdmins";
 		--"Creators";
+		" ";
+		"Permissions";
+		--"Commands";
 		" ";
 		"Banned";
 		"Muted";

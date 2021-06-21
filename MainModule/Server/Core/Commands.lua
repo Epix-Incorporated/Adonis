@@ -70,6 +70,36 @@ return function(Vargs)
 			end
 		end
 
+		--// Cache commands
+		Admin.CacheCommands();
+
+		Commands.Init = nil;
+		Logs:AddLog("Script", "Commands Module Initialized")
+	end;
+
+	function RunAfterPlugins()
+		--// Load custom user-supplied commands (settings.Commands)
+		for ind,cmd in next,Settings.Commands do
+			Commands[ind] = cmd;
+		end
+
+		--// Change command permissions based on settings
+		for ind, cmd in next, Settings.Permissions or {} do
+			local com,level = cmd:match("^(.*):(.*)")
+			if com and level then
+				if level:find(",") then
+					local newLevels = {}
+					for lvl in level:gmatch("[^%,]+") do
+						table.insert(newLevels, service.Trim(lvl))
+					end
+					
+					Admin.SetPermission(com, newLevels)
+				else
+					Admin.SetPermission(com, level)
+				end
+			end
+		end
+
 		--// Update existing permissions to new levels
 		for i,cmd in next,Commands do
 			if type(cmd) == "table" and cmd.AdminLevel then
@@ -85,14 +115,11 @@ return function(Vargs)
 			end
 		end
 
-		--// Cache commands
-		Admin.CacheCommands();
-
-		Commands.Init = nil;
-		Logs:AddLog("Script", "Commands Module Initialized")
+		Commands.RunAfterPlugins = nil;
 	end;
 
 	server.Commands = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 	};
 end

@@ -1016,25 +1016,34 @@ return function(data)
 	local Bottom = Main.Bottom
 	local Top = Main.Top
 
-	function Expand(ent, point, text)
+	function Expand(ent, point, text, richText)
 		local label = point:FindFirstChild("Label")
 
 		if label then
-			ent.MouseLeave:connect(function(x,y)
+			ent.MouseLeave:Connect(function(x,y)
 				if inExpandable == ent then
 					point.Visible = false
 				end
 			end)
 
-			ent.MouseMoved:connect(function(x,y)
-				inExpandable = ent
-				label.Text = text or ent.Desc.Value
+			ent.MouseMoved:Connect(function(x,y)
+				local sizeText = text or ent.Desc.Value
+
+				inExpandable = ent;
+				label.Text = sizeText;
+				label.RichText = richText;
+
+				if richText then
+					sizeText = string.gsub(sizeText, '\<[^>]+\>', '');
+					label.TextScaled = true;
+				end
+
 				--point.Size = UDim2.new(0, 10000, 0, 10000)
 				local newx = 500
-				local bounds = service.TextService:GetTextSize(text or ent.Desc.Value, label.TextSize, label.Font, Vector2.new(1000,1000)).X-- point.Label.TextBounds.X
+				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(1000,1000)).X-- point.Label.TextBounds.X
 				local rows = math.floor(bounds/500)
 				rows = rows+1
-				if rows<1 then rows = 1 end
+				if rows < 1 then rows = 1 end
 				if bounds<500 then newx = bounds end
 				point.Size = UDim2.new(0, newx+10, 0, (rows*20)+10)
 				point.Position = UDim2.new(0, x+6, 0, y-40-((rows*20)+10))
@@ -1264,25 +1273,26 @@ return function(data)
 			local label = new.Text
 			local dots = new.Dots
 			local desc = new.Desc
+			local richText = data.RichText or label.RichText
 
 			label.ZIndex = data.ZIndex or new.ZIndex
 			dots.ZIndex = data.ZIndex or new.ZIndex
 
 			if data.Text then
-				new.Text.Text = data.Text
-				new.Text.Visible = true
+				label.Text = data.Text
+				label.Visible = true
 				data.Text = nil
 			end
 
 			if data.Desc or data.ToolTip then
-				new.Desc.Value = data.Desc or data.ToolTip
+				desc.Value = data.Desc or data.ToolTip
 				data.Desc = nil
 			end
 
-			Expand(new, Tooltip)
+			Expand(new, Tooltip, nil, richText)
 		else
 			if data.ToolTip then
-				Expand(new, Tooltip, data.ToolTip)
+				Expand(new, Tooltip, data.ToolTip, data.RichText)
 			end
 		end
 
@@ -1549,7 +1559,7 @@ return function(data)
 				else
 					selected.Text = "No Selection"
 				end
-				
+
 				local function showMenu()
 					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 					menu.Visible = not menu.Visible

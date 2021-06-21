@@ -104,22 +104,6 @@ return function(Vargs)
 	end;
 
 	local function RunAfterPlugins(data)
-		--// Change command permissions based on settings
-		for ind, cmd in next, Settings.Permissions or {} do
-			local com,level = cmd:match("^(.*):(.*)")
-			if com and level then
-				if level:find(",") then
-					local newLevels = {}
-					for lvl in level:gmatch("[^%,]+") do
-						table.insert(newLevels, service.Trim(lvl))
-					end
-					Admin.SetPermission(com, newLevels)
-				else
-					Admin.SetPermission(com, level)
-				end
-			end
-		end
-
 		--// Backup Map
 		if Settings.AutoBackup then
 			service.TrackTask("Thread: Initial Map Backup", Admin.RunCommand, Settings.Prefix.."backupmap")
@@ -697,13 +681,6 @@ return function(Vargs)
 			return ret
 		end;
 
-		SetPermission = function(cmd,newLevel)
-			local index,command = Admin.GetCommand(cmd)
-			if command and newLevel then
-				command.AdminLevel = newLevel
-			end
-		end;
-
 		RunCommand = function(coma,...)
 			local ind,com = Admin.GetCommand(coma)
 			if com then
@@ -791,6 +768,44 @@ return function(Vargs)
 							return found,real,matched
 						end
 					end
+				end
+			end
+		end;
+
+		FindCommands = function(Command)
+			local prefixChar = string.sub(Command, 1, 1);
+			local checkPrefix = Admin.PrefixCache[prefixChar] and prefixChar;
+			local matched
+			if Command:find(Settings.SplitKey) then
+				matched = Command:match("^(%S+)"..Settings.SplitKey)
+			else
+				matched = Command:match("^(%S+)")
+			end
+
+			if matched then
+				local foundCmds = {};
+				matched = string.lower(matched);
+
+				for ind,cmd in next,Commands do
+					if type(cmd) == "table" and ((checkPrefix and prefixChar == cmd.Prefix) or not checkPrefix) then
+						for _,alias in pairs(cmd.Commands) do
+							if string.lower(alias) == matched then
+								foundCmds[ind] = cmd;
+								break;
+							end
+						end
+					end
+				end
+
+				return foundCmds;
+			end
+		end;
+
+		SetPermission = function(comString, newLevel)
+			local cmds = Admin.FindCommands(comString)
+			if cmds then
+				for ind,cmd in next,cmds do
+					cmd.AdminLevel = newLevel;
 				end
 			end
 		end;

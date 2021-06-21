@@ -18,24 +18,38 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
 				local tab = {}
-				local cStr
+				local cStr = ""
 
 				for i,v in next,commands do
 					if not v.Hidden and not v.Disabled then
 						local lvl = v.AdminLevel;
+						local gotLevels = {};
+
 						if type(lvl) == "table" then
-							cStr = ""
-							for k,m in ipairs(lvl) do
-								if type(m) == "number" then m = Admin.LevelToList(m) or m end
-								cStr = cStr..m..", "
+							for i,v in pairs(lvl) do
+								table.insert(gotLevels, v);
 							end
-						elseif type(lvl) == "number" then
-							local list, name, data = Admin.LevelToList(lvl);
-							--print(tostring(list), tostring(name), tostring(data))
-							cStr = (name or "No Rank") .."; Level ".. lvl;
-						elseif type(lvl) == "string" then
-							local numLvl = Admin.StringToComLevel(lvl);
-							cStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
+						elseif type(lvl) == "string" or type(lvl) == "number" then
+							table.insert(gotLevels, lvl);
+						end
+
+						for i,lvl in next,gotLevels do
+							local tempStr = "";
+
+							if type(lvl) == "number" then
+								local list, name, data = Admin.LevelToList(lvl);
+								--print(tostring(list), tostring(name), tostring(data))
+								tempStr = (name or "No Rank") .."; Level ".. lvl;
+							elseif type(lvl) == "string" then
+								local numLvl = Admin.StringToComLevel(lvl);
+								tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
+							end
+
+							if i > 1 then
+								tempStr = cStr.. ", ".. tempStr;
+							end
+
+							cStr = tempStr;
 						end
 
 						table.insert(tab, {
