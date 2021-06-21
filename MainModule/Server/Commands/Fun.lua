@@ -165,7 +165,7 @@ return function(Vargs, env)
 			Args = {};
 			Fun = true;
 			Hidden = true;
-			Description = "You've Been Trolled You've Been Trolled";
+			Description = "You've Been Trolled You've Been Trolled Yes You've Probably Been Told...";
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"Effect",{Mode = "trolling"})
