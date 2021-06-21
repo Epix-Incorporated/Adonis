@@ -8,7 +8,6 @@ return {
 	"*Admin list is now sorted by level";
 	"*Whitelist/Blacklist code changes & bug fixes";
 	"*ToolTip now correctly supports RichText";
-	"*Changes to how settings.Permissions is handled";
 	"*Added settings.Commands for user-defined commands";
 	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";

@@ -22,7 +22,7 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
 
-				for i,p in next,sevrice.GetPlayers(plr, args[1]) do
+				for i,p in next,service.GetPlayers(plr, args[1]) do
 					local targetLevel = Admin.GetLevel(p);
 
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
@@ -54,7 +54,7 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, "Level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
 
-				for i,p in next,sevrice.GetPlayers(plr, args[1]) do
+				for i,p in next,service.GetPlayers(plr, args[1]) do
 					local targetLevel = Admin.GetLevel(p);
 
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
