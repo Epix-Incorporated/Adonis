@@ -1,0 +1,123 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Script" referent="RBX07F4808F40314BB3BFA92204C1C8E80C">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<bool name="Disabled">true</bool>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">RebootHandler</string>
+			<string name="ScriptGuid">{62D59941-4C6D-45EB-9E45-D4A6587DB801}</string>
+			<ProtectedString name="Source"><![CDATA[if script.Parent then
+	local dDropperVal = script:WaitForChild("Dropper");
+	local dTargetVal = script:WaitForChild("Runner");
+	local parentVal = script:WaitForChild("mParent");
+	local modelVal = script:WaitForChild("Model");
+	local modeVal = script:WaitForChild("Mode");
+
+	warn("Reloading in 5 seconds...");
+	wait(5)
+	script.Parent = nil;
+
+	local dropper = dDropperVal.Value;
+	local dTarget = dTargetVal.Value;
+	local tParent = parentVal.Value;
+	local model = modelVal.Value;
+	local mode = modeVal.Value;
+
+	local function CleanUp()
+		warn("TARGET DISABLED");
+		dTarget.Disabled = true;
+		pcall(function() dTarget.Parent = game:GetService("ServerScriptService") end);
+		wait()
+		pcall(function() dTarget:Destroy() end);
+
+		warn("TARGET DESTROYED");
+		wait();
+
+		warn("CLEANING")
+
+		_G.Adonis = nil;
+		_G.__Adonis_MODULE_MUTEX = nil;
+		_G.__Adonis_MUTEX = nil;
+
+		warn("_G VARIABLES CLEARED")
+
+		warn("MOVING MODEL");
+		dropper.Disabled = true;
+		model.Parent = tParent;
+	end
+
+	if mode == "REBOOT" then
+		warn("ATTEMPTING TO RELOAD ADONIS");
+		CleanUp();
+		wait();
+
+		warn("MOVING")
+		model.Parent = tParent;
+
+		wait()
+
+		warn("RUNNING");
+		model.Loader.Dropper.Disabled = false;
+	elseif mode == "STOP" then
+		warn("ATTEMPTING TO STOP ADONIS");
+		CleanUp();
+	end
+
+	warn("COMPLETE")
+
+	warn("Destroying reboot handler...");
+	script:Destroy();
+end]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="StringValue" referent="RBXEA0512604EAE48D5A10326E53ED8F2E6">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Mode</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Value"></string>
+			</Properties>
+		</Item>
+		<Item class="ObjectValue" referent="RBXD56187B60C9548EABC7A21170D5A8E3A">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Model</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<Ref name="Value">null</Ref>
+			</Properties>
+		</Item>
+		<Item class="ObjectValue" referent="RBXBF6EBECDD6734D218E89C1D288B32648">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">mParent</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<Ref name="Value">null</Ref>
+			</Properties>
+		</Item>
+		<Item class="ObjectValue" referent="RBXB4CE9C085B3E46D898B0B933E86ACDF3">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Runner</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<Ref name="Value">null</Ref>
+			</Properties>
+		</Item>
+		<Item class="ObjectValue" referent="RBX20A09698A70C40A6BB16C730FCACBE3D">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Dropper</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<Ref name="Value">null</Ref>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

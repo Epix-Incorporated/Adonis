@@ -394,6 +394,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Order = data.Order or setTab.Order or {}
 	server.Data = data or {}
 	server.Model = data.Model or service.New("Model")
+	server.ModelParent = data.ModelParent or service.ServerScriptService;
 	server.Dropper = data.Dropper or service.New("Script")
 	server.Loader = data.Loader or service.New("Script")
 	server.Runner = data.Runner or service.New("Script")
@@ -446,6 +447,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Bind cleanup
 	service.DataModel:BindToClose(CleanUp)
+	--server.CleanUp = CleanUp;
 
 	--// Require some dependencies
 	server.Threading = require(server.Deps.ThreadHandler)

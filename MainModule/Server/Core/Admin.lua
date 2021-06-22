@@ -901,6 +901,7 @@ return function(Vargs)
 
 		StringToComLevel = function(str)
 			if type(str) == "number" then return str end;
+			if string.lower(str) == "players" then return 0 end;
 
 			local lvl = Settings.Ranks[str];
 			return (lvl and lvl.Level) or tonumber(str);
