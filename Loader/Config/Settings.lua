@@ -2,9 +2,9 @@
 --- 			Scroll down for settings  			 ---
 --- Do not alter the three variables below ---
 ----------------------------------------------
-local settings = {};				--// The settings table which contains all settings
-local Settings = settings; 	--// For lazily copy-pasted custom commands
-local descs = {};						--// Contains settings descriptions
+local settings = {};		--// The settings table which contains all settings
+local Settings = settings; 	--// For custom commands that use 'Settings' rather than the lowercase 'settings'
+local descs = {};			--// Contains settings descriptions
 ----------------------------------------------
 
 			--------------
@@ -221,9 +221,9 @@ local descs = {};						--// Contains settings descriptions
 			Function = function(plr, args)	--// The command's function; This is the actual code of the command which runs when you run the command
 				--// "plr" is the player running the command
 				--// "args" is a table containing command arguments supplied by the user
-				print("This is 'arg1': ".. tostring(arg[1]));
-				print("This is 'arg2': ".. tostring(arg[2]));
-				print("This is 'etc'(arg 3): ".. tostring(arg[3]));
+				print("This is 'arg1': ".. tostring(args[1]));
+				print("This is 'arg2': ".. tostring(args[2]));
+				print("This is 'etc'(arg 3): ".. tostring(args[3]));
 			end
 		};
 	}
