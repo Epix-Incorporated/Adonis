@@ -419,7 +419,7 @@ return function(Vargs)
 				if p and p:IsA("Player") then
 					return p
 				elseif p and p:IsA('NetworkReplicator') then
-					if p:GetPlayer() ~= nil and p:GetPlayer():IsA('Player') then
+					if p:GetPlayer()~=nil and p:GetPlayer():IsA('Player') then
 						return p:GetPlayer()
 					end
 				end
@@ -622,7 +622,7 @@ return function(Vargs)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
-				for ind,p in pairs(service.()) do
+				for ind,p in pairs(service.GetPlayers()) do
 					Remote.SetLighting(p,prop,value)
 				end
 			end
