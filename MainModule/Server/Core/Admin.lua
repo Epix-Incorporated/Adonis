@@ -501,7 +501,7 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			if type(level) == "string" then
-				level = StringToComLevel(level) or level;
+				level = Admin.StringToComLevel(level) or level;
 			end
 
 			Admin.RemoveAdmin(p, temp)
