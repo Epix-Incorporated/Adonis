@@ -9,16 +9,6 @@ local function boolToStr(bool)
 	end
 end
 
-local function msTypeToStr(enum)
-	if enum == Enum.MembershipType.None then
-		return "None"
-	elseif enum == Enum.MembershipType.Premium then
-		return "Premium"
-	else
-		return "?"
-	end
-end
-
 local function assetTypeToStr(int)
 	return ({
 		[2] = "T-Shirt";
@@ -65,7 +55,7 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "Inspect_"..player.UserId;
 		Title = "Inspect ("..player.Name..")";
-		Size  = {400, 360};
+		Size  = {420, 360};
 		AllowMultiple = false;
 	})
 
@@ -85,7 +75,7 @@ return function(data)
 	local friendstab = tabFrame:NewTab("Friends", {
 		Text = "Friends"
 	})
-	
+
 	local groupstab = tabFrame:NewTab("Groups", {
 		Text = "Groups"
 	})
@@ -122,12 +112,11 @@ return function(data)
 
 		addGeneralEntry("Username:", player.Name, "The player's Roblox username")
 		addGeneralEntry("User ID:", player.UserId, "The player's unique Roblox user ID")
-		addGeneralEntry("Account Age:", player.AccountAge .. " ("..string.format("%.2f", player.AccountAge/365).." years)", "How long (in days) the player has been registered on Roblox")
-		addGeneralEntry("Membership:", msTypeToStr(player.MembershipType), "The player's Roblox membership type")
+		addGeneralEntry("Account Age:", player.AccountAge .. " days ("..string.format("%.2f", player.AccountAge/365).." years)", "How long the player has been registered on Roblox")
+		addGeneralEntry("Membership:", tostring(player.MembershipType):sub(21), "The player's Roblox membership type")
 		i = i + 1
 		addGeneralEntry("Safe Chat Enabled:", boolToStr(data.SafeChat), "Does the player have safe chat enabled?")
 		addGeneralEntry("Can Chat:", boolToStr(data.CanChat), "Does the player's account settings allow them to chat?")
-		addGeneralEntry("Locale ID:", player.LocaleId, "The player's locale ID")
 		addGeneralEntry("Country/Region Code:", data.Code, "The player's country or region code based on geolocation")
 		addGeneralEntry("Is Roblox Staff:", boolToStr(player:IsInGroup(1200769) or player:IsInGroup(2868472)), "Is the player an official Roblox employee?")
 
@@ -226,7 +215,7 @@ return function(data)
 			if friendName == friendInfo[friendName].displayName then
 				entryText = friendName
 			else
-				entryText = friendName.." ("..friendInfo[friendName].displayName..")"
+				entryText = friendInfo[friendName].displayName.." (@"..friendName..")"
 			end
 			local entry = friendstab:Add("TextLabel", {
 				Text = "             "..entryText;
@@ -267,17 +256,17 @@ return function(data)
 		friendstab:ResizeCanvas(false, true, false, false, 5, 5)
 	end
 	
+
+	local sortedGroups = {}           -- Putting this code outside the DO for groupstab
+	local groupInfoRef = {}           -- because it'll be used by adonistab later to
+	for _, groupInfo in pairs(data.Groups) do -- get the Epix Incorporated group logo.
+		table.insert(sortedGroups, groupInfo.Name)
+		groupInfoRef[groupInfo.Name] = {Id=groupInfo.Id;Rank=groupInfo.Rank;Role=groupInfo.Role;IsPrimary=groupInfo.IsPrimary;EmblemUrl=groupInfo.EmblemUrl}
+	end
+	table.sort(sortedGroups)
+	
 	do
 
-		local rawGroups = data.Groups
-		local sortedGroups = {}
-		local groupInfoRef = {}
-		for _, groupInfo in pairs(rawGroups) do
-			table.insert(sortedGroups, groupInfo.Name)
-			groupInfoRef[groupInfo.Name] = {Id=groupInfo.Id;Rank=groupInfo.Rank;Role=groupInfo.Role;IsPrimary=groupInfo.IsPrimary;EmblemUrl=groupInfo.EmblemUrl}
-		end
-		table.sort(sortedGroups)
-		
 		local i = 2
 		local groupCount = 0
 		local ownCount = 0
@@ -346,9 +335,30 @@ return function(data)
 
 		addAdonisEntry("Admin Level:", data.AdminLevel, "The player's Adonis rank")
 		addAdonisEntry("Donor:", boolToStr(data.IsDonor), "Is the player an Adonis Donor?")
-		addAdonisEntry("Contributor:", boolToStr(data.IsContributor), "Is the player an Adonis Contributor (Github)?")
 		addAdonisEntry("Muted:", boolToStr(data.IsMuted), "Is the player muted? (IGNORES TRELLO MUTELIST)")
 		addAdonisEntry("Banned:", boolToStr(data.IsBanned), "Is the player banned? (IGNORES TRELLO BANLIST)")
+
+		local extrainfo = nil
+		if player:GetRankInGroup(886423) == 10 then
+			extrainfo = "User is a GitHub contributor of Adonis"
+		elseif player:GetRankInGroup(886423) == 12 then
+			extrainfo = "User is a developer of Adonis"
+		elseif player.UserId == 698712377 or player.UserId == 1237666 then
+			extrainfo = "You are inspecting the creator of Adonis"
+		end
+		if extrainfo then
+			adonistab:Add("TextLabel", {
+				Size = UDim2.new(1, -10, 0, 25);
+				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+				BackgroundTransparency = 0.5;
+				Text = extrainfo;
+			}):Add("ImageLabel", {
+				Image = groupInfoRef["Epix Incorporated"].EmblemUrl;
+				BackgroundTransparency = 1;
+				Size = UDim2.new(0, 21, 0, 21);
+				Position = UDim2.new(0, 4, 0, 2);
+			})
+		end
 
 		adonistab:ResizeCanvas(false, true, false, false, 5, 5)
 	end
