@@ -340,11 +340,11 @@ return function(data)
 
 		local extrainfo = nil
 		if player:GetRankInGroup(886423) == 10 then
-			extrainfo = "User is a GitHub contributor of Adonis"
+			extrainfo = "User has contributed to Adonis via GitHub"
 		elseif player:GetRankInGroup(886423) == 12 then
-			extrainfo = "User is a developer of Adonis"
+			extrainfo = "User is an official developer of Adonis"
 		elseif player.UserId == 698712377 or player.UserId == 1237666 then
-			extrainfo = "You are inspecting the creator of Adonis"
+			extrainfo = "You are inspecting Sceleratis/Davey_Bones (Adonis creator)!"
 		end
 		if extrainfo then
 			adonistab:Add("TextLabel", {
