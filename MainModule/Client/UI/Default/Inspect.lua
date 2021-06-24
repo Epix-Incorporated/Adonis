@@ -113,7 +113,7 @@ return function(data)
 		addGeneralEntry("Username:", player.Name, "The player's Roblox username")
 		addGeneralEntry("User ID:", player.UserId, "The player's unique Roblox user ID")
 		addGeneralEntry("Account Age:", player.AccountAge .. " days ("..string.format("%.2f", player.AccountAge/365).." years)", "How long the player has been registered on Roblox")
-		addGeneralEntry("Membership:", player.MembershipType).Name, "The player's Roblox membership type")
+		addGeneralEntry("Membership:", player.MembershipType.Name, "The player's Roblox membership type")
 		i = i + 1
 		addGeneralEntry("Safe Chat Enabled:", boolToStr(data.SafeChat), "Does the player have safe chat enabled?")
 		addGeneralEntry("Can Chat:", boolToStr(data.CanChat), "Does the player's account settings allow them to chat?")
