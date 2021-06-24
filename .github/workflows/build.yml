@@ -19,9 +19,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build .github/build.project.json -o Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxm
+        run: rojo build .github/build.project.json -o Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
 
       - name: Upload model as artifact
         uses: actions/upload-artifact@v2
         with:
-          path: Adonis_Nightly_*.rbxm
+          path: Adonis_Nightly_*.rbxmx
