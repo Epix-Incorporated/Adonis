@@ -51,6 +51,7 @@ else
 		ClientPlugins = {};
 		Themes = {};
 
+		ModelParent = model.Parent;
 		Model = model;
 		Config = config;
 		Core = core;

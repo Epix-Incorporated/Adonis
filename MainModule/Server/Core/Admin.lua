@@ -501,7 +501,7 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			if type(level) == "string" then
-				level = StringToComLevel(level) or level;
+				level = Admin.StringToComLevel(level) or level;
 			end
 
 			Admin.RemoveAdmin(p, temp)
@@ -901,6 +901,7 @@ return function(Vargs)
 
 		StringToComLevel = function(str)
 			if type(str) == "number" then return str end;
+			if string.lower(str) == "players" then return 0 end;
 
 			local lvl = Settings.Ranks[str];
 			return (lvl and lvl.Level) or tonumber(str);

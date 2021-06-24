@@ -9,6 +9,34 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
+		--[[
+		--// Unfortunately not viable
+		Reboot = {
+			Prefix = ":";
+			Commands = {"rebootadonis", "reloadadonis"};
+			Args = {};
+			Description = "Attempts to force Adonis to reload";
+			AdminLevel = "Admins";
+			Function = function(plr, args, data)
+				local rebootHandler = server.Deps.RebootHandler:Clone();
+
+				if server.Runner then
+					rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
+					rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
+					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
+					rebootHandler.Model.Value = service.UnWrap(server.Model);
+					rebootHandler.Mode.Value = "REBOOT";
+					wait()
+					rebootHandler.Parent = service.ServerScriptService;
+					rebootHandler.Disabled = false;
+					wait()
+					server.CleanUp();
+				else
+					error("Unable to reload: Runner missing");
+				end
+			end;
+		};--]]
+
 		SetRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"setrank", "setadminrank"};

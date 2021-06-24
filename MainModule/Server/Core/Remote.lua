@@ -536,6 +536,12 @@ return function(Vargs)
 			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)
 			end;
+
+			ExplorerAction = function(p, ...)
+				if Admin.CheckAdmin(p) then
+					--// Handle stuff like Dex calls(?)
+				end
+			end;
 		};
 
 		Commands = {
