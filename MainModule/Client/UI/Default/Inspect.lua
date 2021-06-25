@@ -269,7 +269,7 @@ return function(data)
 	
 	do
 
-		local rawGroups = data.Groups
+		local rawGroups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 		local sortedGroups = {}
 		local groupInfoRef = {}
 		for _, groupInfo in pairs(rawGroups) do
