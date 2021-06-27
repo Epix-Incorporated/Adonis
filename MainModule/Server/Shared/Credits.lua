@@ -2,10 +2,10 @@ return {
 	{Text = "~ MAIN CREDITS ~",		Desc = ""};
 	{Text = "Sceleratis/Davey_Bones",	Desc = "Made Adonis & EISS"};
 	{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
-	{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best scripter I know"};
-	{Text = "Rerumu (Shining_Diamando)",Desc = "Made the endless stairs place\nRerubi (No longer used)\nFiOne (Bytecode Interpreter)\nParser\nSteampunk theme"};
-	{Text = "Cald_fan", 				Desc = "Made the WebPanel"};
-	{Text = "joritochip",				Desc = "WebPanel Contributor"};
+	{Text = "einsteinK",				Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best programmer I know"};
+	{Text = "Rerumu (Shining_Diamando)",Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
+	{Text = "Cald_fan", 				Desc = "WebPanel Creator & Maintainer"};
+	{Text = "joritochip",				Desc = "WebPanel Developer"};
 	{Text = "Coasterteam",				Desc = "Development contributions (Kronos developer)"};
 	{Text = "",		Desc = ""};
 	{Text = "~ GIT CONTRIBUTORS ~",		Desc = ""};
@@ -40,6 +40,8 @@ return {
 	{Text = "@GitHub Expertcoderz",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub GalacticInspired",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub flgx16",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub DrewBokman",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub Kw6m",			Desc = "GitHub Contributor"};
 	{Text = "",		Desc = "Everyone else"};
 	{Text = "~ EVERYONE ELSE ~",		Desc = ""};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};
