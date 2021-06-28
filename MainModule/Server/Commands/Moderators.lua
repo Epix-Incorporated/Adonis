@@ -141,7 +141,7 @@ return function(Vargs, env)
 
 				if num then
 					Admin.SlowMode = num;
-					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.Players:children())
+					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.GetChildren())
 				else
 					Admin.SlowMode = nil;
 					Admin.SlowCache = {};
@@ -157,7 +157,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				local num = tonumber(assert(args[1], "Argument 1 missing")) --math.min(tonumber(args[1]),120)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = num;
 					})

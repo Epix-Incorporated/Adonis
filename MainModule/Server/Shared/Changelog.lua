@@ -10,6 +10,7 @@ return {
 	"*ToolTip now correctly supports RichText";
 	"*Added settings.Commands for user-defined commands";
 	"*Dex updated and moved to its own module; Also added server-side action support";
+	"*Fixed :countdown";
 	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";
 	"(Git/Expertcoderz) Add :transparency command";
