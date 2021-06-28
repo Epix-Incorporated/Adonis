@@ -141,7 +141,7 @@ return function(Vargs, env)
 
 				if num then
 					Admin.SlowMode = num;
-					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.GetChildren())
+					Functions.Hint("Chat slow mode enabled (".. num .."s)", service.GetPlayers())
 				else
 					Admin.SlowMode = nil;
 					Admin.SlowCache = {};
