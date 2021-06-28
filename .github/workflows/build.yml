@@ -1,0 +1,27 @@
+name: rojo
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: Roblox/setup-foreman@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: rojo build .github/build.project.json -o Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
+
+      - name: Upload model as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: Adonis_Nightly_*.rbxmx

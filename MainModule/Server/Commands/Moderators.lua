@@ -47,7 +47,7 @@ return function(Vargs, env)
 
 		TimeDate = {
 			Prefix = Settings.Prefix;
-			Commands = {"timedate";"time","date";"datetime";};
+			Commands = {"timedate";"date";"datetime";};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the current time and date.";
@@ -975,7 +975,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing")
-				
+
 				local newSession = Remote.NewSession("PrivateChat");
 				local eventConnection = newSession.SessionEvent.Event:Connect(function(p, ...)
 					local args = {...};

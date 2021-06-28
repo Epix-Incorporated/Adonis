@@ -259,14 +259,13 @@ return function(data)
 
 	local sortedGroups = {}           -- Putting this code outside the DO for groupstab
 	local groupInfoRef = {}           -- because it'll be used by adonistab later to
-	for _, groupInfo in pairs(data.Groups) do -- get the Epix Incorporated group logo.
+	for _, groupInfo in pairs(service.GroupService:GetGroupsAsync(player.UserId)) do -- get the Epix Incorporated group logo.
 		table.insert(sortedGroups, groupInfo.Name)
 		groupInfoRef[groupInfo.Name] = {Id=groupInfo.Id;Rank=groupInfo.Rank;Role=groupInfo.Role;IsPrimary=groupInfo.IsPrimary;EmblemUrl=groupInfo.EmblemUrl}
 	end
 	table.sort(sortedGroups)
 	
 	do
-
 		local i = 2
 		local groupCount = 0
 		local ownCount = 0

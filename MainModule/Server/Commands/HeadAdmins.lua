@@ -384,17 +384,6 @@ return function(Vargs, env)
 			end
 		};
 
-		DexExplore = {
-			Prefix = Settings.Prefix;
-			Commands = {"dex";"dexexplorer";"dexexplorer"};
-			Args = {};
-			Description = "Lets you explore the game using Dex [Credit to Raspberry Pi/Raspy_Pi/raspymgx/OpenOffset(?)][Useless buttons disabled]";
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
-			end
-		};
-
 		PromptInvite = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptinvite";"inviteprompt";"forceinvite"};

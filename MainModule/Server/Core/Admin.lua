@@ -193,7 +193,7 @@ return function(Vargs)
 
 		GetPlayerGroup = function(p, group)
 			local data = Core.GetPlayer(p)
-			local groups = data.Groups
+			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
 				for i,v in next,groups do
@@ -322,7 +322,7 @@ return function(Vargs)
 
 		UpdateCachedLevel = function(p)
 			local data = Core.GetPlayer(p)
-			data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
+			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			data.AdminLevel = Admin.GetUpdatedLevel(p)
 			data.LastLevelUpdate = tick()
 			Logs.AddLog("Script", {

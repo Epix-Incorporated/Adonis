@@ -41,14 +41,14 @@ return function(Vargs)
 				end
 			end
 		end;
-		
+
 		Ping = function(jobId, data)
 			Core.CrossServer("Pong", {
 				JobId = game.JobId;
 				NumPlayers = #service.Players:GetChildren();
 			})
 		end;
-		
+
 		Pong = function(jobId, data)
 			service.Events.ServerPingReplyReceived:Fire(jobId, data);
 		end;
@@ -82,7 +82,7 @@ return function(Vargs)
 		end;
 
 		DataStoreUpdate = function(jobId, type, data)
-			server.Process.DataStoreUpdated(type, data) 
+			server.Process.DataStoreUpdated(type, data)
 		end;
 
 		UpdateSetting = function(jobId, setting, newValue)
@@ -134,14 +134,14 @@ return function(Vargs)
 			end
 		end;
 	};
-	
+
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
 		Commands = {"serverlist", "crossserverlist", "listservers"};
 		Args = {};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
-		CrossServerDenied = true; 
+		CrossServerDenied = true;
 		Function = function(plr,args)
 			local disced = false;
 			local updateKey = "SERVERPING".. math.random();
@@ -151,7 +151,7 @@ return function(Vargs)
 					replyList[jobId] = data or {};
 				end
 			end)
-			
+
 			local function listUpdate()
 				local tab = {}
 				local totalPlayers = 0;
@@ -165,7 +165,7 @@ return function(Vargs)
 						Desc = "JobId: ".. jobId;
 					})
 				end
-				
+
 				table.insert(tab, 1, {
 					Text = "Total Servers: ".. totalServers .." | Total Players: ".. totalPlayers;
 					Desc = "The total number of servers and players";
@@ -173,15 +173,15 @@ return function(Vargs)
 
 				return tab;
 			end
-			
+
 			local function doDisconnect()
-				if not disced then 
+				if not disced then
 					disced = true;
 					Logs.TempUpdaters[updateKey] = nil;
 					listener:Disconnect();
 				end
 			end
-			
+
 			if not Core.CrossServer("Ping") then
 				doDisconnect();
 				error("CrossServer Handler Not Ready");
@@ -189,11 +189,11 @@ return function(Vargs)
 				local closeEvent = Remote.NewPlayerEvent(plr,updateKey, function()
 					doDisconnect();
 				end)
-				
+
 				Logs.TempUpdaters[updateKey] = listUpdate;
-				
+
 				Remote.MakeGui(plr,"List",{
-					Title = 'Server List', 
+					Title = 'Server List',
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
@@ -278,7 +278,7 @@ return function(Vargs)
 			Core.CrossServer("CrossServerVote", data)
 
 			Remote.MakeGui(plr,"List",{
-				Title = 'Results', 
+				Title = 'Results',
 				Tab = voteUpdate(),
 				Update = "TempUpdate",
 				UpdateArgs = {{UpdateKey = voteKey}},
@@ -306,7 +306,7 @@ return function(Vargs)
 			end
 
 			--// publish
-			MsgService:PublishAsync(subKey, data) 
+			MsgService:PublishAsync(subKey, data)
 		end)
 
 		return true;
@@ -332,5 +332,5 @@ return function(Vargs)
 		Core.CrossServerCommands[i] = v;
 	end
 
-	Logs:AddLog("Script", "Cross-Server Messaging Ready");
+	Logs:AddLog("Script", "Cross-Server Module Loaded");
 end;
