@@ -137,7 +137,7 @@ return function(Vargs, env)
 			Description = "Chat Slow Mode";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = tonumber(assert(args[1], "Argument 1 missing")) --math.min(tonumber(args[1]),120)
+				local num = assert(tonumber(args[1]) or type(args[1]) == "string", "Argument 1 missing") --math.min(tonumber(args[1]),120)
 
 				if num then
 					Admin.SlowMode = num;
@@ -156,7 +156,8 @@ return function(Vargs, env)
 			Description = "Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = tonumber(assert(args[1], "Argument 1 missing")) --math.min(tonumber(args[1]),120)
+				local num = assert(tonumber(args[1]), "Argument 1 missing or not number")
+
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = num;
@@ -177,8 +178,9 @@ return function(Vargs, env)
 			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = tonumber(args[2]) --math.min(tonumber(args[1]),120)
 				assert(args[1] and args[2], "Argument missing or nil")
+				local num = assert(tonumber(args[2]), "Argument 1 missing or not number")
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Countdown", {
 						Time = num;
@@ -194,13 +196,13 @@ return function(Vargs, env)
 			Description = "Hint Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = math.min(tonumber(args[1]), 120)
+				local num = math.min(assert(tonumber(args[1]), "Argument 1 missing or not number"), 120)
 				local loop
 				loop = service.StartLoop("HintCountdown", 1, function()
 					if num < 1 then
 						loop.Running = false
 					else
-						server.Functions.Hint(num, service.Players:children(), 2.5)
+						Functions.Hint(num, service.GetPlayers(), 2.5)
 						num -= 1
 					end
 				end)
@@ -215,7 +217,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					server.Remote.RemoveGui(v, "Countdown")
+					Remote.RemoveGui(v, "Countdown")
 				end
 				service.StopLoop("HintCountdown")
 			end
@@ -230,7 +232,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2] and tonumber(args[1]), "Argument missing or invalid")
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
 						Title = "Message from " .. plr.Name;
@@ -250,7 +252,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
 						Title = "Message from " .. plr.Name;
@@ -286,7 +288,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
 						Title = "Message from " .. plr.Name;
@@ -306,7 +308,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
 						Title = Settings.SystemTitle;
@@ -344,7 +346,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
 						Message = tostring(plr or "")..": "..service.Filter(args[1], plr, v);
 					})
@@ -534,7 +536,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character then
-							for z, cl in ipairs(v.Character:children()) do if cl:IsA("ForceField") then cl:Destroy() end end
+							for z, cl in ipairs(v.Character:GetChildren()) do if cl:IsA("ForceField") then cl:Destroy() end end
 						end
 					end)
 				end
@@ -581,7 +583,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-							for _, obj in ipairs(v.Character:children()) do
+							for _, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
 							local ice = service.New("Part", v.Character)
@@ -612,7 +614,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character then
-							for a, obj in ipairs(v.Character:children()) do
+							for a, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
 						end
@@ -656,7 +658,7 @@ return function(Vargs, env)
 								ice:Destroy()
 							end
 
-							for a, obj in ipairs(v.Character:children()) do
+							for a, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" and obj ~= plate then obj.Anchored = false end
 							end
 							wait(3)
@@ -868,7 +870,7 @@ return function(Vargs, env)
 						hum.MaxHealth = math.huge
 						wait()
 						hum.Health = hum.MaxHealth
-						for k, t in pairs(v.Backpack:children()) do
+						for k, t in pairs(v.Backpack:GetChildren()) do
 							t.Parent = tools
 						end
 						Admin.RunCommand(Settings.Prefix.."name", v.Name, "-AFK-_"..v.Name.."_-AFK-")
@@ -881,7 +883,7 @@ return function(Vargs, env)
 							ff:Destroy()
 							hum.Health = orig
 							hum.MaxHealth = orig
-							for k, t in ipairs(tools:children()) do
+							for k, t in ipairs(tools:GetChildren()) do
 								t.Parent = v.Backpack
 							end
 							Admin.RunCommand(Settings.Prefix.."unname",v.Name)
@@ -956,7 +958,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
-					for _, v in ipairs(p.Character:children()) do
+					for _, v in ipairs(p.Character:GetChildren()) do
 						if v:IsA("Accoutrement") then
 							v:Destroy()
 						end
@@ -1341,7 +1343,7 @@ return function(Vargs, env)
 					Routine(function()
 						local tools = {}
 						table.insert(tools,{Text="==== "..v.Name.."'s Tools ====",Desc=v.Name:lower()})
-						for k,t in pairs(v.Backpack:children()) do
+						for k,t in pairs(v.Backpack:GetChildren()) do
 							if t:IsA("Tool") then
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
 							elseif t:IsA("HopperBin") then
@@ -1643,17 +1645,17 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local adminDictionary = {}
-				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+				for i,v in pairs(service.GetPlayers()) do
 					adminDictionary[v.Name] = Admin.LevelToListName(Admin.GetLevel(v))
 				end
 				local donorList = {}
-				for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]) then
+				for i,v in pairs(service.GetPlayers()) do
+					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
 						table.insert(donorList, v.Name)
 					end
 				end
 				local nilPlayers = 0
-				for i,v in pairs(service.NetworkServer:children()) do
+				for i,v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
@@ -1664,8 +1666,8 @@ return function(Vargs, env)
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = service.GetTime(server.ServerStartTime);
 					ServerAge = service.GetTime(os.time()-server.ServerStartTime);
-					HttpEnabled = server.HTTP.CheckHttp();
-					LoadstringEnabled = pcall(function() loadstring("local hi = 'test'") end);
+					HttpEnabled = HTTP.CheckHttp();
+					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
 					Donors = donorList;
 					ObjectCount = #Variables.Objects;
@@ -1904,14 +1906,12 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local jobId = args[2];
 				assert(args[1] and jobId, "Argument missing or nil")
-
-				local RunService = game:GetService("RunService")
-				if RunService:IsStudio() then
-					error("Command cannot be used in studio.")
+				if service.RunService:IsStudio() then
+					error("Command cannot be used in studio.",0)
 				else
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
 						Functions.Message("Adonis", "Teleporting please wait.", {v}, false, 10)
-						game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, jobId, v)
+						service.TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, v)
 					end
 				end
 			end
@@ -2534,7 +2534,7 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					cPcall(function()
 						if v and v:findFirstChild("leaderstats") then
-							for a,q in pairs(v.leaderstats:children()) do
+							for a,q in pairs(v.leaderstats:GetChildren()) do
 								if q:IsA("IntValue") then q.Value = 0 end
 							end
 						end
@@ -2755,7 +2755,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in pairs(service.GetPlayers(plr,args[1])) do
-					server.Commands.Fly.Function(p, args, true)
+					Commands.Fly.Function(p, args, true)
 				end
 			end
 		};
@@ -3085,7 +3085,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					if v and v:findFirstChild("Backpack") then
-						for a,q in pairs(game.StarterPack:children()) do
+						for a,q in pairs(service.StarterPack:GetChildren()) do
 							local q = q:Clone()
 							if not q:FindFirstChild(Variables.CodeName) then
 								service.New("StringValue", q).Name = Variables.CodeName
@@ -3192,7 +3192,7 @@ return function(Vargs, env)
 						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
 							v.Character.Archivable = true
 
-							for d,e in pairs(v.Character:children()) do
+							for d,e in pairs(v.Character:GetChildren()) do
 								if e:IsA"Accessory" then
 									e:Destroy()
 								end
@@ -3202,7 +3202,7 @@ return function(Vargs, env)
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
 							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
 
-							for d,e in pairs(target_character:children()) do
+							for d,e in pairs(target_character:GetChildren()) do
 								if e:IsA"Accessory" then
 									e:Clone().Parent = v.Character
 								end
@@ -3282,30 +3282,30 @@ return function(Vargs, env)
 						local v2face=v2.Character.Head.face
 						vface.Parent=v2.Character.Head
 						v2face.Parent=v.Character.Head
-						for k,p in pairs(v.Character:children()) do
+						for k,p in pairs(v.Character:GetChildren()) do
 							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
 								p.Parent=tempcloths
 							elseif p:IsA('Tool') then
 								p.Parent=temptools
 							end
 						end
-						for k,p in pairs(v.Backpack:children()) do
+						for k,p in pairs(v.Backpack:GetChildren()) do
 							p.Parent=temptools
 						end
-						for k,p in pairs(v2.Character:children()) do
+						for k,p in pairs(v2.Character:GetChildren()) do
 							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
 								p.Parent=v.Character
 							elseif p:IsA('Tool') then
 								p.Parent=v.Backpack
 							end
 						end
-						for k,p in pairs(tempcloths:children()) do
+						for k,p in pairs(tempcloths:GetChildren()) do
 							p.Parent=v2.Character
 						end
-						for k,p in pairs(v2.Backpack:children()) do
+						for k,p in pairs(v2.Backpack:GetChildren()) do
 							p.Parent=v.Backpack
 						end
-						for k,p in pairs(temptools:children()) do
+						for k,p in pairs(temptools:GetChildren()) do
 							p.Parent=v2.Backpack
 						end
 						v2.Character.HumanoidRootPart.CFrame=vpos
@@ -3346,12 +3346,12 @@ return function(Vargs, env)
 						w6.Part0 = plr.Character:findFirstChild("Left Leg")
 						w6.Part1 = v.Character:findFirstChild("Left Leg")
 						plr.Character.Head.face:Destroy()
-						for i, p in pairs(v.Character:children()) do
+						for i, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") then
 								p.CanCollide = false
 							end
 						end
-						for i, p in pairs(plr.Character:children()) do
+						for i, p in pairs(plr.Character:GetChildren()) do
 							if p:IsA("BasePart") then
 								p.Transparency = 1
 							elseif p:IsA("Accoutrement") then
@@ -3680,7 +3680,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in pairs(v.Character:children()) do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") then
 								obj.Locked = true
 							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
@@ -3703,7 +3703,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in pairs(v.Character:children()) do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") then
 								obj.Locked = false
 							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
@@ -4100,7 +4100,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					if v:findFirstChild("StarterGear") then
-						for a,tool in pairs(v.StarterGear:children()) do
+						for a,tool in pairs(v.StarterGear:GetChildren()) do
 							if tool:IsA("Tool") or tool:IsA("HopperBin") then
 								if args[2]:lower() == "all" or tool.Name:lower():find(args[2]:lower()) == 1 then
 									tool:Destroy()
@@ -4164,7 +4164,7 @@ return function(Vargs, env)
 				local p2 = service.GetPlayers(plr, args[2])
 				for i,v in pairs(p1) do
 					for k,m in pairs(p2) do
-						for j,n in pairs(v.Backpack:children()) do
+						for j,n in pairs(v.Backpack:GetChildren()) do
 							local b = n:clone()
 							n.Parent = m.Backpack
 						end
@@ -4200,8 +4200,8 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v:findFirstChild("Backpack") then
-						for a, tool in pairs(v.Character:children()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
-						for a, tool in pairs(v.Backpack:children()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
+						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
+						for a, tool in pairs(v.Backpack:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
 					end
 				end
 			end
@@ -4309,7 +4309,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1] and args[2],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for a, tm in pairs(service.Teams:children()) do
+					for a, tm in pairs(service.Teams:GetChildren()) do
 						if tm.Name:lower():sub(1,#args[2]) == args[2]:lower() then
 							v.Team = tm
 						end
@@ -4653,7 +4653,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v:findFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:children()) do
+						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 then
 								st.Value = args[3]
 							end
@@ -4674,7 +4674,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v:findFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:children()) do
+						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 and tonumber(st.Value) then
 								st.Value = tonumber(st.Value)+tonumber(args[3])
 							end
@@ -4695,7 +4695,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v:findFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:children()) do
+						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 and tonumber(st.Value) then
 								st.Value = tonumber(st.Value)-tonumber(args[3])
 							end
@@ -4927,7 +4927,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
@@ -4948,7 +4948,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
@@ -4970,7 +4970,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local pitch = args[1]
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Pitch=v.Pitch+tonumber(args[1]:sub(2))
@@ -4994,7 +4994,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Volume=v.Volume+tonumber(args[1]:sub(2))
@@ -5129,7 +5129,7 @@ return function(Vargs, env)
 						Functions.Hint("Invalid audio Name/ID",{plr})
 						return
 					elseif Settings.SongHint then
-						Functions.Hint(name, service.Players:GetPlayers())
+						Functions.Hint(name, service.GetPlayers())
 					end
 
 					for i, v in pairs(service.Workspace:GetChildren()) do
@@ -5428,7 +5428,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("Head") then
-						for a, mod in pairs(v.Character:children()) do
+						for a, mod in pairs(v.Character:GetChildren()) do
 							if mod:findFirstChild("NameTag") then
 								v.Character.Head.Transparency = 0
 								mod:Destroy()
@@ -5478,7 +5478,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:findFirstChild("Head") then
-						for a, mod in pairs(v.Character:children()) do
+						for a, mod in pairs(v.Character:GetChildren()) do
 							if mod:findFirstChild("NameTag") then
 								v.Character.Head.Transparency = 0
 								mod:Destroy()
@@ -6245,13 +6245,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local function checkSafeChat(player)
-					local textToFilter = "1234"
-					if game:GetService("TextService"):FilterStringAsync(textToFilter, player.UserId):GetNonChatStringForUserAsync(player.UserId) == textToFilter then
-						return false
-					else
-						return true
-					end
+					return service.TextService:FilterStringAsync("1234", player.UserId):GetNonChatStringForUserAsync(player.UserId) == "1234" and false or true
 				end
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local _isMuted = false
 					local _isBanned = false
@@ -6272,12 +6268,12 @@ return function(Vargs, env)
 					server.Remote.MakeGui(plr,"Inspect",{
 						Target = v;
 						SafeChat = checkSafeChat(v);
-						CanChat = game:GetService("Chat"):CanUserChatAsync(v.UserId) or "[Error]";
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
 						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
 						IsMuted = _isMuted;
 						IsBanned = _isBanned;
-						Code = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
 						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
 					})

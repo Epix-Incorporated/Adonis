@@ -357,7 +357,7 @@ return function(Vargs)
 				end
 				]]
 
-				local LoadstringEnabled = pcall(loadstring, "") and "ON" or "OFF"
+				local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
 				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
 				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
 
