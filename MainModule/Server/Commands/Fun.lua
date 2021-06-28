@@ -4013,5 +4013,26 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		Transparency = {
+			Prefix = Settings.Prefix;
+			Commands = {"transparency";"trans";};
+			Args = {"player";"value (0-1)";};
+			Hidden = false;
+			Description = "Set the transparency of the target's character";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then
+						for k,p in pairs(v.Character:GetChildren()) do
+							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+								p.Transparency = args[2]
+							end
+						end
+					end
+				end
+			end
+		};
 	}
 end
