@@ -23,6 +23,7 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
+		Defaults = server.Defaults;
 		Commands = server.Commands
 
 		Remote.Init = nil;
@@ -120,6 +121,89 @@ return function(Vargs)
 			Variable = function(p,args)
 				return Variables[args[1]]
 			end;
+			
+			Default = function(p,args)
+				local setting = args[1]
+				local level = Admin.GetLevel(p)
+				local ret = nil
+				local blocked = {
+					DataStore = true;
+					DataStoreKey = true;
+
+					Trello_Enabled = true;
+					Trello_PrimaryBoard = true;
+					Trello_SecondaryBoards = true;
+					Trello_AppKey = true;
+					Trello_Token = true;
+
+					--G_Access = true;
+					G_Access_Key = true;
+					--G_Access_Perms = true;
+					--Allowed_API_Calls = true;
+				}
+
+				if type(setting) == "table" then
+					ret = {}
+					for i,set in pairs(setting) do
+						if Defaults[set] and not (blocked[set] and not level>=5) then
+							ret[set] = Defaults[set]
+						end
+					end
+				elseif type(setting) == "string" then
+					if Defaults[setting] and not (blocked[setting] and not level>=5) then
+						ret = Defaults[setting]
+					end
+				end
+
+				return ret
+			end;
+
+			AllDefaults = function(p,args)
+				if Admin.GetLevel(p) >= 900 then
+					local sets = {}
+
+					sets.Settings = {}
+					sets.Descs = server.Descriptions
+					sets.Order = server.Order
+
+					for i,v in pairs(Defaults) do
+						sets.Settings[i] = v
+					end
+
+					local blocked = {
+						HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
+						DataStore = true;
+						DataStoreKey = true;
+						DataStoreEnabled = true;
+
+						--Trello_Enabled = true;
+						--Trello_PrimaryBoard = true;
+						--Trello_SecondaryBoards = true;
+						Trello_AppKey = true;
+						Trello_Token = true;
+
+						G_API = true;
+						G_Access = true;
+						G_Access_Key = true;
+						G_Access_Perms = true;
+						Allowed_API_Calls = true;
+
+						OnStartup = true;
+						OnSpawn = true;
+						OnJoin = true;
+
+						CustomRanks = true; -- Not supported yet
+					}
+
+					for setting,value in pairs(sets.Settings) do
+						if blocked[setting] then
+							sets.Settings[setting] = nil
+						end
+					end
+
+					return sets
+				end
+			end;
 
 			Setting = function(p,args)
 				local setting = args[1]
@@ -155,14 +239,6 @@ return function(Vargs)
 				end
 
 				return ret
-			end;
-
-			UpdateList = function(p, args)
-				local list = args[1]
-				local update = Logs.ListUpdaters[list]
-				if update then
-					return update(p, unpack(args,2))
-				end
 			end;
 
 			AllSettings = function(p,args)
@@ -209,6 +285,14 @@ return function(Vargs)
 					end
 
 					return sets
+				end
+			end;
+			
+			UpdateList = function(p, args)
+				local list = args[1]
+				local update = Logs.ListUpdaters[list]
+				if update then
+					return update(p, unpack(args,2))
 				end
 			end;
 
