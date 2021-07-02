@@ -38,9 +38,11 @@ return function(Vargs)
 	server.HTTP = {
 		Init = Init;
 		Service = service.HttpService;
+		HttpEnabled = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com");
+		LoadstringEnabled = pcall(loadstring,"");
 
 		CheckHttp = function()
-			return pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com") == true
+			return server.HTTP.HttpEnabled
 		end;
 
 		WebPanel = {
