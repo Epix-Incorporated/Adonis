@@ -399,29 +399,25 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[FullShutdown = {
+		FullShutdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
 			AdminLevel = "HeadAdmins";
+			Filter = true;
 			Function = function(plr,args)
-				if not Core.PanicMode then
-					local logs = Core.GetData("ShutdownLogs") or {}
-					if plr then
-						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[2] or "N/A"})
-					else
-						table.insert(logs,1,{User="Server/Trello",Time=service.GetTime(),Reason=args[2] or "N/A"})
+				assert(args[1], "Reason must be supplied for this command!")
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
+				})
+				if ans == "Yes" then
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
+					error("An error has occured");
 					end
-					if #logs>1000 then
-						table.remove(logs,#logs)
-					end
-					Core.SaveData("ShutdownLogs",logs)
 				end
-
-				Core.SaveData("FullShutdown", {ID = game.PlaceId; User = tostring(plr or "Server"); Reason = args[2]})
-			end
-		};--]]
+			end;
+		};
 	}
 end
