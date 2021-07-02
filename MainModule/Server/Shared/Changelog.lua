@@ -14,14 +14,17 @@ return {
 	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";
 	"(Git/Expertcoderz) Add :transparency command";
+	"(Git/Expertcoderz) Command-related additions #379";
 	"(Git/fxeP1) Loadstring Updates. [Core.Lua/FiOne.lua]";
 	"(Git/fxeP1) Improved Hat/Face/DonorFace command.";
 	"(Git/P3tray) Added tab completion to the Default theme";
 	"(Git/P3tray) Removed PlayerData.Groups";
+	"(Git/P3tray) Added the ability to client.Remote.Get() default adonis settings #380";
 	"(Git/GalacticInspired) Removed content deleted audios from !wat";
 	"(Git/ccuser44) Some code improvements";
 	"(Git/flgx16) Correct math in ping measurement";
 	"(Git/jaydensar) Setup GitHub auto build";
+	"(Git/Kw6m) Finished :fullshutdown";
 	"";
 	"[v220.1 5.28.2021 19:21 EST]";
 	"* New logos!";
