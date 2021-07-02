@@ -459,7 +459,7 @@ return function(Vargs, env)
 		CreateSoundPart = {
 			Prefix = Settings.Prefix;	-- Prefix to use for command
 			Commands = {"createsoundpart","createspart"};	-- Commands
-			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "disco (default: false)", "showhint (default: false)", "noloop (default: false)", "volume (default: 1)", "changeable (default: false)", "clicktotoggle (default: false)" ,"rangetotoggle (default: 10) (required: clicktotoggle)","share type (default: everyone)"};	-- Command arguments
+			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "noloop (default: false)", "volume (default: 1)", "clicktotoggle (default: false)", "share type (default: everyone)"};	-- Command arguments
 			Description = "Creates a sound part";	-- Command Description
 			Hidden = false; -- Is it hidden from the command list?
 			Fun = true;	-- Is it fun?
@@ -486,14 +486,18 @@ return function(Vargs, env)
 
 				local soundrange = (args[2] and tonumber(args[2])) or 10
 				local pitch = (args[3] and tonumber(args[3])) or 1
-				local disco = (args[4] and args[4]:lower() == 'true') or false
-				local showhint = (args[5] and args[5]:lower() == 'true') or false
-				local noloop = (args[6] and args[6]:lower() == 'true') or false
-				local volume = (args[7] and tonumber(args[7])) or 1
-				local changeable = (args[8] and args[8]:lower() == 'true') or false
-				local toggable = (args[9] and args[9]:lower() == 'true') or false
-				local rangetotoggle = (args[10] and tonumber(args[10])) or 10
-				local sharetype = (args[11] and args[11]:lower() == 'all' and 'all') or (args[11] and args[11]:lower() == 'self' and 'self') or (args[11] and args[11]:lower() == 'friends' and 'friends') or (args[11] and args[11]:lower() == 'admins' and 'admins') or 'all'
+				--local disco-- = (args[4] and args[4]:lower() == 'true') or false
+				--local showhint-- = (args[5] and args[5]:lower() == 'true') or false
+				local noloop = (args[4] and args[4]:lower() == 'true') or false
+				local volume = (args[5] and tonumber(args[7])) or 1
+				local changeable = true; -- = (args[8] and args[8]:lower() == 'true') or false
+				local toggable = (args[6] and args[6]:lower() == 'true') or false
+				local rangetotoggle = 0--(args[10] and tonumber(args[10])) or 10
+				local sharetype = (args[7] and args[7]:lower() == 'all' and 'all')
+													or (args[7] and args[7]:lower() == 'self' and 'self')
+													or (args[7] and args[7]:lower() == 'friends' and 'friends')
+													or (args[7] and args[7]:lower() == 'admins' and 'admins')
+													or 'all'
 
 				if rangetotoggle == 0 then
 					rangetotoggle = 32
@@ -532,24 +536,7 @@ return function(Vargs, env)
 					spart.Size = Vector3.new(2, 1, 2)
 					table.insert(Variables.InsertedObjects, spart)
 
-					local curTag
-					local function createTag(txt, secs)
-						if showhint == false then return end
-						if curTag then pcall(function() curTag:Destroy() end) end
-						local tag = script.Tag:Clone()
-						tag.Name = "\0"
-						tag.Enabled = true
-						tag.Frame.Tag.Text = tostring(txt)
-						tag.Parent = spart
-						curTag = tag
 
-
-						if secs then
-							game:GetService("Debris"):AddItem(tag, secs)
-						else
-							game:GetService("Debris"):AddItem(tag, 5)
-						end
-					end
 
 					sound.Changed:Connect(function(prot)
 						if prot == "SoundId" then
@@ -560,23 +547,6 @@ return function(Vargs, env)
 							sound.TimePosition = 0
 						end
 					end)
-
-					sound.Ended:Connect(function()
-						createTag("Sound "..tostring(sound.SoundId).." ended", 5)
-					end)
-
-					local discoscript
-					if disco == true then
-						discoscript = script.DiscoPart:Clone()
-						discoscript.Disabled = false
-						discoscript.Archivable = false
-						server.SyncAPI.TrustScript(discoscript)
-						discoscript.Parent = spart
-					end
-
-					if changeable == true then
-						spart.Name = tostring(soundid)
-					end
 
 					if toggable == true then
 						local clickd = service.New("ClickDetector")
@@ -602,26 +572,14 @@ return function(Vargs, env)
 							if clicks == 1 then
 								if sound.IsPlaying then
 									sound:Pause()
-									createTag("Music paused by "..clicker.Name, 5)
 								else
 									sound:Resume()
-									createTag("Music resumed by "..clicker.Name, 5)
 								end
 							elseif clicks == 2 then
 								if sound.IsPlaying then
 									sound:Stop()
-									createTag("Music stopped by "..clicker.Name, 5)
 								else
 									sound:Play()
-									createTag("Music replaying by "..clicker.Name, 5)
-								end
-							elseif clicks == 3 then
-								if discoscript and discoscript.Parent ~= nil then
-									if discoscript.Disabled then
-										discoscript.Disabled = false
-									else
-										discoscript.Disabled = true
-									end
 								end
 							end
 						end)
@@ -640,18 +598,14 @@ return function(Vargs, env)
 							if suc and prodinfo then
 								if prodinfo.AssetTypeId ~= 3 then
 									spart.Name = prevname
-									createTag("Sound "..spart.Name.." is not valid.")
 									sound:Pause()
 									return end
 
 								soundinfo = prodinfo
 								prevname = spart.Name
 								sound.SoundId = "rbxassetid://"..spart.Name
-								createTag("Sound "..sound.SoundId.." inserted")
 								wait(2)
-								createTag("Sound Name: "..tostring(prodinfo.Name))
 							elseif not suc then
-								createTag("Sound "..tostring(spart.Name).." is not valid.")
 								spart.Name = prevname
 							end
 
@@ -663,14 +617,9 @@ return function(Vargs, env)
 
 					if not toggable then
 						sound:Play()
-						createTag("Now playing " ..soundinfo.Name)
 						wait(2)
-						createTag("SoundId "..soundinfo.AssetId)
-					else
-
 					end
 
-					createTag("Sound Name: "..tostring(soundinfo.Name))
 					sound.Parent = spart
 					spart.Parent = workspace
 					spart.Archivable = false
