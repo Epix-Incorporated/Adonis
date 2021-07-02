@@ -20,6 +20,7 @@ return function(Vargs, env)
 				local tab = {}
 				local cStr = ""
 
+				local cmdCount = 0
 				for i,v in next,commands do
 					if not v.Hidden and not v.Disabled then
 						local lvl = v.AdminLevel;
@@ -57,13 +58,55 @@ return function(Vargs, env)
 							Desc = "["..cStr.."] "..v.Description,
 							Filter = cStr
 						})
+						cmdCount = cmdCount + 1
 					end
 				end
 
 				Remote.MakeGui(plr,"List",
 					{
-						Title = "Commands";
+						Title = "Commands ("..cmdCount..")";
 						Table = tab;
+					}
+				)
+			end
+		};
+			
+		CommandInfo = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"cmdinfo","commandinfo","cmddetails"};
+			Args = {"command"};
+			Description = "Shows you information about a specific command";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				assert(args[1], "No command provided")
+				
+				local commands = Admin.SearchCommands(plr,"all")
+				local cmd
+				for i,v in next,commands do
+					for _, p in pairs(v.Commands) do
+						if p:lower() == args[1]:lower() then
+							cmd = v
+							break
+						end
+					end
+				end
+				assert(cmd, "Command not found / don't include prefix")
+				
+				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
+				if cmdArgs == "" then cmdArgs = "-" end
+				Remote.MakeGui(plr,"List",
+					{
+						Title = "Command Info";
+						Table = {
+							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
+							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
+							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
+							{Text = "Admin Level: "..cmd.AdminLevel, Desc = "Rank required to run the command"},
+							{Text = "Fun: "..tostring(cmd.Fun), Desc = "Is the command fun?"},
+							{Text = "Hidden: "..tostring(cmd.Hidden), Desc = "Is the command hidden from the command list?"},
+							{Text = "Description: "..cmd.Description, Desc = "Command description"}
+						};
+						Size = {400,220}
 					}
 				)
 			end
