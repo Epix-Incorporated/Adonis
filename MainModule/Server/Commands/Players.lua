@@ -70,16 +70,16 @@ return function(Vargs, env)
 				)
 			end
 		};
-			
+
 		CommandInfo = {
-			Prefix = Settings.PlayerPrefix;
+			Prefix = Settings.Prefix;
 			Commands = {"cmdinfo","commandinfo","cmddetails"};
 			Args = {"command"};
 			Description = "Shows you information about a specific command";
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				assert(args[1], "No command provided")
-				
+
 				local commands = Admin.SearchCommands(plr,"all")
 				local cmd
 				for i,v in next,commands do
@@ -91,7 +91,7 @@ return function(Vargs, env)
 					end
 				end
 				assert(cmd, "Command not found / don't include prefix")
-				
+
 				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
 				if cmdArgs == "" then cmdArgs = "-" end
 				Remote.MakeGui(plr,"List",
