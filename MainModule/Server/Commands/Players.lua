@@ -998,7 +998,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
 			Args = {};
-			Description = "Lets you to purchase Roblox Premium";
+			Description = "Lets you purchase Roblox Premium";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
@@ -1040,6 +1040,21 @@ return function(Vargs, env)
 				end
 			end
 		};]]
+		
+		InspectAvatar = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"inspectavatar";"avatarinspect";"viewavatar";"examineavatar";};
+			Args = {"player"};
+			Description = "Opens the Roblox avatar inspect menu for the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(plr,"service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
+				end
+			end
+		};
 
 		DevConsole = {
 			Prefix = Settings.PlayerPrefix;
