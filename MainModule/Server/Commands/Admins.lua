@@ -1159,7 +1159,13 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])
 				if ret then
-					Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
+					if type(ret) == "table" then
+						ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId);
+					else
+						ret = tostring(ret);
+					end
+
+					Functions.Hint(ret.. ' has been Unbanned', {plr})
 				end
 			end
 		};
