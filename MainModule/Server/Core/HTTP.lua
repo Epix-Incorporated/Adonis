@@ -93,24 +93,24 @@ return function(Vargs)
 					local blacklist = {}
 					local whitelist = {}
 
-					local oldListObj = trello.getListObj;
-					trello.getListObj = function(...)
-						local vargs = {...}
-						return select(2, service.Queue("TrelloCall", function()
-							wait(10/60)
-							return oldListObj(table.unpack(vargs))
-						end, true))
-					end
-
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+						local oldListObj = trello.getListObj;
+						trello.getListObj = function(...)
+							local vargs = {...}
+							return select(3, service.Queue("TrelloCall", function()
+								wait(10/60)
+								return oldListObj(table.unpack(vargs))
+							end, 30, true))
+						end
+
 						local lists = trello.getLists(board)
 						local banList = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 						local commandList = trello.getListObj(lists,{"Commands","Command List"})
 						local adminList = trello.getListObj(lists,{"Admins","Admin List","Adminlist"})
 						local modList = trello.getListObj(lists,{"Moderators","Moderator List","Moderatorlist","Modlist","Mod List","Mods"})
 						local creatorList = trello.getListObj(lists,{"Creators","Creator List","Creatorlist","Place Owners"})
-						local ownerList = trello.getListObj(lists,{"Owners", "HeadAdmins","Owner List","Ownerlist"})
+						local ownerList = trello.getListObj(lists,{"Owners", "HeadAdmins", "HeadAdmin List","Owner List","Ownerlist"})
 						local musicList = trello.getListObj(lists,{"Music","Music List","Musiclist","Songs"})
 						local insertList = trello.getListObj(lists,{"InsertList","Insert List","Insertlist","Inserts","ModelList","Model List","Modellist","Models"})
 						local permList = trello.getListObj(lists,{"Permissions","Permission List","Permlist"})
@@ -119,47 +119,24 @@ return function(Vargs)
 						local bList = trello.getListObj(lists,{"Blacklist"})
 						local wList = trello.getListObj(lists,{"Whitelist"})
 
-						if banList then
-							local cards = trello.getCards(banList.id)
-							for l,k in pairs(cards) do
-								table.insert(bans,k.name)
+						local function getNames(list, targTab)
+							if list and list.id then
+								local cards = trello.getCards(list.id)
+								for l,k in pairs(cards) do
+									table.insert(targTab, k.name)
+								end
 							end
 						end
 
-						if creatorList then
-							local cards = trello.getCards(creatorList.id)
-							for l,k in pairs(cards) do
-								table.insert(creators,k.name)
-							end
-						end
-
-						if modList then
-							local cards = trello.getCards(modList.id)
-							for l,k in pairs(cards) do
-								table.insert(mods,k.name)
-							end
-						end
-
-						if adminList then
-							local cards = trello.getCards(adminList.id)
-							for l,k in pairs(cards) do
-								table.insert(admins,k.name)
-							end
-						end
-
-						if ownerList then
-							local cards = trello.getCards(ownerList.id)
-							for l,k in pairs(cards) do
-								table.insert(HeadAdmins,k.name)
-							end
-						end
-
-						if agentList then
-							local cards = trello.getCards(agentList.id)
-							for l,k in pairs(cards) do
-								table.insert(agents,k.name)
-							end
-						end
+						getNames(banList, bans);
+						getNames(creatorList , creators);
+						getNames(modList, mods);
+						getNames(adminList, admins)
+						getNames(ownerList, HeadAdmins);
+						getNames(agentList, agents);
+						getNames(muteList, mutes);
+						getNames(bList, blacklist);
+						getNames(wList, whitelist);
 
 						if musicList then
 							local cards = trello.getCards(musicList.id)
@@ -178,27 +155,6 @@ return function(Vargs)
 									local a,b=k.name:match('^(.*):(.*)')
 									table.insert(insertlist,{Name = a,ID = tonumber(b)})
 								end
-							end
-						end
-
-						if muteList then
-							local cards = trello.getCards(muteList.id)
-							for l,k in pairs(cards) do
-								table.insert(mutes,k.name)
-							end
-						end
-
-						if bList then
-							local cards = trello.getCards(bList.id)
-							for l,k in pairs(cards) do
-								table.insert(blacklist,k.name)
-							end
-						end
-
-						if wList then
-							local cards = trello.getCards(wList.id)
-							for l,k in pairs(cards) do
-								table.insert(whitelist,k.name)
 							end
 						end
 
@@ -240,7 +196,12 @@ return function(Vargs)
 
 					for i,v in pairs(Settings.Trello_Secondary) do table.insert(boards,v) end
 					if Settings.Trello_Primary~="" then table.insert(boards,Settings.Trello_Primary) end
-					for i,v in pairs(boards) do pcall(grabData,v) end
+					for i,v in pairs(boards) do
+						local ran,err = pcall(grabData,v)
+						if not ran then
+							warn(tostring(err))
+						end
+					end
 
 					if #bans>0 then HTTP.Trello.Bans = bans end
 					if #creators>0 then HTTP.Trello.Creators = creators end
@@ -271,7 +232,7 @@ return function(Vargs)
 
 					Settings.Ranks["[Trello] Moderators"] = {
 						Level = 100;
-						Users = mods or {};
+						Users = moderators or {};
 					}
 
 					Variables.Blacklist.Trello = blacklist;

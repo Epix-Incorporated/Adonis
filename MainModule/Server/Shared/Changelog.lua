@@ -1,6 +1,11 @@
 return {
-	"Version: 221";
+	"Version: 221.2";
 	"*Drag edges to expand*";
+	"";
+	"[v221.2 7.3.2021 18:03 EST]";
+	"*Fixed issue with Trello";
+	"*Fixed admin list displaying incorrectly";
+	"*Previously fixed admin breaking bug (short duration, old servers & old loaders only)";
 	"";
 	"[v221 7.3.2021 13:18 EST]";
 	"*Completely redid how permissions/ranks/customranks work";
