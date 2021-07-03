@@ -2,8 +2,8 @@ return {
 	"Version: 221";
 	"*Drag edges to expand*";
 	"";
-	"[v221 WIP]";
-	"*Completely revamped how permissions/ranks/customranks work";
+	"[v221 7.3.2021 13:18 EST]";
+	"*Completely redid how permissions/ranks/customranks work";
 	"*Note: Old settings should remain compatible, however existing plugins might not";
 	"*Admin list is now sorted by level";
 	"*Whitelist/Blacklist code changes & bug fixes";

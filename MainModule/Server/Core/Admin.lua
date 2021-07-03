@@ -71,7 +71,7 @@ return function(Vargs)
 			end
 		end
 
-		--// Old setting backwards compatability
+		--// Old settings/plugins backwards compatability
 		if Settings.Owners then
 			Settings.Ranks.HeadAdmins.Users = Settings.Owners;
 		end
@@ -87,6 +87,10 @@ return function(Vargs)
 		if Settings.Moderators then
 			Settings.Ranks.Moderators.Users = Settings.Moderators;
 		end
+
+		--[[Settings.HeadAdmins = Settings.Ranks.HeadAdmins.Users;
+		Settings.Admins = Settings.Ranks.Admins.Users;
+		Settings.Moderators = Settings.Ranks.Moderators.Users;--]]
 
 		if Settings.CustomRanks then
 			for name,users in next,Settings.CustomRanks do
