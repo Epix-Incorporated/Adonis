@@ -81,11 +81,15 @@ return function(Vargs)
 		end
 
 		if Settings.Admins then
-			Settings.Ranks.Admins.Users = Settings.HeadAdmins;
+			Settings.Ranks.Admins.Users = Settings.Admins;
 		end
 
 		if Settings.Moderators then
 			Settings.Ranks.Moderators.Users = Settings.Moderators;
+		end
+
+		if Settings.Creators then
+			Settings.Ranks.Creators.Users = Settings.Creators;
 		end
 
 		--[[Settings.HeadAdmins = Settings.Ranks.HeadAdmins.Users;
