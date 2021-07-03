@@ -344,15 +344,26 @@ return function(Vargs)
 		LevelToList = function(lvl)
 			local lvl = tonumber(lvl);
 			if not lvl then return nil end;
-			for i,v in next,Settings.Ranks do
-				if lvl == v.Level then
-					return v.Users, i, v;
+			local listName = Admin.LevelToListName(lvl);
+			if listName then
+				local list = Settings.Ranks[listName];
+				if list then
+					return list.Users, listName, list;
 				end
 			end
 		end;
 
 		LevelToListName = function(lvl)
 			if lvl > 999 then return "Place Owner" end
+
+			--// Check if this is a default rank and if the level matches the default (so stuff like [Trello] Admins doesn't appear in the command list)
+			for i,v in next,server.Defaults.Settings.Ranks do
+				local tRank = Settings.Ranks[i];
+				if tRank and tRank.Level == v.Level and v.Level == lvl then
+					return i;
+				end
+			end
+
 			for i,v in next,Settings.Ranks do
 				if v.Level == lvl then
 					return i

@@ -1,6 +1,10 @@
 return {
-	"Version: 221.2";
+	"Version: 221.3";
 	"*Drag edges to expand*";
+	"";
+	"[v221.3 7.3.2021 19:31 EST]";
+	"*Fixed permissions with prefix not working";
+	"*Fixed incorrectly displayed ranks in :cmds";
 	"";
 	"[v221.2 7.3.2021 18:03 EST]";
 	"*Fixed issue with Trello";
