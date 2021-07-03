@@ -784,6 +784,11 @@ return function(Vargs)
 			local prefixChar = string.sub(Command, 1, 1);
 			local checkPrefix = Admin.PrefixCache[prefixChar] and prefixChar;
 			local matched
+
+			if checkPrefix then
+				Command = string.sub(Command, 2);
+			end
+
 			if Command:find(Settings.SplitKey) then
 				matched = Command:match("^(%S+)"..Settings.SplitKey)
 			else
