@@ -1263,7 +1263,7 @@ return function(Vargs, env)
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
 
-				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello is not configured inside Adonis config, please configure Trello to be able to use this command.', {plr}) return end
+				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello has not been configured in settings', {plr}) return end
 
 				local trello = HTTP.Trello.API(appkey,token)
 				local lists = trello.getLists(board)
