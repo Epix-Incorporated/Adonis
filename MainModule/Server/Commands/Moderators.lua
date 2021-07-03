@@ -137,7 +137,7 @@ return function(Vargs, env)
 			Description = "Chat Slow Mode";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = assert(tonumber(args[1]) or type(args[1]) == "string", "Argument 1 missing") --math.min(tonumber(args[1]),120)
+				local num = args[1] and tonumber(args[1]) --math.min(tonumber(args[1]),120)
 
 				if num then
 					Admin.SlowMode = num;
