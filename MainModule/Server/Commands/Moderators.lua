@@ -1937,7 +1937,7 @@ return function(Vargs, env)
 						local rankList, rankName, rankData = Admin.LevelToList(level);
 						table.insert(unsorted, {
 							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
-							Desc = "Rank: ".. (rankName or "Unknown") .."; Permission Level: ".. level;
+							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
 							SortLevel = level;
 						})
 					end
