@@ -1274,7 +1274,7 @@ return function(Vargs, env)
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
 							"Administrator: " .. tostring(plr) ..
-								"\nReason: ".. args[2] or "N/A")
+								"\nReason: ".. (args[2] or "N/A"))
 						HTTP.Trello.Update()
 						Functions.Hint("Trello banned ".. tostring(v),{plr})
 					end
