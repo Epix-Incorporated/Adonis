@@ -851,6 +851,11 @@ return function(Vargs, env)
 			NoFilter = true;
 			Function = function(plr,args)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(args[1], "Missing 1st argument.")
+
+				local bytecode = Core.Bytecode(args[1])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local cl = Core.NewScript('Script', args[1], true)
 				cl.Name = "[Adonis] Script"
 				cl.Parent = service.ServerScriptService
@@ -868,6 +873,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(args[1], "Missing 1st argument.")
+
+				local bytecode = Core.Bytecode(args[1])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local cl = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
 				cl.Name = "[Adonis] LocalScript"
 				cl.Disabled = true
@@ -886,6 +896,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(args[2], "Missing 2nd argument.")
+
+				local bytecode = Core.Bytecode(args[2])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local new = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2], true)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local cl = new:Clone()
