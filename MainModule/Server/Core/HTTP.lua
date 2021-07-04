@@ -217,22 +217,22 @@ return function(Vargs)
 
 					Settings.Ranks["[Trello] Creators"] = {
 						Level = 900;
-						Users = creators or {};
+						Users = HTTP.Trello.Creators or {};
 					}
 
 					Settings.Ranks["[Trello] HeadAdmins"] = {
 						Level = 300;
-						Users = HeadAdmins or {};
+						Users = HTTP.Trello.HeadAdmins or {};
 					}
 
 					Settings.Ranks["[Trello] Admins"] = {
 						Level = 200;
-						Users = admins or {};
+						Users = HTTP.Trello.Admins or {};
 					}
 
 					Settings.Ranks["[Trello] Moderators"] = {
 						Level = 100;
-						Users = moderators or {};
+						Users = HTTP.Trello.Moderators or {};
 					}
 
 					Variables.Blacklist.Trello = blacklist;
