@@ -1732,10 +1732,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local plrCharacter = v.Character
-					local human = plrCharacter and plrCharacter:FindFirstChildOfClass("Humanoid") or nil
-					local rigType = human and (human.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15") or nil
-					if rigType then
+					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+						local human = v.Character:FindFirstChildOfClass("Human")
+						local rigType = human and (human.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15") or nil
 						Functions.PlayAnimation(v,rigType == "R6" and 27789359 or 507771019)
 					end
 				end
