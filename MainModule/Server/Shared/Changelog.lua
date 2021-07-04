@@ -1,6 +1,9 @@
 return {
-	"Version: 221.3";
+	"Version: 221.4";
 	"*Drag edges to expand*";
+	"";
+	"[v221.4 7.3.2021 21:42 EST]";
+	"*Fixed whitelist-related bug that would break everything else";
 	"";
 	"[v221.3 7.3.2021 19:31 EST]";
 	"*Fixed permissions with prefix not working";
