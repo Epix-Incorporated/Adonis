@@ -4,6 +4,7 @@ return {
 	"";
 	"[v221.4 7.3.2021 21:42 EST]";
 	"*Fixed whitelist-related bug that would break everything else";
+	"*Fixed creators not being able to use every command regardless of level";
 	"";
 	"[v221.3 7.3.2021 19:31 EST]";
 	"*Fixed permissions with prefix not working";

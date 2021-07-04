@@ -965,7 +965,7 @@ return function(Vargs)
 			local funAllowed = Settings.FunCommands
 			local isComLevel = Admin.IsComLevel
 
-			if adminLevel >= 999 then
+			if adminLevel >= 900 then
 				return true
 			elseif cmd.Fun and not funAllowed then
 				return false
