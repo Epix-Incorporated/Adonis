@@ -280,6 +280,8 @@ local descs = {};			--// Contains settings descriptions
 	}
 
 	settings.FunCommands = true			-- Are fun commands enabled?
+	settings.CustomAdonis = false			-- Is your version of adonis custom?
+
 	settings.PlayerCommands = true 		-- Are players commands enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script

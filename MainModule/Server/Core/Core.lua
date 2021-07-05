@@ -46,6 +46,7 @@ return function(Vargs)
 		Core.Name = server.Functions:GetRandom()
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
+		if data.PremiumID then Core.IsPremiumVirus = true end
 
 		disableAllGUIs(server.Client.UI);
 

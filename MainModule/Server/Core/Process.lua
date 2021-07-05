@@ -713,6 +713,23 @@ return function(Vargs)
 							})
 						end
 						wait(1)
+
+						if level>3 and Core.ModuleID ~= 2373501710 and Settings.CustomAdonis ~= true then
+							Remote.MakeGui(p,"Alert",{
+								Title = "Urgent Alert!";
+								Message = "You are using an unsupported build of adonis!\n\n The official module ID is 2373501710\n\n You can dismiss this notification forever in Adonis settings (Under fun commands, Line 283)";	
+							})
+						
+						end
+						
+						if level>3 and Core.IsPremiumVirus == true then
+							Remote.MakeGui(p,"Alert",{
+								Title = "Urgent Alert!";
+								Message = "You are using a virus known as Adonis Premium! Please install the real one \n\nThe ID is 2373505175";	
+							})
+
+						end
+						
 						if level>3 and Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
