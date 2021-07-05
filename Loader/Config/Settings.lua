@@ -218,9 +218,10 @@ local descs = {};			--// Contains settings descriptions
 			-- Alternative option: AdminLevel = "Moderators"
 			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
 			Hidden = true;									--// Should this command be hidden from the command list?
-			Function = function(plr, args)	--// The command's function; This is the actual code of the command which runs when you run the command
+			Function = function(plr, args, data)	--// The command's function; This is the actual code of the command which runs when you run the command
 				--// "plr" is the player running the command
 				--// "args" is a table containing command arguments supplied by the user
+				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level)
 				print("This is 'arg1': ".. tostring(args[1]));
 				print("This is 'arg2': ".. tostring(args[2]));
 				print("This is 'etc'(arg 3): ".. tostring(args[3]));

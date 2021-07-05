@@ -1,9 +1,22 @@
 return {
-	"Version: 221";
+	"Version: 221.4";
 	"*Drag edges to expand*";
 	"";
-	"[v221 WIP]";
-	"*Completely revamped how permissions/ranks/customranks work";
+	"[v221.4 7.3.2021 21:42 EST]";
+	"*Fixed whitelist-related bug that would break everything else";
+	"*Fixed creators not being able to use every command regardless of level";
+	"";
+	"[v221.3 7.3.2021 19:31 EST]";
+	"*Fixed permissions with prefix not working";
+	"*Fixed incorrectly displayed ranks in :cmds";
+	"";
+	"[v221.2 7.3.2021 18:03 EST]";
+	"*Fixed issue with Trello";
+	"*Fixed admin list displaying incorrectly";
+	"*Previously fixed admin breaking bug (short duration, old servers & old loaders only)";
+	"";
+	"[v221 7.3.2021 13:18 EST]";
+	"*Completely redid how permissions/ranks/customranks work";
 	"*Note: Old settings should remain compatible, however existing plugins might not";
 	"*Admin list is now sorted by level";
 	"*Whitelist/Blacklist code changes & bug fixes";
@@ -11,6 +24,7 @@ return {
 	"*Added settings.Commands for user-defined commands";
 	"*Dex updated and moved to its own module; Also added server-side action support";
 	"*Fixed :countdown";
+	"*Fixed :slowmode";
 	"(Git/happyman090) Fix for sp00ky and k1tty on MeshPart head places";
 	"(Git/Expertcoderz) Mistake fixing + Aero theme";
 	"(Git/Expertcoderz) Add :transparency command";

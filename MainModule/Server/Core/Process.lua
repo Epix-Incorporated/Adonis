@@ -527,11 +527,10 @@ return function(Vargs)
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-
 					for listName, list in next,Variables.Whitelist.Lists do
-						if Admin.CheckList(p, list) then
+						if Admin.CheckTable(p, list) then
 							listed = true
-							break
+							break;
 						end
 					end
 
@@ -540,7 +539,7 @@ return function(Vargs)
 						return
 					end
 				end
-
+				
 				if Remote.Clients[key] then
 					Core.HookClient(p)
 

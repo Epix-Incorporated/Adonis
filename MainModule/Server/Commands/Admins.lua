@@ -851,6 +851,11 @@ return function(Vargs, env)
 			NoFilter = true;
 			Function = function(plr,args)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
+				assert(args[1], "Missing 1st argument.")
+
+				local bytecode = Core.Bytecode(args[1])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local cl = Core.NewScript('Script', args[1], true)
 				cl.Name = "[Adonis] Script"
 				cl.Parent = service.ServerScriptService
@@ -868,6 +873,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(args[1], "Missing 1st argument.")
+
+				local bytecode = Core.Bytecode(args[1])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local cl = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
 				cl.Name = "[Adonis] LocalScript"
 				cl.Disabled = true
@@ -886,6 +896,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
+				assert(args[2], "Missing 2nd argument.")
+
+				local bytecode = Core.Bytecode(args[2])
+				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+
 				local new = Core.NewScript('LocalScript',"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2], true)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
 					local cl = new:Clone()
@@ -1159,7 +1174,13 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])
 				if ret then
-					Functions.Hint(tostring(ret)..' has been Unbanned',{plr})
+					if type(ret) == "table" then
+						ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId);
+					else
+						ret = tostring(ret);
+					end
+
+					Functions.Hint(ret.. ' has been Unbanned', {plr})
 				end
 			end
 		};
@@ -1257,7 +1278,7 @@ return function(Vargs, env)
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
 
-				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello is not configured inside Adonis config, please configure Trello to be able to use this command.', {plr}) return end
+				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello has not been configured in settings', {plr}) return end
 
 				local trello = HTTP.Trello.API(appkey,token)
 				local lists = trello.getLists(board)
@@ -1268,7 +1289,7 @@ return function(Vargs, env)
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
 							"Administrator: " .. tostring(plr) ..
-								"\nReason: ".. args[2] or "N/A")
+								"\nReason: ".. (args[2] or "N/A"))
 						HTTP.Trello.Update()
 						Functions.Hint("Trello banned ".. tostring(v),{plr})
 					end

@@ -137,7 +137,7 @@ return function(Vargs, env)
 			Description = "Chat Slow Mode";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = assert(tonumber(args[1]) or type(args[1]) == "string", "Argument 1 missing") --math.min(tonumber(args[1]),120)
+				local num = args[1] and tonumber(args[1]) --math.min(tonumber(args[1]),120)
 
 				if num then
 					Admin.SlowMode = num;
@@ -1933,13 +1933,14 @@ return function(Vargs, env)
 
 				for i,v in pairs(service.GetPlayers()) do
 					local level = Admin.GetLevel(v);
-					local rankList, rankName, rankData = Admin.LevelToList(level);
-
-					table.insert(unsorted, {
-						Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
-						Desc = "Rank: ".. (rankName or "Unknown") .."; Permission Level: ".. level;
-						SortLevel = level;
-					})
+					if level > 0 then
+						local rankList, rankName, rankData = Admin.LevelToList(level);
+						table.insert(unsorted, {
+							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
+							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
+							SortLevel = level;
+						})
+					end
 				end
 
 				table.sort(unsorted, function(one, two)
@@ -1960,25 +1961,34 @@ return function(Vargs, env)
 					table.insert(unsorted, {
 						Text = "<b><font color='rgb(77,77,255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
 						Desc = "";
-						SortLevel = data.Level + 1;
+						Level = data.Level;
+						Users = data.Users;
+						Rank = rank;
 					});
-
-					for i,user in ipairs(data.Users) do
-						table.insert(unsorted, {
-							Text = "  ".. user;
-							Desc = "Rank: ".. rank .."; Level: ".. data.Level;
-							SortLevel = data.Level;
-						});
-					end
 				end;
 
 				table.sort(unsorted, function(one, two)
-					return one.SortLevel > two.SortLevel;
+					return one.Level > two.Level;
 				end)
 
 				for i,v in ipairs(unsorted) do
-					v.SortLevel = nil;
+					local Users = v.Users or {};
+					local Level = v.Level or 0;
+					local Rank = v.Rank or "Unknown";
+
+					v.Users = nil;
+					v.Level = nil;
+					v.Rank = nil;
+
 					table.insert(temptable, v)
+
+					for i,user in ipairs(Users) do
+						table.insert(temptable, {
+							Text = "  ".. user;
+							Desc = "Rank: ".. Rank .."; Level: ".. Level;
+							--SortLevel = data.Level;
+						});
+					end
 				end
 
 				Remote.MakeGui(plr, "List", {

@@ -6,6 +6,17 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
+local disableAllGUIs;
+function disableAllGUIs(folder)
+	for i,v in ipairs(folder:GetChildren()) do
+		if v:IsA("ScreenGui") then
+			v.Enabled = false;
+		elseif v:IsA("Folder") or v:IsA("Model") then
+			disableAllGUIs(v);
+		end
+	end
+end;
+
 --// Core
 return function(Vargs)
 	local server = Vargs.Server;
@@ -35,6 +46,8 @@ return function(Vargs)
 		Core.Name = server.Functions:GetRandom()
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
+
+		disableAllGUIs(server.Client.UI);
 
 		Core.Init = nil;
 		Logs:AddLog("Script", "Core Module Initialized")
@@ -324,7 +337,6 @@ return function(Vargs)
 				local folder = server.Client:Clone()
 				local acli = server.Deps.ClientMover:Clone();
 				local client = folder.Client
-
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
 				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
 

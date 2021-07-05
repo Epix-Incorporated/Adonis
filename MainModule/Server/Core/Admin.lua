@@ -71,7 +71,7 @@ return function(Vargs)
 			end
 		end
 
-		--// Old setting backwards compatability
+		--// Old settings/plugins backwards compatability
 		if Settings.Owners then
 			Settings.Ranks.HeadAdmins.Users = Settings.Owners;
 		end
@@ -81,12 +81,20 @@ return function(Vargs)
 		end
 
 		if Settings.Admins then
-			Settings.Ranks.Admins.Users = Settings.HeadAdmins;
+			Settings.Ranks.Admins.Users = Settings.Admins;
 		end
 
 		if Settings.Moderators then
 			Settings.Ranks.Moderators.Users = Settings.Moderators;
 		end
+
+		if Settings.Creators then
+			Settings.Ranks.Creators.Users = Settings.Creators;
+		end
+
+		--[[Settings.HeadAdmins = Settings.Ranks.HeadAdmins.Users;
+		Settings.Admins = Settings.Ranks.Admins.Users;
+		Settings.Moderators = Settings.Ranks.Moderators.Users;--]]
 
 		if Settings.CustomRanks then
 			for name,users in next,Settings.CustomRanks do
@@ -336,15 +344,26 @@ return function(Vargs)
 		LevelToList = function(lvl)
 			local lvl = tonumber(lvl);
 			if not lvl then return nil end;
-			for i,v in next,Settings.Ranks do
-				if lvl == v.Level then
-					return v.Users, i, v;
+			local listName = Admin.LevelToListName(lvl);
+			if listName then
+				local list = Settings.Ranks[listName];
+				if list then
+					return list.Users, listName, list;
 				end
 			end
 		end;
 
 		LevelToListName = function(lvl)
 			if lvl > 999 then return "Place Owner" end
+
+			--// Check if this is a default rank and if the level matches the default (so stuff like [Trello] Admins doesn't appear in the command list)
+			for i,v in next,server.Defaults.Settings.Ranks do
+				local tRank = Settings.Ranks[i];
+				if tRank and tRank.Level == v.Level and v.Level == lvl then
+					return i;
+				end
+			end
+
 			for i,v in next,Settings.Ranks do
 				if v.Level == lvl then
 					return i
@@ -776,6 +795,11 @@ return function(Vargs)
 			local prefixChar = string.sub(Command, 1, 1);
 			local checkPrefix = Admin.PrefixCache[prefixChar] and prefixChar;
 			local matched
+
+			if checkPrefix then
+				Command = string.sub(Command, 2);
+			end
+
 			if Command:find(Settings.SplitKey) then
 				matched = Command:match("^(%S+)"..Settings.SplitKey)
 			else
@@ -941,7 +965,7 @@ return function(Vargs)
 			local funAllowed = Settings.FunCommands
 			local isComLevel = Admin.IsComLevel
 
-			if adminLevel >= 999 then
+			if adminLevel >= 900 then
 				return true
 			elseif cmd.Fun and not funAllowed then
 				return false
