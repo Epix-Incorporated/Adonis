@@ -448,12 +448,7 @@ return function(Vargs)
 		end;
 
 		CheckAdmin = function(p)
-			local level = Admin.GetLevel(p)
-			if level > 0 then
-				return true
-			else
-				return false
-			end
+			return Admin.GetLevel(p) > 0;
 		end;
 
 		SetLevel = function(p, level)
@@ -461,7 +456,7 @@ return function(Vargs)
 			local list = Admin.LevelToList(current)
 
 			if tonumber(level) then
-				if current >= 999 then
+				if current >= 1000 then
 					return false
 				else
 					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.userId, Level = level}
@@ -497,6 +492,7 @@ return function(Vargs)
 			if type(p) == "userdata" then
 				Admin.SetLevel(p,0)
 			end
+			
 			if list then
 				for ind,check in ipairs(list) do
 					if Admin.DoCheck(p, check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
