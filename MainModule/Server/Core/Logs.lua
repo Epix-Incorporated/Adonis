@@ -139,72 +139,76 @@ return function(Vargs)
 			end;
 
 			ShowTasks = function(plr,arg)
-				if arg then
-					for i,v in next,Functions.GetPlayers(plr, arg) do
-						local temp = {}
-						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
+				if not plr or Admin.CheckAdmin(plr) then
+					if arg then
+						for i,v in next,Functions.GetPlayers(plr, arg) do
+							local temp = {}
+							local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 
+							table.insert(temp,{
+								Text = "Client Tasks",
+								Desc = "Tasks their client is performing"})
+
+							for k,t in next,cTasks do
+								table.insert(temp, {
+									Text = tostring(v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
+									Desc = v.Name;
+								})
+							end
+
+							return temp
+						end
+					else
+						local tasks = service.GetTasks()
+						local temp = {}
+						local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
+
+						table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
+
+						for i,v in next,tasks do
+							table.insert(temp,{
+								Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
+								Desc = v.Name
+							})
+						end
+
+						table.insert(temp," ")
 						table.insert(temp,{
 							Text = "Client Tasks",
-							Desc = "Tasks their client is performing"})
+							Desc = "Tasks your client is performing"
+						})
 
-						for k,t in next,cTasks do
-							table.insert(temp, {
-								Text = tostring(v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
-								Desc = v.Name;
+						for i,v in pairs(cTasks) do
+							table.insert(temp,{
+								Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+								Desc = v.Name
 							})
 						end
 
 						return temp
 					end
-				else
-					local tasks = service.GetTasks()
-					local temp = {}
-					local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
-
-					table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
-
-					for i,v in next,tasks do
-						table.insert(temp,{
-							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
-							Desc = v.Name
-						})
-					end
-
-					table.insert(temp," ")
-					table.insert(temp,{
-						Text = "Client Tasks",
-						Desc = "Tasks your client is performing"
-					})
-
-					for i,v in pairs(cTasks) do
-						table.insert(temp,{
-							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
-							Desc = v.Name
-						})
-					end
-
-					return temp
 				end
 			end;
 
-			OldCommandLogs = function()
-				local temp = {}
-				if Core.DataStore then
-					local data = Core.GetData("OldCommandLogs")
-					if data then
-						for i,m in pairs(data) do
-							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+			OldCommandLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local temp = {}
+					if Core.DataStore then
+						local data = Core.GetData("OldCommandLogs")
+						if data then
+							for i,m in pairs(data) do
+								table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+							end
 						end
 					end
-				end
 
-				return temp;
+					return temp;
+				end
 			end;
 
 			DonorList = function()
 				local temptable = {}
-				for i,v in pairs(service.Players:children()) do
+				for i,v in pairs(service.GetPlayers()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end
@@ -212,90 +216,100 @@ return function(Vargs)
 				return temptable
 			end;
 
-			Errors = function()
-				local tab = {}
-				for i,v in pairs(Logs.Errors) do
-					table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
+			Errors = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local tab = {}
+					for i,v in pairs(Logs.Errors) do
+						table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
+					end
+					return tab
 				end
-				return tab
 			end;
 
-			ExploitLogs = function()
-				--local temp={}
-				--for i,v in pairs(Logs.Errors) do
-				--	table.insert(tab,{Time = v.Time;Text = v.Text..": "..tostring(v.Desc):sub(1,20),Desc = v.Desc})
-				--end
-				return Logs.Exploit
+			ExploitLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					--local temp={}
+					--for i,v in pairs(Logs.Errors) do
+					--	table.insert(tab,{Time = v.Time;Text = v.Text..": "..tostring(v.Desc):sub(1,20),Desc = v.Desc})
+					--end
+					return Logs.Exploit
+				end
 			end;
 
-			ChatLogs = function()
-				return Logs.Chats
+			ChatLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					return Logs.Chats
+				end
 			end;
 
-			JoinLogs = function()
-				return Logs.Joins
+			JoinLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					return Logs.Joins
+				end
 			end;
 
 			PlayerList = function(p)
-				local plrs = {}
-				local playz = Functions.GrabNilPlayers('all')
+				if not p or Admin.CheckAdmin(p) then
+					local plrs = {}
+					local playz = Functions.GrabNilPlayers('all')
 
-				for i,v in pairs(playz) do
-					cPcall(function()
-						if type(v) == "string" and v == "NoPlayer" then
-							table.insert(plrs,{Text = "PLAYERLESS CLIENT", Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
-						else
-							local ping
+					for i,v in pairs(playz) do
+						cPcall(function()
+							if type(v) == "string" and v == "NoPlayer" then
+								table.insert(plrs,{Text = "PLAYERLESS CLIENT", Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
+							else
+								local ping
 
-							Routine(function()
-								ping = Remote.Ping(v).."ms"
-							end)
+								Routine(function()
+									ping = Remote.Ping(v).."ms"
+								end)
 
-							for i = 0.1,5,0.1 do
-								if ping then break end
-								wait(0.1)
-							end
-
-							if not ping then
-								ping = ">5000ms"
-							end
-
-							if v and service.Players:FindFirstChild(v.Name) then
-								local h = ""
-								local mh = ""
-								local ws = ""
-								local jp = ""
-								local hn = ""
-								local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-
-								if v.Character and hum then
-									h = hum.Health
-									mh = hum.MaxHealth
-									ws = hum.WalkSpeed
-									jp = hum.JumpPower
-									hn = hum.Name
-								else
-									h = "NO CHARACTER/HUMANOID"
+								for i = 0.1,5,0.1 do
+									if ping then break end
+									wait(0.1)
 								end
 
-								table.insert(plrs,{Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = 'Lower: '..v.Name:lower()..' - Health: '..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
-							else
-								table.insert(plrs,{Text = '[LOADING] '..v.Name, Desc = 'Lower: '..v.Name:lower()..' - Ping: '..ping})
+								if not ping then
+									ping = ">5000ms"
+								end
+
+								if v and service.Players:FindFirstChild(v.Name) then
+									local h = ""
+									local mh = ""
+									local ws = ""
+									local jp = ""
+									local hn = ""
+									local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+									if v.Character and hum then
+										h = hum.Health
+										mh = hum.MaxHealth
+										ws = hum.WalkSpeed
+										jp = hum.JumpPower
+										hn = hum.Name
+									else
+										h = "NO CHARACTER/HUMANOID"
+									end
+
+									table.insert(plrs,{Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = 'Lower: '..v.Name:lower()..' - Health: '..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
+								else
+									table.insert(plrs,{Text = '[LOADING] '..v.Name, Desc = 'Lower: '..v.Name:lower()..' - Ping: '..ping})
+								end
 							end
-						end
-					end)
-				end
+						end)
+					end
 
-				for i = 0.1,5,0.1 do
-					if Functions.CountTable(plrs) >= Functions.CountTable(playz) then break end
-					wait(0.1)
-				end
+					for i = 0.1,5,0.1 do
+						if Functions.CountTable(plrs) >= Functions.CountTable(playz) then break end
+						wait(0.1)
+					end
 
-				return plrs
+					return plrs
+				end
 			end;
 
 			DateTime = function()
-
+				-- NonAdmin ListUpdater, no level check
 				local ostime = os.time()
 				local tab = {}
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
@@ -324,72 +338,78 @@ return function(Vargs)
 				return tab
 			end;
 
-			ServerDetails = function()
-				local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
+			ServerDetails = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
 
-				for i,v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilplayers+=1
+					for i,v in pairs(service.NetworkServer:GetChildren()) do
+						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+							nilplayers+=1
+						end
 					end
-				end
-				for i,v in pairs(service.Players:GetPlayers()) do
-					if Admin.CheckAdmin(v,false) then
-						adminnumber+=1
+					for i,v in pairs(service.Players:GetPlayers()) do
+						if Admin.CheckAdmin(v,false) then
+							adminnumber+=1
+						else
+							nonnumber+=1
+						end
+					end
+
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+					table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
+					table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+					table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
+					table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
+					table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+
+					--[[
+					if workspace.AllowThirdPartySales == true then
+						table.insert(tab,{Text = "Third Party Sales: [ON]"})
 					else
-						nonnumber+=1
+						table.insert(tab,{Text = "Third Party Sales: [OFF]"})
 					end
+					]]
+
+					local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
+					local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
+					local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
+
+					table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
+					table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
+					table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
+
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+					table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
+					table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+					table.insert(tab,{Text = "Nil Players: "..nilplayers})
+					table.insert(tab,{Text = "Objects: "..#Variables.Objects})
+					table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
+					table.insert(tab,{Text = "Gravity: "..tostring(workspace.Gravity)})
+					table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(workspace.FallenPartsDestroyHeight)})
+					table.insert(tab,{Text = "―――――――――――――――――――――――"})
+					return tab
 				end
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
-				table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
-				table.insert(tab,{Text = "Server Start Time: "..service.GetTime(server.ServerStartTime)})
-				table.insert(tab,{Text = "Server Age: "..service.GetTime(os.time()-server.ServerStartTime)})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				--[[
-				if workspace.AllowThirdPartySales == true then
-					table.insert(tab,{Text = "Third Party Sales: [ON]"})
-				else
-					table.insert(tab,{Text = "Third Party Sales: [OFF]"})
-				end
-				]]
-
-				local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
-				local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
-				local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
-
-				table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
-				table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
-				table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
-				table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				table.insert(tab,{Text = "Nil Players: "..nilplayers})
-				table.insert(tab,{Text = "Objects: "..#Variables.Objects})
-				table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
-				table.insert(tab,{Text = "Gravity: "..tostring(workspace.Gravity)})
-				table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(workspace.FallenPartsDestroyHeight)})
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				return tab
 			end;
 
-			CommandLogs = function()
-				local temp = {}
+			CommandLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local temp = {}
 
-				for i,m in pairs(Logs.Commands) do
-					table.insert(temp,{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					for i,m in pairs(Logs.Commands) do
+						table.insert(temp,{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					end
+
+					return temp
 				end
-
-		 		return temp
 			end;
 
-			ScriptLogs = function()
-				return Logs.Script
+			ScriptLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					return Logs.Script
+				end
 			end;
 
 			RemoteLogs = function(p)
@@ -398,51 +418,57 @@ return function(Vargs)
 				end
 			end;
 
-			ServerLog = function()
-				local temp = {}
-				local function toTab(str, desc, color)
-					for i,v in next,service.ExtractLines(str) do
-						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+			ServerLog = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local temp = {}
+					local function toTab(str, desc, color)
+						for i,v in next,service.ExtractLines(str) do
+							table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+						end
 					end
+					for i,v in next,service.LogService:GetLogHistory() do
+						local mType = v.messageType
+						toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+					end
+					return temp
 				end
-				for i,v in next,service.LogService:GetLogHistory() do
-					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
-				end
-				return temp
 			end;
 
 			ClientLog = function(p, player)
-				local temp = {"Player is currently unreachable"}
-
-				if player then
-					temp = (player.Parent and Remote.Get(player, "ClientLog")) or temp
-				end
-
-				return temp
-			end;
-
-			Instances = function(p, player)
-				if player then
+				if not p or Admin.CheckAdmin(p) then
 					local temp = {"Player is currently unreachable"}
 
 					if player then
-						temp = Remote.Get(player, "InstanceList") or temp
+						temp = (player.Parent and Remote.Get(player, "ClientLog")) or temp
 					end
 
 					return temp
-				else
-					local objects = service.GetAdonisObjects()
-					local temp = {}
+				end
+			end;
 
-					for i,v in next,objects do
-						table.insert(temp, {
-							Text = v:GetFullName();
-							Desc = v.ClassName;
-						})
+			Instances = function(p, player)
+				if not p or Admin.CheckAdmin(p) then
+					if player then
+						local temp = {"Player is currently unreachable"}
+
+						if player then
+							temp = Remote.Get(player, "InstanceList") or temp
+						end
+
+						return temp
+					else
+						local objects = service.GetAdonisObjects()
+						local temp = {}
+
+						for i,v in next,objects do
+							table.insert(temp, {
+								Text = v:GetFullName();
+								Desc = v.ClassName;
+							})
+						end
+
+						return temp
 					end
-
-					return temp
 				end
 			end;
 		};
