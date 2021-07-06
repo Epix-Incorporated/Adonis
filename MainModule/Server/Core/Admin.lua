@@ -119,7 +119,7 @@ return function(Vargs)
 
 		--// Run OnStartup Commands
 		for i,v in next,Settings.OnStartup do
-			server.Threading.NewThread(Admin.RunCommand, v)
+			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
 			Logs:AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
 				Desc = "Executed startup command; "..tostring(v)

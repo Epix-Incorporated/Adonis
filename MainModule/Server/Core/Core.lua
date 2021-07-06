@@ -844,7 +844,9 @@ return function(Vargs)
 			})
 		end;
 
-		LoadData = function(key, data)
+		LoadData = function(key, data, serverId)
+			if serverId and serverId == game.JobId then return end;
+			
 			local SavedSettings
 			local SavedTables
 			local Blacklist = {DataStoreKey = true;}
@@ -896,6 +898,7 @@ return function(Vargs)
 				end
 
 				if SavedTables then
+					local CheckMatch = Functions.CheckMatch;
 					for ind,tab in next,SavedTables do
 						local indList = tab.Table;
 						local nameRankComp = {--// Old settings backwards compatability
@@ -915,7 +918,7 @@ return function(Vargs)
 
 						if realTable and tab.Action == "Add" then
 							for i,v in next,realTable do
-								if Functions.CheckMatch(v,tab.Value) then
+								if CheckMatch(v,tab.Value) then
 									table.remove(realTable, i)
 								end
 							end
@@ -928,7 +931,7 @@ return function(Vargs)
 							table.insert(realTable, tab.Value)
 						elseif realTable and tab.Action == "Remove" then
 							for i,v in next,realTable do
-								if Functions.CheckMatch(v, tab.Value) then
+								if CheckMatch(v, tab.Value) then
 									Logs.AddLog("Script",{
 										Text = "Removed value from ".. displayName;
 										Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";

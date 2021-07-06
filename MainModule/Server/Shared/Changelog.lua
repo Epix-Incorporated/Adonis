@@ -1,6 +1,9 @@
 return {
-	"Version: 221.4";
+	"Version: 221.5";
 	"*Drag edges to expand*";
+	"";
+	"[v221.5 7.6.2021 13:48 EST]";
+	"*Fixed a bug related to startup commands that cause loading to halt which resulted in errors";
 	"";
 	"[v221.4 7.3.2021 21:42 EST]";
 	"*Fixed whitelist-related bug that would break everything else";

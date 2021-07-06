@@ -89,8 +89,8 @@ return function(Vargs)
 			Settings[setting] = newValue;
 		end;
 
-		LoadData = function(jobId, ...)
-			Core.LoadData(...);
+		LoadData = function(jobId, key, dat)
+			Core.LoadData(key, dat, jobId);
 		end;
 
 		Event = function(jobId, eventId, ...)

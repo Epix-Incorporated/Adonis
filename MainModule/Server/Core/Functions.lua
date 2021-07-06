@@ -950,9 +950,9 @@ return function(Vargs)
 		end;
 
 		CheckMatch = function(check,match)
-			if check==match then
+			if check == match then
 				return true
-			elseif type(check)=="table" and type(match)=="table" then
+			elseif type(check) == "table" and type(match) == "table" then
 				local good = false
 				local num = 0
 				for k,m in pairs(check) do
@@ -964,7 +964,8 @@ return function(Vargs)
 					end
 					num = num+1
 				end
-				if good and num==Functions.CountTable(check) then
+
+				if good and num == Functions.CountTable(check) then
 					return true
 				end
 			end
