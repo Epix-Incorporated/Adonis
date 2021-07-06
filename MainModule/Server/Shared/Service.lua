@@ -782,7 +782,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 
 			if doYield and not tab.Finished then
-				return tab.Yield:Wait();
+				return select(2, tab.Yield:Wait());
 			end
 		end;
 
@@ -823,7 +823,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 							if not r then
 								func.Error = e;
-								warn("Queue Error: ".. tostring(e))
+								warn("Queue Error: ".. tostring(key) .. ": ".. tostring(e))
 							end
 
 							func.Running = false;

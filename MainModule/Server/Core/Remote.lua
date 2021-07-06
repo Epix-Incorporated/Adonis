@@ -121,7 +121,7 @@ return function(Vargs)
 			Variable = function(p,args)
 				return Variables[args[1]]
 			end;
-			
+
 			Default = function(p,args)
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
@@ -287,7 +287,7 @@ return function(Vargs)
 					return sets
 				end
 			end;
-			
+
 			UpdateList = function(p, args)
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]

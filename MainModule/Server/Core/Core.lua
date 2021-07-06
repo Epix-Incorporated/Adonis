@@ -111,8 +111,8 @@ return function(Vargs)
 		};
 
 		--// Datastore update/queue timers/delays
-		DS_SetDataQueueDelay = 0.5;
-		DS_UpdateQueueDelay = 1;
+		DS_WriteQueueDelay = 1;
+		DS_ReadQueueDelay = 0.5;
 		DS_AllPlayerDataSaveInterval = 30;
 		DS_AllPlayerDataSaveQueueDelay = 0.5;
 
@@ -694,8 +694,51 @@ return function(Vargs)
 			return Core.SetData(...)
 		end;
 
+		DS_GetRequestDelay = function(type)
+			local reqPerMin = 60 + #service.Players:GetPlayers() * 10;
+			local reqDelay = 60/reqPerMin;
+			local requestType = nil;
+
+			if type == "Write" then
+				requestType = Enum.DataStoreRequestType.SetIncrementAsync;
+			elseif type == "Read" then
+				requestType = Enum.DataStoreRequestType.GetAsync;
+			elseif type == "Update" then
+				requestType = Enum.DataStoreRequestType.UpdateAsync;
+			end
+
+			local budget = nil
+
+			repeat
+				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
+			until budget > 0 and wait(1)
+
+			return reqDelay + 0.5;
+		end;
+
+		DS_WriteLimiter = function(type, func, ...)
+			local vararg = {...}
+			return service.Queue("DataStoreWriteData", function()
+				func(unpack(vararg))
+				wait(Core.DS_GetRequestDelay(type))
+			end, 120, true)
+		end;
+
 		RemoveData = function(key)
-			return pcall(Core.DataStore.RemoveAsync, Core.DataStore, Core.DataStoreEncode(key))
+			local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+				local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.RemoveAsync, Core.DataStore, Core.DataStoreEncode(key))
+				if ran then
+					Core.DataCache[key] = nil
+				else
+					logError("DataStore RemoveAsync Failed: ".. tostring(ret))
+				end
+
+				wait(6)
+			end, 120, true)
+
+			if not ran2 then
+				warn("DataStore RemoveData Failed: ".. tostring(err2))
+			end
 		end;
 
 		SetData = function(key, value)
@@ -703,19 +746,19 @@ return function(Vargs)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					local ran2, err2 = service.Queue("DataStoreSetData".. tostring(key), function()
-						local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
+					local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+						local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
 						else
 							logError("DataStore SetAsync Failed: ".. tostring(ret))
 						end
 
-						wait(Core.DS_SetDataQueueDelay)
-					end, 300, true)
+						wait(6)
+					end, 120, true)
 
 					if not ran2 then
-						warn("DataStore UpdateData Failed: ".. tostring(err2))
+						warn("DataStore SetData Failed: ".. tostring(err2))
 					end
 				end
 			end
@@ -724,15 +767,15 @@ return function(Vargs)
 		UpdateData = function(key, func)
 			if Core.DataStore then
 				local err = false;
-				local ran2, err2 = service.Queue("DataStoreUpdateData".. tostring(key), function()
-					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
+				local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+					local ran, ret = Core.DS_WriteLimiter("Update", Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
 
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
 					end
 
-					wait(Core.DS_UpdateQueueDelay)
+					wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
@@ -745,13 +788,22 @@ return function(Vargs)
 
 		GetData = function(key)
 			if Core.DataStore then
-				local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
-				if ran then
-					Core.DataCache[key] = ret
-					return ret
+				local ran2, err2 = service.Queue("DataStoreReadData", function()
+					local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
+					if ran then
+						Core.DataCache[key] = ret
+						return ret
+					else
+						logError("DataStore GetAsync Failed: ".. tostring(ret))
+						return Core.DataCache[key]
+					end
+					wait(Core.DS_GetRequestDelay("Read"))
+				end, 120, true)
+
+				if not ran2 then
+					warn("DataStore GetData Failed: ".. tostring(err2))
 				else
-					logError("DataStore GetAsync Failed: ".. tostring(ret))
-					return Core.DataCache[key]
+					return err2;
 				end
 			end
 		end;
@@ -777,12 +829,54 @@ return function(Vargs)
 			end
 		end;
 
+		ClearAllData = function()
+			local tabs = Core.GetData("SavedTables");
+
+			for i,v in next, tabs do
+				if v.TableKey then
+					Core.RemoveData(v.TableKey);
+				end
+			end
+
+			Core.SetData("SavedSettings",{});
+			Core.SetData("SavedTables",{});
+			Core.CrossServer("LoadData");
+		end;
+
+		GetTableKey = function(indList)
+			local tabs = Core.GetData("SavedTables") or {};
+			local realTable,tableName = Core.IndexPathToTable(indList);
+
+			local foundTable = nil;
+
+			for i,v in next,tabs do
+				if type(v) == "table" and v.TableName and v.TableName == tableName then
+					foundTable = v
+					break;
+				end
+			end
+
+			if not foundTable then
+				foundTable = {
+					TableName = tableName;
+					TableKey = "SAVEDTABLE_".. tableName;
+				}
+
+				table.insert(tabs, foundTable);
+				Core.SetData("SavedTables", tabs);
+			end
+
+			if not Core.GetData(foundTable.TableKey) then
+				Core.SetData(foundTable.TableKey, {});
+			end
+
+			return foundTable.TableKey;
+		end;
+
 		DoSave = function(data)
 			local type = data.Type
 			if type == "ClearSettings" then
-				Core.SetData("SavedSettings",{});
-				Core.SetData("SavedTables",{});
-				Core.CrossServer("LoadData");
+				Core.ClearAllData();
 			elseif type == "SetSetting" then
 				local setting = data.Setting
 				local value = data.Value
@@ -794,12 +888,14 @@ return function(Vargs)
 
 				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
 			elseif type == "TableRemove" then
+				local key = Core.GetTableKey(data.Table);
 				local tab = data.Table
 				local value = data.Value
 
+				data.Action = "Remove"
 				data.Time = os.time()
 
-				Core.UpdateData("SavedTables", function(sets)
+				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
 					for i,v in next,sets do
@@ -808,34 +904,35 @@ return function(Vargs)
 						end
 					end
 
-					data.Action = "Remove"
 					table.insert(sets, data)
+
 					return sets
 				end)
 
-
-				Core.CrossServer("LoadData", "SavedTables");
+				Core.CrossServer("LoadData", "TableUpdate", data);
 			elseif type == "TableAdd" then
+				local key = Core.GetTableKey(data.Table);
 				local tab = data.Table
 				local value = data.Value
 
+				data.Action = "Add"
 				data.Time = os.time()
 
-				Core.UpdateData("SavedTables", function(sets)
+				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
 					for i,v in next,sets do
 						if Functions.CheckMatch(tab, v.Table) and Functions.CheckMatch(v.Value, value) then
-							table.remove(sets,i)
+							table.remove(sets, i)
 						end
 					end
 
-					data.Action = "Add"
-					table.insert(sets,data)
+					table.insert(sets, data)
+
 					return sets
 				end)
 
-				Core.CrossServer("LoadData", "SavedTables");
+				Core.CrossServer("LoadData", "TableUpdate", data);
 			end
 
 			Logs.AddLog(Logs.Script,{
@@ -846,121 +943,135 @@ return function(Vargs)
 
 		LoadData = function(key, data, serverId)
 			if serverId and serverId == game.JobId then return end;
-			
-			local SavedSettings
-			local SavedTables
-			local Blacklist = {DataStoreKey = true;}
-			if Core.DataStore and Settings.DataStoreEnabled then
-				if not key then
-					SavedSettings = Core.GetData("SavedSettings")
-					SavedTables = Core.GetData("SavedTables")
-				elseif key and not data then
-					if key == "SavedSettings" then
-						SavedSettings = Core.GetData("SavedSettings")
-					elseif key == "SavedTables" then
-						SavedTables = Core.GetData("SavedTables")
-					end
-				elseif key and data then
-					if key == "SavedSettings" then
-						SavedSettings = data
-					elseif key == "SavedTables" then
-						SavedTables = data
-					end
+
+			local CheckMatch = Functions.CheckMatch;
+			if key == "TableUpdate" then
+				local tab = data;
+				local indList = tab.Table;
+				local nameRankComp = {--// Old settings backwards compatability
+					Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
+					Creators = {"Settings", "Ranks", "Creators", "Users"};
+					HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
+					Admins = {"Settings", "Ranks", "Admins", "Users"};
+					Moderators = {"Settings", "Ranks", "Moderators", "Users"};
+				}
+
+				if type(indList) == "string" and nameRankComp[indList] then
+					indList = nameRankComp[indList];
 				end
 
-				if not key and not data then
-					if not SavedSettings then
-						SavedSettings = {}
-						Core.SaveData("SavedSettings",{})
-					end
+				local realTable,tableName = Core.IndexPathToTable(indList);
+				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-					if not SavedTables then
-						SavedTables = {}
-						Core.SaveData("SavedTables",{})
-					end
-				end
-
-				if SavedSettings then
-					for setting,value in next,SavedSettings do
-						if not Blacklist[setting] then
-							if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
-								local orig = Settings[setting]
-								for i,v in pairs(server.Commands) do
-									if v.Prefix == orig then
-										v.Prefix = value
-									end
-								end
-							end
-
-							Settings[setting] = value
+				if realTable and tab.Action == "Add" then
+					for i,v in next,realTable do
+						if CheckMatch(v,tab.Value) then
+							table.remove(realTable, i)
 						end
 					end
-				end
 
-				if SavedTables then
-					local CheckMatch = Functions.CheckMatch;
-					for ind,tab in next,SavedTables do
-						local indList = tab.Table;
-						local nameRankComp = {--// Old settings backwards compatability
-							Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
-							Creators = {"Settings", "Ranks", "Creators", "Users"};
-							HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
-							Admins = {"Settings", "Ranks", "Admins", "Users"};
-							Moderators = {"Settings", "Ranks", "Moderators", "Users"};
-						}
+					Logs.AddLog("Script",{
+						Text = "Added value to ".. displayName;
+						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+					})
 
-						if type(indList) == "string" and nameRankComp[indList] then
-							indList = nameRankComp[indList];
-						end
-
-						local realTable,tableName = Core.IndexPathToTable(indList);
-						local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
-
-						if realTable and tab.Action == "Add" then
-							for i,v in next,realTable do
-								if CheckMatch(v,tab.Value) then
-									table.remove(realTable, i)
-								end
-							end
-
+					table.insert(realTable, tab.Value)
+				elseif realTable and tab.Action == "Remove" then
+					for i,v in next,realTable do
+						if CheckMatch(v, tab.Value) then
 							Logs.AddLog("Script",{
-								Text = "Added value to ".. displayName;
-								Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+								Text = "Removed value from ".. displayName;
+								Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
 							})
 
-							table.insert(realTable, tab.Value)
-						elseif realTable and tab.Action == "Remove" then
-							for i,v in next,realTable do
-								if CheckMatch(v, tab.Value) then
-									Logs.AddLog("Script",{
-										Text = "Removed value from ".. displayName;
-										Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
-									})
+							table.remove(realTable, i)
+						end
+					end
+				end
+			else
+				local SavedSettings
+				local SavedTables
+				local Blacklist = {DataStoreKey = true;}
+				if Core.DataStore and Settings.DataStoreEnabled then
+					if not key then
+						SavedSettings = Core.GetData("SavedSettings")
+						SavedTables = Core.GetData("SavedTables")
+					elseif key and not data then
+						if key == "SavedSettings" then
+							SavedSettings = Core.GetData("SavedSettings")
+						elseif key == "SavedTables" then
+							SavedTables = Core.GetData("SavedTables")
+						end
+					elseif key and data then
+						if key == "SavedSettings" then
+							SavedSettings = data
+						elseif key == "SavedTables" then
+							SavedTables = data
+						end
+					end
 
-									table.remove(realTable, i)
+					if not key and not data then
+						if not SavedSettings then
+							SavedSettings = {}
+							Core.SaveData("SavedSettings",{})
+						end
+
+						if not SavedTables then
+							SavedTables = {}
+							Core.SaveData("SavedTables",{})
+						end
+					end
+
+					if SavedSettings then
+						for setting,value in next,SavedSettings do
+							if not Blacklist[setting] then
+								if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+									local orig = Settings[setting]
+									for i,v in pairs(server.Commands) do
+										if v.Prefix == orig then
+											v.Prefix = value
+										end
+									end
+								end
+
+								Settings[setting] = value
+							end
+						end
+					end
+
+					if SavedTables then
+						for i,tData in next,SavedTables do
+							if tData.TableName and tData.TableKey then
+								local data = Core.GetData(tData.TableKey);
+								if data then
+									for k,v in ipairs(data) do
+										Core.LoadData("TableUpdate", v)
+									end
+								end
+							elseif tData.Table and tData.Action then
+								Core.LoadData("TableUpdate", tData)
+							end
+						end
+
+						if Core.Variables.TimeBans then
+							for i,v in next, Core.Variables.TimeBans do
+								if v.EndTime-os.time() <= 0 then
+									table.remove(Core.Variables.TimeBans, i)
+									Core.DoSave({
+										Type = "TableRemove";
+										Table = {"Variables", "TimeBans"};
+										Value = v;
+									})
 								end
 							end
 						end
 					end
 
-					if Core.Variables.TimeBans then
-						for i,v in next, Core.Variables.TimeBans do
-							if v.EndTime-os.time() <= 0 then
-								table.remove(Core.Variables.TimeBans, i)
-								Core.DoSave({
-									Type = "TableRemove";
-									Table = {"Variables", "TimeBans"};
-									Value = v;
-								})
-							end
-						end
-					end
+					Logs.AddLog(Logs.Script,{
+						Text = "Loaded saved data";
+						Desc = "Data was retrieved from the datastore and loaded successfully";
+					})
 				end
-
-				Logs.AddLog(Logs.Script,{
-					Text = "Loaded saved data";
-					Desc = "Data was retrieved from the datastore and loaded successfully";
-				})
 			end
 		end;
 

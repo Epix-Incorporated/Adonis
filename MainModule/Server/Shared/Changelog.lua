@@ -4,6 +4,7 @@ return {
 	"";
 	"[v221.5 7.6.2021 13:48 EST]";
 	"*Fixed a bug related to startup commands that cause loading to halt which resulted in errors";
+	"*CrossServer LoadData no longer triggers LoadData on the origin server (which resulted in lag)";
 	"";
 	"[v221.4 7.3.2021 21:42 EST]";
 	"*Fixed whitelist-related bug that would break everything else";
