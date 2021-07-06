@@ -407,7 +407,6 @@ return function(Vargs)
 					AddLog(Logs.Chats,{
 						Text = p.Name..": "..tostring(filtered);
 						Desc = tostring(filtered);
-						NoTime = true;
 						Player = p;
 					})
 
@@ -436,7 +435,6 @@ return function(Vargs)
 					AddLog(Logs.Chats,{
 						Text = "[MUTED] ".. p.Name ..": "..tostring(filtered);
 						Desc = tostring(filtered);
-						NoTime = true;
 						Player = p;
 					})
 				end
@@ -588,18 +586,15 @@ return function(Vargs)
 
 		NetworkAdded = function(cli)
 			wait(0.25)
-			local tim = service.GetTime()
 			local p = cli:GetPlayer()
 			if p then
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
+				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." connected";
 					Desc = tostring(p).." successfully established a connection with the server";
 					Player = p;
 				})
 			else
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
+				Logs.AddLog(Logs.Script, {
 					Text = "<UNKNOWN> connected";
 					Desc = "An unknown user successfully established a connection with the server";
 				})
@@ -608,21 +603,19 @@ return function(Vargs)
 		end;
 
 		NetworkRemoved = function(cli)
-			local tim = service.GetTime()
 			local p = cli:GetPlayer() or Core.Connections[cli]
 			Core.Connections[cli] = nil
 			if p then
 				local key = tostring(p.userId)
 				Core.SavePlayerData(p)
 				Remote.Clients[key] = nil
-				Logs.AddLog(Logs.Script,{
+				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." disconnected";
 					Desc = tostring(p).." disconnected from the server";
 					Player = p;
 				})
 			else
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
+				Logs.AddLog(Logs.Script, {
 					Text = "<UNKNOWN> disconnected";
 					Desc = "An unknown user disconnected from the server";
 				})
