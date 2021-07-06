@@ -492,7 +492,7 @@ return function(Vargs)
 			if type(p) == "userdata" then
 				Admin.SetLevel(p,0)
 			end
-			
+
 			if list then
 				for ind,check in ipairs(list) do
 					if Admin.DoCheck(p, check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
@@ -732,7 +732,7 @@ return function(Vargs)
 
 		RunCommandAsNonAdmin = function(coma,plr,...)
 			local ind,com = Admin.GetCommand(coma)
-			if com then
+			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
