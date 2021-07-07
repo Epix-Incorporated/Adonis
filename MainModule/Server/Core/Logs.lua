@@ -116,7 +116,11 @@ return function(Vargs)
 				end
 
 				table.sort(temp, function(a, b)
-					return a.Time > b.Time;
+					if a.Time and b.Time and type(a.Time) == "number" and type(b.Time) == "number" then
+						return a.Time > b.Time;
+					else
+						return false;
+					end
 				end)
 
 				for i,v in ipairs(temp) do
