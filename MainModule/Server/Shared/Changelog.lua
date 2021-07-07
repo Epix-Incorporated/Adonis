@@ -2,7 +2,7 @@ return {
 	"Version: 221.8";
 	"*Drag edges to expand*";
 	"";
-	"[v222.8 7.7.2021 14:47 EST]";
+	"[v221.8 7.7.2021 14:47 EST]";
 	"*Fixed Trello whitelist/blacklist not working";
 	"*Random minor bug fixes";
 	"(Git/GalacticInspired) Minor changes #383";
