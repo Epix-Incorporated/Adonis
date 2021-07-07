@@ -235,8 +235,8 @@ return function(Vargs)
 						Users = HTTP.Trello.Moderators or {};
 					}
 
-					Variables.Blacklist.Trello = blacklist;
-					Variables.Whitelist.Trello = whitelist;
+					Variables.Blacklist.Lists.Trello = blacklist;
+					Variables.Whitelist.Lists.Trello = whitelist;
 
 					for i,v in pairs(service.GetPlayers()) do
 						if Admin.CheckBan(v) then

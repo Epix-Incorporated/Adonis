@@ -72,6 +72,9 @@ return function(Vargs)
 			end)
 		end
 
+		--// Save all data on server shutdown
+		game:BindToClose(Core.SaveAllPlayerData);
+
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)

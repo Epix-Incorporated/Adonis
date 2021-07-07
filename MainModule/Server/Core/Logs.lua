@@ -27,9 +27,7 @@ return function(Vargs)
 
 		MaxLogs = Settings.MaxLogs;
 
-		game:BindToClose(function()
-			Logs.SaveCommandLogs()
-		end);
+		game:BindToClose(Logs.SaveCommandLogs);
 
 		Logs.Init = nil;
 		Logs:AddLog("Script", "Logging Module Initialized");

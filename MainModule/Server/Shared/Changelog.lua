@@ -1,8 +1,10 @@
 return {
-	"Version: 222";
+	"Version: 221.8";
 	"*Drag edges to expand*";
 	"";
-	"[v222 WIP]";
+	"[v222.8 7.7.2021 14:47 EST]";
+	"*Fixed Trello whitelist/blacklist not working";
+	"*Random minor bug fixes";
 	"(Git/GalacticInspired) Minor changes #383";
 	"";
 	"[v221.7 7.7.2021 13:27 EST]";
