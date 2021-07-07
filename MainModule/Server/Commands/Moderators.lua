@@ -2996,39 +2996,41 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
-					local bb = service.New('BillboardGui')
-					local la = service.New('SelectionPartLasso',bb)
-					local Humanoid = plr.Character:FindFirstChild("Humanoid")
-					local Part = v.Character:FindFirstChild("HumanoidRootPart")
-					if Part and Humanoid then
-						la.Part = Part
-						la.Humanoid = Humanoid
-						bb.Name = v.Name..'Tracker'
-						bb.Adornee = v.Character.Head
-						bb.AlwaysOnTop = true
-						bb.StudsOffset = Vector3.new(0,2,0)
-						bb.Size = UDim2.new(0,100,0,40)
-						local f = service.New('Frame',bb)
-						f.BackgroundTransparency = 1
-						f.Size = UDim2.new(1,0,1,0)
-						local name = service.New('TextLabel',f)
-						name.Text = v.Name
-						name.BackgroundTransparency = 1
-						name.Font = "Arial"
-						name.TextColor3 = Color3.new(1,1,1)
-						name.TextStrokeColor3 = Color3.new(0,0,0)
-						name.TextStrokeTransparency = 0
-						name.Size = UDim2.new(1,0,0,20)
-						name.TextScaled = true
-						name.TextWrapped = true
-						local arrow = name:clone()
-						arrow.Parent = f
-						arrow.Position = UDim2.new(0,0,0,20)
-						arrow.Text = 'v'
-						Remote.MakeLocal(plr,bb,false,true)
-						local event;event = v.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-						local event2;event2 = plr.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
-					end
+					coroutine.wrap(function()
+						local bb = service.New('BillboardGui')
+						local la = service.New('SelectionPartLasso',bb)
+						local Humanoid = plr.Character:FindFirstChild("Humanoid")
+						local Part = v.Character:FindFirstChild("HumanoidRootPart")
+						if Part and Humanoid then
+							la.Part = Part
+							la.Humanoid = Humanoid
+							bb.Name = v.Name..'Tracker'
+							bb.Adornee = v.Character.Head
+							bb.AlwaysOnTop = true
+							bb.StudsOffset = Vector3.new(0,2,0)
+							bb.Size = UDim2.new(0,100,0,40)
+							local f = service.New('Frame',bb)
+							f.BackgroundTransparency = 1
+							f.Size = UDim2.new(1,0,1,0)
+							local name = service.New('TextLabel',f)
+							name.Text = v.Name
+							name.BackgroundTransparency = 1
+							name.Font = "Arial"
+							name.TextColor3 = Color3.new(1,1,1)
+							name.TextStrokeColor3 = Color3.new(0,0,0)
+							name.TextStrokeTransparency = 0
+							name.Size = UDim2.new(1,0,0,20)
+							name.TextScaled = true
+							name.TextWrapped = true
+							local arrow = name:clone()
+							arrow.Parent = f
+							arrow.Position = UDim2.new(0,0,0,20)
+							arrow.Text = 'v'
+							Remote.MakeLocal(plr,bb,false,true)
+							local event;event = v.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
+							local event2;event2 = plr.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+						end
+					end)()
 				end
 			end
 		};
