@@ -1,6 +1,12 @@
 return {
-	"Version: 221.6";
+	"Version: 221.7";
 	"*Drag edges to expand*";
+	"";
+	"[v221.7 7.7.2021 13:27 EST]";
+	"(Git/joritochip) Fix Trello syncing issue #397";
+	"(Git/DrewBokman) Making track instant for multiple targets and fixing Magnitude refrences. #396";
+	"(Git/joritochip) Local timezones display in logs #395";
+	"(Git/coasterteam) Admin Level Checks to admin-specific ListUpdaters #394";
 	"";
 	"[v221.6 7.6.2021 17:03 EST]";
 	"*CrossServer LoadData no longer triggers LoadData on the origin server (which resulted in lag)";
