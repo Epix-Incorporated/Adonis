@@ -1958,13 +1958,15 @@ return function(Vargs, env)
 				table.insert(temptable,'<b><font color="rgb(180, 60, 0)">==== All Admins ====</font></b>')
 
 				for rank,data in next,Settings.Ranks do
-					table.insert(unsorted, {
-						Text = "<b><font color='rgb(77,77,255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
-						Desc = "";
-						Level = data.Level;
-						Users = data.Users;
-						Rank = rank;
-					});
+					if not data.Hidden then
+						table.insert(unsorted, {
+							Text = "<b><font color='rgb(77,77,255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
+							Desc = "";
+							Level = data.Level;
+							Users = data.Users;
+							Rank = rank;
+						});
+					end
 				end;
 
 				table.sort(unsorted, function(one, two)

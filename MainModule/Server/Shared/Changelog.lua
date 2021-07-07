@@ -5,6 +5,7 @@ return {
 	"[v221.8 7.7.2021 14:47 EST]";
 	"*Fixed Trello whitelist/blacklist not working";
 	"*Random minor bug fixes";
+	"*Made it so admin ranks can be hidden from :adminlist";
 	"(Git/GalacticInspired) Minor changes #383";
 	"";
 	"[v221.7 7.7.2021 13:27 EST]";
