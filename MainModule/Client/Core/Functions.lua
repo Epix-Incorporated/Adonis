@@ -626,15 +626,15 @@ return function()
 
 								local ang = 0.1
 								if wave then
-									if torso.Velocity.magnitude > 1 then
-										ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
+									if torso.Velocity.Magnitude > 1 then
+										ang = ang + ((torso.Velocity.Magnitude/10)*.05)+.05
 									end
 									v.Wave = false
 								else
 									v.Wave = true
 								end
-								ang = ang + math.min(torso.Velocity.magnitude/11, .8)
-								motor.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + 0.002
+								ang = ang + math.min(torso.Velocity.Magnitude/11, .8)
+								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + 0.002
 								if isPlayer then
 									motor.DesiredAngle = -ang
 								else
@@ -1055,23 +1055,23 @@ return function()
 				local wave = false
 				repeat wait(1/44)
 					local ang = 0.1
-					local oldmag = torso.Velocity.magnitude
+					local oldmag = torso.Velocity.Magnitude
 					local mv = .002
-					if wave then ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
+					if wave then ang = ang + ((torso.Velocity.Magnitude/10)*.05)+.05
 						wave = false
 					else
 						wave = true
 					end
-					ang = ang + math.min(torso.Velocity.magnitude/11, .5)
-					motor1.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + mv
+					ang = ang + math.min(torso.Velocity.Magnitude/11, .5)
+					motor1.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + mv
 					motor1.DesiredAngle = -ang
 					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then
 						motor1.MaxVelocity = .04
 					end
 
-					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.magnitude - oldmag) >=(torso.Velocity.magnitude/10) + 1
+					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.Magnitude - oldmag) >=(torso.Velocity.Magnitude/10) + 1
 
-					if torso.Velocity.magnitude < .1 then
+					if torso.Velocity.Magnitude < .1 then
 						wait(.1)
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()

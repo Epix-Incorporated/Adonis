@@ -315,7 +315,7 @@ local function GetFocusDistance(cameraFrame)
 			local offset = fx*cx - fy*cy + fz
 			local origin = cameraFrame.p + offset*znear
 			local _, hit = Workspace:FindPartOnRay(Ray.new(origin, offset.unit*minDist))
-			local dist = (hit - origin).magnitude
+			local dist = (hit - origin).Magnitude
 			if minDist > dist then
 				minDist = dist
 				minVect = offset.unit

@@ -76149,7 +76149,7 @@ function Handles:Pause()
 end
 
 local function IsFirstPerson(Camera)
-    return (Camera.CFrame.p - Camera.Focus.p).magnitude <= 0.6
+    return (Camera.CFrame.p - Camera.Focus.p).Magnitude <= 0.6
 end
 
 function Handles:Resume()
@@ -76254,7 +76254,7 @@ function Handles:UpdateHandle(Handle, SideUnitVector)
         self.Adornee.Size
 
     -- Calculate radius of adornee extents along axis
-    local AdorneeRadius = (AdorneeSize * SideUnitVector / 2).magnitude
+    local AdorneeRadius = (AdorneeSize * SideUnitVector / 2).Magnitude
     local SideCFrame = AdorneeCFrame * CFrame.new(AdorneeRadius * SideUnitVector)
     local AdorneeViewportPoint, AdorneeCameraDepth = WorldToViewportPoint(Camera, SideCFrame.p)
     local StudWidth = 2 * math.tan(math.rad(Camera.FieldOfView) / 2) * AdorneeCameraDepth
@@ -76593,7 +76593,7 @@ function ArcHandles:Pause()
 end
 
 local function IsFirstPerson(Camera)
-    return (Camera.CFrame.p - Camera.Focus.p).magnitude <= 0.6
+    return (Camera.CFrame.p - Camera.Focus.p).Magnitude <= 0.6
 end
 
 function ArcHandles:Resume()
@@ -76724,7 +76724,7 @@ function ArcHandles:UpdateHandle(Side, Handle)
     local StudWidth = 2 * math.tan(math.rad(Camera.FieldOfView) / 2) * CameraDepth
     local StudsPerPixel = StudWidth / Camera.ViewportSize.X
     local HandlePadding = math.max(1, StudsPerPixel * 14) * (self.IsMouseAvailable and 1 or 1.6)
-    local AdorneeRadius = AdorneeSize.magnitude / 2
+    local AdorneeRadius = AdorneeSize.Magnitude / 2
     local Radius = AdorneeRadius + 2 * HandlePadding
 
     -- Calculate CFrame of the handle's side
@@ -76789,7 +76789,7 @@ function ArcHandles:UpdateCircle(Axis, Lines)
     local StudWidth = 2 * math.tan(math.rad(Camera.FieldOfView) / 2) * CameraDepth
     local StudsPerPixel = StudWidth / Camera.ViewportSize.X
     local HandlePadding = math.max(1, StudsPerPixel * 14) * (self.IsMouseAvailable and 1 or 1.6)
-    local AdorneeRadius = AdorneeSize.magnitude / 2
+    local AdorneeRadius = AdorneeSize.Magnitude / 2
     local Radius = AdorneeRadius + 2 * HandlePadding
 
     -- Determine angle of each circle slice
@@ -76819,7 +76819,7 @@ function ArcHandles:UpdateCircle(Axis, Lines)
             CFrame.new(0, 0, Line.Radius / 2)
 
         -- Make line span between endpoints
-        Line.Height = (To - From).magnitude
+        Line.Height = (To - From).Magnitude
 
     end
 end
@@ -83555,7 +83555,7 @@ function StartSnapping()
 			ScreenSnappedPoint = Vector2.new(ScreenSnappedPoint.X, ScreenSnappedPoint.Y);
 
 			-- Calculate direction setting length
-			local DirectionSettingLength = math.min(50, math.max(50, (SnappingStartAim - ScreenSnappedPoint).magnitude * 1.5));
+			local DirectionSettingLength = math.min(50, math.max(50, (SnappingStartAim - ScreenSnappedPoint).Magnitude * 1.5));
 
 			-- Use the mouse position to figure out the resize direction (until after direction setting length)
 			if SnappingStage == 'Direction' then
@@ -83610,7 +83610,7 @@ function StartSnapping()
 				DirectionLine.Visible = true;
 
 				-- Check if drag has passed direction setting length
-				local Length = (SnappingEndAim - ScreenSnappedPoint).magnitude;
+				local Length = (SnappingEndAim - ScreenSnappedPoint).Magnitude;
 				if Length < DirectionSettingLength then
 					return;
 				end;
@@ -83680,7 +83680,7 @@ function StartSnapping()
 					local AlignmentCenter = ScreenStartPoint:Lerp(ScreenDestinationPoint, 0.5);
 					AlignmentLine.Position = UDim2.new(0, AlignmentCenter.X, 0, AlignmentCenter.Y);
 					AlignmentLine.Rotation = AlignmentAngle;
-					AlignmentLine.Size = UDim2.new(0, (ScreenDestinationPoint - ScreenStartPoint).magnitude, 0, 1);
+					AlignmentLine.Size = UDim2.new(0, (ScreenDestinationPoint - ScreenStartPoint).Magnitude, 0, 1);
 					AlignmentLine.PointMarkerA.Rotation = -AlignmentAngle;
 					AlignmentLine.Visible = true;
 
@@ -83793,7 +83793,7 @@ function GetFacesFromCorner(Part, Point)
 		local Face = Part.CFrame * (Part.Size / 2 * Vector3.FromNormalId(FaceEnum));
 
 		-- Get the face's proximity to the point
-		local Proximity = (Point - Face).magnitude;
+		local Proximity = (Point - Face).Magnitude;
 
 		-- Keep track of the proximity to the point
 		table.insert(Faces, { Proximity = Proximity, Face = FaceEnum });
@@ -101199,7 +101199,7 @@ function SnapTracking.GetClosestPoint()
 
 	-- Calculate proximity of each snapping point to the mouse
 	for SnappingPointKey, SnappingPoint in ipairs(SnappingPoints) do
-		SnappingPointProximity[SnappingPointKey] = (SnapTracking.MousePoint - SnappingPoint.p).magnitude;
+		SnappingPointProximity[SnappingPointKey] = (SnapTracking.MousePoint - SnappingPoint.p).Magnitude;
 	end;
 
 	-- Sort out the closest snapping point
@@ -102639,7 +102639,7 @@ function TargetingModule.StartRectangleSelecting()
 			TargetingModule.UpdateSelectionRectangle();
 
 		-- Watch for potential rectangle selections
-		elseif RectangleSelectStart and (Vector2.new(Mouse.X, Mouse.Y) - RectangleSelectStart).magnitude >= 10 then
+		elseif RectangleSelectStart and (Vector2.new(Mouse.X, Mouse.Y) - RectangleSelectStart).Magnitude >= 10 then
 			RectangleSelecting = true;
 			SelectionCancelled = true;
 		end;

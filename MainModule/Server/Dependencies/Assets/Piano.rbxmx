@@ -318,7 +318,7 @@ function PlayNoteSound(note, source, range, sounds)
 	
 	if source then
 		local a = 1/range^2
-		local distance = (game.Workspace.CurrentCamera.CoordinateFrame.p - source).magnitude
+		local distance = (game.Workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
 		local volume = -a*distance^2 + 1
 		if volume < 0.05 then
 			audio:remove()

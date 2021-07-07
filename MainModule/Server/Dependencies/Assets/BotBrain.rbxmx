@@ -64,13 +64,13 @@ end
 function jumpCheck()
 	local cframe = getCFrame()
 	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild('HumanoidRootPart') or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
-	if targ and (targ.Position-cframe.p).magnitude < 1 then
+	if targ and (targ.Position-cframe.p).Magnitude < 1 then
 		--// Do something?
 	else
 		local checkVector = (cframe*CFrame.new(0,0,-3.5)).p
 		local ray = Ray.new(cframe.p,(checkVector - cframe.p).unit)
 		local hit, pos = workspace:FindPartOnRay(ray,char)
-		if hit and (pos-cframe.p).magnitude < 0.7 then
+		if hit and (pos-cframe.p).Magnitude < 0.7 then
 			hum.Jump = true
 		end
 	end
@@ -83,7 +83,7 @@ function findTarget()
 		local vTorso = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("Torso") or v:FindFirstChild("UpperTorso")
 		local human = v:FindFirstChildOfClass("Humanoid")
 		if v~=char and v:IsA("Model") and torso and vTorso and human and human.Health>0 then
-			local dist = (torso.Position-vTorso.Position).magnitude
+			local dist = (torso.Position-vTorso.Position).Magnitude
 			if dist < prevDist and validTarget(v) then
 				prevDist = dist
 				closest = v
@@ -199,7 +199,7 @@ function walkPath()
 			end
 			
 			if #path>2 then
-				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).magnitude < 2.5
+				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).Magnitude < 2.5
 			end
 		end
 		

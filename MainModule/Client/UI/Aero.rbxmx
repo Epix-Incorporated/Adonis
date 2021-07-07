@@ -4747,7 +4747,7 @@ return function(data)
 						Routine(function() 
 							repeat 
 								if not head then break end
-								local dist = (head.Position - cam.CoordinateFrame.p).magnitude
+								local dist = (head.Position - cam.CoordinateFrame.p).Magnitude
 								if dist <= 50 then 
 									clone.Visible = true
 								else 
