@@ -2902,7 +2902,7 @@ return function(Vargs, env)
 													k.Parent = nil
 												end
 											end
-											if (torso.Position-origpos).magnitude>3.3 then
+											if (torso.Position-origpos).Magnitude>3.3 then
 												torso.CFrame = cf
 											end
 										end

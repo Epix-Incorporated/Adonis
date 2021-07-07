@@ -56,7 +56,7 @@ function dirToCom(part, mdir)
 	}
 
 	for i,v in next,dirs do
-		if (v - mdir).magnitude <= 1.05 and mdir ~= Vector3.new(0,0,0) then
+		if (v - mdir).Magnitude <= 1.05 and mdir ~= Vector3.new(0,0,0) then
 			dir[i] = true
 		elseif not keyTab[i] then
 			dir[i] = false

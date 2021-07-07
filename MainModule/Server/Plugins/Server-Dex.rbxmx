@@ -14439,7 +14439,7 @@ do
 &#9;&#9;&#9;&#9;end
 
 &#9;&#9;&#9;&#9;dragGhost.Position = UDim2.new(0,dragPos.x+ghostOffset.x,0,dragPos.y+ghostOffset.y)
-&#9;&#9;&#9;elseif (clickPos-dragPos).magnitude &gt; 8 then
+&#9;&#9;&#9;elseif (clickPos-dragPos).Magnitude &gt; 8 then
 &#9;&#9;&#9;&#9;dragged = true
 &#9;&#9;&#9;&#9;SetZIndex(dragGhost,9)
 &#9;&#9;&#9;&#9;dragGhost.IndentFrame.Transparency = 0.25

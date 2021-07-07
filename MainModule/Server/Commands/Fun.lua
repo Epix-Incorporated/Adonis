@@ -1427,7 +1427,7 @@ return function(Vargs, env)
 
 						repeat
 							for i,v in pairs(parts) do
-								if (((main.Position - v.Position).magnitude * 250 * 20) < (5000 * 40)) and v and v:IsDescendantOf(workspace) then
+								if (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) and v and v:IsDescendantOf(workspace) then
 									coroutine.wrap(fling,v)
 								elseif not v or not v:IsDescendantOf(workspace) then
 									table.remove(parts,i)

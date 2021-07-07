@@ -300,7 +300,7 @@ return function()
 			local humPart = char:WaitForChild("HumanoidRootPart")
 			local hum = char:WaitForChild("Humanoid")
 			while torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
-				if (humPart.Position-torso.Position).magnitude>10 and hum and hum.Health>0 then
+				if (humPart.Position-torso.Position).Magnitude>10 and hum and hum.Health>0 then
 					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
 				end
 			end
