@@ -1,6 +1,9 @@
 return {
-	"Version: 221.7";
+	"Version: 222";
 	"*Drag edges to expand*";
+	"";
+	"[v222 WIP]";
+	"(Git/GalacticInspired) Minor changes #383";
 	"";
 	"[v221.7 7.7.2021 13:27 EST]";
 	"(Git/joritochip) Fix Trello syncing issue #397";

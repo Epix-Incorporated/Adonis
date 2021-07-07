@@ -386,6 +386,11 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	data = service.Wrap(data or {})
 
+	--// Warn if possibly malicious
+	if data.PremiumID or data.PremiumId then
+		warn("You might be using a malicious version of the Adonis loader!")
+	end
+
 	--// Server Variables
 	local setTab = require(server.Deps.DefaultSettings)
 	server.Defaults = setTab
