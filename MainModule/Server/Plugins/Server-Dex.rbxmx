@@ -5309,7 +5309,7 @@ local GuiColor = {
 ---- Icon map constants
 
 local MAP_ID = 3440403115
-local CLASS_MAP_ID = 7061043361
+local CLASS_MAP_ID = "rbxasset://textures/ClassImages.PNG"
 
 -- Indices based on implementation of Icon function.
 local ACTION_CUT         	 = 160
@@ -5699,9 +5699,7 @@ end
 -- Total icons: 14 x 14 (196)
 local Icon, ClassIcon do
 	local iconMap = 'http://www.roblox.com/asset/?id=' .. MAP_ID
-	local classIconMap = 'http://www.roblox.com/asset?id=' .. CLASS_MAP_ID
 	game:GetService('ContentProvider'):Preload(iconMap)
-	game:GetService('ContentProvider'):Preload(classIconMap)
 	local iconDehash do
 		-- 14 x 14, 0-based input, 0-based output
 		local f=math.floor
@@ -5742,11 +5740,7 @@ local Icon, ClassIcon do
 	end
 	
 	function ClassIcon(IconFrame, index)
-		local indexX = index % 64
-		local indexY = math_floor(index/64)
-		
-		local offsetX = indexX * 16
-		local offsetY = indexY * 16
+		local offset = index * 16
 
 		local class = 'Frame'
 		if type(IconFrame) == 'string' then
@@ -5762,16 +5756,16 @@ local Icon, ClassIcon do
 				Create('ImageLabel',{
 					Name = "IconMap";
 					BackgroundTransparency = 1;
-					Image = classIconMap;
+					Image = CLASS_MAP_ID;
 					ImageRectSize = Vector2.new(16, 16);
-					ImageRectOffset = Vector2.new(offsetX, offsetY);
+					ImageRectOffset = Vector2.new(offset, 0);
 					Size = UDim2.new(1, 0, 1, 0);
 					Parent = IconFrame
 				});
 			})
 		end 
 		
-		IconFrame.IconMap.ImageRectOffset = Vector2.new(offsetX, offsetY);
+		IconFrame.IconMap.ImageRectOffset = Vector2.new(offset, 0);
 		return IconFrame
 	end
 end
