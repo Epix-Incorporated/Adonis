@@ -381,11 +381,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	if not data or not data.Loader then
 		warn("WARNING: MainModule loaded without using the loader;")
 	end
-	if data.PremiumID and data.PremiumID == 5465382803 then
-		warn("\n-----------------------URGENT ADONIS ADMIN ALERT-----------------------"
-			.."\nYou're using a malicious clone of Adonis Admin intended to modify your game.\nYour game is at risk of being attacked by malicious people.\nPlease make sure that your Adonis_Loader is made by Davey_Bones.\nConfused? Follow this tutorial made by the owner himself: https://youtu.be/1f9x9gdxLjw"
-			.."\n-----------------------URGENT ADONIS ADMIN ALERT-----------------------")
-	end
+			
 	--// Begin Script Loading
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	data = service.Wrap(data or {})
