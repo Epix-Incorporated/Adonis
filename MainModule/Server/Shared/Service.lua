@@ -930,13 +930,19 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		GetTime = function(optTime)
-			local tim=optTime or os.time()
-			local hour = math.floor((tim%86400)/60/60)
-			local min = math.floor(((tim%86400)/60/60-hour)*60)
-			if min < 10 then min = "0"..min end
-			if hour < 10 then hour = "0"..hour end
-			return hour..":"..min
+		GetTime = function()
+			return os.time();
+		end;
+
+		FormatTime = function(optTime, withDate)
+			local formatString = withDate and "L LT" or "LT"
+			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
+			if service.RunService:IsServer() then
+				return tim:FormatUniversalTime(formatString, "en-gb") -- Always show UTC in 24 hour format
+			else
+				local locale = service.Players.LocalPlayer.LocaleId
+				return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
+			end
 		end;
 
 		OwnsAsset = function(p,id)

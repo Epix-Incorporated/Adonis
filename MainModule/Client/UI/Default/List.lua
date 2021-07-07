@@ -98,7 +98,7 @@ return function(data)
 			end
 
 			if v.Time then
-				v.Text = "["..v.Time.."] "..v.Text
+				v.Text = "["..service.FormatTime(v.Time).."] "..v.Text
 			end
 		end
 

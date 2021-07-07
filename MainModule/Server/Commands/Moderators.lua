@@ -1664,8 +1664,8 @@ return function(Vargs, env)
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
-					ServerStartTime = service.GetTime(server.ServerStartTime);
-					ServerAge = service.GetTime(os.time()-server.ServerStartTime);
+					ServerStartTime = service.FormatTime(server.ServerStartTime);
+					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
 					HttpEnabled = HTTP.CheckHttp();
 					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
