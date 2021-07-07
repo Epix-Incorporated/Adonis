@@ -381,7 +381,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	if not data or not data.Loader then
 		warn("WARNING: MainModule loaded without using the loader;")
 	end
-
+			
 	--// Begin Script Loading
 	setfenv(1,setmetatable({}, {__metatable = unique}))
 	data = service.Wrap(data or {})
