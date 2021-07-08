@@ -11,13 +11,14 @@ return function(Vargs)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local HTTP = service.HttpService
-	local Encode = server.Functions.Base64Encode
-	local Decode = server.Functions.Base64Decode
-	local Variables = server.Variables
 	local Settings = server.Settings
-	local Commands = server.Commands
-	local Admin = server.Admin
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+
+	local Encode = Functions.Base64Encode
+	local Decode = Functions.Base64Decode
+
+	local HttpService = service.HttpService
 
 	Variables.WebPanel_Initiated = false
 
@@ -26,11 +27,18 @@ return function(Vargs)
 		settings.WebPanel_ApiKey = "";
 	]]
 
-	local WebPanel = server.HTTP.WebPanel
+	local WebPanel = HTTP.WebPanel
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
+
+	local FoundCustomCommands = {}
+	local CachedAliases = {}
+	local CachedDefaultLevels = {}
+
+	local OverrideQueue = {}
+	
 	local fakePlayer = service.Wrap(service.New("Folder"))
-	local data = {
+	for i,v in pairs({
 		Name = "Server";
 		ToString = "Server";
 		ClassName = "Player";
@@ -45,14 +53,7 @@ return function(Vargs)
 		PlayerScripts = Instance.new("Folder");
 		Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
 		IsA = function(ignore, arg) if arg == "Player" then return true end end;
-	}
-	for i,v in next,data do fakePlayer:SetSpecial(i, v) end
-
-	local FoundCustomCommands = {}
-	local CachedAliases = {}
-	local CachedDefaultLevels = {}
-
-	local OverrideQueue = {}
+	}) do fakePlayer:SetSpecial(i, v) end
 
 	local function CopyCommand(tbl)
 		local ret = {}
@@ -72,8 +73,28 @@ return function(Vargs)
 		return ret
 	end
 
+	local function WebPanelCleanUp(notBindToClose)
+		if Variables.WebPanel_Initiated then
+			pcall(HttpService.RequestAsync, HttpService, {
+				Url = "https://robloxconnection.adonis.dev/remove";
+				Method = "DELETE";
+				Headers = {
+					["api-key"] = Settings.WebPanel_ApiKey,
+					["Content-Type"] = "application/json"
+				};
+				Body = HttpService:JSONEncode({
+					["JobId"] = game.JobId
+				})
+			});
+		end
+
+		if not notBindToClose then
+			wait(4)
+		end
+	end
+
 	local delta, frames = 0, 0
-	game:GetService("RunService").Stepped:Connect(function(time, step)
+	service.RunService.Stepped:Connect(function(time, step)
 		delta += step
 		frames += 1
 		if delta > 1 then
@@ -85,8 +106,8 @@ return function(Vargs)
 		local stats = {}
 
 		local admins = {}
-		for i,v in pairs(service.NetworkServer:GetChildren()) do
-			if v and v:GetPlayer() and server.Admin.CheckAdmin(v:GetPlayer(), false) then
+		for _, v in pairs(service.NetworkServer:GetChildren()) do
+			if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(), false) then
 				table.insert(admins, v:GetPlayer().Name)
 			end
 		end
@@ -132,11 +153,14 @@ return function(Vargs)
 
 	local function ResetCommands()
 		for index, command in pairs(Commands) do
-			if command.Disabled == "WebPanel" then
-				command.Disabled = nil
+			if type(command) == "table" then
+				if command.Disabled == "WebPanel" then
+					command.Disabled = nil
+				end
+
+				ResetCommandAdminLevel(index, command)
+				ResetCommandAliases(index, command)
 			end
-			ResetCommandAdminLevel(index, command)
-			ResetCommandAliases(index, command)
 		end
 	end
 
@@ -148,14 +172,19 @@ return function(Vargs)
 
 		-- Remove old aliases from command cache
 		for _, alias in pairs(aliases) do
-			Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+			if command.Prefix then
+				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
+			end
 		end
 
 		if CachedAliases[index] then
 			for _, alias in ipairs(CachedAliases[index]) do
 				if not table.find(v.aliases, "-"..alias) then
 					table.insert(newaliases, alias)
-					Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+
+					if command.Prefix then
+						Admin.CommandCache[string.lower(command.Prefix..alias)] = index
+					end
 				end
 			end
 		end
@@ -174,7 +203,8 @@ return function(Vargs)
 				WebPanel = true,
 				__index = function(tbl, index)
 					local rawlevel = rawget(command, "AdminLevel")
-					if index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
+
+					if rawlevel and index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
 						return {AdminLevel = string.sub(rawlevel, 9)}
 					end
 				end,
@@ -189,8 +219,8 @@ return function(Vargs)
 		for i,v in pairs(data.CommandOverrides) do
 			didrun = true
 
-			local index, command = server.Admin.GetCommand(Settings.Prefix..i)
-			if not index or not command then index,command = server.Admin.GetCommand(Settings.PlayerPrefix..i) end
+			local index, command = Admin.GetCommand(Settings.Prefix..i)
+			if not index or not command then index,command = Admin.GetCommand(Settings.PlayerPrefix..i) end
 
 			if index and command then
 				UpdateCommand(index, command, v)
@@ -241,15 +271,22 @@ return function(Vargs)
 		if Variables.MusicList then
 			for i = #Variables.MusicList, 1, -1 do -- Iterating backwards to prevent wonky behavior with table.remove
 				local v = Variables.MusicList[i]
+
 				if v and v.WebPanel then
 					table.remove(Variables.MusicList, i)
 				end
 			end
-			for ind, music in next,data.Levels.Musiclist or {} do
-				if music:match('^(.*):(.*)') then
-					local a,b = music:match('^(.*):(.*)')
-					if server.Variables.MusicList then
-						table.insert(server.Variables.MusicList, {Name = a,ID = tonumber(b),WebPanel=true})
+
+			for ind, music in pairs(data.Levels.Musiclist or {}) do
+				if string.match(music, '^(.*):(.*)') then
+					local a,b = string.match(music, '^(.*):(.*)')
+
+					if Variables.MusicList then
+						table.insert(Variables.MusicList, {
+							Name = a,
+							ID = tonumber(b),
+							WebPanel=true
+						})
 					end
 				end
 			end
@@ -258,12 +295,16 @@ return function(Vargs)
 
 	do -- Create a cache of the default admin levels for all commands
 		for name, command in pairs(Commands) do
-			CachedDefaultLevels[name] = rawget(command, "AdminLevel")
-			local aliases = {}
-			for _, cmd in pairs(rawget(command, "Commands")) do
-				table.insert(aliases, cmd)
+			if type(command) == "table" then
+				CachedDefaultLevels[name] = rawget(command, "AdminLevel")
+
+				local aliases = {}
+				for _, cmd in pairs(rawget(command, "Commands")) do
+					table.insert(aliases, cmd)
+				end
+
+				CachedAliases[name] = aliases					
 			end
-			CachedAliases[name] = aliases
 		end
 	end
 
@@ -300,54 +341,38 @@ return function(Vargs)
 		setmetatable(Commands, CommandsMetatable)
 	end
 
-	service.DataModel:BindToClose(function()
-		if server.Variables.WebPanel_Initiated then
-			local HTTP = game:GetService("HttpService")
-			local success, res = pcall(HTTP.RequestAsync, HTTP, {
-				Url = "https://robloxconnection.adonis.dev/remove";
-				Method = "DELETE";
-				Headers = {
-					["api-key"] = server.Settings.WebPanel_ApiKey,
-					["Content-Type"] = "application/json"
-				};
-				Body = HTTP:JSONEncode({
-					["JobId"] = game.JobId
-				})
-			});
-		end
-		wait(4)
-	end)
+	service.DataModel:BindToClose(WebPanelCleanUp)
 
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
-		local success, res = pcall(HTTP.RequestAsync, HTTP, {
+		local success, res = pcall(HttpService.RequestAsync, HttpService, {
 			Url = "https://robloxconnection.adonis.dev/load";
 			Method = "POST";
 			Headers = {
 				["api-key"] = Settings.WebPanel_ApiKey,
 				["Content-Type"] = "application/json"
 			};
-			Body = HTTP:JSONEncode({
-				["custom-commands"] = Encode(HTTP:JSONEncode(GetCustomCommands())), -- For loading custom commands in command settings!
-				["server-stats"] = Encode(HTTP:JSONEncode(GetServerStats())),
+			Body = HttpService:JSONEncode({
+				["custom-commands"] = Encode(HttpService:JSONEncode(GetCustomCommands())), -- For loading custom commands in command settings!
+				["server-stats"] = Encode(HttpService:JSONEncode(GetServerStats())),
 				["init"] = Variables.WebPanel_Initiated and "false" or "true",
 			})
 		});
 
 		if success and res.Success then
-			local data = HTTP:JSONDecode(res.Body)
+			local data = HttpService:JSONDecode(res.Body)
 
 			--// Load plugins
-			--[[if init then
-				for i,v in next,data.Plugins do
-					local func,err = server.Core.Loadstring(Decode(v), getfenv())
-					if func then
-						func()
-					else
-						warn("Error Loading Plugin from WebPanel.")
-					end
+		--[[if init then
+			for i,v in next,data.Plugins do
+				local func,err = server.Core.Loadstring(Decode(v), getfenv())
+				if func then
+					func()
+				else
+					warn("Error Loading Plugin from WebPanel.")
 				end
-			end]]
+			end
+		end]]
 
 			if not Variables.WebPanel_Initiated then
 				UpdateCommands(data)
@@ -359,7 +384,7 @@ return function(Vargs)
 					Settings.Trello_AppKey = data.trello["app-key"]
 					Settings.Trello_Token = data.trello.token
 
-					service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, server.HTTP.Trello.Update, true)
+					service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
 				end
 			end
 
@@ -369,7 +394,8 @@ return function(Vargs)
 				if typeof(v.server) ~= "string" then v.server = tostring(v.server) end
 
 				if v.action == "gameshutdown" then
-					server.Functions.Shutdown("Game Shutdown")
+					Functions.Shutdown("[WebPanel] Server Shutdown")
+					WebPanelCleanUp(true)
 					break
 				elseif v.action == "updatecommands" then
 					UpdateCommands(data)
@@ -377,26 +403,34 @@ return function(Vargs)
 					UpdateSettings(data)
 
 					for _, p in pairs(service.GetPlayers()) do
-						if server.Admin.CheckBan(p) then
-							server.Admin.AddBan(p, false)
+						if Admin.CheckBan(p) then
+							Admin.AddBan(p, false)
 						else
 							Admin.UpdateCachedLevel(p)
 						end
 					end
 				end
 
-				if (v and v.server == game.JobId) or (game:GetService("RunService"):IsStudio() and v and v.server == "Roblox Studio") then
+				if (v and v.server == game.JobId) or (service.RunService:IsStudio() and v and v.server == "Roblox Studio") then
 					if v.action == "shutdown" then
-						server.Functions.Shutdown("Game Shutdown")
+						Functions.Shutdown("[WebPanel] Server Shutdown")
+						WebPanelCleanUp(true)
 					elseif v.action == "remoteexecute" then
-						if typeof(v.command) ~= "string" then v.command = tostring(v.command) end
-						server.Process.Command(fakePlayer, v.command, {AdminLevel = 900, DontLog = true, IgnoreErrors = true})
+						if typeof(v.command) ~= "string" then
+							v.command = tostring(v.command)
+						end
+
+						Process.Command(fakePlayer, v.command, {
+							AdminLevel = 900,
+							DontLog = true,
+							IgnoreErrors = true
+						})
 					end
 				end
 			end
 
 			if not Variables.WebPanel_Initiated then
-				server.Logs:AddLog("Script", "WebPanel Initialization Complete")
+				Logs:AddLog("Script", "WebPanel Initialization Complete")
 				Variables.WebPanel_Initiated = true
 				wait(3)
 			end
@@ -404,13 +438,14 @@ return function(Vargs)
 			local code, msg = res.StatusCode, res.StatusMessage
 
 			if code ~= 520 and code ~= 524 then
-				server.Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
-				server.Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
+				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
 				break
 			elseif code == 520 then
 				wait(5) --After the server restarts we want to make sure that it has time to inititate everything
 			end
 		end
+
 		wait()
 	end
 end
