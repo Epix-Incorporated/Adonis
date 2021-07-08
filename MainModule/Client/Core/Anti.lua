@@ -354,6 +354,14 @@ return function()
 				end
 			end)
 
+			service.PolicyService.ChildAdded:Connect(function(child)
+				if Anti.GetClassName(child) == "Sound" then
+					if child.SoundId and string.find(string.lower(child.SoundId),"5032588119") then
+						Detected("kick","CMDx Detected; "..tostring(child))
+					end
+				end
+			end)
+
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
