@@ -99,13 +99,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local tab = {}
-				local variables = Core.Variables
-				local timeBans = variables.TimeBans or {}
+				local CoreVariables = Core.Variables
+				local timeBans = CoreVariables.TimeBans or {}
 				for i, v in ipairs(timeBans) do
 					local timeLeft = v.EndTime - os.time()
 					local minutes = Functions.RoundToPlace(timeLeft / 60, 2)
 					if timeLeft <= 0 then
-						table.remove(variables.TimeBans, i)
+						table.remove(CoreVariables.TimeBans, i)
 					else
 						table.insert(tab, {Text = tostring(v.Name)..":"..tostring(v.UserId), Desc = "Minutes Left: "..tostring(minutes)})
 					end
