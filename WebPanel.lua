@@ -390,7 +390,7 @@ return function(Vargs)
 						server.Functions.Shutdown("Game Shutdown")
 					elseif v.action == "remoteexecute" then
 						if typeof(v.command) ~= "string" then v.command = tostring(v.command) end
-						server.Process.Command(fakePlayer, v.command, {AdminLevel = 4, DontLog = true, IgnoreErrors = true})
+						server.Process.Command(fakePlayer, v.command, {AdminLevel = 900, DontLog = true, IgnoreErrors = true})
 					end
 				end
 			end
