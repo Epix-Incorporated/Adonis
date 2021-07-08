@@ -204,7 +204,7 @@ return function()
 			end)
 		end;
 
-		AntiGui = function(data) --// Future
+		AntiGui = function() --// Future
 			service.Player.DescendantAdded:connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
 					c:Destroy()
@@ -213,9 +213,9 @@ return function()
 			end)
 		end;
 
-		AntiTools = function(data)
+		AntiTools = function()
 			if service.Player:WaitForChild("Backpack", 120) then
-				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")
+				-- local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
 				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
 				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
@@ -236,12 +236,12 @@ return function()
 			end
 		end;
 
-		HumanoidState = function(data)
+		HumanoidState = function()
 			wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid")
 			local event
 			local doing = true
-			event = humanoid.StateChanged:connect(function(old,new)
+			event = humanoid.StateChanged:connect(function(_,new)
 				if not doing then
 					event:disconnect()
 				end
@@ -260,7 +260,7 @@ return function()
 			end
 		end;
 
-		Paranoid = function(data)
+		Paranoid = function()
 			wait(1)
 			local char = service.Player.Character
 			local torso = char:WaitForChild("Head")
@@ -318,7 +318,7 @@ return function()
 				end
 			end
 
-			local function checkServ(c)
+			local function checkServ()
 				if not pcall(function()
 					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
 						Detected("crash","Disallowed Services Detected")
@@ -360,7 +360,7 @@ return function()
 				end
 			end)
 
-			service.LogService.MessageOut:connect(function(Message, Type)
+			service.LogService.MessageOut:connect(function(Message)
 				if check(Message) then
 					Detected('crash','Exploit detected; '..Message)
 				end
@@ -376,7 +376,7 @@ return function()
 					Detected("kick","Elysian")
 				elseif check(Message) or check(Trace) or check(Script) then
 					Detected('crash','Exploit detected; '..Message.." "..Trace.." "..Script)
-				elseif (not Script or ((not Trace or Trace == ""))) then
+				elseif not Script or ((not Trace or Trace == "")) then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
 					if Script then
@@ -420,20 +420,20 @@ return function()
 				end
 
 				--// Stuff
-				local ran,err = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
+				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
 					Detected("log","ScriptContext error?")
 				end
 
 				--// Check Log History
-				for i,v in next,service.LogService:GetLogHistory() do
+				for _,v in next,service.LogService:GetLogHistory() do
 					if check(v.message) then
 						Detected('crash','Exploit detected')
 					end
 				end
 
 				--// Check Loadstring
-				local ran,err = pcall(function()
+				local ran,_ = pcall(function()
 					local func,err = loadstring("print('LOADSTRING TEST')")
 				end)
 				if ran then
@@ -441,7 +441,7 @@ return function()
 				end
 
 				--// Check Context Level
-				local ran,err = pcall(function()
+				local ran,_ = pcall(function()
 					local test = Instance.new("StringValue")
 					test.RobloxLocked = true
 				end)
@@ -472,7 +472,7 @@ return function()
 
 		GetClassName = function(obj)
 			local testName = tostring(math.random()..math.random())
-			local ran,err = pcall(function()
+			local _,err = pcall(function()
 				local test = obj[testName]
 			end)
 			if err then
@@ -484,16 +484,20 @@ return function()
 		end;
 
 		RLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
+			return not pcall(function()
+				return obj.GetFullName(obj)
+			end)
 		end;
 
 		ObjRLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
+			return not pcall(function()
+				return obj.GetFullName(obj)
+			end)
 		end;
 
 		CoreRLocked = function(obj)
 			local testName = tostring(math.random()..math.random())
-			local ye,err = pcall(function()
+			local _,err = pcall(function()
 				game:GetService("GuiService"):AddSelectionParent(testName, obj)
 				game:GetService("GuiService"):RemoveSelectionGroup(testName)
 			end)
@@ -501,33 +505,29 @@ return function()
 				return true
 			else
 				wait(0.5)
-				for i,v in next,service.LogService:GetLogHistory() do
+				for _,v in next,service.LogService:GetLogHistory() do
 					if string.find(v.message,testName) and string.find(v.message,"GuiService:") then
 						return true
 					end
 				end
 			end
 		end;
-	}, {[Init] = true, [RunLast] = true, [RunAfterLoaded] = true}, true)
+	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
 
 	client.Anti = Anti
 
 	do
 		local meta = service.MetaFunc
 		local track = meta(service.TrackTask)
-		local loop = meta(service.StartLoop)
 		local opcall = meta(pcall)
 		local oWait = meta(wait)
-		local resume = meta(coroutine.resume)
-		local create = meta(coroutine.create)
 		local tick = meta(tick)
-		local loopAlive = tick()
-		local otostring = meta(tostring)
 
 		track("Thread: TableCheck", meta(function()
 			while oWait(1) do
-				loopAlive = tick()
-				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function() return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill end))
+				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function()
+					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
+				end))
 				if not ran or core ~= Core or remote ~= Remote or functions ~= Functions or anti ~= Anti or send ~= Send or get ~= Get or detected ~= Detected or disconnect ~= Disconnect or kill ~= Kill then
 					opcall(Detected, "crash", "Tamper Protection 10042")
 					oWait(1)
