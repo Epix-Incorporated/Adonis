@@ -192,13 +192,6 @@ return function(Vargs)
 			end
 		end;
 
-		GetTrueRank = function(p, group)
-			local localRank = Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)
-			if localRank and localRank > 0 then
-				return localRank
-			end
-		end;
-
 		GetPlayerGroup = function(p, group)
 			local data = Core.GetPlayer(p)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
@@ -744,7 +737,6 @@ return function(Vargs)
 			end
 		end;
 
-
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
@@ -884,37 +876,6 @@ return function(Vargs)
 			return msg
 		end;
 
-		IsComLevel = function(testLevel, comLevel)
-			--print("Checking", tostring(testLevel), tostring(comLevel))
-			if testLevel == comLevel then
-				return true
-			elseif type(testLevel) == "table" then
-				for i,v in next,testLevel do
-					if i == comLevel or v == comLevel or (type(i) == "string" and type(comLevel) == "string" and i:lower() == comLevel:lower()) then
-						--	print("One Match")
-						return i,v
-					elseif type(comLevel) == "table" then
-						for k,m in ipairs(comLevel) do
-							if i == m or v == m or (type(i) == "string" and type(m) == "string" and i:lower() == m:lower()) then
-								--print("Found a match")
-								return i,v
-							end
-						end
-					end
-				end
-			elseif type(comLevel) == "string" then
-				return testLevel:lower() == comLevel:lower()
-			elseif type(comLevel) == "table" then
-				for i,v in ipairs(comLevel) do
-					if testLevel:lower() == v:lower() then
-						return true
-					end
-				end
-			end
-
-			--print("No Match")
-		end;
-
 		StringToComLevel = function(str)
 			if type(str) == "number" then return str end;
 			if string.lower(str) == "players" then return 0 end;
@@ -955,7 +916,6 @@ return function(Vargs)
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
-			local isComLevel = Admin.IsComLevel
 
 			if adminLevel >= 900 then
 				return true

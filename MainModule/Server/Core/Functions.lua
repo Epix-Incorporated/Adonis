@@ -395,12 +395,6 @@ return function(Vargs)
 			end
 		end;
 
-		PerformOnEach = function(itemList, func, ...)
-			for i,v in next,itemList do
-				pcall(func, v, ...)
-			end
-		end;
-
 		ArgsToString = function(args)
 			local str = ""
 			for i,arg in next,args do
@@ -608,16 +602,6 @@ return function(Vargs)
 			return weld
 		end;
 
-		SetView = function(ob)
-			if ob == 'reset' then
-				workspace.CurrentCamera.CameraType = 'Custom'
-				workspace.CurrentCamera.CameraSubject = service.Player.Character.Humanoid
-				workspace.CurrentCamera.FieldOfView = 70
-			else
-				workspace.CurrentCamera.CameraSubject = ob
-			end
-		end;
-
 		SetLighting = function(prop,value)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
@@ -816,25 +800,6 @@ return function(Vargs)
 			return num
 		end;
 
-		GetTextureUsingHttp = function(id)
-			if service.HttpService.HttpEnabled then
-				local id = tonumber(id);
-
-				if id then
-					if Functions.IsValidTexture(id) then
-						if info.AssetTypeId == 1 then
-							return id;
-						else
-						--// do http stuff?????
-							return 6825455804;
-						end
-					end
-				else
-					error("Invalid assetid provided");
-				end
-			end
-		end;
-
 		IsValidTexture = function(id)
 			local id = tonumber(id)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
@@ -868,7 +833,7 @@ return function(Vargs)
 		end;
 
 		CleanWorkspace = function()
-			for i,v in pairs(service.Workspace:children()) do
+			for i,v in pairs(service.Workspace:GetChildren()) do
 				if v:IsA("Tool") or v:IsA("Accessory") or v:IsA("Hat") then
 					v:Destroy()
 				end
@@ -876,10 +841,10 @@ return function(Vargs)
 		end;
 
 		RemoveSeatWelds = function(seat)
-			if seat~=nil then
-				for i,v in next,seat:GetChildren() do
+			if seat ~= nil then
+				for i,v in ipairs(seat:GetChildren()) do
 					if v:IsA("Weld") then
-						if v.Part1 ~= nil and v.Part1.Name=="HumanoidRootPart" then
+						if v.Part1 ~= nil and v.Part1.Name == "HumanoidRootPart" then
 							v:Destroy()
 						end
 					end
@@ -1010,7 +975,6 @@ return function(Vargs)
 			end
 		end;
 
-		--// Couldn't merge due to "conflicts" so just added manually.
 		ConvertPlayerCharacterToRig = function(p, rigType)
 			rigType = rigType or "R15"
 
@@ -1025,7 +989,7 @@ return function(Vargs)
 			local human = char:FindFirstChildOfClass"Humanoid"
 
 			if head then
-				local rig = server.Deps.Assets["Rig"..rigType]:Clone() -- requires R6 and R15 in Dependencies to retrieve the Rig Models !!
+				local rig = server.Deps.Assets["Rig"..rigType]:Clone()
 				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
 				local origHeadCF = head.CFrame
 				rig.Name = p.Name
@@ -1051,6 +1015,6 @@ return function(Vargs)
 			Clothing.Name = clothingtype
 			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
 			return Clothing
-		end
+		end;
 	};
 end
