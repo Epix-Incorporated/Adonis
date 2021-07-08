@@ -380,7 +380,6 @@ return function()
 				end
 			end)
 
-
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
