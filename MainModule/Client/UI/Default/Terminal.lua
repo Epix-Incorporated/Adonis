@@ -45,7 +45,7 @@ return function(data)
 		out(data,termLines)
 	end)
 	
-	textbox.FocusLost:connect(function(enterPressed)
+	textbox.FocusLost:Connect(function(enterPressed)
 		service.Debounce("_TERMINAL_BOX_FOCUSLOST",function()
 			if enterPressed and textbox.Text ~= "" and textbox.Text ~= "Enter command" then
 				local com = textbox.Text

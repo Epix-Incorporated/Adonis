@@ -14,7 +14,7 @@ local torso = script.Parent
 local posed = false
 local type = script.Type.Value
 local int = script.Num.Value
-game:GetService("RunService").RenderStepped:connect(function()
+game:GetService("RunService").RenderStepped:Connect(function()
 if posed then
   if type == 'ghost' then
     torso.CFrame = torso.CFrame+Vector3.new(((tonumber(int) or 100)*2),0,0)

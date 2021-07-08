@@ -394,7 +394,7 @@ return function(data)
 
 		local tools = {}
 		table.insert(tools,{Text="==== "..player.Name.."'s Tools ====",Desc=player.Name:lower()})
-		for k,t in pairs(player.Backpack:children()) do
+		for k,t in pairs(player.Backpack:GetChildren()) do
 			if t:IsA("Tool") then
 				table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
 			elseif t:IsA("HopperBin") then

@@ -164,8 +164,8 @@ return function(Vargs, env)
 					})
 				end
 				--for i = num, 1, -1 do
-				--Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
-				--Functions.Message(" ", i, false, service.Players:children(), 0.8)
+				--Functions.Message("Countdown", tostring(i), service.Players:GetChildren(), false, 1.1)
+				--Functions.Message(" ", i, false, service.Players:GetChildren(), 0.8)
 				--wait(1)
 				--end
 			end
@@ -582,7 +582,7 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
-						if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
+						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							for _, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
@@ -878,7 +878,7 @@ return function(Vargs, env)
 						local pos = torso.CFrame
 						local running=true
 						local event
-						event = v.Character.Humanoid.Jumping:connect(function()
+						event = v.Character.Humanoid.Jumping:Connect(function()
 							running = false
 							ff:Destroy()
 							hum.Health = orig
@@ -2545,7 +2545,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					cPcall(function()
-						if v and v:findFirstChild("leaderstats") then
+						if v and v:FindFirstChild("leaderstats") then
 							for a,q in pairs(v.leaderstats:GetChildren()) do
 								if q:IsA("IntValue") then q.Value = 0 end
 							end
@@ -2568,7 +2568,7 @@ return function(Vargs, env)
 				if gear:IsA("Tool") or gear:IsA("HopperBin") then
 					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						if v:findFirstChild("Backpack") then
+						if v:FindFirstChild("Backpack") then
 							gear:Clone().Parent = v.Backpack
 						end
 					end
@@ -3029,8 +3029,8 @@ return function(Vargs, env)
 							arrow.Position = UDim2.new(0,0,0,20)
 							arrow.Text = 'v'
 							Remote.MakeLocal(plr,bb,false,true)
-							local event;event = v.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-							local event2;event2 = plr.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+							local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
+							local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
 						end
 					end)()
 				end
@@ -3098,7 +3098,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v:findFirstChild("Backpack") then
+					if v and v:FindFirstChild("Backpack") then
 						for a,q in pairs(service.StarterPack:GetChildren()) do
 							local q = q:Clone()
 							if not q:FindFirstChild(Variables.CodeName) then
@@ -3347,18 +3347,18 @@ return function(Vargs, env)
 						local w2 = service.New("Weld", plr.Character.Head)
 						w2.Part0 = plr.Character.Head
 						w2.Part1 = v.Character.Head
-						local w3 = service.New("Weld", plr.Character:findFirstChild("Right Arm"))
-						w3.Part0 = plr.Character:findFirstChild("Right Arm")
-						w3.Part1 = v.Character:findFirstChild("Right Arm")
-						local w4 = service.New("Weld", plr.Character:findFirstChild("Left Arm"))
-						w4.Part0 = plr.Character:findFirstChild("Left Arm")
-						w4.Part1 = v.Character:findFirstChild("Left Arm")
-						local w5 = service.New("Weld", plr.Character:findFirstChild("Right Leg"))
-						w5.Part0 = plr.Character:findFirstChild("Right Leg")
-						w5.Part1 = v.Character:findFirstChild("Right Leg")
-						local w6 = service.New("Weld", plr.Character:findFirstChild("Left Leg"))
-						w6.Part0 = plr.Character:findFirstChild("Left Leg")
-						w6.Part1 = v.Character:findFirstChild("Left Leg")
+						local w3 = service.New("Weld", plr.Character:FindFirstChild("Right Arm"))
+						w3.Part0 = plr.Character:FindFirstChild("Right Arm")
+						w3.Part1 = v.Character:FindFirstChild("Right Arm")
+						local w4 = service.New("Weld", plr.Character:FindFirstChild("Left Arm"))
+						w4.Part0 = plr.Character:FindFirstChild("Left Arm")
+						w4.Part1 = v.Character:FindFirstChild("Left Arm")
+						local w5 = service.New("Weld", plr.Character:FindFirstChild("Right Leg"))
+						w5.Part0 = plr.Character:FindFirstChild("Right Leg")
+						w5.Part1 = v.Character:FindFirstChild("Right Leg")
+						local w6 = service.New("Weld", plr.Character:FindFirstChild("Left Leg"))
+						w6.Part0 = plr.Character:FindFirstChild("Left Leg")
+						w6.Part1 = v.Character:FindFirstChild("Left Leg")
 						plr.Character.Head.face:Destroy()
 						for i, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") then
@@ -3373,7 +3373,7 @@ return function(Vargs, env)
 							end
 						end
 						v.Character.Parent = plr.Character
-						--v.Character.Humanoid.Changed:connect(function() v.Character.Humanoid.PlatformStand = true end)
+						--v.Character.Humanoid.Changed:Connect(function() v.Character.Humanoid.PlatformStand = true end)
 					end
 				end
 			end
@@ -3542,7 +3542,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local angle = 130 or args[2]
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0,0,math.rad(angle))
 					end
 				end
@@ -3593,7 +3593,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.Jump = true
 					end
 				end
@@ -3610,7 +3610,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.Sit = true
 					end
 				end
@@ -3631,10 +3631,10 @@ return function(Vargs, env)
 						for a, obj in next,v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
 								obj.Transparency = 1
-								if obj:findFirstChild("face") then
+								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 1
 								end
-							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
+							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 1
 							elseif obj:IsA("ForceField") then
 								obj.Visible = false
@@ -3664,10 +3664,10 @@ return function(Vargs, env)
 						for a, obj in next,v.Character:GetChildren() do
 							if obj:IsA("BasePart") and obj.Name~='HumanoidRootPart' then
 								obj.Transparency = 0
-								if obj:findFirstChild("face") then
+								if obj:FindFirstChild("face") then
 									obj.face.Transparency = 0
 								end
-							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
+							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
 							elseif obj:IsA("ForceField") then
 								obj.Visible = true
@@ -3697,7 +3697,7 @@ return function(Vargs, env)
 						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") then
 								obj.Locked = true
-							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
+							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Locked = true
 							end
 						end
@@ -3720,7 +3720,7 @@ return function(Vargs, env)
 						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") then
 								obj.Locked = false
-							elseif obj:IsA("Accoutrement") and obj:findFirstChild("Handle") then
+							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Locked = false
 							end
 						end
@@ -4113,7 +4113,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
-					if v:findFirstChild("StarterGear") then
+					if v:FindFirstChild("StarterGear") then
 						for a,tool in pairs(v.StarterGear:GetChildren()) do
 							if tool:IsA("Tool") or tool:IsA("HopperBin") then
 								if args[2]:lower() == "all" or tool.Name:lower():find(args[2]:lower()) == 1 then
@@ -4213,7 +4213,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v:findFirstChild("Backpack") then
+					if v.Character and v:FindFirstChild("Backpack") then
 						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
 						for a, tool in pairs(v.Backpack:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
 					end
@@ -4268,7 +4268,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:findFirstChild("Humanoid") then
+					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.MaxHealth = args[2]
 						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
 					end
@@ -4287,7 +4287,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.JumpPower = args[2] or 60
 					end
 				end
@@ -4305,7 +4305,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Humanoid") then
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.WalkSpeed = args[2] or 16
 					end
 				end
@@ -4666,7 +4666,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("leaderstats") then
+					if v:FindFirstChild("leaderstats") then
 						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 then
 								st.Value = args[3]
@@ -4687,7 +4687,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("leaderstats") then
+					if v:FindFirstChild("leaderstats") then
 						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 and tonumber(st.Value) then
 								st.Value = tonumber(st.Value)+tonumber(args[3])
@@ -4708,7 +4708,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("leaderstats") then
+					if v:FindFirstChild("leaderstats") then
 						for a, st in pairs(v.leaderstats:GetChildren()) do
 							if st.Name:lower():find(args[2]:lower()) == 1 and tonumber(st.Value) then
 								st.Value = tonumber(st.Value)-tonumber(args[3])
@@ -5339,7 +5339,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
-						if v.Character and v.Character:findFirstChild("HumanoidRootPart") and v.Character:findFirstChild("Humanoid") then
+						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") then
 							local xran local zran
 							repeat xran = math.random(-9999,9999) until math.abs(xran) >= 5555
 							repeat zran = math.random(-9999,9999) until math.abs(zran) >= 5555
@@ -5441,9 +5441,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Head") then
+					if v.Character and v.Character:FindFirstChild("Head") then
 						for a, mod in pairs(v.Character:GetChildren()) do
-							if mod:findFirstChild("NameTag") then
+							if mod:FindFirstChild("NameTag") then
 								v.Character.Head.Transparency = 0
 								mod:Destroy()
 							end
@@ -5466,7 +5466,7 @@ return function(Vargs, env)
 							hum.MaxHealth = 0
 							hum.Health = 0
 						else
-							v.Character.Humanoid.Changed:connect(function(c)
+							v.Character.Humanoid.Changed:Connect(function(c)
 								hum.MaxHealth = v.Character.Humanoid.MaxHealth
 								wait()
 								hum.Health = v.Character.Humanoid.Health
@@ -5491,9 +5491,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("Head") then
+					if v.Character and v.Character:FindFirstChild("Head") then
 						for a, mod in pairs(v.Character:GetChildren()) do
-							if mod:findFirstChild("NameTag") then
+							if mod:FindFirstChild("NameTag") then
 								v.Character.Head.Transparency = 0
 								mod:Destroy()
 							end

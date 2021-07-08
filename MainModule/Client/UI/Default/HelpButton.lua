@@ -34,7 +34,7 @@ return function(data)
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 
-	toggle.MouseButton1Down:connect(function()
+	toggle.MouseButton1Down:Connect(function()
 		local found = client.UI.Get("UserPanel",nil,true)
 		if found then
 			found.Object:Destroy()

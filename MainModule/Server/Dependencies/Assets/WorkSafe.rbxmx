@@ -14,7 +14,7 @@ local mode=script.Mode.Value
 
 if mode=="AnchorSafe" or mode=="ObjectSafe" then
 	function cover(part)
-		for i,v in pairs(part:children()) do
+		for i,v in pairs(part:GetChildren()) do
 			pcall(cover,v)
 		end
 		if part==workspace then return end
@@ -35,7 +35,7 @@ if mode=="AnchorSafe" or mode=="ObjectSafe" then
 				--print("DEL ONE")
 			end
 			local event
-			event=part.Changed:connect(function(p)
+			event=part.Changed:Connect(function(p)
 				pcall(function()
 					if anchor and part and part.Parent and mode=="AnchorSafe" then
 						part.Anchored=true
@@ -48,7 +48,7 @@ if mode=="AnchorSafe" or mode=="ObjectSafe" then
 							local new=orig:clone()
 							new.Parent=workspace
 							cover(new)
-							event:disconnect()
+							event:Disconnect()
 						end
 						--print("DELETE "..part:GetFullName())
 					end
@@ -61,13 +61,13 @@ elseif mode=="AntiLeak" then
 	local function noleak(obj) 
 		if obj.ClassName == "StarterPlayerScripts" or obj.ClassName == "OLD.ServerStorage" or obj.ClassName == "Tool" or obj.ClassName == "HopperBin" then return end 
 		obj.Archivable = false 
-		obj.Changed:connect(function(p)
+		obj.Changed:Connect(function(p)
 			obj.Archivable = false
 		end)
-		for i,v in pairs(obj:children()) do 
+		for i,v in pairs(obj:GetChildren()) do 
 			pcall(function() 
 				v.Archivable = false 	
-				v.Changed:connect(function(p)
+				v.Changed:Connect(function(p)
 					v.Archivable = false
 				end)
 			end) 

@@ -98,7 +98,7 @@ return function(data)
 			end
 
 			if v.Time then
-				v.Text = "["..service.FormatTime(v.Time).."] "..v.Text
+				v.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..v.Text
 			end
 		end
 
@@ -307,7 +307,7 @@ return function(data)
 		TextStrokeTransparency = 0.8;
 	})
 
-	search.FocusLost:connect(function(enter)
+	search.FocusLost:Connect(function(enter)
 		genList(Tab)
 	end)
 

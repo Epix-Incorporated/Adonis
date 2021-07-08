@@ -250,7 +250,7 @@ return function(Vargs, env)
 						audio:Play()
 						wait(2.25)
 						doPause(workspace)
-						Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
+						Variables.ZaWarudo = game.DescendantAdded:Connect(function(c)
 							if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
 								c.Anchored = true
 								table.insert(Variables.FrozenObjects,c)
@@ -337,7 +337,7 @@ return function(Vargs, env)
 				if gear:IsA("Tool") or gear:IsA("HopperBin") then
 					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						if v:findFirstChild("Backpack") then
+						if v:FindFirstChild("Backpack") then
 							gear:Clone().Parent = v.Backpack
 						end
 					end
@@ -356,33 +356,33 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local infect; infect = function(v)
 					local char = v.Character
-					if char and char:findFirstChild("HumanoidRootPart") and not char:FindFirstChild("Infected") then
+					if char and char:FindFirstChild("HumanoidRootPart") and not char:FindFirstChild("Infected") then
 						local cl = service.New("StringValue", char)
 						cl.Name = "Infected"
 						cl.Parent = char
 
-						for q, prt in pairs(char:children()) do
-							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:findFirstChild("NameTag", true)) then
+						for _, prt in pairs(char:GetChildren()) do
+							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Dark green")
 								if prt.Name:find("Leg") or prt.Name:find('Arm') then
 									prt.BrickColor = BrickColor.new("Dark green")
 								end
-								local tconn; tconn = prt.Touched:connect(function(hit)
-									if hit and hit.Parent and service.Players:findFirstChild(hit.Parent.Name) and cl.Parent == char then
+								local tconn; tconn = prt.Touched:Connect(function(hit)
+									if hit and hit.Parent and service.Players:FindFirstChild(hit.Parent.Name) and cl.Parent == char then
 										infect(hit.Parent)
 									elseif cl.Parent ~= char then
-										tconn:disconnect()
+										tconn:Disconnect()
 									end
 								end)
 
-								cl.Changed:connect(function()
+								cl.Changed:Connect(function()
 									if cl.Parent ~= char then
-										tconn:disconnect()
+										tconn:Disconnect()
 									end
 								end)
-							elseif prt:findFirstChild("NameTag") then
+							elseif prt:FindFirstChild("NameTag") then
 								prt.Head.Transparency = 0
 								prt.Head.Reflectance = 0
 								prt.Head.BrickColor = BrickColor.new("Dark green")
@@ -411,12 +411,12 @@ return function(Vargs, env)
 						wait(0.1)
 						local char = script.Parent.Parent
 						local clr = BrickColor.random()
-						for i,v in pairs(char:children()) do
-							if v:IsA("BasePart") and v.Name~='HumanoidRootPart' and (v.Name ~= "Head" or not v.Parent:findFirstChild("NameTag", true)) then
+						for i,v in pairs(char:GetChildren()) do
+							if v:IsA("BasePart") and v.Name~='HumanoidRootPart' and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
 								v.BrickColor = clr
 								v.Reflectance = 0
 								v.Transparency = 0
-							elseif v:findFirstChild("NameTag") then
+							elseif v:FindFirstChild("NameTag") then
 								v.Head.BrickColor = clr
 								v.Head.Reflectance = 0
 								v.Head.Transparency = 0
@@ -462,9 +462,9 @@ return function(Vargs, env)
 					TorsoColor = BrickColor.new("Bright blue")
 				})
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for k,p in pairs(v.Character:children()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
 								p:Destroy()
 							end
@@ -486,9 +486,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for k,p in pairs(v.Character:children()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Part") then
 								if args[2] then
 									local str = BrickColor.new('Institutional white').Color
@@ -548,9 +548,9 @@ return function(Vargs, env)
 					return
 				end
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for k,p in pairs(v.Character:children()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA"BasePart" then
 								p.Material = chosenMat
 							end
@@ -569,9 +569,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for k,p in pairs(v.Character:children()) do
+						for _,p in pairs(v.CharacterGetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("Part") then
@@ -602,27 +602,27 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Admin.RunCommand(Settings.Prefix.."noclip",v.Name)
 
-						if v.Character:findFirstChild("Shirt") then
+						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
 						end
 
-						if v.Character:findFirstChild("Pants") then
+						if v.Character:FindFirstChild("Pants") then
 							v.Character.Pants:Destroy()
 						end
 
-						for a, prt in pairs(v.Character:children()) do
-							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:findFirstChild("NameTag", true)) then
+						for _, prt in pairs(v.Character:GetChildren()) do
+							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = .5
 								prt.Reflectance = 0
 								prt.BrickColor = BrickColor.new("Institutional white")
 								if prt.Name:find("Leg") then
 									prt.Transparency = 1
 								end
-							elseif prt:findFirstChild("NameTag") then
+							elseif prt:FindFirstChild("NameTag") then
 								prt.Head.Transparency = .5
 								prt.Head.Reflectance = 0
 								prt.Head.BrickColor = BrickColor.new("Institutional white")
@@ -642,22 +642,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						if v.Character:findFirstChild("Shirt") then
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt.Parent = v.Character.HumanoidRootPart
 						end
 
-						if v.Character:findFirstChild("Pants") then
+						if v.Character:FindFirstChild("Pants") then
 							v.Character.Pants.Parent = v.Character.HumanoidRootPart
 						end
 
-						for a, prt in pairs(v.Character:children()) do
-							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:findFirstChild("NameTag", true)) then
+						for _, prt in pairs(v.Character:GetChildren()) do
+							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = .4
 								prt.BrickColor = BrickColor.new("Bright yellow")
-							elseif prt:findFirstChild("NameTag") then
+							elseif prt:FindFirstChild("NameTag") then
 								prt.Head.Transparency = 0
 								prt.Head.Reflectance = .4
 								prt.Head.BrickColor = BrickColor.new("Bright yellow")
@@ -677,21 +677,21 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						if v.Character:findFirstChild("Shirt") then
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
 						end
-						if v.Character:findFirstChild("Pants") then
+						if v.Character:FindFirstChild("Pants") then
 							v.Character.Pants:Destroy()
 						end
 
-						for a, prt in pairs(v.Character:children()) do
-							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:findFirstChild("NameTag", true)) then
+						for _, prt in pairs(v.Character:GetChildren()) do
+							if prt:IsA("BasePart") and prt.Name~='HumanoidRootPart' and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = 1
 								prt.BrickColor = BrickColor.new("Institutional white")
-							elseif prt:findFirstChild("NameTag") then
+							elseif prt:FindFirstChild("NameTag") then
 								prt.Head.Transparency = 0
 								prt.Head.Reflectance = 1
 								prt.Head.BrickColor = BrickColor.new("Institutional white")
@@ -1310,7 +1310,7 @@ return function(Vargs, env)
 				local hats = {}
 				local tempHats = {}
 				local run = true
-				local hat = service.Insert(24112667):children()[1]
+				local hat = service.Insert(24112667):GetChildren()[1]
 				--
 				local scr = Deps.Assets.Quacker:Clone()
 				scr.Name = "Quacker"
@@ -1416,10 +1416,10 @@ return function(Vargs, env)
 							if obj ~= main and obj:IsA("Part") then
 								table.insert(parts, 1, obj)
 							elseif obj:IsA("Model") or obj:IsA("Accoutrement") or obj:IsA("Tool") or obj == workspace then
-								for i,v in pairs(obj:children()) do
+								for i,v in pairs(obj:GetChildren()) do
 									Pcall(get,v)
 								end
-								obj.ChildAdded:connect(function(p)Pcall(get,p)end)
+								obj.ChildAdded:Connect(function(p)Pcall(get,p)end)
 							end
 						end
 
@@ -1579,7 +1579,7 @@ return function(Vargs, env)
 						table.insert(objs, f)
 						table.insert(objs, l)
 
-						part.Touched:connect(fire)
+						part.Touched:Connect(fire)
 
 						for i = 0.1, 1, 0.1 do
 							part.Color = oColor:lerp(Color3.new(0, 0, 0), i)
@@ -1592,7 +1592,7 @@ return function(Vargs, env)
 							BlastPressure = 0;
 						})
 
-						ex.Hit:connect(fire)
+						ex.Hit:Connect(fire)
 						ex.Parent = service.Workspace;
 						part.Anchored = false
 						part:BreakJoints()
@@ -1623,9 +1623,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for i,v in pairs(v.Character:children()) do
+						for _,v in pairs(v.Character:GetChildren()) do
 							if v.Name == "Shirt" then local cl = v:Clone() cl.Parent = v.Parent cl.ShirtTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 							if v.Name == "Pants" then local cl = v:Clone() cl.Parent = v.Parent cl.PantsTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 						end
@@ -1644,13 +1644,13 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							Admin.RunCommand(Settings.Prefix.."pants",v.Name,"233373970")
 							Admin.RunCommand(Settings.Prefix.."shirt",v.Name,"133078195")
 
-							for i,v in pairs(v.Character:children()) do
+							for _,v in pairs(v.Character:GetChildren()) do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
 									v:Destroy()
 								end
@@ -1824,7 +1824,7 @@ return function(Vargs, env)
 								p.Anchored = false
 								m.Name = 'Puke Peice'
 								p.Name = 'Puke Peice'
-								p.Touched:connect(function(o)
+								p.Touched:Connect(function(o)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Puke Peice' and o.Name~='Blood Peice' and o.Name~='Blood Plate' and o.Name~='Puke Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf = CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
@@ -1897,7 +1897,7 @@ return function(Vargs, env)
 								p.Anchored = false
 								m.Name='Blood Peice'
 								p.Name='Blood Peice'
-								p.Touched:connect(function(o)
+								p.Touched:Connect(function(o)
 									if not o or not o.Parent then return end
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
@@ -2023,7 +2023,7 @@ return function(Vargs, env)
 								obj = m.Target
 							end
 
-							for l,h in pairs(v.Character:children()) do
+							for _,h in pairs(v.Character:GetChildren()) do
 								if h:IsA('Accessory') then
 									hat = h
 									break
@@ -2095,9 +2095,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for a, frc in pairs(v.Character.HumanoidRootPart:children()) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy() end
 						end
@@ -2115,9 +2115,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for a, frc in pairs(v.Character.HumanoidRootPart:children()) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy()
 							end
@@ -2126,7 +2126,7 @@ return function(Vargs, env)
 						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.force = Vector3.new(0,0,0)
-						for a, prt in pairs(v.Character:children()) do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") then
 								frc.force = frc.force - Vector3.new(0,prt:GetMass()*tonumber(args[2]),0)
 							elseif prt:IsA("Accoutrement") then
@@ -2147,9 +2147,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for a, frc in pairs(v.Character.HumanoidRootPart:children()) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy()
 							end
@@ -2158,7 +2158,7 @@ return function(Vargs, env)
 						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.force = Vector3.new(0,0,0)
-						for a, prt in pairs(v.Character:children()) do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") then
 								frc.force = frc.force + Vector3.new(0,prt:GetMass()*196.25,0)
 							elseif prt:IsA("Accoutrement") then
@@ -2421,9 +2421,9 @@ return function(Vargs, env)
 				bg.maxTorque = Vector3.new(0,math.huge,0)
 				bg.P = 11111
 				bg.D = 0
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						for _,q in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
@@ -2448,9 +2448,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
-						for a,q in pairs(v.Character.HumanoidRootPart:children()) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						for _,q in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
@@ -3076,7 +3076,7 @@ return function(Vargs, env)
 						end
 
 						local function size(part)
-							for i,v in pairs(part:GetChildren()) do
+							for _,v in pairs(part:GetChildren()) do
 								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
 									local p1 = v.Part1
 									local c0 = {v.C0:components()}
@@ -3096,7 +3096,7 @@ return function(Vargs, env)
 										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
 									elseif p1.Name ~= 'Torso' then
 										p1.Anchored = true
-										for k,m in pairs(p1:children()) do
+										for _,m in pairs(p1:GetChildren()) do
 											if m:IsA('Weld') then
 												m.Part0 = nil
 												m.Part1.Anchored = true
@@ -3106,7 +3106,7 @@ return function(Vargs, env)
 										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X,p1.Size.Y,num)
 
-										for k,m in pairs(p1:children()) do
+										for _,m in pairs(p1:GetChildren()) do
 											if m:IsA('Weld') then
 												m.Part0 = p1
 												m.Part1.Anchored = false
@@ -3157,7 +3157,7 @@ return function(Vargs, env)
 						weld.Part0 = root
 						weld.Part1 = torso
 
-						local cape = char:findFirstChild("ADONIS_CAPE")
+						local cape = char:FindFirstChild("ADONIS_CAPE")
 						if cape then
 							cape.Size = cape.Size*num
 						end
@@ -3179,9 +3179,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
-						for k,p in pairs(v.Character:children()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Part") then
 								if p:FindFirstChild("Mesh") then p.Mesh:Destroy() end
 								service.New("BlockMesh",p).Scale=Vector3.new(1,1,args[2] or 0.1)
@@ -3212,11 +3212,11 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local event
 					local torso = v.Character.HumanoidRootPart
-					event = v.Character.HumanoidRootPart.Touched:connect(function(p)
+					event = v.Character.HumanoidRootPart.Touched:Connect(function(p)
 						if torso and torso.Parent and not p:IsDescendantOf(v.Character) and not p.Locked then
 							Functions.MakeWeld(torso,p)
 						elseif not torso or not torso.Parent then
-							event:disconnect()
+							event:Disconnect()
 						end
 					end)
 				end
@@ -3232,7 +3232,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					cPcall(function()
 						if v.Character then
 							local head = v.Character.Head
@@ -3241,7 +3241,7 @@ return function(Vargs, env)
 							local rarm = v.Character['Right Arm']
 							local lleg = v.Character['Left Leg']
 							local rleg = v.Character['Right Leg']
-							for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=true end end
+							for _,v in pairs(v.Character:GetChildren()) do if v:IsA("Part") then v.Anchored=true end end
 							torso.FormFactor="Custom"
 							torso.Size=Vector3.new(torso.Size.X,torso.Size.Y,tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld",v.Character.HumanoidRootPart)
@@ -3279,7 +3279,7 @@ return function(Vargs, env)
 							weld.Part1=rleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5,0)
 							wait()
-							for i,v in pairs(v.Character:children()) do if v:IsA("Part") then v.Anchored=false end end
+							for _,v in pairs(v.Character:GetChildren()) do if v:IsA("Part") then v.Anchored=false end end
 						end
 					end)
 				end
@@ -3297,8 +3297,8 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local hat = service.Insert(36883367)
 				local players = service.GetPlayers(plr,args[1])
-				for i,v in pairs(players) do
-					for k,m in pairs(v.Character:children()) do
+				for _,v in pairs(players) do
+					for _,m in pairs(v.Character:GetChildren()) do
 						if m:IsA("CharacterMesh") or m:IsA("Accoutrement") then
 							m:Destroy()
 						end
@@ -3326,15 +3326,15 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:findFirstChild("HumanoidRootPart") then
+				for _, v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						if humanoid then
 							local isR15 = humanoid.RigType == Enum.HumanoidRigType.R15
 							local joints = Functions.GetJoints(v.Character)
 
-							if v.Character:findFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
-							if v.Character:findFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
+							if v.Character:FindFirstChild("Shirt") then v.Character.Shirt.Parent = v.Character.HumanoidRootPart end
+							if v.Character:FindFirstChild("Pants") then v.Character.Pants.Parent = v.Character.HumanoidRootPart end
 
 							if joints["Neck"] then
 								joints["Neck"].C0 = isR15 and CFrame.new(0, 1, 0) or (CFrame.new(0,1,0) * CFrame.Angles(math.rad(90),math.rad(180),0))
@@ -3360,13 +3360,13 @@ return function(Vargs, env)
 								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5,0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0,math.rad(-90),0))
 							end
 
-							for a, part in pairs(v.Character:children()) do
+							for _, part in pairs(v.Character:GetChildren()) do
 								if part:IsA("BasePart") then
 									part.BrickColor = BrickColor.new("Bright green")
 									if part.Name == "FAKETORSO" then
 										part:Destroy()
 									end
-								elseif part:findFirstChild("NameTag") then
+								elseif part:FindFirstChild("NameTag") then
 									part.Head.BrickColor = BrickColor.new("Bright green")
 								end
 							end
@@ -3567,7 +3567,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in pairs(v.Character:children()) do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") and (obj.Name:find("Leg") or obj.Name:find("Arm")) then
 								obj:Destroy()
 							end

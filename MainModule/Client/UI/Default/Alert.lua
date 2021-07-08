@@ -44,7 +44,7 @@ return function(data)
 			BackgroundTransparency = 1;
 		})
 		
-		muteButton.MouseButton1Down:connect(function()
+		muteButton.MouseButton1Down:Connect(function()
 			if isMuted then
 				alarm.Volume = 1
 				sImg.Image = "rbxassetid://1638551696"

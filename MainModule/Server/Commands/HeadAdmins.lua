@@ -121,7 +121,7 @@ return function(Vargs, env)
 
 		Admin = {
 			Prefix = Settings.Prefix;
-			Commands = {"permadmin","pa","padmin","fulladmin","realadmin"};
+			Commands = {"permadmin","pa","padmin","fulladmin"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
@@ -144,71 +144,6 @@ return function(Vargs, env)
 						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
-			end
-		};
-
-		CustomRank = {
-			Prefix = Settings.Prefix;
-			Commands = {"customrank","ca","crank"};
-			Args = {"player";"rankName"};
-			Hidden = false;
-			Description = "Adds the player to a custom rank set in settings.CustomRanks; Does not save";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-
-				local rank = args[2]
-				local customRank = Settings.CustomRanks[rank]
-
-				assert(customRank,"Rank not found!")
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Hint("Added "..v.Name.." to "..rank,{plr})
-					table.insert(customRank,v.Name..":"..v.userId)
-				end
-			end
-		};
-
-		UnCustomRank = {
-			Prefix = Settings.Prefix;
-			Commands = {"uncustomrank","unca","uncrank"};
-			Args = {"player";"rankName"};
-			Hidden = false;
-			Description = "Removes the player from a custom rank set in settings.CustomRanks; Does not save";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-
-				local rank = args[2]
-				local customRank = Settings.CustomRanks[rank]
-
-				assert(customRank,"Rank not found!")
-
-				service.Iterate(customRank,function(i,v)
-					if v:lower():sub(1,#args[1]) == args[1]:lower() then
-						table.remove(customRank,i)
-						Functions.Hint("Removed "..v.Name.." from "..rank,{plr})
-					end
-				end)
-			end
-		};
-
-		CustomRanks = {
-			Prefix = Settings.Prefix;
-			Commands = {"customranks","cranks"};
-			Args = {};
-			Hidden = false;
-			Description = "Shows custom ranks";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				local tab = {}
-				service.Iterate(Settings.CustomRanks,function(rank,tab)
-					table.insert(tab,{Text = rank, Desc = rank})
-				end)
-				Remote.MakeGui(plr,"List",{Title = "Custom Ranks";Table = tab})
 			end
 		};
 

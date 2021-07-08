@@ -1767,11 +1767,11 @@ return function(data)
 	local nohide = data.KeepChat
 	
 	local function Expand(ent, point)
-		ent.MouseLeave:connect(function(x,y)
+		ent.MouseLeave:Connect(function(x,y)
 			point.Visible = false
 		end)
 		
-		ent.MouseMoved:connect(function(x,y)
+		ent.MouseMoved:Connect(function(x,y)
 			point.Text = ent.Desc.Value
 			point.Size = UDim2.new(0, 10000, 0, 10000)
 			local bounds = point.TextBounds.X
@@ -2149,17 +2149,17 @@ return function(data)
 	
 	fadeOut()
 	
-	frame.MouseEnter:connect(function()
+	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
 	
-	frame.MouseLeave:connect(function()
+	frame.MouseLeave:Connect(function()
 		if not boxFocused then
 			fadeOut()
 		end
 	end)
 	
-	toggle.MouseButton1Click:connect(function()
+	toggle.MouseButton1Click:Connect(function()
 		if drag.Visible then
 			drag.Visible = false
 			toggle.Image = "rbxassetid://417301749"--417285299"
@@ -2169,19 +2169,19 @@ return function(data)
 		end
 	end)
 	
-	global.MouseButton1Click:connect(function()
+	global.MouseButton1Click:Connect(function()
 		openGlobal()
 	end)
 	
-	team.MouseButton1Click:connect(function()
+	team.MouseButton1Click:Connect(function()
 		openTeam()
 	end)
 	
-	localb.MouseButton1Click:connect(function()
+	localb.MouseButton1Click:Connect(function()
 		openLocal()
 	end)
 	
-	admins.MouseButton1Click:connect(function()
+	admins.MouseButton1Click:Connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
@@ -2194,7 +2194,7 @@ return function(data)
 		end
 	end)
 	
-	cross.MouseButton1Click:connect(function()
+	cross.MouseButton1Click:Connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
@@ -2207,7 +2207,7 @@ return function(data)
 		end
 	end)
 	
-	box.FocusLost:connect(function(enterPressed)
+	box.FocusLost:Connect(function(enterPressed)
 		boxFocused = false
 		if enterPressed and not client.Variables.Muted then
 			if box.Text~='' and ((mode~="Cross" and tick()-lastChat>=0.5) or (mode=="Cross" and tick()-lastChat>=10)) then
@@ -2236,7 +2236,7 @@ return function(data)
 		end
 	end)
 	
-	box.Focused:connect(function() 
+	box.Focused:Connect(function() 
 		boxFocused = true
 		if box.Text=="Click here or press the '/' key to chat" then 
 			box.Text = '' 
@@ -2245,7 +2245,7 @@ return function(data)
 	end)
 	
 	if not nohide then
-		service.UserInputService.InputBegan:connect(function(InputObject)
+		service.UserInputService.InputBegan:Connect(function(InputObject)
 			local textbox = service.UserInputService:GetFocusedTextBox()
 			if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Slash then
 				if box.Text=="Click here or press the '/' key to chat" then box.Text='' end
@@ -2259,7 +2259,7 @@ return function(data)
 	local nx,ny=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--450,200
 	local dragging=false
 	local defx,defy=nx,ny
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(dragger.Position.X.Offset+20)
 			ny=defy+(dragger.Position.Y.Offset+20)
@@ -2269,10 +2269,10 @@ return function(data)
 			drag.Size=UDim2.new(0, nx, 0, 30) 
 		end
 	end)
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		dragging=true
 	end)
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		dragging=false
 		defx=nx
 		defy=ny
@@ -2393,14 +2393,14 @@ return function(data)
 						clone.Size = UDim2.new(0,xsize,0,50)
 						
 						
-						if #cont:children()>3 then
-							cont:children()[1]:Destroy()
+						if #cont:GetChildren()>3 then
+							cont:GetChildren()[1]:Destroy()
 						end
 						
-						for i,v in pairs(cont:children()) do
+						for i,v in pairs(cont:GetChildren()) do
 							local xsize = v.TextLabel.TextBounds.X+40
 							if xsize>400 then xsize=400 end
-							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:children())*50))
+							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:GetChildren())*50))
 						end
 						
 						local cam = service.Workspace.CurrentCamera

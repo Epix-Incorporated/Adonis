@@ -192,13 +192,6 @@ return function(Vargs)
 			end
 		end;
 
-		GetTrueRank = function(p, group)
-			local localRank = Remote.LoadCode(p, [[return service.Player:GetRankInGroup(]]..group..[[)]], true)
-			if localRank and localRank > 0 then
-				return localRank
-			end
-		end;
-
 		GetPlayerGroup = function(p, group)
 			local data = Core.GetPlayer(p)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
@@ -327,7 +320,7 @@ return function(Vargs)
 		UpdateCachedLevel = function(p)
 			local data = Core.GetPlayer(p)
 			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
-			data.AdminLevel = Admin.GetUpdatedLevel(p)
+			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
 			data.LastLevelUpdate = tick()
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
@@ -387,13 +380,17 @@ return function(Vargs)
 			return data.AdminLevel or 0
 		end;
 
-		GetUpdatedLevel = function(p)
+		GetUpdatedLevel = function(p, data)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
 
 			if Admin.IsPlaceOwner(p) then
 				return 1000
 			end
+
+			--[[if data and data.AdminLevelOverride then
+				return data.AdminLevelOverride
+			end--]]
 
 			for ind,admin in next,Admin.SpecialLevels do
 				if doCheck(p,admin.Player) then
@@ -447,7 +444,7 @@ return function(Vargs)
 			return Admin.GetLevel(p) > 0;
 		end;
 
-		SetLevel = function(p, level)
+		SetLevel = function(p, level, doSave)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
 
@@ -455,7 +452,14 @@ return function(Vargs)
 				if current >= 1000 then
 					return false
 				else
-					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.userId, Level = level}
+					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.UserId, Level = level}
+
+					--[[if doSave then
+						local data = Core.GetPlayer(p)
+						if data then
+							data.AdminLevelOverride = level;
+						end
+					end--]]
 				end
 			elseif level == "Reset" then
 				Admin.SpecialLevels[tostring(p.userId)] = nil
@@ -471,7 +475,7 @@ return function(Vargs)
 			end
 		end;
 
-		RemoveAdmin = function(p,temp,override)
+		RemoveAdmin = function(p, temp, override)
 			local current = Admin.GetLevel(p)
 			local list, listName, listData = Admin.LevelToList(current)
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
@@ -486,7 +490,7 @@ return function(Vargs)
 			end
 
 			if type(p) == "userdata" then
-				Admin.SetLevel(p,0)
+				Admin.SetLevel(p, 0)
 			end
 
 			if list then
@@ -495,7 +499,7 @@ return function(Vargs)
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							Core.DoSave({
+							service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -544,7 +548,7 @@ return function(Vargs)
 				table.insert(newList,value)
 
 				if Settings.SaveAdmins and not temp then
-					Core.DoSave({
+					service.TrackTask("Thread: SaveAdmin", Core.DoSave, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", newListName, "Users"};
 						Value = value
@@ -744,7 +748,6 @@ return function(Vargs)
 			end
 		end;
 
-
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
@@ -884,37 +887,6 @@ return function(Vargs)
 			return msg
 		end;
 
-		IsComLevel = function(testLevel, comLevel)
-			--print("Checking", tostring(testLevel), tostring(comLevel))
-			if testLevel == comLevel then
-				return true
-			elseif type(testLevel) == "table" then
-				for i,v in next,testLevel do
-					if i == comLevel or v == comLevel or (type(i) == "string" and type(comLevel) == "string" and i:lower() == comLevel:lower()) then
-						--	print("One Match")
-						return i,v
-					elseif type(comLevel) == "table" then
-						for k,m in ipairs(comLevel) do
-							if i == m or v == m or (type(i) == "string" and type(m) == "string" and i:lower() == m:lower()) then
-								--print("Found a match")
-								return i,v
-							end
-						end
-					end
-				end
-			elseif type(comLevel) == "string" then
-				return testLevel:lower() == comLevel:lower()
-			elseif type(comLevel) == "table" then
-				for i,v in ipairs(comLevel) do
-					if testLevel:lower() == v:lower() then
-						return true
-					end
-				end
-			end
-
-			--print("No Match")
-		end;
-
 		StringToComLevel = function(str)
 			if type(str) == "number" then return str end;
 			if string.lower(str) == "players" then return 0 end;
@@ -955,7 +927,6 @@ return function(Vargs)
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
-			local isComLevel = Admin.IsComLevel
 
 			if adminLevel >= 900 then
 				return true
