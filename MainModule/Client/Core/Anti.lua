@@ -180,22 +180,12 @@ return function()
 		end)
 	end
 
-	local CheckEnv = function()
-		if tostring(getfenv) ~= toget or type(getfenv) ~= "function" then
-
-		end
-	end
-
 	local Detectors = service.ReadOnly({
 		Speed = function(data)
 			service.StartLoop("AntiSpeed",1,function()
-				--if service.CheckMethod(workspace, "GetRealPhysicsFPS") then
-					if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
-						Detected('kill','Speed exploiting')
-					end
-				--else
-				--	Detected('kick','Method change detected')
-				--end
+				if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
+					Detected('kill','Speed exploiting')
+				end
 			end)
 		end;
 
@@ -235,19 +225,6 @@ return function()
 							t:Destroy()
 							Detected('log','HopperBin detected (Building Tools)')
 						end
-
-						--[[if tools then
-							local good = false
-							for i,v in pairs(client.AllowedToolsList) do
-								if t.Name==v then
-									good = true
-								end
-							end
-							if not good then
-								t:Destroy()
-								Detected("log","Tool detected")
-							end
-						end--]]
 					end
 				end
 
@@ -259,25 +236,15 @@ return function()
 			end
 		end;
 
-		--[[
-		CheatEngineFinder = function(data)
-			for i,v in pairs(service.LogService:GetLogHistory()) do
-				for k,m in pairs(v) do
-					if type(m)=='string' and m:lower():find('program files') and m:lower():find('cheat engine') and m:lower():find('failed to resolve texture format') then
-						Detected('kick','Cheat Engine installation detected.')
-					end
-				end
-			end
-		end;
-		--]]
-
 		HumanoidState = function(data)
 			wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid")
 			local event
 			local doing = true
 			event = humanoid.StateChanged:connect(function(old,new)
-				if not doing then event:disconnect() end
+				if not doing then
+					event:disconnect()
+				end
 				if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 					doing = false
 					Detected("kill","Noclipping")
@@ -311,12 +278,6 @@ return function()
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
 			local lastUpdate = tick()
-			local doingCrash = false
-			local goodCores = {}
-			local gettingGood = false
-			local gettingMenu = false
-			local menuOpened = false
-			local gotGoodTime = tick()
 			local coreNums = {}
 			local coreClears = service.ReadOnly({
 				FriendStatus = true;
@@ -349,216 +310,22 @@ return function()
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
-			local files = {
-				["C:\\RC7\\rc7.dat"] = true;
-			}
-
 			local function check(Message)
-				for i,v in pairs(lookFor) do
+				for _,v in pairs(lookFor) do
 					if string.find(string.lower(Message),string.lower(v)) and not string.find(string.lower(Message),"failed to load") then
 						return true
 					end
 				end
 			end
 
-			local function findLog(msg)
-				for i,v in pairs(service.LogService:GetLogHistory()) do
-					if string.find(string.lower(v.message),string.lower(msg)) then
-						return true
+			local function checkServ(c)
+				if not pcall(function()
+					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
+						Detected("crash","Disallowed Services Detected")
 					end
+				end) then
+					Detected("kick","Finding Error")
 				end
-			end
-
-			local function findFiles()
-				local image = service.New("Decal",service.Workspace)
-				for i,v in next,files do
-					image.Texture = i;
-					wait(0.5)
-					if findLog(i) then
-					else
-						--// Detected
-						warn("RC7 DETECTION WORKED?")
-					end
-				end
-			end
-
-			local function isGood(item)
-				for i,v in next,goodCores do
-					if rawequal(item, v) then
-						return true
-					end
-				end
-			end
-
-			local function checkServ(c) if not pcall(function()
-				if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
-					Detected("crash","Disallowed Services Detected")
-				end
-			end) then Detected("kick","Finding Error") end end
-
-			local function chkObj(item)
-				local coreNav = service.GuiService.CoreGuiNavigationEnabled
-				service.GuiService.CoreGuiNavigationEnabled = false
-				if Anti.ObjRLocked(item) and not service.GuiService:IsTenFootInterface() then
-					local cont = true
-					local ran,err = pcall(function()
-						local checks = {
-							service.Chat;
-							service.Teams;
-							service.Lighting;
-							service.StarterGui;
-							service.TestService;
-							service.StarterPack;
-							service.StarterPlayer;
-							service.JointsService;
-							service.InsertService;
-							service.ReplicatedStorage;
-							service.ReplicatedFirst;
-							service.SoundService;
-							service.HttpService;
-							service.Workspace;
-							service.Players;
-						}
-						for i,v in next,checks do
-							if item:IsDescendantOf(v) then cont = false end
-						end
-					end)
-
-					if cont then
-						local cont = false
-						local class = Anti.GetClassName(item)
-						local name = tostring(item)
-						local checks = {
-							"Script";
-							"LocalScript";
-							"CoreScript";
-							"ScreenGui";
-							"Frame";
-							"TextLabel";
-							"TextButton";
-							"ImageLabel";
-							"TextBox";
-							"ImageButton";
-							"GuiMain";
-						}
-
-						if class then
-							if class == "LocalScript" then
-								return true
-							end
-
-							for i,v in next,checks do
-								if rawequal(class, v) then
-									cont = true
-								end
-							end
-
-							--[[
-								Menu:
-								FriendStatus - TextButton;
-								EVERY SINGLE MENU GUI ON CLICK FFS
-
-								Reset:
-								ImageButton - ImageButton
-								ButtonHoverText - Frame
-								HoverMid - ImageLabel
-								HoverLeft - ImageLabel
-								HoverRight - ImageLabel
-								ButtonHoverTextLabel - TextLabel
-
-								PlayerList:
-								Icon - ImageLabel;
-								ImageLabel - ImageLabel;
-								NameLabel - TextLabel;
-								Players - Frame;
-								ColumnValue - TextLabel;
-								ColumnName - TextLabel;
-								Frame - Frame;
-								StatText - TextLabel;
-							]]--
-						end
-
-						if not true and cont and menuOpened == false then
-							local players = 0
-							local leaderstats = {}
-							local totStats = 0
-							local teams = 0
-							local total = 0
-
-							for i,v in pairs(service.Players:GetChildren()) do
-								if v:IsA("Player") then
-									players = players+1
-									local stats = v:FindFirstChild("leaderstats")
-									if stats then
-										for k,m in pairs(stats:GetChildren()) do
-											if not leaderstats[m.Name] then
-												leaderstats[m.Name] = 0
-											end
-											leaderstats[m.Name] = leaderstats[m.Name]+1
-										end
-									end
-								end
-							end
-
-							for i,v in pairs(leaderstats) do
-								totStats = totStats+1
-							end
-
-							for i,v in pairs(service.Teams:GetChildren()) do
-								if v:IsA("Team") then
-									teams = teams+1
-								end
-							end
-
-							total = (teams+players+((teams+players)*totStats)+totStats)-1
-							if not coreNums[name] then coreNums[name] = 0 end
-							coreNums[name] = coreNums[name]+1
-
-							print(name.." : "..class.." : "..coreNums[name])
-							print(total)
-							--[[
-							if name == "FriendStatus" and coreNums.FriendStatus > players then
-								print("FRIEND STATUS EXCEEDED PLAYER COUNT")
-							elseif name == "Icon" and coreNums.Icon > players then
-								print("ICON EXCEEDED PLAYER COUNT")
-							elseif name == "ColumnValue" and coreNums.ColoumnValue > totPlayerItems then
-								print("COLUMN VALUE EXCEEDS PLAYER ITEMS COUNT")
-							elseif name == "ColumnName" and coreNums.ColumnName > totPlayerItems then
-								print("COLUMN NAME EXCEEDS PLAYER ITEMS COUNT")
-							elseif name == "NameLabel" and coreNums.NameLabel > totPlayerItems then
-								print("NAME LABEL EXCEEDS PLAYER ITEMS COUNT")
-							end--]]
-
-							if menuOpen or (gettingGood or (gettingMenu and (name == "FriendStatus" and class == "TextButton"))) then
-								table.insert(goodCores,item)
-							elseif not isGood(item) then
-								--print("-------------------------------")
-								--print("FOUND NAME: "..tostring(item))
-								--print("FOUND CLASS: "..tostring(class))
-								--print("FOUND TYPE: "..tostring(type(item)))
-								--print("FOUND TYPEOF: "..tostring(type(item)))
-								--print("-------------------------------")
-
-								local testName = tostring(math.random()..math.random())
-								local ye,err = pcall(function()
-									service.GuiService:AddSelectionParent(testName, item) -- Christbru figured out the detection method
-									service.GuiService:RemoveSelectionGroup(testName)
-								end)
-
-								--print(ye,err)
-
-								if err and string.find(err,testName) and string.find(err,"GuiService:") then return true end
-								wait(0.5)
-								for i,v in next,service.LogService:GetLogHistory() do
-									if string.find(v.message,testName) and string.find(v.message,"GuiService:") then
-										return true
-									end
-								end--]]
-							end
-						end
-					end
-				end
-				service.GuiService.CoreGuiNavigationEnabled = coreNav
 			end
 
 			local function checkTool(t)
@@ -572,30 +339,13 @@ return function()
 			checkServ()
 
 			service.DataModel.ChildAdded:connect(checkServ)
-			--service.Player.DescendantAdded:connect(checkTool)
-
-			service.Players.PlayerAdded:connect(function(p)
-				gotGoodTime = tick()
-			end)
 
 			service.Events.CharacterRemoving:connect(function()
-				for i,v in next,coreNums do
+				for i,_ in next,coreNums do
 					if coreClears[i] then
 						coreNums[i] = 0
 					end
 				end
-				--[[
-				gettingGood = true
-				wait()
-				gettingGood = false--]]
-			end)
-
-			service.GuiService.MenuClosed:connect(function()
-				menuOpen = false
-			end)
-
-			service.GuiService.MenuOpened:connect(function()
-				menuOpen = true
 			end)
 
 			service.ScriptContext.ChildAdded:connect(function(child)
@@ -648,22 +398,9 @@ return function()
 				end
 			end)
 
-			--[[service.NetworkClient.ChildRemoved:connect(function(child)
-				wait(30)
-				client.Kill("Client disconnected from server")
-			end)--]]
-
 			service.RunService.Stepped:Connect(function()
 				lastUpdate = tick()
 			end)
-
-			--[[game.DescendantAdded:connect(function(c)
-				if chkObj(c) and type(c)=="userdata" and not doingCrash then
-					doingCrash = true
-					--print("OK WE DETECTED THINGS")
-					Detected("crash","New CoreGui Object; "..tostring(c))
-				end
-			end)--]]
 
 			if service.Player:WaitForChild("Backpack", 120) then
 				service.Player.Backpack.ChildAdded:connect(checkTool)
@@ -672,10 +409,10 @@ return function()
 			--// Detection Loop
 			service.StartLoop("Detection",10,function()
 				--// Prevent event stopping
-				if tick()-lastUpdate > 60 then
+				-- if tick()-lastUpdate > 60 then -- commented to stop vscode from yelling at me
 					--Detected("crash","Events stopped")
 					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
-				end
+				-- end
 
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
@@ -748,22 +485,10 @@ return function()
 
 		RLocked = function(obj)
 			return not pcall(function() return obj.GetFullName(obj) end)
-			--[[local ran,err = pcall(function() service.New("StringValue", obj):Destroy() end)
-			if ran then
-				return false
-			else
-				return true
-			end--]]
 		end;
 
 		ObjRLocked = function(obj)
 			return not pcall(function() return obj.GetFullName(obj) end)
-			--[[local ran,err = pcall(function() obj.Parent = obj.Parent end)
-			if ran then
-				return false
-			else
-				return true
-			end--]]
 		end;
 
 		CoreRLocked = function(obj)
@@ -783,7 +508,7 @@ return function()
 				end
 			end
 		end;
-	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
+	}, {[Init] = true, [RunLast] = true, [RunAfterLoaded] = true}, true)
 
 	client.Anti = Anti
 
@@ -809,20 +534,8 @@ return function()
 					opcall(Disconnect, "Adonis_10042")
 					opcall(Kill, "Adonis_10042")
 					opcall(Kick, Player, "Adonis_10042")
-					--pcall(function() while true do end end)
 				end
 			end
 		end))
-		--[[
-		loop("Thread: CheckLoop", "Stepped", meta(function()
-			local ran,ret = resume(create(function() return tick()-loopAlive end))
-			if not ran or not ret or ret > 5 then
-				opcall(Detected, "crash", "Tamper Protection 10043")
-				oWait(1)
-				opcall(Disconnect, "Adonis_10043")
-				opcall(Kill, "Adonis_10043")
-				opcall(Kick, Player, "Adonis_10043")
-			end
-		end), true)--]]
 	end
 end
