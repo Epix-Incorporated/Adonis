@@ -40,8 +40,8 @@ return function(Vargs, env)
 		SetRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"setrank", "setadminrank"};
-			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level";
+			Args = {"player", "level", "save"};
+			Description = "Sets the target player(s) admin rank; Saves if <save> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
@@ -56,7 +56,7 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.AddAdmin(p, newLevel, true)
+						Admin.AddAdmin(p, newLevel, args[3] ~= "true")
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -74,7 +74,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setlevel", "setadminlevel"};
 			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level";
+			Description = "Sets the target player(s) permission level for the current server";
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
@@ -88,7 +88,7 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.SetLevel(p, newLevel)
+						Admin.SetLevel(p, newLevel)--, args[3] == "true")
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -1186,13 +1186,13 @@ return function(Vargs, env)
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
-			Args = {"player";};
+			Args = {"player", "save"};
 			Hidden = false;
-			Description = "Removes the target players' admin powers; Saves";
+			Description = "Removes the target players' admin powers; Saves if <save> is 'true'";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1], "Argument missing or nil")
 
 				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
@@ -1201,7 +1201,7 @@ return function(Vargs, env)
 						local targLevel = Admin.GetLevel(v)
 						if targLevel>0 then
 							if sendLevel>targLevel then
-								Admin.RemoveAdmin(v,false,true)
+								Admin.RemoveAdmin(v, true, args[2] == "true")
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
 							else
 								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})

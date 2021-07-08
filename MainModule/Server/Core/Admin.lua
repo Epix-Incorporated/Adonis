@@ -320,7 +320,7 @@ return function(Vargs)
 		UpdateCachedLevel = function(p)
 			local data = Core.GetPlayer(p)
 			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
-			data.AdminLevel = Admin.GetUpdatedLevel(p)
+			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
 			data.LastLevelUpdate = tick()
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
@@ -380,13 +380,17 @@ return function(Vargs)
 			return data.AdminLevel or 0
 		end;
 
-		GetUpdatedLevel = function(p)
+		GetUpdatedLevel = function(p, data)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
 
 			if Admin.IsPlaceOwner(p) then
 				return 1000
 			end
+
+			--[[if data and data.AdminLevelOverride then
+				return data.AdminLevelOverride
+			end--]]
 
 			for ind,admin in next,Admin.SpecialLevels do
 				if doCheck(p,admin.Player) then
@@ -440,7 +444,7 @@ return function(Vargs)
 			return Admin.GetLevel(p) > 0;
 		end;
 
-		SetLevel = function(p, level)
+		SetLevel = function(p, level, doSave)
 			local current = Admin.GetLevel(p)
 			local list = Admin.LevelToList(current)
 
@@ -448,7 +452,14 @@ return function(Vargs)
 				if current >= 1000 then
 					return false
 				else
-					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.userId, Level = level}
+					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.UserId, Level = level}
+
+					--[[if doSave then
+						local data = Core.GetPlayer(p)
+						if data then
+							data.AdminLevelOverride = level;
+						end
+					end--]]
 				end
 			elseif level == "Reset" then
 				Admin.SpecialLevels[tostring(p.userId)] = nil
@@ -464,7 +475,7 @@ return function(Vargs)
 			end
 		end;
 
-		RemoveAdmin = function(p,temp,override)
+		RemoveAdmin = function(p, temp, override)
 			local current = Admin.GetLevel(p)
 			local list, listName, listData = Admin.LevelToList(current)
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
@@ -479,7 +490,7 @@ return function(Vargs)
 			end
 
 			if type(p) == "userdata" then
-				Admin.SetLevel(p,0)
+				Admin.SetLevel(p, 0)
 			end
 
 			if list then
@@ -488,7 +499,7 @@ return function(Vargs)
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							Core.DoSave({
+							service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -537,7 +548,7 @@ return function(Vargs)
 				table.insert(newList,value)
 
 				if Settings.SaveAdmins and not temp then
-					Core.DoSave({
+					service.TrackTask("Thread: SaveAdmin", Core.DoSave, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", newListName, "Users"};
 						Value = value
