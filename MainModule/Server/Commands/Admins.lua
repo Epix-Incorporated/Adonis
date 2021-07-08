@@ -317,8 +317,8 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.Players:GetPlayers()) do
-					Remote.RemoveGui(v,"Message")
-					Remote.MakeGui(v,"Message",{
+					Remote.RemoveGui(v,"ServerMessage")
+					Remote.MakeGui(v,"ServerMessage",{
 						Title = Settings.SystemTitle;
 						Message = args[1]; --service.Filter(args[1],plr,v);
 					})
@@ -1308,8 +1308,8 @@ return function(Vargs, env)
 				assert(args[1],"Argument missing or nil")
 				assert(args[2],"Argument missing or nil")
 				for i,v in pairs(service.Players:GetChildren()) do
-					Remote.RemoveGui(v,"Message")
-					Remote.MakeGui(v,"Message",{
+					Remote.RemoveGui(v,"CustomMessage")
+					Remote.MakeGui(v,"CustomMessage",{
 						Title = args[1];
 						Message = args[2];
 						--service.Filter(args[1],plr,v);
