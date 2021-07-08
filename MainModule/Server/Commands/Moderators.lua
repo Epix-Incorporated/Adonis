@@ -1157,7 +1157,9 @@ return function(Vargs, env)
 					r,g,b = args[5]:match("(.*),(.*),(.*)")
 				end
 				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				if not r or not g or not b then
+					error("Invalid Input")
+				end
 				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(p,"ColorCorrectionEffect",{
 						Name = "WINDOW_COLORCORRECTION",
@@ -3082,8 +3084,14 @@ return function(Vargs, env)
 							arrow.Position = UDim2.new(0,0,0,20)
 							arrow.Text = 'v'
 							Remote.MakeLocal(plr,bb,false,true)
-							local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-							local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+							local event; event = v.CharacterRemoving:Connect(function()
+								Remote.RemoveLocal(plr,v.Name..'Tracker')
+								event:Disconnect()
+							end)
+							local event2; event2 = plr.CharacterRemoving:Connect(function()
+								Remote.RemoveLocal(plr,v.Name..'Tracker')
+								event2:Disconnect()
+							end)
 						end
 					end)()
 				end
@@ -3217,9 +3225,13 @@ return function(Vargs, env)
 							cl:MakeJoints()
 							cl:WaitForChild("Humanoid")
 							v.Character.Archivable = false
-							repeat wait(0.5) until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
+							repeat
+								wait(0.5)
+							until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
 							wait(5)
-							if cl then cl:Destroy() end
+							if cl then
+								cl:Destroy()
+							end
 						end
 					end)
 				end
@@ -3267,7 +3279,9 @@ return function(Vargs, env)
 
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
-							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
+							pcall(function()
+								v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl)
+							end)
 
 							for _,e in pairs(target_character:GetChildren()) do
 								if e:IsA"Accessory" then
@@ -3818,7 +3832,9 @@ return function(Vargs, env)
 
 				if args[2] then
 					local teststr = args[2]
-					if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr).Color end
+					if BrickColor.new(teststr) ~= nil then
+						str = BrickColor.new(teststr).Color
+					end
 				end
 
 				for _, v in pairs(service.GetPlayers(plr,args[1])) do
@@ -3925,7 +3941,9 @@ return function(Vargs, env)
 					r,g,b = args[1]:match("(.*),(.*),(.*)")
 				end
 				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				if not r or not g or not b then
+					error("Invalid Input")
+				end
 				if args[2] then
 					for _,v in pairs(service.GetPlayers(plr,args[2])) do
 						Remote.SetLighting(v,"Ambient",Color3.new(r,g,b))
@@ -3950,7 +3968,9 @@ return function(Vargs, env)
 					r,g,b = args[1]:match("(.*),(.*),(.*)")
 				end
 				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				if not r or not g or not b then
+					error("Invalid Input")
+				end
 				if args[2] then
 					for _,v in pairs(service.GetPlayers(plr,args[2])) do
 						Remote.SetLighting(v,"OutdoorAmbient",Color3.new(r,g,g))
@@ -4639,7 +4659,9 @@ return function(Vargs, env)
 						end
 					end
 
-					if not point then Functions.Hint('Waypoint '..m..' was not found.',{plr}) end
+					if not point then
+						Functions.Hint('Waypoint '..m..' was not found.',{plr})
+					end
 				elseif args[2]:find(',') then
 					local x,y,z = args[2]:match('(.*),(.*),(.*)')
 					for _,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -4798,7 +4820,9 @@ return function(Vargs, env)
 					for _,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
 							for _,k in pairs(v.Character:GetChildren()) do
-								if k:IsA("Shirt") then k:Destroy() end
+								if k:IsA("Shirt") then
+									k:Destroy()
+								end
 							end
 							Shirt:Clone().Parent = v.Character
 						end
@@ -4825,7 +4849,9 @@ return function(Vargs, env)
 					for _,v in pairs(service.GetPlayers(plr,args[1])) do
 						if v.Character then
 							for _,k in pairs(v.Character:GetChildren()) do
-								if k:IsA("Pants") then k:Destroy() end
+								if k:IsA("Pants") then
+									k:Destroy()
+								end
 							end
 							Pants:Clone().Parent = v.Character
 						end
@@ -4923,7 +4949,9 @@ return function(Vargs, env)
 					end
 				end
 
-				if args[3] and args[3] == "true" then loop = false end
+				if args[3] and args[3] == "true" then
+					loop = false
+				end
 				volume = tonumber(args[5]) or volume
 				pitch = tonumber(args[4]) or pitch
 
@@ -5096,7 +5124,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				service.StopLoop("MusicShuffle")
 				Admin.RunCommand(Settings.Prefix.."stopmusic")
-				if not args[1] then error("Missing argument") end
+				if not args[1] then
+					error("Missing argument")
+				end
 				if args[1]:lower()~="off" then
 					local idList = {}
 
@@ -5114,7 +5144,9 @@ return function(Vargs, env)
 							pitch = 1
 						end
 
-						if not id then error("Invalid ID: "..tostring(id)) end
+						if not id then
+							error("Invalid ID: "..tostring(id))
+						end
 
 						table.insert(idList,{ID = id,Pitch = pitch})
 					end
@@ -5312,9 +5344,15 @@ return function(Vargs, env)
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldp then oldp:Destroy() end
-						if oldg then oldg:Destroy() end
-						if olds then olds:Destroy() end
+						if oldp then
+							oldp:Destroy()
+						end
+						if oldg then
+							oldg:Destroy()
+						end
+						if olds then
+							olds:Destroy()
+						end
 
 						local new = scr:Clone()
 						local flightPosition = service.New("BodyPosition")
@@ -5383,9 +5421,15 @@ return function(Vargs, env)
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
-						if oldp then oldp:Destroy() end
-						if oldg then oldg:Destroy() end
-						if olds then olds:Destroy() end
+						if oldp then
+							oldp:Destroy()
+						end
+						if oldg then
+							oldg:Destroy()
+						end
+						if olds then
+							olds:Destroy()
+						end
 					end
 				end
 			end
@@ -5403,9 +5447,14 @@ return function(Vargs, env)
 				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") then
-							local xran local zran
-							repeat xran = math.random(-9999,9999) until math.abs(xran) >= 5555
-							repeat zran = math.random(-9999,9999) until math.abs(zran) >= 5555
+							local xran
+							local zran
+							repeat
+								xran = math.random(-9999,9999)
+							until math.abs(xran) >= 5555
+							repeat
+								zran = math.random(-9999,9999)
+							until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
 							v.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
 							local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
@@ -5537,7 +5586,9 @@ return function(Vargs, env)
 						end
 
 						cl.CanCollide = false
-						local weld = service.New("Weld", cl) weld.Part0 = cl weld.Part1 = char.Head
+						local weld = service.New("Weld", cl)
+						weld.Part0 = cl
+						weld.Part1 = char.Head
 						char.Head.Transparency = 1
 					end
 				end
@@ -5626,7 +5677,9 @@ return function(Vargs, env)
 				end
 
 				if not assetHD then
-					local suc,ers = pcall(function() return service.AssetService:GetBundleDetailsAsync(id) end)
+					local suc,ers = pcall(function()
+						return service.AssetService:GetBundleDetailsAsync(id)
+					end)
 
 					if suc then
 						for _, item in next, ers.Items do
