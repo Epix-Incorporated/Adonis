@@ -14,7 +14,7 @@ local mode=script.Mode.Value
 
 if mode=="AnchorSafe" or mode=="ObjectSafe" then
 	function cover(part)
-		for i,v in pairs(part:children()) do
+		for i,v in pairs(part:GetChildren()) do
 			pcall(cover,v)
 		end
 		if part==workspace then return end
@@ -64,7 +64,7 @@ elseif mode=="AntiLeak" then
 		obj.Changed:connect(function(p)
 			obj.Archivable = false
 		end)
-		for i,v in pairs(obj:children()) do 
+		for i,v in pairs(obj:GetChildren()) do 
 			pcall(function() 
 				v.Archivable = false 	
 				v.Changed:connect(function(p)

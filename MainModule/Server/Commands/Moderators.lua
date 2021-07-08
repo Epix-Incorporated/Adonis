@@ -164,8 +164,8 @@ return function(Vargs, env)
 					})
 				end
 				--for i = num, 1, -1 do
-				--Functions.Message("Countdown", tostring(i), service.Players:children(), false, 1.1)
-				--Functions.Message(" ", i, false, service.Players:children(), 0.8)
+				--Functions.Message("Countdown", tostring(i), service.Players:GetChildren(), false, 1.1)
+				--Functions.Message(" ", i, false, service.Players:GetChildren(), 0.8)
 				--wait(1)
 				--end
 			end

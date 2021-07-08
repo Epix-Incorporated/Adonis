@@ -448,7 +448,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				for i,v in pairs(service.Teams:children()) do
+				for _,v in pairs(service.Teams:GetChildren()) do
 					if v:IsA("Team") and v.Name:lower():sub(1,#args[1])==args[1]:lower() then
 						v:Destroy()
 					end
@@ -650,9 +650,9 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:children())
+				Functions.Hint('Restoring Map...',service.Players:GetChildren())
 
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						service.RunService.Heartbeat:Wait()

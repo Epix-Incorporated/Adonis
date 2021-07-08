@@ -4,7 +4,7 @@ if hats then
 	local mode = hats.Mode
 	local target = hats.Target
 	repeat
-		for i,hat in next,hats:children() do
+		for _,hat in next,hats:GetChildren() do
 			if hat:IsA('Part') then
 				local bpos = hat.bpos
 				hat.CanCollide = false

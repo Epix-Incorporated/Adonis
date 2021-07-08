@@ -2393,14 +2393,14 @@ return function(data)
 						clone.Size = UDim2.new(0,xsize,0,50)
 						
 						
-						if #cont:children()>3 then
-							cont:children()[1]:Destroy()
+						if #cont:GetChildren()>3 then
+							cont:GetChildren()[1]:Destroy()
 						end
 						
-						for i,v in pairs(cont:children()) do
+						for i,v in pairs(cont:GetChildren()) do
 							local xsize = v.TextLabel.TextBounds.X+40
 							if xsize>400 then xsize=400 end
-							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:children())*50))
+							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:GetChildren())*50))
 						end
 						
 						local cam = service.Workspace.CurrentCamera

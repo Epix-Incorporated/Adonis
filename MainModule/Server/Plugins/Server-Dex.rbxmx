@@ -10891,9 +10891,9 @@ Instance.new(&quot;Folder&quot;, HiddenEntriesMain)
 
 local function NameHiddenEntries()
 &#9;if MuteHiddenItems then
-&#9;&#9;HiddenEntriesMain.Name = &quot;Expand to view (&quot; .. (#game:children() - #gameChildren) .. &quot;) hidden items&quot;
+&#9;&#9;HiddenEntriesMain.Name = &quot;Expand to view (&quot; .. (#game:GetChildren() - #gameChildren) .. &quot;) hidden items&quot;
 &#9;else
-&#9;&#9;HiddenEntriesMain.Name = &quot;Collapse to hide (&quot; .. (#game:children() - #gameChildren) .. &quot;) more items&quot;
+&#9;&#9;HiddenEntriesMain.Name = &quot;Collapse to hide (&quot; .. (#game:GetChildren() - #gameChildren) .. &quot;) more items&quot;
 &#9;end
 end
 

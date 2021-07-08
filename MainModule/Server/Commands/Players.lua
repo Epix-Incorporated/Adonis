@@ -303,7 +303,7 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
-					for k,p in pairs(plr.Character:children()) do
+					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
 								local str = BrickColor.new('Institutional white').Color
@@ -629,7 +629,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				for i,v in pairs(plr.Character:children()) do
+				for _,v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end
@@ -701,7 +701,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temptable = {}
-				for i,v in pairs(service.Players:children()) do
+				for _,v in pairs(service.Players:GetChildren()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end

@@ -152,14 +152,14 @@ return function(data)
 	
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
-		for i,v in pairs(holder:children()) do
+		for i,v in pairs(holder:GetChildren()) do
 			table.insert(holdstuff,1,v)
 		end
 		for i,v in pairs(holdstuff) do
 			v.Position = UDim2.new(0,0,1,-75*(i+mod))
 		end
-		holder.CanvasSize=UDim2.new(0,0,0,(#holder:children()*75))
-		local pos = (((#holder:children())*75) - holder.AbsoluteWindowSize.Y)
+		holder.CanvasSize=UDim2.new(0,0,0,(#holder:GetChildren()*75))
+		local pos = (((#holder:GetChildren())*75) - holder.AbsoluteWindowSize.Y)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end
@@ -7775,7 +7775,7 @@ return function(data)
 		container.Position = UDim2.new(0,0,0,0)
 	end
 	
-	local children = container:children()
+	local children = container:GetChildren()
 	
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
@@ -7783,8 +7783,8 @@ return function(data)
 	
 	local function moveGuis(m,ignore)
 		m = m or 0
-		local max = #container:children()
-		for i,v in pairs(container:children()) do
+		local max = #container:GetChildren()
+		for i,v in pairs(container:GetChildren()) do
 			if v~=ignore then
 				local y = (i+m)*28
 				v.Position = UDim2.new(0,0,0,y)
@@ -7796,13 +7796,13 @@ return function(data)
 	local lom = -1
 	moveGuis(-1)
 	gui.Parent = container
-	if #container:children()>5 then lom = -2 end
-	UDim2.new(0,0,0,(#container:children()+lom)*28)
+	if #container:GetChildren()>5 then lom = -2 end
+	UDim2.new(0,0,0,(#container:GetChildren()+lom)*28)
 	moveGuis(-1)
-	--gui:TweenPosition(UDim2.new(0,0,0,(#container:children()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
+	--gui:TweenPosition(UDim2.new(0,0,0,(#container:GetChildren()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
 	
-	if #container:children()>5 then
-		local gui = container:children()[1]
+	if #container:GetChildren()>5 then
+		local gui = container:GetChildren()[1]
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)

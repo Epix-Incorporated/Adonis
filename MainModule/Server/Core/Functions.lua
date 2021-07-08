@@ -106,10 +106,10 @@ return function(Vargs)
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					if #players>=#parent:GetChildren() then return end
-					local rand = parent:GetChildren()[math.random(#parent:children())]
+					local rand = parent:GetChildren()[math.random(#parent:GetChildren())]
 					local p = getplr(rand)
 
-					for i,v in pairs(players) do
+					for _,v in pairs(players) do
 						if(v.Name == p.Name)then
 							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
 							return;
@@ -210,7 +210,7 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("%$(.*)")
 					if matched and tonumber(matched) then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p:IsInGroup(tonumber(matched)) then
 								table.insert(players,p)
@@ -227,7 +227,7 @@ return function(Vargs)
 					local matched = tonumber(msg:match("id%-(.*)"))
 					local foundNum = 0
 					if matched then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.userId == matched then
 								table.insert(players,p)
@@ -272,7 +272,7 @@ return function(Vargs)
 					local foundNum = 0
 
 					if matched then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.DisplayName == matched then
 								table.insert(players,p)
@@ -310,7 +310,7 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("group%-(.*)")
 					if matched and tonumber(matched) then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p:IsInGroup(tonumber(matched)) then
 								table.insert(players,p)
@@ -868,7 +868,7 @@ return function(Vargs)
 		end;
 
 		CleanWorkspace = function()
-			for i,v in pairs(service.Workspace:children()) do
+			for _,v in pairs(service.Workspace:GetChildren()) do
 				if v:IsA("Tool") or v:IsA("Accessory") or v:IsA("Hat") then
 					v:Destroy()
 				end
@@ -937,7 +937,7 @@ return function(Vargs)
 					end
 					--[[
 					if Admin.CheckDonor(plr) and (Settings.DonorPerks or Admin.GetLevel(plr)>=4) then
-						local gear=service.InsertService:LoadAsset(57902997):children()[1]
+						local gear=service.InsertService:LoadAsset(57902997):GetChildren()[1]
 						if not plr.Backpack:FindFirstChild(gear.Name..'DonorTool') then
 							gear.Name=gear.Name..'DonorTool'
 							gear.Parent=plr.Backpack
@@ -1030,7 +1030,7 @@ return function(Vargs)
 				local origHeadCF = head.CFrame
 				rig.Name = p.Name
 
-				for a,b in pairs(char:children()) do
+				for _,b in pairs(char:GetChildren()) do
 					if b:IsA("Accessory") or b:IsA("Pants") or b:IsA("Shirt") or b:IsA("ShirtGraphic") or b:IsA("BodyColors") then
 						b.Parent = rig
 					elseif b:IsA"BasePart" and b.Name == "Head" and b:FindFirstChild("face") then

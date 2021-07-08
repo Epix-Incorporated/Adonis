@@ -145,14 +145,14 @@ return function(data)
 	
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
-		for i,v in pairs(holder:children()) do
+		for i,v in pairs(holder:GetChildren()) do
 			table.insert(holdstuff,1,v)
 		end
 		for i,v in pairs(holdstuff) do
 			v.Position = UDim2.new(0,0,1,-75*(i+mod))
 		end
-		holder.CanvasSize=UDim2.new(0,0,0,(#holder:children()*75))
-		local pos = (((#holder:children())*75) - holder.AbsoluteWindowSize.Y)
+		holder.CanvasSize=UDim2.new(0,0,0,(#holder:GetChildren()*75))
+		local pos = (((#holder:GetChildren())*75) - holder.AbsoluteWindowSize.Y)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end

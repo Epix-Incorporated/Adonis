@@ -38,7 +38,7 @@ function Activate()
 	SetSounds(PianoSounds)
 	--Player.Character.Torso.Anchored=true
 	--Humanoid.PlatformStand=true
-	for i,v in pairs(Player.Backpack:children()) do
+	for i,v in pairs(Player.Backpack:GetChildren()) do
 		v.Parent=Tools
 	end
 end
@@ -56,7 +56,7 @@ function Deactivate()
 			v:Destroy()
 		end
 	end
-	for i,v in pairs(Tools:children()) do
+	for i,v in pairs(Tools:GetChildren()) do
 		v.Parent=Player.Backpack
 	end
 	Tools:Destroy()

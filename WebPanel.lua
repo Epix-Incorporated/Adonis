@@ -91,7 +91,7 @@ return function(Vargs)
 			end
 		end
 
-		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:children() or #game.Players:GetPlayers()
+		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
 		stats.MaxPlayers = game.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
 		stats.ServerSpeed = math.min(frames/60, 1)*100
