@@ -228,7 +228,7 @@ return function()
 					end
 				end
 
-				for _,t in pairs(service.Player.Backpack:children()) do
+				for _,t in pairs(service.Player.Backpack:GetChildren()) do
 					check(t)
 				end
 
