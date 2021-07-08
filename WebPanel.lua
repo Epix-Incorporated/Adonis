@@ -36,7 +36,7 @@ return function(Vargs)
 	local CachedDefaultLevels = {}
 
 	local OverrideQueue = {}
-	
+
 	local fakePlayer = service.Wrap(service.New("Folder"))
 	for i,v in pairs({
 		Name = "Server";
@@ -57,11 +57,13 @@ return function(Vargs)
 
 	local function CopyCommand(tbl)
 		local ret = {}
-		for i,v in pairs(tbl) do
-			if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
-				ret[i] = tbl[i]
-			elseif typeof(v) == "table" then
-				ret[i] = CopyCommand(tbl[i])
+		if tbl and type(tbl) == "table" then
+			for i,v in pairs(tbl) do
+				if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
+					ret[i] = v
+				elseif typeof(v) == "table" then
+					ret[i] = CopyCommand(v)
+				end
 			end
 		end
 		return ret
@@ -303,7 +305,7 @@ return function(Vargs)
 					table.insert(aliases, cmd)
 				end
 
-				CachedAliases[name] = aliases					
+				CachedAliases[name] = aliases
 			end
 		end
 	end
