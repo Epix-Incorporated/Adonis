@@ -68,8 +68,8 @@ function onEquipped(mouse)
   mouse.Button1Down:connect(function() onButton1Down(mouse) end)
 end
 
-game:service("UserInputService").InputBegan:connect(function(InputObject)
-if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
+game:service("UserInputService").InputBegan:connect(function(InputObject,gpe)
+if  InputObject.UserInputType == Enum.UserInputType.Keyboard and not gpe then
   if InputObject.KeyCode == Enum.KeyCode.R then
     holding = true
     rotate()
