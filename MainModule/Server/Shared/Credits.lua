@@ -23,7 +23,6 @@ return {
 	{Text = "@GitHub ccuser44",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 	{Text = "@GitHub TheLegendarySpark",Desc = "GitHub Contributor"};
-	{Text = "@GitHub joritochip",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub DarkBro",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub pbstFusion",		Desc = "GitHub Contributor"};
 	{Text = "@GitHub policetonyR",		Desc = "GitHub Contributor"};
@@ -42,6 +41,7 @@ return {
 	{Text = "@GitHub flgx16",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub DrewBokman",			Desc = "GitHub Contributor"};
 	{Text = "@GitHub Kw6m",			Desc = "GitHub Contributor"};
+	{Text = "@GitHub chexburger ",			Desc = "GitHub Contributor"}; chexburger
 	{Text = "",		Desc = "Everyone else"};
 	{Text = "~ EVERYONE ELSE ~",		Desc = ""};
 	{Text = "Stravant/JustAPerson/Jason Priest (?)", Desc = "Wrote LBI (No longer used)"};
