@@ -1185,23 +1185,6 @@ return function(data)
 						end)
 					end
 				};
-				{
-					Text = "Theme: ";
-					Desc = "- Allows you to set the Adonis UI theme";
-					Entry = "DropDown";
-					Setting = "CustomTheme";
-					Value = client.Variables.CustomTheme or "Game Theme";
-					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
-					Function = function(selection)
-						if selection == "Game Theme" then
-							client.Variables.CustomTheme = nil
-							client.Remote.Get("UpdateClient","CustomTheme",nil)
-						else
-							client.Variables.CustomTheme = selection
-							client.Remote.Get("UpdateClient","CustomTheme",selection)
-						end
-					end
-				}
 			}
 
 			local num = 0;
