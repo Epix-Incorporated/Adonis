@@ -559,7 +559,7 @@ return function()
 		local oWait = meta(wait)
 		local tick = meta(tick)
 
-		track("Thread: TableCheck",meta(function()
+		track("Thread: TableCheck", meta(function()
 			while oWait(1) do
 				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function()
 					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
