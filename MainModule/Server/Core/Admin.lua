@@ -234,7 +234,7 @@ return function(Vargs)
 			end
 		end;
 
-		DoCheck = function(p, check)
+		DoCheck = function(p, check, banCheck)
 			local pType = type(p)
 			local cType = type(check)
 			if pType == "string" and cType == "string" then
@@ -246,7 +246,7 @@ return function(Vargs)
 					return true
 				end
 			elseif cType == "number" then
-				if p.userId == check then
+				if p.UserId == check then
 					return true
 				end
 			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
@@ -293,25 +293,21 @@ return function(Vargs)
 					end
 				elseif p.Name == check then
 					return true
-				elseif type(check) == "string" then
+				elseif not banCheck and type(check) == "string" and not string.find(check, ":") then
 					local cache = Admin.UserIdCache[check]
 
 					if cache and p.UserId == cache then
 						return true
-					elseif cache==false then
-						return
-					end
+					elseif not cache then
+						local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
 
-					local suc,userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
+						if suc and userId then
+							Admin.UserIdCache[check] = userId
 
-					if suc and userId then
-						Admin.UserIdCache[check] = userId
-
-						if p.UserId == userId then
-							return true
+							if p.UserId == userId then
+								return true
+							end
 						end
-					elseif not suc then
-						Admin.UserIdCache[check] = false
 					end
 				end
 			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
@@ -586,7 +582,7 @@ return function(Vargs)
 			local doCheck = Admin.DoCheck
 			local banCheck = Admin.DoBanCheck
 			for ind,admin in next,Settings.Banned do
-				if doCheck(p, admin) or banCheck(p, admin) or (type(admin) == "table" and (doCheck(p, admin.Name) or doCheck(p, admin.UserId))) then
+				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
 					return true, (type(admin) == "table" and admin.Reason)
 				end
 			end
