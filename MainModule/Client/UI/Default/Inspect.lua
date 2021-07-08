@@ -110,7 +110,8 @@ return function(data)
 			i = i + 1
 		end
 
-		addGeneralEntry("Username:", player.Name, "The player's Roblox username")
+		addGeneralEntry("Display Name:", player.DisplayName, "The player's display name")
+		addGeneralEntry("Username:", player.Name, "The player's unique Roblox username")
 		addGeneralEntry("User ID:", player.UserId, "The player's unique Roblox user ID")
 		addGeneralEntry("Account Age:", player.AccountAge .. " days ("..string.format("%.2f", player.AccountAge/365).." years)", "How long the player has been registered on Roblox")
 		addGeneralEntry("Membership:", player.MembershipType.Name, "The player's Roblox membership type")
