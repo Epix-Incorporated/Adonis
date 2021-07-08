@@ -639,7 +639,7 @@ return function(data)
 		end
 	end
 	
-	text.FocusLost:connect(function(enterPressed)
+	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
@@ -649,7 +649,7 @@ return function(data)
 		close()
 	end)
 	
-	text.Changed:connect(function(c)
+	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
@@ -682,7 +682,7 @@ return function(data)
 					new.Visible = true
 					new.Parent = players
 					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:connect(function()
+					new.MouseButton1Down:Connect(function()
 						text.Text = text.Text..tostring(v)
 						text:CaptureFocus()
 					end)
@@ -708,7 +708,7 @@ return function(data)
 					b.Text = v
 					b.Name = "Entry "..num
 					b.Position = UDim2.new(0,0,0,20*num)
-					b.MouseButton1Down:connect(function()
+					b.MouseButton1Down:Connect(function()
 						text.Text = b.Text
 						text:CaptureFocus()
 					end)

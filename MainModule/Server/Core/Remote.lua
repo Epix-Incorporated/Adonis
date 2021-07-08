@@ -599,7 +599,7 @@ return function(Vargs)
 							v:Kick()
 						end
 
-						service.PlayerAdded:connect(function(p)
+						service.PlayerAdded:Connect(function(p)
 							p:Kick()
 						end)
 					end

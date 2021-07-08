@@ -1229,7 +1229,7 @@ return function(data)
 
 			if data.TextChanged and class == "TextBox" then
 				local textChanged = functionify(data.TextChanged, new)
-				new.FocusLost:connect(function(enterPressed)
+				new.FocusLost:Connect(function(enterPressed)
 					textChanged(new.Text, enterPressed, new)
 				end)
 			end
@@ -1238,7 +1238,7 @@ return function(data)
 				local debounce = false;
 				local doDebounce = data.Debounce;
 				local onClick = functionify((data.OnClicked or data.OnClick), new)
-				new.MouseButton1Down:connect(function()
+				new.MouseButton1Down:Connect(function()
 					if not debounce then
 						if doDebounce then
 							debounce = true
@@ -1313,7 +1313,7 @@ return function(data)
 
 			new.Text = data.Text or new.Text
 			button.ZIndex = data.ZIndex or new.ZIndex
-			button.MouseButton1Down:connect(new.DoClick)
+			button.MouseButton1Down:Connect(new.DoClick)
 		end
 
 		if class == "Boolean" then
@@ -1340,7 +1340,7 @@ return function(data)
 
 			--new.ZIndex = data.ZIndex
 			new.Text = (enabled and "Enabled") or "Disabled"
-			new.MouseButton1Down:connect(function()
+			new.MouseButton1Down:Connect(function()
 				if onToggle then
 					toggle()
 				end
@@ -1370,13 +1370,13 @@ return function(data)
 
 			if data.TextChanged then
 				local textChanged = functionify(data.TextChanged, box)
-				box.Changed:connect(function(p)
+				box.Changed:Connect(function(p)
 					if p == "Text" and not ignore then
 						textChanged(box.Text)
 					end
 				end)
 
-				box.FocusLost:connect(function(enter)
+				box.FocusLost:Connect(function(enter)
 					local change = textChanged(box.Text, true, enter)
 					if change then
 						ignore = true
@@ -1409,7 +1409,7 @@ return function(data)
 				drag.Position = slider.Position
 			end
 
-			bar.InputBegan:connect(function(input)
+			bar.InputBegan:Connect(function(input)
 				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 
@@ -1429,16 +1429,16 @@ return function(data)
 				end
 			end)
 
-			drag.DragBegin:connect(function()
+			drag.DragBegin:Connect(function()
 				moving = true
 			end)
 
-			drag.DragStopped:connect(function()
+			drag.DragStopped:Connect(function()
 				moving = false
 				drag.Position = slider.Position
 			end)
 
-			drag.Changed:connect(function()
+			drag.Changed:Connect(function()
 				if moving then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 
@@ -2012,7 +2012,7 @@ return function(data)
 	end
 
 	if Walls then
-		Drag.DragStopped:connect(function()
+		Drag.DragStopped:Connect(function()
 			wallPosition()
 		end)
 	end
@@ -2040,7 +2040,7 @@ return function(data)
 			end
 		end
 
-		Refresh.MouseButton1Down:connect(function()
+		Refresh.MouseButton1Down:Connect(function()
 			if not debounce then
 				debounce = true
 				DoRefresh()
@@ -2082,11 +2082,11 @@ return function(data)
 		local ReallyInFrame
 
 		local function readify(obj)
-			obj.MouseEnter:connect(function()
+			obj.MouseEnter:Connect(function()
 				ReallyInFrame = obj
 			end)
 
-			obj.MouseLeave:connect(function()
+			obj.MouseLeave:Connect(function()
 				if ReallyInFrame == obj then
 					ReallyInFrame = nil
 				end
@@ -2303,8 +2303,8 @@ return function(data)
 	end
 
 
-	Close.MouseButton1Down:connect(doClose)
-	Hide.MouseButton1Down:connect(function() doHide() end)
+	Close.MouseButton1Down:Connect(doClose)
+	Hide.MouseButton1Down:Connect(function() doHide() end)
 	gTable.CustomDestroy = function()
 		service.UnWrap(GUI):Destroy()
 		if client.Variables.MouseLockedBy == gTable then

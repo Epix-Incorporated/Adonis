@@ -112,8 +112,8 @@ return function(Vargs)
 			end
 		end
 
-		stats.PlayerCount = #service.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #service.Players:GetPlayers()
-		stats.MaxPlayers = service.Players.MaxPlayers
+		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
+		stats.MaxPlayers = game.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
 		stats.ServerSpeed = math.min(frames/60, 1)*100
 		stats.Admins = admins
@@ -416,10 +416,6 @@ return function(Vargs)
 						Functions.Shutdown("[WebPanel] Server Shutdown")
 						WebPanelCleanUp(true)
 					elseif v.action == "remoteexecute" then
-<<<<<<< Updated upstream
-						if typeof(v.command) ~= "string" then v.command = tostring(v.command) end
-						server.Process.Command(fakePlayer, v.command, {AdminLevel = 900, DontLog = true, IgnoreErrors = true})
-=======
 						if typeof(v.command) ~= "string" then
 							v.command = tostring(v.command)
 						end
@@ -429,7 +425,6 @@ return function(Vargs)
 							DontLog = true,
 							IgnoreErrors = true
 						})
->>>>>>> Stashed changes
 					end
 				end
 			end

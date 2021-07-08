@@ -5,7 +5,7 @@ local bindEvent = threadScript:WaitForChild("Event")
 threadScript.Parent = nil
 setfenv(1, {})
 
-bindEvent.Event:connect(function(func)
+bindEvent.Event:Connect(function(func)
 	bindEvent.Parent = nil
 	threadScript.Name = threadName
 	return func()

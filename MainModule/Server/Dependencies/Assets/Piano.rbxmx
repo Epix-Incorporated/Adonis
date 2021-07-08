@@ -38,7 +38,7 @@ function Activate()
 	SetSounds(PianoSounds)
 	--Player.Character.Torso.Anchored=true
 	--Humanoid.PlatformStand=true
-	for i,v in pairs(Player.Backpack:children()) do
+	for i,v in pairs(Player.Backpack:GetChildren()) do
 		v.Parent=Tools
 	end
 end
@@ -56,7 +56,7 @@ function Deactivate()
 			v:Destroy()
 		end
 	end
-	for i,v in pairs(Tools:children()) do
+	for i,v in pairs(Tools:GetChildren()) do
 		v.Parent=Player.Backpack
 	end
 	Tools:Destroy()
@@ -133,15 +133,15 @@ end
 
 KeyboardConnection = nil
 JumpConnection = nil
-FocusConnection = InputService.TextBoxFocused:connect(TextFocus) --always needs to be connected
-UnfocusConnection = InputService.TextBoxFocusReleased:connect(TextUnfocus)
+FocusConnection = InputService.TextBoxFocused:Connect(TextFocus) --always needs to be connected
+UnfocusConnection = InputService.TextBoxFocusReleased:Connect(TextUnfocus)
 
 function MakeKeyboardConnections()
-	KeyboardConnection = InputService.InputBegan:connect(Input)
+	KeyboardConnection = InputService.InputBegan:Connect(Input)
 	
 end
 function BreakKeyboardConnections()
-	KeyboardConnection:disconnect()
+	KeyboardConnection:Disconnect()
 end
 
 PianoGui = Gui.PianoGui
@@ -256,24 +256,24 @@ CapsButtonConnection = nil
 
 function MakeGuiConnections()
 	for i, v in pairs(PianoGui.Keys:GetChildren()) do
-		PianoKeysConnections[i] = v.InputBegan:connect(function(Object) PianoKeyPressed(Object, tonumber(v.Name)) end)
+		PianoKeysConnections[i] = v.InputBegan:Connect(function(Object) PianoKeyPressed(Object, tonumber(v.Name)) end)
 	end
-	PianoGui.Buy.MouseButton1Click:connect(function() game:service("MarketplaceService"):PromptPurchase(Player,254415530) end)
-	PianoGui.Teleport.MouseButton1Click:connect(function() game:service("TeleportService"):Teleport(233727153) end)
-	ExitButtonConnection = PianoGui.ExitButton.InputBegan:connect(ExitButtonPressed)
-	SheetsButtonConnection = PianoGui.SheetsButton.InputBegan:connect(SheetsButtonPressed)
-	--SheetsEditedConnection = SheetsGui.Sheet.ScrollingFrame.TextBox.Changed:connect(SheetsEdited)
-	CapsButtonConnection = PianoGui.CapsButton.InputBegan:connect(CapsButtonPressed)
+	PianoGui.Buy.MouseButton1Click:Connect(function() game:service("MarketplaceService"):PromptPurchase(Player,254415530) end)
+	PianoGui.Teleport.MouseButton1Click:Connect(function() game:service("TeleportService"):Teleport(233727153) end)
+	ExitButtonConnection = PianoGui.ExitButton.InputBegan:Connect(ExitButtonPressed)
+	SheetsButtonConnection = PianoGui.SheetsButton.InputBegan:Connect(SheetsButtonPressed)
+	--SheetsEditedConnection = SheetsGui.Sheet.ScrollingFrame.TextBox.Changed:Connect(SheetsEdited)
+	CapsButtonConnection = PianoGui.CapsButton.InputBegan:Connect(CapsButtonPressed)
 end
 function BreakGuiConnections()
 	for i, v in pairs(PianoKeysConnections) do
-		v:disconnect()
+		v:Disconnect()
 	end
 	
-	ExitButtonConnection:disconnect()
-	SheetsButtonConnection:disconnect()
-	--SheetsEditedConnection:disconnect()
-	CapsButtonConnection:disconnect()
+	ExitButtonConnection:Disconnect()
+	SheetsButtonConnection:Disconnect()
+	--SheetsEditedConnection:Disconnect()
+	CapsButtonConnection:Disconnect()
 end
 
 ContentProvider = game:GetService("ContentProvider")
@@ -351,7 +351,7 @@ function ReturnCamera()
 end
 
 ScriptReady = true
-Humanoid.Died:connect(Deactivate)
+Humanoid.Died:Connect(Deactivate)
 Activate()
 
 
