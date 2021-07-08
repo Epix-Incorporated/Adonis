@@ -388,8 +388,6 @@ return function(Vargs)
 				end
 			end
 
-			Logs:AddLog("Script", "WebPanel Module Loaded");
-
 			--// Handle queue items
 			for i,v in pairs(data.Queue) do
 				if typeof(v.action) ~= "string" then v.action = tostring(v.action) end
