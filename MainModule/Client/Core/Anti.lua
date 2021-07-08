@@ -205,7 +205,7 @@ return function()
 		end;
 
 		AntiGui = function() --// Future
-			service.Player.DescendantAdded:connect(function(c)
+			service.Player.DescendantAdded:Connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
 					c:Destroy()
 					Detected("log","Unknown GUI detected and destroyed")
@@ -232,7 +232,7 @@ return function()
 					check(t)
 				end
 
-				service.Player.Backpack.ChildAdded:connect(check)
+				service.Player.Backpack.ChildAdded:Connect(check)
 			end
 		end;
 
@@ -241,7 +241,7 @@ return function()
 			local humanoid = service.Player.Character:WaitForChild("Humanoid")
 			local event
 			local doing = true
-			event = humanoid.StateChanged:connect(function(_,new)
+			event = humanoid.StateChanged:Connect(function(_,new)
 				if not doing then
 					event:disconnect()
 				end
@@ -338,9 +338,9 @@ return function()
 
 			checkServ()
 
-			service.DataModel.ChildAdded:connect(checkServ)
+			service.DataModel.ChildAdded:Connect(checkServ)
 
-			service.Events.CharacterRemoving:connect(function()
+			service.Events.CharacterRemoving:Connect(function()
 				for i,_ in next,coreNums do
 					if coreClears[i] then
 						coreNums[i] = 0
@@ -348,25 +348,25 @@ return function()
 				end
 			end)
 
-			service.ScriptContext.ChildAdded:connect(function(child)
+			service.ScriptContext.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
 				end
 			end)
 
-			service.ReplicatedFirst.ChildAdded:connect(function(child)
+			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick","Localscript Detected; "..tostring(child))
 				end
 			end)
 
-			service.LogService.MessageOut:connect(function(Message)
+			service.LogService.MessageOut:Connect(function(Message)
 				if check(Message) then
 					Detected('crash','Exploit detected; '..Message)
 				end
 			end)
 
-			service.Selection.SelectionChanged:connect(function()
+			service.Selection.SelectionChanged:Connect(function()
 				Detected('kick','Selection changed')
 			end)
 
@@ -403,7 +403,7 @@ return function()
 			end)
 
 			if service.Player:WaitForChild("Backpack", 120) then
-				service.Player.Backpack.ChildAdded:connect(checkTool)
+				service.Player.Backpack.ChildAdded:Connect(checkTool)
 			end
 
 			--// Detection Loop
