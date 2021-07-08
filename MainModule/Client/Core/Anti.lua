@@ -228,7 +228,7 @@ return function()
 					end
 				end
 
-				for i,t in pairs(service.Player.Backpack:children()) do
+				for _,t in pairs(service.Player.Backpack:children()) do
 					check(t)
 				end
 
@@ -273,7 +273,7 @@ return function()
 			end
 		end;
 
-		MainDetection = function(data)
+		MainDetection = function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
@@ -473,7 +473,7 @@ return function()
 		GetClassName = function(obj)
 			local testName = tostring(math.random()..math.random())
 			local _,err = pcall(function()
-				local test = obj[testName]
+				local _ = obj[testName]
 			end)
 			if err then
 				local class = string.match(err,testName.." is not a valid member of (.*)")
