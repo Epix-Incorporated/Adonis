@@ -35,7 +35,7 @@ if mode=="AnchorSafe" or mode=="ObjectSafe" then
 				--print("DEL ONE")
 			end
 			local event
-			event=part.Changed:connect(function(p)
+			event=part.Changed:Connect(function(p)
 				pcall(function()
 					if anchor and part and part.Parent and mode=="AnchorSafe" then
 						part.Anchored=true
@@ -61,13 +61,13 @@ elseif mode=="AntiLeak" then
 	local function noleak(obj) 
 		if obj.ClassName == "StarterPlayerScripts" or obj.ClassName == "OLD.ServerStorage" or obj.ClassName == "Tool" or obj.ClassName == "HopperBin" then return end 
 		obj.Archivable = false 
-		obj.Changed:connect(function(p)
+		obj.Changed:Connect(function(p)
 			obj.Archivable = false
 		end)
 		for i,v in pairs(obj:GetChildren()) do 
 			pcall(function() 
 				v.Archivable = false 	
-				v.Changed:connect(function(p)
+				v.Changed:Connect(function(p)
 					v.Archivable = false
 				end)
 			end) 

@@ -229,7 +229,7 @@ return function(data)
 		frame.BackgroundTransparency = 1
 		frame.Size = UDim2.new(1, 0, 0,150)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		frame.ChildAdded:connect(function(c)
+		frame.ChildAdded:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -237,7 +237,7 @@ return function(data)
 			end
 		end)
 		
-		frame.ChildRemoved:connect(function(c)
+		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else

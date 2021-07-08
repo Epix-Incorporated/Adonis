@@ -1027,24 +1027,24 @@ function ReturnSetting(set)
 &#9;end
 end
 
-OpenToggleButton.MouseButton1Up:connect(function()
+OpenToggleButton.MouseButton1Up:Connect(function()
 &#9;toggleDex(true)
 end)
 
-OpenScriptEditorButton.MouseButton1Up:connect(function()
+OpenScriptEditorButton.MouseButton1Up:Connect(function()
 &#9;if OpenScriptEditorButton.Active then
 &#9;&#9;ScriptEditor.Visible = true
 &#9;end
 end)
 
-CloseToggleButton.MouseButton1Up:connect(function()
+CloseToggleButton.MouseButton1Up:Connect(function()
 &#9;if CloseToggleButton.Active then
 &#9;&#9;toggleDex(false)
 &#9;end
 end)
 
 --[[
-OpenToggleButton.MouseButton1Up:connect(function()
+OpenToggleButton.MouseButton1Up:Connect(function()
 &#9;SideMenu:TweenPosition(UDim2.new(1, -330, 0, 0), &quot;Out&quot;, &quot;Quad&quot;, 0.5, true)
 &#9;
 &#9;if CurrentWindow == &quot;Explorer&quot; then
@@ -1057,7 +1057,7 @@ OpenToggleButton.MouseButton1Up:connect(function()
 &#9;OpenToggleButton:TweenPosition(UDim2.new(1,0,0,0), &quot;Out&quot;, &quot;Quad&quot;, 0.5, true)
 end)
 
-CloseToggleButton.MouseButton1Up:connect(function()
+CloseToggleButton.MouseButton1Up:Connect(function()
 &#9;SideMenu:TweenPosition(UDim2.new(1, 0, 0, 0), &quot;Out&quot;, &quot;Quad&quot;, 0.5, true)
 &#9;
 &#9;ExplorerPanel:TweenPosition(UDim2.new(1, 30, 0, 0), &quot;Out&quot;, &quot;Quad&quot;, 0.5, true)
@@ -1069,26 +1069,26 @@ end)
 --]]
 
 --[[
-ExplorerButton.MouseButton1Up:connect(function()
+ExplorerButton.MouseButton1Up:Connect(function()
 &#9;switchWindows(&quot;Explorer&quot;)
 end)
 
-SettingsButton.MouseButton1Up:connect(function()
+SettingsButton.MouseButton1Up:Connect(function()
 &#9;switchWindows(&quot;Settings&quot;)
 end)
 --]]
 
 for i,v in pairs(SlideFrame:GetChildren()) do
-&#9;v.MouseButton1Click:connect(function()
+&#9;v.MouseButton1Click:Connect(function()
 &#9;&#9;switchWindows(v.Name)
 &#9;end)
 &#9;
-&#9;v.MouseEnter:connect(function()v.BackgroundTransparency = 0.5 end)
-&#9;v.MouseLeave:connect(function()if CurrentWindow~=v.Name then v.BackgroundTransparency = 1 end end)
+&#9;v.MouseEnter:Connect(function()v.BackgroundTransparency = 0.5 end)
+&#9;v.MouseLeave:Connect(function()if CurrentWindow~=v.Name then v.BackgroundTransparency = 1 end end)
 end
 
 --[[
-ExplorerButton.MouseButton1Up:connect(function()
+ExplorerButton.MouseButton1Up:Connect(function()
 &#9;if CurrentWindow ~= &quot;Explorer&quot; then
 &#9;&#9;CurrentWindow = &quot;Explorer&quot;
 &#9;&#9;
@@ -1098,7 +1098,7 @@ ExplorerButton.MouseButton1Up:connect(function()
 &#9;end
 end)
 
-SettingsButton.MouseButton1Up:connect(function()
+SettingsButton.MouseButton1Up:Connect(function()
 &#9;if CurrentWindow ~= &quot;Settings&quot; then
 &#9;&#9;CurrentWindow = &quot;Settings&quot;
 &#9;&#9;
@@ -1128,7 +1128,7 @@ function createSetting(name,interName,defaultOn)
 &#9;&#9;end
 &#9;end&#9;
 &#9;
-&#9;newSetting.Change.MouseButton1Click:connect(function()
+&#9;newSetting.Change.MouseButton1Click:Connect(function()
 &#9;&#9;toggle(not Settings[interName])
 &#9;end)
 &#9;
@@ -1147,7 +1147,7 @@ createSetting(&quot;Select ungrouped models&quot;,&quot;SelectUngrouped&quot;,tr
 createSetting(&quot;SaveInstance decompiles scripts&quot;,&quot;SaveInstanceScripts&quot;,true)
 
 --[[
-ClickSelectOption.MouseButton1Up:connect(function()
+ClickSelectOption.MouseButton1Up:Connect(function()
 &#9;if Settings.ClickSelect then
 &#9;&#9;Settings.ClickSelect = false
 &#9;&#9;ClickSelectOption.Text = &quot;OFF&quot;
@@ -1157,7 +1157,7 @@ ClickSelectOption.MouseButton1Up:connect(function()
 &#9;end
 end)
 
-SelectionBoxOption.MouseButton1Up:connect(function()
+SelectionBoxOption.MouseButton1Up:Connect(function()
 &#9;if Settings.SelBox then
 &#9;&#9;Settings.SelBox = false
 &#9;&#9;SelectionBox.Adornee = nil
@@ -1168,7 +1168,7 @@ SelectionBoxOption.MouseButton1Up:connect(function()
 &#9;end
 end)
 
-ClearPropsOption.MouseButton1Up:connect(function()
+ClearPropsOption.MouseButton1Up:Connect(function()
 &#9;if Settings.ClearProps then
 &#9;&#9;Settings.ClearProps = false
 &#9;&#9;ClearPropsOption.Text = &quot;OFF&quot;
@@ -1178,7 +1178,7 @@ ClearPropsOption.MouseButton1Up:connect(function()
 &#9;end
 end)
 
-SelectUngroupedOption.MouseButton1Up:connect(function()
+SelectUngroupedOption.MouseButton1Up:Connect(function()
 &#9;if Settings.SelectUngrouped then
 &#9;&#9;Settings.SelectUngrouped = false
 &#9;&#9;SelectUngroupedOption.Text = &quot;OFF&quot;
@@ -1198,7 +1198,7 @@ local function getSelection()
 &#9;end
 end
 
-Mouse.Button1Down:connect(function()
+Mouse.Button1Down:Connect(function()
 &#9;if CurrentWindow == &quot;Explorer&quot; and Settings.ClickSelect then
 &#9;&#9;local target = Mouse.Target
 &#9;&#9;if target then
@@ -1207,7 +1207,7 @@ Mouse.Button1Down:connect(function()
 &#9;end
 end)
 
-SelectionChanged.Event:connect(function()
+SelectionChanged.Event:Connect(function()
 &#9;if Settings.SelBox then
 &#9;&#9;local success,err = pcall(function()
 &#9;&#9;&#9;local selection = getSelection()
@@ -1271,7 +1271,7 @@ createCopyWhatSetting(&quot;Workspace&quot;)
 
 SaveMapName.Text = tostring(game.PlaceId)..&quot;MapCopy&quot;
 
-SaveMapButton.MouseButton1Click:connect(function()
+SaveMapButton.MouseButton1Click:Connect(function()
 &#9;if SaveInstance then
 &#9;&#9;SaveInstance(game,SaveMapName.Text)
 &#9;&#9;SaveMapButton.Text = &quot;The map has been saved&quot;
@@ -9018,7 +9018,7 @@ local function CreateTextButton(readOnly, onClick)
 		button.TextColor3 = Row.TextLockedColor
 	else
 		button.TextColor3 = Row.TextColor
-		button.MouseButton1Click:connect(function()
+		button.MouseButton1Click:Connect(function()
 			onClick()
 		end)
 	end
@@ -9076,15 +9076,15 @@ local function CreateDropDownItem(text, onClick)
 	button.Active = true
 	button.Text = text
 
-	button.MouseEnter:connect(function()
+	button.MouseEnter:Connect(function()
 		button.TextColor3 = DropDown.TextColorOver
 		button.BackgroundColor3 = DropDown.BackColorOver
 	end)
-	button.MouseLeave:connect(function()
+	button.MouseLeave:Connect(function()
 		button.TextColor3 = DropDown.TextColor
 		button.BackgroundColor3 = DropDown.BackColor
 	end)
-	button.MouseButton1Click:connect(function()
+	button.MouseButton1Click:Connect(function()
 		onClick(text)
 	end)
 	return button
@@ -9176,17 +9176,17 @@ local function CreateDropDown(choices, currentChoice, readOnly, onClick)
 
 	if not readOnly then
 
-		button.MouseEnter:connect(function()
+		button.MouseEnter:Connect(function()
 			button.TextColor3 = Row.TextColor
 			showArrow(DropDown.ArrowColorOver)
 		end)
-		button.MouseLeave:connect(function()
+		button.MouseLeave:Connect(function()
 			button.TextColor3 = Row.TextColor
 			if not expanded then
 				showArrow(DropDown.ArrowColor)
 			end
 		end)
-		button.MouseButton1Click:connect(function()
+		button.MouseButton1Click:Connect(function()
 			if expanded then
 				hideMenu()
 			else
@@ -9232,7 +9232,7 @@ local function CreateBrickColor(readOnly, onClick)
 	colorBox.Position = UDim2.new(0, Styles.Margin, 0, Styles.Margin)
 	colorBox.Size = UDim2.new(0, BrickColors.BoxSize, 0, BrickColors.BoxSize)
 	colorBox.Text = ""
-	colorBox.MouseButton1Click:connect(function()
+	colorBox.MouseButton1Click:Connect(function()
 		if not readOnly then
 			toggle()
 		end
@@ -9270,7 +9270,7 @@ local function CreateBrickColor(readOnly, onClick)
 		brickColorBox.ZIndex = colorPalette.ZIndex
 		brickColorBox.Parent = colorPalette
 
-		brickColorBox.MouseButton1Click:connect(function()
+		brickColorBox.MouseButton1Click:Connect(function()
 			hide()
 			onClick(brickColor)
 		end)
@@ -9327,9 +9327,9 @@ function CreateCheckbox(value, readOnly, onClick)
 	end
 
 	if not readOnly then
-		checkboxFrame.MouseEnter:connect(function() mouseover = true updateSprite() end)
-		checkboxFrame.MouseLeave:connect(function() mouseover = false updateSprite() end)
-		checkboxFrame.MouseButton1Click:connect(function()
+		checkboxFrame.MouseEnter:Connect(function() mouseover = true updateSprite() end)
+		checkboxFrame.MouseLeave:Connect(function() mouseover = false updateSprite() end)
+		checkboxFrame.MouseButton1Click:Connect(function()
 			onClick(checked)
 		end)
 	end
@@ -9359,7 +9359,7 @@ Controls["default"] = function(object, propertyData, readOnly)
 	end
 
 	if not readOnly then
-		box.FocusLost:connect(function(enterPressed)
+		box.FocusLost:Connect(function(enterPressed)
 			Set(object, propertyData, ToValue(box.Text,propertyType))
 			update()
 		end)
@@ -9367,7 +9367,7 @@ Controls["default"] = function(object, propertyData, readOnly)
 
 	update()
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
@@ -9392,14 +9392,14 @@ Controls["bool"] = function(object, propertyData, readOnly)
 		setValue(checked)
 	end
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
 
 	if object:IsA("BoolValue") then
-		object.Changed:connect(function(val)
+		object.Changed:Connect(function(val)
 			update()
 		end)
 	end
@@ -9424,7 +9424,7 @@ Controls["BrickColor"] = function(object, propertyData, readOnly)
 
 	update()
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
@@ -9438,7 +9438,7 @@ Controls["Color3"] = function(object, propertyData, readOnly)
 
 	local frame,textBox,colorBox = CreateColor3Control(readOnly)
 
-	textBox.FocusLost:connect(function(enterPressed)
+	textBox.FocusLost:Connect(function(enterPressed)
 		Set(object, propertyData, ToValue(textBox.Text,"Color3"))
 		local value = object[propertyName]
 		colorBox.BackgroundColor3 = value
@@ -9453,7 +9453,7 @@ Controls["Color3"] = function(object, propertyData, readOnly)
 
 	update()
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
@@ -9485,7 +9485,7 @@ Controls["Enum"] = function(object, propertyData, readOnly)
 
 	update()
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
@@ -9514,7 +9514,7 @@ Controls["Object"] = function(object, propertyData, readOnly)
 	end
 
 	if not readOnly then
-		box.MouseButton1Click:connect(function()
+		box.MouseButton1Click:Connect(function()
 			if AwaitingObjectValue then
 				AwaitingObjectValue = false
 				update()
@@ -9527,21 +9527,21 @@ Controls["Object"] = function(object, propertyData, readOnly)
 		end)
 
 		box.Cancel.Visible = true
-		box.Cancel.MouseButton1Click:connect(function()
+		box.Cancel.MouseButton1Click:Connect(function()
 			object[propertyName] = nil
 		end)
 	end
 
 	update()
 
-	object.Changed:connect(function(property)
+	object.Changed:Connect(function(property)
 		if (property == propertyName) then
 			update()
 		end
 	end)
 
 	if object:IsA("ObjectValue") then
-		object.Changed:connect(function(val)
+		object.Changed:Connect(function(val)
 			update()
 		end)
 	end
@@ -9649,11 +9649,11 @@ function CreateRow(object, propertyData, isAlternateRow)
 	local control = GetControl(object, propertyData, readOnly)
 	control.Parent = propertyValueFrame
 
-	rowFrame.MouseEnter:connect(function()
+	rowFrame.MouseEnter:Connect(function()
 		propertyLabelFrame.BackgroundColor3 = Row.BackgroundColorMouseover
 		propertyValueFrame.BackgroundColor3 = Row.BackgroundColorMouseover
 	end)
-	rowFrame.MouseLeave:connect(function()
+	rowFrame.MouseLeave:Connect(function()
 		propertyLabelFrame.BackgroundColor3 = backColor
 		propertyValueFrame.BackgroundColor3 = backColor
 	end)
@@ -9768,7 +9768,7 @@ do
 	end
 end
 function SetZIndexOnChanged(object)
-	return object.Changed:connect(function(p)
+	return object.Changed:Connect(function(p)
 		if p == "ZIndex" then
 			SetZIndex(object,object.ZIndex)
 		end
@@ -10326,7 +10326,7 @@ do
 
 	end
 
-	MainFrame.Changed:connect(function(p)
+	MainFrame.Changed:Connect(function(p)
 		if p == 'AbsoluteSize' then
 			scrollBarH.VisibleSpace = math.ceil(MainFrame.AbsoluteSize.x)
 			scrollBarH:Update()
@@ -10336,14 +10336,14 @@ do
 	end)
 
 	local wheelAmount = Row.Height
-	PropertiesFrame.MouseWheelForward:connect(function()
+	PropertiesFrame.MouseWheelForward:Connect(function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
 			scrollBar:ScrollTo(scrollBar.ScrollIndex - wheelAmount)
 		else
 			scrollBar:ScrollTo(scrollBar.ScrollIndex - scrollBar.VisibleSpace)
 		end
 	end)
-	PropertiesFrame.MouseWheelBackward:connect(function()
+	PropertiesFrame.MouseWheelBackward:Connect(function()
 		if scrollBar.VisibleSpace - 1 > wheelAmount then
 			scrollBar:ScrollTo(scrollBar.ScrollIndex + wheelAmount)
 		else
@@ -10357,11 +10357,11 @@ scrollBar:Update()
 
 showProperties(GetSelection())
 
-bindSelectionChanged.Event:connect(function()
+bindSelectionChanged.Event:Connect(function()
 	showProperties(GetSelection())
 end)
 
-bindSetAwait.Event:connect(function(obj)
+bindSetAwait.Event:Connect(function(obj)
 	if AwaitingObjectValue then
 		AwaitingObjectValue = false
 		local mySel = obj
@@ -10373,7 +10373,7 @@ bindSetAwait.Event:connect(function(obj)
 	end
 end)
 
-propertiesSearch.Changed:connect(function(prop)
+propertiesSearch.Changed:Connect(function(prop)
 	if prop == "Text" then
 		showProperties(GetSelection())
 	end
@@ -12144,7 +12144,7 @@ function createDDown(dBut, callback,...)
 &#9;&#9;table.insert(activeOptions,newOption)
 &#9;&#9;newOption.Position = UDim2.new(-0.4, dBut.Position.X.Offset, dBut.Position.Y.Scale, dBut.Position.Y.Offset + (#activeOptions * dBut.Size.Y.Offset))
 &#9;&#9;newOption.Text = slots[i]
-&#9;&#9;newOption.MouseButton1Down:connect(function()
+&#9;&#9;newOption.MouseButton1Down:Connect(function()
 &#9;&#9;&#9;dBut.Text = slots[i]
 &#9;&#9;&#9;callback(slots[i])
 &#9;&#9;&#9;for i,v in pairs(activeOptions) do
@@ -12206,7 +12206,7 @@ do
 &#9;end
 
 &#9;function SetZIndexOnChanged(object)
-&#9;&#9;return object.Changed:connect(function(p)
+&#9;&#9;return object.Changed:Connect(function(p)
 &#9;&#9;&#9;if p == &quot;ZIndex&quot; then
 &#9;&#9;&#9;&#9;SetZIndex(object,object.ZIndex)
 &#9;&#9;&#9;end
@@ -13308,7 +13308,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 &#9;&#9;end
 &#9;&#9;
 &#9;&#9;
-&#9;&#9;button.MouseEnter:connect(function()
+&#9;&#9;button.MouseEnter:Connect(function()
 &#9;&#9;&#9;button.TextColor3 = DropDown.TextColorOver
 &#9;&#9;&#9;button.BackgroundColor3 = DropDown.BackColorOver
 &#9;&#9;&#9;if not insObj and CurrentInsertObjectWindow then
@@ -13327,11 +13327,11 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 &#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;end
 &#9;&#9;end)
-&#9;&#9;button.MouseLeave:connect(function()
+&#9;&#9;button.MouseLeave:Connect(function()
 &#9;&#9;&#9;button.TextColor3 = DropDown.TextColor
 &#9;&#9;&#9;button.BackgroundColor3 = DropDown.BackColor
 &#9;&#9;end)
-&#9;&#9;button.MouseButton1Click:connect(function()
+&#9;&#9;button.MouseButton1Click:Connect(function()
 &#9;&#9;&#9;button.TextColor3 = DropDown.TextColor
 &#9;&#9;&#9;button.BackgroundColor3 = DropDown.BackColor
 &#9;&#9;&#9;onClick(text)
@@ -13770,7 +13770,7 @@ function CreateCaution(title,msg)
 &#9;newCaution.Visible = true
 &#9;newCaution.Title.Text = title
 &#9;newCaution.MainWindow.Desc.Text = msg
-&#9;newCaution.MainWindow.Ok.MouseButton1Up:connect(function()
+&#9;newCaution.MainWindow.Ok.MouseButton1Up:Connect(function()
 &#9;&#9;newCaution.Visible = false
 &#9;end)
 end
@@ -13794,7 +13794,7 @@ function CreateTableCaution(title,msg)
 &#9;end
 &#9;newCaution.Parent = explorerPanel.Parent
 &#9;newCaution.Visible = true
-&#9;newCaution.MainWindow.Ok.MouseButton1Up:connect(function()
+&#9;newCaution.MainWindow.Ok.MouseButton1Up:Connect(function()
 &#9;&#9;newCaution:Destroy()
 &#9;end)
 end
@@ -13959,13 +13959,13 @@ function PromptRemoteCaller(inst)
 &#9;local newArgument = ArgumentTemplate:Clone()
 &#9;newArgument.Parent = ArgumentList
 &#9;newArgument.Visible = true
-&#9;newArgument.Type.MouseButton1Down:connect(function()
+&#9;newArgument.Type.MouseButton1Down:Connect(function()
 &#9;&#9;createDDown(newArgument.Type,function(choice)
 &#9;&#9;&#9;newArgument.Type.Text = choice
 &#9;&#9;end,&quot;Script&quot;,&quot;Number&quot;,&quot;String&quot;,&quot;Color3&quot;,&quot;Vector3&quot;,&quot;Vector2&quot;,&quot;UDim2&quot;,&quot;NumberRange&quot;)
 &#9;end)
 &#9;
-&#9;CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up:connect(function()
+&#9;CurrentRemoteWindow.MainWindow.Ok.MouseButton1Up:Connect(function()
 &#9;&#9;if CurrentRemoteWindow and inst.Parent ~= nil then
 &#9;&#9;&#9;local MyArguments = {}
 &#9;&#9;&#9;for i,v in pairs(ArgumentList:GetChildren()) do
@@ -13994,14 +13994,14 @@ function PromptRemoteCaller(inst)
 &#9;&#9;end
 &#9;end)
 &#9;
-&#9;CurrentRemoteWindow.MainWindow.Add.MouseButton1Up:connect(function()
+&#9;CurrentRemoteWindow.MainWindow.Add.MouseButton1Up:Connect(function()
 &#9;&#9;if CurrentRemoteWindow then
 &#9;&#9;&#9;local newArgument = ArgumentTemplate:Clone()
 &#9;&#9;&#9;newArgument.Position = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
 &#9;&#9;&#9;newArgument.Parent = ArgumentList
 &#9;&#9;&#9;ArgumentList.CanvasSize = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
 &#9;&#9;&#9;newArgument.Visible = true
-&#9;&#9;&#9;newArgument.Type.MouseButton1Down:connect(function()
+&#9;&#9;&#9;newArgument.Type.MouseButton1Down:Connect(function()
 &#9;&#9;&#9;&#9;createDDown(newArgument.Type,function(choice)
 &#9;&#9;&#9;&#9;&#9;newArgument.Type.Text = choice
 &#9;&#9;&#9;&#9;end,&quot;Script&quot;,&quot;Number&quot;,&quot;String&quot;,&quot;Color3&quot;,&quot;Vector3&quot;,&quot;Vector2&quot;,&quot;UDim2&quot;,&quot;NumberRange&quot;)
@@ -14009,7 +14009,7 @@ function PromptRemoteCaller(inst)
 &#9;&#9;end
 &#9;end)
 &#9;
-&#9;CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up:connect(function()
+&#9;CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up:Connect(function()
 &#9;&#9;if CurrentRemoteWindow then
 &#9;&#9;&#9;if #ArgumentList:GetChildren() &gt; 1 then
 &#9;&#9;&#9;&#9;ArgumentList:GetChildren()[#ArgumentList:GetChildren()]:Destroy()
@@ -14018,14 +14018,14 @@ function PromptRemoteCaller(inst)
 &#9;&#9;end
 &#9;end)
 &#9;
-&#9;CurrentRemoteWindow.MainWindow.Cancel.MouseButton1Up:connect(function()
+&#9;CurrentRemoteWindow.MainWindow.Cancel.MouseButton1Up:Connect(function()
 &#9;&#9;if CurrentRemoteWindow then
 &#9;&#9;&#9;CurrentRemoteWindow:Destroy()
 &#9;&#9;&#9;CurrentRemoteWindow = nil
 &#9;&#9;end
 &#9;end)
 &#9;
-&#9;CurrentRemoteWindow.MainWindow.DisplayReturned.MouseButton1Up:connect(function()
+&#9;CurrentRemoteWindow.MainWindow.DisplayReturned.MouseButton1Up:Connect(function()
 &#9;&#9;if displayValues then
 &#9;&#9;&#9;displayValues = false
 &#9;&#9;&#9;CurrentRemoteWindow.MainWindow.DisplayReturned.enabled.Visible = false
@@ -14053,7 +14053,7 @@ function PromptSaveInstance(inst)
 &#9;local saveObjects = true
 &#9;local overwriteCaution = false
 &#9;
-&#9;CurrentSaveInstanceWindow.MainWindow.Save.MouseButton1Up:connect(function()
+&#9;CurrentSaveInstanceWindow.MainWindow.Save.MouseButton1Up:Connect(function()
 &#9;&#9;if readfile then
 &#9;&#9;&#9;if readfile(filename.Text..&quot;.rbxmx&quot;) then
 &#9;&#9;&#9;&#9;if not overwriteCaution then
@@ -14063,7 +14063,7 @@ function PromptSaveInstance(inst)
 &#9;&#9;&#9;&#9;&#9;newCaution.MainWindow.Desc.Text = &quot;The file, &quot;..filename.Text..&quot;.rbxmx, already exists. Overwrite?&quot;
 &#9;&#9;&#9;&#9;&#9;newCaution.Parent = explorerPanel.Parent
 &#9;&#9;&#9;&#9;&#9;newCaution.Visible = true
-&#9;&#9;&#9;&#9;&#9;newCaution.MainWindow.Yes.MouseButton1Up:connect(function()
+&#9;&#9;&#9;&#9;&#9;newCaution.MainWindow.Yes.MouseButton1Up:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;ypcall(function()
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;SaveInstance(inst,filename.Text..&quot;.rbxmx&quot;,not saveObjects)
 &#9;&#9;&#9;&#9;&#9;&#9;end)
@@ -14074,7 +14074,7 @@ function PromptSaveInstance(inst)
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;CurrentSaveInstanceWindow = nil
 &#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;end)
-&#9;&#9;&#9;&#9;&#9;newCaution.MainWindow.No.MouseButton1Up:connect(function()
+&#9;&#9;&#9;&#9;&#9;newCaution.MainWindow.No.MouseButton1Up:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;overwriteCaution = false
 &#9;&#9;&#9;&#9;&#9;&#9;newCaution:Destroy()
 &#9;&#9;&#9;&#9;&#9;end)
@@ -14108,7 +14108,7 @@ function PromptSaveInstance(inst)
 &#9;&#9;&#9;end
 &#9;&#9;end
 &#9;end)
-&#9;CurrentSaveInstanceWindow.MainWindow.Cancel.MouseButton1Up:connect(function()
+&#9;CurrentSaveInstanceWindow.MainWindow.Cancel.MouseButton1Up:Connect(function()
 &#9;&#9;if CurrentSaveInstanceWindow then
 &#9;&#9;&#9;CurrentSaveInstanceWindow:Destroy()
 &#9;&#9;&#9;CurrentSaveInstanceWindow = nil
@@ -14117,7 +14117,7 @@ function PromptSaveInstance(inst)
 &#9;&#9;&#9;end
 &#9;&#9;end
 &#9;end)
-&#9;CurrentSaveInstanceWindow.MainWindow.SaveObjects.MouseButton1Up:connect(function()
+&#9;CurrentSaveInstanceWindow.MainWindow.SaveObjects.MouseButton1Up:Connect(function()
 &#9;&#9;if saveObjects then
 &#9;&#9;&#9;saveObjects = false
 &#9;&#9;&#9;CurrentSaveInstanceWindow.MainWindow.SaveObjects.enabled.Visible = false
@@ -14341,7 +14341,7 @@ do
 &#9;&#9;local connDrag
 &#9;&#9;local conUp
 
-&#9;&#9;conDrag = mouseDrag.MouseMoved:connect(function(x,y)
+&#9;&#9;conDrag = mouseDrag.MouseMoved:Connect(function(x,y)
 &#9;&#9;&#9;local pos = Vector2.new(x,y) - listFrame.AbsolutePosition
 &#9;&#9;&#9;local size = listFrame.AbsoluteSize
 &#9;&#9;&#9;if pos.x &lt; 0 or pos.x &gt; size.x or pos.y &lt; 0 or pos.y &gt; size.y then return end
@@ -14369,7 +14369,7 @@ do
 &#9;&#9;&#9;function cancelSelectDrag()end
 &#9;&#9;end
 
-&#9;&#9;conUp = mouseDrag[button]:connect(cancelSelectDrag)
+&#9;&#9;conUp = mouseDrag[button]:Connect(cancelSelectDrag)
 
 &#9;&#9;mouseDrag.Parent = GetScreen(listFrame)
 &#9;end
@@ -14416,7 +14416,7 @@ do
 &#9;&#9;})
 &#9;&#9;SetZIndex(parentHighlight,9)
 
-&#9;&#9;conDrag = mouseDrag.MouseMoved:connect(function(x,y)
+&#9;&#9;conDrag = mouseDrag.MouseMoved:Connect(function(x,y)
 &#9;&#9;&#9;local dragPos = Vector2.new(x,y)
 &#9;&#9;&#9;if dragged then
 &#9;&#9;&#9;&#9;local pos = dragPos - listFrame.AbsolutePosition
@@ -14465,7 +14465,7 @@ do
 &#9;&#9;&#9;Selection:Set({object})
 &#9;&#9;end
 
-&#9;&#9;conUp = mouseDrag.MouseButton1Up:connect(function()
+&#9;&#9;conUp = mouseDrag.MouseButton1Up:Connect(function()
 &#9;&#9;&#9;cancelReparentDrag()
 &#9;&#9;&#9;if dragged then
 &#9;&#9;&#9;&#9;if parentIndex then
@@ -14494,7 +14494,7 @@ do
 &#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;end
 &#9;&#9;end)
-&#9;&#9;conUp2 = mouseDrag.MouseButton2Down:connect(function()
+&#9;&#9;conUp2 = mouseDrag.MouseButton2Down:Connect(function()
 &#9;&#9;&#9;cancelReparentDrag()
 &#9;&#9;end)
 
@@ -14554,7 +14554,7 @@ do
 &#9;&#9;&#9;&#9;&#9;listEntries[i] = entry
 
 &#9;&#9;&#9;&#9;&#9;local expand = entry.IndentFrame.Expand
-&#9;&#9;&#9;&#9;&#9;&#9;expand.MouseEnter:connect(function()
+&#9;&#9;&#9;&#9;&#9;&#9;expand.MouseEnter:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;local node = TreeList[i + self.ScrollIndex]
 &#9;&#9;&#9;&#9;&#9;&#9;if #node &gt; 0 then
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;if node.Object ~= HiddenEntriesMain then
@@ -14572,7 +14572,7 @@ do
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;end)
-&#9;&#9;&#9;&#9;&#9;expand.MouseLeave:connect(function()
+&#9;&#9;&#9;&#9;&#9;expand.MouseLeave:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;pcall(function()
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;local node = TreeList[i + self.ScrollIndex]
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;if node.Object == HiddenEntriesMain then
@@ -14603,7 +14603,7 @@ do
 &#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;
-&#9;&#9;&#9;&#9;&#9;expand.MouseButton1Down:connect(function()
+&#9;&#9;&#9;&#9;&#9;expand.MouseButton1Down:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;local node = TreeList[i + self.ScrollIndex]
 &#9;&#9;&#9;&#9;&#9;&#9;if #node &gt; 0 then
 &#9;&#9;&#9;&#9;&#9;&#9;&#9;if node.Object ~= HiddenEntriesMain then&#9;&#9;&#9;&#9;
@@ -14635,7 +14635,7 @@ do
 &#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;end)
 
-&#9;&#9;&#9;&#9;&#9;entry.MouseButton1Down:connect(function(x,y)
+&#9;&#9;&#9;&#9;&#9;entry.MouseButton1Down:Connect(function(x,y)
 &#9;&#9;&#9;&#9;&#9;&#9;local node = TreeList[i + self.ScrollIndex]
 &#9;&#9;&#9;&#9;&#9;&#9;DestroyRightClick()
 &#9;&#9;&#9;&#9;&#9;&#9;if GetAwaitRemote:Invoke() then
@@ -14697,7 +14697,7 @@ do
 &#9;&#9;&#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;&#9;end)
 
-&#9;&#9;&#9;&#9;&#9;entry.MouseButton2Down:connect(function()
+&#9;&#9;&#9;&#9;&#9;entry.MouseButton2Down:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;if not Option.Selectable then return end
 &#9;&#9;&#9;&#9;&#9;&#9;
 &#9;&#9;&#9;&#9;&#9;&#9;DestroyRightClick()
@@ -14721,7 +14721,7 @@ do
 &#9;&#9;&#9;&#9;&#9;end)
 &#9;&#9;&#9;&#9;&#9;
 &#9;&#9;&#9;&#9;&#9;
-&#9;&#9;&#9;&#9;&#9;entry.MouseButton2Up:connect(function()
+&#9;&#9;&#9;&#9;&#9;entry.MouseButton2Up:Connect(function()
 &#9;&#9;&#9;&#9;&#9;&#9;if not Option.Selectable then return end
 &#9;&#9;&#9;&#9;&#9;&#9;
 &#9;&#9;&#9;&#9;&#9;&#9;local node = TreeList[i + self.ScrollIndex]
@@ -14787,7 +14787,7 @@ do
 &#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;local text = entry.IndentFrame.EntryText
 &#9;&#9;&#9;&#9;text.Text = object.Name
-&#9;&#9;&#9;&#9;nameConnLookup[entry] = node.Object.Changed:connect(function(p)
+&#9;&#9;&#9;&#9;nameConnLookup[entry] = node.Object.Changed:Connect(function(p)
 &#9;&#9;&#9;&#9;&#9;if p == &apos;Name&apos; then
 &#9;&#9;&#9;&#9;&#9;&#9;text.Text = object.Name
 &#9;&#9;&#9;&#9;&#9;end
@@ -14830,14 +14830,14 @@ do
 &#9;end)
 
 &#9;local wheelAmount = 6
-&#9;explorerPanel.MouseWheelForward:connect(function()
+&#9;explorerPanel.MouseWheelForward:Connect(function()
 &#9;&#9;if scrollBar.VisibleSpace - 1 &gt; wheelAmount then
 &#9;&#9;&#9;scrollBar:ScrollTo(scrollBar.ScrollIndex - wheelAmount)
 &#9;&#9;else
 &#9;&#9;&#9;scrollBar:ScrollTo(scrollBar.ScrollIndex - scrollBar.VisibleSpace)
 &#9;&#9;end
 &#9;end)
-&#9;explorerPanel.MouseWheelBackward:connect(function()
+&#9;explorerPanel.MouseWheelBackward:Connect(function()
 &#9;&#9;if scrollBar.VisibleSpace - 1 &gt; wheelAmount then
 &#9;&#9;&#9;scrollBar:ScrollTo(scrollBar.ScrollIndex + wheelAmount)
 &#9;&#9;else
@@ -15117,7 +15117,7 @@ function updateDexStorageListeners()
 &#9;dexStorageListeners = {}
 &#9;for i,v in pairs(DexStorageMain:GetChildren()) do
 &#9;&#9;pcall(function()
-&#9;&#9;&#9;local ev = v.Changed:connect(updateDexStorage)
+&#9;&#9;&#9;local ev = v.Changed:Connect(updateDexStorage)
 &#9;&#9;&#9;table.insert(dexStorageListeners,ev)
 &#9;&#9;end)
 &#9;end
@@ -15285,14 +15285,14 @@ local actionButtons do
 &#9;&#9;&#9;Parent = headerFrame;
 &#9;&#9;})
 &#9;&#9;
-&#9;&#9;button.MouseEnter:connect(function()
+&#9;&#9;button.MouseEnter:Connect(function()
 &#9;&#9;&#9;if buttonEnabled then
 &#9;&#9;&#9;&#9;button.BackgroundTransparency = 0.9
 &#9;&#9;&#9;end
 &#9;&#9;&#9;--Icon(button,over)
 &#9;&#9;&#9;--tipText.Visible = true
 &#9;&#9;end)
-&#9;&#9;button.MouseLeave:connect(function()
+&#9;&#9;button.MouseLeave:Connect(function()
 &#9;&#9;&#9;button.BackgroundTransparency = 1
 &#9;&#9;&#9;--Icon(button,icon)
 &#9;&#9;&#9;--tipText.Visible = false
@@ -15320,7 +15320,7 @@ local actionButtons do
 &#9;&#9;
 
 &#9;-- DELETE
-&#9;makeButton(ACTION_DELETE,ACTION_DELETE_OVER,&quot;Delete&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:connect(function()
+&#9;makeButton(ACTION_DELETE,ACTION_DELETE_OVER,&quot;Delete&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:Connect(function()
 &#9;&#9;if not Option.Modifiable then return end
 &#9;&#9;local list = Selection:Get()
 &#9;&#9;for i = 1,#list do
@@ -15330,7 +15330,7 @@ local actionButtons do
 &#9;end)
 &#9;
 &#9;-- PASTE
-&#9;makeButton(ACTION_PASTE,ACTION_PASTE_OVER,&quot;Paste&quot;,true,function() return #Selection:Get() &gt; 0 and #clipboard &gt; 0 end).MouseButton1Click:connect(function()
+&#9;makeButton(ACTION_PASTE,ACTION_PASTE_OVER,&quot;Paste&quot;,true,function() return #Selection:Get() &gt; 0 and #clipboard &gt; 0 end).MouseButton1Click:Connect(function()
 &#9;&#9;if not Option.Modifiable then return end
 &#9;&#9;local parent = Selection.List[1] or workspace
 &#9;&#9;for i = 1,#clipboard do
@@ -15342,7 +15342,7 @@ local actionButtons do
 &#9;end)
 &#9;
 &#9;-- COPY
-&#9;makeButton(ACTION_COPY,ACTION_COPY_OVER,&quot;Copy&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:connect(function()
+&#9;makeButton(ACTION_COPY,ACTION_COPY_OVER,&quot;Copy&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:Connect(function()
 &#9;&#9;if not Option.Modifiable then return end
 &#9;&#9;clipboard = {}
 &#9;&#9;local list = Selection.List
@@ -15356,7 +15356,7 @@ local actionButtons do
 &#9;end)
 &#9;
 &#9;-- CUT
-&#9;makeButton(ACTION_CUT,ACTION_CUT_OVER,&quot;Cut&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:connect(function()
+&#9;makeButton(ACTION_CUT,ACTION_CUT_OVER,&quot;Cut&quot;,true,function() return #Selection:Get() &gt; 0 end).MouseButton1Click:Connect(function()
 &#9;&#9;if not Option.Modifiable then return end
 &#9;&#9;clipboard = {}
 &#9;&#9;local list = Selection.List
@@ -15442,7 +15442,7 @@ function SelectionVar()
 &#9;return Selection
 end
 
-Input.InputBegan:connect(function(key)
+Input.InputBegan:Connect(function(key)
 &#9;if key.KeyCode == Enum.KeyCode.LeftControl then
 &#9;&#9;HoldingCtrl = true
 &#9;end
@@ -15451,7 +15451,7 @@ Input.InputBegan:connect(function(key)
 &#9;end
 end)
 
-Input.InputEnded:connect(function(key)
+Input.InputEnded:Connect(function(key)
 &#9;if key.KeyCode == Enum.KeyCode.LeftControl then
 &#9;&#9;HoldingCtrl = false
 &#9;end
@@ -15465,14 +15465,14 @@ while RbxApi == nil do
 &#9;wait()
 end
 
-explorerFilter.Changed:connect(function(prop)
+explorerFilter.Changed:Connect(function(prop)
 &#9;if prop == &quot;Text&quot; then&#9;&#9;
 &#9;&#9;Selection.Finding = true
 &#9;&#9;rawUpdateList()
 &#9;end
 end)
 
-explorerFilter.FocusLost:connect(function()&#9;
+explorerFilter.FocusLost:Connect(function()&#9;
 &#9;if explorerFilter.Text == &quot;&quot; then
 &#9;&#9;if Selection.Found[1] then
 &#9;&#9;&#9;scrollBar:ScrollTo(NodeLookup[Selection.Found[1]].Index)

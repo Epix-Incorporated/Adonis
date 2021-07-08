@@ -743,7 +743,7 @@ return function(Vargs, env)
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
 						if scr and tab then
-							sb[class][name].Event = plr.Chatted:connect(function(msg)
+							sb[class][name].Event = plr.Chatted:Connect(function(msg)
 								if msg:sub(1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
 
 								else

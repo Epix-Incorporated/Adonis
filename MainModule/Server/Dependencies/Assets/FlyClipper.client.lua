@@ -9,7 +9,7 @@ local running = true
 local dir = {w = 0, s = 0, a = 0, d = 0} 
 local spd = 2 
 	
-local moos = mouse.KeyDown:connect(function(key)
+local moos = mouse.KeyDown:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 1 
 	elseif key:lower() == "s" then 
@@ -25,7 +25,7 @@ local moos = mouse.KeyDown:connect(function(key)
 	end 
 end) 
 
-local moos1 = mouse.KeyUp:connect(function(key)
+local moos1 = mouse.KeyUp:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 0 
 	elseif key:lower() == "s" then 
@@ -39,7 +39,7 @@ end)
 					
 torso.Anchored = true 
 hum.PlatformStand = true 
-local macka = hum.Changed:connect(function() 
+local macka = hum.Changed:Connect(function() 
 	hum.PlatformStand = true 
 end) 
 

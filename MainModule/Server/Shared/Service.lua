@@ -397,16 +397,16 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				Kill = function() newTask.R_Status = "Killing" service.Threads.End(newTask.Thread) newTask.Changed:fire("Killed") newTask.Remove() end;
 			}
 
-			function newTask.Changed:connect(func)
-				return service.Events[index.."_TASKCHANGED"]:connect(func)
+			function newTask.Changed:Connect(func)
+				return service.Events[index.."_TASKCHANGED"]:Connect(func)
 			end;
 
 			function newTask.Changed:fire(...)
 				service.Events[index.."_TASKCHANGED"]:fire(...)
 			end
 
-			function newTask.Finished:connect(func)
-				return service.Events[index.."_TASKFINISHED"]:connect(func)
+			function newTask.Finished:Connect(func)
+				return service.Events[index.."_TASKFINISHED"]:Connect(func)
 			end
 
 			function newTask.Finished:wait()
@@ -552,7 +552,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					end;
 
 					connect = function(ignore, func)
-						return Wrap(object:connect(function(...)
+						return Wrap(object:Connect(function(...)
 							return func(unpack(service.Wrap{...}))
 						end))
 					end;
@@ -613,7 +613,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 		Timer = function(t,func,check)
 			local start = tick()
-			local event; event = service.RunService.RenderStepped:connect(function()
+			local event; event = service.RunService.RenderStepped:Connect(function()
 				if tick()-start>t or (check and check()) then
 					func()
 					event:disconnect()
@@ -1179,7 +1179,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		ChatService = game:GetService("Chat");
 		Gamepasses = game:GetService("GamePassService");
 		Delete = function(obj,num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
-		RbxEvent = function(signal, func) local event = signal:connect(func) table.insert(RbxEvents, event) return event end;
+		RbxEvent = function(signal, func) local event = signal:Connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;
 		DelRbxEvent = function(signal) for i,v in next,RbxEvents do if v == signal then v:Disconnect() table.remove(RbxEvents, i) end end end;
 		SanitizeString = function(str) str = service.Trim(str) local new = "" for i = 1,#str do if str:sub(i,i) ~= "\n" and str:sub(i,i) ~= "\0" then new = new..str:sub(i,i) end end return new end;

@@ -393,7 +393,7 @@ return function()
 				end,
 
 				BindEvent = function(event, func)
-					local signal = event:connect(func)
+					local signal = event:Connect(func)
 					local origDisc = signal.Disconnect
 					local Events = gTable.Events
 					local disc = function()

@@ -295,7 +295,7 @@ return function(data)
 						new.Text = k.Value
 						--[[
 						local event
-						event = k.Changed:connect(function()
+						event = k.Changed:Connect(function()
 							if k and k.Parent and new and new.Parent then
 								--new.Text = k.Value
 								populate()
@@ -331,15 +331,15 @@ return function(data)
 	
 	fadeOut()
 	
-	frame.MouseEnter:connect(function()
+	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
 	
-	frame.MouseLeave:connect(function()
+	frame.MouseLeave:Connect(function()
 		fadeOut()
 	end)
 	
-	service.UserInputService.InputBegan:connect(function(InputObject)
+	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
 			if drag.Visible then
@@ -350,7 +350,7 @@ return function(data)
 		end
 	end)
 	
-	mouse.Move:connect(function(x,y)
+	mouse.Move:Connect(function(x,y)
 		if dragging then
 			np=defp+(dragger.Position.X.Offset)
 			nx=defx-(dragger.Position.X.Offset)
@@ -373,13 +373,13 @@ return function(data)
 		end
 	end)
 	
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		defp = drag.Position.X.Offset
 		dragging = true
 		dontSize = true
 	end)
 	
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
 		defx,defy,defp=nx,ny,drag.Position.X.Offset
@@ -389,29 +389,29 @@ return function(data)
 	
 	--[[
 	for k,p in pairs(service.Players:GetPlayers()) do
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			populate()
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 	end
 	
-	service.Players.PlayerAdded:connect(function(p)
+	service.Players.PlayerAdded:Connect(function(p)
 		populate()
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 		wait(0.5)
 		populate()
 	end)
 	
-	service.Teams.ChildAdded:connect(populate)
-	service.Teams.ChildRemoved:connect(populate)
+	service.Teams.ChildAdded:Connect(populate)
+	service.Teams.ChildRemoved:Connect(populate)
 	
 	wait(0.5)
 	populate()

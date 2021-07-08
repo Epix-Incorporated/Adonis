@@ -25,7 +25,7 @@ if hats then
 				elseif mode.Value=='Attack' then
 					waittime = 0.3
 					bpos.position = target.Value.Position+Vector3.new(math.random(-3,3),math.random(-3,3),math.random(-3,3))
-					events[hat.Name..'hatpet'] = hat.Touched:connect(function(p) 
+					events[hat.Name..'hatpet'] = hat.Touched:Connect(function(p) 
 						if not tonumber(p.Name) and game:service("Players"):GetPlayerFromCharacter(p.Parent) then 
 							p.Parent.Humanoid:TakeDamage(1) 
 						end 

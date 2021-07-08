@@ -63,7 +63,7 @@ this = {
 		threads[newThread] = true
 		
 		--pcall(setfenv, func, oldEnv)
-		changeEvent = newThread.Changed:connect(function(p)
+		changeEvent = newThread.Changed:Connect(function(p)
 			if p == "Name" and newThread.Name == "__READY" and threads[newThread] then
 				newBind:Fire(function()
 					local returns = {pcall(func, unpack(sendArgs))}

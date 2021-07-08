@@ -21727,7 +21727,7 @@ function Component.Start()
 	Connections.HideOnLeave = Support.AddGuiInputListener(View.Parent, 'Ended', 'MouseMovement', true, Component.Hide);
 
 	-- Clear connections when the component is removed
-	Component.OnRemove:connect(ClearConnections);
+	Component.OnRemove:Connect(ClearConnections);
 
 	-- Return component for chaining
 	return Component;

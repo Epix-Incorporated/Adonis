@@ -250,7 +250,7 @@ return function(Vargs, env)
 						audio:Play()
 						wait(2.25)
 						doPause(workspace)
-						Variables.ZaWarudo = game.DescendantAdded:connect(function(c)
+						Variables.ZaWarudo = game.DescendantAdded:Connect(function(c)
 							if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
 								c.Anchored = true
 								table.insert(Variables.FrozenObjects,c)
@@ -369,7 +369,7 @@ return function(Vargs, env)
 								if prt.Name:find("Leg") or prt.Name:find('Arm') then
 									prt.BrickColor = BrickColor.new("Dark green")
 								end
-								local tconn; tconn = prt.Touched:connect(function(hit)
+								local tconn; tconn = prt.Touched:Connect(function(hit)
 									if hit and hit.Parent and service.Players:findFirstChild(hit.Parent.Name) and cl.Parent == char then
 										infect(hit.Parent)
 									elseif cl.Parent ~= char then
@@ -377,7 +377,7 @@ return function(Vargs, env)
 									end
 								end)
 
-								cl.Changed:connect(function()
+								cl.Changed:Connect(function()
 									if cl.Parent ~= char then
 										tconn:disconnect()
 									end
@@ -1419,7 +1419,7 @@ return function(Vargs, env)
 								for i,v in pairs(obj:GetChildren()) do
 									Pcall(get,v)
 								end
-								obj.ChildAdded:connect(function(p)Pcall(get,p)end)
+								obj.ChildAdded:Connect(function(p)Pcall(get,p)end)
 							end
 						end
 
@@ -1579,7 +1579,7 @@ return function(Vargs, env)
 						table.insert(objs, f)
 						table.insert(objs, l)
 
-						part.Touched:connect(fire)
+						part.Touched:Connect(fire)
 
 						for i = 0.1, 1, 0.1 do
 							part.Color = oColor:lerp(Color3.new(0, 0, 0), i)
@@ -1592,7 +1592,7 @@ return function(Vargs, env)
 							BlastPressure = 0;
 						})
 
-						ex.Hit:connect(fire)
+						ex.Hit:Connect(fire)
 						ex.Parent = service.Workspace;
 						part.Anchored = false
 						part:BreakJoints()
@@ -1824,7 +1824,7 @@ return function(Vargs, env)
 								p.Anchored = false
 								m.Name = 'Puke Peice'
 								p.Name = 'Puke Peice'
-								p.Touched:connect(function(o)
+								p.Touched:Connect(function(o)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Puke Peice' and o.Name~='Blood Peice' and o.Name~='Blood Plate' and o.Name~='Puke Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf = CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
@@ -1897,7 +1897,7 @@ return function(Vargs, env)
 								p.Anchored = false
 								m.Name='Blood Peice'
 								p.Name='Blood Peice'
-								p.Touched:connect(function(o)
+								p.Touched:Connect(function(o)
 									if not o or not o.Parent then return end
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
@@ -3212,7 +3212,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local event
 					local torso = v.Character.HumanoidRootPart
-					event = v.Character.HumanoidRootPart.Touched:connect(function(p)
+					event = v.Character.HumanoidRootPart.Touched:Connect(function(p)
 						if torso and torso.Parent and not p:IsDescendantOf(v.Character) and not p.Locked then
 							Functions.MakeWeld(torso,p)
 						elseif not torso or not torso.Parent then

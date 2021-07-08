@@ -123,7 +123,7 @@ return function(data)
 		frame.Size = UDim2.new(0, 200, 0.5, 0)
 		frame.Position = UDim2.new(1, -210, 0.5, -10)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		frame.ChildAdded:connect(function(c)
+		frame.ChildAdded:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -131,7 +131,7 @@ return function(data)
 			end
 		end)
 		
-		frame.ChildRemoved:connect(function(c)
+		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -162,7 +162,7 @@ return function(data)
 	frame.Name = name
 	main.Text = text
 	
-	main.MouseButton1Click:connect(function()
+	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
 				returner = clickfunc()
@@ -172,7 +172,7 @@ return function(data)
 		end
 	end)
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if closefunc then
 				returner = closefunc()

@@ -45,7 +45,7 @@ local val = service.New('StringValue',head)
 local old = math.random()
 local stop = false
 
-hum.Died:connect(function()
+hum.Died:Connect(function()
 stop = true
 wait(0.5)
 workspace.CurrentCamera.FieldOfView = 70

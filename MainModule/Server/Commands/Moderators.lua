@@ -878,7 +878,7 @@ return function(Vargs, env)
 						local pos = torso.CFrame
 						local running=true
 						local event
-						event = v.Character.Humanoid.Jumping:connect(function()
+						event = v.Character.Humanoid.Jumping:Connect(function()
 							running = false
 							ff:Destroy()
 							hum.Health = orig
@@ -3029,8 +3029,8 @@ return function(Vargs, env)
 							arrow.Position = UDim2.new(0,0,0,20)
 							arrow.Text = 'v'
 							Remote.MakeLocal(plr,bb,false,true)
-							local event;event = v.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-							local event2;event2 = plr.CharacterRemoving:connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+							local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
+							local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
 						end
 					end)()
 				end
@@ -3373,7 +3373,7 @@ return function(Vargs, env)
 							end
 						end
 						v.Character.Parent = plr.Character
-						--v.Character.Humanoid.Changed:connect(function() v.Character.Humanoid.PlatformStand = true end)
+						--v.Character.Humanoid.Changed:Connect(function() v.Character.Humanoid.PlatformStand = true end)
 					end
 				end
 			end
@@ -5466,7 +5466,7 @@ return function(Vargs, env)
 							hum.MaxHealth = 0
 							hum.Health = 0
 						else
-							v.Character.Humanoid.Changed:connect(function(c)
+							v.Character.Humanoid.Changed:Connect(function(c)
 								hum.MaxHealth = v.Character.Humanoid.MaxHealth
 								wait()
 								hum.Health = v.Character.Humanoid.Health

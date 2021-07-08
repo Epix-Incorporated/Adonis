@@ -609,7 +609,7 @@ return function(Vargs, env)
 
 						removeScripts(hat)
 						hat.Parent = plr.Character
-						hat.Changed:connect(function()
+						hat.Changed:Connect(function()
 							if hat.Parent ~= plr.Character then
 								hat:Destroy()
 							end
