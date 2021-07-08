@@ -637,25 +637,12 @@ return function(Vargs, env)
 			end
 		};
 
-		Keybinds = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
-			Args = {};
-			Hidden = false;
-			Description = "Opens the keybind manager";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
-			end
-		};
-
 		GetScript = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getscript";"getadonis"};
 			Args = {};
 			Hidden = false;
-			Description = "Get this script.";
+			Description = "Prompts you to take a copy of the script";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -668,7 +655,7 @@ return function(Vargs, env)
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you your current ping (in seconds)";
+			Description = "Shows you your current ping";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -681,7 +668,7 @@ return function(Vargs, env)
 			Commands = {"getping";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Shows the target player's ping (in seconds)";
+			Description = "Shows the target player's ping";
 			Fun = false;
 			AdminLevel = "Helpers";
 			Function = function(plr,args)
@@ -785,12 +772,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(plr.userId)
-				if succeeded then
-					service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
-				else
-					Functions.Hint("Could not rejoin.")
-				end
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
 
@@ -821,7 +803,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"agents";"trelloagents";"showagents";};
 			Args = {};
-			Hidden = false;
+			Hidden = true;
 			Description = "Shows a list of Trello agents pulled from the configured boards";
 			Fun = false;
 			AdminLevel = "Players";
@@ -965,6 +947,19 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
+			end
+		};
+
+		Keybinds = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the keybind manager";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
 

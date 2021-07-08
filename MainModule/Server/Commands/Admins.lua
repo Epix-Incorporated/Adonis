@@ -271,7 +271,7 @@ return function(Vargs, env)
 						Remote.RemoveGui(v,"Notif")
 					end
 				else
-					Variables.NotifMessage = args[1] --service.LaxFilter(args[1],plr) --// Command processor handles arg filtering
+					Variables.NotifMessage = args[1]
 					for i,v in pairs(service.GetPlayers()) do
 						Remote.MakeGui(v,"Notif",{
 							Message = Variables.NotifMessage;
@@ -320,7 +320,7 @@ return function(Vargs, env)
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = Settings.SystemTitle;
-						Message = args[1]; --service.Filter(args[1],plr,v);
+						Message = args[1];
 					})
 				end
 			end
@@ -369,7 +369,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in next, workspace:GetDescendants() do
-					if v and v.Parent and v:IsA"BasePart" then
+					if v and v.Parent and v:IsA("BasePart") then
 						v.Locked = true
 					end
 				end
@@ -386,7 +386,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in next, workspace:GetDescendants() do
-					if v and v.Parent and v:IsA"BasePart" then
+					if v and v.Parent and v:IsA("BasePart") then
 						v.Locked = false
 					end
 				end
@@ -430,8 +430,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local color = BrickColor.new(math.random(1,227))
-				if BrickColor.new(args[2])~=nil then color=BrickColor.new(args[2]) end
+				local color = BrickColor.new(math.random(1, 227))
+				if BrickColor.new(args[2]) ~= nil then color = BrickColor.new(args[2]) end
 				local team = service.New("Team", service.Teams)
 				team.Name = args[1]
 				team.AutoAssignable = false
@@ -448,8 +448,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				for i,v in pairs(service.Teams:children()) do
-					if v:IsA("Team") and v.Name:lower():sub(1,#args[1])==args[1]:lower() then
+				for i,v in pairs(service.Teams:GetChildren()) do
+					if v:IsA("Team") and v.Name:lower():sub(1,#args[1]) == args[1]:lower() then
 						v:Destroy()
 					end
 				end
@@ -535,8 +535,6 @@ return function(Vargs, env)
 					spart.Position = char:FindFirstChild("Head").Position
 					spart.Size = Vector3.new(2, 1, 2)
 					table.insert(Variables.InsertedObjects, spart)
-
-
 
 					sound.Changed:Connect(function(prot)
 						if prot == "SoundId" then
@@ -846,7 +844,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"s";"scr";"script";"makescript"};
 			Args = {"code";};
-			Description = "Lets you run code on the server";
+			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
@@ -869,7 +867,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ls";"lscr";"localscript";};
 			Args = {"code";};
-			Description = "Lets you run code as a local script";
+			Description = "Executes the given code on the client";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
@@ -892,7 +890,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cs";"cscr";"clientscript";};
 			Args = {"player";"code";};
-			Description = "Lets you run a localscript on the target player(s)";
+			Description = "Executes the given code on the client of the target player(s)";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
