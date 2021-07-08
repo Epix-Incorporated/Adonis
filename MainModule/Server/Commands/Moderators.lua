@@ -1042,12 +1042,8 @@ return function(Vargs, env)
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local newSession = Remote.NewSession("PrivateChat");
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					newSessions.Add(v);
-					Remote.MakeGui(v, "PrivateChat", {
-						SessionKey = newSession.SessionKey;
-					});
+					Remote.MakeGui(v, "Chat");
 				end
 			end
 		};
