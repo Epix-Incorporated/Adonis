@@ -310,6 +310,10 @@ return function()
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
+			local soundIds = {
+				5032588119,
+			}
+			
 			local function check(Message)
 				for _,v in pairs(lookFor) do
 					if string.find(string.lower(Message),string.lower(v)) and not string.find(string.lower(Message),"failed to load") then
@@ -326,6 +330,15 @@ return function()
 				end) then
 					Detected("kick","Finding Error")
 				end
+			end
+
+			local function soundIdCheck(Sound)
+				for _,v in pairs(soundIds) do
+					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)),tostring(v)) or Sound.SoundId == tostring(v)) then
+						return true
+					end
+				end
+				return false
 			end
 
 			local function checkTool(t)
@@ -355,12 +368,18 @@ return function()
 			end)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) == "Sound" then
-					if child.SoundId and string.find(string.lower(child.SoundId),"5032588119") then
-						Detected("kick","CMDx Detected; "..tostring(child))
+				if child:IsA("Sound") then
+					if soundIdCheck(child) then
+						Detected("crash","CMDx Detected; "..tostring(child))
+					else
+						wait()
+						if soundIdCheck(child) then
+							Detected("crash","CMDx Detected; "..tostring(child))
+						end
 					end
 				end
 			end)
+
 
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
