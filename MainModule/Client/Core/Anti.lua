@@ -783,7 +783,7 @@ return function()
 				end
 			end
 		end;
-	}, {[Init] = true, [RunLast] = true, [RunAfterLoaded] = true}, true)
+	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
 
 	client.Anti = Anti
 
