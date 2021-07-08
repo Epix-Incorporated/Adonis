@@ -55,7 +55,7 @@ return function(data)
 	})
 
 	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0,0,0), 0.1)
-	reply.FocusLost:connect(sendIt)
+	reply.FocusLost:Connect(sendIt)
 
 	gTable = window.gTable
   window:Ready();

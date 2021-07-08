@@ -138,7 +138,7 @@ return function(Vargs)
 			--[[
 			for i,v in pairs(service.Players:GetPlayers()) do
 				cPcall(function()
-					v.Chatted:connect(function(msg)
+					v.Chatted:Connect(function(msg)
 						Process.Chat(v,msg)
 					end)
 				end)

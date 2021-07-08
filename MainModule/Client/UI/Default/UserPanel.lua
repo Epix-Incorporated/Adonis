@@ -1168,7 +1168,7 @@ return function(data)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey
 							toggle.Text = "Waiting..."
-							local event = service.UserInputService.InputBegan:connect(function(InputObject)
+							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 								local textbox = service.UserInputService:GetFocusedTextBox()
 								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey = InputObject.KeyCode.Name

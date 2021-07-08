@@ -109,7 +109,7 @@ end
 
 local function lockCheck(obj)
 	callCheck(obj)
-	obj.Changed:connect(function(p) 
+	obj.Changed:Connect(function(p) 
 		warn("Child changed; Checking...")
 		callCheck(obj) 
 	end)
@@ -249,7 +249,7 @@ else
 		end)
 	end
 	
-	finderEvent = playerGui.ChildAdded:connect(function(child)
+	finderEvent = playerGui.ChildAdded:Connect(function(child)
 		warn("Child Added")
 		if not foundClient and child.Name == "Adonis_Container" then
 			local client = child:FindFirstChildOfClass("Folder");

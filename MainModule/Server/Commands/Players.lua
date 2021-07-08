@@ -264,8 +264,8 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if plr.Character and plr.Character:findFirstChild("Head") and plr.Character.Head:findFirstChild("face") then
-					plr.Character.Head:findFirstChild("face"):Destroy()
+				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
+					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
 
 				local id = tonumber(args[1])
@@ -303,7 +303,7 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
-					for k,p in pairs(plr.Character:children()) do
+					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
 								local str = BrickColor.new('Institutional white').Color
@@ -609,7 +609,7 @@ return function(Vargs, env)
 
 						removeScripts(hat)
 						hat.Parent = plr.Character
-						hat.Changed:connect(function()
+						hat.Changed:Connect(function()
 							if hat.Parent ~= plr.Character then
 								hat:Destroy()
 							end
@@ -629,7 +629,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				for i,v in pairs(plr.Character:children()) do
+				for _,v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end
@@ -688,7 +688,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temptable = {}
-				for i,v in pairs(service.Players:children()) do
+				for _,v in pairs(service.Players:GetChildren()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end

@@ -26,7 +26,7 @@ return function(data)
 				TextSize = 20;
 			})
 			
-			box.FocusLost:connect(function(enterPressed)
+			box.FocusLost:Connect(function(enterPressed)
 				if enterPressed and service.Player.Character:FindFirstChild('Head') and color and box.Text~='Click here or press ";" to chat' then
 					if #box.Text > 0 then
 						service.ChatService:Chat(service.Player.Character.Head, service.LaxFilter(box.Text), color)

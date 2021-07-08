@@ -773,7 +773,7 @@ return function(Vargs)
 				--end
 
 				--SanitizeCharacter()
-				--p.Character.DescendantAdded:connect(function(child)
+				--p.Character.DescendantAdded:Connect(function(child)
 				--	SanitizeCharacter()
 				--end)
 

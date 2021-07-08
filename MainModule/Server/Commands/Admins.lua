@@ -413,7 +413,7 @@ return function(Vargs, env)
 				service.New("StringValue",f3x).Name = Variables.CodeName
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("Backpack") then
+					if v:FindFirstChild("Backpack") then
 						f3x:Clone().Parent = v.Backpack
 					end
 				end
@@ -450,7 +450,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.Teams:GetChildren()) do
 					if v:IsA("Team") and v.Name:lower():sub(1,#args[1]) == args[1]:lower() then
-						v:Destroy()
+            v:Destroy()
 					end
 				end
 			end
@@ -648,9 +648,9 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:children())
+				Functions.Hint('Restoring Map...',service.Players:GetChildren())
 
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						service.RunService.Heartbeat:Wait()
@@ -719,7 +719,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 					end
 
@@ -741,7 +741,7 @@ return function(Vargs, env)
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
 						if scr and tab then
-							sb[class][name].Event = plr.Chatted:connect(function(msg)
+							sb[class][name].Event = plr.Chatted:Connect(function(msg)
 								if msg:sub(1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
 
 								else
@@ -760,7 +760,7 @@ return function(Vargs, env)
 					local tab = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
-							sb[class][name].Event:disconnect()
+							sb[class][name].Event:Disconnect()
 							Functions.Hint("No longer editing "..class.." "..name,{plr})
 						end
 					else
@@ -784,7 +784,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 						sb[class][name] = nil
 					else
