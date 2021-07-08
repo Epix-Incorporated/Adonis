@@ -1,6 +1,9 @@
 return {
-	"Version: 221.8";
+	"Version: 221.9";
 	"*Drag edges to expand*";
+	"";
+	"[v221.9 7.7.2021 22:50 EST]";
+	"*Ban check optimization";
 	"";
 	"[v221.8 7.7.2021 14:47 EST]";
 	"*Fixed Trello whitelist/blacklist not working";
