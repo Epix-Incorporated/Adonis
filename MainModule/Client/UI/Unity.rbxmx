@@ -2,14 +2,14 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBX42B8BEA404164FC98F59940F2024E4CD">
+	<Item class="Folder" referent="RBXD195C71DABE34412AF52BE79A8C1AFB2">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Unity</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="Frame" referent="RBXA366516613DC4F7983C3C59AEE734FFF">
+		<Item class="Frame" referent="RBX9F5A9C48F2034EFF8260BF2596A216EC">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -63,19 +63,19 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">9</int>
 			</Properties>
-			<Item class="Folder" referent="RBX1137C588D3CA4792895C655DDD179925">
+			<Item class="Folder" referent="RBX54DFAA8697734851ABDA755EA41CEF89">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX94ED0B9A1C644F58A1CF61128EDB7B5C">
+				<Item class="ModuleScript" referent="RBXF8505E4A5B654F2E86346C421BB6C639">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{18BE6459-2E6A-424F-A840-00CAB4C45B1B}</string>
+						<string name="ScriptGuid">{6441DC0E-D3DB-415A-9129-6462C1B189EA}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -130,7 +130,7 @@ return function(data)
 		frame.Size = UDim2.new(0, 200, 0.5, 0)
 		frame.Position = UDim2.new(1, -210, 0.5, -10)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		frame.ChildAdded:Connect(function(c)
+		frame.ChildAdded:connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -138,7 +138,7 @@ return function(data)
 			end
 		end)
 		
-		frame.ChildRemoved:Connect(function(c)
+		frame.ChildRemoved:connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -152,14 +152,14 @@ return function(data)
 	
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
-		for i,v in pairs(holder:GetChildren()) do
+		for i,v in pairs(holder:children()) do
 			table.insert(holdstuff,1,v)
 		end
 		for i,v in pairs(holdstuff) do
 			v.Position = UDim2.new(0,0,1,-75*(i+mod))
 		end
-		holder.CanvasSize=UDim2.new(0,0,0,(#holder:GetChildren()*75))
-		local pos = (((#holder:GetChildren())*75) - holder.AbsoluteWindowSize.Y)
+		holder.CanvasSize=UDim2.new(0,0,0,(#holder:children()*75))
+		local pos = (((#holder:children())*75) - holder.AbsoluteWindowSize.Y)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end
@@ -169,7 +169,7 @@ return function(data)
 	frame.Name = name
 	main.Text = text
 	
-	main.MouseButton1Click:Connect(function()
+	main.MouseButton1Click:connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
 				returner = clickfunc()
@@ -179,7 +179,7 @@ return function(data)
 		end
 	end)
 	
-	close.MouseButton1Click:Connect(function()
+	close.MouseButton1Click:connect(function()
 		if frame and frame.Parent then
 			if closefunc then
 				returner = closefunc()
@@ -231,7 +231,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX74505C4E84CD4AB1825B209C8D141347">
+				<Item class="BoolValue" referent="RBXAAFECC45E10243BF9FA88F6CE677D9D8">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -240,7 +240,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX475C32F38E54406AAA3854767047A4B8">
+				<Item class="BoolValue" referent="RBX2ACFDB366B214B25B64A141C4744F3B5">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -250,7 +250,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXC15291E3BC32494C9EEBAD18779ABD54">
+			<Item class="Frame" referent="RBX26885B6CCA664BCBB05B28D7FFE60A7B">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -304,7 +304,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX3DC9B5CC9726426A8986F392FCCDEA77">
+				<Item class="TextButton" referent="RBX48704D9F01E14681998385BCD1DFA94A">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -384,7 +384,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">10</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX525D419BB3E545E2A1E0892D8D5D100E">
+					<Item class="UICorner" referent="RBX5FDB666E4586402DA0226EA3CE358DB0">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -397,7 +397,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextButton" referent="RBXDCB75DBDED364A819BBEF9E6463D7675">
+				<Item class="TextButton" referent="RBX0AA7339A12674CEDBEF541C3DA776819">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -478,7 +478,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX354A35D7708F43C085093195FCC9EB58">
+				<Item class="TextLabel" referent="RBX31D82DEC1D7C4C01B7274982835D4266">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -555,7 +555,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX5255BFC6744046618F3C2DAA6911176C">
+				<Item class="TextLabel" referent="RBXE73BCE567A7A4BB0A151827826A310C5">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -633,7 +633,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="UICorner" referent="RBX7B719A55B18745F694E53E9E35C194CD">
+			<Item class="UICorner" referent="RBX45270F75603042A7813324041A1DCEF3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<UDim name="CornerRadius">
@@ -646,7 +646,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX1DC77D34E38241BB94A0DC2A8EFB5242">
+		<Item class="ScreenGui" referent="RBXD74A126C3D4C4F9687EE0F708AA24A3C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -660,7 +660,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBXE06CB848D66741B8AA5668F20157BAD5">
+			<Item class="Frame" referent="RBX73DF78FA0A2A48A0BC89EE7C9B7113B2">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -714,7 +714,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">7</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX1FBFDFE03B7246A6A79EE4D5B42BF907">
+				<Item class="TextLabel" referent="RBXB4E31EDE38A346F0AA712BC229C09C77">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -791,7 +791,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX44E4BB9D2BED4C2B87A3B0853A647C1B">
+				<Item class="TextLabel" referent="RBX6D1C589230C84294A13CA5187B34D7DB">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -869,19 +869,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBXE5255A4669E64BB4B126079CA465BBEE">
+			<Item class="Folder" referent="RBXF5D69BAADA8B46049DE7E66956F96C42">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX53977B6605744E01B71FAB606DDA4B20">
+				<Item class="ModuleScript" referent="RBX23F8870BC61A4D79998549A1BB38D618">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{A7470FCC-C3C3-4A22-975F-C54411FC14CB}</string>
+						<string name="ScriptGuid">{FDAE787A-17A6-4BD5-B127-1C73F2D44CB1}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1044,7 +1044,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXF3D52529528348EAA537DCE3633D5D42">
+				<Item class="BoolValue" referent="RBX882DB66B80374AC2A7A373C83BC7EA7B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1053,7 +1053,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX51186E0B59A44B6A99A036143A6EAC8D">
+				<Item class="BoolValue" referent="RBX8968B27E446B4E408F92D8C9F15C3550">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1064,7 +1064,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXF5E3271CFD384D39BF1158AC8D475B56">
+		<Item class="ScreenGui" referent="RBX9085080BCCC348C8A55801E3D107ABF9">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -1078,7 +1078,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBXF6BF5B78561944C687D8D266A2DC905C">
+			<Item class="Frame" referent="RBX35E50C34285C4ACF970E446DC4E07250">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1132,7 +1132,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">10</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX35DCA1A796314FFC847450BDFD0FCA7A">
+				<Item class="TextLabel" referent="RBX3A2C959A9F2E4D3EA3B7EB1B17D8E5D2">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1209,7 +1209,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX5B751B155EAB4658ABADCFA964645D66">
+				<Item class="TextLabel" referent="RBX5A332A52DE734C3AB5F51AEB5F95A452">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1286,7 +1286,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX36171EF4D4C441C0AABDB21C3573D8B4">
+				<Item class="Frame" referent="RBX73B8A8B0AF984523B9C03B9626A8ADA7">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1340,7 +1340,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">12</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX7D0F98B20DCF4C778B717FA7EDCD1B50">
+					<Item class="UICorner" referent="RBXCD7B12C79A744C499DDA58525673E00E">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -1353,7 +1353,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBX43F65A851C3745A4AEA9A2A89B5B1AAE">
+				<Item class="UICorner" referent="RBX73D60E6CB6984C78954955D40AFD1B0B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -1366,19 +1366,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX09BF41C5F86E4E88A8BF6A0FD170791F">
+			<Item class="Folder" referent="RBX2D6479B7240C45F3BC45C0E3743EEE6B">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXBAE772747CCA4622B4246F119AC9738A">
+				<Item class="ModuleScript" referent="RBX130ED800A699461CA7A8809C9C79DD2B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{137C2ED3-FC02-4EFB-B6E5-4FE4EA863BAA}</string>
+						<string name="ScriptGuid">{E6911586-BC57-499C-A8CB-3F30A7DB4917}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1421,7 +1421,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX8B98C1DF2B3A43AB987DF721F8A4569F">
+				<Item class="BoolValue" referent="RBX4E23152CCCFF49C393A7BB507A173EC6">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1430,7 +1430,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXDADAAEB87E5D4E1387FF23C436B96CAC">
+				<Item class="BoolValue" referent="RBXA9216634C5704A2798D14B4B0B61B7E3">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1441,7 +1441,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX7B1572880953490C826F59470C184494">
+		<Item class="ScreenGui" referent="RBX774787E56399465CB0F7BA08069FF9D8">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -1455,19 +1455,19 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBX3D3CB383615B4756B992142F1E5641A3">
+			<Item class="Folder" referent="RBX3DE5595DAAFF418D97FDD6BCC855662E">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXF53A894960004723912063C1AD644094">
+				<Item class="ModuleScript" referent="RBXA9E53990F5BB4D6090D0A00BD8C129D7">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{0CDD4B36-84D6-4B3E-AA48-F9D67CCBEAA2}</string>
+						<string name="ScriptGuid">{8D1DF58B-AE0A-4DF5-A039-4AC29852D99F}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1496,7 +1496,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX1A4F4AF3FA334D1B83EBEE1F2A1D90BE">
+				<Item class="BoolValue" referent="RBX86AB4673B6364D5ABBB0B556440F2915">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1505,7 +1505,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX08A0F264F8334378BB0084779D633C2F">
+				<Item class="BoolValue" referent="RBX3268C5A27A1149AB8A7E0C6128CD44EE">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1515,7 +1515,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX8FCD7A63E0C84E12988BA308F789A3F4">
+			<Item class="TextLabel" referent="RBX466AB83705084E0AB774124724389C22">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1591,7 +1591,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="UICorner" referent="RBX23AD60A2CF664568A4116EC38883D629">
+				<Item class="UICorner" referent="RBX685AE21CC7FD43D2BEB3908ADB130AC6">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -1605,7 +1605,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXB3D2B4A716F44C0DB589CEBF87D16EF3">
+		<Item class="ScreenGui" referent="RBXE6F32FB5F27F449DBF9E5C18447B9DAC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -1619,7 +1619,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="TextLabel" referent="RBX24FA38A0CA4D407498F51E5422F5EA53">
+			<Item class="TextLabel" referent="RBXDD49B7F25CB9474880BEA470E8189B8D">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1695,7 +1695,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextBox" referent="RBX267B64DF85214C43BC7EDF4E92EA3475">
+				<Item class="TextBox" referent="RBXBD56E3EAF31E4E178E3981352CE4BEFE">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1782,7 +1782,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBXC72412E3FF87404FBD8398034119ED4A">
+				<Item class="StringValue" referent="RBXC799904451234775B0C7753B86933933">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -1792,7 +1792,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXC2F5FAD0D39647A2A550B8BAD431E9EB">
+			<Item class="Frame" referent="RBX8FAD26A296F8433D934E1FFBB869A1F6">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1846,7 +1846,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="NumberValue" referent="RBX29FEC3651F94402EA9EDE8D8C4344493">
+				<Item class="NumberValue" referent="RBX79E3FA71AA5B45F389D4AF75B3929C02">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Percentage</string>
@@ -1855,7 +1855,7 @@ end]]></ProtectedString>
 						<double name="Value">0</double>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXCDEF97211C574166A311D9504275CABD">
+				<Item class="Frame" referent="RBX24CC31A98D2C4044BE6C41C1D8993E99">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1910,7 +1910,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX5558C998E9B0439AAE2C23D9F9405677">
+				<Item class="ImageLabel" referent="RBX79680B1395FF4EFB83AFC1C4E5F85B07">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1997,7 +1997,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBXD4E3FC29EAD84D7F89DB00058BCE9A0A">
+				<Item class="ImageLabel" referent="RBXEF39E1B51D4545C1A389AA8283622DF9">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2085,7 +2085,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXE549B3ADAA4242A993ED4456A8DF49F1">
+			<Item class="Frame" referent="RBX683643A4B50A47D89C7FF584C96A1E8F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -2139,7 +2139,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">999999</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBXF97B2D1D24CA48619110C580D53739D4">
+				<Item class="TextLabel" referent="RBX990E96719F1D4FC496D34B226D0C6470">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2217,7 +2217,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX89ABFE7370424D23A5201417D98C4C86">
+			<Item class="Frame" referent="RBX32FB1D843911411291AB1D363046D677">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -2271,7 +2271,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX4A6C438A56124D20A437DF164A50E174">
+				<Item class="TextButton" referent="RBX81BE8AE1AAA64E98A5E997BF13BC0C94">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -2352,7 +2352,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX8B48E68A30CD4E5AB78BD2F658F95900">
+				<Item class="ImageButton" referent="RBX71BB88633F084B51BEBD7AA391F86E73">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -2445,7 +2445,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX364E16717F2147AE927D2FD63024E122">
+				<Item class="Frame" referent="RBX285C5997E407491C8B20A593DF193251">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2499,7 +2499,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX33D343D24BB04A119ACC75FAB57FA808">
+					<Item class="UICorner" referent="RBX8251F151F0DA4270B1A1A7119AA73261">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -2512,7 +2512,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBXD0716D4BBFB94929BE184B8C5D6328D1">
+				<Item class="UICorner" referent="RBXE2813227EA70443BACCFD1FCBF992E1E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -2525,14 +2525,14 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX2323EA214F8B46C69F4B8B8D6B09F9D4">
+			<Item class="Folder" referent="RBX1A6E899BE585479A889CB2CC5A95B3F9">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BoolValue" referent="RBX6F7B7D60FE5A4CA5BFE4609EF54DE802">
+				<Item class="BoolValue" referent="RBX286D11660C2F4FCBB63C507EF64C99ED">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -2541,12 +2541,12 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBXD86BF9B0F5A34B3B87AED5A7864ED717">
+				<Item class="ModuleScript" referent="RBX9F3A0C5FEFF344C4A38FAFBD72822EAF">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{CD610E9A-8333-41AF-B051-1497D2D7310D}</string>
+						<string name="ScriptGuid">{9001CBEA-8246-49D1-9F1F-5C97153C0EB8}</string>
 						<ProtectedString name="Source"><![CDATA[																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -2769,13 +2769,13 @@ return function(data)
 		local label = point:FindFirstChild("Label")
 		
 		if label then
-			ent.MouseLeave:Connect(function(x,y)
+			ent.MouseLeave:connect(function(x,y)
 				if inExpandable == ent then
 					point.Visible = false
 				end
 			end)
 			
-			ent.MouseMoved:Connect(function(x,y)
+			ent.MouseMoved:connect(function(x,y)
 				inExpandable = ent
 				label.Text = text or ent.Desc.Value
 				--point.Size = UDim2.new(0, 10000, 0, 10000)
@@ -2985,7 +2985,7 @@ return function(data)
 			
 			if data.TextChanged and class == "TextBox" then
 				local textChanged = functionify(data.TextChanged, new)
-				new.FocusLost:Connect(function(enterPressed)
+				new.FocusLost:connect(function(enterPressed)
 					textChanged(new.Text, enterPressed, new)
 				end)
 			end 
@@ -2994,7 +2994,7 @@ return function(data)
 				local debounce = false;
 				local doDebounce = data.Debounce;
 				local onClick = functionify((data.OnClicked or data.OnClick), new)
-				new.MouseButton1Down:Connect(function()
+				new.MouseButton1Down:connect(function()
 					if not debounce then 
 						if doDebounce then
 							debounce = true
@@ -3068,7 +3068,7 @@ return function(data)
 			
 			new.Text = data.Text or new.Text
 			button.ZIndex = data.ZIndex or new.ZIndex
-			button.MouseButton1Down:Connect(new.DoClick)
+			button.MouseButton1Down:connect(new.DoClick)
 		end
 		
 		if class == "Boolean" then
@@ -3095,7 +3095,7 @@ return function(data)
 			
 			--new.ZIndex = data.ZIndex
 			new.Text = (enabled and "[ON]") or "[OFF]"
-			new.MouseButton1Down:Connect(function()
+			new.MouseButton1Down:connect(function()
 				if onToggle then
 					toggle()
 				end
@@ -3133,13 +3133,13 @@ return function(data)
 			
 			if data.TextChanged then
 				local textChanged = functionify(data.TextChanged, box)
-				box.Changed:Connect(function(p)
+				box.Changed:connect(function(p)
 					if p == "Text" and not ignore then
 						textChanged(box.Text)
 					end
 				end)
 				
-				box.FocusLost:Connect(function(enter)
+				box.FocusLost:connect(function(enter)
 					local change = textChanged(box.Text, true, enter)
 					if change then
 						ignore = true
@@ -3172,7 +3172,7 @@ return function(data)
 				drag.Position = slider.Position
 			end
 			
-			bar.InputBegan:Connect(function(input)
+			bar.InputBegan:connect(function(input)
 				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 					
@@ -3192,16 +3192,16 @@ return function(data)
 				end
 			end)
 			
-			drag.DragBegin:Connect(function()
+			drag.DragBegin:connect(function()
 				moving = true
 			end)
 			
-			drag.DragStopped:Connect(function()
+			drag.DragStopped:connect(function()
 				moving = false
 				drag.Position = slider.Position
 			end)
 			
-			drag.Changed:Connect(function()
+			drag.Changed:connect(function()
 				if moving then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 					
@@ -3398,7 +3398,7 @@ return function(data)
 					tabButton.BackgroundTransparency = data.Transparency or 0
 				end
 				
-				tabButton.MouseButton1Down:Connect(function()
+				tabButton.MouseButton1Down:connect(function()
 					if not disabled then
 						tabFrame:FocusTab()
 					end
@@ -3746,7 +3746,7 @@ return function(data)
 	end
 	
 	if Walls then
-		Drag.DragStopped:Connect(function()
+		Drag.DragStopped:connect(function()
 			wallPosition()
 		end)
 	end
@@ -3774,7 +3774,7 @@ return function(data)
 			end
 		end
 		
-		Refresh.MouseButton1Down:Connect(function()
+		Refresh.MouseButton1Down:connect(function()
 			if not debounce then
 				debounce = true
 				DoRefresh()
@@ -3816,11 +3816,11 @@ return function(data)
 		local ReallyInFrame
 		
 		local function readify(obj)
-			obj.MouseEnter:Connect(function()
+			obj.MouseEnter:connect(function()
 				ReallyInFrame = obj
 			end)
 			
-			obj.MouseLeave:Connect(function()
+			obj.MouseLeave:connect(function()
 				if ReallyInFrame == obj then
 					ReallyInFrame = nil
 				end
@@ -4037,8 +4037,8 @@ return function(data)
 	end
 	
 	
-	Close.MouseButton1Down:Connect(doClose)
-	Hide.MouseButton1Down:Connect(function() doHide() end)
+	Close.MouseButton1Down:connect(doClose)
+	Hide.MouseButton1Down:connect(function() doHide() end)
 	gTable.CustomDestroy = function()
 		service.UnWrap(GUI):Destroy()
 		if client.Variables.MouseLockedBy == gTable then
@@ -4171,7 +4171,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXED0E97A13F63438CBF1326BB2D7A5D47">
+				<Item class="BoolValue" referent="RBXD679AB68D5E24630BE2E6EBB1FFD63F8">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -4180,12 +4180,12 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX7877731201294FEA84559979160EBF60">
+				<Item class="ModuleScript" referent="RBX22E6205579B84D62A33F1C170B965BC0">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Modifier</string>
-						<string name="ScriptGuid">{F71B2350-B30C-4679-9DE8-C5DDD0B8CCB1}</string>
+						<string name="ScriptGuid">{AC014745-FBF9-4C5B-960A-B50EABCAC5E9}</string>
 						<ProtectedString name="Source"><![CDATA[service = nil;
 client = nil;
 
@@ -4281,7 +4281,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBXBC3ACB970195449F895066AEB21C1E9B">
+			<Item class="TextLabel" referent="RBXD6E94ED6B6FA4D688D8F2410B94D01AA">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4357,7 +4357,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXC46287087DB04D96A17DD69E75300E15">
+				<Item class="TextButton" referent="RBXBAC999A95C8E4F9FBBFC76D4A946B3B5">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4438,7 +4438,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBX709F16F944734AD9BC18227275A0106F">
+				<Item class="StringValue" referent="RBX5BCAC2957132489B911E93FA31BA3327">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4448,7 +4448,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBXD33E4A8B87084E308626ECAAC4696F31">
+			<Item class="TextLabel" referent="RBX6FF22988BD444713A3D1A0411B52C155">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4524,7 +4524,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXB79E990AE61E4542ABD0193B0CAF6A9C">
+				<Item class="TextButton" referent="RBXDEFCB35AE6494D4E945489B154AD65AF">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4605,7 +4605,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBXCEA20C88FF544D2CA75627452614C557">
+				<Item class="StringValue" referent="RBXA2384524C6DD4A38B05195008B424425">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4615,7 +4615,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="BoolValue" referent="RBX600D91A8F475475EB9BC74173523FAF1">
+			<Item class="BoolValue" referent="RBX3A48E9DE0ECE412791FC064D6F3FD7AF">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Check</string>
@@ -4624,7 +4624,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXFDE55F48992A46278D1A4E174EEDEBD9">
+			<Item class="Frame" referent="RBX9111F75822204F2F8C569B7799B870C2">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4678,7 +4678,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBX8EE21CF74CEB4B70BAA6AEDCF0279F05">
+				<Item class="ScrollingFrame" referent="RBX93AEE300774448529B023282442125C3">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4759,7 +4759,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXF06F60918E354A248B46418DD26CDF89">
+				<Item class="Frame" referent="RBXD0586A1D44334A5E80A17B7AFB5AE2F0">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4815,7 +4815,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBXD20187B2532F4FDBBC7EF977DE091700">
+			<Item class="TextLabel" referent="RBXE65080D7715F473280C5CD30A7503C64">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4891,7 +4891,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXD71C65CBA43C4D699204B6C8DEE402CA">
+				<Item class="TextButton" referent="RBXE0F485C8C948428D8585534E50036ED3">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4972,7 +4972,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBXD622D3353C4A4EFC9B021767BE1DB030">
+				<Item class="StringValue" referent="RBX536160D005044983A7916A2E8170C6D0">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4982,7 +4982,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXC01044A1CDC841A5B8B02E4F805B98B0">
+			<Item class="Frame" referent="RBXDFAD7E444E58432FBAB7E11951AD8D8A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -5036,7 +5036,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="StringValue" referent="RBX5FDBA51698D842768EC55B579AD7E33F">
+				<Item class="StringValue" referent="RBX0DAB94C7413A47A49693A5CE0EC6A601">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -5045,7 +5045,7 @@ end]]></ProtectedString>
 						<string name="Value">TestDesc</string>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXEB126A6493384FDC965DAFF5E8EB94D5">
+				<Item class="TextLabel" referent="RBX78BC9D135471467F98A0438B73565D1B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -5122,7 +5122,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXFC84D2D7ABF24CE7A07C8DB39FD49449">
+				<Item class="TextLabel" referent="RBXBA0CFDBC2D2E4E24868EB14BE629FD84">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -5199,7 +5199,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextBox" referent="RBX5EC9C2ECAEA74A7C9579BE0589EB8B54">
+				<Item class="TextBox" referent="RBXCB1F38F5BDE9428093A6291C24EB3280">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5287,7 +5287,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextButton" referent="RBXEE76D1713C954BA1B7BE4AAB286CD683">
+			<Item class="TextButton" referent="RBX7D92650EBDAD4F2E8B1D028953454A00">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -5368,7 +5368,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextButton" referent="RBX02813FAF783F40A396020983BE229556">
+			<Item class="TextButton" referent="RBX2471CCA6715D44DD9B5343F772BD96CF">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -5448,7 +5448,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX5F9B813190504C548172F17A3459245D">
+				<Item class="TextButton" referent="RBX4CD9B5B666CF4F83B1F034B073BD186E">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5528,7 +5528,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="ImageLabel" referent="RBXDA0C0F3697C4473F8AEEFAE78467A548">
+					<Item class="ImageLabel" referent="RBX9AE6B33267414BF7B0E3623DDCE488AC">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -5615,7 +5615,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">10</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBX899B02D2ABEB401EAA3372CE024566F9">
+					<Item class="UICorner" referent="RBX2BCD4525756949B88DC048EE49443E66">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5628,7 +5628,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="ImageButton" referent="RBX5ECDE753937045D6A3BBABA1BBC40923">
+				<Item class="ImageButton" referent="RBX5157BC49E0FB4BEB9AE7C8E452BAB3A8">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5721,7 +5721,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">-5</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBX151A090DB353468F83B158E03A909399">
+				<Item class="TextButton" referent="RBX0D43FFD02DBD48AC9F23D707EE49FB2C">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5801,7 +5801,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="UICorner" referent="RBXCCD688DF7B74428D878C28F3256A817B">
+					<Item class="UICorner" referent="RBXA6CF8877F291462ABDD153986DC892CE">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5814,7 +5814,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextButton" referent="RBXBAB59189468A48E6AA31DD20F5D56C3A">
+				<Item class="TextButton" referent="RBXC72AFD00A4DD4C47AD13CE2B64400803">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5894,7 +5894,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX40B81E9599CD40F7929C87457D1534CD">
+					<Item class="TextLabel" referent="RBX4DC04E56A6A643CDA25B4867D4A5625E">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -5971,7 +5971,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">10</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBXE7BB6F13B88C4601AEDEFE6DEFCFA1A3">
+					<Item class="UICorner" referent="RBX7857109D6E0340B7BA5FC7F4883182FC">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5984,7 +5984,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextLabel" referent="RBX5B39457908574CBF8DA918B0007A2ED9">
+				<Item class="TextLabel" referent="RBXC8EB1D6DF16F4955AC0F650CE91759E7">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -6061,7 +6061,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">9</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXA3DFA93273CA402A80C3E7F0486A4090">
+				<Item class="Frame" referent="RBX915FFB5CA012402F8CF72B0D6D4A4C7E">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -6115,7 +6115,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="ImageButton" referent="RBX64D96BF90B674381960909575A72DA20">
+					<Item class="ImageButton" referent="RBX2505A9D5B57D4AA89E8AD4BFCC821852">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6208,7 +6208,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX51BBA051A16442EEA1FB7D812BEEA940">
+					<Item class="ImageButton" referent="RBX61CD000E21474FF48B21839CCB10D21B">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6301,7 +6301,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBX25A448A1D1B047C7B81918CAFA6EDA82">
+					<Item class="ScrollingFrame" referent="RBX305DD879B1D84A6F85E0243E612FA4CF">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -6382,7 +6382,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX026B4BF1A8D34874AB9B4F8CF416C223">
+					<Item class="ImageButton" referent="RBXC67826EC87DF4F0DBA42667032990FA0">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6475,7 +6475,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX138274E2952D4A1B9101A86910B8425C">
+					<Item class="ImageButton" referent="RBX3C73932D0119432C8F1E04C93D3FFB9D">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6568,7 +6568,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX044EE0962BD94BBB8F27FE5AB02C5F1E">
+					<Item class="ImageButton" referent="RBX77D5E4F498074D31AE2553EA94BC383C">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6661,7 +6661,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX966CF5EFD5FA4C729EB9E061382DCE07">
+					<Item class="ImageButton" referent="RBXA34DF977B0BC455684D6ADB2B0735F9B">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6754,7 +6754,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageLabel" referent="RBX937D12A8B16749FEB606E48ACEA85B2D">
+					<Item class="ImageLabel" referent="RBX12E554CB820A4BFF962A0AA4D9673801">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6841,7 +6841,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageLabel" referent="RBXC19FBC2B7CDF4E6D91C228478D7C7C12">
+					<Item class="ImageLabel" referent="RBXCA25CE5BF28C40ABB5B09BB57F39F4DD">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6928,7 +6928,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBXF6CB7827107F4D75BBDB30751CEAAB17">
+					<Item class="ImageButton" referent="RBX8C5FD18CB43C4F9FA3EEC6BAE1453298">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7021,7 +7021,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX7A465CB541D34F7A99E164E5EDF3882C">
+					<Item class="ImageButton" referent="RBX875DB907F8C74A70B26F6D6BADBA8FBC">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7114,7 +7114,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="Frame" referent="RBX58968A243E0B450AADA4839A695EDBCE">
+					<Item class="Frame" referent="RBXD694397393B74C35B4D87C7BE6E8F4B3">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7168,7 +7168,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX8B391920F7E74CA8B9243D41B558BBD0">
+						<Item class="UICorner" referent="RBX7A3C347DECD84B649264E177A42050DA">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -7181,7 +7181,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="UICorner" referent="RBX8DC2D953F3494EC3820DDF57AE0A1BDB">
+					<Item class="UICorner" referent="RBX7490F08DE91E4EBC9A474468F0129EDF">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -7194,7 +7194,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX785D01409D5C475EA62EFAAD4BB11408">
+				<Item class="Frame" referent="RBX7B09648177874CB694E5EE91F058F571">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -7248,7 +7248,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="UICorner" referent="RBXC812A64A03C948A186F2CF3DDA6C9748">
+					<Item class="UICorner" referent="RBX93892C44F35541D1849E3DA6430A1CAB">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -7263,7 +7263,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXD7A4CD5FB80247C8A73EBAF5D12275B2">
+		<Item class="ScreenGui" referent="RBX6897EC0C3C844D61AE1A161F5E1692F6">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -7277,96 +7277,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="TextLabel" referent="RBX86D37E6736CD4823B6F63BF3BAD02EAF">
-				<Properties>
-					<bool name="Active">false</bool>
-					<Vector2 name="AnchorPoint">
-						<X>0</X>
-						<Y>0</Y>
-					</Vector2>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
-					<token name="AutomaticSize">0</token>
-					<Color3 name="BackgroundColor3">
-						<R>0.0431372561</R>
-						<G>0.0431372561</G>
-						<B>0.0431372561</B>
-					</Color3>
-					<float name="BackgroundTransparency">0</float>
-					<Color3 name="BorderColor3">
-						<R>0.105882362</R>
-						<G>0.164705887</G>
-						<B>0.207843155</B>
-					</Color3>
-					<token name="BorderMode">0</token>
-					<int name="BorderSizePixel">0</int>
-					<bool name="ClipsDescendants">false</bool>
-					<bool name="Draggable">false</bool>
-					<token name="Font">45</token>
-					<int name="LayoutOrder">0</int>
-					<float name="LineHeight">1</float>
-					<int name="MaxVisibleGraphemes">-1</int>
-					<string name="Name">TextLabel</string>
-					<Ref name="NextSelectionDown">null</Ref>
-					<Ref name="NextSelectionLeft">null</Ref>
-					<Ref name="NextSelectionRight">null</Ref>
-					<Ref name="NextSelectionUp">null</Ref>
-					<UDim2 name="Position">
-						<XS>0</XS>
-						<XO>0</XO>
-						<YS>0</YS>
-						<YO>0</YO>
-					</UDim2>
-					<bool name="RichText">false</bool>
-					<Ref name="RootLocalizationTable">null</Ref>
-					<float name="Rotation">0</float>
-					<bool name="Selectable">false</bool>
-					<Ref name="SelectionImageObject">null</Ref>
-					<UDim2 name="Size">
-						<XS>1</XS>
-						<XO>0</XO>
-						<YS>0</YS>
-						<YO>40</YO>
-					</UDim2>
-					<token name="SizeConstraint">0</token>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-					<string name="Text">Arigato</string>
-					<Color3 name="TextColor3">
-						<R>1</R>
-						<G>1</G>
-						<B>1</B>
-					</Color3>
-					<bool name="TextScaled">false</bool>
-					<float name="TextSize">24</float>
-					<Color3 name="TextStrokeColor3">
-						<R>0</R>
-						<G>0</G>
-						<B>0</B>
-					</Color3>
-					<float name="TextStrokeTransparency">0.5</float>
-					<float name="TextTransparency">0</float>
-					<token name="TextTruncate">0</token>
-					<bool name="TextWrapped">true</bool>
-					<token name="TextXAlignment">2</token>
-					<token name="TextYAlignment">1</token>
-					<bool name="Visible">true</bool>
-					<int name="ZIndex">1</int>
-				</Properties>
-				<Item class="UICorner" referent="RBX16BCB353994B4B7E933F0FDF989E98D1">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<UDim name="CornerRadius">
-							<S>0.0599999987</S>
-							<O>0</O>
-						</UDim>
-						<string name="Name">UICorner</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-					</Properties>
-				</Item>
-			</Item>
-			<Item class="Frame" referent="RBX3369F8A9110C4A5CB410F23B3345E946">
+			<Item class="Frame" referent="RBX4EBDCA840D7346109C50A66921A3CC82">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -7421,19 +7332,19 @@ end]]></ProtectedString>
 					<int name="ZIndex">3</int>
 				</Properties>
 			</Item>
-			<Item class="Folder" referent="RBX860902D3A6514A0FB81FB4D69DA7F64C">
+			<Item class="Folder" referent="RBXBB3C9A015CDD49F39E2B1BAA78DA4081">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXCD5B87394614476A9712720FD267E2A6">
+				<Item class="ModuleScript" referent="RBXCF484DDD1572449EB9E21A5D34420431">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{54E546D0-8BAD-4B26-899C-A0599FCFB14B}</string>
+						<string name="ScriptGuid">{514676E7-5F5B-42B1-9543-8E071E6FBC9D}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7487,7 +7398,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXFA0F02C92DA24A07989EA2D6F70911C5">
+				<Item class="BoolValue" referent="RBXE4FB39A1F58B41B681E8668F4C14DDC9">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7496,7 +7407,7 @@ end]]></ProtectedString>
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXF36D781274EF490D9479A20734D5EFF1">
+				<Item class="BoolValue" referent="RBX9EC761CE221C4C00B3042C2406DCC151">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -7507,7 +7418,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX5946E02BD80A4A88B8F77BA19B32E5B6">
+		<Item class="Frame" referent="RBXB949E79184904B4DAA9032825D896877">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -7561,7 +7472,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX8CDF5AA09A4E46D09D4CABEFCEBC7DEF">
+			<Item class="Frame" referent="RBX8A35D70E6157498DB8803B82DC85E2B7">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -7615,7 +7526,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX73557E32BE164250B4E849ADF899C81C">
+				<Item class="TextLabel" referent="RBX71979A5F1EA344E687C3EE637D4C5028">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -7692,7 +7603,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="UICorner" referent="RBX630B612103F94860B6EBFDC7EA96F10B">
+				<Item class="UICorner" referent="RBXFCFDC74B2FFA4E0E856BE57C366B4372">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -7705,19 +7616,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBXB3AECD3E5078499F8A8FF68E76265A6F">
+			<Item class="Folder" referent="RBX46E8FA40E8864B639CC5B79DB46F6B64">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXE93A17937A3F437AB392CDFE0E6BB083">
+				<Item class="ModuleScript" referent="RBXE5B4343A83E54597AEFC89221EFFEA46">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{328BE9D0-5828-4662-874D-8BA5D922F230}</string>
+						<string name="ScriptGuid">{B619A5AE-EA59-49E3-A0C1-5376A3B93248}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7746,7 +7657,7 @@ return function(data)
 		frame.BackgroundTransparency = 1
 		frame.Size = UDim2.new(1, 0, 0,150)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		frame.ChildAdded:Connect(function(c)
+		frame.ChildAdded:connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -7754,7 +7665,7 @@ return function(data)
 			end
 		end)
 		
-		frame.ChildRemoved:Connect(function(c)
+		frame.ChildRemoved:connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -7775,7 +7686,7 @@ return function(data)
 		container.Position = UDim2.new(0,0,0,0)
 	end
 	
-	local children = container:GetChildren()
+	local children = container:children()
 	
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
@@ -7783,8 +7694,8 @@ return function(data)
 	
 	local function moveGuis(m,ignore)
 		m = m or 0
-		local max = #container:GetChildren()
-		for i,v in pairs(container:GetChildren()) do
+		local max = #container:children()
+		for i,v in pairs(container:children()) do
 			if v~=ignore then
 				local y = (i+m)*28
 				v.Position = UDim2.new(0,0,0,y)
@@ -7796,13 +7707,13 @@ return function(data)
 	local lom = -1
 	moveGuis(-1)
 	gui.Parent = container
-	if #container:GetChildren()>5 then lom = -2 end
-	UDim2.new(0,0,0,(#container:GetChildren()+lom)*28)
+	if #container:children()>5 then lom = -2 end
+	UDim2.new(0,0,0,(#container:children()+lom)*28)
 	moveGuis(-1)
-	--gui:TweenPosition(UDim2.new(0,0,0,(#container:GetChildren()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
+	--gui:TweenPosition(UDim2.new(0,0,0,(#container:children()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
 	
-	if #container:GetChildren()>5 then
-		local gui = container:GetChildren()[1]
+	if #container:children()>5 then
+		local gui = container:children()[1]
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
@@ -7820,7 +7731,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXAB6D7C1FEE34470086F74FC001C376E3">
+				<Item class="BoolValue" referent="RBX3F43F9E2F9D44FD683DD52891ADD4B77">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7829,7 +7740,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX61B058AB8D494120AE9074A73CC6ECA2">
+				<Item class="BoolValue" referent="RBX43324B53898146DA8911F1C68DE9AE33">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -7840,7 +7751,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX35F1AB1533524EE1A57BEA53C471A500">
+		<Item class="ScreenGui" referent="RBXC6FA5E1CF27946CF9EB9AC211DE0173D">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -7854,19 +7765,19 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBX500B6F9231104892A90D87F76D0CFF71">
+			<Item class="Folder" referent="RBXFD4FEF4DF9CC432B98AA85A05AF5DDDC">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXF349D48A9F5744309ED368857678FD9F">
+				<Item class="ModuleScript" referent="RBXA3D956DF011F422584DD61C60F8E8942">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{A468E437-1987-4D41-A806-A9885234FD09}</string>
+						<string name="ScriptGuid">{D46EDB0D-E204-4AD4-91B7-858405086B08}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7987,7 +7898,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX7F3DCFD3B9AC4112942B4CFE6283B6BF">
+				<Item class="BoolValue" referent="RBXF776253443B841E9B33C4E81609A8572">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7996,7 +7907,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXBD38A44E6AEA4341A137357821BD003D">
+				<Item class="BoolValue" referent="RBX67C2135009404B9A99863C1ABFD6C1F9">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -8006,7 +7917,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX1363047A9A58481CA09CDFF3009C6C58">
+			<Item class="Frame" referent="RBXA92233A2B8934638836DC9F047FB6F49">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -8060,7 +7971,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">4888894</int>
 				</Properties>
-				<Item class="Frame" referent="RBXE3E6D4FCF4644F2DB33B197C9548FA30">
+				<Item class="Frame" referent="RBXFC079729662742229F96DEB1AD1F489B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8114,7 +8025,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">4888899</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX45578EF08C324D2D852E9A8CD7509639">
+					<Item class="TextLabel" referent="RBXED05D9020B69429EA62FBA48EED36C71">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8191,7 +8102,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">488810000</int>
 						</Properties>
 					</Item>
-					<Item class="TextLabel" referent="RBX9B12BCC40997477CBF0B2D911FCB0A1B">
+					<Item class="TextLabel" referent="RBX2EFA4E08D1174FD3B1D615E1AD9C8D57">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8268,7 +8179,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">488810000</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBX43969EA0289445529D8CDBA5BD7E42BB">
+					<Item class="UICorner" referent="RBXC17E91B343B34BA384E7AF5C0034D734">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -8280,7 +8191,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="TextLabel" referent="RBX157C3267FFEA4C848888DC84BBE3251F">
+					<Item class="TextLabel" referent="RBX2CC44130840D4568B2B70472E4D9B6FA">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8358,7 +8269,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBX5769E17102534B449D785019691DFCF0">
+				<Item class="UICorner" referent="RBX0CABFB3D9B2042FCA2C6F9E229631D99">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -8372,7 +8283,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="StringValue" referent="RBX175384B382DD4628B43AFA0B8572E615">
+		<Item class="StringValue" referent="RBXF6599CA06BAE4DC2BF8E8FA1EA57538F">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
@@ -8381,12 +8292,12 @@ end]]></ProtectedString>
 				<string name="Value">Default</string>
 			</Properties>
 		</Item>
-		<Item class="ModuleScript" referent="RBX3BC5FC423C504DA6BFA6F7C77F70E0A9">
+		<Item class="ModuleScript" referent="RBXB081583CE4D84EF688F0047E6D20FAEE">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">HelpButton</string>
-				<string name="ScriptGuid">{D4A3910D-662A-4CF5-B7F3-DCA6A1BE3F44}</string>
+				<string name="ScriptGuid">{2E10C09C-0CF6-4E22-B905-FAF36854AAA8}</string>
 				<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -8450,7 +8361,7 @@ return function(data)
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 
-	toggle.MouseButton1Down:Connect(
+	toggle.MouseButton1Down:connect(
 		function()
 			local found = client.UI.Get("UserPanel", nil, true)
 			if found then
@@ -8468,7 +8379,7 @@ end
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBX1F98854D7436476CB2C67E266F9FB24B">
+		<Item class="ScreenGui" referent="RBXA85C29CDCD624C15A26A3C205D3590D6">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
@@ -8482,7 +8393,7 @@ end
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBXF9A9E5A3148442DBB8572052D5C55EE6">
+			<Item class="Frame" referent="RBXC4EF03E949194EDFAE02E441ABD1E2FC">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -8536,7 +8447,7 @@ end
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBXE45A81BD57054878BADD38049E0468A9">
+				<Item class="ScrollingFrame" referent="RBX6CC29C6E88BF4695A0DB4BF9F1EAA870">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8617,7 +8528,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextBox" referent="RBX0F551F0AF36E48499C91E68382D33D46">
+				<Item class="TextBox" referent="RBXC69CD2AF09EC41B383A4207599594CAE">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -8704,7 +8615,7 @@ end
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX4CE59FF378CE492E86799D5D1B7A6841">
+				<Item class="Frame" referent="RBX954568ECF5DD4D81A79962BBFD51F274">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8759,7 +8670,7 @@ end
 						<int name="ZIndex">5</int>
 					</Properties>
 				</Item>
-				<Item class="ScrollingFrame" referent="RBX2831D2ECFFA14E218EE09E777E5F6165">
+				<Item class="ScrollingFrame" referent="RBX6EBA3A4B2CDA4F4AB98566853F28435C">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8840,7 +8751,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="UICorner" referent="RBX57B734E8AAAA4654BC246FAFBAFEFB70">
+				<Item class="UICorner" referent="RBX536685F2180044318C06DC56582D97C9">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -8853,7 +8764,7 @@ end
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextButton" referent="RBX84F043407A024FFD87C89C95C574A964">
+			<Item class="TextButton" referent="RBX6B499815D14D484DB476360B54713B21">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -8934,14 +8845,14 @@ end
 					<int name="ZIndex">3</int>
 				</Properties>
 			</Item>
-			<Item class="Folder" referent="RBX4DBF7620D5E7430B85E9213911695539">
+			<Item class="Folder" referent="RBX4841EB3B4F0945DC95A33C86BFE9A1F0">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BoolValue" referent="RBXBA6FD1D816C742BAA8838892ED0DB4DF">
+				<Item class="BoolValue" referent="RBXFAB988CDA1FE460987B1A2736F4E8BE1">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -8950,12 +8861,12 @@ end
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX2E2B2F1B268D40F983F10807F7071DC3">
+				<Item class="ModuleScript" referent="RBXBFA395EE8B464565B77D7D93C877E490">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{2A25F51E-7B73-4B00-8735-EE7B958EF0AC}</string>
+						<string name="ScriptGuid">{4368BAD3-885E-47DA-9029-6602C01D4A23}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -9116,7 +9027,7 @@ return function(data)
 		end
 	end
 	
-	text.FocusLost:Connect(function(enterPressed)
+	text.FocusLost:connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
@@ -9126,7 +9037,7 @@ return function(data)
 		close()
 	end)
 	
-	text.Changed:Connect(function(c)
+	text.Changed:connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
@@ -9147,7 +9058,7 @@ return function(data)
 					new.Visible = true
 					new.Parent = players
 					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:Connect(function()
+					new.MouseButton1Down:connect(function()
 						text.Text = text.Text..tostring(v)
 						text:CaptureFocus()
 					end)
@@ -9172,7 +9083,7 @@ return function(data)
 					b.Parent = scroll
 					b.Text = v
 					b.Position = UDim2.new(0,0,0,20*num)
-					b.MouseButton1Down:Connect(function()
+					b.MouseButton1Down:connect(function()
 						text.Text = b.Text
 						text:CaptureFocus()
 					end)
@@ -9210,7 +9121,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXA4D5520A8EA64723B6CDC84659F73B5E">
+				<Item class="BoolValue" referent="RBX48D8422F53004C9BAFF5A86F2B5AC314">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -9221,7 +9132,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX5230801F471E4721B480BFDE540B3BBA">
+		<Item class="ScreenGui" referent="RBX56739C69E02D4C3ABBF86520BABBBA89">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -9235,7 +9146,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBXF710BB9927CA4634BB5FCBF09962977B">
+			<Item class="Frame" referent="RBXBF9C4239DF55409A8E5678C2815904B3">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -9289,7 +9200,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">7</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX285B27933D5D42A3945482109A7D7E36">
+				<Item class="TextLabel" referent="RBX259CDECDF2E445D0877E78197EE6929A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -9366,7 +9277,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXE9845ED20CB145FDAA8E898B64046325">
+				<Item class="TextLabel" referent="RBXE6A8AC9B965D48599E31C19BA7F9FC4F">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -9443,7 +9354,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="UIGradient" referent="RBXA9E4F56CA06143CB92AE017276A499A1">
+				<Item class="UIGradient" referent="RBX733ECB8D608841A6BA552D9A7EB35E6D">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<ColorSequence name="Color">0 0.423529 0.423529 0.423529 0 0.497504 1 1 1 0 1 0.290196 0.290196 0.290196 0 </ColorSequence>
@@ -9460,19 +9371,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX10EC00D01FFA491B96035C1DE7C2A90C">
+			<Item class="Folder" referent="RBX31B510A1A9494FA0846427CA5E75244C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX319462E4B9D5472C949587635E0049DE">
+				<Item class="ModuleScript" referent="RBX9B81D11F350149848645ABA81E97A3FE">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{B39E1ECA-07CC-483D-B61C-999FBD96E8DC}</string>
+						<string name="ScriptGuid">{9047E7E2-9063-4A01-9421-CF4670B1683A}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -9635,7 +9546,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX4369871721F74714A584C756F600705C">
+				<Item class="BoolValue" referent="RBX4534ACE1E8184F78A5312BE33C0E217E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -9644,7 +9555,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXEC3D38D9FB9D463BA06F80EB22EA7BD2">
+				<Item class="BoolValue" referent="RBX91A169DA521C4A748FE150DDF5E58085">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -9655,7 +9566,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX2E3CF06DF46E4116A5BA431322F94A79">
+		<Item class="ScreenGui" referent="RBX62380061C7964D699BD12050EE76E455">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -9669,7 +9580,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBX22F73252B7B4416BAF5627AA01A4C1C6">
+			<Item class="Frame" referent="RBX9FE443B666954C56AF42B6668EB3B6AF">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -9723,7 +9634,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">7</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX97B6C729A0944B3E8C73168546ACF58C">
+				<Item class="TextLabel" referent="RBX3E01A0C5096640439FA6847AACA235C3">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -9800,7 +9711,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="UIGradient" referent="RBX3CCD119E7D49498C9BB1EF85704971B0">
+				<Item class="UIGradient" referent="RBX7CF1296A308C405AA370E2906DBBD1F1">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<ColorSequence name="Color">0 1 1 1 0 0.505824 0 0 0 0 1 1 1 1 0 </ColorSequence>
@@ -9816,7 +9727,7 @@ end]]></ProtectedString>
 						<NumberSequence name="Transparency">0 0 0 1 0 0 </NumberSequence>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX8298284895D34452ADC807F8358A104E">
+				<Item class="TextLabel" referent="RBX871DDAD9CF034F9DB1D88EC1EE00912A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -9893,7 +9804,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX550BAC8036614C0896C06D1EBB4A11C6">
+				<Item class="ImageLabel" referent="RBX79D51B0C9D834341A72B4B15CBF6D70D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -9981,19 +9892,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBXE8EE0536F2174687A0228167F20759BE">
+			<Item class="Folder" referent="RBXCCE7E1C3CC624D10B0207F98160CC32A">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX46B5C219B6074C68BF780A38E44E3B81">
+				<Item class="ModuleScript" referent="RBXE92264C7CE8F4D78809D5A9E33854C6A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{DFE23BF7-20AC-4F26-B6FD-8520C64A0F9B}</string>
+						<string name="ScriptGuid">{9251FB18-099D-4CEA-831F-666380F55A75}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -10163,7 +10074,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX6AC97ED6172A421F9CD3B075DEC467D6">
+				<Item class="BoolValue" referent="RBXE5660A5252704303B0145958421BEEE0">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -10172,7 +10083,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXE172C8F25A1B4DBDBBF2CB19C1F4D704">
+				<Item class="BoolValue" referent="RBXC2DE5BF15734441CA97335383BA51886">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
