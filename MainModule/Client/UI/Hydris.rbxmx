@@ -12237,7 +12237,7 @@ return function(data)
 								text.Text = "(x"..v.Duplicates..") "..text.Text
 							end
 							if v.Time then 
-								text.Text = "["..service.FormatTime(v.Time).."] "..text.Text
+								text.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..text.Text
 							end
 							if v.Color then
 								text.TextColor3 = v.Color

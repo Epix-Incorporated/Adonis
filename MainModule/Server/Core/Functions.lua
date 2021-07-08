@@ -662,6 +662,11 @@ return function(Vargs)
 		end;
 
 		Cape = function(player,isdon,material,color,decal,reflect)
+			material = material or "Neon"
+			if not Functions.GetEnumValue(Enum.Material, material) then
+				error("Invalid material value")
+			end
+
 			Functions.UnCape(player)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
@@ -704,6 +709,17 @@ return function(Vargs)
 			end
 		end;
 
+		GetEnumValue = function(enum, item)
+			local valid = false
+			for _,v in ipairs(enum:GetEnumItems()) do
+				if v.Name == item then
+					valid = v.Value
+					break
+				end
+			end
+			return valid
+		end;
+
 		ApplyBodyPart = function(character, model)
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
@@ -726,13 +742,10 @@ return function(Vargs)
 							v:Clone().Parent = character
 						end
 					elseif rigType == "R15" then
-						local validParts = {}
-						for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do
-							validParts[x.Name] = x.Value
-						end
 						for _,v in pairs(part:GetChildren()) do
-							if validParts[v.Name] then
-								humanoid:ReplaceBodyPartR15(validParts[v.Name], v:Clone())
+							local value = Functions.GetEnumValue(Enum.BodyPartR15, v.Name)
+							if value then
+								humanoid:ReplaceBodyPartR15(value, v:Clone())
 							end
 						end
 					end
