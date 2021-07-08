@@ -48,7 +48,7 @@ if mode=="AnchorSafe" or mode=="ObjectSafe" then
 							local new=orig:clone()
 							new.Parent=workspace
 							cover(new)
-							event:disconnect()
+							event:Disconnect()
 						end
 						--print("DELETE "..part:GetFullName())
 					end

@@ -721,7 +721,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 					end
 
@@ -762,7 +762,7 @@ return function(Vargs, env)
 					local tab = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
-							sb[class][name].Event:disconnect()
+							sb[class][name].Event:Disconnect()
 							Functions.Hint("No longer editing "..class.." "..name,{plr})
 						end
 					else
@@ -786,7 +786,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 						sb[class][name] = nil
 					else

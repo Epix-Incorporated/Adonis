@@ -373,13 +373,13 @@ return function(Vargs, env)
 									if hit and hit.Parent and service.Players:FindFirstChild(hit.Parent.Name) and cl.Parent == char then
 										infect(hit.Parent)
 									elseif cl.Parent ~= char then
-										tconn:disconnect()
+										tconn:Disconnect()
 									end
 								end)
 
 								cl.Changed:Connect(function()
 									if cl.Parent ~= char then
-										tconn:disconnect()
+										tconn:Disconnect()
 									end
 								end)
 							elseif prt:FindFirstChild("NameTag") then
@@ -3216,7 +3216,7 @@ return function(Vargs, env)
 						if torso and torso.Parent and not p:IsDescendantOf(v.Character) and not p.Locked then
 							Functions.MakeWeld(torso,p)
 						elseif not torso or not torso.Parent then
-							event:disconnect()
+							event:Disconnect()
 						end
 					end)
 				end

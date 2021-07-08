@@ -13014,7 +13014,7 @@ return function(data)
 								--new.Text = k.Value
 								populate()
 							else
-								event:disconnect()
+								event:Disconnect()
 							end
 						end)
 						--]]

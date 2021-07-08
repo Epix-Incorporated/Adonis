@@ -616,7 +616,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			local event; event = service.RunService.RenderStepped:Connect(function()
 				if tick()-start>t or (check and check()) then
 					func()
-					event:disconnect()
+					event:Disconnect()
 				end
 			end)
 		end;

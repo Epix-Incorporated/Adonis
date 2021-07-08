@@ -243,12 +243,12 @@ return function()
 			local doing = true
 			event = humanoid.StateChanged:Connect(function(_,new)
 				if not doing then
-					event:disconnect()
+					event:Disconnect()
 				end
 				if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 					doing = false
 					Detected("kill","Noclipping")
-					event:disconnect()
+					event:Disconnect()
 				end
 			end)
 

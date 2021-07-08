@@ -14364,8 +14364,8 @@ do
 
 &#9;&#9;function cancelSelectDrag()
 &#9;&#9;&#9;mouseDrag.Parent = nil
-&#9;&#9;&#9;conDrag:disconnect()
-&#9;&#9;&#9;conUp:disconnect()
+&#9;&#9;&#9;conDrag:Disconnect()
+&#9;&#9;&#9;conUp:Disconnect()
 &#9;&#9;&#9;function cancelSelectDrag()end
 &#9;&#9;end
 
@@ -14452,9 +14452,9 @@ do
 
 &#9;&#9;function cancelReparentDrag()
 &#9;&#9;&#9;mouseDrag.Parent = nil
-&#9;&#9;&#9;conDrag:disconnect()
-&#9;&#9;&#9;conUp:disconnect()
-&#9;&#9;&#9;conUp2:disconnect()
+&#9;&#9;&#9;conDrag:Disconnect()
+&#9;&#9;&#9;conUp:Disconnect()
+&#9;&#9;&#9;conUp2:Disconnect()
 &#9;&#9;&#9;dragGhost:Destroy()
 &#9;&#9;&#9;parentHighlight:Destroy()
 &#9;&#9;&#9;function cancelReparentDrag()end
@@ -14783,7 +14783,7 @@ do
 &#9;&#9;&#9;&#9;
 &#9;&#9;&#9;&#9;-- update name change detection
 &#9;&#9;&#9;&#9;if nameConnLookup[entry] then
-&#9;&#9;&#9;&#9;&#9;nameConnLookup[entry]:disconnect()
+&#9;&#9;&#9;&#9;&#9;nameConnLookup[entry]:Disconnect()
 &#9;&#9;&#9;&#9;end
 &#9;&#9;&#9;&#9;local text = entry.IndentFrame.EntryText
 &#9;&#9;&#9;&#9;text.Text = object.Name
@@ -14915,7 +14915,7 @@ removeObject = function(object)
 &#9;local parent = objectNode.Parent
 &#9;remove(parent,objectNode.Index)
 &#9;NodeLookup[object] = nil
-&#9;connLookup[object]:disconnect()
+&#9;connLookup[object]:Disconnect()
 &#9;connLookup[object] = nil
 
 &#9;if visible then

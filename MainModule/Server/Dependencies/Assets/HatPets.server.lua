@@ -10,7 +10,7 @@ if hats then
 				hat.CanCollide = false
 	
 				if events[hat.Name..'hatpet'] then
-					events[hat.Name..'hatpet']:disconnect()
+					events[hat.Name..'hatpet']:Disconnect()
 					events[hat.Name..'hatpet'] = nil
 				end
 	

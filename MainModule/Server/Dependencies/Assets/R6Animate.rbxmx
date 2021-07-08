@@ -155,7 +155,7 @@ function stopAllAnimations()
 
 	currentAnim = ""
 	if (currentAnimKeyframeHandler ~= nil) then
-		currentAnimKeyframeHandler:disconnect()
+		currentAnimKeyframeHandler:Disconnect()
 	end
 
 	if (oldAnimTrack ~= nil) then
@@ -218,7 +218,7 @@ function playAnimation(animName, transitionTime, humanoid)
 
 		-- set up keyframe name triggers
 		if (currentAnimKeyframeHandler ~= nil) then
-			currentAnimKeyframeHandler:disconnect()
+			currentAnimKeyframeHandler:Disconnect()
 		end
 		currentAnimKeyframeHandler = currentAnimTrack.KeyframeReached:Connect(keyFrameReachedFunc)
 	end
@@ -276,7 +276,7 @@ function stopToolAnimations()
 	local oldAnim = toolAnimName
 
 	if (currentToolAnimKeyframeHandler ~= nil) then
-		currentToolAnimKeyframeHandler:disconnect()
+		currentToolAnimKeyframeHandler:Disconnect()
 	end
 
 	toolAnimName = ""

@@ -141,7 +141,7 @@ function MakeKeyboardConnections()
 	
 end
 function BreakKeyboardConnections()
-	KeyboardConnection:disconnect()
+	KeyboardConnection:Disconnect()
 end
 
 PianoGui = Gui.PianoGui
@@ -267,13 +267,13 @@ function MakeGuiConnections()
 end
 function BreakGuiConnections()
 	for i, v in pairs(PianoKeysConnections) do
-		v:disconnect()
+		v:Disconnect()
 	end
 	
-	ExitButtonConnection:disconnect()
-	SheetsButtonConnection:disconnect()
-	--SheetsEditedConnection:disconnect()
-	CapsButtonConnection:disconnect()
+	ExitButtonConnection:Disconnect()
+	SheetsButtonConnection:Disconnect()
+	--SheetsEditedConnection:Disconnect()
+	CapsButtonConnection:Disconnect()
 end
 
 ContentProvider = game:GetService("ContentProvider")

@@ -52,8 +52,8 @@ repeat
 	torso.CFrame = CFrame.new(torso.Position, workspace.CurrentCamera.CoordinateFrame.p) * CFrame.Angles(0,math.rad(180),0) * CFrame.new((dir.d-dir.a)*spd,0,(dir.s-dir.w)*spd) 
 until not running or hum.Parent == nil or torso.Parent == nil or script.Parent == nil or not enabled or not enabled.Value or not enabled.Parent
 
-moos:disconnect()
-moos1:disconnect()
-macka:disconnect()
+moos:Disconnect()
+moos1:Disconnect()
+macka:Disconnect()
 torso.Anchored = false
 hum.PlatformStand = false
