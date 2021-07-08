@@ -446,24 +446,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 		if core then
 			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
-				if core.Init then
-					core.Init(data)
-				end
-
 				if core.RunLast then
 					table.insert(runLast, core.RunLast);
+					core.RunLast = nil;
 				end
 
 				if core.RunAfterInit then
 					table.insert(runAfterInit, core.RunAfterInit);
+					core.RunAfterInit = nil;
 				end
 
 				if core.RunAfterPlugins then
 					table.insert(runAfterPlugins, core.RunAfterPlugins);
+					core.RunAfterPlugins = nil;
 				end
 
 				if core.RunAfterLoaded then
-					table.insert(runAfterLoaded, core.RunAfterLoaded)
+					table.insert(runAfterLoaded, core.RunAfterLoaded);
+					core.RunAfterLoaded = nil;
+				end
+
+				if core.Init then
+					core.Init(data);
+					core.Init = nil;
 				end
 			end
 		end
