@@ -10,7 +10,7 @@
 			<string name="Name">R15Animate</string>
 			<string name="ScriptGuid"></string>
 			<ProtectedString name="Source"><![CDATA[function   waitForChild(parent, childName)
-	local child = parent:findFirstChild(childName)
+	local child = parent:FindFirstChild(childName)
 	if child then return child end
 	while true do
 		child = parent.ChildAdded:wait()

@@ -264,8 +264,8 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if plr.Character and plr.Character:findFirstChild("Head") and plr.Character.Head:findFirstChild("face") then
-					plr.Character.Head:findFirstChild("face"):Destroy()
+				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
+					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
 
 				local id = tonumber(args[1])

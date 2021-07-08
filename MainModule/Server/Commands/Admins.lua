@@ -413,7 +413,7 @@ return function(Vargs, env)
 				service.New("StringValue",f3x).Name = Variables.CodeName
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("Backpack") then
+					if v:FindFirstChild("Backpack") then
 						f3x:Clone().Parent = v.Backpack
 					end
 				end
