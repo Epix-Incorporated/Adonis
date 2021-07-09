@@ -134,9 +134,9 @@ return function(Vargs)
 								})
 
 								if command then
-									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									keys.LastUpdate = os.time()
 
+									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
 									else
@@ -537,7 +537,7 @@ return function(Vargs)
 						return
 					end
 				end
-				
+
 				if Remote.Clients[key] then
 					Core.HookClient(p)
 
