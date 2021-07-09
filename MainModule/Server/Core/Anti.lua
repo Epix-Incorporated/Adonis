@@ -47,7 +47,9 @@ return function(Vargs)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(info) end)
+			pcall(function()
+				service.UnWrap(p):Kick(info)
+			end)
 
 			wait(1)
 
@@ -70,7 +72,9 @@ return function(Vargs)
 				local parent = service.NetworkServer or service.Players
 				local net = service.NetworkServer or false
 				for ind,p in next,parent:GetChildren() do
-					if net then p = p:GetPlayer() end
+					if net then
+						p = p:GetPlayer()
+					end
 					if p then
 						if Anti.ObjRLocked(p) then
 							Anti.Detected(p, "Log", "Player RobloxLocked")
