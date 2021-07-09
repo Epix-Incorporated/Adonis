@@ -27,7 +27,6 @@ return function(Vargs)
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
 
-
 		for ind, music in next, Settings.MusicList or {} do table.insert(Variables.MusicList, music) end
 		for ind, music in next, Settings.InsertList or {} do table.insert(Variables.InsertList, music) end
 		for ind, cape in next, Settings.CapeList or {} do table.insert(Variables.Capes, cape) end

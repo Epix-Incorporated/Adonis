@@ -8,7 +8,6 @@ logError = nil
 sortedPairs = nil
 
 --// Commands
---// Highly recommended you disable Intellesense before editing this...
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -28,7 +27,7 @@ return function(Vargs)
 		Commands = server.Commands;
 		Deps = server.Deps;
 
-		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
+		--// Cache all commands into a dictionary
 		setmetatable(Commands, {
 			__index = function(self, ind)
 				local targInd = Admin.CommandCache[ind:lower()]
@@ -79,13 +78,13 @@ return function(Vargs)
 
 	function RunAfterPlugins()
 		--// Load custom user-supplied commands (settings.Commands)
-		for ind,cmd in next,Settings.Commands do
+		for ind, cmd in next, Settings.Commands do
 			Commands[ind] = cmd;
 		end
 
 		--// Change command permissions based on settings
 		for ind, cmd in next, Settings.Permissions or {} do
-			local com,level = cmd:match("^(.*):(.*)")
+			local com, level = cmd:match("^(.*):(.*)")
 			if com and level then
 				if level:find(",") then
 					local newLevels = {}
@@ -101,15 +100,16 @@ return function(Vargs)
 		end
 
 		--// Update existing permissions to new levels
-		for i,cmd in next,Commands do
+		for i, cmd in next, Commands do
 			if type(cmd) == "table" and cmd.AdminLevel then
 				local lvl = cmd.AdminLevel;
 				if type(lvl) == "string" then
 					cmd.AdminLevel = Admin.StringToComLevel(lvl);
-					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
 				elseif type(lvl) == "table" then
 					for b,v in next,lvl do
-						lvl[b] = Admin.StringToComLevel(v);
+						if type(v) == "string" then
+							lvl[b] = Admin.StringToComLevel(v);
+						end
 					end
 				end
 			end

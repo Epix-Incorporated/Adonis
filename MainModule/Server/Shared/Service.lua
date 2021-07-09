@@ -207,12 +207,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		ForEach = function(tab, func)
-			for i,v in next,tab do
-				func(tab, i, v)
-			end
-		end;
-
 		WrapEventArgs = function(tab)
 			local Wrap = service.Wrap
 			local UnWrap = service.UnWrap
@@ -465,14 +459,67 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		Start = coroutine.resume;
 		Wrap = coroutine.wrap;
 		Get = coroutine.running;
-		New = function(func) local new = coroutine.create(func) table.insert(service.Threads.Threads,new) return new end;
-		End = function(thread) repeat if thread and service.Threads.Status(thread) ~= "dead" then service.Threads.Stop(thread) service.Threads.Resume(thread) else thread = false break end until not thread or service.Threads.Status(thread) == "dead" end;
-		Wrap = function(func,...) local new = service.Threads.New(func) service.Threads.Resume(func,...) return new end;
-		Resume = function(thread,...) if thread and coroutine.status(thread) == "suspended" then return coroutine.resume(thread,...) end end;
-		Remove = function(thread) service.Threads.Stop(thread) for ind,th in pairs(service.Threads.Threads) do if th == thread then table.remove(service.Threads.Threads,ind) end end end;
-		StopAll = function() for ind,th in pairs(service.Threads.Threads) do service.Threads.Stop(th) table.remove(service.Threads.Threads,ind) end end; ResumeAll = function() for ind,th in pairs(service.Threads.Threads) do service.Threads.Resume(th) end end; GetAll = function() return service.Threads.Threads end;
+
+		New = function(func)
+			local new = coroutine.create(func)
+			table.insert(service.Threads.Threads,new)
+			return new
+		end;
+
+		End = function(thread)
+			repeat
+				if thread and service.Threads.Status(thread) ~= "dead" then
+					service.Threads.Stop(thread)
+					service.Threads.Resume(thread)
+				else
+					thread = false
+					break
+				end
+			until not thread or service.Threads.Status(thread) == "dead"
+		end;
+
+		Wrap = function(func,...)
+			local new = service.Threads.New(func)
+			service.Threads.Resume(func,...)
+			return new
+		end;
+
+		Resume = function(thread,...)
+			if thread and coroutine.status(thread) == "suspended" then
+				return coroutine.resume(thread,...)
+			end
+		end;
+
+		Remove = function(thread)
+			service.Threads.Stop(thread)
+			for ind,th in pairs(service.Threads.Threads) do
+				if th == thread then
+					table.remove(service.Threads.Threads,ind)
+				end
+			end
+		end;
+
+		StopAll = function()
+			for ind,th in pairs(service.Threads.Threads) do
+				service.Threads.Stop(th)
+				table.remove(service.Threads.Threads,ind)
+			end
+		end;
+		
+		ResumeAll = function()
+			for ind,th in pairs(service.Threads.Threads) do
+				service.Threads.Resume(th)
+			end
+		end;
+		
+		GetAll = function()
+			return service.Threads.Threads
+		end;
 	},{
-		WrapIgnore = function(tab) return setmetatable(tab,{__metatable = "Ignore"}) end;
+		WrapIgnore = function(tab)
+			return setmetatable(tab,{__metatable = "Ignore"})
+		end;
+
 		CheckWrappers = function()
 			for obj,wrap in next,Wrappers do
 				if service.IsDestroyed(obj) then
@@ -480,6 +527,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end
 		end;
+
 		Wrapped = function(object)
 			if getmetatable(object) == "Adonis_Proxy" then
 				return true
@@ -487,6 +535,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return false
 			end
 		end;
+
 		UnWrap = function(object)
 			if type(object) == "table" then
 				local tab = {}
@@ -498,6 +547,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return object
 			end
 		end;
+
 		Wrap = function(object, fullWrap)
 			fullWrap = fullWrap or (fullWrap == nil and client ~= nil) --// Everything clientside should be getting wrapped anyway
 			if getmetatable(object) == "Ignore" or getmetatable(object) == "ReadOnly_Table" then
@@ -609,7 +659,12 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return new
 		end;
 
-		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
+		IsLocked = function(obj)
+			return not pcall(function()
+				obj.Name = obj.Name
+				return obj.Name
+			end)
+		end;
 
 		Timer = function(t,func,check)
 			local start = tick()
@@ -625,11 +680,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if (not limit and tab[ind or 1] ~= nil) or (limit and (ind or 1) <= limit) then
 				return tab[ind or 1], service.Unpack(tab,(ind or 1)+1,limit)
 			end
-		end;
-
-		AltUnpack = function(args,shift)
-			if shift then shift = shift-1 end
-			return args[1+(shift or 0)],args[2+(shift or 0)],args[3+(shift or 0)],args[4+(shift or 0)],args[5+(shift or 0)],args[6+(shift or 0)],args[7+(shift or 0)],args[8+(shift or 0)],args[9+(shift or 0)],args[10+(shift or 0)]
 		end;
 
 		ExtractLines = function(str)
@@ -714,15 +764,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			metatable.__metatable = false
 			for i,v in next,meta do metatable[i] = v end
 			return newProxy
-		end;
-
-		GetUserType = function(obj)
-			local ran,err = pcall(function() local temp = obj[math.random()] end)
-			if ran then
-				return "Unknown"
-			else
-				return err:match("%S+$")
-			end
 		end;
 
 		CountTable = function(tab)
@@ -957,14 +998,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		Round = function(num)
-			if num >= 0.5 then
-				return math.ceil(num)
-			elseif num < 0.5 then
-				return math.floor(num)
-			end
-		end;
-
 		Yield = function()
 			local event = service.New("BindableEvent");
 			return {
@@ -1025,28 +1058,15 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			tab.Kill = kill
 			RunningLoops[index] = tab
 
-
 			if noYield then
 				service.TrackTask("Thread: Loop: ".. name, loop)
 			else
 				service.TrackTask("Loop: ".. name, loop)
 			end
 
-			--[[local task = service.Threads.RunTask("LOOP:"..name, loop)
-
-			if not noYield then
-				task.Finished:wait()
-				kill()
-			end--]]
-
-			--[[if noYield then
-				Routine(loop)
-			else
-				loop()
-			end--]]
-
 			return tab
 		end;
+
 		StopLoop = function(name)
 			for ind,loop in pairs(RunningLoops) do
 				if name == loop.Function or name == loop.Name then
@@ -1054,18 +1074,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end
 		end;
-		FindClass = function(parent, class)
-			for ind, child in next,parent:GetChildren() do
-				if child:IsA(class) then
-					return child
-				end
-			end
-		end;
+
 		Immutable = function(...)
 			local co = coroutine.wrap(function(...) while true do coroutine.yield(...) end end)
 			co(...)
 			return co
 		end;
+
 		ReadOnly = function(tabl, excluded, killOnError, noChecks)
 			local doChecks = (not noChecks) and service.RunService:IsClient()
 			local player = doChecks and service.Players.LocalPlayer
@@ -1119,6 +1134,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				__gc = function()end;
 			}
 		end;
+
 		Wait = function(mode)
 			if not mode or mode == "Stepped" then
 				service.RunService.Stepped:wait()
@@ -1128,10 +1144,15 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				wait(tonumber(mode))
 			end
 		end;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
+
 		OrigRawEqual = rawequal;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
-		HasItem = function(obj, prop) return pcall(function() return obj[prop] end) end;
+
+		HasItem = function(obj, prop) 
+			return pcall(function() 
+				return obj[prop] 
+			end) 
+		end;
+
 		IsDestroyed = function(object)
 			if type(object) == "userdata" and service.HasItem(object, "Parent") then
 				if object.Parent == nil then
@@ -1147,6 +1168,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return false
 		end;
+
 		Insert = function(id, rawModel)
 			local model = service.InsertService:LoadAsset(id)
 			if not rawModel and model:IsA("Model") and model.Name == "Model" then
@@ -1157,9 +1179,22 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 			return model
 		end;
-		GetPlayers = function() return service.Players:GetPlayers() end;
-		IsAdonisObject = function(obj) for i,v in next,CreatedItems do if v == obj then return true end end end;
-		GetAdonisObjects = function() return CreatedItems end;
+
+		GetPlayers = function() 
+			return service.Players:GetPlayers() 
+		end;
+
+		IsAdonisObject = function(obj) 
+			for i,v in next, CreatedItems do 
+				if v == obj then 
+					return true 
+				end 
+			end 
+		end;
+
+		GetAdonisObjects = function() 
+			return CreatedItems 
+		end;
 	}
 
 	service = setmetatable({

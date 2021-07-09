@@ -559,7 +559,6 @@ return function(Vargs)
 							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
 							Player = p;
 						});
-						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				else
 					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
@@ -720,6 +719,7 @@ return function(Vargs)
 
 									window:Add("ImageLabel",{
 										Image = "rbxassetid://1059543904";
+										ScaleType = Enum.ScaleType.Fit;
 									})
 
 									window:Ready()
@@ -729,13 +729,13 @@ return function(Vargs)
 					end
 
 					if newVer then
-						Core.SetData("VersionNumber",newVer)
+						Core.SetData("VersionNumber", newVer)
 					end
 				end
 
 				--// Run OnJoin commands
 				for i,v in next,Settings.OnJoin do
-					Logs.AddLog("Script",{
+					Logs.AddLog("Script", {
 						Text = "OnJoin: Executed "..tostring(v);
 						Desc = "Executed OnJoin command; "..tostring(v)
 					})
@@ -780,21 +780,21 @@ return function(Vargs)
 				--// Wait for UI stuff to finish
 				wait(1);
 				p:WaitForChild("PlayerGui", 9e9);
-				Remote.Get(p,"UIKeepAlive");
+				Remote.Get(p, "UIKeepAlive");
 
-				--//GUI loading
+				--// GUI loading
 				if Variables.NotifMessage then
-					Remote.MakeGui(p,"Notif",{
+					Remote.MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
 				end
 
 				if Settings.Console then
-					Remote.MakeGui(p,"Console")
+					Remote.MakeGui(p, "Console")
 				end
 
 				if Settings.HelpButton then
-					Remote.MakeGui(p,"HelpButton")
+					Remote.MakeGui(p, "HelpButton")
 				end
 
 				if Settings.TopBarShift then
@@ -802,29 +802,22 @@ return function(Vargs)
 				end
 
 				if Settings.CustomChat then
-					Remote.MakeGui(p,"Chat")
+					Remote.MakeGui(p, "Chat")
 				end
 
 				if Settings.PlayerList then
-					Remote.MakeGui(p,"PlayerList")
+					Remote.MakeGui(p, "PlayerList")
 				end
 
 				if level < 1 then
 					if Settings.AntiNoclip then
-						Remote.Send(p,"LaunchAnti","HumanoidState")
+						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 
 					if Settings.AntiParanoid then
-						Remote.Send(p,"LaunchAnti","Paranoid")
+						Remote.Send(p, "LaunchAnti", "Paranoid")
 					end
 				end
-
-				--// Check muted
-				--[=[for ind,admin in pairs(Settings.Muted) do
-					if Admin.DoCheck(p,admin) then
-						Remote.LoadCode(p,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
-					end
-				end--]=]
 
 				Functions.Donor(p)
 
@@ -832,18 +825,14 @@ return function(Vargs)
 				service.Events.CharacterAdded:Fire(p)
 
 				--// Run OnSpawn commands
-				for i,v in next,Settings.OnSpawn do
-					Logs.AddLog("Script",{
+				for i,v in next, Settings.OnSpawn do
+					Logs.AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
 						Desc = "Executed OnSpawn command; "..tostring(v)
 					})
-					Admin.RunCommandAsPlayer(v,p)
+					Admin.RunCommandAsPlayer(v, p)
 				end
 			end
-		end;
-
-		PlayerTeleported = function(p,data)
-
 		end;
 	};
 end

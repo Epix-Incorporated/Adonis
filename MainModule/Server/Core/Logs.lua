@@ -230,10 +230,6 @@ return function(Vargs)
 
 			ExploitLogs = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
-					--local temp={}
-					--for i,v in pairs(Logs.Errors) do
-					--	table.insert(tab,{Time = v.Time;Text = v.Text..": "..tostring(v.Desc):sub(1,20),Desc = v.Desc})
-					--end
 					return Logs.Exploit
 				end
 			end;
@@ -338,62 +334,6 @@ return function(Vargs)
 
 				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				return tab
-			end;
-
-			ServerDetails = function(plr)
-				if not plr or Admin.CheckAdmin(plr) then
-					local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
-
-					for i,v in pairs(service.NetworkServer:GetChildren()) do
-						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-							nilplayers+=1
-						end
-					end
-					for i,v in pairs(service.Players:GetPlayers()) do
-						if Admin.CheckAdmin(v,false) then
-							adminnumber+=1
-						else
-							nonnumber+=1
-						end
-					end
-
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
-					table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Server Speed: "..service.Round(service.Workspace:GetRealPhysicsFPS())})
-					table.insert(tab,{Text = "Server Start Time: "..service.FormatTime(server.ServerStartTime)})
-					table.insert(tab,{Text = "Server Age: "..service.FormatTime(os.time()-server.ServerStartTime)})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-					--[[
-					if workspace.AllowThirdPartySales == true then
-						table.insert(tab,{Text = "Third Party Sales: [ON]"})
-					else
-						table.insert(tab,{Text = "Third Party Sales: [OFF]"})
-					end
-					]]
-
-					local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
-					local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
-					local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
-
-					table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
-					table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
-					table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
-
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
-					table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Nil Players: "..nilplayers})
-					table.insert(tab,{Text = "Objects: "..#Variables.Objects})
-					table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
-					table.insert(tab,{Text = "Gravity: "..tostring(workspace.Gravity)})
-					table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(workspace.FallenPartsDestroyHeight)})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					return tab
-				end
 			end;
 
 			CommandLogs = function(plr)

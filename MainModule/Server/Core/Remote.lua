@@ -607,10 +607,6 @@ return function(Vargs)
 			};
 		};
 
-		SessionHandlers = {
-
-		};
-
 		UnEncrypted = {
 			TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
@@ -649,15 +645,6 @@ return function(Vargs)
 					service.Events[args[1]]:fire(unpack(args,2))
 				end
 			end;
-
-		--[[Session = function(p,args)
-				local type = args[1]
-				local data = args[2]
-				local handler = Remote.SessionHandlers[type]
-				if handler then
-					return handler(p, data)
-				end
-			end;--]]
 
 			Session = function(p, args)
 				local sessionKey = args[1];
@@ -815,16 +802,6 @@ return function(Vargs)
 				end
 			end;
 
-			ClientCheck = function(p,args)
-				--// LastUpdate should be auto updated upon command finding
-				--[[local key = tostring(p.userId)
-				local special = args[1]
-				local client = Remote.Clients[key]
-				if client then--and special and special == client.Special then
-					client.LastUpdate = tick()
-				end--]]
-			end;
-
 			LogError = function(p,args)
 				logError(p,args[1])
 			end;
@@ -844,7 +821,6 @@ return function(Vargs)
 
 			ProcessChat = function(p,args)
 				Process.Chat(p,args[1])
-				--Process.CustomChat(p,args[1])
 			end;
 
 			ProcessCustomChat = function(p,args)
@@ -1124,7 +1100,7 @@ return function(Vargs)
 		end;
 
 		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
+			cache = cache or Remote.EncodeCache or {}
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -1151,7 +1127,7 @@ return function(Vargs)
 		end;
 
 		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
+			cache = cache or Remote.DecodeCache or {}
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then

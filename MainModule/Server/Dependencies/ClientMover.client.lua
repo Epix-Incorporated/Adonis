@@ -12,7 +12,6 @@ local tostring = tostring;
 local players = game:GetService("Players");
 local player = players.LocalPlayer;
 local folder = script.Parent;
-local container = folder.Parent;
 local Kick = player.Kick;
 local module = folder:WaitForChild("Client");
 local target = player;
@@ -98,7 +97,7 @@ if module and module:IsA("ModuleScript") then
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	warn("Changing child parent...")
 	wait(0.01)
-	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+	folder.Parent = nil --// We cannot do this asynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	warn("Destroying parent...")
 
@@ -123,11 +122,6 @@ if module and module:IsA("ModuleScript") then
 		else
 			print("Debug: The client was found and loaded?")
 			warn("Client Loaded")
-			--folder.Parent = nil
-
-			if container and container:IsA("ScreenGui") then
-				container:Destroy();
-			end
 		end
 	end
 end

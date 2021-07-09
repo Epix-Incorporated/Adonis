@@ -41,10 +41,6 @@ return function(Vargs)
 		HttpEnabled = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com");
 		LoadstringEnabled = pcall(loadstring,"");
 
-		CheckHttp = function()
-			return server.HTTP.HttpEnabled
-		end;
-
 		WebPanel = {
 			Moderators = {};
 			Admins = {};
@@ -72,13 +68,10 @@ return function(Vargs)
 			PerformedCommands = {};
 
 			Update = function()
-				if not HTTP.CheckHttp() then
-					--HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
-					warn('Http is not enabled! Cannot connect to Trello!')
-				elseif not Settings.Trello_Enabled then
-					-- Do something else?
+				if not HTTP.HttpEnabled then
+					warn('Unable to connect to Trello because HTTP requests are not allowed!')
 				else
-					local boards = {}
+					local boards = {Settings.Trello_Primary, unpack(Settings.Trello_Secondary or {})}
 					local bans = {}
 					local admins = {}
 					local mods = {}
@@ -94,7 +87,7 @@ return function(Vargs)
 					local whitelist = {}
 
 					local function grabData(board)
-						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+						local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
 						local oldListObj = trello.getListObj;
 						trello.getListObj = function(...)
 							local vargs = {...}
@@ -194,26 +187,28 @@ return function(Vargs)
 						end
 					end
 
-					for i,v in pairs(Settings.Trello_Secondary) do table.insert(boards,v) end
-					if Settings.Trello_Primary~="" then table.insert(boards,Settings.Trello_Primary) end
 					for i,v in pairs(boards) do
-						local ran,err = pcall(grabData,v)
+						if v == "" then
+							continue
+						end
+
+						local ran, err = pcall(grabData, v)
 						if not ran then
 							warn(tostring(err))
 						end
 					end
 
-					if #bans>0 then HTTP.Trello.Bans = bans end
-					if #creators>0 then HTTP.Trello.Creators = creators end
-					if #admins>0 then HTTP.Trello.Admins = admins end
-					if #mods>0 then HTTP.Trello.Moderators = mods end
-					if #HeadAdmins>0 then HTTP.Trello.HeadAdmins = HeadAdmins end
-					if #music>0 then HTTP.Trello.Music = music end
-					if #insertlist>0 then HTTP.Trello.InsertList = insertlist end
-					if #mutes>0 then HTTP.Trello.Mutes = mutes end
-					if #agents>0 then HTTP.Trello.Agents = agents end
-					if #blacklist>0 then HTTP.Trello.Blacklist = blacklist end
-					if #whitelist>0 then HTTP.Trello.Whitelist = whitelist end
+					if #bans > 0 then HTTP.Trello.Bans = bans end
+					if #creators > 0 then HTTP.Trello.Creators = creators end
+					if #admins > 0 then HTTP.Trello.Admins = admins end
+					if #mods > 0 then HTTP.Trello.Moderators = mods end
+					if #HeadAdmins > 0 then HTTP.Trello.HeadAdmins = HeadAdmins end
+					if #music > 0 then HTTP.Trello.Music = music end
+					if #insertlist > 0 then HTTP.Trello.InsertList = insertlist end
+					if #mutes > 0 then HTTP.Trello.Mutes = mutes end
+					if #agents > 0 then HTTP.Trello.Agents = agents end
+					if #blacklist > 0 then HTTP.Trello.Blacklist = blacklist end
+					if #whitelist > 0 then HTTP.Trello.Whitelist = whitelist end
 
 					Settings.Ranks["[Trello] Creators"] = {
 						Level = Settings.Ranks.Creators.Level;
@@ -238,23 +233,23 @@ return function(Vargs)
 					Variables.Blacklist.Lists.Trello = blacklist;
 					Variables.Whitelist.Lists.Trello = whitelist;
 
-					for i,v in pairs(service.GetPlayers()) do
-						if Admin.CheckBan(v) then
-							v:Kick(Variables.BanMessage)
-						end
+					for i,v in ipairs(service.GetPlayers()) do
+						local isBanned = false
 
-						if v and v.Parent then
-							for ind,admin in pairs(HTTP.Trello.Mutes) do
-								if Admin.DoCheck(v,admin) then
-									Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
-								end
+						for k,m in ipairs(HTTP.Trello.Bans) do
+							if Admin.DoCheck(v,m) then
+								isBanned = true
+								v:Kick(Variables.BanMessage)
+								break
 							end
 						end
 
-						Admin.UpdateCachedLevel(v)
+						if not isBanned then
+							Admin.UpdateCachedLevel(v)
+						end
 					end
 
-					Logs.AddLog(Logs.Script,{
+					Logs.AddLog(Logs.Script, {
 						Text = "Updated Trello Data";
 						Desc = "Data was retreived from Trello";
 					})

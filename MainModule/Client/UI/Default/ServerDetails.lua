@@ -101,7 +101,7 @@ return function(data)
 			addOverviewEntry("Private Server Owner:", (game:GetService("Players"):GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..game.PrivateServerOwnerId..")")
 		end
 		i = i + 1
-		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
+		addOverviewEntry("Server Speed:", math.round(service.Workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
 		addOverviewEntry("Server Age:", data.ServerAge)
 

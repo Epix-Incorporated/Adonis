@@ -138,7 +138,7 @@ return function(Vargs)
 			--[[
 			for i,v in pairs(service.Players:GetPlayers()) do
 				cPcall(function()
-					v.Chatted:Connect(function(msg)
+					v.Chatted:connect(function(msg)
 						Process.Chat(v,msg)
 					end)
 				end)
@@ -257,7 +257,7 @@ return function(Vargs)
 
 		UpdateConnections = function()
 			if service.NetworkServer then
-				for i,cli in next,service.NetworkServer:GetChildren() do
+				for i, cli in next, service.NetworkServer:GetChildren() do
 					Core.Connections[cli] = cli:GetPlayer()
 				end
 			end
@@ -265,7 +265,7 @@ return function(Vargs)
 
 		UpdateConnection = function(p)
 			if service.NetworkServer then
-				for i,cli in next,service.NetworkServer:GetChildren() do
+				for i, cli in next, service.NetworkServer:GetChildren() do
 					if cli:GetPlayer() == p then
 						Core.Connections[cli] = p
 					end
@@ -338,10 +338,10 @@ return function(Vargs)
 				local depsName = Functions:GetRandom()
 				local eventName = Functions:GetRandom()
 				local folder = server.Client:Clone()
-				local acli = server.Deps.ClientMover:Clone();
+				local acli = server.Deps.ClientMover:Clone()
 				local client = folder.Client
-				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
-				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
+				local parentTo = "PlayerGui"
+				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600)
 
 				if playerGui and playerGui.ClassName ~= parentTo then
 					playerGui = p:FindFirstChildOfClass(parentTo);
@@ -354,13 +354,7 @@ return function(Vargs)
 					return false
 				end
 
-				folder.Name = "Adonis_Client" --Core.Name.."\\"..depsName
-
-				local container = service.New("ScreenGui");
-				container.ResetOnSpawn = false;
-				container.Enabled = false;
-				container.Name = "\0";--"Adonis_Container";
-				folder.Parent = container;
+				folder.Name = "\0"
 
 				local specialVal = service.New("StringValue")
 				specialVal.Value = Core.Name.."\\"..depsName
@@ -381,7 +375,7 @@ return function(Vargs)
 				end)--]]
 
 				local ok,err = pcall(function()
-					container.Parent = playerGui
+					folder.Parent = playerGui
 					acli.Disabled = false;
 				end)
 
@@ -396,78 +390,9 @@ return function(Vargs)
 			end
 		end;
 
-		LoadClientLoader = function(p)
-			local loader = Deps.ClientLoader:Clone()
-			loader.Name = Functions.GetRandom()
-			loader.Parent = p:WaitForChild("PlayerGui", 60) or p:WaitForChild("Backpack")
-			loader.Disabled = false
-		end;
-
 		LoadExistingPlayer = function(p)
 			warn("Loading existing player: ".. tostring(p))
-			--Core.LoadClientLoader(p)
 			Process.PlayerAdded(p)
-		end;
-
-		MakeClient = function()
-			local ran,error = pcall(function()
-				if Anti.RLocked(service.StarterPlayer) then
-					Core.Panic("StarterPlayer RobloxLocked")
-				else
-					local starterScripts = service.StarterPlayer:FindFirstChild(Core.Name)
-					if not starterScripts then
-						starterScripts = service.New("StarterPlayerScripts", service.StarterPlayer)
-						starterScripts.Name = Core.Name
-						starterScripts.Changed:Connect(function(p)
-							if p=="Parent" then
-								Core.MakeClient()
-							elseif p=="Name" then
-								starterScripts.Name = Core.Name
-							elseif p=="RobloxLocked" and Anti.RLocked(starterScripts) then
-								Core.Panic("PlayerScripts RobloxLocked")
-							end
-						end)
-
-						starterScripts.ChildAdded:Connect(function(c)
-							if c.Name ~= Core.Name then
-								wait(0.5)
-								c:Destroy()
-							end
-						end)
-					end
-
-					starterScripts:ClearAllChildren()
-					if Anti.RLocked(starterScripts) then
-						Core.Panic("StarterPlayerScripts RobloxLocked")
-					else
-						if Core.Client then
-							local cli = Core.Client
-							if Anti.ObjRLocked(cli.Object) then
-								Core.Panic("Client RobloxLocked")
-							else
-								Core.Client.Security:Disconnect()
-								pcall(function() Core.Client.Object:Destroy() end)
-							end
-						end
-						Core.Client = {}
-						local client = Deps.Client:Clone()
-						client.Name = Core.Name
-						server.ClientDeps:Clone().Parent = client
-						client.Parent = starterScripts
-						client.Disabled = false
-						Core.Client.Object = client
-						Core.Client.Security = client.Changed:Connect(function(p)
-							if p == "Parent" or p == "RobloxLocked" then
-								Core.MakeClient()
-							end
-						end)
-					end
-				end
-			end)
-			if error then
-				print(error)
-				Core.Panic("Error while making client")
-			end
 		end;
 
 		ExecutePermission = function(scr, code, isLocal)

@@ -267,7 +267,7 @@ return function(Vargs)
 				elseif isGood and check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
 					local item = tonumber(check:match("^Item:(.*)"))
 					if item then
-						if service.MarketPlace:PlayerOwnsAsset(p, item) then
+						if service.OwnsAsset(p, item) then
 							return true
 						end
 					end
@@ -571,7 +571,7 @@ return function(Vargs)
 					if type(pass) == "number" then
 						ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
 					elseif type(pass) == "string" and tonumber(pass) then
-						ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, tonumber(pass)) end)
+						ran,ret = pcall(function() return service.OwnsAsset(p, tonumber(pass)) end)
 					end
 
 					if ran and ret then
