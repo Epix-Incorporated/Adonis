@@ -48,12 +48,12 @@ return function(data)
 		BackgroundTransparency = 0.5;
 	})
 	
-	yes.MouseButton1Down:connect(function()
+	yes.MouseButton1Down:Connect(function()
 		answer = "Yes"
 		window:Close()
 	end)
 	
-	no.MouseButton1Down:connect(function()
+	no.MouseButton1Down:Connect(function()
 		answer = "No"
 		window:Close()
 	end)

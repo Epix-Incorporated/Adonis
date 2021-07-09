@@ -264,8 +264,8 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if plr.Character and plr.Character:findFirstChild("Head") and plr.Character.Head:findFirstChild("face") then
-					plr.Character.Head:findFirstChild("face"):Destroy()
+				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
+					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
 
 				local id = tonumber(args[1])
@@ -303,7 +303,7 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
-					for k,p in pairs(plr.Character:children()) do
+					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
 								local str = BrickColor.new('Institutional white').Color
@@ -609,7 +609,7 @@ return function(Vargs, env)
 
 						removeScripts(hat)
 						hat.Parent = plr.Character
-						hat.Changed:connect(function()
+						hat.Changed:Connect(function()
 							if hat.Parent ~= plr.Character then
 								hat:Destroy()
 							end
@@ -629,24 +629,11 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				for i,v in pairs(plr.Character:children()) do
+				for _,v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end
 				end
-			end
-		};
-
-		Keybinds = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
-			Args = {};
-			Hidden = false;
-			Description = "Opens the keybind manager";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
 
@@ -655,7 +642,7 @@ return function(Vargs, env)
 			Commands = {"getscript";"getadonis"};
 			Args = {};
 			Hidden = false;
-			Description = "Get this script.";
+			Description = "Prompts you to take a copy of the script";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -668,7 +655,7 @@ return function(Vargs, env)
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you your current ping (in seconds)";
+			Description = "Shows you your current ping";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -681,7 +668,7 @@ return function(Vargs, env)
 			Commands = {"getping";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Shows the target player's ping (in seconds)";
+			Description = "Shows the target player's ping";
 			Fun = false;
 			AdminLevel = "Helpers";
 			Function = function(plr,args)
@@ -701,7 +688,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temptable = {}
-				for i,v in pairs(service.Players:children()) do
+				for _,v in pairs(service.Players:GetChildren()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end
@@ -785,12 +772,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(plr.userId)
-				if succeeded then
-					service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
-				else
-					Functions.Hint("Could not rejoin.")
-				end
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
 
@@ -821,7 +803,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"agents";"trelloagents";"showagents";};
 			Args = {};
-			Hidden = false;
+			Hidden = true;
 			Description = "Shows a list of Trello agents pulled from the configured boards";
 			Fun = false;
 			AdminLevel = "Players";
@@ -965,6 +947,19 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"UserPanel",{Tab = "Aliases"})
+			end
+		};
+
+		Keybinds = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the keybind manager";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
 

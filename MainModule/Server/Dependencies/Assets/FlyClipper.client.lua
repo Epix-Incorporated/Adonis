@@ -9,7 +9,7 @@ local running = true
 local dir = {w = 0, s = 0, a = 0, d = 0} 
 local spd = 2 
 	
-local moos = mouse.KeyDown:connect(function(key)
+local moos = mouse.KeyDown:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 1 
 	elseif key:lower() == "s" then 
@@ -25,7 +25,7 @@ local moos = mouse.KeyDown:connect(function(key)
 	end 
 end) 
 
-local moos1 = mouse.KeyUp:connect(function(key)
+local moos1 = mouse.KeyUp:Connect(function(key)
 	if key:lower() == "w" then 
 		dir.w = 0 
 	elseif key:lower() == "s" then 
@@ -39,7 +39,7 @@ end)
 					
 torso.Anchored = true 
 hum.PlatformStand = true 
-local macka = hum.Changed:connect(function() 
+local macka = hum.Changed:Connect(function() 
 	hum.PlatformStand = true 
 end) 
 
@@ -52,8 +52,8 @@ repeat
 	torso.CFrame = CFrame.new(torso.Position, workspace.CurrentCamera.CoordinateFrame.p) * CFrame.Angles(0,math.rad(180),0) * CFrame.new((dir.d-dir.a)*spd,0,(dir.s-dir.w)*spd) 
 until not running or hum.Parent == nil or torso.Parent == nil or script.Parent == nil or not enabled or not enabled.Value or not enabled.Parent
 
-moos:disconnect()
-moos1:disconnect()
-macka:disconnect()
+moos:Disconnect()
+moos1:Disconnect()
+macka:Disconnect()
 torso.Anchored = false
 hum.PlatformStand = false

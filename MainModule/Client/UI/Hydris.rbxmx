@@ -54,11 +54,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 local function Expand(ent, point)
-	ent.MouseLeave:connect(function(x,y)
+	ent.MouseLeave:Connect(function(x,y)
 		point.Visible = false
 	end)
 	
-	ent.MouseMoved:connect(function(x,y)
+	ent.MouseMoved:Connect(function(x,y)
 		point.Label.Text = ent.Desc.Value
 		point.Size = UDim2.new(0, 10000, 0, 10000)
 		local bounds = point.Label.TextBounds.X
@@ -93,14 +93,14 @@ return function(data)
 	Refresh.Visible=true
 	Search.Visible=true
 
-	Search.InputBegan:connect(function(t)
+	Search.InputBegan:Connect(function(t)
 		drag.Draggable=false
 	end)
-	Search.InputEnded:connect(function(t)
+	Search.InputEnded:Connect(function(t)
 		drag.Draggable=true
 	end)
 	
-	cls.MouseButton1Click:connect(function()
+	cls.MouseButton1Click:Connect(function()
 		drag.Draggable = false
 		drag:TweenPosition(UDim2.new(0, -drag.Size.X.Offset, drag.Position.Y.Scale, drag.Position.Y.Offset), "Out", "Sine", 0.5, true)
 		wait(0.5)
@@ -109,7 +109,7 @@ return function(data)
 
 	drag.BackgroundColor3 = main.BackgroundColor3
 	
-	hide.MouseButton1Click:connect(function() 
+	hide.MouseButton1Click:Connect(function() 
 		if main.Visible then
 			main.Visible = false
 			drag.BackgroundTransparency = main.BackgroundTransparency
@@ -127,7 +127,7 @@ return function(data)
 	local dragging=false
 	local defx,defy=nx,ny
 	local topText=""
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(drag2.Position.X.Offset+20)
 			ny=defy+(drag2.Position.Y.Offset+20)
@@ -148,15 +148,15 @@ return function(data)
 			end
 		end
 	end)
-	drag2.DragBegin:connect(function(init)
+	drag2.DragBegin:Connect(function(init)
 		dragging=true
 	end)
-	drag2.DragStopped:connect(function(x,y)
+	drag2.DragStopped:Connect(function(x,y)
 		dragging=false
 		defx=nx
 		defy=ny
 		drag2.Position=UDim2.new(1,-20,1,-20)
-		ScrollFr.CanvasSize = UDim2.new(0, 0, 0, (#ScrollFr:children())*20)
+		ScrollFr.CanvasSize = UDim2.new(0, 0, 0, (#ScrollFr:GetChildren())*20)
 	end)
 	
 	local populate; populate = function(term)
@@ -168,7 +168,7 @@ return function(data)
 		clone.Desc.Value = "Go back"
 		clone.Visible = true
 		clone.Parent = ScrollFr
-		clone.Open.MouseButton1Click:connect(function()
+		clone.Open.MouseButton1Click:Connect(function()
 			if parent.Parent then
 				parent = parent.Parent
 				populate()
@@ -188,11 +188,11 @@ return function(data)
 					clone.Desc.Value = child.ClassName
 					clone.Visible = true
 					clone.Parent = ScrollFr
-					clone.Delete.MouseButton1Click:connect(function()
+					clone.Delete.MouseButton1Click:Connect(function()
 						child:Destroy()
 						populate(term)
 					end)
-					clone.Open.MouseButton1Click:connect(function()
+					clone.Open.MouseButton1Click:Connect(function()
 						parent = child
 						populate()
 					end)
@@ -204,7 +204,7 @@ return function(data)
 		end
 	end
 	----
-	Search.FocusLost:connect(function(enterPressed)
+	Search.FocusLost:Connect(function(enterPressed)
 		if enterPressed and (Search.Text ~= "Search" and Search.Text ~= "" or string.len(Search.Text) > 0) then
 			populate(Search.Text)
 		elseif enterPressed and (Search.Text=="" or string.len(Search.Text)==0 or string.lower(Search.Text)=="all") then
@@ -220,7 +220,7 @@ return function(data)
 	----
 	Search.Text="Search"
 	
-	Refresh.MouseButton1Click:connect(function()
+	Refresh.MouseButton1Click:Connect(function()
 		if (Search.Text ~= "Search" and Search.Text ~= "") then
 			populate(Search.Text)
 		else
@@ -1809,7 +1809,7 @@ return function(data)
 		end
 	end
 	
-	text.FocusLost:connect(function(enterPressed)
+	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
@@ -1818,7 +1818,7 @@ return function(data)
 		end
 	end)
 	
-	text.Changed:connect(function(c)
+	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
@@ -1839,7 +1839,7 @@ return function(data)
 					new.Visible = true
 					new.Parent = players
 					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:connect(function()
+					new.MouseButton1Down:Connect(function()
 						text.Text = text.Text..tostring(v)
 						text:CaptureFocus()
 					end)
@@ -1863,7 +1863,7 @@ return function(data)
 					b.Parent = scroll
 					b.Text = v
 					b.Position = UDim2.new(0,0,0,20*num)
-					b.MouseButton1Down:connect(function()
+					b.MouseButton1Down:Connect(function()
 						text.Text = b.Text
 						text:CaptureFocus()
 					end)
@@ -1881,7 +1881,7 @@ return function(data)
 		end
 	end)
 	
-	service.UserInputService.InputBegan:connect(function(InputObject)
+	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
 			if opened then
@@ -2714,20 +2714,20 @@ return function(data)
 		
 		box.Text='Click here or press ";" to chat'
 		
-		box.FocusLost:connect(function(enterPressed)
+		box.FocusLost:Connect(function(enterPressed)
 			if enterPressed and localplayer.Character:FindFirstChild('Head') and color and box.Text~='Click here or press ";" to chat' then
 				service.ChatService:Chat(localplayer.Character.Head,service.LaxFilter(box.Text),color)
 				box.Text='Click here or press ";" to chat'
 			end
 		end)
 		
-		mouse.KeyDown:connect(function(key)
+		mouse.KeyDown:Connect(function(key)
 			if key==';' then
 				box:CaptureFocus()
 			end
 		end)
 		
-		close.MouseButton1Click:connect(function()
+		close.MouseButton1Click:Connect(function()
 			gui:Destroy()
 		end)
 		
@@ -4523,11 +4523,11 @@ return function(data)
 	local nohide = data.KeepChat
 	
 	local function Expand(ent, point)
-		ent.MouseLeave:connect(function(x,y)
+		ent.MouseLeave:Connect(function(x,y)
 			point.Visible = false
 		end)
 		
-		ent.MouseMoved:connect(function(x,y)
+		ent.MouseMoved:Connect(function(x,y)
 			point.Text = ent.Desc.Value
 			point.Size = UDim2.new(0, 10000, 0, 10000)
 			local bounds = point.TextBounds.X
@@ -4905,17 +4905,17 @@ return function(data)
 	
 	fadeOut()
 	
-	frame.MouseEnter:connect(function()
+	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
 	
-	frame.MouseLeave:connect(function()
+	frame.MouseLeave:Connect(function()
 		if not boxFocused then
 			fadeOut()
 		end
 	end)
 	
-	toggle.MouseButton1Click:connect(function()
+	toggle.MouseButton1Click:Connect(function()
 		if drag.Visible then
 			drag.Visible = false
 			toggle.Image = "rbxassetid://417301749"--417285299"
@@ -4925,19 +4925,19 @@ return function(data)
 		end
 	end)
 	
-	global.MouseButton1Click:connect(function()
+	global.MouseButton1Click:Connect(function()
 		openGlobal()
 	end)
 	
-	team.MouseButton1Click:connect(function()
+	team.MouseButton1Click:Connect(function()
 		openTeam()
 	end)
 	
-	localb.MouseButton1Click:connect(function()
+	localb.MouseButton1Click:Connect(function()
 		openLocal()
 	end)
 	
-	admins.MouseButton1Click:connect(function()
+	admins.MouseButton1Click:Connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
@@ -4950,7 +4950,7 @@ return function(data)
 		end
 	end)
 	
-	cross.MouseButton1Click:connect(function()
+	cross.MouseButton1Click:Connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
@@ -4963,7 +4963,7 @@ return function(data)
 		end
 	end)
 	
-	box.FocusLost:connect(function(enterPressed)
+	box.FocusLost:Connect(function(enterPressed)
 		boxFocused = false
 		if enterPressed and not client.Variables.Muted then
 			if box.Text~='' and ((mode~="Cross" and tick()-lastChat>=0.5) or (mode=="Cross" and tick()-lastChat>=10)) then
@@ -4992,7 +4992,7 @@ return function(data)
 		end
 	end)
 	
-	box.Focused:connect(function() 
+	box.Focused:Connect(function() 
 		boxFocused = true
 		if box.Text=="Click here or press the '/' key to chat" then 
 			box.Text = '' 
@@ -5001,7 +5001,7 @@ return function(data)
 	end)
 	
 	if not nohide then
-		service.UserInputService.InputBegan:connect(function(InputObject)
+		service.UserInputService.InputBegan:Connect(function(InputObject)
 			local textbox = service.UserInputService:GetFocusedTextBox()
 			if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Slash then
 				if box.Text=="Click here or press the '/' key to chat" then box.Text='' end
@@ -5015,7 +5015,7 @@ return function(data)
 	local nx,ny=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--450,200
 	local dragging=false
 	local defx,defy=nx,ny
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(dragger.Position.X.Offset+20)
 			ny=defy+(dragger.Position.Y.Offset+20)
@@ -5025,10 +5025,10 @@ return function(data)
 			drag.Size=UDim2.new(0, nx, 0, 30) 
 		end
 	end)
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		dragging=true
 	end)
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		dragging=false
 		defx=nx
 		defy=ny
@@ -5149,14 +5149,14 @@ return function(data)
 						clone.Size = UDim2.new(0,xsize,0,50)
 						
 						
-						if #cont:children()>3 then
-							cont:children()[1]:Destroy()
+						if #cont:GetChildren()>3 then
+							cont:GetChildren()[1]:Destroy()
 						end
 						
-						for i,v in pairs(cont:children()) do
+						for i,v in pairs(cont:GetChildren()) do
 							local xsize = v.TextLabel.TextBounds.X+40
 							if xsize>400 then xsize=400 end
-							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:children())*50))
+							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:GetChildren())*50))
 						end
 						
 						local cam = service.Workspace.CurrentCamera
@@ -6143,7 +6143,7 @@ return function(data)
 	local make = gui.Frame.Make
 	local close = gui.Frame.Cancel
 	
-	make.MouseButton1Click:connect(function()
+	make.MouseButton1Click:Connect(function()
 		gui:Destroy()
 		client.Remote.Send("TrelloOperation",{
 			Action = "MakeCard",
@@ -6153,7 +6153,7 @@ return function(data)
 		})
 	end)
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		gui:Destroy()
 	end)
 	
@@ -6521,7 +6521,7 @@ return function(data)
 	
 	ms.Text = "..."
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		ping:Destroy()
 	end)
 	
@@ -6646,7 +6646,7 @@ return function(data)
 	local frame = script.Parent.Parent.Frame
 	client.UI.Prepare(script.Parent.Parent)
 	
-	frame.ChildAdded:connect(function(c)
+	frame.ChildAdded:Connect(function(c)
 		if #frame:GetChildren() == 0 then
 			frame.Visible = false
 		else
@@ -6654,7 +6654,7 @@ return function(data)
 		end
 	end)
 	
-	frame.ChildRemoved:connect(function(c)
+	frame.ChildRemoved:Connect(function(c)
 		if #frame:GetChildren() == 0 then
 			frame.Visible = false
 		else
@@ -8986,11 +8986,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 local function Expand(ent, point)
-	ent.MouseLeave:connect(function(x,y)
+	ent.MouseLeave:Connect(function(x,y)
 		point.Visible = false
 	end)
 	
-	ent.MouseMoved:connect(function(x,y)
+	ent.MouseMoved:Connect(function(x,y)
 		point.Label.Text = ent.Desc.Value
 		point.Size = UDim2.new(0, 10000, 0, 10000)
 		local bounds = point.Label.TextBounds.X
@@ -9068,7 +9068,7 @@ return function(data)
 				frame.Resume.Text = "Suspend"
 			end
 			
-			frame.Resume.MouseButton1Down:connect(function()
+			frame.Resume.MouseButton1Down:Connect(function()
 				if frame.Resume.Text == "Resume" and task:Status() == "Suspended" then
 					task:Resume()
 				else
@@ -9078,13 +9078,13 @@ return function(data)
 				updateLists()
 			end)
 			
-			frame.Kill.MouseButton1Down:connect(function()
+			frame.Kill.MouseButton1Down:Connect(function()
 				task:Kill()
 				wait(0.5)
 				updateLists()
 			end)
 			
-			frame.Stop.MouseButton1Down:connect(function()
+			frame.Stop.MouseButton1Down:Connect(function()
 				task:Stop()
 				wait(0.5)
 				updateLists()
@@ -9097,10 +9097,10 @@ return function(data)
 		cFrame.CanvasSize =  UDim2.new(0, 0, 0, num*20)
 	end
 	
-	sTab.MouseButton1Down:connect(openServer)
-	cTab.MouseButton1Down:connect(openClient)
+	sTab.MouseButton1Down:Connect(openServer)
+	cTab.MouseButton1Down:Connect(openClient)
 	
-	Close.MouseButton1Click:connect(function()
+	Close.MouseButton1Click:Connect(function()
 		drag.Draggable = false
 		drag:TweenPosition(UDim2.new(drag.Position.X.Scale, drag.Position.X.Offset, 1,0), "Out", "Sine", 0.5, true)
 		wait(0.5)
@@ -9109,7 +9109,7 @@ return function(data)
 
 	drag.BackgroundColor3 = Main.BackgroundColor3
 	
-	Hide.MouseButton1Click:connect(function() 
+	Hide.MouseButton1Click:Connect(function() 
 		if Main.Visible then
 			Main.Visible = false
 			drag.BackgroundTransparency = Main.BackgroundTransparency
@@ -9121,7 +9121,7 @@ return function(data)
 		end
 	end)
 	
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(Dragger.Position.X.Offset+20)
 			ny=defy+(Dragger.Position.Y.Offset+20)
@@ -9143,11 +9143,11 @@ return function(data)
 		end
 	end)
 	
-	Dragger.DragBegin:connect(function(init)
+	Dragger.DragBegin:Connect(function(init)
 		dragging = true
 	end)
 	
-	Dragger.DragStopped:connect(function(x,y)
+	Dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		defx = nx
 		defy = ny
@@ -12052,11 +12052,11 @@ service = nil
 gTable = nil
 
 local function Expand(ent, point)
-	ent.MouseLeave:connect(function(x,y)
+	ent.MouseLeave:Connect(function(x,y)
 		point.Visible = false
 	end)
 	
-	ent.MouseMoved:connect(function(x,y)
+	ent.MouseMoved:Connect(function(x,y)
 		point.Label.Text = ent.Desc.Value
 		point.Size = UDim2.new(0, 10000, 0, 10000)
 		local bounds = point.Label.TextBounds.X
@@ -12117,22 +12117,22 @@ return function(data)
 	drag.BackgroundColor3 = main.BackgroundColor3
 	drag.Position = UDim2.new(0, -600, 0.5, -100)	
 	
-	search.InputBegan:connect(function(t)
+	search.InputBegan:Connect(function(t)
 		drag.Draggable = false
 	end)
 	
-	search.InputEnded:connect(function(t)
+	search.InputEnded:Connect(function(t)
 		drag.Draggable = true
 	end)
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		drag.Draggable = false
 		drag:TweenPosition(UDim2.new(drag.Position.X.Scale, drag.Position.X.Offset, 1,0), "Out", "Sine", 0.5, true)
 		wait(0.5)
 		gTable:Destroy()
 	end)
 
-	hide.MouseButton1Click:connect(function() 
+	hide.MouseButton1Click:Connect(function() 
 		if main.Visible then
 			main.Visible = false
 			drag.BackgroundTransparency = main.BackgroundTransparency
@@ -12150,7 +12150,7 @@ return function(data)
 	local dragging=false
 	local defx,defy=nx,ny
 	local topText=""
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(drag2.Position.X.Offset+20)
 			ny=defy+(drag2.Position.Y.Offset+20)
@@ -12171,10 +12171,10 @@ return function(data)
 			end
 		end
 	end)
-	drag2.DragBegin:connect(function(init)
+	drag2.DragBegin:Connect(function(init)
 		dragging = true
 	end)
-	drag2.DragStopped:connect(function(x,y)
+	drag2.DragStopped:Connect(function(x,y)
 		dragging = false
 		defx = nx
 		defy = ny
@@ -12237,7 +12237,7 @@ return function(data)
 								text.Text = "(x"..v.Duplicates..") "..text.Text
 							end
 							if v.Time then 
-								text.Text = "["..service.FormatTime(v.Time).."] "..text.Text
+								text.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..text.Text
 							end
 							if v.Color then
 								text.TextColor3 = v.Color
@@ -12296,7 +12296,7 @@ return function(data)
 	
 	search.Visible = true
 	
-	search.FocusLost:connect(function(enterPressed)
+	search.FocusLost:Connect(function(enterPressed)
 		if enterPressed and (search.Text ~= "Search" and search.Text ~= "" or string.len(search.Text) > 0) then
 			scroll:ClearAllChildren()
 			LogGuiInfo(search.Text)
@@ -12325,7 +12325,7 @@ return function(data)
 	
 	search.Text = "Search"
 	if Update then refresh.Visible = true end
-	refresh.MouseButton1Click:connect(function()
+	refresh.MouseButton1Click:Connect(function()
 		Tab = client.Remote.Get("UpdateList",Update,unpack(UpdateArgs or {}))
 		updateList()
 	end)
@@ -12803,7 +12803,7 @@ return function(data)
 	local function checkStats()
 		local stats = localplayer:FindFirstChild("leaderstats")
 		if stats and not dontSize then
-			nx = ((#stats:children()-1)*70)+210
+			nx = ((#stats:GetChildren()-1)*70)+210
 			defx = nx
 			drag.Size = UDim2.new(0,nx,0,30)
 			drag.Position = UDim2.new(1,-(nx),0,0)
@@ -12841,7 +12841,7 @@ return function(data)
 		local leaderstats = {}
 		local found = {}
 		
-		for i,v in pairs(service.Teams:children()) do
+		for i,v in pairs(service.Teams:GetChildren()) do
 			teams[v.Name] = {Color = v.TeamColor, Players = {}, Stats = {}, StatNames = {}}
 		end
 		
@@ -12864,7 +12864,7 @@ return function(data)
 			
 			local stats = v:FindFirstChild("leaderstats")
 			if stats then
-				for k,m in pairs(stats:children()) do
+				for k,m in pairs(stats:GetChildren()) do
 					if team.Stats[m.Name] and tonumber(team.Stats[m.Name]) and m:IsA("IntValue") and tonumber(m.Value) then
 						team.Stats[m.Name] = team.Stats[m.Name]+tonumber(m.Value)
 					elseif not team.Stats[m.Name] and m:IsA("IntValue") then
@@ -12942,7 +12942,7 @@ return function(data)
 						else
 							new.Text = ""
 						end
-						new.Position = UDim2.new(0,(#team.Stats:children()-1)*70,0,0)
+						new.Position = UDim2.new(0,(#team.Stats:GetChildren()-1)*70,0,0)
 					end
 				else
 					team.Stats.Visible = false
@@ -12999,7 +12999,7 @@ return function(data)
 				
 				local stats = p:FindFirstChild("leaderstats")
 				if stats and pstats and pstat then
-					stats = stats:children()
+					stats = stats:GetChildren()
 					pstats.Visible = true
 					local statEnt = pstat
 					for stat,k in pairs(stats) do
@@ -13009,16 +13009,16 @@ return function(data)
 						new.Text = k.Value
 						--[[
 						local event
-						event = k.Changed:connect(function()
+						event = k.Changed:Connect(function()
 							if k and k.Parent and new and new.Parent then
 								--new.Text = k.Value
 								populate()
 							else
-								event:disconnect()
+								event:Disconnect()
 							end
 						end)
 						--]]
-						new.Position = UDim2.new(0,(#pstats:children()-1)*70,0,0)
+						new.Position = UDim2.new(0,(#pstats:GetChildren()-1)*70,0,0)
 					end
 				elseif pstats then
 					pstats.Visible = false
@@ -13045,15 +13045,15 @@ return function(data)
 	
 	fadeOut()
 	
-	frame.MouseEnter:connect(function()
+	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
 	
-	frame.MouseLeave:connect(function()
+	frame.MouseLeave:Connect(function()
 		fadeOut()
 	end)
 	
-	service.UserInputService.InputBegan:connect(function(InputObject)
+	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
 			if drag.Visible then
@@ -13064,7 +13064,7 @@ return function(data)
 		end
 	end)
 	
-	mouse.Move:connect(function(x,y)
+	mouse.Move:Connect(function(x,y)
 		if dragging then
 			np=defp+(dragger.Position.X.Offset)
 			nx=defx-(dragger.Position.X.Offset)
@@ -13087,13 +13087,13 @@ return function(data)
 		end
 	end)
 	
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		defp = drag.Position.X.Offset
 		dragging = true
 		dontSize = true
 	end)
 	
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
 		defx,defy,defp=nx,ny,drag.Position.X.Offset
@@ -13103,29 +13103,29 @@ return function(data)
 	
 	--[[
 	for k,p in pairs(service.Players:GetPlayers()) do
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			populate()
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 	end
 	
-	service.Players.PlayerAdded:connect(function(p)
+	service.Players.PlayerAdded:Connect(function(p)
 		populate()
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 		wait(0.5)
 		populate()
 	end)
 	
-	service.Teams.ChildAdded:connect(populate)
-	service.Teams.ChildRemoved:connect(populate)
+	service.Teams.ChildAdded:Connect(populate)
+	service.Teams.ChildRemoved:Connect(populate)
 	
 	wait(0.5)
 	populate()
@@ -14418,17 +14418,17 @@ return function(data)
 	Message.Text = message
 	Title.Text = title
 	
-	ReplyBox.FocusLost:connect(function(enterPressed)
+	ReplyBox.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			send()
 		end
 	end)
 	
-	Close.MouseButton1Click:connect(function() 
+	Close.MouseButton1Click:Connect(function() 
 		gui:Destroy() 
 	end)
 	
-	Reply.MouseButton1Click:connect(function()
+	Reply.MouseButton1Click:Connect(function()
 		if not replying then
 			replying = true
 			Frame:TweenSize(UDim2.new(0,300,0,280),nil,nil,0.5)
@@ -14609,7 +14609,7 @@ return function(data)
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 	
-	toggle.MouseButton1Down:connect(function()
+	toggle.MouseButton1Down:Connect(function()
 		local found = client.UI.Get("UserPanel",nil,true)
 		if found then
 			found.Object:Destroy()
@@ -14686,7 +14686,7 @@ return function(data)
 	local frame = script.Parent.Parent.Frame
 	client.UI.Prepare(script.Parent.Parent)
 	
-	frame.ChildAdded:connect(function(c)
+	frame.ChildAdded:Connect(function(c)
 		if #frame:GetChildren() == 0 then
 			frame.Visible = false
 		else
@@ -14694,7 +14694,7 @@ return function(data)
 		end
 	end)
 	
-	frame.ChildRemoved:connect(function(c)
+	frame.ChildRemoved:Connect(function(c)
 		if #frame:GetChildren() == 0 then
 			frame.Visible = false
 		else
@@ -16618,7 +16618,7 @@ return function(data)
 		return new
 	end
 	
-	service.Events.TerminalLive:connect(function(rData)
+	service.Events.TerminalLive:Connect(function(rData)
 		local data = rData.Data
 		local rType = rData.Type
 		
@@ -16646,7 +16646,7 @@ return function(data)
 		end)
 	end,true)
 	
-	box.FocusLost:connect(function(enterPressed)
+	box.FocusLost:Connect(function(enterPressed)
 		service.Debounce("_TERMINAL_BOX_FOCUSLOST",function()
 			wait(0.1)
 			if enterPressed and box.Text~="" then
@@ -16669,7 +16669,7 @@ return function(data)
 		end)
 	end)
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		updater:Kill()
 		client.Remote.Send("Session","Terminal",false) 
 		out("Disconnecting session...",termLines)
@@ -16678,18 +16678,18 @@ return function(data)
 		gui:Destroy() 
 	end)
 	
-	localTab.MouseButton1Down:connect(openLocal)
-	scriptTab.MouseButton1Down:connect(openScript)
-	logsTab.MouseButton1Down:connect(openLogs)
-	termTab.MouseButton1Down:connect(openTerm)
-	serverTab.MouseButton1Down:connect(openServer)
-	errorTab.MouseButton1Down:connect(openErrors)
+	localTab.MouseButton1Down:Connect(openLocal)
+	scriptTab.MouseButton1Down:Connect(openScript)
+	logsTab.MouseButton1Down:Connect(openLogs)
+	termTab.MouseButton1Down:Connect(openTerm)
+	serverTab.MouseButton1Down:Connect(openServer)
+	errorTab.MouseButton1Down:Connect(openErrors)
 	
 	local mouse=service.Players.LocalPlayer:GetMouse()
 	local nx,ny=frame.AbsoluteSize.X,frame.AbsoluteSize.Y--500,300
 	local dragging=false
 	local defx,defy=nx,ny
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(dragger.Position.X.Offset+20)
 			ny=defy+(dragger.Position.Y.Offset+20)
@@ -16698,11 +16698,11 @@ return function(data)
 			frame.Size=UDim2.new(0, nx, 0, ny) 
 		end
 	end)
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		dragging = true
 		frame.Active = false
 	end)
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		frame.Active = true
 		dragging = false
 		defx = nx
@@ -17437,7 +17437,7 @@ return function(data)
 	alarm.SoundId='http://www.roblox.com/asset/?id=138081509'
 	alarm:Play()
 	
-	ok.MouseButton1Click:connect(function()
+	ok.MouseButton1Click:Connect(function()
 		alarm:Stop()
 		gTable:Destroy()
 	end)
@@ -17948,12 +17948,12 @@ return function(data)
 	
 	ques.Text = question
 	
-	yes.MouseButton1Click:connect(function()
+	yes.MouseButton1Click:Connect(function()
 		ans = "Yes"
 		gui:Destroy()
 	end)
 	
-	no.MouseButton1Click:connect(function()
+	no.MouseButton1Click:Connect(function()
 		ans = "No"
 		gui:Destroy()
 	end)
@@ -18757,7 +18757,7 @@ return function(data)
 	
 	ques.Text = question
 	
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		gui:Destroy()
 		selected = false
 	end)
@@ -18769,7 +18769,7 @@ return function(data)
 		clone.Text = v
 		clone.Position = UDim2.new(0,0,0,num*20)
 		clone.Visible = true
-		clone.MouseButton1Click:connect(function()
+		clone.MouseButton1Click:Connect(function()
 			gui:Destroy()
 			selected = v
 		end)

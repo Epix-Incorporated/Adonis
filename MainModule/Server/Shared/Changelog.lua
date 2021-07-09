@@ -1,6 +1,18 @@
 return {
-	"Version: 221.9";
+	"Version: 222.1";
 	"*Drag edges to expand*";
+	"";
+	"[v222.1 7.8.2021 21:33 EST]";
+	"*CheckAllClients bug fix (and then fixed it again at 22:51....)";
+	"";
+	"[v222 7.8.2021 09:38 EST]";
+	"*:setrank now has an optional third argument that must be 'true' if you want it to save";
+	"*:unadmin and related commands now have a second argument that must be 'true' if you want it to save";
+	"(Git/joritochip) Remove unused functions and commands #406";
+	"(Git/DrewBokman) Removing bloat and random code comments, and other code improvements for Client.Core.Anti #405";
+	"(Git/fxeP1) Performance/fixes inside WebPanel.lua #404";
+	"(Git/joritochip) Validate cape material enum + bug fix #403";
+	"(Git/P3tray) Windows XP Theme #399";
 	"";
 	"[v221.9 7.7.2021 22:50 EST]";
 	"*Ban check optimization";

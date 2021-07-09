@@ -40,8 +40,8 @@ return function(Vargs, env)
 		SetRank = {
 			Prefix = Settings.Prefix;
 			Commands = {"setrank", "setadminrank"};
-			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level";
+			Args = {"player", "level", "save"};
+			Description = "Sets the target player(s) admin rank; Saves if <save> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
@@ -56,7 +56,7 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.AddAdmin(p, newLevel, true)
+						Admin.AddAdmin(p, newLevel, args[3] ~= "true")
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -74,7 +74,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setlevel", "setadminlevel"};
 			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level";
+			Description = "Sets the target player(s) permission level for the current server";
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
@@ -88,7 +88,7 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.SetLevel(p, newLevel)
+						Admin.SetLevel(p, newLevel)--, args[3] == "true")
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -271,7 +271,7 @@ return function(Vargs, env)
 						Remote.RemoveGui(v,"Notif")
 					end
 				else
-					Variables.NotifMessage = args[1] --service.LaxFilter(args[1],plr) --// Command processor handles arg filtering
+					Variables.NotifMessage = args[1]
 					for i,v in pairs(service.GetPlayers()) do
 						Remote.MakeGui(v,"Notif",{
 							Message = Variables.NotifMessage;
@@ -320,7 +320,7 @@ return function(Vargs, env)
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = Settings.SystemTitle;
-						Message = args[1]; --service.Filter(args[1],plr,v);
+						Message = args[1];
 					})
 				end
 			end
@@ -369,7 +369,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in next, workspace:GetDescendants() do
-					if v and v.Parent and v:IsA"BasePart" then
+					if v and v.Parent and v:IsA("BasePart") then
 						v.Locked = true
 					end
 				end
@@ -386,7 +386,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in next, workspace:GetDescendants() do
-					if v and v.Parent and v:IsA"BasePart" then
+					if v and v.Parent and v:IsA("BasePart") then
 						v.Locked = false
 					end
 				end
@@ -413,7 +413,7 @@ return function(Vargs, env)
 				service.New("StringValue",f3x).Name = Variables.CodeName
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:findFirstChild("Backpack") then
+					if v:FindFirstChild("Backpack") then
 						f3x:Clone().Parent = v.Backpack
 					end
 				end
@@ -430,8 +430,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local color = BrickColor.new(math.random(1,227))
-				if BrickColor.new(args[2])~=nil then color=BrickColor.new(args[2]) end
+				local color = BrickColor.new(math.random(1, 227))
+				if BrickColor.new(args[2]) ~= nil then color = BrickColor.new(args[2]) end
 				local team = service.New("Team", service.Teams)
 				team.Name = args[1]
 				team.AutoAssignable = false
@@ -448,9 +448,9 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				for i,v in pairs(service.Teams:children()) do
-					if v:IsA("Team") and v.Name:lower():sub(1,#args[1])==args[1]:lower() then
-						v:Destroy()
+				for i,v in pairs(service.Teams:GetChildren()) do
+					if v:IsA("Team") and v.Name:lower():sub(1,#args[1]) == args[1]:lower() then
+            v:Destroy()
 					end
 				end
 			end
@@ -535,8 +535,6 @@ return function(Vargs, env)
 					spart.Position = char:FindFirstChild("Head").Position
 					spart.Size = Vector3.new(2, 1, 2)
 					table.insert(Variables.InsertedObjects, spart)
-
-
 
 					sound.Changed:Connect(function(prot)
 						if prot == "SoundId" then
@@ -650,9 +648,9 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:children())
+				Functions.Hint('Restoring Map...',service.Players:GetChildren())
 
-				for i,v in pairs(service.Workspace:children()) do
+				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
 						pcall(function() v:Destroy() end)
 						service.RunService.Heartbeat:Wait()
@@ -721,7 +719,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 					end
 
@@ -743,7 +741,7 @@ return function(Vargs, env)
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
 						if scr and tab then
-							sb[class][name].Event = plr.Chatted:connect(function(msg)
+							sb[class][name].Event = plr.Chatted:Connect(function(msg)
 								if msg:sub(1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
 
 								else
@@ -762,7 +760,7 @@ return function(Vargs, env)
 					local tab = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
-							sb[class][name].Event:disconnect()
+							sb[class][name].Event:Disconnect()
 							Functions.Hint("No longer editing "..class.." "..name,{plr})
 						end
 					else
@@ -786,7 +784,7 @@ return function(Vargs, env)
 							sb[class][name].Script:Destroy()
 						end)
 						if sb.ChatEvent then
-							sb.ChatEvent:disconnect()
+							sb.ChatEvent:Disconnect()
 						end
 						sb[class][name] = nil
 					else
@@ -846,7 +844,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"s";"scr";"script";"makescript"};
 			Args = {"code";};
-			Description = "Lets you run code on the server";
+			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
@@ -869,7 +867,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ls";"lscr";"localscript";};
 			Args = {"code";};
-			Description = "Lets you run code as a local script";
+			Description = "Executes the given code on the client";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
@@ -892,7 +890,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cs";"cscr";"clientscript";};
 			Args = {"player";"code";};
-			Description = "Lets you run a localscript on the target player(s)";
+			Description = "Executes the given code on the client of the target player(s)";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
@@ -1188,13 +1186,13 @@ return function(Vargs, env)
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
-			Args = {"player";};
+			Args = {"player", "save"};
 			Hidden = false;
-			Description = "Removes the target players' admin powers; Saves";
+			Description = "Removes the target players' admin powers; Saves if <save> is 'true'";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1], "Argument missing or nil")
 
 				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], true)
@@ -1203,7 +1201,7 @@ return function(Vargs, env)
 						local targLevel = Admin.GetLevel(v)
 						if targLevel>0 then
 							if sendLevel>targLevel then
-								Admin.RemoveAdmin(v,false,true)
+								Admin.RemoveAdmin(v, true, args[2] == "true")
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
 							else
 								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})

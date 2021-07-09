@@ -226,7 +226,7 @@ function init()
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
 	
-	hum.Died:connect(function()
+	hum.Died:Connect(function()
 		wait(1)
 		props.isDead = true
 		char:Destroy()
@@ -244,7 +244,7 @@ function init()
 end
 
 function doToucher(part)
-	part.Touched:connect(function(hit)
+	part.Touched:Connect(function(hit)
 		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChild("Humanoid") then
 			doAttack(hit.Parent)
 		end
@@ -256,7 +256,7 @@ doToucher(head)
 doToucher(lleg)
 doToucher(rleg)
 
-event.Event:connect(function(command,data)
+event.Event:Connect(function(command,data)
 	if command == "SetSetting" then
 		for i,v in next,data do
 			props[i] = v
