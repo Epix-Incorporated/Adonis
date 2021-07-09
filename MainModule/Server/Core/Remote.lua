@@ -89,7 +89,7 @@ return function(Vargs)
 				end
 
 				if keys and special and special == keys.Special then
-					keys.LastUpdate = tick()
+					keys.LastUpdate = os.time()
 				end
 
 				return returner
@@ -806,7 +806,7 @@ return function(Vargs)
 				local client = Remote.Clients[key]
 
 				if client and client.LoadingStatus == "LOADING" then
-					client.LastUpdate = tick()
+					client.LastUpdate = os.time()
 					client.RemoteReady = true
 					client.LoadingStatus = "READY"
 					Process.FinishLoading(p)
@@ -821,7 +821,7 @@ return function(Vargs)
 				local special = args[1]
 				local client = Remote.Clients[key]
 				if client then--and special and special == client.Special then
-					client.LastUpdate = tick()
+					client.LastUpdate = os.time()
 				end--]]
 			end;
 
