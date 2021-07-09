@@ -3241,7 +3241,11 @@ return function(Vargs, env)
 							local rarm = v.Character['Right Arm']
 							local lleg = v.Character['Left Leg']
 							local rleg = v.Character['Right Leg']
-							for _,v in pairs(v.Character:GetChildren()) do if v:IsA("Part") then v.Anchored=true end end
+							for _,v in pairs(v.Character:GetChildren()) do
+								if v:IsA("Part") then
+									v.Anchored=true
+								end
+							end
 							torso.FormFactor="Custom"
 							torso.Size=Vector3.new(torso.Size.X,torso.Size.Y,tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld",v.Character.HumanoidRootPart)
@@ -4017,7 +4021,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Transparency = {
 			Prefix = Settings.Prefix;
 			Commands = {"transparency";"trans";};
