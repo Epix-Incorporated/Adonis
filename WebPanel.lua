@@ -315,27 +315,29 @@ return function(Vargs)
 		local ExistingNewIndex = CommandsMetatable.__newindex
 
 		CommandsMetatable.__newindex = function(tab, ind, val)
-			-- Prevent overwriting the existing metatable
-			if ExistingNewIndex then
-				ExistingNewIndex(tab, ind, val)
-			end
+			if tab and ind and val then
+				-- Prevent overwriting the existing metatable
+				if ExistingNewIndex then
+					ExistingNewIndex(tab, ind, val)
+				end
 
-			-- Add the new command to a table to send to the web server during the next request
-			FoundCustomCommands[ind] = CopyCommand(val)
-			CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
-			local aliases = {}
-			for _, cmd in pairs(rawget(val, "Commands")) do
-				table.insert(aliases, cmd)
-			end
-			CachedAliases[ind] = aliases
+				-- Add the new command to a table to send to the web server during the next request
+				FoundCustomCommands[ind] = CopyCommand(val)
+				CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
+				local aliases = {}
+				for _, cmd in pairs(rawget(val, "Commands")) do
+					table.insert(aliases, cmd)
+				end
+				CachedAliases[ind] = aliases
 
-			-- Handle panel overrides where no matching command was found
-			local command = Commands[ind]
+				-- Handle panel overrides where no matching command was found
+				local command = Commands[ind]
 
-			for i,v in pairs(OverrideQueue) do
-				if command.Commands and table.find(command.Commands, v.name) then
-					UpdateCommand(ind, val, v.data)
-					break
+				for i,v in pairs(OverrideQueue) do
+					if command.Commands and table.find(command.Commands, v.name) then
+						UpdateCommand(ind, val, v.data)
+						break
+					end
 				end
 			end
 		end
