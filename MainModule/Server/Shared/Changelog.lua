@@ -1,6 +1,9 @@
 return {
-	"Version: 222";
+	"Version: 222.1";
 	"*Drag edges to expand*";
+	"";
+	"[v222.1 7.8.2021 21:33 EST]";
+	"*CheckAllClients bug fix";
 	"";
 	"[v222 7.8.2021 09:38 EST]";
 	"*:setrank now has an optional third argument that must be 'true' if you want it to save";

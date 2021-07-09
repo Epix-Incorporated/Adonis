@@ -81,7 +81,7 @@ return function(Vargs)
 						else
 							local client = Remote.Clients[tostring(p.UserId)]
 							if client and client.LastUpdate then
-								if os.time() - lastTime > Anti.ClientTimeoutLimit then
+								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
 									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >".. Anti.ClientTimeoutLimit .." seconds]")
 								end
 							end
