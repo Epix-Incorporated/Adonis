@@ -439,7 +439,21 @@ return function(Vargs)
 				wait(3)
 			end
 		else
-			local code, msg = res.StatusCode, res.StatusMessage
+			if res == "HttpError: Timedout" then
+				local success, aliveCheck = pcall(HttpService.RequestAsync, HttpService, {
+					Url = "https://adonis.dev/",
+					Method = "GET"
+				})
+
+				if not success and aliveCheck and aliveCheck.StatusCode ~= 200 then
+					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
+					wait(30)
+				end
+
+				continue
+			end
+
+			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
 
 			if code ~= 520 and code ~= 524 then
 				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
