@@ -7,6 +7,7 @@ return {
 	"***If you're using Settings.Commands, update to the latest version of the loader settings module!";
 	"*Fixed Settings.Commands' functions not having the correct environment";
 	"*Fixed timebans";
+	"*Fixed RateLimit exploit log spam for the RemoteEvent";
 	"*Timebans now display the end date & time to the banned user";
 	"(Git/TjeerdoBoy112) Fix error locale Timezone unavailable #412";
 	"";
