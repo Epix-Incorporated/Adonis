@@ -105,14 +105,15 @@ return function(data)
 			addOverviewEntry("Private Server ID:", data.PrivateServerId)
 			addOverviewEntry("Private Server Owner:", (game:GetService("Players"):GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..game.PrivateServerOwnerId..")")
 		end
-		--Server Internet Info
-		serii = data.ServerInternetInfo
-		addOverviewEntry("Timezone:", serii.timezone or "[Error]")
-		addOverviewEntry("Country:", serii.country or "[Error]")
-		addOverviewEntry("Region:", serii.region or "[Error]")
-		addOverviewEntry("City:", serii.city or "[Error]")
-		addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
-
+		if data.ServerInternetInfo then
+			--Server Internet Info
+			local serii = data.ServerInternetInfo
+			addOverviewEntry("Timezone:", serii.timezone or "[Error]")
+			addOverviewEntry("Country:", serii.country or "[Error]")
+			addOverviewEntry("Region:", serii.region or "[Error]")
+			addOverviewEntry("City:", serii.city or "[Error]")
+			addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+		end
 		i = i + 1
 		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
