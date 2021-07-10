@@ -29,13 +29,13 @@ Adonis is a server moderation and management system created for use on the Roblo
 ### Method 2: GitHub Releases
 * Download the `rbxm` file snapshot from the [latest release](https://github.com/Sceleratis/Adonis/releases/latest)
 * Import the model file into Studio
-    * Note: By default, snapshots included provided in releases have <a href="#debug_mode">`DebugMode`</a> enabled.
+    * Note: By default, snapshots included in releases have <a href="#debug_mode">`DebugMode`</a> enabled.
  
 ### Method 3: Filesystem
 * Download the repository to your computer's file system
 * Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file
     * If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`
-* Import the model file into Studio
+* Import the compiled model file into Studio
     * Note: By default, loaders compiled from the repository have <a href="#debug_mode">`DebugMode`</a> enabled. **This method compiles the _bleeding edge_ version of Adonis, which may be unstable.**
  
 ## Debug Mode
