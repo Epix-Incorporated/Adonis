@@ -319,6 +319,28 @@ return function(Vargs)
 
 				return resp
 			end;
+			
+			Playlist = function(p,args)
+				local playerData = Core.GetPlayer(p)
+				return playerData.CustomPlaylist or {}
+			end;
+
+			UpdatePlaylist = function(p,args)
+				local resp = "Error: Unknown Error"
+				if type(args)=="table" then
+					if string.len(service.HttpService:JSONEncode(args)) < 4000 then
+						local playerData = Core.GetPlayer(p)
+						playerData.CustomPlaylist = args[1]
+						Core.SavePlayer(p,playerData)
+						resp = "Updated"
+					else
+						resp = "Error: Playlist is too big (4000+ chars)"
+					end
+				else
+					resp = "Error: Data is not a valid table"
+				end
+				return resp
+			end;
 
 			UpdateClient = function(p,args)
 				local playerData = Core.GetPlayer(p)
