@@ -121,10 +121,6 @@ return function(Vargs)
 						lvl[b] = Admin.StringToComLevel(v);
 					end
 				end
-
-				if not cmd.Prefix then
-					cmd.Prefix = Settings.Prefix;
-				end
 			end
 		end
 
