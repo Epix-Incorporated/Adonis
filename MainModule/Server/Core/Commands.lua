@@ -80,19 +80,28 @@ return function(Vargs)
 	function RunAfterPlugins()
 		--// Load custom user-supplied commands (settings.Commands)
 		for ind,cmd in next,Settings.Commands do
+			local Function = cmd.Function
+
+			if Function then
+				setfenv(Function, GetEnv(getfenv(Function), {
+					server = server;
+					service = service;
+				}))
+			end
+
 			Commands[ind] = cmd;
 		end
 
 		--// Change command permissions based on settings
 		for ind, cmd in next, Settings.Permissions or {} do
-			local com,level = cmd:match("^(.*):(.*)")
+			local com,level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
-				if level:find(",") then
+				if string.find(level, ",") then
 					local newLevels = {}
-					for lvl in level:gmatch("[^%,]+") do
+					for lvl in string.gmatch(level, "[^%,]+") do
 						table.insert(newLevels, service.Trim(lvl))
 					end
-					
+
 					Admin.SetPermission(com, newLevels)
 				else
 					Admin.SetPermission(com, level)

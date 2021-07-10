@@ -216,7 +216,6 @@ server = {
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
-	FilteringEnabled = workspace.FilteringEnabled;
 	ServerStartTime = os.time();
 	CommandCache = {};
 };
