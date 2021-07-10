@@ -98,6 +98,8 @@ return function(Vargs)
 					local args = {...}
 					local key = tostring(p.userId)
 					local keys = Remote.Clients[key]
+					local rateLimitCheck = RateLimit(p, "Remote")
+
 					if keys then
 						keys.Received = keys.Received+1
 						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
@@ -123,7 +125,7 @@ return function(Vargs)
 								})
 
 								return {UnEncrypted[com](p,...)}
-							elseif RateLimit(p, "Remote") and string.len(com) <= Remote.MaxLen then
+							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
@@ -134,9 +136,9 @@ return function(Vargs)
 								})
 
 								if command then
-									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									keys.LastUpdate = os.time()
 
+									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
 									else
@@ -145,13 +147,13 @@ return function(Vargs)
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
+							elseif rateLimitCheck and RateLimit(p, "RateLog") then
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
-					elseif RateLimit(p, "RateLog") then
-						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
-						warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 					end
 				end
 			end
@@ -537,7 +539,7 @@ return function(Vargs)
 						return
 					end
 				end
-				
+
 				if Remote.Clients[key] then
 					Core.HookClient(p)
 

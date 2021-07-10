@@ -78,7 +78,8 @@ return function(Vargs)
 
 	function RunAfterPlugins()
 		--// Load custom user-supplied commands (settings.Commands)
-		for ind, cmd in next, Settings.Commands do
+		for ind,cmd in next,Settings.Commands do
+			setfenv(cmd.Function, getfenv());
 			Commands[ind] = cmd;
 		end
 
@@ -91,7 +92,7 @@ return function(Vargs)
 					for lvl in level:gmatch("[^%,]+") do
 						table.insert(newLevels, service.Trim(lvl))
 					end
-					
+
 					Admin.SetPermission(com, newLevels)
 				else
 					Admin.SetPermission(com, level)
@@ -111,6 +112,10 @@ return function(Vargs)
 							lvl[b] = Admin.StringToComLevel(v);
 						end
 					end
+				end
+
+				if not cmd.Prefix then
+					cmd.Prefix = Settings.Prefix;
 				end
 			end
 		end

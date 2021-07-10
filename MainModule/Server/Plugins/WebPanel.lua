@@ -15,9 +15,11 @@ return function(Vargs)
 
 	--// Note: This will only run/be required if the WebPanel_Enabled setting is true at server startup
 	if server.Settings.WebPanel_Enabled then
-		local WebModFunc = require(6289861017)
-		if WebModFunc then
+		local ran,WebModFunc = pcall(require, 6289861017)
+		if ran and WebModFunc then
 			WebModFunc(Vargs)
+		elseif not ran then
+			warn("WebPanel Loading Failed: ".. tostring(WebModFunc))
 		end
 	end
 

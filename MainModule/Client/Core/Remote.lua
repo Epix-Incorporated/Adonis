@@ -120,12 +120,12 @@ return function()
 		Sent = 0;
 
 		CheckClient = function()
-			if tick() - Core.LastUpdate >= 55 then
+			if os.time() - Core.LastUpdate >= 55 then
 				wait(math.random()) --// De-sync everyone's client checks slightly
 				local returner = math.random()
 				local ret = Remote.Send("ClientCheck", {Sent = 0;--[[Remote.Sent]] Received = Remote.Received}, client.DepsName, returner)
 				--[[if ret and ret == returner then
-					Core.LastUpdate = tick()
+					Core.LastUpdate = os.time()
 				else
 					client.Kill("Client check failed")
 				end--]]
@@ -386,7 +386,7 @@ return function()
 		end;
 
 		Send = function(com,...)
-			Core.LastUpdate = tick()
+			Core.LastUpdate = os.time()
 			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
 		end;
 
