@@ -1661,11 +1661,11 @@ return function(Vargs, env)
 					r = service.HttpService:JSONDecode(r)
 				end
 				local serverInfo = s and {
-					country = r.country 
-					city = r.city 
-					region = r.region 
-					zipcode = r.zipcode 
-					timezone = r.timezone 
+					country = r.country,
+					city = r.city,
+					region = r.region,
+					zipcode = r.zip,
+					timezone = r.timezone
 				} or nil
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
