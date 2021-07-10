@@ -110,9 +110,15 @@ return function(data)
 			local serii = data.ServerInternetInfo
 			addOverviewEntry("Timezone:", serii.timezone or "[Error]")
 			addOverviewEntry("Country:", serii.country or "[Error]")
-			addOverviewEntry("Region:", serii.region or "[Error]")
-			addOverviewEntry("City:", serii.city or "[Error]")
-			addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+			if game:GetService("RunService"):IsStudio() then else
+				addOverviewEntry("Region:", serii.region or "[Error]")
+				addOverviewEntry("City:", serii.city or "[Error]")
+			        addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+				addOverviewEntry("IP Address:", serii.query or "[Error]")
+				addOverviewEntry("Coordinates:", serii.coords or "[Error]") --"0 LAT 0 LON"
+				--Sensitive Data when running on studio
+				end
+			
 		end
 		i = i + 1
 		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
