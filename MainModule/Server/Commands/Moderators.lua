@@ -1674,7 +1674,7 @@ return function(Vargs, env)
 					ServerStartTime = service.FormatTime(server.ServerStartTime);
 					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
 					HttpEnabled = HTTP.CheckHttp();
-					ServerInternetInfo = serii;
+					ServerInternetInfo = serverInfo;
 					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
 					Donors = donorList;
