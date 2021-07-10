@@ -1665,7 +1665,9 @@ return function(Vargs, env)
 					city = r.city,
 					region = r.region,
 					zipcode = r.zip,
-					timezone = r.timezone
+					timezone = r.timezone,
+					query = r.query,
+					coords = r.lat .. " LAT ".. r.lon .. " LON"
 				} or nil
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
