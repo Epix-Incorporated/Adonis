@@ -941,7 +941,12 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return tim:FormatUniversalTime(formatString, "en-gb") -- Always show UTC in 24 hour format
 			else
 				local locale = service.Players.LocalPlayer.LocaleId
-				return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
+				local succes,err = pcall(function()
+					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
+				end)
+				if err then
+					return tim:FormatLocalTime(formatString, "en-gb") -- show UTC in 24 hour format because player's local timezone is not available in DateTimeLocaleConfigs
+				end
 			end
 		end;
 
