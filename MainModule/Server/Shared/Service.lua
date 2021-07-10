@@ -775,10 +775,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			table.insert(queue.Functions, tab);
 
 			if not queue.Processing then
-				local ran, err = service.TrackTask("Thread: QueueProcessor_"..tostring(key), service.ProcessQueue, queue, key);
-				if not ran or err then
-					warn("Queue Error: ".. tostring(err))
-				end
+				service.TrackTask("Thread: QueueProcessor_"..tostring(key), service.ProcessQueue, queue, key);
 			end
 
 			if doYield and not tab.Finished then

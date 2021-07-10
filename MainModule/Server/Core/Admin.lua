@@ -596,7 +596,7 @@ return function(Vargs)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, ban.Reason;
+						return true, "\n Banned until ".. service.FormatTime(ban.EndTime, true);
 					end
 				end
 			end
@@ -830,7 +830,7 @@ return function(Vargs)
 		end;
 
 		FormatCommand = function(command)
-			local text = command.Prefix..command.Commands[1]
+			local text = command.Prefix.. command.Commands[1]
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
 

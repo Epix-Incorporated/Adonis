@@ -1,6 +1,14 @@
 return {
-	"Version: 222.1";
+	"Version: 222.2";
 	"*Drag edges to expand*";
+	"";
+	"[v222.2 7.10.2021 16:01 EST]";
+	"*Moved Settings.Commands (so they can actually see the prefix setting...)";
+	"***If you're using Settings.Commands, update to the latest version of the loader settings module!";
+	"*Fixed Settings.Commands' functions not having the correct environment";
+	"*Fixed timebans";
+	"*Timebans now display the end date & time to the banned user";
+	"(Git/TjeerdoBoy112) Fix error locale Timezone unavailable #412";
 	"";
 	"[v222.1 7.8.2021 21:33 EST]";
 	"*CheckAllClients bug fix (and then fixed it again at 22:51....)";
