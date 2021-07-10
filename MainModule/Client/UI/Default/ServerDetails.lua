@@ -60,7 +60,12 @@ return function(data)
 				end
 			end
 		end
+		
+		
+		
 
+		
+		
 		local i = 1
 		local function addOverviewEntry(name, value, toolTip)
 			local entry = overviewtab:Add("TextLabel", {
@@ -81,7 +86,7 @@ return function(data)
 
 			i = i + 1
 		end
-
+  
 		addOverviewEntry("Place Name:", service.MarketPlace:GetProductInfo(game.PlaceId).Name)
 		addOverviewEntry("Place ID:", game.PlaceId)
 		addOverviewEntry("Place Version:", game.PlaceVersion)
@@ -100,6 +105,14 @@ return function(data)
 			addOverviewEntry("Private Server ID:", data.PrivateServerId)
 			addOverviewEntry("Private Server Owner:", (game:GetService("Players"):GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..game.PrivateServerOwnerId..")")
 		end
+		--Server Internet Info
+		serii = data.ServerInternetInfo
+		addOverviewEntry("Timezone:", serii.timezone or "[Error]")
+		addOverviewEntry("Country:", serii.country or "[Error]")
+		addOverviewEntry("Region:", serii.region or "[Error]")
+		addOverviewEntry("City:", serii.city or "[Error]")
+		addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+
 		i = i + 1
 		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
