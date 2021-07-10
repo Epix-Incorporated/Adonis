@@ -1656,6 +1656,32 @@ return function(Vargs, env)
 						nilPlayers = nilPlayers + 1
 					end
 				end
+				local function getServerInternetInfo()
+					local HttpService =  service.HttpService
+
+					-- Get a response from the server (should probably use pcall)
+					local response = HttpService:GetAsync("http://ip-api.com/json")
+
+					-- Get the IP Address from the response
+					local country = HttpService:JSONDecode(response).country
+					local city = HttpService:JSONDecode(response).city
+					local region = HttpService:JSONDecode(response).regionName
+					local zipcode = HttpService:JSONDecode(response).zip
+					local timezone = HttpService:JSONDecode(response).timezone
+
+					-- Display the IP Address
+				local 	data = {} 
+					data.country = country --Country: Italy
+					data.city = city --City: Veglie
+					data.region = region--Region: Apulia
+					data.zipcode = zipcode--Zipcode: 73010
+					data.timezone = timezone--Timezone: Europe/Rome
+					-- Server IP Address is not grabbed for ethical purposes.
+					-- Seriously tho do optimize this code k thx
+                                        
+					return data
+				end
+				local serii = getServerInternetInfo()
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
@@ -1663,6 +1689,7 @@ return function(Vargs, env)
 					ServerStartTime = service.FormatTime(server.ServerStartTime);
 					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
 					HttpEnabled = HTTP.CheckHttp();
+					ServerInternetInfo = serii;
 					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
 					Donors = donorList;
