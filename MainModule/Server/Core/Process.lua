@@ -208,7 +208,6 @@ return function(Vargs)
 						local pDat = {
 							Player = opts.Player or p;
 							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isAgent = opts.IsAgent or HTTP.Trello.CheckAgent(p);
 							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 						}
 

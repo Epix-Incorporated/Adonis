@@ -66,7 +66,6 @@ return function(Vargs)
 			Bans = {};
 			Music = {};
 			InsertList = {};
-			Agents = {};
 			Blacklist = {};
 			Whitelist = {};
 			PerformedCommands = {};
@@ -85,7 +84,6 @@ return function(Vargs)
 					local HeadAdmins = {}
 					local helpers = {}
 					local creators = {}
-					local agents = {}
 					local music = {}
 					local insertlist = {}
 					local mutes = {}
@@ -115,7 +113,6 @@ return function(Vargs)
 						local insertList = trello.getListObj(lists,{"InsertList","Insert List","Insertlist","Inserts","ModelList","Model List","Modellist","Models"})
 						local permList = trello.getListObj(lists,{"Permissions","Permission List","Permlist"})
 						local muteList = trello.getListObj(lists,{"Mutelist","Mute List"})
-						local agentList = trello.getListObj(lists,{"Agents","Agent List","Agentlist"})
 						local bList = trello.getListObj(lists,{"Blacklist"})
 						local wList = trello.getListObj(lists,{"Whitelist"})
 
@@ -133,7 +130,6 @@ return function(Vargs)
 						getNames(modList, mods);
 						getNames(adminList, admins)
 						getNames(ownerList, HeadAdmins);
-						getNames(agentList, agents);
 						getNames(muteList, mutes);
 						getNames(bList, blacklist);
 						getNames(wList, whitelist);
@@ -211,7 +207,6 @@ return function(Vargs)
 					if #music>0 then HTTP.Trello.Music = music end
 					if #insertlist>0 then HTTP.Trello.InsertList = insertlist end
 					if #mutes>0 then HTTP.Trello.Mutes = mutes end
-					if #agents>0 then HTTP.Trello.Agents = agents end
 					if #blacklist>0 then HTTP.Trello.Blacklist = blacklist end
 					if #whitelist>0 then HTTP.Trello.Whitelist = whitelist end
 
@@ -258,14 +253,6 @@ return function(Vargs)
 						Text = "Updated Trello Data";
 						Desc = "Data was retreived from Trello";
 					})
-				end
-			end;
-
-			CheckAgent = function(p)
-				for ind,v in pairs(HTTP.Trello.Agents) do
-					if Admin.DoCheck(p,v) then
-						return true
-					end
 				end
 			end;
 		};

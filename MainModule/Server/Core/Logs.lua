@@ -415,7 +415,7 @@ return function(Vargs)
 			end;
 
 			RemoteLogs = function(p)
-				if Admin.CheckAdmin(p) or HTTP.Trello.CheckAgent(p) then
+				if Admin.CheckAdmin(p) then
 					return Logs.RemoteFires
 				end
 			end;

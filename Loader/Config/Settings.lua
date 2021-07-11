@@ -125,7 +125,6 @@ local descs = {};			--// Contains settings descriptions
 				Admins				- Card Format: Same as settings.Admins
 				HeadAdmins				- Card Format: Same as settings.HeadAdmins
 				Creators			- Card Format: Same as settings.Creators
-				Agents				- Card Format: Same as settings.Admins
 				Banlist				- Card Format: Same as settings.Banned
 				Mutelist			- Card Format: Same as settings.Muted
 				Blacklist			- Card Format: Same as settings.Blacklist
