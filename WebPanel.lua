@@ -445,7 +445,7 @@ return function(Vargs)
 					Method = "GET"
 				})
 
-				if not success and aliveCheck and aliveCheck.StatusCode ~= 200 then
+				if not success and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
 					wait(30)
 				end
