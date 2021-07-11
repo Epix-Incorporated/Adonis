@@ -618,27 +618,29 @@ return function(Vargs, env)
 				end
 			end
 		};
-    DonorRemoveHat = {
-            Prefix = Settings.PlayerPrefix;
-            Commands = {"removehat";};
-            Args = {"Accessory"};
-            Hidden = false;
-            Description = "Remove any hats you are currently wearing";
-            Fun = false;
-            Donors = true;
-            AdminLevel = "Donors";
-            Function = function(plr,args)
-                if plr.Character:FindFirstChild(args[1]) then plr.Character:FindFirstChild(args[1]):Destroy()
-                    Functions.Hint(args[1].." Has been removed",{plr})
-                else if not plr.Character:FindFirstChild(args[1]) then
-                        Functions.Hint(args[1].." Is not a valid hat",{plr})
-                    
-                    end
+ 	DonorRemoveHat = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removehat";};
+			Args = {"Accessory"};
+			Hidden = false;
+			Description = "Remove any accessories you are currently wearing";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr,args)
+				if plr.Character:FindFirstChild(args[1]) and plr.Character:FindFirstChild(args[1]):IsA("Accessory") then	
+					hat =  plr.Character:FindFirstChild(args[1])
+					hat:Destroy()
+					Functions.Hint(args[1].." Has been removed",{plr})	
+				else
+					Functions.Hint(args[1].." Is not a valid accessory",{plr})
+				end
 
-                end
 
-            end        
-        };
+			end
+
+		
+		};
     
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
