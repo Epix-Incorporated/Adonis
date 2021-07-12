@@ -1924,13 +1924,31 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local temptable = {};
 				local unsorted = {};
+				local levelListCache = {}
+
+				local function levelToList(level)
+					local cached = levelListCache[level]
+					if cached then
+						return cached.List, cached.Name, cached.Data
+					else
+						local rankList, rankName, rankData = Admin.LevelToList(level)
+						local data = {
+							List = rankList;
+							Name = rankName;
+							Data = rankData;
+						}
+
+						levelListCache[level] = data;
+						return rankList, rankName, rankData
+					end
+				end
 
 				table.insert(temptable,'<b><font color="rgb(60, 180, 0)">==== Admins In-Game ====</font></b>')
 
 				for i,v in pairs(service.GetPlayers()) do
 					local level = Admin.GetLevel(v);
 					if level > 0 then
-						local rankList, rankName, rankData = Admin.LevelToList(level);
+						local rankList, rankName, rankData = levelToList(level);
 						table.insert(unsorted, {
 							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
 							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;

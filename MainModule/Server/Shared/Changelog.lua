@@ -7,6 +7,7 @@ return {
 	"*Possibly fixed a bug involving NetworkClients that caused client-server communication to break for some users";
 	"**Aforementioned bug basically made the script not work for them at all";
 	"*Player.Chatted is now hooked server-side *BEFORE* the client finishes loading";
+	"*:admins may load a bit faster in games with a lot of players now";
 	"";
 	"[v222.2 7.10.2021 16:01 EST]";
 	"*Moved Settings.Commands (so they can actually see the prefix setting...)";

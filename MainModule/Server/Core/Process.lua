@@ -411,7 +411,7 @@ return function(Vargs)
 						Desc = tostring(filtered);
 						Player = p;
 					})
-					
+
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
@@ -632,7 +632,7 @@ return function(Vargs)
 					Desc = "An unknown user disconnected from the server";
 				})
 			end
-			service.Events.NetworkRemoved:fire(cli)
+			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		FinishLoading = function(p)

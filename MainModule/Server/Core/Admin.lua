@@ -366,7 +366,7 @@ return function(Vargs)
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
 
-			if clients[tostring(p.UserId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
+			if clients[tostring(p.UserId)] and (not levels or not lastUpdate or tick()-lastUpdate > 60) then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
 					if data.AdminLevel < level then
