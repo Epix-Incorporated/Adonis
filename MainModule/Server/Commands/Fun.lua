@@ -3729,7 +3729,7 @@ return function(Vargs, env)
 			Commands = {"torso";"torsopackage";};
 			Args = {"player";"id";};
 			Hidden = false;
-			Description = "Change the target player(s)'s Left Arm package";
+			Description = "Change the target player(s)'s Torso package";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
