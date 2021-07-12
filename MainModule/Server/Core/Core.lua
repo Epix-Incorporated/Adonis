@@ -56,8 +56,10 @@ return function(Vargs)
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		server.Core.MakeEvent()
-		service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-		service.JointsService.ChildRemoved:Connect(function(c)
+
+		local remoteParent = service.ReplicatedStorage;
+		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
+		remoteParent.ChildRemoved:Connect(function(c)
 			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
 				wait();
 				server.Core.MakeEvent()
@@ -169,9 +171,10 @@ return function(Vargs)
 		end;
 
 		MakeEvent = function()
+			local remoteParent = service.ReplicatedStorage;
 			local ran,error = pcall(function()
-				if Anti.RLocked(service.JointsService) then
-					Core.Panic("JointsService RobloxLocked/Unusable")
+				if Anti.RLocked(remoteParent) then
+					Core.Panic("Remote Parent RobloxLocked/Unusable")
 				elseif server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent")
@@ -198,7 +201,7 @@ return function(Vargs)
 					Core.RemoteEvent.Decoy1 = decoy1
 					Core.RemoteEvent.Decoy2 = decoy2
 
-					event.Parent = service.JointsService
+					event.Parent = remoteParent
 					--decoy1.Parent = service.JointsService
 					--decoy2.Parent = service.JointsService
 
@@ -242,6 +245,7 @@ return function(Vargs)
 					Core.RemoteEvent.FuncSec = secure(func, "");
 					Core.RemoteEvent.DecoySecurity1 = secure(decoy1, Core.Name)
 					Core.RemoteEvent.DecoySecurity2 = secure(decoy2, Core.Name)
+					
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";

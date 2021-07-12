@@ -411,7 +411,7 @@ return function(Vargs)
 						Desc = tostring(filtered);
 						Player = p;
 					})
-
+					
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
@@ -549,20 +549,27 @@ return function(Vargs)
 						Player = p;
 					})
 
+
+					--// Get chats
+					p.Chatted:Connect(function(msg)
+							service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+					end)
+
+					--// Character added
 					p.CharacterAdded:Connect(function()
 						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
 					end)
 
-					wait(60*10)
-
-					if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
-						Logs.AddLog("Script", {
-							Text = p.Name .. " Failed to Load",
-							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
-							Player = p;
-						});
-						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
-					end
+					delay(600, function()
+						if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
+							Logs.AddLog("Script", {
+								Text = p.Name .. " Failed to Load",
+								Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+								Player = p;
+							});
+							--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
+						end
+					end)
 				else
 					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 				end
@@ -573,7 +580,12 @@ return function(Vargs)
 			--local key = tostring(p.userId)
 			--Core.SavePlayerData(p)
 			--Remote.Clients[key] = nil
-			service.Events.PlayerRemoving:fire(p)
+			service.Events.PlayerRemoving:Fire(p)
+
+			local key = tostring(p.userId)
+			Core.SavePlayerData(p)
+			Remote.Clients[key] = nil
+
 			local level = (p and Admin.GetLevel(p)) or 0
 			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
@@ -590,6 +602,7 @@ return function(Vargs)
 			wait(0.25)
 			local p = cli:GetPlayer()
 			if p then
+				Core.Connections[cli] = p;
 				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." connected";
 					Desc = tostring(p).." successfully established a connection with the server";
@@ -608,9 +621,6 @@ return function(Vargs)
 			local p = cli:GetPlayer() or Core.Connections[cli]
 			Core.Connections[cli] = nil
 			if p then
-				local key = tostring(p.userId)
-				Core.SavePlayerData(p)
-				Remote.Clients[key] = nil
 				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." disconnected";
 					Desc = tostring(p).." disconnected from the server";
@@ -628,23 +638,18 @@ return function(Vargs)
 		FinishLoading = function(p)
 			local PlayerData = Core.GetPlayer(p)
 			local level = Admin.GetLevel(p)
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 
 			--// Finish loading
-			service.FireEvent(p.userId.."_CLIENTLOADER",p)
+			service.FireEvent(p.UserId.."_CLIENTLOADER",p)
 
 			--// Fire player added
-			service.Events.PlayerAdded:fire(p)
+			service.Events.PlayerAdded:Fire(p)
 			Logs.AddLog(Logs.Joins,{
 				Text = p.Name;
 				Desc = p.Name.." joined the server";
 				Player = p;
 			})
-
-			--// Get chats
-			service.RbxEvent(p.Chatted, function(msg)
-				Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",Process.Chat,60,p,msg)
-			end)
 
 			--// Start keybind listener
 			Remote.Send(p,"Function","KeyBindListener")

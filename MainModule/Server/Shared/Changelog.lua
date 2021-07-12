@@ -1,6 +1,12 @@
 return {
-	"Version: 222.2";
+	"Version: 222.3";
 	"*Drag edges to expand*";
+	"";
+	"[v222.3 7.11.2021 22:41 EST]";
+	"*Moved the RemoteEvent to ReplicatedStorage (from JointsService) for now (has a random name.)";
+	"*Possibly fixed a bug involving NetworkClients that caused client-server communication to break for some users";
+	"**Aforementioned bug basically made the script not work for them at all";
+	"*Player.Chatted is now hooked server-side *BEFORE* the client finishes loading";
 	"";
 	"[v222.2 7.10.2021 16:01 EST]";
 	"*Moved Settings.Commands (so they can actually see the prefix setting...)";
