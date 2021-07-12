@@ -321,12 +321,14 @@ return function(Vargs)
 			local data = Core.GetPlayer(p)
 			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
-			data.LastLevelUpdate = tick()
+			data.LastLevelUpdate = os.time()
+
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
 				Player = p;
 			})
+
 			return data.AdminLevel
 		end;
 
@@ -365,8 +367,9 @@ return function(Vargs)
 			local level = data.AdminLevel
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
+			local key = tostring(p.UserId)
 
-			if clients[tostring(p.UserId)] and (not levels or not lastUpdate or tick()-lastUpdate > 60) then
+			if clients[key] and (not level or not lastUpdate or os.time() - lastUpdate > 60) then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
 					if data.AdminLevel < level then
