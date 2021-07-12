@@ -229,10 +229,19 @@ return function(Vargs, env)
 					handle.Name = 'Handle'
 					handle.CanCollide = false
 					handle.Transparency = 1
-					local model = game:GetService('Players'):CreateHumanoidModelFromUserId(plr.userId)
+					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
 					model.Name = plr.displayName
-					handle.CFrame = (model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')).CFrame
+					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
+	      	local bHeight = hum:WaitForChild('BodyHeightScale')
+	      	local bDepth = hum:WaitForChild('BodyDepthScale')
+					local bWidth = hum:WaitForChild('BodyWidthScale')
+	        bHeight.Value = bHeight.Value / 2
+	        bDepth.Value = bDepth.Value / 2
+	        bWidth.Value = bWidth.Value / 2
+					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
+					handle.CFrame = cfr
 					model.Parent = tool
+					model:SetPrimaryPartCFrame(cfr)
 					local weld = Instance.new('WeldConstraint', tool)
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
