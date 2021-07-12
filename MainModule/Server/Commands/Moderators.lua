@@ -1946,7 +1946,8 @@ return function(Vargs, env)
 				table.insert(temptable,'<b><font color="rgb(60, 180, 0)">==== Admins In-Game ====</font></b>')
 
 				for i,v in pairs(service.GetPlayers()) do
-					local level = Admin.GetLevel(v);
+					local data = Core.GetPlayer(v);
+					local level = data.AdminLevel or Admin.GetLevel(v);
 					if level > 0 then
 						local rankList, rankName, rankData = levelToList(level);
 						table.insert(unsorted, {
