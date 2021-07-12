@@ -177,6 +177,7 @@ return function(Vargs, env)
 			Commands = {"brazil";};
 			Args = {"players"};
 			AdminLevel = "Moderators";
+			Fun = true;
 			Description = "You're going to";
 			Function = function (runner, args)
 				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
@@ -209,6 +210,35 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		-- maybe make it work with players not in-game
+		CharGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"chargear";"charactergear";"doll";"cgear"};
+			Args = {"player";};
+			Fun = true;
+			Hidden = false;
+			AdminLevel = "Moderators";
+			Description = "Gives you a doll of a player.";
+			Function = function(runner,args)
+				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					local tool = Instance.new('Tool', runner:FindFirstChildWhichIsA('Backpack'))
+					tool.ToolTip = plr.DisplayName .. ' as a tool, generated with Adonis.'
+					tool.Name = plr.Name
+					local handle = Instance.new('Part', tool)
+					handle.Name = 'Handle'
+					handle.CanCollide = false
+					handle.Transparency = 1
+					local model = game:GetService('Players'):CreateHumanoidModelFromUserId(plr.userId)
+					model.Name = plr.displayName
+					handle.CFrame = (model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')).CFrame
+					model.Parent = tool
+					local weld = Instance.new('WeldConstraint', tool)
+					weld.Part0 = handle
+					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
+				end
+			end
+		},
 
 		LowRes = {
 			Prefix = Settings.Prefix;
