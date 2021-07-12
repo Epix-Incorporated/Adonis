@@ -176,7 +176,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"brazil";};
 			Args = {"players"};
-			AdminLevel = "Admins";
+			AdminLevel = "Moderators";
 			Description = "You're going to";
 			Function = function (runner, args)
 				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
