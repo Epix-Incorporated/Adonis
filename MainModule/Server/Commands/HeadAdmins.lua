@@ -46,14 +46,17 @@ return function(Vargs, env)
 						}
 
 						table.insert(timebans, data)
+
+						v:Kick("\nBanned until ".. service.FormatTime(endTime, true))
+						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...",{plr})
+
 						Core.DoSave({
 							Type = "TableAdd";
-							Table = {"Variables", "TimeBans"};
+							Table = {"Core", "Variables", "TimeBans"};
 							Value = data;
 						})
 
-						v:Kick("\nBanned until "..endTime)
-						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for "..tostring(time),{plr})
 					end
 				end
 			end

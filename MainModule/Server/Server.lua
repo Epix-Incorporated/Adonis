@@ -559,5 +559,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	service.Events.ServerInitialized:Fire();
+	
 	return "SUCCESS"
 end})

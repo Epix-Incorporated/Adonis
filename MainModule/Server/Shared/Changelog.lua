@@ -1,6 +1,22 @@
 return {
-	"Version: 222.1";
+	"Version: 222.3";
 	"*Drag edges to expand*";
+	"";
+	"[v222.3 7.11.2021 22:41 EST]";
+	"*Moved the RemoteEvent to ReplicatedStorage (from JointsService) for now (has a random name.)";
+	"*Possibly fixed a bug involving NetworkClients that caused client-server communication to break for some users";
+	"**Aforementioned bug basically made the script not work for them at all";
+	"*Player.Chatted is now hooked server-side *BEFORE* the client finishes loading";
+	"*:admins may load a bit faster in games with a lot of players now";
+	"";
+	"[v222.2 7.10.2021 16:01 EST]";
+	"*Moved Settings.Commands (so they can actually see the prefix setting...)";
+	"***If you're using Settings.Commands, update to the latest version of the loader settings module!";
+	"*Fixed Settings.Commands' functions not having the correct environment";
+	"*Fixed timebans";
+	"*Fixed RateLimit exploit log spam for the RemoteEvent";
+	"*Timebans now display the end date & time to the banned user";
+	"(Git/TjeerdoBoy112) Fix error locale Timezone unavailable #412";
 	"";
 	"[v222.1 7.8.2021 21:33 EST]";
 	"*CheckAllClients bug fix (and then fixed it again at 22:51....)";

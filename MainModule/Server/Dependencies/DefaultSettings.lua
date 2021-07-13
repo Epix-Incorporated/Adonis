@@ -206,29 +206,6 @@ local descs = {};			--// Contains settings descriptions
 		-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
 	};	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
 
-	--// Easily add new custom commands below (without needing to create a plugin module)
-	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module)
-	settings.Commands = {
-		SomeNewCommand = {								--// The index & table of the command
-			Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
-			Commands = {"examplecommand"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
-			Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
-			Description = "Example command";--// The description of the command
-			AdminLevel = 100; -- Moderators	--// The commands minimum admin level; This can also be a table containing specific levels rather than a minimum level: {124, 152, "HeadAdmins", etc};
-			-- Alternative option: AdminLevel = "Moderators"
-			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
-			Hidden = true;									--// Should this command be hidden from the command list?
-			Function = function(plr, args, data)	--// The command's function; This is the actual code of the command which runs when you run the command
-				--// "plr" is the player running the command
-				--// "args" is a table containing command arguments supplied by the user
-				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level)
-				print("This is 'arg1': ".. tostring(args[1]));
-				print("This is 'arg2': ".. tostring(args[2]));
-				print("This is 'etc'(arg 3): ".. tostring(args[3]));
-			end
-		};
-	}
-
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {};			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Blacklist = {};		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -250,6 +227,30 @@ local descs = {};			--// Contains settings descriptions
 	settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 	settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
 	settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+
+	--// Easily add new custom commands below (without needing to create a plugin module)
+	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module)
+	settings.Commands = {
+		ExampleCommand1 = {								--// The index & table of the command
+			Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
+			Commands = {"examplecommand1", "examplealias1", "examplealias2"};	--// A table containing the command strings (the things you chat in-game to run the command, the 'ff' in ':ff me')
+			Args = {"arg1", "arg2", "etc"};	--// Command arguments, these will be available in order as args[1], args[2], args[3], etc; This is the 'me' in ':ff me'
+			Description = "Example command";--// The description of the command
+			AdminLevel = 100; -- Moderators	--// The commands minimum admin level; This can also be a table containing specific levels rather than a minimum level: {124, 152, "HeadAdmins", etc};
+			-- Alternative option: AdminLevel = "Moderators"
+			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
+			Hidden = true;									--// Should this command be hidden from the command list?
+			Function = function(plr, args, data)	--// The command's function; This is the actual code of the command which runs when you run the command
+				--// "plr" is the player running the command
+				--// "args" is a table containing command arguments supplied by the user
+				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level)
+				print("This is 'arg1': ".. tostring(args[1]));
+				print("This is 'arg2': ".. tostring(args[2]));
+				print("This is 'etc'(arg 3): ".. tostring(args[3]));
+				error("this is an example error :o !")
+			end
+		};
+	}
 
 	settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
 	settings.Trello_Enabled = false;		  -- Are the Trello features enabled?

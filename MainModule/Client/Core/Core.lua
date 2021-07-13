@@ -129,6 +129,8 @@ return function()
 			local events = {}
 			local found
 
+			local remoteParent = service.ReplicatedStorage;
+
 			local function finishEvent(event)
 				if event then
 					local rFunc = event:FindFirstChildOfClass("RemoteFunction")
@@ -171,7 +173,7 @@ return function()
 
 			local function search()
 				local children = {}
-				for i,child in next,service.JointsService:GetChildren() do
+				for i,child in next,remoteParent:GetChildren() do
 					if string.sub(child.Name,1,#client.RemoteName) == client.RemoteName then
 						table.insert(children, child)
 					end
@@ -217,7 +219,7 @@ return function()
 					timer = timer+1
 					if timer%10 == 0 or not firstSearch then
 						firstSearch = true
-						local event = service.JointsService:FindFirstChild(client.RemoteName)
+						local event = remoteParent:FindFirstChild(client.RemoteName)
 						if event then
 							found = event
 							finishEvent(event)
