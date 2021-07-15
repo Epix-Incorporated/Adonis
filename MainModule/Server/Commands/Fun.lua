@@ -241,6 +241,11 @@ return function(Vargs, env)
 					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
 					handle.CFrame = cfr
 					model:FindFirstChild('Animate').Disabled = true
+					for _,v in pairs(model:GetDescendants()) do
+						if v:IsA('BasePart') then
+							v.Massless = true
+						end
+					end
 					model.Parent = tool
 					model:SetPrimaryPartCFrame(cfr)
 					local weld = Instance.new('WeldConstraint', tool)
