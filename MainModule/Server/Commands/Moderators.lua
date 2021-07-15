@@ -4296,14 +4296,36 @@ return function(Vargs, env)
 			Commands = {"jpower";"jpow";"jumppower";};
 			Args = {"player";"number";};
 			Hidden = false;
-			Description = "Set the target player(s)'s JumpPower to <number>";
+			Description = "Set the target player(s)'s jump power to <number>";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.JumpPower = args[2] or 60
+						local humanoid = v.Character.Humanoid
+						humanoid.JumpPower = args[2] or 50
+						humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
+					end
+				end
+			end
+		};
+		
+		JumpHeight = {
+			Prefix = Settings.Prefix;
+			Commands = {"jheight";"jumpheight";};
+			Args = {"player";"number";};
+			Hidden = false;
+			Description = "Set the target player(s)'s jump height to <number>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
+						local humanoid = v.Character.Humanoid
+						humanoid.JumpHeight = args[2] or 7.2
+						humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
 					end
 				end
 			end
