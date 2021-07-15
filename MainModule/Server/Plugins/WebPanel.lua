@@ -17,11 +17,11 @@ return function(Vargs)
 	if server.Settings.WebPanel_Enabled then
 		local ran,WebModFunc = pcall(require, 6289861017)
 		if ran and WebModFunc then
-			WebModFunc(Vargs)
+			coroutine.wrap(WebModFunc)(Vargs)
 		elseif not ran then
 			warn("WebPanel Loading Failed: ".. tostring(WebModFunc))
 		end
 	end
 
-	Logs:AddLog("Script", "WebPanel Module Loaded");
+	server.Logs:AddLog("Script", "WebPanel Module Loaded");
 end

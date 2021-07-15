@@ -2261,32 +2261,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Insert = {
-			Prefix = Settings.Prefix;
-			Commands = {"insert";"ins";};
-			Args = {"id";};
-			Hidden = false;
-			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local id = args[1]:lower()
-				for i,v in pairs(Variables.InsertList) do
-					if id==v.Name:lower() then
-						id = v.ID
-						break
-					end
-				end
-				local obj = service.Insert(tonumber(id), true)
-				if obj and plr.Character then
-					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = service.Workspace
-					pcall(function() obj:MakeJoints() end)
-					obj:MoveTo(plr.Character:GetModelCFrame().p)
-				end
-			end
-		};
-
 		InsertList = {
 			Prefix = Settings.Prefix;
 			Commands = {"insertlist";"inserts";"inslist";"modellist";"models";};
@@ -2586,14 +2560,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local gear = service.Insert(tonumber(args[2]))
-				if gear:IsA("Tool") or gear:IsA("HopperBin") then
-					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
-					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						if v:FindFirstChild("Backpack") then
-							gear:Clone().Parent = v.Backpack
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear:IsA("Tool") or gear:IsA("HopperBin") then
+						service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr,args[1])) do
+							if v:FindFirstChild("Backpack") then
+								gear:Clone().Parent = v.Backpack
+							end
 						end
 					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.",0)
 				end
 			end
 		};
