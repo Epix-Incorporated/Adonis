@@ -9,6 +9,18 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
+		AudioPlayer = {
+			Prefix = Settings.Prefix;
+			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
+			Args = {"time";};
+			Description = "Opens an audio player window";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for _,v in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
+					Remote.MakeGui(v, "Music")
+				end
+			end
+		};
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick";};
