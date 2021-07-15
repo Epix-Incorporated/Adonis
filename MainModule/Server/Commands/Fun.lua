@@ -171,6 +171,84 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"Effect",{Mode = "trolling"})
 			end
 		};
+
+		Brazil = {
+			Prefix = Settings.Prefix;
+			Commands = {"brazil";};
+			Args = {"players"};
+			AdminLevel = "Moderators";
+			Fun = true;
+			Description = "You're going to";
+			Function = function (runner, args)
+				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					local character = plr.Character
+					local root = character:FindFirstChild("HumanoidRootPart")
+					local sound = Instance.new("Sound", root)
+					sound.SoundId = "rbxassetid://5816432987"
+					sound.Volume = 10
+					sound.PlayOnRemove = true
+					sound:Destroy()
+					wait(1.4)
+					local vel = Instance.new("BodyVelocity", root)
+					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
+					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+					vel.P = math.huge
+					local smoke = Instance.new("ParticleEmitter")
+					smoke.Enabled = true
+					smoke.Lifetime = NumberRange.new(0, 3)
+					smoke.Rate = 999999
+					smoke.RotSpeed = NumberRange.new(0, 20)
+					smoke.Rotation = NumberRange.new(0, 360)
+					smoke.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1.25, 1.25), NumberSequenceKeypoint.new(1, 1.25, 1.25) })
+					smoke.Speed = NumberRange.new(1, 1)
+					smoke.SpreadAngle = Vector2.new(360, 360)
+					smoke.Texture = "rbxassetid://642204234"
+					smoke.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0, 0), NumberSequenceKeypoint.new(1, 1, 0) })
+					smoke.Parent = root
+					service.Debris:AddItem(smoke, 99)
+					service.Debris:AddItem(vel, 99)
+				end
+			end
+		};
+
+		-- maybe make it work with players not in-game
+		CharGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"chargear";"charactergear";"doll";"cgear"};
+			Args = {"player";};
+			Fun = true;
+			Hidden = false;
+			AdminLevel = "Moderators";
+			Description = "Gives you a doll of a player.";
+			Function = function(runner,args)
+				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					local tool = Instance.new('Tool', runner:FindFirstChildWhichIsA('Backpack'))
+					tool.ToolTip = plr.DisplayName .. ' as a tool, generated with Adonis.'
+					tool.Name = plr.Name
+					local handle = Instance.new('Part', tool)
+					handle.Name = 'Handle'
+					handle.CanCollide = false
+					handle.Transparency = 1
+					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
+					model.Name = plr.displayName
+					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
+	      	local bHeight = hum:WaitForChild('BodyHeightScale')
+	      	local bDepth = hum:WaitForChild('BodyDepthScale')
+					local bWidth = hum:WaitForChild('BodyWidthScale')
+	        bHeight.Value = bHeight.Value / 2
+	        bDepth.Value = bDepth.Value / 2
+	        bWidth.Value = bWidth.Value / 2
+					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
+					handle.CFrame = cfr
+					model.Parent = tool
+					model:SetPrimaryPartCFrame(cfr)
+					local weld = Instance.new('WeldConstraint', tool)
+					weld.Part0 = handle
+					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
+				end
+			end
+		},
+
 		LowRes = {
 			Prefix = Settings.Prefix;
 			Commands = {"lowres","pixelrender","pixel","pixelize"};
@@ -3690,7 +3768,7 @@ return function(Vargs, env)
 			Commands = {"torso";"torsopackage";};
 			Args = {"player";"id";};
 			Hidden = false;
-			Description = "Change the target player(s)'s Left Arm package";
+			Description = "Change the target player(s)'s Torso package";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
