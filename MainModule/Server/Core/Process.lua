@@ -639,9 +639,6 @@ return function(Vargs)
 			local level = Admin.GetLevel(p)
 			local key = tostring(p.UserId)
 
-			--// Finish loading
-			service.FireEvent(p.UserId.."_CLIENTLOADER",p)
-
 			--// Fire player added
 			service.Events.PlayerAdded:Fire(p)
 			Logs.AddLog(Logs.Joins,{

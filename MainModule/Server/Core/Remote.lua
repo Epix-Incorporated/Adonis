@@ -74,27 +74,6 @@ return function(Vargs)
 				return service.BroadcastFilter(args[1],args[2] or p)
 			end;
 
-			ClientCheck = function(p,args)
-				local key = tostring(p.userId)
-				local data = args[1]
-				local special = args[2]
-				local returner = args[3]
-				local keys = Remote.Clients[key]
-
-				--print("Sent: "..(data.Sent+1).." : "..keys.Received)
-				--print("Received: "..data.Received.." : "..keys.Sent)
-
-				if (math.abs(data.Received-keys.Sent) > 10) then
-					--print("Something is wrong...")
-				end
-
-				if keys and special and special == keys.Special then
-					keys.LastUpdate = os.time()
-				end
-
-				return returner
-			end;
-
 			TaskManager = function(p,args)
 				if Admin.GetLevel(p) >= 900 then
 					local action = args[1]
@@ -319,7 +298,7 @@ return function(Vargs)
 
 				return resp
 			end;
-			
+
 			Playlist = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				return playerData.CustomPlaylist or {}
@@ -672,6 +651,23 @@ return function(Vargs)
 				end
 			end;
 
+			ClientCheck = function(p,args)
+				local key = tostring(p.userId)
+				local data = args[1]
+				local special = args[2]
+				local keys = Remote.Clients[key]
+
+				--if (math.abs(data.Received - keys.Sent) > 10) then
+				--	print("Something is wrong...")
+				--end
+
+				if keys and special and special == keys.Special then
+					keys.LastUpdate = os.time()
+				else
+					Anti.Detected(p, "Log", "Client sent incorrect check data")
+				end
+			end;
+
 		--[[Session = function(p,args)
 				local type = args[1]
 				local data = args[2]
@@ -831,20 +827,13 @@ return function(Vargs)
 					client.LastUpdate = os.time()
 					client.RemoteReady = true
 					client.LoadingStatus = "READY"
+
+					service.Events.ClientLoaded:Fire(p)
 					Process.FinishLoading(p)
 				else
+					--warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
-			end;
-
-			ClientCheck = function(p,args)
-				--// LastUpdate should be auto updated upon command finding
-				--[[local key = tostring(p.userId)
-				local special = args[1]
-				local client = Remote.Clients[key]
-				if client then--and special and special == client.Special then
-					client.LastUpdate = os.time()
-				end--]]
 			end;
 
 			LogError = function(p,args)

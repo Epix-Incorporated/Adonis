@@ -70,7 +70,7 @@ end
 
 local function Kill(info)
 	if DebugMode then warn(info) return end
-	pcall(function() Kick(player, info) end) 
+	pcall(function() Kick(player, info) end)
 	wait(1)
 	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
 end
@@ -109,9 +109,9 @@ end
 
 local function lockCheck(obj)
 	callCheck(obj)
-	obj.Changed:Connect(function(p) 
+	obj.Changed:Connect(function(p)
 		warn("Child changed; Checking...")
-		callCheck(obj) 
+		callCheck(obj)
 	end)
 end
 
@@ -132,25 +132,25 @@ local function checkChild(child)
 		local clientModule
 		local oldChild = child
 		local container = child.Parent
-		
+
 		warn("Adding child to checked list & setting parent...")
 		checkedChildren[child] = true
-		
+
 		warn("Waiting for Client & Special")
 		nameVal = child:WaitForChild("Special", 30)
 		clientModule = child:WaitForChild("Client", 30)
-		
+
 		warn("Checking Client & Special")
 		callCheck(nameVal)
 		callCheck(clientModule)
-		
+
 		warn("Getting origName")
 		origName = (nameVal and nameVal.Value) or child.Name
 		warn("Got name: "..tostring(origName))
-		
+
 		warn("Changing child parent...")
 		child.Parent = nil
-		
+
 		warn("Destroying parent...")
 		if container and container:IsA("ScreenGui") and container.Name == "Adonis_Container" then
 			spawn(function()
@@ -158,22 +158,22 @@ local function checkChild(child)
 				container:Destroy();
 			end)
 		end
-		
+
 		if clientModule and clientModule:IsA("ModuleScript") then
 			print("Debug: Loading the client?")
 			local meta = require(clientModule)
 			warn("Got metatable: "..tostring(meta))
 			if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
 				local ran,ret = pcall(meta,{
-					Module = clientModule, 
+					Module = clientModule,
 					Start = start,
 					Loader = script,
-					Name = origName, 
-					LoadingTime = loadingTime, 
-					CallCheck = callCheck, 
+					Name = origName,
+					LoadingTime = loadingTime,
+					CallCheck = callCheck,
 					Kill = Kill
 				})
-				
+
 				warn("Got return: "..tostring(ret))
 				if ret ~= "SUCCESS" then
 					warn(ret)
@@ -214,7 +214,7 @@ if _G.__CLIENTLOADER then
 	warn("ClientLoader already running;");
 else
 	_G.__CLIENTLOADER = true;
-	
+
 	print("Debug: ACLI Loading?")
 	setfenv(1, {})
 	script.Name = "\0"
@@ -229,15 +229,15 @@ else
 	else
 		warn("CoreGui Locked: "..tostring(Locked(game:GetService("CoreGui"))))
 	end
-	
+
 	warn("Checking Services")
 	--[[for i,service in next,services do
 		doPcall(lockCheck, game:GetService(service))
 	end--]]
-	
+
 	warn("Waiting for PlayerGui...");
 	local playerGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 600);
-	
+
 	if not playerGui then
 		warn("PlayerGui not found after 10 minutes");
 		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)");
@@ -248,7 +248,7 @@ else
 			end
 		end)
 	end
-	
+
 	finderEvent = playerGui.ChildAdded:Connect(function(child)
 		warn("Child Added")
 		if not foundClient and child.Name == "Adonis_Container" then
@@ -256,26 +256,26 @@ else
 			doPcall(checkChild, client);
 		end
 	end)
-	
+
 	warn("Waiting and scanning (incase event fails)...")
 	repeat
 		scan(playerGui);
 		wait(5);
 	until (tick() - start > 600) or foundClient
-	
+
 	warn("Elapsed: ".. tostring(tick() - start));
 	warn("Timeout: ".. tostring(tick() - start > 600));
 	warn("Found Client: ".. tostring(foundClient));
-	
+
 	warn("Disconnecting finder event...");
 	if finderEvent then
 		finderEvent:Disconnect();
 	end
-	
+
 	warn("Checking if client found...")
 	if not foundClient then
 		warn("Loading took too long")
-		Kick(player, "ACLI: Loading Error [Took Too Long (>10 Minutes)]")
+		Kick(player, "\nACLI: [CLI-1162246] \nLoading Error [Took Too Long (>10 Minutes)]")
 	else
 		print("Debug: Adonis loaded?")
 		warn("Client found")
@@ -283,4 +283,3 @@ else
 		warn(time())
 	end
 end
-
