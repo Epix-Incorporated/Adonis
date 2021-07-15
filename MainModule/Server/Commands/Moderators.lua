@@ -1332,7 +1332,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you a list of items currently in the target player(s) backpack";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -1361,7 +1360,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you all players currently in-game, including nil ones";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local plrs = {}
@@ -1551,7 +1549,6 @@ return function(Vargs, env)
 			Commands = {"view";"watch";"nsa";"viewplayer";};
 			Args = {"player";};
 			Description = "Makes you view the target player";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -1567,7 +1564,6 @@ return function(Vargs, env)
 			Commands = {"viewport", "cctv"};
 			Args = {"player";};
 			Description = "Makes a viewport of the target player<s>";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -1583,7 +1579,6 @@ return function(Vargs, env)
 			Commands = {"resetview";"rv";"fixview";"fixcam";"unwatch";"unview"};
 			Args = {"optional player"};
 			Description = "Resets your view";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1] then
@@ -3009,7 +3004,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
@@ -3059,7 +3053,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1]:lower() == Settings.SpecialPrefix.."all" then
@@ -5752,7 +5745,6 @@ return function(Vargs, env)
 			Description = "View server log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Agents = true;
 			Function = function(plr,args)
 				local temp = {}
 				local auto
@@ -5790,7 +5782,6 @@ return function(Vargs, env)
 			Description = "View local log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Agents = true;
 			Function = function(plr,args)
 				local auto
 				if args[2] and type(args[2]) == "string" and (args[2]:lower() == "yes" or args[2]:lower() == "true") then
@@ -5848,7 +5839,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "View the exploit logs for the server OR a specific player";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5874,7 +5864,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Displays the current join logs for the server";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5896,7 +5885,6 @@ return function(Vargs, env)
 			Commands = {"chatlogs","chats","chathistory"};
 			Args = {"autoupdate"};
 			Description = "Displays the current chat logs for the server";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5923,7 +5911,6 @@ return function(Vargs, env)
 			Args = {"autoupdate"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
-			Agents = true;
 			Function = function(plr,args)
 				local auto
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then

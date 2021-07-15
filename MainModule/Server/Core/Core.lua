@@ -1230,8 +1230,6 @@ return function(Vargs)
 
 				GetLevel = service.MetaFunc(Admin.GetLevel);
 
-				CheckAgent = service.MetaFunc(HTTP.Trello.CheckAgent);
-
 				SetLighting = service.MetaFunc(Functions.SetLighting);
 
 				SetPlayerLighting = service.MetaFunc(Remote.SetLighting);

@@ -725,7 +725,6 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = adminLvl;
-					isAgent = HTTP.Trello.CheckAgent(plr) or false;
 					isDonor = (Admin.CheckDonor(plr) and (Settings.DonorCommands or com.AllowDonors)) or false;
 				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
@@ -745,7 +744,6 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = 0;
-					isAgent = false;
 					isDonor = false;
 				}})
 				if error then
@@ -930,7 +928,6 @@ return function(Vargs)
 			local allowed = false
 			local p = pDat.Player
 			local adminLevel = pDat.Level
-			local isAgent = pDat.isAgent
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
@@ -940,8 +937,6 @@ return function(Vargs)
 			elseif cmd.Fun and not funAllowed then
 				return false
 			elseif cmd.Donors and isDonor then
-				return true
-			elseif cmd.Agents and isAgent then
 				return true
 			elseif comLevel == 0 and Settings.PlayerCommands then
 				return true
@@ -958,7 +953,6 @@ return function(Vargs)
 			local pDat = {
 				Player = p;
 				Level = Admin.GetLevel(p);
-				isAgent = HTTP.Trello.CheckAgent(p);
 				isDonor = Admin.CheckDonor(p);
 			}
 

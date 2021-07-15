@@ -799,23 +799,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Agents = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"agents";"trelloagents";"showagents";};
-			Args = {};
-			Hidden = true;
-			Description = "Shows a list of Trello agents pulled from the configured boards";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				local temp={}
-				for i,v in pairs(HTTP.Trello.Agents) do
-					table.insert(temp,{Text = v,Desc = "A Trello agent"})
-				end
-				Remote.MakeGui(plr,"List",{Title = "Agents", Tab = temp})
-			end
-		};
-
 		Credits = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"credit";"credits";};
