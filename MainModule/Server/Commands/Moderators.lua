@@ -6285,6 +6285,55 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		Reverb = {
+			Prefix = Settings.Prefix;
+			Commands = {"reverb","ambientreverb";};
+			Args = {"reverbType","optional player";};
+			Description = "Lets you change the reverb type with an optional player argument (CASE SENSITTIVE)";
+			AdminLevel = "Moderators";
+			Function = function(plr,args,data)
+				local rev = args[1]
+		
+				local reverbs = {"NoReverb","GenericReverb","PaddedCell","Room","Bathroom","LivingRoom",
+				"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
+				"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
+				"ParkingLot","SewerPipe","UnderWater"}
+			
+				if not rev or not Enum.ReverbType[rev] then
+				
+					Functions.Hint("Argument 1 missing or nil. Opening Reverb List",{plr})
+				
+					local tab = {}
+				
+					table.insert(tab,{Text = "Note: Argument is CASE SENSITIVE"})
+				
+					for _,v in pairs(reverbs) do
+					table.insert(tab,{Text = v})
+					end
+				
+					Remote.MakeGui(plr,"List",{Title = "Reverbs";Table = tab})
+
+					return
+				end
+			
+				if args[2] then
+				
+					for i,v in pairs(service.GetPlayers(plr,args[2])) do
+					Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
+
+					end
+				
+					Functions.Hint("Changed Ambient Reverb of specified player(s)",{plr})
+			
+				else
+				
+					service.SoundService.AmbientReverb = Enum.ReverbType[rev]
+					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
+			
+				end
+			end
+		};
 
 		Inspect = {
 			Prefix = Settings.Prefix;
