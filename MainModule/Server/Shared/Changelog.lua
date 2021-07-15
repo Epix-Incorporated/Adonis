@@ -7,8 +7,10 @@ return {
 	"(Git/P3tray) The Audio Player #415";
 	"(Git/Awesomewebm) :reverb #422";
 	"(Git/Expertcoderz) Aero theme update #410";
-	"(Git/LolloDev5123) Add region information in :serverinfo #411";
 	"(Git/TjeerdoBoy112) Add: time and date to a warning when hovering over the warning #421";
+	"(Git/LolloDev5123) Add region information in :serverinfo #411";
+	"(Git/LolloDev5123) Deletion of legacy themes (Hydris, SteamPunk, TransBlack) #409";
+	"		Deleted themes will be included in the EXTRAS release model (on the repo)";
 	"(Git/joritochip) Fix JumpPower, add JumpHeight #423";
 	"(Git/joritochip) Remove Agents #419";
 	"(Git/joritochip) Dex improvements #414";
