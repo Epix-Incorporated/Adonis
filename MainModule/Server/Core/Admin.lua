@@ -119,6 +119,7 @@ return function(Vargs)
 
 		--// Run OnStartup Commands
 		for i,v in next,Settings.OnStartup do
+			warn("Running startup command ".. tostring(v))
 			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
 			Logs:AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
@@ -182,6 +183,9 @@ return function(Vargs)
 		SlowCache = {};
 		UserIdCache = {};
 		BlankPrefix = false;
+
+		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
+		AdminLevelCacheTimeout = 30;
 
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
@@ -321,12 +325,14 @@ return function(Vargs)
 			local data = Core.GetPlayer(p)
 			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
-			data.LastLevelUpdate = tick()
+			data.LastLevelUpdate = os.time()
+
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
 				Player = p;
 			})
+
 			return data.AdminLevel
 		end;
 
@@ -365,8 +371,9 @@ return function(Vargs)
 			local level = data.AdminLevel
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
+			local key = tostring(p.UserId)
 
-			if clients[tostring(p.UserId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
+			if clients[key] and (not level or not lastUpdate or os.time() - lastUpdate > Admin.AdminLevelCacheTimeout) then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
 					if data.AdminLevel < level then
