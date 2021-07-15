@@ -240,6 +240,7 @@ return function(Vargs, env)
 	        bWidth.Value = bWidth.Value / 2
 					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
 					handle.CFrame = cfr
+					model:FindFirstChild('Animate').Disabled = true
 					model.Parent = tool
 					model:SetPrimaryPartCFrame(cfr)
 					local weld = Instance.new('WeldConstraint', tool)
