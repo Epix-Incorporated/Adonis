@@ -1,6 +1,23 @@
 return {
-	"Version: 222.3";
+	"Version: 223";
 	"*Drag edges to expand*";
+	"";
+	"[v223 WIP]";
+	"*Minor changes to the client loading process & checks";
+	"(Git/P3tray) The Audio Player #415";
+	"(Git/Awesomewebm) :reverb #422";
+	"(Git/Expertcoderz) Aero theme update #410";
+	"(Git/LolloDev5123) Add region information in :serverinfo #411";
+	"(Git/TjeerdoBoy112) Add: time and date to a warning when hovering over the warning #421";
+	"(Git/joritochip) Fix JumpPower, add JumpHeight #423";
+	"(Git/joritochip) Remove Agents #419";
+	"(Git/joritochip) Dex improvements #414";
+	"(Git/joritochip) Rewrite README.md #416";
+	"(Git/fxeP1) Update WebPanel.lua / Plugins/WebPanel.lua / Moderators.lua/Admins.lua #418";
+	"		Added coroutine to prevent yield from WebPanel function.";
+	"		Added a check to see if it returns \"HttpError: Timedout\" as if it does it checks if adonis.dev is alive and if not it will stall for 30 seconds then continue, otherwise if alive it will just continue.";
+	"		Added checks to gear command to prevent any non gear from being inserted.";
+	"		Moved insert to Admins rank. (Should be reasonable as moderators shouldn't need to insert anything from ROBLOX or the creators inventory)";
 	"";
 	"[v222.3 7.11.2021 22:41 EST]";
 	"*Moved the RemoteEvent to ReplicatedStorage (from JointsService) for now (has a random name.)";
