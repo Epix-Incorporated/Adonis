@@ -655,7 +655,7 @@ return function(Vargs, env)
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you your current ping";
+			Description = "Shows you your current ping (latency)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -912,7 +912,7 @@ return function(Vargs, env)
 			Commands = {"info";"about";"userpanel";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows info about the script";
+			Description = "Shows info about the script (Adonis)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -976,7 +976,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
 			Args = {};
-			Description = "Lets you purchase Roblox Premium";
+			Description = "Prompts you to purchase Roblox Premium";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
