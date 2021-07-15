@@ -5,6 +5,7 @@ return {
 	"[v223 WIP]";
 	"*Minor changes to the client loading process & checks";
 	"(Git/P3tray) The Audio Player #415";
+	"(Git/Jack5079) Add :brazil and :doll fun commands #420";
 	"(Git/Awesomewebm) :reverb #422";
 	"(Git/Expertcoderz) Aero theme update #410";
 	"(Git/TjeerdoBoy112) Add: time and date to a warning when hovering over the warning #421";
