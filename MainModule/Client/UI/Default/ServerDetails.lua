@@ -60,7 +60,12 @@ return function(data)
 				end
 			end
 		end
+		
+		
+		
 
+		
+		
 		local i = 1
 		local function addOverviewEntry(name, value, toolTip)
 			local entry = overviewtab:Add("TextLabel", {
@@ -81,7 +86,7 @@ return function(data)
 
 			i = i + 1
 		end
-
+  
 		addOverviewEntry("Place Name:", service.MarketPlace:GetProductInfo(game.PlaceId).Name)
 		addOverviewEntry("Place ID:", game.PlaceId)
 		addOverviewEntry("Place Version:", game.PlaceVersion)
@@ -99,6 +104,21 @@ return function(data)
 		elseif getServerType() == "Private" then
 			addOverviewEntry("Private Server ID:", data.PrivateServerId)
 			addOverviewEntry("Private Server Owner:", (game:GetService("Players"):GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..game.PrivateServerOwnerId..")")
+		end
+		if data.ServerInternetInfo then
+			--Server Internet Info
+			local serii = data.ServerInternetInfo
+			addOverviewEntry("Timezone:", serii.timezone or "[Error]")
+			addOverviewEntry("Country:", serii.country or "[Error]")
+			if game:GetService("RunService"):IsStudio() then else
+				addOverviewEntry("Region:", serii.region or "[Error]")
+				addOverviewEntry("City:", serii.city or "[Error]")
+			        addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+				addOverviewEntry("IP Address:", serii.query or "[Error]")
+				addOverviewEntry("Coordinates:", serii.coords or "[Error]") --"0 LAT 0 LON"
+				--Sensitive Data when running on studio
+				end
+			
 		end
 		i = i + 1
 		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))

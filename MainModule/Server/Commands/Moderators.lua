@@ -1663,6 +1663,19 @@ return function(Vargs, env)
 						nilPlayers = nilPlayers + 1
 					end
 				end
+				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
+				if s then
+					r = service.HttpService:JSONDecode(r)
+				end
+				local serverInfo = s and {
+					country = r.country,
+					city = r.city,
+					region = r.region,
+					zipcode = r.zip,
+					timezone = r.timezone,
+					query = r.query,
+					coords = r.lat .. " LAT ".. r.lon .. " LON"
+				} or nil
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
@@ -1670,6 +1683,7 @@ return function(Vargs, env)
 					ServerStartTime = service.FormatTime(server.ServerStartTime);
 					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
 					HttpEnabled = HTTP.CheckHttp();
+					ServerInternetInfo = serverInfo;
 					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
 					Donors = donorList;
