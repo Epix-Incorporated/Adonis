@@ -6345,7 +6345,7 @@ return function(Vargs, env)
 
 					do
 						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "Yes" or "No" or not policyResult and "Unable to be fetched"
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
 					end
 
 					Remote.MakeGui(plr, "Inspect", {
