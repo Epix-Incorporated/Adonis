@@ -395,7 +395,6 @@ return function(data)
 	do
 		local i = 1
 		local function addGameEntry(name, value, toolTip)
-			print(name.value,toolTip)
 			local entry = gametab:Add("TextLabel", {
 				Text = "  "..name.." ";
 				ToolTip = toolTip;
