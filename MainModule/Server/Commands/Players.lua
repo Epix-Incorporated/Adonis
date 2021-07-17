@@ -618,7 +618,28 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+ 		DonorRemoveHat = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removehat";};
+			Args = {"Accessory"};
+			Hidden = false;
+			Description = "Remove any accessories you are currently wearing";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr,args)
+				local hat = plr.Character:FindFirstChild(args[1])
+				if hat and hat:IsA("Accessory") then	
+					hat:Destroy()
+					Functions.Hint(args[1].." has been removed",{plr})	
+				else
+					Functions.Hint(args[1].." is not a valid accessory",{plr})
+				end
 
+			end
+		};
+    
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removehats";"nohats";};
@@ -655,7 +676,7 @@ return function(Vargs, env)
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you your current ping";
+			Description = "Shows you your current ping (latency)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -799,23 +820,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Agents = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"agents";"trelloagents";"showagents";};
-			Args = {};
-			Hidden = true;
-			Description = "Shows a list of Trello agents pulled from the configured boards";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				local temp={}
-				for i,v in pairs(HTTP.Trello.Agents) do
-					table.insert(temp,{Text = v,Desc = "A Trello agent"})
-				end
-				Remote.MakeGui(plr,"List",{Title = "Agents", Tab = temp})
-			end
-		};
-
 		Credits = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"credit";"credits";};
@@ -929,7 +933,7 @@ return function(Vargs, env)
 			Commands = {"info";"about";"userpanel";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows info about the script";
+			Description = "Shows info about the script (Adonis)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -993,7 +997,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
 			Args = {};
-			Description = "Lets you purchase Roblox Premium";
+			Description = "Prompts you to purchase Roblox Premium";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";

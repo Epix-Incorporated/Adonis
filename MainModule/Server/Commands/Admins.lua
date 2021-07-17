@@ -420,6 +420,32 @@ return function(Vargs, env)
 			end
 		};
 
+		Insert = {
+			Prefix = Settings.Prefix;
+			Commands = {"insert";"ins";};
+			Args = {"id";};
+			Hidden = false;
+			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				local id = args[1]:lower()
+				for i,v in pairs(Variables.InsertList) do
+					if id==v.Name:lower() then
+						id = v.ID
+						break
+					end
+				end
+				local obj = service.Insert(tonumber(id), true)
+				if obj and plr.Character then
+					table.insert(Variables.InsertedObjects, obj)
+					obj.Parent = service.Workspace
+					pcall(function() obj:MakeJoints() end)
+					obj:MoveTo(plr.Character:GetModelCFrame().p)
+				end
+			end
+		};
+
 		NewTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"newteam","createteam","maketeam"};

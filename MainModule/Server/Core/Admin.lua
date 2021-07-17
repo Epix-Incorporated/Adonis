@@ -119,6 +119,7 @@ return function(Vargs)
 
 		--// Run OnStartup Commands
 		for i,v in next,Settings.OnStartup do
+			warn("Running startup command ".. tostring(v))
 			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
 			Logs:AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
@@ -182,6 +183,9 @@ return function(Vargs)
 		SlowCache = {};
 		UserIdCache = {};
 		BlankPrefix = false;
+
+		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
+		AdminLevelCacheTimeout = 30;
 
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
@@ -321,12 +325,14 @@ return function(Vargs)
 			local data = Core.GetPlayer(p)
 			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
-			data.LastLevelUpdate = tick()
+			data.LastLevelUpdate = os.time()
+
 			Logs.AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
 				Player = p;
 			})
+
 			return data.AdminLevel
 		end;
 
@@ -365,8 +371,9 @@ return function(Vargs)
 			local level = data.AdminLevel
 			local lastUpdate = data.LastLevelUpdate
 			local clients = Remote.Clients
+			local key = tostring(p.UserId)
 
-			if clients[tostring(p.UserId)] and not level or not lastUpdate or tick()-lastUpdate > 60 then
+			if clients[key] and (not level or not lastUpdate or os.time() - lastUpdate > Admin.AdminLevelCacheTimeout) then
 				Admin.UpdateCachedLevel(p)
 				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
 					if data.AdminLevel < level then
@@ -596,7 +603,7 @@ return function(Vargs)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, ban.Reason;
+						return true, "\n Banned until ".. service.FormatTime(ban.EndTime, true);
 					end
 				end
 			end
@@ -718,7 +725,6 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = adminLvl;
-					isAgent = HTTP.Trello.CheckAgent(plr) or false;
 					isDonor = (Admin.CheckDonor(plr) and (Settings.DonorCommands or com.AllowDonors)) or false;
 				}})
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
@@ -738,7 +744,6 @@ return function(Vargs)
 				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = 0;
-					isAgent = false;
 					isDonor = false;
 				}})
 				if error then
@@ -830,7 +835,7 @@ return function(Vargs)
 		end;
 
 		FormatCommand = function(command)
-			local text = command.Prefix..command.Commands[1]
+			local text = command.Prefix.. command.Commands[1]
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
 
@@ -923,7 +928,6 @@ return function(Vargs)
 			local allowed = false
 			local p = pDat.Player
 			local adminLevel = pDat.Level
-			local isAgent = pDat.isAgent
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
@@ -933,8 +937,6 @@ return function(Vargs)
 			elseif cmd.Fun and not funAllowed then
 				return false
 			elseif cmd.Donors and isDonor then
-				return true
-			elseif cmd.Agents and isAgent then
 				return true
 			elseif comLevel == 0 and Settings.PlayerCommands then
 				return true
@@ -951,7 +953,6 @@ return function(Vargs)
 			local pDat = {
 				Player = p;
 				Level = Admin.GetLevel(p);
-				isAgent = HTTP.Trello.CheckAgent(p);
 				isDonor = Admin.CheckDonor(p);
 			}
 

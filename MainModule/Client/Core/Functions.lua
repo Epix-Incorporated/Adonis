@@ -146,6 +146,14 @@ return function()
 				end)
 			end
 		end;
+		
+		Playlist = function()
+			return client.Remote.Get("Playlist")
+		end;
+
+		UpdatePlaylist = function(playlist)
+			client.Remote.Get("UpdatePlaylist", playlist)
+		end;
 
 		Dizzy = function(speed)
 			service.StopLoop("DizzyLoop")

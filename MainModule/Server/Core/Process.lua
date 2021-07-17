@@ -98,6 +98,8 @@ return function(Vargs)
 					local args = {...}
 					local key = tostring(p.userId)
 					local keys = Remote.Clients[key]
+					local rateLimitCheck = RateLimit(p, "Remote")
+
 					if keys then
 						keys.Received = keys.Received+1
 						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
@@ -123,7 +125,7 @@ return function(Vargs)
 								})
 
 								return {UnEncrypted[com](p,...)}
-							elseif RateLimit(p, "Remote") and string.len(com) <= Remote.MaxLen then
+							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
@@ -145,13 +147,13 @@ return function(Vargs)
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
+							elseif rateLimitCheck and RateLimit(p, "RateLog") then
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
-					elseif RateLimit(p, "RateLog") then
-						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
-						warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 					end
 				end
 			end
@@ -206,7 +208,6 @@ return function(Vargs)
 						local pDat = {
 							Player = opts.Player or p;
 							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isAgent = opts.IsAgent or HTTP.Trello.CheckAgent(p);
 							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 						}
 
@@ -547,20 +548,27 @@ return function(Vargs)
 						Player = p;
 					})
 
+
+					--// Get chats
+					p.Chatted:Connect(function(msg)
+							service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+					end)
+
+					--// Character added
 					p.CharacterAdded:Connect(function()
 						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
 					end)
 
-					wait(60*10)
-
-					if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
-						Logs.AddLog("Script", {
-							Text = p.Name .. " Failed to Load",
-							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
-							Player = p;
-						});
-						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
-					end
+					delay(600, function()
+						if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
+							Logs.AddLog("Script", {
+								Text = p.Name .. " Failed to Load",
+								Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+								Player = p;
+							});
+							--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
+						end
+					end)
 				else
 					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 				end
@@ -571,7 +579,12 @@ return function(Vargs)
 			--local key = tostring(p.userId)
 			--Core.SavePlayerData(p)
 			--Remote.Clients[key] = nil
-			service.Events.PlayerRemoving:fire(p)
+			service.Events.PlayerRemoving:Fire(p)
+
+			local key = tostring(p.userId)
+			Core.SavePlayerData(p)
+			Remote.Clients[key] = nil
+
 			local level = (p and Admin.GetLevel(p)) or 0
 			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
@@ -588,6 +601,7 @@ return function(Vargs)
 			wait(0.25)
 			local p = cli:GetPlayer()
 			if p then
+				Core.Connections[cli] = p;
 				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." connected";
 					Desc = tostring(p).." successfully established a connection with the server";
@@ -606,9 +620,6 @@ return function(Vargs)
 			local p = cli:GetPlayer() or Core.Connections[cli]
 			Core.Connections[cli] = nil
 			if p then
-				local key = tostring(p.userId)
-				Core.SavePlayerData(p)
-				Remote.Clients[key] = nil
 				Logs.AddLog(Logs.Script, {
 					Text = tostring(p).." disconnected";
 					Desc = tostring(p).." disconnected from the server";
@@ -620,29 +631,21 @@ return function(Vargs)
 					Desc = "An unknown user disconnected from the server";
 				})
 			end
-			service.Events.NetworkRemoved:fire(cli)
+			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		FinishLoading = function(p)
 			local PlayerData = Core.GetPlayer(p)
 			local level = Admin.GetLevel(p)
-			local key = tostring(p.userId)
-
-			--// Finish loading
-			service.FireEvent(p.userId.."_CLIENTLOADER",p)
+			local key = tostring(p.UserId)
 
 			--// Fire player added
-			service.Events.PlayerAdded:fire(p)
+			service.Events.PlayerAdded:Fire(p)
 			Logs.AddLog(Logs.Joins,{
 				Text = p.Name;
 				Desc = p.Name.." joined the server";
 				Player = p;
 			})
-
-			--// Get chats
-			service.RbxEvent(p.Chatted, function(msg)
-				Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",Process.Chat,60,p,msg)
-			end)
 
 			--// Start keybind listener
 			Remote.Send(p,"Function","KeyBindListener")

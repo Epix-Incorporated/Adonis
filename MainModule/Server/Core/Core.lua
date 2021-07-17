@@ -56,8 +56,10 @@ return function(Vargs)
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
 		server.Core.MakeEvent()
-		service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-		service.JointsService.ChildRemoved:Connect(function(c)
+
+		local remoteParent = service.ReplicatedStorage;
+		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
+		remoteParent.ChildRemoved:Connect(function(c)
 			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
 				wait();
 				server.Core.MakeEvent()
@@ -169,9 +171,10 @@ return function(Vargs)
 		end;
 
 		MakeEvent = function()
+			local remoteParent = service.ReplicatedStorage;
 			local ran,error = pcall(function()
-				if Anti.RLocked(service.JointsService) then
-					Core.Panic("JointsService RobloxLocked/Unusable")
+				if Anti.RLocked(remoteParent) then
+					Core.Panic("Remote Parent RobloxLocked/Unusable")
 				elseif server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent")
@@ -198,7 +201,7 @@ return function(Vargs)
 					Core.RemoteEvent.Decoy1 = decoy1
 					Core.RemoteEvent.Decoy2 = decoy2
 
-					event.Parent = service.JointsService
+					event.Parent = remoteParent
 					--decoy1.Parent = service.JointsService
 					--decoy2.Parent = service.JointsService
 
@@ -242,6 +245,7 @@ return function(Vargs)
 					Core.RemoteEvent.FuncSec = secure(func, "");
 					Core.RemoteEvent.DecoySecurity1 = secure(decoy1, Core.Name)
 					Core.RemoteEvent.DecoySecurity2 = secure(decoy2, Core.Name)
+
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";
@@ -341,26 +345,19 @@ return function(Vargs)
 				local acli = server.Deps.ClientMover:Clone();
 				local client = folder.Client
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
-				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
-
-				if playerGui and playerGui.ClassName ~= parentTo then
-					playerGui = p:FindFirstChildOfClass(parentTo);
-				end
+				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
 
 				if not p.Parent then
 					return false
-				elseif not playerGui then
-					p:Kick("Loading Error \nPlayerGui Missing (Waited 10 Minutes)")
+				elseif not parentObj then
+					p:Kick("\n[CLI-102495] Loading Error \nPlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
-
-				folder.Name = "Adonis_Client" --Core.Name.."\\"..depsName
 
 				local container = service.New("ScreenGui");
 				container.ResetOnSpawn = false;
 				container.Enabled = false;
-				container.Name = "\0";--"Adonis_Container";
-				folder.Parent = container;
+				container.Name = "\0";
 
 				local specialVal = service.New("StringValue")
 				specialVal.Value = Core.Name.."\\"..depsName
@@ -373,26 +370,33 @@ return function(Vargs)
 				keys.Module = client
 
 				acli.Parent = folder;
+				acli.Disabled = false;
 
-				--[[service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
-					if container.Parent == playerGui then
-						container:Destroy()
+				folder.Name = "Adonis_Client"
+				folder.Parent = container;
+
+				--// Event only fires AFTER the client is alive and well
+				local event; event = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container.Parent == parentObj then
+						container:Destroy();
+						event:Disconnect();
 					end
-				end)--]]
+				end)
 
 				local ok,err = pcall(function()
-					container.Parent = playerGui
-					acli.Disabled = false;
+					container.Parent = parentObj
 				end)
 
 				if not Core.PanicMode and not ok then
-					p:Kick("Loading Error \n[HookClient Error: "..tostring(err).."]")
+					p:Kick("\n[CLI-192385] Loading Error \n[HookClient Error: "..tostring(err).."]")
 					return false
 				else
 					return true
 				end
 			else
-				if p then p:Kick("Loading Error \n[HookClient: Keys Missing]") end
+				if p and p.Parent then
+					p:Kick("\n[CLI-5691283] Loading Error \n[HookClient: Keys Missing]")
+				end
 			end
 		end;
 
@@ -1225,8 +1229,6 @@ return function(Vargs)
 				CheckDonor = service.MetaFunc(Admin.CheckDonor);
 
 				GetLevel = service.MetaFunc(Admin.GetLevel);
-
-				CheckAgent = service.MetaFunc(HTTP.Trello.CheckAgent);
 
 				SetLighting = service.MetaFunc(Functions.SetLighting);
 

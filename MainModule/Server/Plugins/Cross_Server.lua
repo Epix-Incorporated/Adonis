@@ -307,7 +307,7 @@ return function(Vargs)
 
 			--// publish
 			MsgService:PublishAsync(subKey, data)
-		end)
+		end, 300, true)
 
 		return true;
 	end

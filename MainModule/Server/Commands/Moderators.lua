@@ -9,6 +9,18 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
+		AudioPlayer = {
+			Prefix = Settings.Prefix;
+			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
+			Args = {"time";};
+			Description = "Opens an audio player window";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for _,v in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
+					Remote.MakeGui(v, "Music")
+				end
+			end
+		};
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick";};
@@ -427,7 +439,7 @@ return function(Vargs, env)
 
 					if data.Warnings then
 						for k, m in pairs(data.Warnings) do
-							table.insert(tab,{Text = "["..k.."] "..m.Message,Desc = "Given by: "..m.From.."; "..m.Message})
+							table.insert(tab,{Text = "["..k.."] "..m.Message,Desc = "[".. service.FormatTime(m.Time,true) .."] Given by: "..m.From.."; "..m.Message})
 						end
 					end
 
@@ -1332,7 +1344,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you a list of items currently in the target player(s) backpack";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -1361,7 +1372,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you all players currently in-game, including nil ones";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local plrs = {}
@@ -1551,7 +1561,6 @@ return function(Vargs, env)
 			Commands = {"view";"watch";"nsa";"viewplayer";};
 			Args = {"player";};
 			Description = "Makes you view the target player";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -1567,7 +1576,6 @@ return function(Vargs, env)
 			Commands = {"viewport", "cctv"};
 			Args = {"player";};
 			Description = "Makes a viewport of the target player<s>";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
@@ -1583,7 +1591,6 @@ return function(Vargs, env)
 			Commands = {"resetview";"rv";"fixview";"fixcam";"unwatch";"unview"};
 			Args = {"optional player"};
 			Description = "Resets your view";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1] then
@@ -1656,6 +1663,19 @@ return function(Vargs, env)
 						nilPlayers = nilPlayers + 1
 					end
 				end
+				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
+				if s then
+					r = service.HttpService:JSONDecode(r)
+				end
+				local serverInfo = s and {
+					country = r.country,
+					city = r.city,
+					region = r.region,
+					zipcode = r.zip,
+					timezone = r.timezone,
+					query = r.query,
+					coords = r.lat .. " LAT ".. r.lon .. " LON"
+				} or nil
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
@@ -1663,6 +1683,7 @@ return function(Vargs, env)
 					ServerStartTime = service.FormatTime(server.ServerStartTime);
 					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
 					HttpEnabled = HTTP.CheckHttp();
+					ServerInternetInfo = serverInfo;
 					LoadstringEnabled = HTTP.LoadstringEnabled;
 					Admins = adminDictionary;
 					Donors = donorList;
@@ -1924,13 +1945,32 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local temptable = {};
 				local unsorted = {};
+				local levelListCache = {}
+
+				local function levelToList(level)
+					local cached = levelListCache[level]
+					if cached then
+						return cached.List, cached.Name, cached.Data
+					else
+						local rankList, rankName, rankData = Admin.LevelToList(level)
+						local data = {
+							List = rankList;
+							Name = rankName;
+							Data = rankData;
+						}
+
+						levelListCache[level] = data;
+						return rankList, rankName, rankData
+					end
+				end
 
 				table.insert(temptable,'<b><font color="rgb(60, 180, 0)">==== Admins In-Game ====</font></b>')
 
 				for i,v in pairs(service.GetPlayers()) do
-					local level = Admin.GetLevel(v);
+					local data = Core.GetPlayer(v);
+					local level = data.AdminLevel or Admin.GetLevel(v);
 					if level > 0 then
-						local rankList, rankName, rankData = Admin.LevelToList(level);
+						local rankList, rankName, rankData = levelToList(level);
 						table.insert(unsorted, {
 							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
 							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
@@ -2235,32 +2275,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Insert = {
-			Prefix = Settings.Prefix;
-			Commands = {"insert";"ins";};
-			Args = {"id";};
-			Hidden = false;
-			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local id = args[1]:lower()
-				for i,v in pairs(Variables.InsertList) do
-					if id==v.Name:lower() then
-						id = v.ID
-						break
-					end
-				end
-				local obj = service.Insert(tonumber(id), true)
-				if obj and plr.Character then
-					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = service.Workspace
-					pcall(function() obj:MakeJoints() end)
-					obj:MoveTo(plr.Character:GetModelCFrame().p)
-				end
-			end
-		};
-
 		InsertList = {
 			Prefix = Settings.Prefix;
 			Commands = {"insertlist";"inserts";"inslist";"modellist";"models";};
@@ -2560,14 +2574,22 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local gear = service.Insert(tonumber(args[2]))
-				if gear:IsA("Tool") or gear:IsA("HopperBin") then
-					service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
-					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						if v:FindFirstChild("Backpack") then
-							gear:Clone().Parent = v.Backpack
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear:IsA("Tool") or gear:IsA("HopperBin") then
+						service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr,args[1])) do
+							if v:FindFirstChild("Backpack") then
+								gear:Clone().Parent = v.Backpack
+							end
 						end
 					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.",0)
 				end
 			end
 		};
@@ -2990,7 +3012,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in next,service.GetPlayers(plr,args[1]) do
@@ -3040,7 +3061,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if args[1]:lower() == Settings.SpecialPrefix.."all" then
@@ -4277,14 +4297,36 @@ return function(Vargs, env)
 			Commands = {"jpower";"jpow";"jumppower";};
 			Args = {"player";"number";};
 			Hidden = false;
-			Description = "Set the target player(s)'s JumpPower to <number>";
+			Description = "Set the target player(s)'s jump power to <number>";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.JumpPower = args[2] or 60
+						local humanoid = v.Character.Humanoid
+						humanoid.JumpPower = args[2] or 50
+						humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
+					end
+				end
+			end
+		};
+		
+		JumpHeight = {
+			Prefix = Settings.Prefix;
+			Commands = {"jheight";"jumpheight";};
+			Args = {"player";"number";};
+			Hidden = false;
+			Description = "Set the target player(s)'s jump height to <number>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1],"Argument missing or nil")
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("Humanoid") then
+						local humanoid = v.Character.Humanoid
+						humanoid.JumpHeight = args[2] or 7.2
+						humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
 					end
 				end
 			end
@@ -5711,7 +5753,6 @@ return function(Vargs, env)
 			Description = "View server log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Agents = true;
 			Function = function(plr,args)
 				local temp = {}
 				local auto
@@ -5749,7 +5790,6 @@ return function(Vargs, env)
 			Description = "View local log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Agents = true;
 			Function = function(plr,args)
 				local auto
 				if args[2] and type(args[2]) == "string" and (args[2]:lower() == "yes" or args[2]:lower() == "true") then
@@ -5807,7 +5847,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "View the exploit logs for the server OR a specific player";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5833,7 +5872,6 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Displays the current join logs for the server";
 			Fun = false;
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5855,7 +5893,6 @@ return function(Vargs, env)
 			Commands = {"chatlogs","chats","chathistory"};
 			Args = {"autoupdate"};
 			Description = "Displays the current chat logs for the server";
-			Agents = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local auto
@@ -5882,7 +5919,6 @@ return function(Vargs, env)
 			Args = {"autoupdate"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
-			Agents = true;
 			Function = function(plr,args)
 				local auto
 				if args[1] and type(args[1]) == "string" and (args[1]:lower() == "yes" or args[1]:lower() == "true") then
@@ -6241,6 +6277,55 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","TextToSpeech",args[2])
+				end
+			end
+		};
+		
+		Reverb = {
+			Prefix = Settings.Prefix;
+			Commands = {"reverb","ambientreverb";};
+			Args = {"reverbType","optional player";};
+			Description = "Lets you change the reverb type with an optional player argument (CASE SENSITTIVE)";
+			AdminLevel = "Moderators";
+			Function = function(plr,args,data)
+				local rev = args[1]
+		
+				local reverbs = {"NoReverb","GenericReverb","PaddedCell","Room","Bathroom","LivingRoom",
+				"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
+				"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
+				"ParkingLot","SewerPipe","UnderWater"}
+			
+				if not rev or not Enum.ReverbType[rev] then
+				
+					Functions.Hint("Argument 1 missing or nil. Opening Reverb List",{plr})
+				
+					local tab = {}
+				
+					table.insert(tab,{Text = "Note: Argument is CASE SENSITIVE"})
+				
+					for _,v in pairs(reverbs) do
+					table.insert(tab,{Text = v})
+					end
+				
+					Remote.MakeGui(plr,"List",{Title = "Reverbs";Table = tab})
+
+					return
+				end
+			
+				if args[2] then
+				
+					for i,v in pairs(service.GetPlayers(plr,args[2])) do
+					Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
+
+					end
+				
+					Functions.Hint("Changed Ambient Reverb of specified player(s)",{plr})
+			
+				else
+				
+					service.SoundService.AmbientReverb = Enum.ReverbType[rev]
+					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
+			
 				end
 			end
 		};
