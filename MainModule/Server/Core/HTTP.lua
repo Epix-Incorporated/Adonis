@@ -38,11 +38,7 @@ return function(Vargs)
 	server.HTTP = {
 		Init = Init;
 		Service = service.HttpService;
-<<<<<<< Updated upstream
-		HttpEnabled = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com");
-=======
 		HttpEnabled = pcall(service.HttpService.GetAsync, service.HttpService, "http://www.google.com/robots.txt");
->>>>>>> Stashed changes
 		LoadstringEnabled = pcall(loadstring,"");
 
 		CheckHttp = function()
