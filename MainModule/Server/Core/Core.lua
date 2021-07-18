@@ -1251,6 +1251,8 @@ return function(Vargs)
 				Message = service.MetaFunc(Functions.Message);
 
 				RunCommandAsNonAdmin = service.MetaFunc(server.Admin.RunCommandAsNonAdmin);
+
+				IsBanned = service.MetaFunc(server.Admin.Banned)
 			}
 
 			local AdonisGTable = service.NewProxy({
