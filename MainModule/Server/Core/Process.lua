@@ -581,15 +581,18 @@ return function(Vargs)
 			--Remote.Clients[key] = nil
 			service.Events.PlayerRemoving:Fire(p)
 
-			local key = tostring(p.userId)
-			Core.SavePlayerData(p)
-			Remote.Clients[key] = nil
+			local data = Core.GetPlayer(p)
+			local key = tostring(p.UserId)
 
 			local level = (p and Admin.GetLevel(p)) or 0
 			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
+			Remote.Clients[key] = nil
+			Core.PlayerData[key] = nil
+
+			Core.SavePlayerData(p, data)
 			Logs.AddLog(Logs.Script,{
 				Text = tostring(p).." left";
 				Desc = tostring(p).." player removed";
