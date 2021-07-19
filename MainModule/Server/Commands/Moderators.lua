@@ -4311,7 +4311,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		JumpHeight = {
 			Prefix = Settings.Prefix;
 			Commands = {"jheight";"jumpheight";};
@@ -4439,8 +4439,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for _,player in ipairs(server.Functions.GetPlayers(plr, args[1])) do
-
+				for _,player in ipairs(Functions.GetPlayers(plr, args[1])) do
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
@@ -5562,7 +5561,7 @@ return function(Vargs, env)
 									end
 								end
 							elseif rigType == Enum.HumanoidRigType.R15 then
-								local rig = server.Deps.Assets.RigR15
+								local rig = Deps.Assets.RigR15
 								local rigHumanoid = rig.Humanoid
 								local validParts = {}
 								for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do
@@ -6280,7 +6279,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Reverb = {
 			Prefix = Settings.Prefix;
 			Commands = {"reverb","ambientreverb";};
@@ -6289,43 +6288,43 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
 				local rev = args[1]
-		
+
 				local reverbs = {"NoReverb","GenericReverb","PaddedCell","Room","Bathroom","LivingRoom",
-				"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
-				"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
-				"ParkingLot","SewerPipe","UnderWater"}
-			
+					"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
+					"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
+					"ParkingLot","SewerPipe","UnderWater"}
+
 				if not rev or not Enum.ReverbType[rev] then
-				
+
 					Functions.Hint("Argument 1 missing or nil. Opening Reverb List",{plr})
-				
+
 					local tab = {}
-				
+
 					table.insert(tab,{Text = "Note: Argument is CASE SENSITIVE"})
-				
+
 					for _,v in pairs(reverbs) do
-					table.insert(tab,{Text = v})
+						table.insert(tab,{Text = v})
 					end
-				
+
 					Remote.MakeGui(plr,"List",{Title = "Reverbs";Table = tab})
 
 					return
 				end
-			
+
 				if args[2] then
-				
+
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-					Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
+						Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
 
 					end
-				
+
 					Functions.Hint("Changed Ambient Reverb of specified player(s)",{plr})
-			
+
 				else
-				
+
 					service.SoundService.AmbientReverb = Enum.ReverbType[rev]
 					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
-			
+
 				end
 			end
 		};
@@ -6339,35 +6338,24 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local function checkSafeChat(player)
-					return service.TextService:FilterStringAsync("1234", player.UserId):GetNonChatStringForUserAsync(player.UserId) == "1234" and false or true
-				end
-
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local _isMuted = false
-					local _isBanned = false
+					local hasSafeChat
+					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
+					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
 
-					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
-						_isMuted = true
-					else
-						_isMuted = false
+					do
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
 					end
 
-					local isBanned = false
-					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
-						_isBanned = true
-					else
-						_isBanned = false
-					end
-
-					server.Remote.MakeGui(plr,"Inspect",{
+					Remote.MakeGui(plr, "Inspect", {
 						Target = v;
-						SafeChat = checkSafeChat(v);
+						SafeChat = hasSafeChat;
 						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						IsMuted = _isMuted;
-						IsBanned = _isBanned;
+						AdminLevel = "["..Admin.GetLevel(v).."] "..Admin.LevelToListName(Admin.GetLevel(v));
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						IsMuted = isMuted;
+						IsBanned = isBanned;
 						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
 						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
