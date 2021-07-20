@@ -609,6 +609,9 @@ return function(Vargs)
 				AdminPoints = 0;
 			};
 		end;
+			};
+		end;
+
 
 		GetPlayer = function(p)
 			local key = tostring(p.UserId)
