@@ -655,7 +655,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for _,p in pairs(v.CharacterGetChildren()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("Part") then
@@ -4101,7 +4101,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Transparency = {
 			Prefix = Settings.Prefix;
 			Commands = {"transparency";"trans";};
