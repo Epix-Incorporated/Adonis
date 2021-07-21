@@ -14,12 +14,13 @@ return function(Vargs, env)
 			Commands = {"tban";"timedban";"timeban";};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
-			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :undataban";
+			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				local time = args[2] or '60'
 				assert(args[1] and args[2], "Argument missing or nil")
+				local time = args[2]
+
 				if time:lower():sub(#time)=='s' then
 					time = time:sub(1,#time-1)
 					time = tonumber(time)
@@ -35,10 +36,12 @@ return function(Vargs, env)
 				end
 
 				local level = data.PlayerData.Level;
+				local timebans = Core.Variables.TimeBans
+
 				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
 					if level > Admin.GetLevel(v) then
-						local endTime = tonumber(os.time())+tonumber(time)
-						local timebans = Core.Variables.TimeBans
+						local endTime = os.time() + tonumber(time)
+
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
@@ -64,22 +67,22 @@ return function(Vargs, env)
 
 		UnTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"untimeban";};
+			Commands = {"untimeban";"untimedban";"untban";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "UnBan";
+			Description = "Removes specified player from Timebans list";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1], "Argument missing or nil")
 				local timebans = Core.Variables.TimeBans or {}
+
 				for i, data in next, timebans do
 					if data.Name:lower():sub(1,#args[1]) == args[1]:lower() then
 						table.remove(timebans, i)
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = "TimeBans";
-							Parent = "Variables";
+							Table = {"Core", "Variables", "TimeBans"};
 							Value = data;
 						})
 

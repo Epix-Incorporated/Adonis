@@ -1066,7 +1066,7 @@ return function(Vargs)
 									table.remove(Core.Variables.TimeBans, i)
 									Core.DoSave({
 										Type = "TableRemove";
-										Table = {"Variables", "TimeBans"};
+										Table = {"Core", "Variables", "TimeBans"};
 										Value = v;
 									})
 								end
