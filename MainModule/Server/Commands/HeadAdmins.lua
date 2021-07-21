@@ -35,6 +35,8 @@ return function(Vargs, env)
 					time = ((tonumber(time)*60)*60)*24
 				end
 
+				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
+
 				local level = data.PlayerData.Level;
 				local timebans = Core.Variables.TimeBans
 
