@@ -111,15 +111,18 @@ return function(Vargs, env)
 				local tab = {}
 				local variables = Core.Variables
 				local timeBans = Core.Variables.TimeBans or {}
-				for _, v in ipairs(timeBans) do
+
+				for ind, v in pairs(timeBans) do
 					local timeLeft = v.EndTime - os.time()
 					local minutes = Functions.RoundToPlace(timeLeft / 60, 2)
+
 					if timeLeft <= 0 then
-						table.remove(Core.Variables.TimeBans, i)
+						table.remove(Core.Variables.TimeBans, ind)
 					else
 						table.insert(tab, {Text = tostring(v.Name)..":"..tostring(v.UserId), Desc = "Minutes Left: "..tostring(minutes)})
 					end
 				end
+
 				Remote.MakeGui(plr, "List", {Title = 'Time Bans', Tab = tab})
 			end
 		};
@@ -133,6 +136,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v ,"Notification", {
 						Title = "Notification";
