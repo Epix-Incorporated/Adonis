@@ -988,7 +988,7 @@ return function(Vargs, env)
 			Commands = {"privatechat", "privatemessage", "pm", "dm", "pchat"};
 			Args = {"player", "message (optional)"};
 			Filter = true;
-			Hidden = true; --// This command is WIP
+			Hidden = false;
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
@@ -1006,8 +1006,9 @@ return function(Vargs, env)
 					for peer in next,newSession.Users do
 						table.insert(peers, {
 							Name = peer.Name;
+							DisplayName = peer.DisplayName;
 							UserId = peer.UserId;
-							Instance = service.UnWrap(peer);
+							--Instance = service.UnWrap(peer);
 						})
 					end
 
@@ -1015,6 +1016,7 @@ return function(Vargs, env)
 				end
 
 				local function systemMessage(msg)
+					local data
 					data = {
 						Name = "*SYSTEM*";
 						UserId = 0;
@@ -1041,6 +1043,7 @@ return function(Vargs, env)
 							local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
 							local data, msg = {
 								Name = p.Name;
+								DisplayName = p.DisplayName;
 								UserId = p.UserId;
 								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
 							}, service.LaxFilter(string.sub(args[1], 1, 140), p);
@@ -1111,8 +1114,10 @@ return function(Vargs, env)
 
 				if args[2] then
 					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+
 					local data = {
 						Name = plr.Name;
+						DisplayName = plr.DisplayName;
 						UserId = plr.UserId;
 						Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
 					};
