@@ -1224,6 +1224,10 @@ return function(Vargs)
 
 				CheckAdmin = service.MetaFunc(Admin.CheckAdmin);
 
+				IsAdmin = service.MetaFunc(Admin.CheckAdmin);
+
+				IsBanned = service.MetaFunc(Admin.CheckBan);
+
 				IsMuted = service.MetaFunc(Admin.IsMuted);
 
 				CheckDonor = service.MetaFunc(Admin.CheckDonor);
