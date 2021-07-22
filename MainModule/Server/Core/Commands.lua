@@ -80,8 +80,10 @@ return function(Vargs)
 	function RunAfterPlugins()
 		--// Load custom user-supplied commands (settings.Commands)
 		for ind,cmd in next,Settings.Commands do
-			setfenv(cmd.Function, getfenv());
-			Commands[ind] = cmd;
+			if cmd.Function then
+				setfenv(cmd.Function, getfenv());
+				Commands[ind] = cmd;
+			end
 		end
 
 		--// Change command permissions based on settings

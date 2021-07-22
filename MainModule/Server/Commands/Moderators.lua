@@ -985,8 +985,8 @@ return function(Vargs, env)
 
 		PrivateChat = {
 			Prefix = Settings.Prefix;
-			Commands = {"pc", "dm", "privatechat"};
-			Args = {"player"};
+			Commands = {"privatechat", "privatemessage", "pm", "dm", "pchat"};
+			Args = {"player", "message (optional)"};
 			Filter = true;
 			Hidden = true; --// This command is WIP
 			Description = "Send a private message to a player";
@@ -994,43 +994,157 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				assert(args[1], "Argument missing")
 
+				local sessionName = Functions.GetRandom(); --// Used by the private chat windows
 				local newSession = Remote.NewSession("PrivateChat");
-				local eventConnection = newSession.SessionEvent.Event:Connect(function(p, ...)
+				local history = {};
+
+				newSession.Data.History = history;
+
+				local function getPeerList()
+					local peers = {};
+
+					for peer in next,newSession.Users do
+						table.insert(peers, {
+							Name = peer.Name;
+							UserId = peer.UserId;
+							Instance = service.UnWrap(peer);
+						})
+					end
+
+					return peers;
+				end
+
+				local function systemMessage(msg)
+					data = {
+						Name = "*SYSTEM*";
+						UserId = 0;
+						Icon = 0;
+					};
+
+					table.insert(history, {
+						Sender = data;
+						Message = msg;
+					});
+
+					newSession:SendToUsers("PlayerSentMessage", data, msg);
+				end;
+
+				newSession:ConnectEvent(function(p, cmd, ...)
 					local args = {...};
-					local cmd = args[1];
 
-					if cmd == "SendMessage" then
-						if newSession.Users[p] then
-							table.insert(newSession.Users[p].Messages, args[2]);
+					if not p then -- System event(s)
+						if cmd == "LastUserRemoved" then
+							newSession:End();
 						end
+					else	-- Player event(s)
+						if cmd == "SendMessage" then
+							local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+							local data, msg = {
+								Name = p.Name;
+								UserId = p.UserId;
+								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+							}, service.LaxFilter(args[1], p);
 
-						newSession.SendToUsers("PlayerSentMessage", p, args[2]);
-					elseif cmd == "LeaveSession" then
-						newSession.Users[p] = nil;
-						newSession.SendToUsers("PlayerLeftSession", p);
-					elseif cmd == "EndSession" and p == plr then
-						newSession.End();
+							table.insert(history, {
+								Sender = data;
+								Message = msg;
+							})
+
+							if #history > 200 then
+								table.remove(history, 1)
+							end
+
+							newSession:SendToUsers("PlayerSentMessage", data, msg);
+						elseif cmd == "LeaveSession" then
+							newSession.Users[p] = nil;
+							newSession:RemoveUser(p);
+
+							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
+							newSession:SendToUsers("UpdatePeerList", getPeerList());
+						elseif cmd == "EndSession" and p == plr then
+							systemMessage("<i>Session ended</i>");
+
+							newSession:End();
+						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local player = args[1];
+
+							if player then
+								newSession:AddUser(player);
+								newSession:SendToUser(player, "AddedToSession");
+
+								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
+								Remote.MakeGui(player, "PrivateChat", {
+									Owner = plr;
+									SessionKey = newSession.SessionKey;
+									SessionName = sessionName;
+									History = history;
+									CanManageUsers = Admin.CheckAdmin(player);
+								})
+
+								newSession:SendToUsers("UpdatePeerList", getPeerList());
+							end
+						elseif cmd == "RemovePlayerFromSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local peer = args[1];
+
+							if peer then
+								for pr in next,newSession.Users do
+									if peer.UserId and peer.UserId == pr.UserId then
+										newSession:SendToUser(pr, "RemovedFromSession");
+										newSession:RemoveUser(pr)
+										systemMessage(string.format("<i>%s removed %s from the session</i>", p.Name, pr.Name))
+									end
+								end
+							end
+
+							newSession:SendToUsers("UpdatePeerList", getPeerList());
+						elseif cmd == "GetPeerList" then
+							newSession:SendToUser(p, "UpdatePeerList", getPeerList());
+						end
 					end
 				end)
 
-				for i,v in ipairs(service.GetPlayers(plr, args[1])) do
-					newSession.AddUser(v, {
-						Messages = {};
+				systemMessage("<i>Chat session started</i>")
+
+				if args[2] then
+					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+					local data = {
+						Name = plr.Name;
+						UserId = plr.UserId;
+						Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+					};
+
+					table.insert(history, {
+						Sender = data;
+						Message = args[2];
 					});
+				end
 
-					Remote.MakeGui(v, "PrivateChat", {
-						Owner = plr;
-						SessionKey = newSession.SessionKey;
-					})
+				newSession:AddUser(plr);
+				Remote.MakeGui(plr, "PrivateChat", {
+					Owner = plr;
+					SessionKey = newSession.SessionKey;
+					SessionName = sessionName;
+					History = history;
+					CanManageUsers = true;
+				})
 
-					-- testing stuff below
-					wait(2)
-					newSession.SendToUsers("PlayerSentMessage", plr, "this is a test message");
+				for i,v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v ~= plr then
+						newSession:AddUser(v);
+
+						Remote.MakeGui(v, "PrivateChat", {
+							Owner = plr;
+							SessionKey = newSession.SessionKey;
+							SessionName = sessionName;
+							History = history;
+							CanManageUsers = Admin.CheckAdmin(v);
+						})
+					end
 				end
 			end
 		};
 
-		PrivateMessage = {
+		--[[PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
 			Args = {"player";"message";};
@@ -1049,7 +1163,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
+		};--]]
 
 		ShowChat = {
 			Prefix = Settings.Prefix;

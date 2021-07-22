@@ -681,8 +681,8 @@ return function(Vargs)
 				local sessionKey = args[1];
 				local session = sessionKey and Remote.GetSession(sessionKey);
 
-				if session then
-					session.SessionEvent.Event:Fire(p, unpack(args, 2));
+				if session and session.Users[p] then
+					session:FireEvent(p, unpack(args, 2));
 				end
 			end;
 
@@ -863,7 +863,7 @@ return function(Vargs)
 				Process.CustomChat(p,args[1],args[2],true)
 			end;
 
-			PrivateMessage = function(p,args)
+			--[[PrivateMessage = function(p,args)
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local title = args[1]
 				local target = args[2]
@@ -880,39 +880,93 @@ return function(Vargs)
 					Desc = message,
 					Player = p;
 				})
-			end;
+			end;--]]
 		};
 
 		NewSession = function(sessionType)
-			local event = service.New("BindableEvent");
-			local session = {}
-			local sessionKey = Functions.GetRandom();
+			local session = {
+				Ended = false;
+				NumUsers = 0;
+				Data = {};
+				Users = {};
+				Events = {};
+				SessionType = sessionType;
+				SessionKey = Functions.GetRandom();
+				SessionEvent = service.New("BindableEvent");
 
-			session.Users = {};
-			session.SessionType = sessionType;
-			session.SessionKey = sessionKey;
-			session.SessionEvent = event;
-			session.AddUser = function(p, defaultData)
-				session.Users[p] = defaultData or {};
-			end;
+				AddUser = function(self, p, defaultData)
+					assert(not self.Ended, "Cannot add user to session: Session Ended")
 
-			session.SendToUsers = function(...)
-				for p in next,session.Users do
-					Remote.Send(p, "SessionData", sessionKey, ...)
+					self.Users[p] = defaultData or {};
+					self.NumUsers = self.NumUsers + 1;
 				end;
-			end;
 
-			session.FireEvent = function(...)
-				sessionEvent:Fire(...);
-			end;
+				RemoveUser = function(self, p)
+					assert(not self.Ended, "Cannot remove user from session: Session Ended")
 
-			session.End = function()
-				session.SendToUsers("SessionEnded");
-				sessionEvent:Destroy();
-				Remote.Sessions[sessionKey] = nil;
-			end
+					self.Users[p] = nil;
+					self.NumUsers = self.NumUsers - 1;
 
-			Remote.Sessions[sessionKey] = session;
+					if self.NumUsers == 0 then
+						self:FireEvent(nil, "LastUserRemoved");
+					end
+				end;
+
+				SendToUsers = function(self, ...)
+					if not self.Ended then
+						for p in next,self.Users do
+							Remote.Send(p, "SessionData", self.SessionKey, ...);
+						end;
+					end
+				end;
+
+				SendToUser = function(self, p, ...)
+					if not self.Ended and self.Users[p] then
+						Remote.Send(p, "SessionData", self.SessionKey, ...);
+					end
+				end;
+
+				FireEvent = function(self, ...)
+					if not self.Ended then
+						self.SessionEvent:Fire(...);
+					end
+				end;
+
+				End = function(self)
+					if not self.Ended then
+						for t,event in next,self.Events do
+							event:Disconnect();
+							self.Events[t] = nil;
+						end
+
+						self:SendToUsers("SessionEnded");
+
+						self.NumUsers = 0;
+						self.Users = {};
+						self.SessionEvent:Destroy();
+
+						self.Ended = true;
+						Remote.Sessions[self.SessionKey] = nil;
+					end
+				end;
+
+				ConnectEvent = function(self, func)
+					assert(not self.Ended, "Cannot connect session event: Session Ended")
+
+					local connection = self.SessionEvent.Event:Connect(func);
+					table.insert(self.Events, connection)
+
+					return connection;
+				end;
+			};
+
+			session.Events.PlayerRemoving = service.Events.PlayerRemoving:Connect(function(plr)
+				if self.Users[plr] then
+					self:RemoveUser(plr)
+				end
+			end)
+
+			Remote.Sessions[session.SessionKey] = session;
 
 			return session;
 		end;

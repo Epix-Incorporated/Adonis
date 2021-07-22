@@ -396,7 +396,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	ServiceSpecific.LocalContainer = function()
 		if not client.Variables.LocalContainer or not client.Variables.LocalContainer.Parent then
-			client.Variables.LocalContainer = service.New("Camera")
+			client.Variables.LocalContainer = service.New("Folder")
 			client.Variables.LocalContainer.Name = client.Functions.GetRandom()
 			client.Variables.LocalContainer.Parent = service.Workspace
 		end

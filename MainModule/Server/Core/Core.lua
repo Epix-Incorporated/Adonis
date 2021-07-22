@@ -655,7 +655,6 @@ return function(Vargs)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
 					Core.SetData(key, data)
-					Core.PlayerData[key] = nil
 					Logs.AddLog(Logs.Script,{
 						Text = "Saved data for "..tostring(p);
 						Desc = "Player data was saved to the datastore";

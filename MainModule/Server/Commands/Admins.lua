@@ -1212,9 +1212,9 @@ return function(Vargs, env)
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
-			Args = {"player", "save"};
+			Args = {"player", "temp (true/false)"};
 			Hidden = false;
-			Description = "Removes the target players' admin powers; Saves if <save> is 'true'";
+			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
@@ -1227,7 +1227,7 @@ return function(Vargs, env)
 						local targLevel = Admin.GetLevel(v)
 						if targLevel>0 then
 							if sendLevel>targLevel then
-								Admin.RemoveAdmin(v, true, args[2] == "true")
+								Admin.RemoveAdmin(v, true, args[2] ~= "true")
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
 							else
 								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})

@@ -1858,6 +1858,14 @@ return function(data)
 	function doClose()
 		if not isClosed then
 			isClosed = true
+
+			if onClose then
+				local r,e = pcall(onClose)
+				if e then
+					warn(e)
+				end
+			end
+
 			gTable:Destroy()
 		end
 	end
@@ -2306,7 +2314,6 @@ return function(data)
 	Close.MouseButton1Down:Connect(doClose)
 	Hide.MouseButton1Down:Connect(function() doHide() end)
 	gTable.CustomDestroy = function()
-		service.UnWrap(GUI):Destroy()
 		if client.Variables.MouseLockedBy == gTable then
 			Mouse.Icon = curIcon
 			client.Variables.MouseLockedBy = nil
@@ -2318,6 +2325,8 @@ return function(data)
 				onClose()
 			end
 		end
+
+		service.UnWrap(GUI):Destroy()
 	end
 
 	for i,child in next,GUI:GetChildren() do
