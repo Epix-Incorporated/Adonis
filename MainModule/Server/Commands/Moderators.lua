@@ -1043,7 +1043,7 @@ return function(Vargs, env)
 								Name = p.Name;
 								UserId = p.UserId;
 								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-							}, service.LaxFilter(args[1], p);
+							}, service.LaxFilter(string.sub(args[1], 1, 140), p);
 
 							table.insert(history, {
 								Sender = data;

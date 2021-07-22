@@ -560,7 +560,7 @@ return function(Vargs)
 					end)
 
 					delay(600, function()
-						if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
+						if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 							Logs.AddLog("Script", {
 								Text = p.Name .. " Failed to Load",
 								Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",

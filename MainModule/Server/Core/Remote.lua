@@ -961,8 +961,8 @@ return function(Vargs)
 			};
 
 			session.Events.PlayerRemoving = service.Events.PlayerRemoving:Connect(function(plr)
-				if self.Users[plr] then
-					self:RemoveUser(plr)
+				if session.Users[plr] then
+					session:RemoveUser(plr)
 				end
 			end)
 
