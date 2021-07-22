@@ -193,7 +193,7 @@ return function(data)
 	reply = window:Add("TextBox", {
 		Text = ""; --"Enter reply";
 		PlaceholderText = "";
-		Size = UDim2.new(1, -65, 0, 30);
+		Size = UDim2.new(1, -70, 0, 30);
 		Position = UDim2.new(0, 5, 1, -35);
 		ClearTextOnFocus = false;--true;
 		TextScaled = true;
