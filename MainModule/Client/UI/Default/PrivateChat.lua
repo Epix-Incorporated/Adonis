@@ -195,7 +195,7 @@ return function(data)
 		PlaceholderText = "";
 		Size = UDim2.new(1, -65, 0, 30);
 		Position = UDim2.new(0, 5, 1, -35);
-		ClearTextOnFocus = true;
+		ClearTextOnFocus = false;--true;
 		TextScaled = true;
 	})
 
@@ -257,6 +257,7 @@ return function(data)
 	reply.FocusLost:Connect(function(isEnter)
     if isEnter then
       sendIt();
+      reply.Text = "";
       reply:CaptureFocus();
     end
   end)

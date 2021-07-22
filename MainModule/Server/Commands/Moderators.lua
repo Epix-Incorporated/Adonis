@@ -1055,12 +1055,16 @@ return function(Vargs, env)
 							end
 
 							newSession:SendToUsers("PlayerSentMessage", data, msg);
-						elseif cmd == "LeaveSession" then
-							newSession.Users[p] = nil;
+						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p);
 
 							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
 							newSession:SendToUsers("UpdatePeerList", getPeerList());
+
+							if p == plr then
+								systemMessage("<i>Session ended: Session owner left</i>");
+								newSession:End();
+							end
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>");
 

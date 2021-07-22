@@ -896,19 +896,23 @@ return function(Vargs)
 
 				AddUser = function(self, p, defaultData)
 					assert(not self.Ended, "Cannot add user to session: Session Ended")
-
-					self.Users[p] = defaultData or {};
-					self.NumUsers = self.NumUsers + 1;
+					if not self.Users[p] then
+						self.Users[p] = defaultData or {};
+						self.NumUsers = self.NumUsers + 1;
+					end
 				end;
 
 				RemoveUser = function(self, p)
 					assert(not self.Ended, "Cannot remove user from session: Session Ended")
+					if self.Users[p] then
+						self.Users[p] = nil;
+						self.NumUsers = self.NumUsers - 1;
 
-					self.Users[p] = nil;
-					self.NumUsers = self.NumUsers - 1;
-
-					if self.NumUsers == 0 then
-						self:FireEvent(nil, "LastUserRemoved");
+						if self.NumUsers == 0 then
+							self:FireEvent(nil, "LastUserRemoved");
+						else
+							self:FireEvent(p, "RemovedFromSession");
+						end
 					end
 				end;
 
@@ -960,7 +964,7 @@ return function(Vargs)
 				end;
 			};
 
-			session.Events.PlayerRemoving = service.Events.PlayerRemoving:Connect(function(plr)
+			session.Events.PlayerRemoving = service.Players.PlayerRemoving:Connect(function(plr)
 				if session.Users[plr] then
 					session:RemoveUser(plr)
 				end
