@@ -22,6 +22,7 @@ return {
 	"(Git/joritochip) Dex improvements #414";
 	"(Git/joritochip) Rewrite README.md #416";
 	"(Git/fxeP1) Fixes/Updates to Inspect #425";
+	"(Git/fxeP1) Added DisplayNames to PrivateChat #429";
 	"(Git/fxeP1) Update WebPanel.lua / Plugins/WebPanel.lua / Moderators.lua/Admins.lua #418";
 	"		Added coroutine to prevent yield from WebPanel function.";
 	"		Added a check to see if it returns \"HttpError: Timedout\" as if it does it checks if adonis.dev is alive and if not it will stall for 30 seconds then continue, otherwise if alive it will just continue.";
