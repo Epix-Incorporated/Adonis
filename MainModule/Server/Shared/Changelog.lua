@@ -2,7 +2,7 @@ return {
 	"Version: 223";
 	"*Drag edges to expand*";
 	"";
-	"[v223 WIP]";
+	"[v223 7.22.2021 20:00 EST]";
 	"*Minor changes to the client loading process & checks";
 	"*:privatemessage has been replaced with :privatechat";
 	"*Fixed windows.OnClose";
