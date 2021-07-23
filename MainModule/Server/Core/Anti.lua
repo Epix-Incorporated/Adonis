@@ -67,18 +67,16 @@ return function(Vargs)
 					Desc = "Making sure all clients are active";
 				})
 
-				local parent = service.NetworkServer or service.Players
-				local net = service.NetworkServer or false
-				for ind,p in next,parent:GetChildren() do
-					if net then p = p:GetPlayer() end
-					if p then
+				for ind,p in ipairs(service.Players:GetPlayers()) do
+					if p and p:IsA("Player") then
 						if Anti.ObjRLocked(p) then
 							Anti.Detected(p, "Log", "Player RobloxLocked")
 						else
-							local client = Remote.Clients[tostring(p.UserId)]
+							local key = tostring(p.UserId)
+							local client = Remote.Clients[key]
 							if client and client.LastUpdate then
 								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >".. Anti.ClientTimeoutLimit .." seconds]")
+									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
 								end
 							end
 						end

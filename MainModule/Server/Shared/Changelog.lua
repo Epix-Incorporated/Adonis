@@ -1,6 +1,9 @@
 return {
-	"Version: 223";
+	"Version: 223.1";
 	"*Drag edges to expand*";
+	"";
+	"[v223.1 7.23.2021 09:22 EST]";
+	"*Minor changes/Potential bug fix";
 	"";
 	"[v223 7.22.2021 20:00 EST]";
 	"*Minor changes to the client loading process & checks";

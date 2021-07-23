@@ -89,20 +89,24 @@ return function(Vargs)
 		};
 
 		Remote = function(p, cliData, com, ...)
+			local key = tostring(p.UserId)
+			local keys = Remote.Clients[key]
 			if p and p:IsA("Player") then
 				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
+				elseif cliData and keys and cliData.Module ~= keys.Module then
+					Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
 					local args = {...}
-					local key = tostring(p.userId)
-					local keys = Remote.Clients[key]
 					local rateLimitCheck = RateLimit(p, "Remote")
 
 					if keys then
-						keys.Received = keys.Received+1
-						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
+						keys.LastUpdate = os.time()
+						keys.Received = keys.Received + 1
+
+						if type(com) == "string" then
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
@@ -136,8 +140,6 @@ return function(Vargs)
 								})
 
 								if command then
-									keys.LastUpdate = os.time()
-
 									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
@@ -576,9 +578,6 @@ return function(Vargs)
 		end;
 
 		PlayerRemoving = function(p)
-			--local key = tostring(p.userId)
-			--Core.SavePlayerData(p)
-			--Remote.Clients[key] = nil
 			service.Events.PlayerRemoving:Fire(p)
 
 			local data = Core.GetPlayer(p)
@@ -591,6 +590,11 @@ return function(Vargs)
 
 			Remote.Clients[key] = nil
 			Core.PlayerData[key] = nil
+			Logs.AddLog(Logs.Script,{
+				Text = string.format("Removed keys for %s", tostring(p));
+				Desc = "Player left the game (PlayerRemoving)";
+				Player = p;
+			})
 
 			Core.SavePlayerData(p, data)
 			Logs.AddLog(Logs.Script,{
@@ -598,43 +602,6 @@ return function(Vargs)
 				Desc = tostring(p).." player removed";
 				Player = p;
 			})
-		end;
-
-		NetworkAdded = function(cli)
-			wait(0.25)
-			local p = cli:GetPlayer()
-			if p then
-				Core.Connections[cli] = p;
-				Logs.AddLog(Logs.Script, {
-					Text = tostring(p).." connected";
-					Desc = tostring(p).." successfully established a connection with the server";
-					Player = p;
-				})
-			else
-				Logs.AddLog(Logs.Script, {
-					Text = "<UNKNOWN> connected";
-					Desc = "An unknown user successfully established a connection with the server";
-				})
-			end
-			service.Events.NetworkAdded:fire(cli)
-		end;
-
-		NetworkRemoved = function(cli)
-			local p = cli:GetPlayer() or Core.Connections[cli]
-			Core.Connections[cli] = nil
-			if p then
-				Logs.AddLog(Logs.Script, {
-					Text = tostring(p).." disconnected";
-					Desc = tostring(p).." disconnected from the server";
-					Player = p;
-				})
-			else
-				Logs.AddLog(Logs.Script, {
-					Text = "<UNKNOWN> disconnected";
-					Desc = "An unknown user disconnected from the server";
-				})
-			end
-			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		FinishLoading = function(p)
@@ -648,6 +615,11 @@ return function(Vargs)
 				Text = p.Name;
 				Desc = p.Name.." joined the server";
 				Player = p;
+			})
+
+			Logs.AddLog(Logs.Script,{
+				Text = string.format("%s finished loading", p.Name);
+				Desc = "Client finished loading";
 			})
 
 			--// Start keybind listener
@@ -846,6 +818,43 @@ return function(Vargs)
 					Admin.RunCommandAsPlayer(v,p)
 				end
 			end
+		end;
+
+		NetworkAdded = function(cli)
+			wait(0.25)
+			local p = cli:GetPlayer()
+			if p then
+				Core.Connections[cli] = p;
+				Logs.AddLog(Logs.Script, {
+					Text = tostring(p).." connected";
+					Desc = tostring(p).." successfully established a connection with the server";
+					Player = p;
+				})
+			else
+				Logs.AddLog(Logs.Script, {
+					Text = "<UNKNOWN> connected";
+					Desc = "An unknown user successfully established a connection with the server";
+				})
+			end
+			service.Events.NetworkAdded:fire(cli)
+		end;
+
+		NetworkRemoved = function(cli)
+			local p = cli:GetPlayer() or Core.Connections[cli]
+			Core.Connections[cli] = nil
+			if p then
+				Logs.AddLog(Logs.Script, {
+					Text = tostring(p).." disconnected";
+					Desc = tostring(p).." disconnected from the server";
+					Player = p;
+				})
+			else
+				Logs.AddLog(Logs.Script, {
+					Text = "<UNKNOWN> disconnected";
+					Desc = "An unknown user disconnected from the server";
+				})
+			end
+			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		PlayerTeleported = function(p,data)
