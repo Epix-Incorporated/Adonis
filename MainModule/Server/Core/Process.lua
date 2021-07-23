@@ -96,8 +96,8 @@ return function(Vargs)
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
-				elseif cliData and keys and cliData.Module ~= keys.Module then
-					Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
+				--elseif cliData and keys and cliData.Module ~= keys.Module then
+				--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
 					local args = {...}
 					local rateLimitCheck = RateLimit(p, "Remote")
