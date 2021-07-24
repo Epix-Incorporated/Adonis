@@ -91,6 +91,7 @@ return function(Vargs)
 		Remote = function(p, cliData, com, ...)
 			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
+
 			if p and p:IsA("Player") then
 				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
@@ -278,6 +279,7 @@ return function(Vargs)
 								local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
 								if not opts.IgnoreErrors then
 									if error and type(error) == "string" then
+										Logs:AddLog("Errors", tostring(error))
 										error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
 										if not isSystem then
 											Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
@@ -482,8 +484,6 @@ return function(Vargs)
 				local keyData = {
 					Player = p;
 					Key = Functions:GetRandom();
-					Decoy1 = Functions:GetRandom();
-					Decoy2 = Functions:GetRandom();
 					Cache = {};
 					Sent = 0;
 					Received = 0;
@@ -588,8 +588,9 @@ return function(Vargs)
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
-			Remote.Clients[key] = nil
+			--Remote.Clients[key] = nil
 			Core.PlayerData[key] = nil
+
 			Logs.AddLog(Logs.Script,{
 				Text = string.format("Removed keys for %s", tostring(p));
 				Desc = "Player left the game (PlayerRemoving)";

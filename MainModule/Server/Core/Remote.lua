@@ -37,6 +37,9 @@ return function(Vargs)
 			end
 		end
 
+		--// Start key check loop
+		service.StartLoop("ClientKeyCheck", 60, Remote.CheckKeys, true);
+
 		Remote.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Remote Module RunAfterPlugins Finished");
 	end
@@ -52,6 +55,8 @@ return function(Vargs)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+
+		TimeUntilKeyDestroyed = 60 * 10; --// How long until a player's key data should be completely removed?
 
 		Returnables = {
 			RateLimits = function(p, args)
@@ -863,24 +868,26 @@ return function(Vargs)
 				Process.CustomChat(p,args[1],args[2],true)
 			end;
 
-			--[[PrivateMessage = function(p,args)
+			PrivateMessage = function(p,args)
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
-				local title = args[1]
-				local target = args[2]
-				local from = args[3]
-				local message = args[4]
-				Remote.MakeGui(target,"PrivateMessage",{
-					Title = "Reply from ".. p.Name;--title;
-					Player = p;
-					Message = service.Filter(message, p, target);
-				})
+				if Variables.AuthorizedToReply[p] or Admin.CheckAdmin(p) then
+					local title = args[1]
+					local target = args[2]
+					local from = args[3]
+					local message = args[4]
+					Remote.MakeGui(target,"PrivateMessage",{
+						Title = "Reply from ".. p.Name;--title;
+						Player = p;
+						Message = service.Filter(message, p, target);
+					})
 
-				Logs.AddLog(Logs.Script,{
-					Text = p.Name.." replied to "..tostring(target),
-					Desc = message,
-					Player = p;
-				})
-			end;--]]
+					Logs:AddLog(Logs.Script,{
+						Text = p.Name.." replied to "..tostring(target),
+						Desc = message,
+						Player = p;
+					})
+				end
+			end;
 		};
 
 		NewSession = function(sessionType)
@@ -1063,6 +1070,31 @@ return function(Vargs)
 				return true
 			else
 				return false
+			end
+		end;
+
+		CheckKeys = function()
+			--// Check all keys for ones no longer in use for >10 minutes (so players who actually left aren't tracked forever)
+			for key, data in next,Remote.Clients do
+				local continue = true;
+
+				if data.Player and data.Player.Parent == service.Players then
+					continue = false;
+				else
+					for i,player in ipairs(service.Players:GetPlayers()) do
+						if tonumber(key) == player.UserId then
+							data.Player = player;
+							continue = false;
+							break;
+						end
+					end
+				end
+
+				if continue and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
+					Remote.Clients[key] = nil;
+					--print("Client key removed for UserId ".. tostring(key))
+					Logs:AddLog("Script", "Client key removed for UserId ".. tostring(key))
+				end
 			end
 		end;
 

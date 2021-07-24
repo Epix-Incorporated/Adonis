@@ -5,7 +5,6 @@ Pcall = nil
 Routine = nil
 GetEnv = nil
 logError = nil
-sortedPairs = nil
 
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...

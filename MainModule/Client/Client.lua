@@ -89,7 +89,6 @@ local warn = function(...) for i,v in next,{...}do warn(tostring(v)) end end
 local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print(error) logError(error) warn('ERROR :: '..error) end end
 local Pcall = function(func,...) local ran,error=pcall(func,...) if error then logError(error) end end
 local Routine = function(func,...) coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in next,t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
 local Immutable = function(...) local mut = coroutine.wrap(function(...) while true do coroutine.yield(...) end end) mut(...) return mut end
 local player = game:GetService("Players").LocalPlayer
 local Fire, Detected
@@ -207,7 +206,6 @@ locals = {
 	Routine = Routine;
 	service = service;
 	logError = logError;
-	sortedPairs = sortedPairs;
 	origEnv = origEnv;
 }
 

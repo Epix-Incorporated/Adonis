@@ -159,12 +159,8 @@ return function(Vargs)
 				Core.RemoteEvent.FuncSec:Disconnect()
 				Core.RemoteEvent.Security:Disconnect()
 				Core.RemoteEvent.Event:Disconnect()
-				Core.RemoteEvent.DecoySecurity1:Disconnect()
-				Core.RemoteEvent.DecoySecurity2:Disconnect()
 				pcall(function() service.Delete(Core.RemoteEvent.Object) end)
 				pcall(function() service.Delete(Core.RemoteEvent.Function) end)
-				pcall(function() service.Delete(Core.RemoteEvent.Decoy1) end)
-				pcall(function() service.Delete(Core.RemoteEvent.Decoy2) end)
 				Core.FixingEvent = false;
 				Core.RemoteEvent = nil;
 			end
@@ -179,8 +175,6 @@ return function(Vargs)
 					local rTable = {};
 					local event = service.New("RemoteEvent")
 					local func = service.New("RemoteFunction", {Parent = event, Name = ""})
-					local decoy1 = event:Clone()
-					local decoy2 = event:Clone()
 					local secureTriggered = false
 					local tripDet = math.random()
 
@@ -189,21 +183,13 @@ return function(Vargs)
 					Core.TripDet = tripDet;
 
 					event.Name = Core.Name--..Functions.GetRandom() -- Core.Name
-					decoy1.Name = Core.Name..Functions.GetRandom()
-					decoy2.Name = Core.Name..Functions.GetRandom()
 
 					event.Archivable = false
-					decoy1.Archivable = false
-					decoy2.Archivable = false
 
 					Core.RemoteEvent.Object = event
 					Core.RemoteEvent.Function = func
-					Core.RemoteEvent.Decoy1 = decoy1
-					Core.RemoteEvent.Decoy2 = decoy2
 
 					event.Parent = remoteParent
-					--decoy1.Parent = service.JointsService
-					--decoy2.Parent = service.JointsService
 
 					local function secure(ev, name)
 						return service.RbxEvent(ev.Changed, function(p)
@@ -227,24 +213,8 @@ return function(Vargs)
 					Core.RemoteEvent.Event = service.RbxEvent(event.OnServerEvent, Process.Remote)
 					func.OnServerInvoke = Process.Remote
 
-					service.RbxEvent(decoy1.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.UserId)]
-						if keys and com == "TrustCheck" and modu == keys.Module then
-							decoy1:FireClient(p,"TrustCheck",keys.Decoy1)
-						end
-					end)
-
-					service.RbxEvent(decoy2.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.UserId)]
-						if keys and com == "TrustCheck" and modu == keys.Module then
-							decoy1:FireClient(p,"TrustCheck",keys.Decoy2)
-						end
-					end)
-
 					Core.RemoteEvent.Security = secure(event, Core.Name)
 					Core.RemoteEvent.FuncSec = secure(func, "");
-					Core.RemoteEvent.DecoySecurity1 = secure(decoy1, Core.Name)
-					Core.RemoteEvent.DecoySecurity2 = secure(decoy2, Core.Name)
 
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";

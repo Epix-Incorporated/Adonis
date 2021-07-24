@@ -985,7 +985,7 @@ return function(Vargs, env)
 
 		PrivateChat = {
 			Prefix = Settings.Prefix;
-			Commands = {"privatechat", "privatemessage", "pm", "dm", "pchat"};
+			Commands = {"privatechat", "dm", "pchat"};
 			Args = {"player", "message (optional)"};
 			Filter = true;
 			Hidden = false;
@@ -1153,7 +1153,7 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[PrivateMessage = {
+		PrivateMessage = {
 			Prefix = Settings.Prefix;
 			Commands = {"pm";"privatemessage";};
 			Args = {"player";"message";};
@@ -1164,6 +1164,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				if Admin.CheckAdmin(plr) then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
 							Title = "Message from "..plr.Name;
 							Player = plr;

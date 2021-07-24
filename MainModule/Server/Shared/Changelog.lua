@@ -1,6 +1,10 @@
 return {
-	"Version: 223.1";
+	"Version: 223.2";
 	"*Drag edges to expand*";
+	"";
+	"[v223.2 7.24.2021 15:17 EST]";
+	"*By popular demand the old :pm has returned! Also bandaged a vuln related to it.";
+	"*Possibly fixed an issue where player keys are removed prematurely, resulting in a kick.";
 	"";
 	"[v223.1 7.23.2021 09:22 EST]";
 	"*Minor changes/Potential bug fix";
