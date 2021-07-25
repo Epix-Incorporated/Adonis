@@ -4331,7 +4331,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		CopyTools = {
 			Prefix = Settings.Prefix;
 			Commands = {"copytools";};
@@ -4346,8 +4346,7 @@ return function(Vargs, env)
 				for i,v in pairs(p1) do
 					for k,m in pairs(p2) do
 						for j,n in pairs(v.Backpack:GetChildren()) do
-							local b = n:clone()
-							n.Parent = m.Backpack
+							n:Clone().Parent = m.Backpack
 						end
 					end
 				end
