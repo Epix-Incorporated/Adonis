@@ -112,6 +112,14 @@ return function()
 				workspace.CurrentCamera.CameraSubject = ob
 			end
 		end;
+		
+		FormatPlayer = function(player)
+			if player.DisplayName == player.Name then
+				return "@"..player.Name
+			else
+				return ("%s (@%s)"):format(player.DisplayName, player.Name)
+			end
+		end;
 
 		AddAlias = function(alias, command)
 			Variables.Aliases[alias:lower()] = command;
