@@ -1094,7 +1094,10 @@ return function(Vargs, env)
 				systemMessage("Chat session started")
 
 				if args[2] then
-					table.insert(history, {plr, args[2]});
+					table.insert(history, {
+						Sender = plr;
+						Message = args[2];
+					})
 				end
 
 				newSession:AddUser(plr);
