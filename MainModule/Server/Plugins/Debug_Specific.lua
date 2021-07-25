@@ -5,7 +5,6 @@ Pcall = nil
 Routine = nil
 GetEnv = nil
 logError = nil
-sortedPairs = nil
 
 --// This module is for stuff specific to debugging
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!

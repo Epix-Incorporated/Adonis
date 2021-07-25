@@ -174,15 +174,14 @@ return function(Vargs, env)
 
 		Brazil = {
 			Prefix = Settings.Prefix;
-			Commands = {"brazil";};
+			Commands = {"brazil";"sendtobrazil"};
 			Args = {"players"};
 			AdminLevel = "Moderators";
 			Fun = true;
 			Description = "You're going to";
-			Function = function (runner, args)
-				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
-					local character = plr.Character
-					local root = character:FindFirstChild("HumanoidRootPart")
+			Function = function (plr, args)
+				for _,v in pairs(service.GetPlayers(plr, args[1])) do
+					local root = v.Character:FindFirstChild("HumanoidRootPart")
 					local sound = Instance.new("Sound", root)
 					sound.SoundId = "rbxassetid://5816432987"
 					sound.Volume = 10
@@ -211,39 +210,44 @@ return function(Vargs, env)
 			end
 		};
 
-		-- maybe make it work with players not in-game
 		CharGear = {
 			Prefix = Settings.Prefix;
 			Commands = {"chargear";"charactergear";"doll";"cgear"};
-			Args = {"player";};
+			Args = {"player/username";};
 			Fun = true;
 			Hidden = false;
 			AdminLevel = "Moderators";
-			Description = "Gives you a doll of a player.";
-			Function = function(runner,args)
-				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
-					local tool = Instance.new('Tool', runner:FindFirstChildWhichIsA('Backpack'))
-					tool.ToolTip = plr.DisplayName .. ' as a tool, generated with Adonis.'
-					tool.Name = plr.Name
+			Description = "Gives you a doll of a player";
+			Function = function(plr,args)
+				local function generate(userId)
+					local tool = Instance.new('Tool', plr:FindFirstChildWhichIsA('Backpack'))
+					local targetName = service.Players:GetNameFromUserIdAsync(userId)
+					if service.Players:GetPlayerByUserId(userId) then
+						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
+					else
+						tool.ToolTip = "@"..targetName.." as a tool"
+					end
+					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
 					local handle = Instance.new('Part', tool)
 					handle.Name = 'Handle'
 					handle.CanCollide = false
 					handle.Transparency = 1
-					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
-					model.Name = plr.displayName
-					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
-	      	local bHeight = hum:WaitForChild('BodyHeightScale')
-	      	local bDepth = hum:WaitForChild('BodyDepthScale')
+					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
+					model.Name = targetName
+					local hum = model:WaitForChild("Humanoid")
+					local bHeight = hum:WaitForChild('BodyHeightScale')
+					local bDepth = hum:WaitForChild('BodyDepthScale')
 					local bWidth = hum:WaitForChild('BodyWidthScale')
-	        bHeight.Value = bHeight.Value / 2
-	        bDepth.Value = bDepth.Value / 2
-	        bWidth.Value = bWidth.Value / 2
-					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
+					bHeight.Value = bHeight.Value / 2
+					bDepth.Value = bDepth.Value / 2
+					bWidth.Value = bWidth.Value / 2
+					local cfr = (plr.Character:FindFirstChild('Right Arm') or plr.Character:FindFirstChild('RightFoot')).CFrame
 					handle.CFrame = cfr
 					model:FindFirstChild('Animate').Disabled = true
-					for _,v in pairs(model:GetDescendants()) do
-						if v:IsA('BasePart') then
-							v.Massless = true
+					for _,obj in pairs(model:GetDescendants()) do
+						if obj:IsA('BasePart') then
+							obj.Massless = true
+							obj.CanCollide = false
 						end
 					end
 					model.Parent = tool
@@ -252,8 +256,21 @@ return function(Vargs, env)
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
 				end
+				
+				if pcall(function() service.GetPlayers(plr, args[1]) end) then
+					for _,v in pairs(service.GetPlayers(plr, args[1])) do
+						generate(v.UserId)
+					end
+				else
+					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+					if success then
+						generate(id)
+					else
+						error("Unable to find target user")
+					end
+				end
 			end
-		},
+		};
 
 		LowRes = {
 			Prefix = Settings.Prefix;
@@ -655,7 +672,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for _,p in pairs(v.CharacterGetChildren()) do
+						for _,p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("Part") then

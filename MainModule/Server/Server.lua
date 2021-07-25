@@ -100,15 +100,61 @@ local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
-local isModule = function(module) for ind, modu in next, server.Modules do if module == modu then return true end end end
-local logError = function(plr, err) if server.Core and server.Core.DebugMode then warn("Error: "..tostring(plr)..": "..tostring(err)) end if server then server.Logs.AddLog(server.Logs.Errors,{Text = tostring(plr), Desc = err, Player = plr}) end end
+local isModule = function(module)
+	for ind, modu in next, server.Modules do
+		if module == modu then
+			return true
+		end
+	end
+end
+
+local logError = function(plr, err)
+	if type(plr) == "string" and not err then
+		err = plr;
+		plr = nil;
+	end
+
+	if server.Core and server.Core.DebugMode then
+		warn("Error: "..tostring(plr)..": "..tostring(err))
+	end
+
+	if server and server.Logs then
+		server.Logs.AddLog(server.Logs.Errors, {
+			Text = ((err and plr and tostring(plr) ..":") or "").. tostring(err),
+			Desc = err,
+			Player = plr
+		})
+	end
+end
+
 --local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
-local print = function(...) --[[if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::", ...) else]] print(":: Adonis ::", ...) --[[end]] end
-local warn = function(...) --[[if server.Core and server.Core.DebugMode then message("::DEBUG:: Adonis ::", ...) else]] warn(":: Adonis ::", ...) --[[end]] end
-local cPcall = function(func, ...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error = pcall(cour,...) if error then warn(error) logError("SERVER",error) warn(error) end end
-local Pcall = function(func, ...) local ran,error = pcall(func,...) if error then warn(error) logError("SERVER",error) warn(error) end end
-local Routine = function(func, ...) coroutine.resume(coroutine.create(func),...) end
-local sortedPairs = function(t, f) local a = {} for n in next, t do table.insert(a, n) end table.sort(a, f) local i = 0 local iter = function () i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end return iter end
+local print = function(...)
+	print(":: Adonis ::", ...)
+end
+
+local warn = function(...)
+	warn(":: Adonis ::", ...)
+end
+
+local Pcall = function(func, ...)
+	local ran,error = pcall(func,...)
+	if error then
+		warn(error)
+		logError(error)
+	end
+	return ran,error
+end
+
+local cPcall = function(func, ...)
+	return Pcall(function(...)
+		coroutine.resume(coroutine.create(func),...)
+	end, ...)
+end
+
+local Routine = function(func, ...)
+	coroutine.resume(coroutine.create(func),...)
+end
+
 local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({}, {
 		__index = function(tab, ind)
@@ -226,7 +272,6 @@ locals = {
 	CodeName = "";
 	Settings = server.Settings;
 	HookedEvents = HookedEvents;
-	sortedPairs = sortedPairs;
 	ErrorLogs = ErrorLogs;
 	logError = logError;
 	origEnv = origEnv;
@@ -559,6 +604,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	service.Events.ServerInitialized:Fire();
-	
+
 	return "SUCCESS"
 end})

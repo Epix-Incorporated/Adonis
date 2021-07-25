@@ -874,6 +874,8 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local usage={
 					'Mouse over things in lists to expand them';
+					'Commands: ';
+					'Timeban, Works with non-ingame players, '.. Settings.Prefix ..'tban Player time(d/h/m/s) | Example Usage: '.. Settings.Prefix ..'timeban Sceleratis 10h (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
 					'Special Functions: ';
 					'Ex: '..Settings.Prefix..'kill FUNCTION, so like '..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all';
 					'Put /e in front to make it silent (/e '..Settings.Prefix..'kill scel)';

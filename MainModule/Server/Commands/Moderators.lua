@@ -111,15 +111,18 @@ return function(Vargs, env)
 				local tab = {}
 				local variables = Core.Variables
 				local timeBans = Core.Variables.TimeBans or {}
-				for _, v in ipairs(timeBans) do
+
+				for ind, v in pairs(timeBans) do
 					local timeLeft = v.EndTime - os.time()
 					local minutes = Functions.RoundToPlace(timeLeft / 60, 2)
+
 					if timeLeft <= 0 then
-						table.remove(Core.Variables.TimeBans, i)
+						table.remove(Core.Variables.TimeBans, ind)
 					else
 						table.insert(tab, {Text = tostring(v.Name)..":"..tostring(v.UserId), Desc = "Minutes Left: "..tostring(minutes)})
 					end
 				end
+
 				Remote.MakeGui(plr, "List", {Title = 'Time Bans', Tab = tab})
 			end
 		};
@@ -133,6 +136,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v ,"Notification", {
 						Title = "Notification";
@@ -981,47 +985,170 @@ return function(Vargs, env)
 
 		PrivateChat = {
 			Prefix = Settings.Prefix;
-			Commands = {"pc", "dm", "privatechat"};
-			Args = {"player"};
+			Commands = {"privatechat", "dm", "pchat"};
+			Args = {"player", "message (optional)"};
 			Filter = true;
-			Hidden = true; --// This command is WIP
+			Hidden = false;
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing")
 
+				local sessionName = Functions.GetRandom(); --// Used by the private chat windows
 				local newSession = Remote.NewSession("PrivateChat");
-				local eventConnection = newSession.SessionEvent.Event:Connect(function(p, ...)
+				local history = {};
+
+				newSession.Data.History = history;
+
+				local function getPeerList()
+					local peers = {};
+
+					for peer in next,newSession.Users do
+						table.insert(peers, {
+							Name = peer.Name;
+							DisplayName = peer.DisplayName;
+							UserId = peer.UserId;
+							--Instance = service.UnWrap(peer);
+						})
+					end
+
+					return peers;
+				end
+
+				local function systemMessage(msg)
+					local data
+					data = {
+						Name = "*SYSTEM*";
+						UserId = 0;
+						Icon = 0;
+					};
+
+					table.insert(history, {
+						Sender = data;
+						Message = msg;
+					});
+
+					newSession:SendToUsers("PlayerSentMessage", data, msg);
+				end;
+
+				newSession:ConnectEvent(function(p, cmd, ...)
 					local args = {...};
-					local cmd = args[1];
 
-					if cmd == "SendMessage" then
-						if newSession.Users[p] then
-							table.insert(newSession.Users[p].Messages, args[2]);
+					if not p then -- System event(s)
+						if cmd == "LastUserRemoved" then
+							newSession:End();
 						end
+					else	-- Player event(s)
+						if cmd == "SendMessage" then
+							local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+							local data, msg = {
+								Name = p.Name;
+								DisplayName = p.DisplayName;
+								UserId = p.UserId;
+								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+							}, service.LaxFilter(string.sub(args[1], 1, 140), p);
 
-						newSession.SendToUsers("PlayerSentMessage", p, args[2]);
-					elseif cmd == "LeaveSession" then
-						newSession.Users[p] = nil;
-						newSession.SendToUsers("PlayerLeftSession", p);
-					elseif cmd == "EndSession" and p == plr then
-						newSession.End();
+							table.insert(history, {
+								Sender = data;
+								Message = msg;
+							})
+
+							if #history > 200 then
+								table.remove(history, 1)
+							end
+
+							newSession:SendToUsers("PlayerSentMessage", data, msg);
+						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
+							newSession:RemoveUser(p);
+
+							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
+							newSession:SendToUsers("UpdatePeerList", getPeerList());
+
+							if p == plr then
+								systemMessage("<i>Session ended: Session owner left</i>");
+								newSession:End();
+							end
+						elseif cmd == "EndSession" and p == plr then
+							systemMessage("<i>Session ended</i>");
+
+							newSession:End();
+						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local player = args[1];
+
+							if player then
+								newSession:AddUser(player);
+								newSession:SendToUser(player, "AddedToSession");
+
+								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
+								Remote.MakeGui(player, "PrivateChat", {
+									Owner = plr;
+									SessionKey = newSession.SessionKey;
+									SessionName = sessionName;
+									History = history;
+									CanManageUsers = Admin.CheckAdmin(player);
+								})
+
+								newSession:SendToUsers("UpdatePeerList", getPeerList());
+							end
+						elseif cmd == "RemovePlayerFromSession" and (p == plr or Admin.CheckAdmin(p)) then
+							local peer = args[1];
+
+							if peer then
+								for pr in next,newSession.Users do
+									if peer.UserId and peer.UserId == pr.UserId then
+										newSession:SendToUser(pr, "RemovedFromSession");
+										newSession:RemoveUser(pr)
+										systemMessage(string.format("<i>%s removed %s from the session</i>", p.Name, pr.Name))
+									end
+								end
+							end
+
+							newSession:SendToUsers("UpdatePeerList", getPeerList());
+						elseif cmd == "GetPeerList" then
+							newSession:SendToUser(p, "UpdatePeerList", getPeerList());
+						end
 					end
 				end)
 
-				for i,v in ipairs(service.GetPlayers(plr, args[1])) do
-					newSession.AddUser(v, {
-						Messages = {};
+				systemMessage("<i>Chat session started</i>")
+
+				if args[2] then
+					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+
+					local data = {
+						Name = plr.Name;
+						DisplayName = plr.DisplayName;
+						UserId = plr.UserId;
+						Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+					};
+
+					table.insert(history, {
+						Sender = data;
+						Message = args[2];
 					});
+				end
 
-					Remote.MakeGui(v, "PrivateChat", {
-						Owner = plr;
-						SessionKey = newSession.SessionKey;
-					})
+				newSession:AddUser(plr);
+				Remote.MakeGui(plr, "PrivateChat", {
+					Owner = plr;
+					SessionKey = newSession.SessionKey;
+					SessionName = sessionName;
+					History = history;
+					CanManageUsers = true;
+				})
 
-					-- testing stuff below
-					wait(2)
-					newSession.SendToUsers("PlayerSentMessage", plr, "this is a test message");
+				for i,v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v ~= plr then
+						newSession:AddUser(v);
+
+						Remote.MakeGui(v, "PrivateChat", {
+							Owner = plr;
+							SessionKey = newSession.SessionKey;
+							SessionName = sessionName;
+							History = history;
+							CanManageUsers = Admin.CheckAdmin(v);
+						})
+					end
 				end
 			end
 		};
@@ -1037,6 +1164,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				if Admin.CheckAdmin(plr) then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
 							Title = "Message from "..plr.Name;
 							Player = plr;
@@ -1045,7 +1173,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
+		};--]]
 
 		ShowChat = {
 			Prefix = Settings.Prefix;
@@ -4204,6 +4332,27 @@ return function(Vargs, env)
 			end
 		};
 
+		CopyTools = {
+			Prefix = Settings.Prefix;
+			Commands = {"copytools";};
+			Args = {"player1";"player2";};
+			Hidden = false;
+			Description = "Copies player1's tools and gives them to player2";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local p1 = service.GetPlayers(plr, args[1])
+				local p2 = service.GetPlayers(plr, args[2])
+				for i,v in pairs(p1) do
+					for k,m in pairs(p2) do
+						for j,n in pairs(v.Backpack:GetChildren()) do
+							n:Clone().Parent = m.Backpack
+						end
+					end
+				end
+			end
+		};
+
 		RemoveGuis = {
 			Prefix = Settings.Prefix;
 			Commands = {"removeguis";"noguis";};
@@ -4311,7 +4460,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		JumpHeight = {
 			Prefix = Settings.Prefix;
 			Commands = {"jheight";"jumpheight";};
@@ -4439,8 +4588,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for _,player in ipairs(server.Functions.GetPlayers(plr, args[1])) do
-
+				for _,player in ipairs(Functions.GetPlayers(plr, args[1])) do
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
@@ -5562,7 +5710,7 @@ return function(Vargs, env)
 									end
 								end
 							elseif rigType == Enum.HumanoidRigType.R15 then
-								local rig = server.Deps.Assets.RigR15
+								local rig = Deps.Assets.RigR15
 								local rigHumanoid = rig.Humanoid
 								local validParts = {}
 								for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do
@@ -6280,7 +6428,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Reverb = {
 			Prefix = Settings.Prefix;
 			Commands = {"reverb","ambientreverb";};
@@ -6289,43 +6437,43 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
 				local rev = args[1]
-		
+
 				local reverbs = {"NoReverb","GenericReverb","PaddedCell","Room","Bathroom","LivingRoom",
-				"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
-				"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
-				"ParkingLot","SewerPipe","UnderWater"}
-			
+					"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
+					"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
+					"ParkingLot","SewerPipe","UnderWater"}
+
 				if not rev or not Enum.ReverbType[rev] then
-				
+
 					Functions.Hint("Argument 1 missing or nil. Opening Reverb List",{plr})
-				
+
 					local tab = {}
-				
+
 					table.insert(tab,{Text = "Note: Argument is CASE SENSITIVE"})
-				
+
 					for _,v in pairs(reverbs) do
-					table.insert(tab,{Text = v})
+						table.insert(tab,{Text = v})
 					end
-				
+
 					Remote.MakeGui(plr,"List",{Title = "Reverbs";Table = tab})
 
 					return
 				end
-			
+
 				if args[2] then
-				
+
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-					Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
+						Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
 
 					end
-				
+
 					Functions.Hint("Changed Ambient Reverb of specified player(s)",{plr})
-			
+
 				else
-				
+
 					service.SoundService.AmbientReverb = Enum.ReverbType[rev]
 					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
-			
+
 				end
 			end
 		};
@@ -6339,35 +6487,24 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local function checkSafeChat(player)
-					return service.TextService:FilterStringAsync("1234", player.UserId):GetNonChatStringForUserAsync(player.UserId) == "1234" and false or true
-				end
-
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local _isMuted = false
-					local _isBanned = false
+					local hasSafeChat
+					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
+					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
 
-					if table.find(Settings.Muted, v.Name..":"..v.UserId) then
-						_isMuted = true
-					else
-						_isMuted = false
+					do
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
 					end
 
-					local isBanned = false
-					if table.find(Settings.Banned, v.Name..":"..v.UserId) then
-						_isBanned = true
-					else
-						_isBanned = false
-					end
-
-					server.Remote.MakeGui(plr,"Inspect",{
+					Remote.MakeGui(plr, "Inspect", {
 						Target = v;
-						SafeChat = checkSafeChat(v);
+						SafeChat = hasSafeChat;
 						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "["..server.Admin.GetLevel(v).."] "..server.Admin.LevelToListName(server.Admin.GetLevel(v));
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, server.Variables.DonorPass[1]);
-						IsMuted = _isMuted;
-						IsBanned = _isBanned;
+						AdminLevel = "["..Admin.GetLevel(v).."] "..Admin.LevelToListName(Admin.GetLevel(v));
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						IsMuted = isMuted;
+						IsBanned = isBanned;
 						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
 						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
