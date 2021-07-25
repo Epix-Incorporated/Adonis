@@ -3,6 +3,8 @@ client = nil
 service = nil
 
 return function(data)
+	local Functions = client.Functions;
+
 	local Owner = data.FromPlayer;
 	local SessionKey = data.SessionKey;
 	local SessionName = data.SessionName;
@@ -39,7 +41,7 @@ return function(data)
 
 			if good then
 				table.insert(list, {
-					Text = string.format("%s (%s)", v.Name, v.DisplayName);
+					Text = Functions.FormatPlayer(v);
 					Data = service.UnWrap(v);
 				});
 			end
@@ -69,7 +71,7 @@ return function(data)
 
 		for i,peer in next,peers do
 			local pBut = playerList:Add("TextButton", {
-				Text = string.format("%s (%s)", peer.Name, peer.DisplayName);
+				Text = Functions.FormatPlayer(peer);
 				Size = UDim2.new(1, 0, 0, 25);
 				TextSize = 12;
 				BackgroundTransparency = 1;
@@ -98,58 +100,99 @@ return function(data)
 		playerList.CanvasSize = UDim2.new(0, 0, 0, lObj.AbsoluteContentSize.Y)
 	end;
 
-	function newMessage(data)
-		local pName = data.PlayerName;
-		local pDisplayName = pName ~= "*SYSTEM*" and data.PlayerDisplayName
-		local msg = data.Message;
-		local icon = data.Icon or 0;
+	function newMessage(sender, message)
+		local newMsg
+		
+		if type(sender) == "string" then
+			newMsg = chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 25);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
 
-		local newMsg = chatlog:Add("Frame", {
-			Size = UDim2.new(1, 0, 0, 50);
-			BackgroundTransparency = 1;
-			AutomaticSize = "Y";
-			Children = {
-				{ClassName = "Frame";
-					Name = "CHATFRAME";
-					Size = UDim2.new(1, -10, 1, -10);
-					Position = UDim2.new(0, 5, 0, 5);
-					BackgroundTransparency = 0.5;
-					AutomaticSize = "Y";
-					Children = {
-						{ClassName = "ImageButton";
-							Name = "Icon";
-							Size = UDim2.new(0, 48, 0, 48);
-							Position = UDim2.new(0, 1, 0, 1);
-							Image = icon;
-						};
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(0, 0, 0, 14);
+								Position = UDim2.new(0, 1, 0, 1);
+								Text = "   "..sender;
+								TextSize = "12";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
 
-						{ClassName = "TextLabel";
-							Name = "PlayerName";
-							Size = UDim2.new(1, -55, 0, 15);
-							Position = UDim2.new(0, 55, 0, 0);
-							Text = not pDisplayName and pName or string.format("%s (%s)", pName, pDisplayName);
-							TextSize = "12";
-							TextXAlignment = "Left";
-							BackgroundTransparency = 1;
-						};
-
-						{ClassName = "TextLabel";
-							Name = "Message";
-							Size = UDim2.new(1, -55, 0, 10);
-							Position = UDim2.new(0, 55, 0, 15);
-							Text = msg;
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							AutomaticSize = "Y";
-							TextWrapped = true;
-							TextScaled = false;
-							RichText = true;
-							BackgroundTransparency = 1;
-						};
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, 0, 0, 10);
+								Position = UDim2.new(0, 0, 0, 14);
+								Text = "   <i>"..(message or "<font color='rgb(230,0,0)'>An error has occured</font>").."</i>";
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								RichText = true;
+								BackgroundTransparency = 1;
+							};
+						}
 					}
 				}
-			}
-		})
+			})
+		else
+			local gotIcon, status = service.Players:GetUserThumbnailAsync(sender.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+			newMsg = chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 50);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
+							{ClassName = "ImageButton";
+								Name = "Icon";
+								Size = UDim2.new(0, 48, 0, 48);
+								Position = UDim2.new(0, 1, 0, 1);
+								Image = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+							};
+
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(1, -55, 0, 15);
+								Position = UDim2.new(0, 55, 0, 0);
+								Text = Functions.FormatPlayer(sender);
+								TextSize = "12";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, -55, 0, 10);
+								Position = UDim2.new(0, 55, 0, 15);
+								Text = message;
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								BackgroundTransparency = 1;
+							};
+						}
+					}
+				}
+			})
+		end
+
 
 		table.insert(messageObjs, newMsg);
 
@@ -158,14 +201,6 @@ return function(data)
 			table.remove(messageObjs, 1);
 		end
 	end
-
-	local function systemMessage(msg)
-		newMessage({
-			PlayerName = "*SYSTEM*";
-			Message = msg;
-			Icon = 0;
-		})
-	end;
 
 	if client.UI.Get("PrivateChat".. SessionName) then
 		return
@@ -185,7 +220,7 @@ return function(data)
 	})
 
 	chatlog = window:Add("ScrollingFrame",{
-		Size = UDim2.new(1, -105, 1, -45);
+		Size = UDim2.new(1, -125, 1, -45);
 		CanvasSize = UDim2.new(0, 0, 0, 0);
 		BackgroundTransparency = 0.9;
 		--AutomaticCanvasSize = "Y";
@@ -193,16 +228,16 @@ return function(data)
 
 	reply = window:Add("TextBox", {
 		Text = ""; --"Enter reply";
-		PlaceholderText = "";
+		PlaceholderText = "Enter message";
 		Size = UDim2.new(1, -70, 0, 30);
 		Position = UDim2.new(0, 5, 1, -35);
-		ClearTextOnFocus = false;--true;
+		ClearTextOnFocus = false;
 		TextScaled = true;
 	})
 
 	playerList = window:Add("ScrollingFrame",{
-		Size = UDim2.new(0, 100, 1, -75);
-		Position = UDim2.new(1, -100, 0, 0);
+		Size = UDim2.new(0, 120, 1, -75);
+		Position = UDim2.new(1, -120, 0, 0);
 		BackgroundTransparency = 0.5;
 		AutomaticCanvasSize = "Y";
 	})
@@ -215,7 +250,7 @@ return function(data)
 			if CanManageUsers then
 				promptAddUser();
 			else
-				systemMessage("<i>You are not allowed to manage users</i>");
+				newMessage("*SYSTEM*", "You are not allowed to manage users");
 			end
 		end
 	})
@@ -231,7 +266,7 @@ return function(data)
 					selectedPlayer = nil;
 				end
 			else
-				systemMessage("<i>You are not allowed to manage users</i>");
+				newMessage("*SYSTEM*", "You are not allowed to manage users");
 			end
 		end
 	})
@@ -271,12 +306,7 @@ return function(data)
 	if data.History then
 		for i,data in ipairs(data.History) do
 			local p = data.Sender;
-			newMessage({
-				PlayerName = p.Name;
-				PlayerDisplayName = p.DisplayName;
-				Message = data.Message;
-				Icon = p.Icon or 0; --// replace with user avatar later
-			});
+			newMessage(p, data.Message);
 		end
 	end
 
@@ -284,23 +314,18 @@ return function(data)
 		local vargs = {...};
 		if SessionKey == sessionKey then
 			if cmd == "PlayerSentMessage" then
-				local p = vargs[1];
+				local p = vargs[1] or "*SYSTEM*";
 				local message = vargs[2];
 
 				if newMessage then
-					newMessage({
-						PlayerName = p.Name;
-						PlayerDisplayName = p.DisplayName;
-						Message = message;
-						Icon = p.Icon or 0;
-					})
+					newMessage(p, message)
 				end
 			elseif cmd == "UpdatePeerList" then
 				updatePeerList(vargs[1]);
 			elseif cmd == "RemovedFromSession" then
-				systemMessage("<i>You have been removed from this chat session</i>");
+				newMessage("*SYSTEM*", "You have been removed from this chat session");
 			elseif cmd == "AddedToSession" then
-				systemMessage("<i>You have been added to this chat session</i>");
+				newMessage("*SYSTEM*", "You have been added to this chat session");
 			end
 		end
 	end)
