@@ -1004,31 +1004,19 @@ return function(Vargs, env)
 					local peers = {};
 
 					for peer in next,newSession.Users do
-						table.insert(peers, {
-							Name = peer.Name;
-							DisplayName = peer.DisplayName;
-							UserId = peer.UserId;
-							--Instance = service.UnWrap(peer);
-						})
+						table.insert(peers, peer)
 					end
 
 					return peers;
 				end
 
 				local function systemMessage(msg)
-					local data
-					data = {
-						Name = "*SYSTEM*";
-						UserId = 0;
-						Icon = 0;
-					};
-
 					table.insert(history, {
-						Sender = data;
+						Sender = "*SYSTEM*";
 						Message = msg;
 					});
-
-					newSession:SendToUsers("PlayerSentMessage", data, msg);
+					
+					newSession:SendToUsers("PlayerSentMessage", "*SYSTEM*", msg);
 				end;
 
 				newSession:ConnectEvent(function(p, cmd, ...)
@@ -1040,16 +1028,9 @@ return function(Vargs, env)
 						end
 					else	-- Player event(s)
 						if cmd == "SendMessage" then
-							local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-							local data, msg = {
-								Name = p.Name;
-								DisplayName = p.DisplayName;
-								UserId = p.UserId;
-								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-							}, service.LaxFilter(string.sub(args[1], 1, 140), p);
-
+							local msg = service.LaxFilter(string.sub(args[1], 1, 140), p)
 							table.insert(history, {
-								Sender = data;
+								Sender = p;
 								Message = msg;
 							})
 
@@ -1057,19 +1038,19 @@ return function(Vargs, env)
 								table.remove(history, 1)
 							end
 
-							newSession:SendToUsers("PlayerSentMessage", data, msg);
+							newSession:SendToUsers("PlayerSentMessage", p, msg);
 						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
 							newSession:RemoveUser(p);
 
-							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
+							systemMessage(p.Name.." has left the session")
 							newSession:SendToUsers("UpdatePeerList", getPeerList());
 
 							if p == plr then
-								systemMessage("<i>Session ended: Session owner left</i>");
+								systemMessage("Session ended: Session owner left");
 								newSession:End();
 							end
 						elseif cmd == "EndSession" and p == plr then
-							systemMessage("<i>Session ended</i>");
+							systemMessage("Session ended");
 
 							newSession:End();
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
@@ -1079,7 +1060,7 @@ return function(Vargs, env)
 								newSession:AddUser(player);
 								newSession:SendToUser(player, "AddedToSession");
 
-								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
+								systemMessage(string.format("%s added %s to the session", p.Name, player.Name))
 								Remote.MakeGui(player, "PrivateChat", {
 									Owner = plr;
 									SessionKey = newSession.SessionKey;
@@ -1098,7 +1079,7 @@ return function(Vargs, env)
 									if peer.UserId and peer.UserId == pr.UserId then
 										newSession:SendToUser(pr, "RemovedFromSession");
 										newSession:RemoveUser(pr)
-										systemMessage(string.format("<i>%s removed %s from the session</i>", p.Name, pr.Name))
+										systemMessage(string.format("%s removed %s from the session", p.Name, pr.Name))
 									end
 								end
 							end
@@ -1110,22 +1091,10 @@ return function(Vargs, env)
 					end
 				end)
 
-				systemMessage("<i>Chat session started</i>")
+				systemMessage("Chat session started")
 
 				if args[2] then
-					local gotIcon, status = service.Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-
-					local data = {
-						Name = plr.Name;
-						DisplayName = plr.DisplayName;
-						UserId = plr.UserId;
-						Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-					};
-
-					table.insert(history, {
-						Sender = data;
-						Message = args[2];
-					});
+					table.insert(history, {plr, args[2]});
 				end
 
 				newSession:AddUser(plr);
