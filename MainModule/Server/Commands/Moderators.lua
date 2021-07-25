@@ -4331,6 +4331,28 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		CopyTools = {
+			Prefix = Settings.Prefix;
+			Commands = {"copytools";};
+			Args = {"player1";"player2";};
+			Hidden = false;
+			Description = "Copies player1's tools and gives them to player2";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local p1 = service.GetPlayers(plr, args[1])
+				local p2 = service.GetPlayers(plr, args[2])
+				for i,v in pairs(p1) do
+					for k,m in pairs(p2) do
+						for j,n in pairs(v.Backpack:GetChildren()) do
+							local b = n:clone()
+							n.Parent = m.Backpack
+						end
+					end
+				end
+			end
+		};
 
 		RemoveGuis = {
 			Prefix = Settings.Prefix;
