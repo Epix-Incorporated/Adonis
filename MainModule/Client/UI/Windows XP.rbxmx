@@ -18,452 +18,13 @@
 				<string name="Value">Default</string>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBXD96B796E5B9C459F80C58CDF91900341">
+		<Item class="ModuleScript" referent="RBXD79C45E4AF3D4D439B2E599376E0BFC3">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">false</bool>
-				<int name="DisplayOrder">0</int>
-				<bool name="Enabled">false</bool>
-				<bool name="IgnoreGuiInset">false</bool>
-				<string name="Name">Console</string>
-				<bool name="ResetOnSpawn">true</bool>
-				<Ref name="RootLocalizationTable">null</Ref>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<token name="ZIndexBehavior">0</token>
-			</Properties>
-			<Item class="Frame" referent="RBX074CA19782BC4BA59FE265C34DA2D099">
-				<Properties>
-					<bool name="Active">false</bool>
-					<Vector2 name="AnchorPoint">
-						<X>0</X>
-						<Y>0</Y>
-					</Vector2>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">false</bool>
-					<token name="AutomaticSize">0</token>
-					<Color3 name="BackgroundColor3">
-						<R>0.0862745121</R>
-						<G>0.0862745121</G>
-						<B>0.0862745121</B>
-					</Color3>
-					<float name="BackgroundTransparency">0.100000001</float>
-					<Color3 name="BorderColor3">
-						<R>0</R>
-						<G>0</G>
-						<B>0</B>
-					</Color3>
-					<token name="BorderMode">0</token>
-					<int name="BorderSizePixel">0</int>
-					<bool name="ClipsDescendants">true</bool>
-					<bool name="Draggable">false</bool>
-					<int name="LayoutOrder">0</int>
-					<string name="Name">Frame</string>
-					<Ref name="NextSelectionDown">null</Ref>
-					<Ref name="NextSelectionLeft">null</Ref>
-					<Ref name="NextSelectionRight">null</Ref>
-					<Ref name="NextSelectionUp">null</Ref>
-					<UDim2 name="Position">
-						<XS>0.363478243</XS>
-						<XO>0</XO>
-						<YS>0.325173885</YS>
-						<YO>0</YO>
-					</UDim2>
-					<Ref name="RootLocalizationTable">null</Ref>
-					<float name="Rotation">0</float>
-					<bool name="Selectable">false</bool>
-					<Ref name="SelectionImageObject">null</Ref>
-					<UDim2 name="Size">
-						<XS>0.272757769</XS>
-						<XO>0</XO>
-						<YS>0</YS>
-						<YO>200</YO>
-					</UDim2>
-					<token name="SizeConstraint">0</token>
-					<int64 name="SourceAssetId">-1</int64>
-					<token name="Style">0</token>
-					<BinaryString name="Tags"></BinaryString>
-					<bool name="Visible">true</bool>
-					<int name="ZIndex">1</int>
-				</Properties>
-				<Item class="ScrollingFrame" referent="RBX664F1FAF65B84FEAA0F13E6D84EF61AA">
-					<Properties>
-						<bool name="Active">false</bool>
-						<Vector2 name="AnchorPoint">
-							<X>0</X>
-							<Y>0</Y>
-						</Vector2>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">false</bool>
-						<token name="AutomaticCanvasSize">0</token>
-						<token name="AutomaticSize">0</token>
-						<Color3 name="BackgroundColor3">
-							<R>0.164705887</R>
-							<G>0.164705887</G>
-							<B>0.164705887</B>
-						</Color3>
-						<float name="BackgroundTransparency">1</float>
-						<Color3 name="BorderColor3">
-							<R>0</R>
-							<G>0</G>
-							<B>0</B>
-						</Color3>
-						<token name="BorderMode">0</token>
-						<int name="BorderSizePixel">0</int>
-						<Content name="BottomImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<Vector2 name="CanvasPosition">
-							<X>0</X>
-							<Y>0</Y>
-						</Vector2>
-						<UDim2 name="CanvasSize">
-							<XS>0</XS>
-							<XO>0</XO>
-							<YS>0</YS>
-							<YO>1000</YO>
-						</UDim2>
-						<bool name="ClipsDescendants">true</bool>
-						<bool name="Draggable">false</bool>
-						<token name="ElasticBehavior">0</token>
-						<token name="HorizontalScrollBarInset">0</token>
-						<int name="LayoutOrder">0</int>
-						<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<string name="Name">PlayerList</string>
-						<Ref name="NextSelectionDown">null</Ref>
-						<Ref name="NextSelectionLeft">null</Ref>
-						<Ref name="NextSelectionRight">null</Ref>
-						<Ref name="NextSelectionUp">null</Ref>
-						<UDim2 name="Position">
-							<XS>0.99999994</XS>
-							<XO>-125</XO>
-							<YS>0.0809698477</YS>
-							<YO>35</YO>
-						</UDim2>
-						<Ref name="RootLocalizationTable">null</Ref>
-						<float name="Rotation">0</float>
-						<Color3 name="ScrollBarImageColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
-						</Color3>
-						<float name="ScrollBarImageTransparency">0</float>
-						<int name="ScrollBarThickness">0</int>
-						<token name="ScrollingDirection">2</token>
-						<bool name="ScrollingEnabled">true</bool>
-						<bool name="Selectable">true</bool>
-						<Ref name="SelectionImageObject">null</Ref>
-						<UDim2 name="Size">
-							<XS>0</XS>
-							<XO>118</XO>
-							<YS>0</YS>
-							<YO>136</YO>
-						</UDim2>
-						<token name="SizeConstraint">0</token>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<Content name="TopImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<token name="VerticalScrollBarInset">0</token>
-						<token name="VerticalScrollBarPosition">0</token>
-						<bool name="Visible">true</bool>
-						<int name="ZIndex">2</int>
-					</Properties>
-				</Item>
-				<Item class="TextBox" referent="RBX628604DC73FA468DB8EF7011AF8B5F0A">
-					<Properties>
-						<bool name="Active">true</bool>
-						<Vector2 name="AnchorPoint">
-							<X>0</X>
-							<Y>0</Y>
-						</Vector2>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">false</bool>
-						<token name="AutomaticSize">0</token>
-						<Color3 name="BackgroundColor3">
-							<R>0.0666666701</R>
-							<G>0.0666666701</G>
-							<B>0.0666666701</B>
-						</Color3>
-						<float name="BackgroundTransparency">0</float>
-						<Color3 name="BorderColor3">
-							<R>0.0862745121</R>
-							<G>0.0862745121</G>
-							<B>0.0862745121</B>
-						</Color3>
-						<token name="BorderMode">0</token>
-						<int name="BorderSizePixel">0</int>
-						<bool name="ClearTextOnFocus">false</bool>
-						<bool name="ClipsDescendants">false</bool>
-						<bool name="Draggable">false</bool>
-						<token name="Font">16</token>
-						<int name="LayoutOrder">0</int>
-						<float name="LineHeight">1</float>
-						<int name="MaxVisibleGraphemes">-1</int>
-						<bool name="MultiLine">false</bool>
-						<string name="Name">TextBox</string>
-						<Ref name="NextSelectionDown">null</Ref>
-						<Ref name="NextSelectionLeft">null</Ref>
-						<Ref name="NextSelectionRight">null</Ref>
-						<Ref name="NextSelectionUp">null</Ref>
-						<Color3 name="PlaceholderColor3">
-							<R>0.699999988</R>
-							<G>0.699999988</G>
-							<B>0.699999988</B>
-						</Color3>
-						<string name="PlaceholderText">Enter command</string>
-						<UDim2 name="Position">
-							<XS>0</XS>
-							<XO>8</XO>
-							<YS>0</YS>
-							<YO>8</YO>
-						</UDim2>
-						<bool name="RichText">false</bool>
-						<Ref name="RootLocalizationTable">null</Ref>
-						<float name="Rotation">0</float>
-						<bool name="Selectable">true</bool>
-						<Ref name="SelectionImageObject">null</Ref>
-						<bool name="ShowNativeInput">true</bool>
-						<UDim2 name="Size">
-							<XS>0.989224136</XS>
-							<XO>-10</XO>
-							<YS>-0.00591715984</YS>
-							<YO>30</YO>
-						</UDim2>
-						<token name="SizeConstraint">0</token>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<string name="Text"></string>
-						<Color3 name="TextColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
-						</Color3>
-						<bool name="TextEditable">true</bool>
-						<bool name="TextScaled">false</bool>
-						<float name="TextSize">22</float>
-						<Color3 name="TextStrokeColor3">
-							<R>0</R>
-							<G>0</G>
-							<B>0</B>
-						</Color3>
-						<float name="TextStrokeTransparency">0.5</float>
-						<float name="TextTransparency">0</float>
-						<token name="TextTruncate">0</token>
-						<bool name="TextWrapped">true</bool>
-						<token name="TextXAlignment">2</token>
-						<token name="TextYAlignment">1</token>
-						<bool name="Visible">true</bool>
-						<int name="ZIndex">1</int>
-					</Properties>
-					<Item class="UICorner" referent="RBX34E0BF5F13A34695BCE7CAAC3D5ECE5E">
-						<Properties>
-							<BinaryString name="AttributesSerialize"></BinaryString>
-							<UDim name="CornerRadius">
-								<S>0</S>
-								<O>8</O>
-							</UDim>
-							<string name="Name">UICorner</string>
-							<int64 name="SourceAssetId">-1</int64>
-							<BinaryString name="Tags"></BinaryString>
-						</Properties>
-					</Item>
-				</Item>
-				<Item class="ScrollingFrame" referent="RBX438CDBEF72344B2A97D3AE9F36756BF0">
-					<Properties>
-						<bool name="Active">false</bool>
-						<Vector2 name="AnchorPoint">
-							<X>0</X>
-							<Y>0</Y>
-						</Vector2>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">false</bool>
-						<token name="AutomaticCanvasSize">0</token>
-						<token name="AutomaticSize">0</token>
-						<Color3 name="BackgroundColor3">
-							<R>0.0862745121</R>
-							<G>0.0862745121</G>
-							<B>0.0862745121</B>
-						</Color3>
-						<float name="BackgroundTransparency">1</float>
-						<Color3 name="BorderColor3">
-							<R>0</R>
-							<G>0</G>
-							<B>0</B>
-						</Color3>
-						<token name="BorderMode">0</token>
-						<int name="BorderSizePixel">0</int>
-						<Content name="BottomImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<Vector2 name="CanvasPosition">
-							<X>0</X>
-							<Y>0</Y>
-						</Vector2>
-						<UDim2 name="CanvasSize">
-							<XS>0</XS>
-							<XO>0</XO>
-							<YS>0</YS>
-							<YO>1000</YO>
-						</UDim2>
-						<bool name="ClipsDescendants">true</bool>
-						<bool name="Draggable">false</bool>
-						<token name="ElasticBehavior">0</token>
-						<token name="HorizontalScrollBarInset">0</token>
-						<int name="LayoutOrder">0</int>
-						<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<string name="Name">ScrollingFrame</string>
-						<Ref name="NextSelectionDown">null</Ref>
-						<Ref name="NextSelectionLeft">null</Ref>
-						<Ref name="NextSelectionRight">null</Ref>
-						<Ref name="NextSelectionUp">null</Ref>
-						<UDim2 name="Position">
-							<XS>0</XS>
-							<XO>10</XO>
-							<YS>0</YS>
-							<YO>47</YO>
-						</UDim2>
-						<Ref name="RootLocalizationTable">null</Ref>
-						<float name="Rotation">0</float>
-						<Color3 name="ScrollBarImageColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
-						</Color3>
-						<float name="ScrollBarImageTransparency">0</float>
-						<int name="ScrollBarThickness">0</int>
-						<token name="ScrollingDirection">2</token>
-						<bool name="ScrollingEnabled">true</bool>
-						<bool name="Selectable">true</bool>
-						<Ref name="SelectionImageObject">null</Ref>
-						<UDim2 name="Size">
-							<XS>0.989224136</XS>
-							<XO>-130</XO>
-							<YS>0.198860466</YS>
-							<YO>100</YO>
-						</UDim2>
-						<token name="SizeConstraint">0</token>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<Content name="TopImage"><url>http://roblox.com/asset?id=158348114</url></Content>
-						<token name="VerticalScrollBarInset">0</token>
-						<token name="VerticalScrollBarPosition">0</token>
-						<bool name="Visible">true</bool>
-						<int name="ZIndex">2</int>
-					</Properties>
-				</Item>
-				<Item class="UICorner" referent="RBX92B422274A65411A9DA48B0DB9675B4F">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<UDim name="CornerRadius">
-							<S>0</S>
-							<O>8</O>
-						</UDim>
-						<string name="Name">UICorner</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-					</Properties>
-				</Item>
-			</Item>
-			<Item class="TextButton" referent="RBX3E2FA506166E484FA54EBF26BC225530">
-				<Properties>
-					<bool name="Active">true</bool>
-					<Vector2 name="AnchorPoint">
-						<X>0</X>
-						<Y>0</Y>
-					</Vector2>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoButtonColor">true</bool>
-					<bool name="AutoLocalize">false</bool>
-					<token name="AutomaticSize">0</token>
-					<Color3 name="BackgroundColor3">
-						<R>0.227450997</R>
-						<G>0.258823544</G>
-						<B>0.36470589</B>
-					</Color3>
-					<float name="BackgroundTransparency">1</float>
-					<Color3 name="BorderColor3">
-						<R>0.105882362</R>
-						<G>0.164705887</G>
-						<B>0.207843155</B>
-					</Color3>
-					<token name="BorderMode">0</token>
-					<int name="BorderSizePixel">0</int>
-					<bool name="ClipsDescendants">false</bool>
-					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
-					<int name="LayoutOrder">0</int>
-					<float name="LineHeight">1</float>
-					<int name="MaxVisibleGraphemes">-1</int>
-					<bool name="Modal">false</bool>
-					<string name="Name">Entry</string>
-					<Ref name="NextSelectionDown">null</Ref>
-					<Ref name="NextSelectionLeft">null</Ref>
-					<Ref name="NextSelectionRight">null</Ref>
-					<Ref name="NextSelectionUp">null</Ref>
-					<UDim2 name="Position">
-						<XS>0</XS>
-						<XO>0</XO>
-						<YS>0</YS>
-						<YO>0</YO>
-					</UDim2>
-					<bool name="RichText">false</bool>
-					<Ref name="RootLocalizationTable">null</Ref>
-					<float name="Rotation">0</float>
-					<bool name="Selectable">true</bool>
-					<bool name="Selected">false</bool>
-					<Ref name="SelectionImageObject">null</Ref>
-					<UDim2 name="Size">
-						<XS>1</XS>
-						<XO>-10</XO>
-						<YS>0</YS>
-						<YO>20</YO>
-					</UDim2>
-					<token name="SizeConstraint">0</token>
-					<int64 name="SourceAssetId">-1</int64>
-					<token name="Style">0</token>
-					<BinaryString name="Tags"></BinaryString>
-					<string name="Text">:ff &lt;player&gt;</string>
-					<Color3 name="TextColor3">
-						<R>1</R>
-						<G>1</G>
-						<B>1</B>
-					</Color3>
-					<bool name="TextScaled">false</bool>
-					<float name="TextSize">18</float>
-					<Color3 name="TextStrokeColor3">
-						<R>0</R>
-						<G>0</G>
-						<B>0</B>
-					</Color3>
-					<float name="TextStrokeTransparency">1</float>
-					<float name="TextTransparency">0</float>
-					<token name="TextTruncate">0</token>
-					<bool name="TextWrapped">false</bool>
-					<token name="TextXAlignment">0</token>
-					<token name="TextYAlignment">1</token>
-					<bool name="Visible">false</bool>
-					<int name="ZIndex">3</int>
-				</Properties>
-			</Item>
-			<Item class="Folder" referent="RBX73F8315DD6B242F5B618C151700CD4F7">
-				<Properties>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<string name="Name">Config</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-				</Properties>
-				<Item class="BoolValue" referent="RBX2C84E3D575A64287B5AEB9A7C9C4B4D7">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<string name="Name">CanKeepAlive</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<bool name="Value">false</bool>
-					</Properties>
-				</Item>
-				<Item class="ModuleScript" referent="RBXBD38A9EE36D04C24AD2327F92FFF61E4">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Code</string>
-						<string name="ScriptGuid"></string>
-						<ProtectedString name="Source"><![CDATA[client = nil
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">HelpButton</string>
+				<string name="ScriptGuid">{5FC077CB-0FE9-4511-97F9-3FDF0E6AF627}</string>
+				<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
 Routine = nil
@@ -471,219 +32,56 @@ service = nil
 gTable = nil
 
 --// All global vars will be wiped/replaced except script
---// All guis are autonamed codeName..gui.Name
 
 return function(data)
-	local player = service.Players.LocalPlayer
-	local playergui = player.PlayerGui
-	local gui = script.Parent.Parent
-	local frame = gui.Frame
-	local text = gui.Frame.TextBox
-	local scroll = gui.Frame.ScrollingFrame
-	local players = gui.Frame.PlayerList
-	local entry = gui.Entry
-	local BindEvent = gTable.BindEvent
-	
-	local opened = false
-	local scrolling = false
-	local debounce = false
-	local settings = client.Remote.Get("Setting",{"SplitKey","ConsoleKeyCode","BatchKey"})
-	local splitKey = settings.SplitKey
-	local consoleKey = settings.ConsoleKeyCode
-	local batchKey = settings.BatchKey
-	local commands = client.Remote.Get('FormattedCommands') or {}
-	
-	local scrollOpenSize = UDim2.new(0.36, 0, 0, 200)
-	local scrollCloseSize = UDim2.new(0.36, 0, 0, 47)
-	
-	local openPos = UDim2.new(0.32, 0, 0.353, 0)
-	local closePos = UDim2.new(0.32, 0, 0, -200)
-	
-	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
-	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
-		Size = scrollOpenSize;
-	})
-	
-	local scrollCloseTween = service.TweenService:Create(frame, tweenInfo, {
-		Size = scrollCloseSize;
-	})
-	
-	local consoleOpenTween = service.TweenService:Create(frame, tweenInfo, {
-		Position = openPos;
-	})
-	
-	local consoleCloseTween = service.TweenService:Create(frame, tweenInfo, {
-		Position = closePos;
-	})
-		
-	frame.Position = closePos
-	frame.Visible = false
-	frame.Size = scrollCloseSize
-	scroll.Visible = false
-	
-	client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
-	client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-	
-	local function close()
-		if gui:IsDescendantOf(game) and not debounce then
-			debounce = true
-			scroll:ClearAllChildren()
-			scroll.CanvasSize = UDim2.new(0,0,0,0)
-			scroll.ScrollingEnabled = false
-			frame.Size = scrollCloseSize
-			scroll.Visible = false
-			players.Visible = false
-			scrollOpen = false
-			
-			consoleCloseTween:Play();
-			
-			debounce = false
-			opened = false
-		end
-	end
-	
-	local function open()
-		if gui:IsDescendantOf(game) and not debounce then
-			debounce = true
-			
-			scroll.ScrollingEnabled = true
-			players.ScrollingEnabled = true
+	local playergui = service.PlayerGui
+	local localplayer = service.Players.LocalPlayer
+	local gui = service.New("ScreenGui")
+	local toggle = service.New("ImageButton", gui)
+	local gTable = client.UI.Register(gui)
 
-			consoleOpenTween:Play();
-			
-			frame.Size = scrollCloseSize
-			scroll.Visible = false
-			players.Visible = false
-			scrollOpen = false
-			text.Text = ''
-			frame.Visible = true
-			frame.Position = openPos;
-			text:CaptureFocus()
-			text.Text = ''
-			wait()
-			text.Text = ''
-			debounce = false
-			opened = true
-		end
+	if client.UI.Get("HelpButton", gui, true) then
+		gui:Destroy()
+		gTable:Destroy()
+		return nil
 	end
-	
-	text.FocusLost:connect(function(enterPressed)
-		if enterPressed then
-			if text.Text~='' and string.len(text.Text)>1 then
-				client.Remote.Send('ProcessCommand',text.Text)
-			end
-		end
-		
-		close()
-	end)
-	
-	text.Changed:connect(function(c)
-		if c == 'Text' and text.Text ~= '' and open then
-			scroll:ClearAllChildren()
-			players:ClearAllChildren()
-			
-			local nText = text.Text
-			if string.match(nText,".*"..batchKey.."([^']+)") then
-				nText = string.match(nText,".*"..batchKey.."([^']+)")
-				nText = string.match(nText,"^%s*(.-)%s*$")
-			end
-			
-			local pNum = 0
-			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
-			for i,v in next,service.Players:GetChildren() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
-					local new = entry:Clone()
-					new.Text = tostring(v)
-					new.TextXAlignment = "Right"
-					new.Visible = true
-					new.Parent = players
-					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:connect(function()
-						text.Text = text.Text..tostring(v)
-						text:CaptureFocus()
-					end)
-					pNum = pNum+1
-				end
-			end
-				
-			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
-				
-			local num = 0
-			for i,v in next,commands do
-				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
-					if not scrollOpen then
-						scrollOpenTween:Play();
-						--frame.Size = UDim2.new(1,0,0,140)
-						scroll.Visible = true
-						players.Visible = true
-						scrollOpen = true
-					end
-					local b = entry:Clone()
-					b.Visible = true
-					b.Parent = scroll
-					b.Text = v
-					b.Position = UDim2.new(0,0,0,20*num)
-					b.MouseButton1Down:connect(function()
-						text.Text = b.Text
-						text:CaptureFocus()
-					end)
-					num = num+1
-				end
-			end
-			
-			if num > 0 then
-				frame.Size = UDim2.new(0.36, 0, 0, math.clamp((math.max(num, pNum)*20)+53, 47, 200))
-			else
-				players.Visible = false
-				frame.Size = scrollCloseSize
-			end
-			scroll.CanvasSize = UDim2.new(0,0,0,num*20)
-		elseif c == 'Text' and text.Text == '' and opened then
-			scrollCloseTween:Play();
-			--service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
-			scroll.Visible = false
-			players.Visible = false
-			scrollOpen = false
-			scroll:ClearAllChildren() 
-			scroll.CanvasSize = UDim2.new(0,0,0,0)
+
+	gTable.Name = "HelpButton"
+	gTable.CanKeepAlive = false
+
+	toggle.Name = "Toggle"
+	toggle.BackgroundTransparency = 1
+	toggle.Position = UDim2.new(1, -45, 1, -45)
+	toggle.Size = UDim2.new(0, 40, 0, 40)
+	toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
+	toggle.ImageTransparency = 0
+
+	--if client.UI.Get("Chat") then
+	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
+	--end
+
+	toggle.MouseButton1Down:connect(function()
+		local found = client.UI.Get("UserPanel",nil,true)
+		if found then
+			found.Object:Destroy()
+		else
+			client.UI.Make("UserPanel",{})
 		end
 	end)
-	
-	BindEvent(service.UserInputService.InputBegan, function(InputObject)
-		local textbox = service.UserInputService:GetFocusedTextBox()
-		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
-			if opened then
-				close()
-			else
-				open()
-			end
-			client.Variables.ConsoleOpen = opened
-		end
-	end)
-	
+
 	gTable:Ready()
-end]]></ProtectedString>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-					</Properties>
-				</Item>
-				<Item class="BoolValue" referent="RBXE048DF86270F48E89FF6E36CEA000246">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<string name="Name">AllowMultiple</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<bool name="Value">false</bool>
-					</Properties>
-				</Item>
-			</Item>
+end
+]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
 		</Item>
 		<Item class="ScreenGui" referent="RBX3F4745F5A57F4614ADC27FD0831E99E9">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
 				<int name="DisplayOrder">0</int>
-				<bool name="Enabled">false</bool>
+				<bool name="Enabled">true</bool>
 				<bool name="IgnoreGuiInset">false</bool>
 				<string name="Name">Output</string>
 				<bool name="ResetOnSpawn">false</bool>
@@ -1002,7 +400,7 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid"></string>
+						<string name="ScriptGuid">{21D50E52-497B-42BA-A5FD-E391F280E901}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1061,6 +459,666 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
+			</Item>
+		</Item>
+		<Item class="ScreenGui" referent="RBXD96B796E5B9C459F80C58CDF91900341">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">false</bool>
+				<int name="DisplayOrder">0</int>
+				<bool name="Enabled">true</bool>
+				<bool name="IgnoreGuiInset">false</bool>
+				<string name="Name">Console</string>
+				<bool name="ResetOnSpawn">true</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<token name="ZIndexBehavior">0</token>
+			</Properties>
+			<Item class="Folder" referent="RBX73F8315DD6B242F5B618C151700CD4F7">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">Config</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="BoolValue" referent="RBX2C84E3D575A64287B5AEB9A7C9C4B4D7">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">CanKeepAlive</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Value">false</bool>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBXBD38A9EE36D04C24AD2327F92FFF61E4">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">Code</string>
+						<string name="ScriptGuid">{C19FB605-7B18-4CDB-922B-74060454A48A}</string>
+						<ProtectedString name="Source"><![CDATA[client = nil
+cPcall = nil
+Pcall = nil
+Routine = nil
+service = nil
+gTable = nil
+
+--// All global vars will be wiped/replaced except script
+--// All guis are autonamed codeName..gui.Name
+
+return function(data)
+	local player = service.Players.LocalPlayer
+	local playergui = player.PlayerGui
+	local gui = script.Parent.Parent
+	local frame = gui.Frame
+	local text = gui.Frame.TextBox
+	local scroll = gui.Frame.ScrollingFrame
+	local players = gui.Frame.PlayerList
+	local entry = gui.Entry
+	local BindEvent = gTable.BindEvent
+	
+	local opened = false
+	local scrolling = false
+	local debounce = false
+	local settings = client.Remote.Get("Setting",{"SplitKey","ConsoleKeyCode","BatchKey"})
+	local splitKey = settings.SplitKey
+	local consoleKey = settings.ConsoleKeyCode
+	local batchKey = settings.BatchKey
+	local commands = client.Remote.Get('FormattedCommands') or {}
+	
+	local scrollOpenSize = UDim2.new(0.36, 0, 0, 200)
+	local scrollCloseSize = UDim2.new(0.36, 0, 0, 47)
+	
+	local openPos = UDim2.new(0.32, 0, 0.353, 0)
+	local closePos = UDim2.new(0.32, 0, 0, -200)
+	
+	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
+	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
+		Size = scrollOpenSize;
+	})
+	
+	local scrollCloseTween = service.TweenService:Create(frame, tweenInfo, {
+		Size = scrollCloseSize;
+	})
+	
+	local consoleOpenTween = service.TweenService:Create(frame, tweenInfo, {
+		Position = openPos;
+	})
+	
+	local consoleCloseTween = service.TweenService:Create(frame, tweenInfo, {
+		Position = closePos;
+	})
+		
+	frame.Position = closePos
+	frame.Visible = false
+	frame.Size = scrollCloseSize
+	scroll.Visible = false
+	
+	client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
+	client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
+	
+	local function close()
+		if gui:IsDescendantOf(game) and not debounce then
+			debounce = true
+			scroll:ClearAllChildren()
+			scroll.CanvasSize = UDim2.new(0,0,0,0)
+			scroll.ScrollingEnabled = false
+			frame.Size = scrollCloseSize
+			scroll.Visible = false
+			players.Visible = false
+			scrollOpen = false
+			
+			consoleCloseTween:Play();
+			
+			debounce = false
+			opened = false
+		end
+	end
+	
+	local function open()
+		if gui:IsDescendantOf(game) and not debounce then
+			debounce = true
+			
+			scroll.ScrollingEnabled = true
+			players.ScrollingEnabled = true
+
+			consoleOpenTween:Play();
+			
+			frame.Size = scrollCloseSize
+			scroll.Visible = false
+			players.Visible = false
+			scrollOpen = false
+			text.Text = ''
+			frame.Visible = true
+			frame.Position = openPos;
+			text:CaptureFocus()
+			text.Text = ''
+			wait()
+			text.Text = ''
+			debounce = false
+			opened = true
+		end
+	end
+	
+	text.FocusLost:connect(function(enterPressed)
+		if enterPressed then
+			if text.Text~='' and string.len(text.Text)>1 then
+				client.Remote.Send('ProcessCommand',text.Text)
+			end
+		end
+		
+		close()
+	end)
+	
+	text.Changed:connect(function(c)
+		if c == 'Text' and text.Text ~= '' and open then
+			scroll:ClearAllChildren()
+			players:ClearAllChildren()
+			
+			local nText = text.Text
+			if string.match(nText,".*"..batchKey.."([^']+)") then
+				nText = string.match(nText,".*"..batchKey.."([^']+)")
+				nText = string.match(nText,"^%s*(.-)%s*$")
+			end
+			
+			local pNum = 0
+			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
+			for i,v in next,service.Players:GetChildren() do
+				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
+					local new = entry:Clone()
+					new.Text = tostring(v)
+					new.TextXAlignment = "Right"
+					new.Visible = true
+					new.Parent = players
+					new.Position = UDim2.new(0,0,0,20*pNum)
+					new.MouseButton1Down:connect(function()
+						text.Text = text.Text..tostring(v)
+						text:CaptureFocus()
+					end)
+					pNum = pNum+1
+				end
+			end
+				
+			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
+				
+			local num = 0
+			for i,v in next,commands do
+				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
+					if not scrollOpen then
+						scrollOpenTween:Play();
+						--frame.Size = UDim2.new(1,0,0,140)
+						scroll.Visible = true
+						players.Visible = true
+						scrollOpen = true
+					end
+					local b = entry:Clone()
+					b.Visible = true
+					b.Parent = scroll
+					b.Text = v
+					b.Position = UDim2.new(0,0,0,20*num)
+					b.MouseButton1Down:connect(function()
+						text.Text = b.Text
+						text:CaptureFocus()
+					end)
+					num = num+1
+				end
+			end
+			
+			if num > 0 then
+				frame.Size = UDim2.new(0.36, 0, 0, math.clamp((math.max(num, pNum)*20)+53, 47, 200))
+			else
+				players.Visible = false
+				frame.Size = scrollCloseSize
+			end
+			scroll.CanvasSize = UDim2.new(0,0,0,num*20)
+		elseif c == 'Text' and text.Text == '' and opened then
+			scrollCloseTween:Play();
+			--service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
+			scroll.Visible = false
+			players.Visible = false
+			scrollOpen = false
+			scroll:ClearAllChildren() 
+			scroll.CanvasSize = UDim2.new(0,0,0,0)
+		end
+	end)
+	
+	BindEvent(service.UserInputService.InputBegan, function(InputObject)
+		local textbox = service.UserInputService:GetFocusedTextBox()
+		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
+			if opened then
+				close()
+			else
+				open()
+			end
+			client.Variables.ConsoleOpen = opened
+		end
+	end)
+	
+	gTable:Ready()
+end]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="BoolValue" referent="RBXE048DF86270F48E89FF6E36CEA000246">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">AllowMultiple</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Value">false</bool>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Frame" referent="RBX074CA19782BC4BA59FE265C34DA2D099">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">false</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.0862745121</R>
+						<G>0.0862745121</G>
+						<B>0.0862745121</B>
+					</Color3>
+					<float name="BackgroundTransparency">0.100000001</float>
+					<Color3 name="BorderColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">true</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Frame</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.363478243</XS>
+						<XO>0</XO>
+						<YS>0.325173885</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<UDim2 name="Size">
+						<XS>0.272757769</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>200</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="ScrollingFrame" referent="RBX664F1FAF65B84FEAA0F13E6D84EF61AA">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">false</bool>
+						<token name="AutomaticCanvasSize">0</token>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.164705887</R>
+							<G>0.164705887</G>
+							<B>0.164705887</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<Content name="BottomImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<Vector2 name="CanvasPosition">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<UDim2 name="CanvasSize">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>1000</YO>
+						</UDim2>
+						<bool name="ClipsDescendants">true</bool>
+						<bool name="Draggable">false</bool>
+						<token name="ElasticBehavior">0</token>
+						<token name="HorizontalScrollBarInset">0</token>
+						<int name="LayoutOrder">0</int>
+						<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<string name="Name">PlayerList</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.99999994</XS>
+							<XO>-125</XO>
+							<YS>0.0809698477</YS>
+							<YO>35</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<Color3 name="ScrollBarImageColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="ScrollBarImageTransparency">0</float>
+						<int name="ScrollBarThickness">0</int>
+						<token name="ScrollingDirection">2</token>
+						<bool name="ScrollingEnabled">true</bool>
+						<bool name="Selectable">true</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>118</XO>
+							<YS>0</YS>
+							<YO>136</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<Content name="TopImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<token name="VerticalScrollBarInset">0</token>
+						<token name="VerticalScrollBarPosition">0</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+				</Item>
+				<Item class="TextBox" referent="RBX628604DC73FA468DB8EF7011AF8B5F0A">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">false</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0.0862745121</R>
+							<G>0.0862745121</G>
+							<B>0.0862745121</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClearTextOnFocus">false</bool>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<token name="Font">16</token>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="MultiLine">false</bool>
+						<string name="Name">TextBox</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<Color3 name="PlaceholderColor3">
+							<R>0.699999988</R>
+							<G>0.699999988</G>
+							<B>0.699999988</B>
+						</Color3>
+						<string name="PlaceholderText">Enter command</string>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>8</XO>
+							<YS>0</YS>
+							<YO>8</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<bool name="ShowNativeInput">true</bool>
+						<UDim2 name="Size">
+							<XS>0.989224136</XS>
+							<XO>-10</XO>
+							<YS>-0.00591715984</YS>
+							<YO>30</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text"></string>
+						<Color3 name="TextColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<bool name="TextEditable">true</bool>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">22</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">0.5</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="UICorner" referent="RBX34E0BF5F13A34695BCE7CAAC3D5ECE5E">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<UDim name="CornerRadius">
+								<S>0</S>
+								<O>8</O>
+							</UDim>
+							<string name="Name">UICorner</string>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="ScrollingFrame" referent="RBX438CDBEF72344B2A97D3AE9F36756BF0">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">false</bool>
+						<token name="AutomaticCanvasSize">0</token>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.0862745121</R>
+							<G>0.0862745121</G>
+							<B>0.0862745121</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<Content name="BottomImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<Vector2 name="CanvasPosition">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<UDim2 name="CanvasSize">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>1000</YO>
+						</UDim2>
+						<bool name="ClipsDescendants">true</bool>
+						<bool name="Draggable">false</bool>
+						<token name="ElasticBehavior">0</token>
+						<token name="HorizontalScrollBarInset">0</token>
+						<int name="LayoutOrder">0</int>
+						<Content name="MidImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<string name="Name">ScrollingFrame</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>10</XO>
+							<YS>0</YS>
+							<YO>47</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<Color3 name="ScrollBarImageColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="ScrollBarImageTransparency">0</float>
+						<int name="ScrollBarThickness">0</int>
+						<token name="ScrollingDirection">2</token>
+						<bool name="ScrollingEnabled">true</bool>
+						<bool name="Selectable">true</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<UDim2 name="Size">
+							<XS>0.989224136</XS>
+							<XO>-130</XO>
+							<YS>0.198860466</YS>
+							<YO>100</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<Content name="TopImage"><url>http://roblox.com/asset?id=158348114</url></Content>
+						<token name="VerticalScrollBarInset">0</token>
+						<token name="VerticalScrollBarPosition">0</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+				</Item>
+				<Item class="UICorner" referent="RBX92B422274A65411A9DA48B0DB9675B4F">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<UDim name="CornerRadius">
+							<S>0</S>
+							<O>8</O>
+						</UDim>
+						<string name="Name">UICorner</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="TextButton" referent="RBX3E2FA506166E484FA54EBF26BC225530">
+				<Properties>
+					<bool name="Active">true</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoButtonColor">true</bool>
+					<bool name="AutoLocalize">false</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.227450997</R>
+						<G>0.258823544</G>
+						<B>0.36470589</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="Font">3</token>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<bool name="Modal">false</bool>
+					<string name="Name">Entry</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">true</bool>
+					<bool name="Selected">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>-10</XO>
+						<YS>0</YS>
+						<YO>20</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">:ff &lt;player&gt;</string>
+					<Color3 name="TextColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<bool name="TextScaled">false</bool>
+					<float name="TextSize">18</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">false</bool>
+					<token name="TextXAlignment">0</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">false</bool>
+					<int name="ZIndex">3</int>
+				</Properties>
 			</Item>
 		</Item>
 		<Item class="ScreenGui" referent="RBXABB799DAE53F44F891FBB29F3BCDF5AF">
@@ -1554,9 +1612,9 @@ end]]></ProtectedString>
 					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
-						<R>0.325490206</R>
-						<G>0.325490206</G>
-						<B>0.325490206</B>
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
 					</Color3>
 					<float name="BackgroundTransparency">0</float>
 					<Color3 name="BorderColor3">
@@ -1653,9 +1711,9 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 						<string name="Text">Test Desciption</string>
 						<Color3 name="TextColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
 						</Color3>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">18</float>
@@ -1664,7 +1722,7 @@ end]]></ProtectedString>
 							<G>0</G>
 							<B>0</B>
 						</Color3>
-						<float name="TextStrokeTransparency">0.5</float>
+						<float name="TextStrokeTransparency">1</float>
 						<float name="TextTransparency">0</float>
 						<token name="TextTruncate">0</token>
 						<bool name="TextWrapped">true</bool>
@@ -1686,9 +1744,9 @@ end]]></ProtectedString>
 					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
-						<R>0.188235313</R>
-						<G>0.188235313</G>
-						<B>0.188235313</B>
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
 					</Color3>
 					<float name="BackgroundTransparency">0</float>
 					<Color3 name="BorderColor3">
@@ -1707,9 +1765,9 @@ end]]></ProtectedString>
 					<Ref name="NextSelectionRight">null</Ref>
 					<Ref name="NextSelectionUp">null</Ref>
 					<UDim2 name="Position">
-						<XS>0.75</XS>
+						<XS>0.17349726</XS>
 						<XO>0</XO>
-						<YS>0.25</YS>
+						<YS>0.44181034</YS>
 						<YO>0</YO>
 					</UDim2>
 					<Ref name="RootLocalizationTable">null</Ref>
@@ -1789,9 +1847,9 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 						<string name="Text">Selected Option</string>
 						<Color3 name="TextColor3">
-							<R>0.933333397</R>
-							<G>0.933333397</G>
-							<B>0.933333397</B>
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
 						</Color3>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">16</float>
@@ -1826,7 +1884,7 @@ end]]></ProtectedString>
 							<G>1</G>
 							<B>1</B>
 						</Color3>
-						<float name="BackgroundTransparency">1</float>
+						<float name="BackgroundTransparency">0</float>
 						<Color3 name="BorderColor3">
 							<R>0.105882362</R>
 							<G>0.164705887</G>
@@ -1839,9 +1897,9 @@ end]]></ProtectedString>
 						<Content name="HoverImage"><null></null></Content>
 						<Content name="Image"><url>rbxassetid://1317396937</url></Content>
 						<Color3 name="ImageColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
+							<R>0.301960796</R>
+							<G>0.380392164</G>
+							<B>0.521568656</B>
 						</Color3>
 						<Vector2 name="ImageRectOffset">
 							<X>0</X>
@@ -1860,9 +1918,9 @@ end]]></ProtectedString>
 						<Ref name="NextSelectionRight">null</Ref>
 						<Ref name="NextSelectionUp">null</Ref>
 						<UDim2 name="Position">
-							<XS>1</XS>
+							<XS>1.05999994</XS>
 							<XO>-30</XO>
-							<YS>0.5</YS>
+							<YS>0.75</YS>
 							<YO>-15</YO>
 						</UDim2>
 						<Content name="PressedImage"><null></null></Content>
@@ -1874,9 +1932,9 @@ end]]></ProtectedString>
 						<Ref name="SelectionImageObject">null</Ref>
 						<UDim2 name="Size">
 							<XS>0</XS>
-							<XO>30</XO>
+							<XO>21</XO>
 							<YS>0</YS>
-							<YO>30</YO>
+							<YO>20</YO>
 						</UDim2>
 						<token name="SizeConstraint">0</token>
 						<Rect2D name="SliceCenter">
@@ -1902,6 +1960,34 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
+					<Item class="UIGradient" referent="RBXAEBDA17A6B5444F49A8180A445A54625">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<ColorSequence name="Color">0 0.882353 0.917647 0.996078 0 1 0.741176 0.878431 0.984314 0 </ColorSequence>
+							<bool name="Enabled">true</bool>
+							<string name="Name">UIGradient</string>
+							<Vector2 name="Offset">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<float name="Rotation">45</float>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+							<NumberSequence name="Transparency">0 0 0 1 0 0 </NumberSequence>
+						</Properties>
+					</Item>
+					<Item class="UICorner" referent="RBX82F8E84F8D8F426399C1BF62A4200A16">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<UDim name="CornerRadius">
+								<S>0</S>
+								<O>3</O>
+							</UDim>
+							<string name="Name">UICorner</string>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
 				</Item>
 				<Item class="Frame" referent="RBX43C4B74C71F8491C88BC008126E85E11">
 					<Properties>
@@ -1914,9 +2000,9 @@ end]]></ProtectedString>
 						<bool name="AutoLocalize">false</bool>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
-							<R>0.129411772</R>
-							<G>0.129411772</G>
-							<B>0.129411772</B>
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
 						</Color3>
 						<float name="BackgroundTransparency">0</float>
 						<Color3 name="BorderColor3">
@@ -1925,7 +2011,7 @@ end]]></ProtectedString>
 							<B>0.301960796</B>
 						</Color3>
 						<token name="BorderMode">0</token>
-						<int name="BorderSizePixel">0</int>
+						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<int name="LayoutOrder">0</int>
@@ -2028,17 +2114,17 @@ return function(data)
 	local function apply(child)
 		
 		if child:IsA("TextButton") then
-			child.BackgroundColor3 = Color3.fromRGB(150, 150, 150);
+			child.BackgroundColor3 = Color3.fromRGB(244, 244, 240);
 			child.BorderColor3 = Color3.fromRGB(50, 70, 160);--child.BorderColor3 = Color3.fromRGB(00, 50, 220);
 			child.BorderSizePixel = 1;
 			
-			--[[local rounder = service.New("UICorner",{
-				CornerRadius = UDim.new(0, 8);
+			local rounder = service.New("UICorner",{
+				CornerRadius = UDim.new(0, 5);
 				Parent = child;
-			});--]]
+			});
 
 		elseif child:IsA("GuiObject") then
-			child.BackgroundColor3 = Color3.fromRGB(170, 170, 170);
+			child.BackgroundColor3 = Color3.fromRGB(236, 233, 216);
 			child.BorderColor3 = Color3.fromRGB(100, 100, 100);
 			child.BorderSizePixel = 1;
 		end
@@ -2104,7 +2190,7 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code.OLD</string>
-						<string name="ScriptGuid"></string>
+						<string name="ScriptGuid">{34198D07-C4BF-4619-8F84-A7030D2FED30}</string>
 						<ProtectedString name="Source"><![CDATA[																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -4310,9 +4396,9 @@ end]]></ProtectedString>
 						<bool name="AutoLocalize">true</bool>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
+							<R>0.925490201</R>
+							<G>0.913725495</G>
+							<B>0.847058833</B>
 						</Color3>
 						<float name="BackgroundTransparency">1</float>
 						<Color3 name="BorderColor3">
@@ -4397,9 +4483,9 @@ end]]></ProtectedString>
 							<token name="AutomaticCanvasSize">0</token>
 							<token name="AutomaticSize">0</token>
 							<Color3 name="BackgroundColor3">
-								<R>0.678431392</R>
-								<G>0.678431392</G>
-								<B>0.678431392</B>
+								<R>0.925490201</R>
+								<G>0.913725495</G>
+								<B>0.847058833</B>
 							</Color3>
 							<float name="BackgroundTransparency">0</float>
 							<Color3 name="BorderColor3">
@@ -6825,64 +6911,6 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-		</Item>
-		<Item class="ModuleScript" referent="RBXD79C45E4AF3D4D439B2E599376E0BFC3">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<Content name="LinkedSource"><null></null></Content>
-				<string name="Name">HelpButton</string>
-				<string name="ScriptGuid"></string>
-				<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
-Pcall = nil
-Routine = nil
-service = nil
-gTable = nil
-
---// All global vars will be wiped/replaced except script
-
-return function(data)
-	local playergui = service.PlayerGui
-	local localplayer = service.Players.LocalPlayer
-	local gui = service.New("ScreenGui")
-	local toggle = service.New("ImageButton", gui)
-	local gTable = client.UI.Register(gui)
-
-	if client.UI.Get("HelpButton", gui, true) then
-		gui:Destroy()
-		gTable:Destroy()
-		return nil
-	end
-
-	gTable.Name = "HelpButton"
-	gTable.CanKeepAlive = false
-
-	toggle.Name = "Toggle"
-	toggle.BackgroundTransparency = 1
-	toggle.Position = UDim2.new(1, -45, 1, -45)
-	toggle.Size = UDim2.new(0, 40, 0, 40)
-	toggle.Image = "http://www.roblox.com/asset/?id=7059706594"
-	toggle.ImageTransparency = 0
-
-	--if client.UI.Get("Chat") then
-	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
-	--end
-
-	toggle.MouseButton1Down:connect(function()
-		local found = client.UI.Get("UserPanel",nil,true)
-		if found then
-			found.Object:Destroy()
-		else
-			client.UI.Make("UserPanel",{})
-		end
-	end)
-
-	gTable:Ready()
-end
-]]></ProtectedString>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-			</Properties>
 		</Item>
 	</Item>
 </roblox>
