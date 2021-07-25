@@ -28,7 +28,7 @@ When I handle the merge, I will also add you to the credits as "@GitHub YourGitH
 Once I finish merging changes, I'll do some quick minor testing to make sure everything still works correctly. Once that's done, I'll upload the updated models, after which all new servers will be running the latest version. 
 
 ## How do I get the "GitHub Contributor" roles?
-After your contribution is accepted, message me on the server and I'll give you the role. If you'd also like the Contributor rank in the Roblox group make sure you join the group (https://www.roblox.com/groups/886423/Epix-Incorporated#!/about) and DM me on Discord (Sceleratis#0001).
+After your contribution is accepted, post your Discord & Roblox usernames in the discussion thread (https://github.com/Sceleratis/Adonis/discussions/433) and message me on Discord (Sceleratis#0001) and I'll give you the roles. Group: https://www.roblox.com/groups/886423/Epix-Incorporated#!/about
 
 
 ### That's all, folks!
