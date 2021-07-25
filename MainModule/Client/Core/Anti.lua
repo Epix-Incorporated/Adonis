@@ -238,24 +238,26 @@ return function()
 
 		HumanoidState = function()
 			wait(1)
-			local humanoid = service.Player.Character:WaitForChild("Humanoid")
+			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
-			event = humanoid.StateChanged:Connect(function(_,new)
-				if not doing then
-					event:Disconnect()
-				end
-				if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
-					doing = false
-					Detected("kill","Noclipping")
-					event:Disconnect()
-				end
-			end)
+			if humanoid then
+				event = humanoid.StateChanged:Connect(function(_,new)
+					if not doing then
+						event:Disconnect()
+					end
+					if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
+						doing = false
+						Detected("kill","Noclipping")
+						event:Disconnect()
+					end
+				end)
 
-			while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
-				if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
-					doing = false
-					Detected("kill","Noclipping")
+				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
+					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
+						doing = false
+						Detected("kill","Noclipping")
+					end
 				end
 			end
 		end;
@@ -264,9 +266,9 @@ return function()
 			wait(1)
 			local char = service.Player.Character
 			local torso = char:WaitForChild("Head")
-			local humPart = char:WaitForChild("HumanoidRootPart")
-			local hum = char:WaitForChild("Humanoid")
-			while torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
+			local humPart = char:WaitForChild("HumanoidRootPart", 2)
+			local hum = char:WaitForChild("Humanoid", 2)
+			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
 				if (humPart.Position-torso.Position).Magnitude>10 and hum and hum.Health>0 then
 					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
 				end
@@ -313,7 +315,7 @@ return function()
 			local soundIds = {
 				5032588119,
 			}
-			
+
 			local function check(Message)
 				for _,v in pairs(lookFor) do
 					if string.find(string.lower(Message),string.lower(v)) and not string.find(string.lower(Message),"failed to load") then

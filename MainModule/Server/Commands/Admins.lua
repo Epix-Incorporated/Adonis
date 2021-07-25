@@ -229,20 +229,20 @@ return function(Vargs, env)
 						local plrs = service.GetPlayers(plr,args[2],true)
 						if #plrs>0 then
 							for i,v in pairs(plrs) do
-								table.insert(Variables.Whitelist.List,v.Name..":"..v.userId)
+								table.insert(Variables.Whitelist.Lists.Settings,v.Name..":"..v.userId)
 								Functions.Hint("Whitelisted "..v.Name,{plr})
 							end
 						else
-							table.insert(Variables.Whitelist.List,args[2])
+							table.insert(Variables.Whitelist.Lists.Settings, args[2])
 						end
 					else
 						error('Missing name to whitelist')
 					end
 				elseif args[1]:lower()=="remove" then
 					if args[2] then
-						for i,v in pairs(Variables.Whitelist.List) do
+						for i,v in pairs(Variables.Whitelist.Lists.Settings) do
 							if v:lower():sub(1,#args[2]) == args[2]:lower() then
-								table.remove(Variables.Whitelist.List,i)
+								table.remove(Variables.Whitelist.Lists.Settings,i)
 								Functions.Hint("Removed "..tostring(v).." from the whitelist",{plr})
 							end
 						end
