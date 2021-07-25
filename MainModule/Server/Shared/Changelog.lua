@@ -3,7 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v224 WIP]";
+	"(Git/evanultra01) Copytools command #434";
 	"(Git/Expertcoderz) Major Aero theme update #430";
+	"(Git/Expertcoderz) :doll can now be used with non-ingame users #432";
 	"";
 	"[v223.2 7.24.2021 16:10 EST]";
 	"*By popular demand the old :pm has returned! Also bandaged a vuln related to it.";
