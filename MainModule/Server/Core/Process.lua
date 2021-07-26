@@ -611,11 +611,6 @@ return function(Vargs)
 			})
 
 			Core.SavePlayerData(p, data)
-			Logs.AddLog(Logs.Script,{
-				Text = tostring(p).." left";
-				Desc = tostring(p).." player removed";
-				Player = p;
-			})
 		end;
 
 		FinishLoading = function(p)

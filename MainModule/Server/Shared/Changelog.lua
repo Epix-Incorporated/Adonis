@@ -1,6 +1,10 @@
 return {
-	"Version: 224";
+	"Version: 224.1";
 	"*Drag edges to expand*";
+	"";
+	"[v224.1 7.26.2021 17:50 EST]";
+	"*More verbosity";
+	"(Git/fxeP1) Fix filtering/Chat limit kick. #436";
 	"";
 	"[v224 7.25.2021 21:35 EST]";
 	"*Actively investigating client loading issues";

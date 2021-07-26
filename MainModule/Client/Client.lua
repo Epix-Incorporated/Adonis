@@ -421,12 +421,12 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		if client.Core.Key then
 			--// Run anything from core modules that needs to be done after the client has finished loading
 			for i,f in next,runAfterLoaded do
-				f(data);
+				Pcall(f, data);
 			end
 
 			--// Stuff to run after absolutely everything else
 			for i,f in next,runLast do
-				f(data);
+				Pcall(f, data);
 			end
 
 			--// Finished loading
