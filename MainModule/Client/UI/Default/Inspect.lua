@@ -1,12 +1,9 @@
 client = nil
 service = nil
+Routine = nil
 
 local function boolToStr(bool)
-	if bool then
-		return "Yes"
-	else
-		return "No"
-	end
+	return bool and "Yes" or "No"
 end
 
 local function assetTypeToStr(int)
@@ -50,6 +47,11 @@ local function formatColor3(color)
 end
 
 return function(data)
+	local client = client
+	local service = client.Service
+
+	local Routine = Routine
+
 	local player = data.Target
 
 	local window = client.UI.Make("Window", {
@@ -116,7 +118,7 @@ return function(data)
 		addGeneralEntry("Account Age:", player.AccountAge .. " days ("..string.format("%.2f", player.AccountAge/365).." years)", "How long the player has been registered on Roblox")
 		addGeneralEntry("Membership:", player.MembershipType.Name, "The player's Roblox membership type")
 		i = i + 1
-		addGeneralEntry("Safe Chat Enabled:", boolToStr(data.SafeChat), "Does the player have safe chat enabled?")
+		addGeneralEntry("Safe Chat Enabled:", (data.SafeChat), "Does the player have safe chat enabled?")
 		addGeneralEntry("Can Chat:", boolToStr(data.CanChat), "Does the player's account settings allow them to chat?")
 		addGeneralEntry("Country/Region Code:", data.Code, "The player's country or region code based on geolocation")
 		addGeneralEntry("Is Roblox Staff:", boolToStr(player:IsInGroup(1200769) or player:IsInGroup(2868472)), "Is the player an official Roblox employee?")
@@ -137,16 +139,23 @@ return function(data)
 				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
 				TextXAlignment = "Left";
 			})
+			
+			if value["Image"] then
+				Routine(service.ContentProvider.PreloadAsync, service.ContentProvider, {
+					value["Image"]
+				})
+			end
+
 			entry:Add(valueType, value)
 
 			i = i + 1
 		end
 
-		local humDesc = game:GetService("Players"):GetHumanoidDescriptionFromUserId(player.UserId)
+		local humDesc = service.Players:GetHumanoidDescriptionFromUserId(player.UserId)
 
-		addAvatarEntry("Head Shot Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);})
-		addAvatarEntry("Avatar Bust Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size48x48);})
-		addAvatarEntry("Avatar Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = game:GetService("Players"):GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size48x48);})
+		addAvatarEntry("Head Shot Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = service.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);})
+		addAvatarEntry("Avatar Bust Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = service.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size48x48);})
+		addAvatarEntry("Avatar Thumbnail:", "ImageLabel", {BackgroundTransparency = 1;Size = UDim2.new(0, 30, 1, 0);Position = UDim2.new(1, -30, 0, 0);Image = service.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size48x48);})
 		addAvatarEntry("Body Type Scale:", "TextLabel", {Text = " "..humDesc.BodyTypeScale.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";}, "The factor by which the shape of the Humanoid rig is interpolated from the standard R15 body shape shape (0) to a taller and more slender body type (1)")
 		addAvatarEntry("Depth Scale:", "TextLabel", {Text = " "..humDesc.DepthScale.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";}, "The factor by which the depth (back-to-front distance) of the Humanoid rig is scaled")
 		addAvatarEntry("Height Scale:", "TextLabel", {Text = " "..humDesc.HeightScale.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";}, "The factor by which the height (top-to-bottom distance) of the Humanoid rig is scaled")
@@ -164,11 +173,11 @@ return function(data)
 
 		i = i + 1
 
-		spawn(function()
+		Routine(function()
 			for _, category in ipairs({{humDesc.ClimbAnimation,humDesc.Face,humDesc.FallAnimation,humDesc.Head,humDesc.IdleAnimation,humDesc.JumpAnimation,humDesc.LeftArm,humDesc.LeftLeg,humDesc.Pants,humDesc.RightArm,humDesc.RightLeg,humDesc.RunAnimation,humDesc.Shirt,humDesc.SwimAnimation,humDesc.Torso,humDesc.WalkAnimation},string.split(humDesc.BackAccessory),string.split(humDesc.FaceAccessory),string.split(humDesc.FrontAccessory),string.split(humDesc.HairAccessory),string.split(humDesc.HatAccessory),string.split(humDesc.ShouldersAccessory),string.split(humDesc.WaistAccessory),string.split(humDesc.NeckAccessory)}) do
 				for _, itemId in ipairs(category) do
 					if itemId and itemId ~= 0 and tonumber(itemId) ~= nil then
-						local info = game:GetService("MarketplaceService"):GetProductInfo(itemId)
+						local info = service.MarketplaceService:GetProductInfo(itemId)
 						addAvatarEntry(info.Name, "TextLabel", {Text = " "..assetTypeToStr(info.AssetTypeId).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";}, "ID: "..itemId.." | Creator: "..(info.Creator.Name or ("[None]")).." | Price: "..(info.PriceInRobux or "0").." Robux")
 					end
 				end
@@ -202,9 +211,12 @@ return function(data)
 
 		for item, pageNo in iterPageItems(friendPages) do
 			table.insert(sortedFriends, item.Username)
-			friendInfo[item.Username] = {id=item.Id;displayName=item.DisplayName;isOnline=item.IsOnline;}
+			friendInfo[item.Username] = {
+				id=item.Id;
+				displayName=item.DisplayName;
+				isOnline=item.IsOnline;
+			}
 		end
-
 		table.sort(sortedFriends)
 
 		local i = 2
@@ -236,12 +248,17 @@ return function(data)
 					TextXAlignment = "Right";
 				})
 			end
-			spawn(function()
+			Routine(function()
+				local friendHeadshot = service.Players:GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
 				entry:Add("ImageLabel", {
-					Image = game:GetService("Players"):GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+					Image = friendHeadshot;
 					BackgroundTransparency = 1;
 					Size = UDim2.new(0, 30, 0, 30);
 					Position = UDim2.new(0, 0, 0, 0);
+				})
+
+				service.ContentProvider:PreloadAsync({
+					friendHeadshot
 				})
 			end)
 			i = i + 1
@@ -256,16 +273,28 @@ return function(data)
 
 		friendstab:ResizeCanvas(false, true, false, false, 5, 5)
 	end
-	
+
 
 	local sortedGroups = {}           -- Putting this code outside the DO for groupstab
 	local groupInfoRef = {}           -- because it'll be used by adonistab later to
 	for _, groupInfo in pairs(service.GroupService:GetGroupsAsync(player.UserId) or {}) do -- get the Epix Incorporated group logo.
+		
+		-- Preloading Group EmblemUrl(s) before player gets to not cause downloading of it when on the page
+		Routine(service.ContentProvider.PreloadAsync, service.ContentProvider, {
+			groupInfo.EmblemUrl
+		})
+
 		table.insert(sortedGroups, groupInfo.Name)
-		groupInfoRef[groupInfo.Name] = {Id=groupInfo.Id;Rank=groupInfo.Rank;Role=groupInfo.Role;IsPrimary=groupInfo.IsPrimary;EmblemUrl=groupInfo.EmblemUrl}
+		groupInfoRef[groupInfo.Name] = {
+			Id = groupInfo.Id;
+			Rank = groupInfo.Rank;
+			Role = groupInfo.Role;
+			IsPrimary = groupInfo.IsPrimary;
+			EmblemUrl = groupInfo.EmblemUrl
+		}
 	end
 	table.sort(sortedGroups)
-	
+
 	do
 		local i = 2
 		local groupCount = 0
@@ -291,7 +320,7 @@ return function(data)
 				Position = UDim2.new(1, -120, 0, 0);
 				TextXAlignment = "Right";
 			})
-			spawn(function()
+			Routine(function()
 				entry:Add("ImageLabel", {
 					Image = groupInfo.EmblemUrl;
 					BackgroundTransparency = 1;

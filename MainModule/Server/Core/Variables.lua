@@ -48,6 +48,7 @@ return function(Vargs)
 		RunAfterInit = AfterInit;
 		ZaWarudo = false;
 		CodeName = math.random();
+		AuthorizedToReply = {};
 		FrozenObjects = {};
 		ScriptBuilder = {};
 		CachedDonors = {};
