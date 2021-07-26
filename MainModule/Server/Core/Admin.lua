@@ -349,7 +349,11 @@ return function(Vargs)
 		end;
 
 		LevelToListName = function(lvl)
-			if lvl > 999 then return "Place Owner" end
+			if lvl > 999 then
+				return "Place Owner"
+			elseif lvl == 0 then
+				return "Players";
+			end
 
 			--// Check if this is a default rank and if the level matches the default (so stuff like [Trello] Admins doesn't appear in the command list)
 			for i,v in next,server.Defaults.Settings.Ranks do
