@@ -92,10 +92,17 @@ return function(Vargs)
 		end;
 
 		SaveCommandLogs = function()
+			local logsToSave = Logs.Commands --{};
+			--local numLogsToSave = 200; --// Save the last X logs from this server
+
+			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
+			--	table.insert(logsToSave, Logs.Commands[i]);
+			--end
+
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				local temp = {}
 
-				for i,m in ipairs(Logs.Commands) do
+				for i,m in ipairs(logsToSave) do
 					local newTab = (type(m) == "table" and service.CloneTable(m)) or m;
 					if type(m) == "table" and newTab.Player then
 						local p = newTab.Player;

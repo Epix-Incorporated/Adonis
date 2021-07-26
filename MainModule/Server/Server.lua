@@ -577,9 +577,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.AllModulesLoaded = true;
 	service.Events.AllModulesLoaded:Fire(os.time());
 
-	--// Prepare the client loader
-	--server.Core.PrepareClient()
-
 	--// Queue handler
 	--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 

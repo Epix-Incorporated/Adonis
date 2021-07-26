@@ -114,121 +114,49 @@ return function()
 
 		GetEvent = function()
 			if Core.RemoteEvent then
-				Core.RemoteEvent.Event:Disconnect()
-				Core.RemoteEvent.Security:Disconnect()
-				Core.RemoteEvent = nil
+				for name,event in next,Core.RemoteEvent.Events do
+					event:Disconnect()
+				end
+
+				Core.RemoteEvent = nil;
 			end
 
-			Core.RemoteEvent = {}
-
-			local rindex = 0
-			local firstSearch
-			local timer = 1
-			local prevTime = 0
-			local start = os.time()
-			local events = {}
-			local found
-
+			local eventData = {}
 			local remoteParent = service.ReplicatedStorage;
+			local event = remoteParent:WaitForChild(client.RemoteName, 300)
 
-			local function finishEvent(event)
-				if event then
-					local rFunc = event:FindFirstChildOfClass("RemoteFunction")
-					if rFunc then
-						Core.RemoteEvent.Object = event
+			if not event then
+				Anti.Detected("Kick", "RemoteEvent Not Found");
+			else
+				local rFunc = event:WaitForChild("__FUNCTION", 120);
 
-						Core.RemoteEvent.Function = rFunc
-						rFunc.OnClientInvoke = Process.Remote;
-
-						Core.RemoteEvent.FireServer = event.FireServer
-						Core.RemoteEvent.Event = event.OnClientEvent:Connect(Process.Remote)--]]
-						Core.RemoteEvent.Security = event.Changed:Connect(function(p)
-							if Core.RemoteEvent.Function then
-								Core.RemoteEvent.Function.OnClientInvoke = Process.Remote;
-							end
-
-							if p == "RobloxLocked" and Anti.RLocked(event) then
-								client.Kill("RemoteEvent Locked")
-							elseif not event or not event.Parent then
-								Core.GetEvent()
-							end
-						end)
-
-						rFunc.Changed:Connect(function()
-							rFunc.OnClientInvoke = Process.Remote;
-						end)
-
-						--SetFireServer(service.MetaFunc(event.FireServer))
-
-						if not Core.Key then
-							Remote.Fire(client.DepsName.."GET_KEY")
-						end
-					else
-						client.Kill("RemoteFunction not found")
-					end
+				if not rFunc then
+					Anti.Detected("Kick", "RemoteFunction Not Found");
 				else
-					client.Kill("RemoteEvent not found")
-				end
-			end
+					local events = {};
 
-			local function search()
-				local children = {}
-				for i,child in next,remoteParent:GetChildren() do
-					if string.sub(child.Name,1,#client.RemoteName) == client.RemoteName then
-						table.insert(children, child)
-					end
-				end
+					rFunc.OnClientInvoke = Process.Remote;
 
-				for ind,e in next,events do
-					e.Event:Disconnect() events[ind] = nil
-				end
+					eventData.Object = event;
+					eventData.Function = rFunc;
+					eventData.FireServer = event.FireServer;
+					eventData.Events = events;
 
-				for i,child in next,children do
-					if not Anti.ObjRLocked(child) and child:IsA("RemoteEvent") and child:FindFirstChildOfClass("RemoteFunction") then
-						local index = rindex+1
-						rindex = index
-						if not events[child] then
-							local eventTab; eventTab = {
-								Event = child.OnClientEvent:Connect(function(com, ...)
-									if com == "TrustCheck" and select(1,...) == Core.Special and not found then
-										found = child
-										Core.RemoteEvent.Event = eventTab.Event
-										finishEvent(child)
-										for ind,e in next,events do
-											if ind ~= child then
-												e.Event:Disconnect() events[ind] = nil
-											end
-										end
-									elseif found and found == child then
-										--Process.Remote(com, ...)
-									end
-								end);
-								Object = child;
-							}
-							events[child] = eventTab
+					events.ProcessRemote = event.OnClientEvent:Connect(Process.Remote)
+					events.ParentChildRemoved = remoteParent.ChildRemoved:Connect(function(child)
+						if (Core.RemoteEvent == eventData) and child == event and wait() then
+							warn("::ADONIS:: REMOTE EVENT REMOVED? RE-GRABBING");
+							Core.GetEvent();
 						end
+					end)
 
-						child:FireServer(client.Module, "TrustCheck")
+					Core.RemoteEvent = eventData
+
+					if not Core.Key then
+						Remote.Fire(client.DepsName.."GET_KEY")
 					end
 				end
 			end
-
-			repeat
-				if os.time() > prevTime then
-					prevTime = os.time()
-					timer = timer+1
-					if timer%10 == 0 or not firstSearch then
-						firstSearch = true
-						local event = remoteParent:FindFirstChild(client.RemoteName)
-						if event then
-							found = event
-							finishEvent(event)
-						end
-						--search()
-					end
-				end
-
-			until found or not wait(0.01)
 		end;
 
 		LoadPlugin = function(plugin)

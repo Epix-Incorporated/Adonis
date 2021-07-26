@@ -618,10 +618,10 @@ return function(Vargs)
 		};
 
 		UnEncrypted = {
-			TrustCheck = function(p)
+			--[[TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;
+			end;--]]
 
 			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)

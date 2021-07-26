@@ -371,7 +371,7 @@ return function()
 			local limit = (limits and limits.Remote) or 0.01;
 			local RemoteEvent = Core.RemoteEvent;
 			local extra = {...};
-
+			
 			if RemoteEvent and RemoteEvent.Object then
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;

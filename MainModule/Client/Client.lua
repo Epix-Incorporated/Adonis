@@ -82,12 +82,12 @@ local WaitingEvents = {}
 local ServiceSpecific = {}
 local ServiceVariables = {}
 local function isModule(module) for ind,modu in next,client.Modules do if rawequal(module, modu) then return true end end end
-local function logError(err) warn("ERROR:"..tostring(err)) if client and client.Remote then client.Remote.Send("LogError",err) end end
+local function logError(err) warn("ERROR: ".. tostring(err)) if client and client.Remote then client.Remote.Send("LogError",err) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
 local print = function(...) for i,v in next,{...}do print(':: Adonis :: '..tostring(v)) end  end
 local warn = function(...) for i,v in next,{...}do warn(tostring(v)) end end
 local cPcall = function(func,...) local function cour(...) coroutine.resume(coroutine.create(func),...) end local ran,error=pcall(cour,...) if error then print(error) logError(error) warn('ERROR :: '..error) end end
-local Pcall = function(func,...) local ran,error=pcall(func,...) if error then logError(error) end end
+local Pcall = function(func,...) local ran,error = pcall(func,...) if error then logError(error) end end
 local Routine = function(func,...) coroutine.resume(coroutine.create(func),...) end
 local Immutable = function(...) local mut = coroutine.wrap(function(...) while true do coroutine.yield(...) end end) mut(...) return mut end
 local player = game:GetService("Players").LocalPlayer
@@ -465,7 +465,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 				end
 
 				if core.Init then
-					core.Init(data);
+					Pcall(core.Init, data);
 					core.Init = nil;
 				end
 			end
@@ -474,7 +474,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 	for i,f in next,runAfterInit do
-		f(data);
+		Pcall(f, data);
 	end
 
 	--// Load Plugins
@@ -484,7 +484,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 	for i,f in next,runAfterPlugins do
-		f(data);
+		Pcall(f, data);
 	end
 
 	--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)

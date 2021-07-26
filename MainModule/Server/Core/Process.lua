@@ -113,6 +113,8 @@ return function(Vargs)
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
+
+									Logs:AddLog("Script", string.format("%s requested client keys", tostring(p)))
 								else
 									Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
@@ -490,6 +492,9 @@ return function(Vargs)
 					LastUpdate = os.time();
 					FinishedLoading = false;
 					LoadingStatus = "WAITING_FOR_KEY";
+
+					Special = Core.MockClientKeys and Core.MockClientKeys.Special;
+					Module = Core.MockClientKeys and Core.MockClientKeys.Module;
 				}
 
 				Core.PlayerData[key] = nil
@@ -501,6 +506,7 @@ return function(Vargs)
 						if playerGui.Name ~= "PlayerGui" then
 							playerGui.Name = "PlayerGui"
 						end
+
 						playerGui:GetPropertyChangedSignal("Name"):Connect(function()
 							playerGui.Name = "PlayerGui"
 						end)
@@ -509,18 +515,20 @@ return function(Vargs)
 
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
-				Core.UpdateConnection(p)
+				--Core.UpdateConnection(p)
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
 
 				if banned then
+					Remote.Clients[key] = nil;
 					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
 					return
 				end
 
 				if Variables.ServerLock and level < 1 then
+					Remote.Clients[key] = nil;
 					p:Kick(Variables.LockMessage)
 					return
 				end
@@ -536,20 +544,25 @@ return function(Vargs)
 					end
 
 					if not listed and level == 0 then
+						Remote.Clients[key] = nil;
 						p:Kick(Variables.LockMessage)
 						return
 					end
 				end
 
 				if Remote.Clients[key] then
-					Core.HookClient(p)
+					--Core.HookClient(p)
 
 					Logs.AddLog(Logs.Script,{
-						Text = p.Name .. " joined";
+						Text = p.Name .. " loading started";
 						Desc = p.Name .. " successfully joined the server";
-						Player = p;
 					})
 
+					Logs.AddLog(Logs.Joins,{
+						Text = p.Name;
+						Desc = p.Name.." joined the server";
+						Player = p;
+					})
 
 					--// Get chats
 					p.Chatted:Connect(function(msg)
@@ -592,7 +605,7 @@ return function(Vargs)
 			Core.PlayerData[key] = nil
 
 			Logs.AddLog(Logs.Script,{
-				Text = string.format("Removed keys for %s", tostring(p));
+				Text = string.format("Removed Data for %s", tostring(p));
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
@@ -612,12 +625,6 @@ return function(Vargs)
 
 			--// Fire player added
 			service.Events.PlayerAdded:Fire(p)
-			Logs.AddLog(Logs.Joins,{
-				Text = p.Name;
-				Desc = p.Name.." joined the server";
-				Player = p;
-			})
-
 			Logs.AddLog(Logs.Script,{
 				Text = string.format("%s finished loading", p.Name);
 				Desc = "Client finished loading";
