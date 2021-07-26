@@ -110,6 +110,7 @@ if module and module:IsA("ModuleScript") then
 	folder.Name = "";
 	wait(0.01);
 	folder.Parent = nil; --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+
 	warn("Destroying parent...")
 
 	print("Debug: Loading the client?")
@@ -121,6 +122,7 @@ if module and module:IsA("ModuleScript") then
 			Start = start,
 			Loader = script,
 			Name = origName,
+			Folder = folder;
 			LoadingTime = loadingTime,
 			CallCheck = callCheck,
 			Kill = Kill
@@ -128,7 +130,7 @@ if module and module:IsA("ModuleScript") then
 
 		warn("Got return: "..tostring(ret))
 		if ret ~= "SUCCESS" then
-			warn(ret)
+			realWarn(ret)
 			Kill("ACLI: Loading Error [Bad Module Return]")
 		else
 			print("Debug: The client was found and loaded?")

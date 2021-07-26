@@ -218,7 +218,7 @@ return function()
 
 				--// Load all config values into the new Config folder
 				for i,v in next,endConfig do
-					v:Clone().Parent = confFolder
+					v:Clone().Parent = confFolder;
 				end
 
 				--// Find next module based theme GUI if code not found or first in sequence is module (in theme)

@@ -67,7 +67,7 @@ local startTime = tick()
 local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
-local Folder = nil
+local Folder = script.Parent;
 local locals = {}
 local client = {}
 local Queues = {}
@@ -199,17 +199,17 @@ client = setmetatable({
 
 locals = {
 	Pcall = Pcall;
-	Folder = Folder;
 	GetEnv = GetEnv;
 	cPcall = cPcall;
 	client = client;
+	Folder = Folder;
 	Routine = Routine;
 	service = service;
 	logError = logError;
 	origEnv = origEnv;
 }
 
-service = setfenv(require(script.Parent.Shared.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
+service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" and service.Detected then
 		Kill()("Shananigans denied")
@@ -266,6 +266,7 @@ Axes = service.Localize(Axes)
 for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val, true) end end
 pcall(function() return service.Player.Kick end)
 script = service.Wrap(script, true)
+Folder = service.Wrap(Folder, true)
 Enum = service.Wrap(Enum, true)
 game = service.Wrap(game, true)
 rawequal = service.RawEqual
@@ -343,13 +344,13 @@ for ind,loc in next,{
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab,data)
-	local folder = script.Parent
 	local remoteName,depsName = string.match(data.Name, "(.*)\\(.*)")
-	Folder = folder:Clone()
+	Folder = service.Wrap(data.Folder or folder:Clone() or Folder)
 
 	setfenv(1,setmetatable({}, {__metatable = unique}))
-	client.UIFolder = Folder.UI
-	client.Shared = Folder.Shared
+	client.Folder = Folder;
+	client.UIFolder = Folder:WaitForChild("UI");
+	client.Shared = Folder:WaitForChild("Shared");
 	client.Loader = data.Loader
 	client.Module = data.Module
 	client.DepsName = depsName
@@ -358,10 +359,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.RemoteName = remoteName
 
 	--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
-	for ind,obj in next,Folder.Dependencies:GetChildren() do client.Deps[obj.Name] = obj end
+	for ind,obj in next,Folder:WaitForChild("Dependencies"):GetChildren() do client.Deps[obj.Name] = obj end
 
 	--// Do this before we start hooking up events
-	folder:Destroy()
+	--folder:Destroy()
 	script:Destroy()
 
 	--// Intial setup
