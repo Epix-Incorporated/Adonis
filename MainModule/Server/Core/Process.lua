@@ -399,13 +399,9 @@ return function(Vargs)
 		end;
 
 		Chat = function(p, msg)
-			if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-				Anti.Detected(p, "kick", "Talking guest")
-			end
-
 			if RateLimit(p, "Chat") then
 				local isMuted = Admin.IsMuted(p);
-				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
+				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
