@@ -248,7 +248,7 @@ return function()
 			local data = data or {}
 			local defaults = {Desktop = "Default"; Mobile = "Mobilius"}
 			local themeData = themeData or Variables.LastServerTheme or defaults
-			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
+			local theme = (service.IsMobile() and themeData.Mobile) or themeData.Desktop
 			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 			local newGui, folder2, foundConf = UI.GetNew(theme, name)
 
