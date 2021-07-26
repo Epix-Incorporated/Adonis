@@ -350,7 +350,7 @@ return function(Vargs)
 
 		LevelToListName = function(lvl)
 			if lvl > 999 then
-				return "Place Owner"
+				return "Place Owner";
 			elseif lvl == 0 then
 				return "Players";
 			end
