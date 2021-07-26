@@ -2,9 +2,10 @@ return {
 	"Version: 224";
 	"*Drag edges to expand*";
 	"";
-	"[v224 7.25.2021 18:22 EST]";
+	"[v224 7.25.2021 21:35 EST]";
 	"*Actively investigating client loading issues";
 	"*Simplified the client RemoteEvent/Function setup process";
+	"*Client now uses StarterPlayerScripts";
 	"(Git/evanultra01) Copytools command #434";
 	"(Git/Expertcoderz) Major Aero theme update #430";
 	"(Git/Expertcoderz) :doll can now be used with non-ingame users #432";
