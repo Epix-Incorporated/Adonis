@@ -4,7 +4,7 @@ return {
 	"";
 	"[v224.3 7.27.2021 18:08 EST]";
 	"*Added :esp and :unesp";
-	"*Minor changes";
+	"*Minor changes/fixes";
 	"";
 	"[v224.2 7.27.2021 15:52 EST]";
 	"*The client will now dump it's loading log when the localplayer is kicked";
