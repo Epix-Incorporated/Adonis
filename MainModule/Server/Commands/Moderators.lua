@@ -21,6 +21,7 @@ return function(Vargs, env)
 				end
 			end
 		};
+
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick";};
@@ -41,6 +42,38 @@ return function(Vargs, env)
 						Functions.Hint("Kicked "..tostring(v), {plr})
 					end
 				end
+			end
+		};
+
+		ESP = {
+			Prefix = Settings.Prefix;
+			Commands = {"esp";};
+			Args = {"target (optional)", "brickcolor (optional)"};
+			Filter = true;
+			Description = "Allows you to see <target> (or all humanoids if no target is supplied) through walls";
+			AdminLevel = "Moderators";
+			Function = function(plr, args, data)
+				Remote.Send(plr, "Function", "CharacterESP", false)
+
+				if args[1] then
+					for _2,v2 in ipairs(service.GetPlayers(plr, args[1])) do
+						Remote.Send(plr, "Function", "CharacterESP", true, v2.Character, args[2] and BrickColor.new(args[2]).Color)
+					end
+				else
+					Remote.Send(plr, "Function", "CharacterESP", true)
+				end
+			end
+		};
+
+		UnESP = {
+			Prefix = Settings.Prefix;
+			Commands = {"unesp";};
+			Args = {};
+			Filter = true;
+			Description = "Removes ESP";
+			AdminLevel = "Moderators";
+			Function = function(plr, args, data)
+				Remote.Send(plr, "Function", "CharacterESP", false)
 			end
 		};
 
@@ -180,8 +213,8 @@ return function(Vargs, env)
 					})
 				end
 				--for i = num, 1, -1 do
-				--Functions.Message("Countdown", tostring(i), service.Players:GetChildren(), false, 1.1)
-				--Functions.Message(" ", i, false, service.Players:GetChildren(), 0.8)
+				--Functions.Message("Countdown", tostring(i), service.Players:GetPlayers(), false, 1.1)
+				--Functions.Message(" ", i, false, service.Players:GetPlayers(), 0.8)
 				--wait(1)
 				--end
 			end

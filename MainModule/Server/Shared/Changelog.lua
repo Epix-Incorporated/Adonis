@@ -1,6 +1,10 @@
 return {
-	"Version: 224.2";
+	"Version: 224.3";
 	"*Drag edges to expand*";
+	"";
+	"[v224.3 7.27.2021 18:08 EST]";
+	"*Added :esp and :unesp";
+	"*Minor changes";
 	"";
 	"[v224.2 7.27.2021 15:52 EST]";
 	"*The client will now dump it's loading log when the localplayer is kicked";

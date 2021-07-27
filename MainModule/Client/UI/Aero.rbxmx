@@ -182,13 +182,13 @@ return function(data)
 	local gui = script.Parent.Parent
 	local bar = gui.TextLabel
 	local playergui = service.PlayerGui
-	
+
 	--[[
 	local TopbarMatchAdmin = client.GetReturn("Setting","TopbarMatchAdmin")
 	local TopbarColor = client.GetReturn("Setting","TopbarColor")
 	local TopbarTransparency = client.GetReturn("Setting","TopbarTransparency")
 	local TopbarText = client.GetReturn("Setting","TopbarText")
-	
+
 	if not TopbarMatchAdmin then
 		local text=TopbarText
 		if text=="%TIME" then
@@ -213,7 +213,7 @@ return function(data)
 		bar.BackgroundTransparency=TopbarTransparency
 	end
 	--]]
-	
+
 	bar.Position=UDim2.new(0,0,0,-40)
 	gTable:Ready()
 end]]></ProtectedString>
@@ -262,7 +262,7 @@ return function(data)
 	local gui = service.New("ScreenGui")
 	local toggle = service.New("ImageButton", gui)
 	local gTable = client.UI.Register(gui)
-	
+
 	local clickSound = service.New("Sound")
 	clickSound.Parent = toggle
 	clickSound.Volume = 0.3
@@ -370,17 +370,17 @@ return function(data)
 	local frame = gui.Frame
 	local msg = gui.Frame.Message
 	local ttl = gui.Frame.Title
-	
+
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	
+
 	local title = data.Title
 	local message = data.Message
 	local scroll = data.Scroll
 	local tim = data.Time
-	
+
 	if not data.Message or not data.Title then gui:Destroy() end
-	
+
 	ttl.Text = title
 	msg.Text = message
 	ttl.TextTransparency = 1
@@ -388,25 +388,25 @@ return function(data)
 	ttl.TextStrokeTransparency = 1
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
-	
-	
+
+
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
 	blur.Parent = service.Workspace.CurrentCamera
-	
+
 	local fadeSteps = 10
 	local blurSize = 10
 	local textFade = 0.1
 	local strokeFade = 0.5
 	local frameFade = 0.3
-	
+
 	local blurStep = blurSize/fadeSteps
 	local frameStep = frameFade/fadeSteps
 	local textStep = 0.1
 	local strokeStep = 0.1
 	local gone = false
-	
+
 	local function fadeIn()
 		if not gone then
 			blur.Enabled = true
@@ -431,7 +431,7 @@ return function(data)
 			end
 		end
 	end
-	
+
 	local function fadeOut()
 		if not gone then
 			for i = 1,fadeSteps do
@@ -457,56 +457,56 @@ return function(data)
 			gone = true
 		end
 	end
-	
+
 	gTable.CustomDestroy = function()
 		if not gone then
 			gone = true
 			pcall(fadeOut)
 		end
-		
+
 		pcall(function() service.UnWrap(gui):Destroy() end)
 		pcall(function() blur:Destroy() end)
 	end
-	
-	
+
+
 	--[[if not scroll then
 		msg.Text = message
 	else
 		Routine(function()
 			wait(0.5)
-			for i = 1, #message do 
-				msg.Text = msg.Text .. message:sub(i,i) 
-				wait(0.05) 
-			end 
+			for i = 1, #message do
+				msg.Text = msg.Text .. message:sub(i,i)
+				wait(0.05)
+			end
 		end)
 	end--]] -- For now?
-	
+
 	fadeIn()
 	wait(tim or 5)
 	if not gone then
 		fadeOut()
 	end
-	
+
 	--[[
-	
+
 	frame.Position = UDim2.new(0.5,-175,-1.5,0)
-	
+
 	gui.Parent = playergui
-	
+
 	frame:TweenPosition(UDim2.new(0.5,-175,0.25,0),nil,nil,0.5)
-	
+
 	if not scroll then
 		msg.Text = message
 		wait(tim or 10)
 	else
 		wait(0.5)
-		for i = 1, #message do 
-			msg.Text = msg.Text .. message:sub(i,i) 
-			wait(0.05) 
-		end 
-		wait(tim or 5) 
+		for i = 1, #message do
+			msg.Text = msg.Text .. message:sub(i,i)
+			wait(0.05)
+		end
+		wait(tim or 5)
 	end
-	
+
 	if frame then
 		frame:TweenPosition(UDim2.new(0.5,-175,-1.5,0),nil,nil,0.5)
 		wait(1)
@@ -2665,12 +2665,12 @@ return function(data)
 	local storedChats = client.Variables.StoredChats
 	local desc = gui.Desc
 	local nohide = data.KeepChat
-	
+
 	local function Expand(ent, point)
 		ent.MouseLeave:connect(function(x,y)
 			point.Visible = false
 		end)
-		
+
 		ent.MouseMoved:connect(function(x,y)
 			point.Text = ent.Desc.Value
 			point.Size = UDim2.new(0, 10000, 0, 10000)
@@ -2685,7 +2685,7 @@ return function(data)
 			point.Position = UDim2.new(0, x, 0, y-40-(rows*20))
 		end)
 	end
-	
+
 	local function UpdateChat()
 		if gui then
 			local globalTab = gui.Drag.Frame.Frame.Global
@@ -2693,16 +2693,16 @@ return function(data)
 			local localTab = gui.Drag.Frame.Frame.Local
 			local adminsTab = gui.Drag.Frame.Frame.Admins
 			local crossTab = gui.Drag.Frame.Frame.Cross
-			
+
 			local entry = gui.Entry
 			local tester = gui.BoundTest
-			
+
 			globalTab:ClearAllChildren()
 			teamTab:ClearAllChildren()
 			localTab:ClearAllChildren()
 			adminsTab:ClearAllChildren()
 			crossTab:ClearAllChildren()
-			
+
 			local globalNum = 0
 			local teamNum = 0
 			local localNum = 0
@@ -2720,40 +2720,40 @@ return function(data)
 				end
 				clone.Visible = true
 				clone.Nameb.Font = "SourceSansBold"
-				
+
 				local color = v.Color or BrickColor.White()
 				clone.Nameb.TextColor3 = color.Color
-				
-				
+
+
 				tester.Text = "["..v.Player.."]: "
 				local naml = tester.TextBounds.X + 5
 				if naml>100 then naml = 100 end
-				
+
 				tester.Text = v.Message
 				local mesl = tester.TextBounds.X
-				
+
 				clone.Message.Position = UDim2.new(0,naml,0,0)
 				clone.Message.Size = UDim2.new(1,-(naml+10),1,0)
 				clone.Nameb.Size = UDim2.new(0,naml,0,20)
-				
+
 				clone.Visible = false
 				clone.Parent = globalTab
-				
+
 				local rows = math.floor((mesl+naml)/clone.AbsoluteSize.X)
 				rows = rows + 1
 				if rows<1 then rows = 1 end
 				if rows>3 then rows = 3 end
 				--rows = rows+1
-				
+
 				clone.Parent = nil
 				clone.Visible = true
-				
+
 				clone.Size = UDim2.new(1,0,0,rows*20)
-				
+
 				if v.Private then
 					clone.Nameb.TextColor3 = Color3.new(150/255, 57/255, 176/255)
 				end
-				
+
 				if v.Mode=="Global" then
 					clone.Position = UDim2.new(0,0,0,globalNum*20)
 					globalNum = globalNum + 1
@@ -2791,59 +2791,59 @@ return function(data)
 					clone.Parent = crossTab
 				end
 			end
-			
+
 			globalTab.CanvasSize = UDim2.new(0, 0, 0, ((globalNum)*20))
 			teamTab.CanvasSize = UDim2.new(0, 0, 0, ((teamNum)*20))
 			localTab.CanvasSize = UDim2.new(0, 0, 0, ((localNum)*20))
 			adminsTab.CanvasSize = UDim2.new(0, 0, 0, ((adminsNum)*20))
 			crossTab.CanvasSize = UDim2.new(0, 0, 0, ((crossNum)*20))
-			
+
 			local glob = (((globalNum)*20) - globalTab.AbsoluteWindowSize.Y)
 			local tea = (((teamNum)*20) - teamTab.AbsoluteWindowSize.Y)
 			local loc = (((localNum)*20) - localTab.AbsoluteWindowSize.Y)
 			local adm = (((adminsNum)*20) - adminsTab.AbsoluteWindowSize.Y)
 			local cro = (((crossNum)*20) - crossTab.AbsoluteWindowSize.Y)
-			
+
 			if glob<0 then glob=0 end
 			if tea<0 then tea=0 end
 			if loc<0 then loc=0 end
 			if adm<0 then adm=0 end
 			if cro<0 then cro=0 end
-			
+
 			globalTab.CanvasPosition =Vector2.new(0,glob)
 			teamTab.CanvasPosition =Vector2.new(0,tea)
 			localTab.CanvasPosition = Vector2.new(0,loc)
 			adminsTab.CanvasPosition = Vector2.new(0,adm)
 			crossTab.CanvasPosition = Vector2.new(0,cro)
-		end	
+		end
 	end
-	
+
 	if not storedChats then
 		client.Variables.StoredChats = {}
 		storedChats = client.Variables.StoredChats
 	end
-	
+
 	gTable:Ready()
-	
+
 	local bubble = gui.Bubble
 	local toggle = gui.Toggle
 	local drag = gui.Drag
 	local frame = gui.Drag.Frame
 	local frame2 = gui.Drag.Frame.Frame
 	local box = gui.Drag.Frame.Chat
-	
+
 	local globalTab = gui.Drag.Frame.Frame.Global
 	local teamTab = gui.Drag.Frame.Frame.Team
 	local localTab = gui.Drag.Frame.Frame.Local
 	local adminsTab = gui.Drag.Frame.Frame.Admins
 	local crossTab = gui.Drag.Frame.Frame.Cross
-	
+
 	local global = gui.Drag.Frame.Global
 	local team = gui.Drag.Frame.Team
 	local localb = gui.Drag.Frame.Local
 	local admins = gui.Drag.Frame.Admins
 	local cross = gui.Drag.Frame.Cross
-	
+
 	local ChatScript,ChatMain,Chatted = service.Player.PlayerScripts:FindFirstChild("ChatScript")
 	if ChatScript then
 		ChatMain = ChatScript:FindFirstChild("ChatMain")
@@ -2851,7 +2851,7 @@ return function(data)
 			Chatted = require(ChatMain).MessagePosted
 		end
 	end
-	
+
 	if not nohide then
 		client.Variables.CustomChat = true
 		client.Variables.ChatEnabled = false
@@ -2859,38 +2859,38 @@ return function(data)
 	else
 		drag.Position = UDim2.new(0,10,1,-180)
 	end
-	
+
 	local dragger = gui.Drag.Frame.Dragger
 	local fakeDrag = gui.Drag.Frame.FakeDragger
-	
+
 	local boxFocused = false
 	local mode = "Global"
-	
+
 	local lastChat = 0
 	local lastClick = 0
 	local isAdmin = client.Remote.Get("CheckAdmin")
-	
+
 	if not isAdmin then
 		admins.BackgroundTransparency = 0.8
 		admins.TextTransparency = 0.8
 		cross.BackgroundTransparency = 0.8
 		cross.TextTransparency = 0.8
 	end
-	
+
 	if client.UI.Get("HelpButton") then
 		toggle.Position = UDim2.new(1, -(45+45),1, -45)
 	end
-	
+
 	local function openGlobal()
 		globalTab.Visible = true
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		global.Text = "Global"
 		mode = "Global"
-		
+
 		global.BackgroundTransparency = 0
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -2906,17 +2906,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openTeam()
 		globalTab.Visible = false
 		teamTab.Visible = true
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		team.Text = "Team"
 		mode = "Team"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0
 		localb.BackgroundTransparency = 0.5
@@ -2933,17 +2933,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openLocal()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = true
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		localb.Text = "Local"
 		mode = "Local"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0
@@ -2960,17 +2960,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openAdmins()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = true
 		crossTab.Visible = false
-		
+
 		admins.Text = "Admins"
 		mode = "Admins"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -2986,17 +2986,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openCross()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = true
-		
+
 		cross.Text = "Cross"
 		mode = "Cross"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -3012,7 +3012,7 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function fadeIn()
 		--[[
 		frame.BackgroundTransparency = 0.5
@@ -3029,7 +3029,7 @@ return function(data)
 		box.BackgroundTransparency = 0
 		fakeDrag.Visible = true
 	end
-	
+
 	local function fadeOut()
 		--[[
 		frame.BackgroundTransparency = 0
@@ -3046,19 +3046,19 @@ return function(data)
 		box.BackgroundTransparency = 1
 		fakeDrag.Visible = false
 	end
-	
+
 	fadeOut()
-	
+
 	frame.MouseEnter:connect(function()
 		fadeIn()
 	end)
-	
+
 	frame.MouseLeave:connect(function()
 		if not boxFocused then
 			fadeOut()
 		end
 	end)
-	
+
 	toggle.MouseButton1Click:connect(function()
 		if drag.Visible then
 			drag.Visible = false
@@ -3068,19 +3068,19 @@ return function(data)
 			toggle.Image = "rbxassetid://417301773"--417285351"
 		end
 	end)
-	
+
 	global.MouseButton1Click:connect(function()
 		openGlobal()
 	end)
-	
+
 	team.MouseButton1Click:connect(function()
 		openTeam()
 	end)
-	
+
 	localb.MouseButton1Click:connect(function()
 		openLocal()
 	end)
-	
+
 	admins.MouseButton1Click:connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
@@ -3093,7 +3093,7 @@ return function(data)
 			lastClick = tick()
 		end
 	end)
-	
+
 	cross.MouseButton1Click:connect(function()
 		if isAdmin or tick() - lastClick>5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
@@ -3106,7 +3106,7 @@ return function(data)
 			lastClick = tick()
 		end
 	end)
-	
+
 	box.FocusLost:connect(function(enterPressed)
 		boxFocused = false
 		if enterPressed and not client.Variables.Muted then
@@ -3135,15 +3135,15 @@ return function(data)
 			end
 		end
 	end)
-	
-	box.Focused:connect(function() 
+
+	box.Focused:connect(function()
 		boxFocused = true
-		if box.Text=="Click here or press the '/' key to chat" then 
-			box.Text = '' 
-		end 
+		if box.Text=="Click here or press the '/' key to chat" then
+			box.Text = ''
+		end
 		fadeIn()
 	end)
-	
+
 	if not nohide then
 		service.UserInputService.InputBegan:connect(function(InputObject)
 			local textbox = service.UserInputService:GetFocusedTextBox()
@@ -3154,19 +3154,19 @@ return function(data)
 			end
 		end)
 	end
-	
+
 	local mouse=service.Players.LocalPlayer:GetMouse()
 	local nx,ny=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--450,200
 	local dragging=false
 	local defx,defy=nx,ny
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:connect(function(x,y)
 		if dragging then
 			nx=defx+(dragger.Position.X.Offset+20)
 			ny=defy+(dragger.Position.Y.Offset+20)
 			if nx<260 then nx=260 end
 			if ny<100 then ny=100 end
-			frame.Size=UDim2.new(1, 0, 0, ny) 
-			drag.Size=UDim2.new(0, nx, 0, 30) 
+			frame.Size=UDim2.new(1, 0, 0, ny)
+			drag.Size=UDim2.new(0, nx, 0, 30)
 		end
 	end)
 	dragger.DragBegin:connect(function(init)
@@ -3179,23 +3179,23 @@ return function(data)
 		dragger.Position=UDim2.new(1,-20,1,-20)
 		UpdateChat()
 	end)
-	
+
 	UpdateChat()
-	
+
 	--[[
-	if not service.UserInputService.KeyboardEnabled then 
-		warn("User is on mobile :: CustomChat Disabled") 
+	if not service.UserInputService.KeyboardEnabled then
+		warn("User is on mobile :: CustomChat Disabled")
 		chatenabled = true
 		drag.Visible = false
 		service.StarterGui:SetCoreGuiEnabled('Chat',true)
-	end	
+	end
 	--]]
-	
+
 	client.Handlers.RemoveCustomChat = function()
 		local chat=gui
 		if chat then chat:Destroy() client.Variables.ChatEnabled = true service.StarterGui:SetCoreGuiEnabled('Chat',true) end
 	end
-	
+
 	client.Handlers.ChatHandler = function(plr, message, mode)
 		if not message then return end
 		if string.sub(message,1,2)=='/e' then return end
@@ -3211,18 +3211,18 @@ return function(data)
 			local entry = gui.Entry
 			local bubble = gui.Bubble
 			local tester = gui.BoundTest
-			
+
 			local num = 0
 			local player
-			
+
 			if plr and type(plr) == "userdata" then
 				player = plr
 			else
 				player = {Name = tostring(plr or "System"), TeamColor = BrickColor.White()}
 			end
-			
+
 			if #message>150 then message = string.sub(message,1,150).."..." end
-			
+
 			if mode then
 				if mode=="Private" or mode=="System" then
 					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Global",Private=true})
@@ -3238,7 +3238,7 @@ return function(data)
 				local plr = player.Name
 				table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=plr,Message=message,Mode="Global"})
 			end
-			
+
 			if mode=="Local" then
 				if not localTab.Visible then
 					localb.Text = "Local*"
@@ -3260,18 +3260,18 @@ return function(data)
 					global.Text = "Global*"
 				end
 			end
-			
+
 			if #storedChats>=50 then
 				table.remove(storedChats,1)
 			end
-			
+
 			UpdateChat()
-			
+
 			if not nohide then
 				if player and type(player)=="userdata" then
 					local char = player.Character
 					local head = char:FindFirstChild("Head")
-					
+
 					if head then
 						local cont = service.LocalContainer():FindFirstChild(player.Name.."Bubbles")
 						if not cont then
@@ -3281,58 +3281,58 @@ return function(data)
 							cont.SizeOffset = Vector2.new(0,0.5)
 							cont.Size = UDim2.new(0,200,0,150)
 						end
-						
+
 						cont.Adornee = head
-				
+
 						local clone = bubble:Clone()
 						clone.TextLabel.Text = message
 						clone.Parent = cont
-						
+
 						local xsize = clone.TextLabel.TextBounds.X+40
 						if xsize>400 then xsize=400 end
 						clone.Size = UDim2.new(0,xsize,0,50)
-						
-						
+
+
 						if #cont:children()>3 then
 							cont:children()[1]:Destroy()
 						end
-						
+
 						for i,v in pairs(cont:children()) do
 							local xsize = v.TextLabel.TextBounds.X+40
 							if xsize>400 then xsize=400 end
 							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:children())*50))
 						end
-						
+
 						local cam = service.Workspace.CurrentCamera
 						local char = player.Character
 						local head = char:FindFirstChild("Head")
 						local label = clone.TextLabel
-						
-						Routine(function() 
-							repeat 
+
+						Routine(function()
+							repeat
 								if not head then break end
 								local dist = (head.Position - cam.CoordinateFrame.p).magnitude
-								if dist <= 50 then 
+								if dist <= 50 then
 									clone.Visible = true
-								else 
+								else
 									clone.Visible = false
 								end
-								wait(0.1) 
+								wait(0.1)
 							until not clone.Parent or not clone or not head or not head.Parent or not char
 						end)
-						
+
 						wait(10)
-						
+
 						if clone then clone:Destroy() end
 					end
 				end
 			end
 		end
 	end
-	
+
 	local textbox = service.UserInputService:GetFocusedTextBox()
-	if textbox then 
-		textbox:ReleaseFocus() 
+	if textbox then
+		textbox:ReleaseFocus()
 	end
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -4112,7 +4112,7 @@ return function(data)
 	local players = gui.Frame.PlayerList
 	local entry = gui.Entry
 	local BindEvent = gTable.BindEvent
-	
+
 	local opened = false
 	local scrolling = false
 	local debounce = false
@@ -4121,54 +4121,54 @@ return function(data)
 	local consoleKey = settings.ConsoleKeyCode
 	local batchKey = settings.BatchKey
 	local commands = client.Remote.Get('FormattedCommands') or {}
-	
+
 	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 140);
 	})
-	
+
 	local scrollCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 40);
 	})
-	
+
 	local consoleOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = UDim2.new(0, 0, 0, 0);
 	})
-	
+
 	local consoleCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = UDim2.new(0, 0, 0, -200);
 	})
-		
+
 	frame.Position = UDim2.new(0,0,0,-200)
 	frame.Visible = false
 	frame.Size = UDim2.new(1,0,0,40)
 	scroll.Visible = false
-	
+
 	if client.Variables.ConsoleOpen then
-		if client.Variables.ChatEnabled then 
-			service.StarterGui:SetCoreGuiEnabled("Chat",true) 
+		if client.Variables.ChatEnabled then
+			service.StarterGui:SetCoreGuiEnabled("Chat",true)
 		end
-		
-		if client.Variables.PlayerListEnabled then 
-			service.StarterGui:SetCoreGuiEnabled('PlayerList',true) 
+
+		if client.Variables.PlayerListEnabled then
+			service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
 		end
-		if client.UI.Get("Notif") then 
-			client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true 
+		if client.UI.Get("Notif") then
+			client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true
 		end
-		
+
 		local scr = client.UI.Get("Chat",nil,true)
 		if scr then scr.Object.Drag.Visible = true end
-		
+
 		local scr = client.UI.Get("PlayerList",nil,true)
 		if scr then scr.Object.Drag.Visible = true end
-		
+
 		local scr = client.UI.Get("HintHolder",nil,true)
 		if scr then scr.Object.Frame.Visible = true end
 	end
-	
+
 	client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
 	client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-	
+
 	local function close()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
@@ -4179,28 +4179,28 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			
-			if client.Variables.ChatEnabled then 
-				service.StarterGui:SetCoreGuiEnabled("Chat",true) 
+
+			if client.Variables.ChatEnabled then
+				service.StarterGui:SetCoreGuiEnabled("Chat",true)
 			end
-			
-			if client.Variables.PlayerListEnabled then 
-				service.StarterGui:SetCoreGuiEnabled('PlayerList',true) 
+
+			if client.Variables.PlayerListEnabled then
+				service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
 			end
-			
-			if client.UI.Get("Notif") then 
-				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true 
+
+			if client.UI.Get("Notif") then
+				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true
 			end
-			
+
 			local scr = client.UI.Get("Chat",nil,true)
 			if scr then scr.Object.Drag.Visible = true end
-			
+
 			local scr = client.UI.Get("PlayerList",nil,true)
 			if scr then scr.Object.Drag.Visible = true end
-			
+
 			local scr = client.UI.Get("HintHolder",nil,true)
 			if scr then scr.Object.Frame.Visible = true end
-			
+
 			consoleCloseTween:Play();
 			--service.SafeTweenPos(frame,UDim2.new(0,0,0,-200),'Out','Linear',0.2,true)
 			--frame:TweenPosition(UDim2.new(0,0,0,-200),'Out','Linear',0.2,true)
@@ -4208,34 +4208,34 @@ return function(data)
 			opened = false
 		end
 	end
-	
+
 	local function open()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
 			client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
 			client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-			
+
 			service.StarterGui:SetCoreGuiEnabled("Chat",false)
 			service.StarterGui:SetCoreGuiEnabled('PlayerList',false)
-					
+
 			scroll.ScrollingEnabled = true
 			players.ScrollingEnabled = true
-					
-			if client.UI.Get("Notif") then 
-				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = false 
+
+			if client.UI.Get("Notif") then
+				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = false
 			end
-					
+
 			local scr = client.UI.Get("Chat",nil,true)
 			if scr then scr.Object.Drag.Visible = false end
-					
+
 			local scr = client.UI.Get("PlayerList",nil,true)
 			if scr then scr.Object.Drag.Visible = false end
-					
+
 			local scr = client.UI.Get("HintHolder",nil,true)
 			if scr then scr.Object.Frame.Visible = false end
-			
+
 			consoleOpenTween:Play();
-			
+
 			frame.Size = UDim2.new(1,0,0,40)
 			scroll.Visible = false
 			players.Visible = false
@@ -4251,31 +4251,31 @@ return function(data)
 			opened = true
 		end
 	end
-	
+
 	text.FocusLost:connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
 			end
 		end
-		
+
 		close()
 	end)
-	
+
 	text.Changed:connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
-			
+
 			local nText = text.Text
 			if string.match(nText,".*"..batchKey.."([^']+)") then
 				nText = string.match(nText,".*"..batchKey.."([^']+)")
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
-			
+
 			local pNum = 0
 			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
-			for i,v in next,service.Players:GetChildren() do
+			for i,v in next,service.Players:GetPlayers() do
 				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
 					local new = entry:Clone()
 					new.Text = tostring(v)
@@ -4290,9 +4290,9 @@ return function(data)
 					pNum = pNum+1
 				end
 			end
-				
+
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
-				
+
 			local num = 0
 			for i,v in next,commands do
 				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
@@ -4323,11 +4323,11 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			scroll:ClearAllChildren() 
+			scroll:ClearAllChildren()
 			scroll.CanvasSize = UDim2.new(0,0,0,0)
 		end
 	end)
-	
+
 	BindEvent(service.UserInputService.InputBegan, function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
@@ -4339,7 +4339,7 @@ return function(data)
 			client.Variables.ConsoleOpen = opened
 		end
 	end)
-	
+
 	gTable:Ready()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -4611,7 +4611,7 @@ return function(data)
 	local t2 = main.Message
 	local msg = data.Message
 	local color = data.Color
-	
+
 	local found = client.UI.Get("Output")
 	if found then
 		for i,v in pairs(found) do
@@ -4621,7 +4621,7 @@ return function(data)
 			end
 		end
 	end
-	
+
 	t2.Text = msg
 	t2.Font = "SourceSans"
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
@@ -5250,24 +5250,24 @@ gTable = nil
 return function(data)
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
-	
+
 	local frame = script.Parent.Parent
 	local close = frame.Frame.Close
 	local main = frame.Frame.Main
 	local title = frame.Frame.Title
 	local timer = frame.Frame.Timer
-	
+
 	local gTable = data.gTable
 	local clickfunc = data.OnClick
 	local closefunc = data.OnClose
 	local ignorefunc = data.OnIgnore
-	
+
 	local name = data.Title
 	local text = data.Message or data.Text or ""
 	local time = data.Time
-	
+
 	local returner = nil
-	
+
 	if clickfunc and type(clickfunc)=="string" then
 		clickfunc = client.Core.LoadCode(clickfunc, GetEnv())
 	end
@@ -5277,10 +5277,10 @@ return function(data)
 	if ignorefunc and type(ignorefunc)=="string" then
 		ignorefunc = client.Core.LoadCode(ignorefunc, GetEnv())
 	end
-	
+
 	--client.UI.Make("NotificationHolder")
 	local holder = client.UI.Get("NotificationHolder",nil,true)
-	if not holder then 
+	if not holder then
 		local hold = service.New("ScreenGui")
 		local hTable = client.UI.Register(hold)
 		local frame = service.New("ScrollingFrame", hold)
@@ -5298,7 +5298,7 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
@@ -5306,11 +5306,11 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		holder = hTable
 		hTable:Ready()
 	end
-	
+
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
 		for i,v in pairs(holder:children()) do
@@ -5324,12 +5324,12 @@ return function(data)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end
-	
+
 	holder = holder.Object.Frame
 	title.Text = name
 	frame.Name = name
 	main.Text = text
-	
+
 	main.MouseButton1Click:connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
@@ -5339,7 +5339,7 @@ return function(data)
 			moveGuis(holder,0)
 		end
 	end)
-	
+
 	close.MouseButton1Click:connect(function()
 		if frame and frame.Parent then
 			if closefunc then
@@ -5349,13 +5349,13 @@ return function(data)
 			moveGuis(holder,0)
 		end
 	end)
-	
+
 	moveGuis(holder,1)
 	frame.Parent = holder
 	frame.Size = UDim2.new(0, 0, 0, 0)
 	frame:TweenSize(UDim2.new(1, -5, 0, 60),'Out','Quad',0.2)
 	frame:TweenPosition(UDim2.new(0,0,1,-75),'Out','Linear',0.2)
-	
+
 	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = 'http://www.roblox.com/asset/?id='.."203785584"--client.NotificationSound
@@ -5365,7 +5365,7 @@ return function(data)
 		wait(0.5)
 		sound:Destroy()
 	end)
-	
+
 	if time then
 		timer.Visible = true
 		spawn(function()
@@ -5375,7 +5375,7 @@ return function(data)
 				wait(1)
 				time = time-1
 			until time<=0 or not frame or not frame.Parent
-			
+
 			if frame and frame.Parent then
 				if ignorefunc then
 					returner = ignorefunc()
@@ -5385,9 +5385,9 @@ return function(data)
 			end
 		end)
 	end
-	
+
 	repeat wait() until returner ~= nil or not frame or not frame.Parent
-	
+
 	return returner
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -5947,9 +5947,9 @@ return function(data)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	
+
 	client.UI.Remove("Notif",script.Parent.Parent)
-	
+
 	if str and type(str)=="string" then
 		label.Text = str
 		gTable:Ready()
@@ -6464,10 +6464,10 @@ return function(data)
 	local playergui = service.PlayerGui
 	local str = data.Message
 	local time = data.Time or 15
-	
+
 	--client.UI.Make("HintHolder")
 	local container = client.UI.Get("HintHolder",nil,true)
-	if not container then 
+	if not container then
 		local holder = service.New("ScreenGui")
 		local hTable = client.UI.Register(holder)
 		local frame = service.New("ScrollingFrame", holder)
@@ -6484,7 +6484,7 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		frame.ChildRemoved:connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
@@ -6492,24 +6492,24 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		container = hTable
 		hTable:Ready()
 	end
 	container = container.Object.Frame
-	
+
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
 	local topbar = client.UI.Get("TopBar")
-	
+
 	container.Position = UDim2.new(0,0,0,((notif and 30) or 0) + ((topbar and 40) or 0) - 35)
-	
+
 	local children = container:children()
-	
+
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
 	local bounds = gui.Frame.msg.TextBounds.X
-	
+
 	local function moveGuis(m,ignore)
 		m = m or 0
 		local max = #container:children()
@@ -6521,7 +6521,7 @@ return function(data)
 			end
 		end
 	end
-	
+
 	local lom = -1
 	moveGuis(-1)
 	gui.Parent = container
@@ -6529,17 +6529,17 @@ return function(data)
 	UDim2.new(0,0,0,(#container:children()+lom)*28)
 	moveGuis(-1)
 	--gui:TweenPosition(UDim2.new(0,0,0,(#container:children()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
-	
+
 	if #container:children()>5 then
 		local gui = container:children()[1]
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
 	end
-	
+
 	wait(data.Time or 5)
-	
-	if gui and gui.Parent then 
+
+	if gui and gui.Parent then
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
@@ -11069,7 +11069,7 @@ return function(data)
 
 		local newTitleButton = create("TextButton", data)
 		create("UICorner", {CornerRadius = UDim.new(0,4);Parent = newTitleButton})
-		
+
 		newTitleButton.MouseButton1Down:Connect(function() RippleEffect(newTitleButton) end)
 		return newTitleButton
 	end
@@ -11501,7 +11501,7 @@ return function(data)
 				else
 					selected.Text = "No Selection"
 				end
-				
+
 				local function showMenu()
 					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 					menu.Visible = not menu.Visible

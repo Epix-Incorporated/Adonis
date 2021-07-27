@@ -674,7 +674,7 @@ return function(Vargs, env)
 				end
 
 				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:GetChildren())
+				Functions.Hint('Restoring Map...',service.Players:GetPlayers())
 
 				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v~=script and v.Archivable==true and not v:IsA('Terrain') then
@@ -1331,7 +1331,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				assert(args[2],"Argument missing or nil")
-				for i,v in pairs(service.Players:GetChildren()) do
+				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
 						Title = args[1];

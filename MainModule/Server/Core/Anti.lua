@@ -33,7 +33,7 @@ return function(Vargs)
 
 	local function RunAfterPlugins(data)
 		--// Fake finder
-		service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
+		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
 
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
@@ -135,7 +135,7 @@ return function(Vargs)
 			if Anti.ObjRLocked(p) or not p:IsA("Player") then
 				return true,1
 			else
-				local players = service.Players:GetChildren()
+				local players = service.Players:GetPlayers()
 				local found = 0
 
 				if service.NetworkServer then
@@ -173,7 +173,7 @@ return function(Vargs)
 		end;
 
 		FindFakePlayers = function()
-			for i,v in pairs(service.Players:GetChildren()) do
+			for i,v in pairs(service.Players:GetPlayers()) do
 				if Anti.isFake(v) then
 					Anti.RemovePlayer(v, "Fake")
 				end

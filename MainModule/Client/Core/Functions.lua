@@ -90,6 +90,77 @@ return function()
 		RunLast = RunLast;
 		Kill = client.Kill;
 
+		ESPify = function(obj, color)
+			for i, part in ipairs(obj:GetChildren()) do
+				if part:IsA("BasePart") then
+					for i,surface in ipairs({"Front", "Back", "Top", "Bottom", "Left", "Right"}) do
+						local gui = service.New("SurfaceGui", {
+							Name = "__ADONISESP";
+							AlwaysOnTop = true;
+							ResetOnSpawn = false;
+							Face = surface;
+						})
+
+						service.New("Frame", {
+							Parent = gui;
+							Size = UDim2.new(1, 0, 1, 0);
+							BackgroundColor3 = color or Color3.fromRGB(255, 0, 234);
+						})
+
+						gui.Parent = part;
+						gui.AncestryChanged:Connect(function()
+							if not gui:IsDescendantOf(workspace) then
+								gui:Destroy()
+
+								for i,v in next,Variables.ESPObjects do
+									if v == gui then
+										table.remove(Variables.ESPObjects, i)
+										break;
+									end
+								end
+							end
+						end)
+
+						Variables.ESPObjects[gui] = part;
+					end
+				end
+			end
+		end;
+
+		CharacterESP = function(mode, target, color)
+			if Variables.ESPEvent then
+				Variables.ESPEvent:Disconnect();
+				Variables.ESPEvent = nil;
+			end
+
+			for obj in next,Variables.ESPObjects do
+				if not mode or not target or (target and obj:IsDescendantOf(target)) then
+					pcall(function() obj:Destroy() end)
+					Variables.ESPObjects[obj] = nil;
+				end
+			end
+
+			if mode == true then
+				if not target then
+					Variables.ESPEvent = workspace.ChildAdded:Connect(function(obj)
+						local human = obj:FindFirstChildOfClass("Humanoid")
+						if obj:IsA("Model") and human then
+							Functions.ESPify(obj, color);
+						end
+					end)
+
+					for i,obj in ipairs(workspace:GetChildren()) do
+						local human = obj:FindFirstChildOfClass("Humanoid")
+						if obj:IsA("Model") and human then
+							Functions.ESPify(obj, color);
+						end
+					end
+				else
+					Functions.ESPify(target, color);
+				end
+			end
+		end;
+
 		GetRandom = function(pLen)
 			local Len = (type(pLen) == "number" and pLen) or math.random(10,15) --// reru
 			local Res = {};
@@ -146,7 +217,7 @@ return function()
 				end)
 			end
 		end;
-		
+
 		Playlist = function()
 			return client.Remote.Get("Playlist")
 		end;

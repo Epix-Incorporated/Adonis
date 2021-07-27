@@ -959,7 +959,7 @@ return function(data)
 	local players = gui.Frame.PlayerList
 	local entry = gui.Entry
 	local BindEvent = gTable.BindEvent
-	
+
 	local opened = false
 	local scrolling = false
 	local debounce = false
@@ -968,38 +968,38 @@ return function(data)
 	local consoleKey = settings.ConsoleKeyCode
 	local batchKey = settings.BatchKey
 	local commands = client.Remote.Get('FormattedCommands') or {}
-	
+
 	local scrollOpenSize = UDim2.new(0.36, 0, 0, 200)
 	local scrollCloseSize = UDim2.new(0.36, 0, 0, 47)
-	
+
 	local openPos = UDim2.new(0.32, 0, 0.353, 0)
 	local closePos = UDim2.new(0.32, 0, 0, -200)
-	
+
 	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = scrollOpenSize;
 	})
-	
+
 	local scrollCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = scrollCloseSize;
 	})
-	
+
 	local consoleOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = openPos;
 	})
-	
+
 	local consoleCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = closePos;
 	})
-		
+
 	frame.Position = closePos
 	frame.Visible = false
 	frame.Size = scrollCloseSize
 	scroll.Visible = false
-	
+
 	client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
 	client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-	
+
 	local function close()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
@@ -1010,23 +1010,23 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			
+
 			consoleCloseTween:Play();
-			
+
 			debounce = false
 			opened = false
 		end
 	end
-	
+
 	local function open()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
-			
+
 			scroll.ScrollingEnabled = true
 			players.ScrollingEnabled = true
 
 			consoleOpenTween:Play();
-			
+
 			frame.Size = scrollCloseSize
 			scroll.Visible = false
 			players.Visible = false
@@ -1042,31 +1042,31 @@ return function(data)
 			opened = true
 		end
 	end
-	
+
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
 			end
 		end
-		
+
 		close()
 	end)
-	
+
 	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
-			
+
 			local nText = text.Text
 			if string.match(nText,".*"..batchKey.."([^']+)") then
 				nText = string.match(nText,".*"..batchKey.."([^']+)")
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
-			
+
 			local pNum = 0
 			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
-			for i,v in next,service.Players:GetChildren() do
+			for i,v in next,service.Players:GetPlayers() do
 				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
 					local new = entry:Clone()
 					new.Text = tostring(v)
@@ -1081,9 +1081,9 @@ return function(data)
 					pNum = pNum+1
 				end
 			end
-				
+
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
-				
+
 			local num = 0
 			for i,v in next,commands do
 				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
@@ -1106,7 +1106,7 @@ return function(data)
 					num = num+1
 				end
 			end
-			
+
 			if num > 0 then
 				frame.Size = UDim2.new(0.36, 0, 0, math.clamp((math.max(num, pNum)*20)+53, 47, 200))
 			else
@@ -1120,11 +1120,11 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			scroll:ClearAllChildren() 
+			scroll:ClearAllChildren()
 			scroll.CanvasSize = UDim2.new(0,0,0,0)
 		end
 	end)
-	
+
 	BindEvent(service.UserInputService.InputBegan, function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
@@ -1136,7 +1136,7 @@ return function(data)
 			client.Variables.ConsoleOpen = opened
 		end
 	end)
-	
+
 	gTable:Ready()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -1507,7 +1507,7 @@ return function(data)
 			end
 		end
 	end--]]
-	
+
 	t2.Text = msg
 	t2.Font = "Arial"
 	--t2.Position = UDim2.new(0, 0, 0.35, 0)
@@ -2487,7 +2487,7 @@ local function ignore(child)
 			--return true;
 		end
 	end
-	
+
 	if child.BackgroundTransparency == 1 then
 		return true;
 	end
@@ -2499,23 +2499,23 @@ local function propChange(child, target, list)
 			target[i] = child[i];
 		end
 	end
-	
+
 	if child.ZIndex == 1 then
 		child.ZIndex = 2;
 	end
-	
+
 	target.ZIndex = child.ZIndex-1;
 end
 
 return function(data)
 	local gui = script.Parent.Parent;--data.GUI;
-	
+
 	local function apply(child)
 		local rounder = service.New("UICorner",{
 			CornerRadius = UDim.new(0, 8);
 			Parent = child;
 		});
-		
+
 		if child:IsA("ScrollingFrame") then
 			child.BackgroundTransparency = 1;
 			--local propList = {
@@ -2528,23 +2528,23 @@ return function(data)
 			--	Rotation = true;
 			--	SizeConstraint = true;
 			--}
-			
+
 			--local frame = service.New("Frame");
 			--propChange(child, frame, propList)
-			
+
 			--child.BackgroundTransparency = 1;
-			
+
 			--child.Changed:Connect(function(p)
 			--	if p ~= "BackgroundTransparency" then
 			--		propChange(child, frame, propList);
 			--	end
 			--end)
-			
-			
+
+
 			--frame.Parent = child.Parent;
 		end
 	end
-	
+
 	gui.DescendantAdded:Connect(function(child)
 		if child:IsA("GuiObject") and not child:FindFirstChildOfClass("UICorner") and not ignore(child) then
 			apply(child);

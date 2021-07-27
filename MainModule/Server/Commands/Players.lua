@@ -709,7 +709,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temptable = {}
-				for _,v in pairs(service.Players:GetChildren()) do
+				for _,v in pairs(service.Players:GetPlayers()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end

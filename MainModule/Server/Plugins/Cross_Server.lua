@@ -44,7 +44,7 @@ return function(Vargs)
 		Ping = function(jobId, data)
 			Core.CrossServer("Pong", {
 				JobId = game.JobId;
-				NumPlayers = #service.Players:GetChildren();
+				NumPlayers = #service.Players:GetPlayers();
 			})
 		end;
 
