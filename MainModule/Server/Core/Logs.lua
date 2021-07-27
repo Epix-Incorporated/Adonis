@@ -45,6 +45,7 @@ return function(Vargs)
 		ServerDetails = {};
 		DateTime = {};
 		TempUpdaters = {};
+		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
 			local indToName = {
@@ -93,6 +94,7 @@ return function(Vargs)
 
 		SaveCommandLogs = function()
 			local logsToSave = Logs.Commands --{};
+			local maxLogs = Logs.OldCommandLogsLimit;
 			--local numLogsToSave = 200; --// Save the last X logs from this server
 
 			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
@@ -128,9 +130,12 @@ return function(Vargs)
 					end
 				end)
 
-				for i,v in ipairs(temp) do
-					if i > MaxLogs then
-						temp[i] = nil;
+				--// Trim logs, starting from the oldest
+				if #temp > maxLogs then
+					local diff = #temp - maxLogs;
+
+					for i = 1, diff do
+						table.remove(temp, 1)
 					end
 				end
 

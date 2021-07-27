@@ -48,12 +48,15 @@ return function()
 
 	local function RunAfterLoaded()
 		--// Report client finished loading
+		log("Fire client loaded")
 		client.Remote.Send("ClientLoaded")
 
 		--// Ping loop
+		log("Start ClientCheck loop");
 		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
+		log("Get settings");
 		local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
 		if settings then
 			client.G_API = settings.G_API
@@ -63,9 +66,10 @@ return function()
 			client.Allowed_API_Calls = settings.Allowed_API_Calls
 			client.HelpButtonImage = settings.HelpButtonImage
 		else
+			log("GET SETTINGS FAILED")
 			warn("FAILED TO GET SETTINGS FROM SERVER");
 		end
-
+		
 		Remote.RunAfterLoaded = nil;
 	end
 
@@ -371,7 +375,7 @@ return function()
 			local limit = (limits and limits.Remote) or 0.01;
 			local RemoteEvent = Core.RemoteEvent;
 			local extra = {...};
-			
+
 			if RemoteEvent and RemoteEvent.Object then
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
