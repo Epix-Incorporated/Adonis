@@ -48,11 +48,11 @@ return function()
 
 	local function RunAfterLoaded()
 		--// Report client finished loading
-		log("Fire client loaded")
+		log("~! Fire client loaded")
 		client.Remote.Send("ClientLoaded")
 
 		--// Ping loop
-		log("Start ClientCheck loop");
+		log("~! Start ClientCheck loop");
 		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
@@ -66,10 +66,10 @@ return function()
 			client.Allowed_API_Calls = settings.Allowed_API_Calls
 			client.HelpButtonImage = settings.HelpButtonImage
 		else
-			log("GET SETTINGS FAILED")
+			log("~! GET SETTINGS FAILED?")
 			warn("FAILED TO GET SETTINGS FROM SERVER");
 		end
-		
+
 		Remote.RunAfterLoaded = nil;
 	end
 

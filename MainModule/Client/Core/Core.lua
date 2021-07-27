@@ -114,12 +114,16 @@ return function()
 
 		GetEvent = function()
 			if Core.RemoteEvent then
+				log("Disconnect old RemoteEvent")
+
 				for name,event in next,Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
 				Core.RemoteEvent = nil;
 			end
+
+			log("Getting RemoteEvent");
 
 			local eventData = {}
 			local remoteParent = service.ReplicatedStorage;
@@ -128,6 +132,8 @@ return function()
 			if not event then
 				Anti.Detected("Kick", "RemoteEvent Not Found");
 			else
+				log("Getting RemoteFunction");
+
 				local rFunc = event:WaitForChild("__FUNCTION", 120);
 
 				if not rFunc then
@@ -146,6 +152,7 @@ return function()
 					events.ParentChildRemoved = remoteParent.ChildRemoved:Connect(function(child)
 						if (Core.RemoteEvent == eventData) and child == event and wait() then
 							warn("::ADONIS:: REMOTE EVENT REMOVED? RE-GRABBING");
+							log("~! REMOTEEVENT WAS REMOVED?")
 							Core.GetEvent();
 						end
 					end)
@@ -153,6 +160,7 @@ return function()
 					Core.RemoteEvent = eventData
 
 					if not Core.Key then
+						log("~! Getting key from server")
 						Remote.Fire(client.DepsName.."GET_KEY")
 					end
 				end

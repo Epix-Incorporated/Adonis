@@ -431,6 +431,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	for ind,load in next,LoadingOrder do
 		local modu = Folder.Core:FindFirstChild(load)
 		if modu then
+			log("~! Loading Core Module: ".. tostring(load))
 			LoadModule(modu, true, {script = script})
 		end
 	end
@@ -446,13 +447,13 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		log("Client fired finished loading")
 		if client.Core.Key then
 			--// Run anything from core modules that needs to be done after the client has finished loading
-			log("Doing run after loaded")
+			log("~! Doing run after loaded")
 			for i,f in next,runAfterLoaded do
 				Pcall(f, data);
 			end
 
 			--// Stuff to run after absolutely everything else
-			log("Doing run last")
+			log("~! Doing run last")
 			for i,f in next,runLast do
 				Pcall(f, data);
 			end
@@ -464,7 +465,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 			client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
 			service.Events.FinishedLoading:Fire(os.time())
 
-			log("Finished loading?")
+			log("~! FINISHED LOADING!")
 		else
 			log("Client missing remote key")
 			client.Kill()("Missing remote key")
@@ -472,10 +473,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	--// Initialize Cores
-	log("Init cores");
+	log("~! Init cores");
 	for i,name in next,LoadingOrder do
 		local core = client[name]
-		log("Load ".. tostring(name))
+		log("~! INIT: ".. tostring(name))
 
 		if core then
 			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
@@ -509,19 +510,19 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
-	log("Running after init")
+	log("~! Running after init")
 	for i,f in next,runAfterInit do
 		Pcall(f, data);
 	end
 
 	--// Load Plugins
-	log("Running plugins")
+	log("~! Running plugins")
 	for index,plugin in next,Folder.Plugins:GetChildren() do
 		LoadModule(plugin, false, {script = plugin}); --noenv
 	end
 
 	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
-	log("Running after plugins")
+	log("~! Running after plugins")
 	for i,f in next,runAfterPlugins do
 		Pcall(f, data);
 	end
@@ -564,6 +565,6 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	service.Events.ClientInitialized:Fire();
 
-	log("Return success");
+	log("~! Return success");
 	return "SUCCESS"
 end})
