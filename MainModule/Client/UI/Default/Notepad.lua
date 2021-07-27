@@ -78,7 +78,7 @@ return function(data)
 				TextXAlignment = "Right";
 				ClipsDescendants = true;
 				TextChanged = function(text, enter, new)
-					if enter and tonumber(text) and #text < 1000 then
+					if enter and tonumber(text) and text < 1000 then
 						content.TextSize = text;
 					end
 				end
