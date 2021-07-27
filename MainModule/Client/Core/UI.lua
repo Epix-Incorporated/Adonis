@@ -376,18 +376,20 @@ return function()
 				Active = true,
 				Ready = function()
 					if gTable.Config then gTable.Config.Parent = nil end
-					if pcall(function()
+					local ran,err = pcall(function()
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
 							gTable.Object.Parent = service.PlayerGui
 							gTable.Object.Enabled = true
 						else
 							gTable.Object.Parent = UI.GetHolder()
 						end
-					end) then
+					end);
+
+					if ran then
 						gTable.Active = true
 					else
 						warn("Something happened while trying to set the parent of "..tostring(gTable.Name))
-						warn'Maybe it was locked (Destroyed)?'
+						warn(tostring(err))
 						gTable:Destroy()
 					end
 				end,

@@ -47,7 +47,7 @@ return function(Vargs)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(info) end)
+			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
 
 			wait(1)
 
@@ -77,7 +77,7 @@ return function(Vargs)
 							local client = Remote.Clients[key]
 							if client and client.LastUpdate then
 								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]\n[Please open the developer console (F9) and screenshot any errors/warnings related to Adonis if this was done in error]")
 								end
 							end
 						end

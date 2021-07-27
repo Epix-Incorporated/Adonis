@@ -1,6 +1,11 @@
 return {
-	"Version: 224.1";
+	"Version: 224.2";
 	"*Drag edges to expand*";
+	"";
+	"[v224.2 7.27.2021 15:52 EST]";
+	"*The client will now dump it's loading log when the localplayer is kicked";
+	"*IF YOU ARE KICKED FOR A CLIENT TIMEOUT, PLEASE VIEW THE CONSOLE AND SCREENSHOT ANY ADONIS RELATED MESSAGES!";
+	"*You can send them to my Discord (Sceleratis#0001); Currently investigating a client loading issue affecting specific players randomly";
 	"";
 	"[v224.1 7.26.2021 17:50 EST]";
 	"*More verbosity";

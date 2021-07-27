@@ -81,6 +81,9 @@ local HookedEvents = {}
 local WaitingEvents = {}
 local ServiceSpecific = {}
 local ServiceVariables = {}
+local clientLog = {};
+local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis:: ".. tostring(v)) end end;
+local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 local function isModule(module) for ind,modu in next,client.Modules do if rawequal(module, modu) then return true end end end
 local function logError(err) warn("ERROR: ".. tostring(err)) if client and client.Remote then client.Remote.Send("LogError",err) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
@@ -160,6 +163,8 @@ local LoadModule = function(plugin, yield, envVars)
 	end
 end;
 
+log("Client setmetatable");
+
 client = setmetatable({
 	Handlers = {};
 	Modules = {};
@@ -207,7 +212,11 @@ locals = {
 	service = service;
 	logError = logError;
 	origEnv = origEnv;
+	log = log;
+	dumplog = dumplog;
 }
+
+log("Create service metatable");
 
 service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {client = client}))(function(eType, msg, desc, ...)
 	local extra = {...}
@@ -235,6 +244,7 @@ end, function(c, parent, tab)
 end, ServiceSpecific)
 
 --// Localize
+log("Localize");
 os = service.Localize(os)
 math = service.Localize(math)
 table = service.Localize(table)
@@ -263,6 +273,7 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 
 --// Wrap
+log("Wrap")
 for i,val in next,service do if type(val) == "userdata" then service[i] = service.Wrap(val, true) end end
 pcall(function() return service.Player.Kick end)
 script = service.Wrap(script, true)
@@ -277,6 +288,7 @@ client.Service = service
 client.Module = service.Wrap(client.Module, true)
 
 --// Setting things up
+log("Setting things up")
 for ind,loc in next,{
 	_G = _G;
 	game = game;
@@ -342,8 +354,16 @@ for ind,loc in next,{
 	service = service;
 } do locals[ind] = loc end
 
+--// Dump log on disconnect
+service.NetworkClient.ChildRemoved:Connect(function(p)
+	dumplog();
+end)
+
 --// Init
+log("Return init function");
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab,data)
+	log("Begin init");
+
 	local remoteName,depsName = string.match(data.Name, "(.*)\\(.*)")
 	Folder = service.Wrap(data.Folder or folder:Clone() or Folder)
 
@@ -359,16 +379,20 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	client.RemoteName = remoteName
 
 	--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
+	log("Get dependencies")
 	for ind,obj in next,Folder:WaitForChild("Dependencies"):GetChildren() do client.Deps[obj.Name] = obj end
 
 	--// Do this before we start hooking up events
+	log("Destroy script object")
 	--folder:Destroy()
 	script:Destroy()
 
 	--// Intial setup
+	log("Initial services caching")
 	for ind, serv in next,ServicesWeUse do local temp = service[serv] end
 
 	--// Client specific service variables/functions
+	log("Add service specific")
 	ServiceSpecific.Player = service.Players.LocalPlayer;
 	ServiceSpecific.PlayerGui = service.Player:FindFirstChild("PlayerGui");
 	ServiceSpecific.SafeTweenSize = function(obj,...) pcall(obj.TweenSize,obj,...) end;
@@ -403,6 +427,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end;
 
 	--// Load Core Modules
+	log("Loading core modules")
 	for ind,load in next,LoadingOrder do
 		local modu = Folder.Core:FindFirstChild(load)
 		if modu then
@@ -418,30 +443,39 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Loading Finisher
 	client.Finish_Loading = function()
+		log("Client fired finished loading")
 		if client.Core.Key then
 			--// Run anything from core modules that needs to be done after the client has finished loading
+			log("Doing run after loaded")
 			for i,f in next,runAfterLoaded do
 				Pcall(f, data);
 			end
 
 			--// Stuff to run after absolutely everything else
+			log("Doing run last")
 			for i,f in next,runLast do
 				Pcall(f, data);
 			end
 
 			--// Finished loading
+			log("Finish loading")
 			clientLocked = true
 			client.Finish_Loading = function() end
 			client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
 			service.Events.FinishedLoading:Fire(os.time())
+
+			log("Finished loading?")
 		else
+			log("Client missing remote key")
 			client.Kill()("Missing remote key")
 		end
 	end
 
 	--// Initialize Cores
+	log("Init cores");
 	for i,name in next,LoadingOrder do
 		local core = client[name]
+		log("Load ".. tostring(name))
 
 		if core then
 			if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
@@ -466,6 +500,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 				end
 
 				if core.Init then
+					log("Run init for ".. tostring(name))
 					Pcall(core.Init, data);
 					core.Init = nil;
 				end
@@ -474,19 +509,24 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
+	log("Running after init")
 	for i,f in next,runAfterInit do
 		Pcall(f, data);
 	end
 
 	--// Load Plugins
+	log("Running plugins")
 	for index,plugin in next,Folder.Plugins:GetChildren() do
 		LoadModule(plugin, false, {script = plugin}); --noenv
 	end
 
 	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
+	log("Running after plugins")
 	for i,f in next,runAfterPlugins do
 		Pcall(f, data);
 	end
+
+	log("Initial loading complete")
 
 	--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 	client.AllModulesLoaded = true;
@@ -523,5 +563,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	}, true)--]]
 
 	service.Events.ClientInitialized:Fire();
+
+	log("Return success");
 	return "SUCCESS"
 end})
