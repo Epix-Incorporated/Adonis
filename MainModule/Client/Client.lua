@@ -60,6 +60,16 @@ local ServicesWeUse = {
 	"NetworkClient";
 };
 
+--// Logging
+local clientLog = {};
+local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis:: ".. tostring(v)) end end;
+local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
+
+--// Dump log on disconnect
+game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+	dumplog();
+end)
+
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local origWarn = warn
@@ -81,9 +91,6 @@ local HookedEvents = {}
 local WaitingEvents = {}
 local ServiceSpecific = {}
 local ServiceVariables = {}
-local clientLog = {};
-local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis:: ".. tostring(v)) end end;
-local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 local function isModule(module) for ind,modu in next,client.Modules do if rawequal(module, modu) then return true end end end
 local function logError(err) warn("ERROR: ".. tostring(err)) if client and client.Remote then client.Remote.Send("LogError",err) end end
 local message = function(...) game:GetService("TestService"):Message(...) end
@@ -353,11 +360,6 @@ for ind,loc in next,{
 	Ray = Ray;
 	service = service;
 } do locals[ind] = loc end
-
---// Dump log on disconnect
-service.NetworkClient.ChildRemoved:Connect(function(p)
-	dumplog();
-end)
 
 --// Init
 log("Return init function");

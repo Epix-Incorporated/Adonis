@@ -492,48 +492,56 @@ return function(Vargs)
 			Core.PlayerData[key] = nil
 			Remote.Clients[key] = keyData
 
-			Routine(function()
-				if Anti.UserSpoofCheck(p) then
+			local ran, err = Pcall(function()
+				Routine(function()
+					if Anti.UserSpoofCheck(p) then
+						Remote.Clients[key] = nil;
+						Anti.Detected(p, "kick", "Username Spoofing");
+					end
+				end)
+
+				--p:SetSpecial("Kick", Anti.RemovePlayer)
+				--p:SetSpecial("Detected", Anti.Detected)
+				--Core.UpdateConnection(p)
+
+				local PlayerData = Core.GetPlayer(p)
+				local level = Admin.GetLevel(p)
+				local banned, reason = Admin.CheckBan(p)
+
+				if banned then
 					Remote.Clients[key] = nil;
-					Anti.Detected(p, "kick", "Username Spoofing");
+					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
+					return
+				end
+
+				if Variables.ServerLock and level < 1 then
+					Remote.Clients[key] = nil;
+					p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
+					return
+				end
+
+				if Variables.Whitelist.Enabled then
+					local listed = false
+
+					for listName, list in next,Variables.Whitelist.Lists do
+						if Admin.CheckTable(p, list) then
+							listed = true
+							break;
+						end
+					end
+
+					if not listed and level == 0 then
+						Remote.Clients[key] = nil;
+						p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
+						return
+					end
 				end
 			end)
 
-			--p:SetSpecial("Kick", Anti.RemovePlayer)
-			--p:SetSpecial("Detected", Anti.Detected)
-			--Core.UpdateConnection(p)
-
-			local PlayerData = Core.GetPlayer(p)
-			local level = Admin.GetLevel(p)
-			local banned, reason = Admin.CheckBan(p)
-
-			if banned then
-				Remote.Clients[key] = nil;
-				p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
-				return
-			end
-
-			if Variables.ServerLock and level < 1 then
-				Remote.Clients[key] = nil;
-				p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
-				return
-			end
-
-			if Variables.Whitelist.Enabled then
-				local listed = false
-
-				for listName, list in next,Variables.Whitelist.Lists do
-					if Admin.CheckTable(p, list) then
-						listed = true
-						break;
-					end
-				end
-
-				if not listed and level == 0 then
-					Remote.Clients[key] = nil;
-					p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
-					return
-				end
+			if not ran then
+				Logs:AddLog("Errors", tostring(p) .." PlayerAdded Failed: ".. tostring(err))
+				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn(tostring(err))
 			end
 
 			if Remote.Clients[key] then
@@ -558,6 +566,7 @@ return function(Vargs)
 				p.CharacterAdded:Connect(function()
 					service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
 				end)
+
 				delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						Logs.AddLog("Script", {
