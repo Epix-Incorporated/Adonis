@@ -282,6 +282,7 @@ return function(Vargs, env)
 			Description = "Turns a player into a doll which can be picked up";
 			Function = function(runner,args)
 				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					if plr.Character.Parent:IsA("Tool") ~= true then
 					local tool = Instance.new('Tool', workspace)
 					tool.ToolTip = plr.DisplayName .. ' as a tool, converted with Adonis.'
 					tool.Name = plr.Name
@@ -314,6 +315,9 @@ return function(Vargs, env)
 					local weld = Instance.new('WeldConstraint', tool)
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild('HumanoidRootPart')
+					else
+						error("That user is already a doll!")											
+					end
 				end
 			end
 		};
