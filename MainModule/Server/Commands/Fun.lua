@@ -271,6 +271,52 @@ return function(Vargs, env)
 				end
 			end
 		};
+												
+		PlrGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"playergear", "dollify", "pgear", "plrgear"};
+			Args = {"player";};
+			Fun = true;
+			Hidden = false;
+			AdminLevel = "Moderators";
+			Description = "Turns a player into a doll which can be picked up";
+			Function = function(runner,args)
+				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					local tool = Instance.new('Tool', workspace)
+					tool.ToolTip = plr.DisplayName .. ' as a tool, converted with Adonis.'
+					tool.Name = plr.Name
+					local handle = Instance.new('Part', tool)
+					handle.Name = 'Handle'
+					handle.Transparency = 1
+					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
+					model.Name=plr.DisplayName
+					local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
+					plr.Character:Destroy()
+					plr.Character=model
+					model:SetPrimaryPartCFrame(oldcframe)
+					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
+					local bHeight = hum:WaitForChild('BodyHeightScale')
+					local bDepth = hum:WaitForChild('BodyDepthScale')
+					local bWidth = hum:WaitForChild('BodyWidthScale')
+					bHeight.Value = bHeight.Value / 2
+					bDepth.Value = bDepth.Value / 2
+					bWidth.Value = bWidth.Value / 2
+					local cfr = (plr.Character:FindFirstChild('HumanoidRootPart')).CFrame
+					handle.CFrame = cfr
+					handle.CanCollide = false
+					for _,v in pairs(model:GetDescendants()) do
+						if v:IsA('BasePart') then
+							v.Massless = true
+						end
+					end
+					model.Parent = tool
+					model:SetPrimaryPartCFrame(cfr)
+					local weld = Instance.new('WeldConstraint', tool)
+					weld.Part0 = handle
+					weld.Part1 = model:FindFirstChild('HumanoidRootPart')
+				end
+			end
+		};
 
 		LowRes = {
 			Prefix = Settings.Prefix;
