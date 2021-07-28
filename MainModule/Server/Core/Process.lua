@@ -473,116 +473,103 @@ return function(Vargs)
 		end;
 
 		PlayerAdded = function(p)
-			if Anti.RLocked(p) then
-				Anti.Detected(p, "kick", "Roblox Locked")
-			elseif Anti.UserSpoofCheck(p) then
-				Anti.Detected(p, "kick", "Username Spoofing");
-			else
-				local key = tostring(p.UserId)
-				local keyData = {
+			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. tostring(p))
+
+			local key = tostring(p.UserId)
+			local keyData = {
+				Player = p;
+				Key = Functions:GetRandom();
+				Cache = {};
+				Sent = 0;
+				Received = 0;
+				LastUpdate = os.time();
+				FinishedLoading = false;
+				LoadingStatus = "WAITING_FOR_KEY";
+				Special = Core.MockClientKeys and Core.MockClientKeys.Special;
+				Module = Core.MockClientKeys and Core.MockClientKeys.Module;
+			}
+
+			Core.PlayerData[key] = nil
+			Remote.Clients[key] = keyData
+
+			Routine(function()
+				if Anti.UserSpoofCheck(p) then
+					Remote.Clients[key] = nil;
+					Anti.Detected(p, "kick", "Username Spoofing");
+				end
+			end)
+
+			--p:SetSpecial("Kick", Anti.RemovePlayer)
+			--p:SetSpecial("Detected", Anti.Detected)
+			--Core.UpdateConnection(p)
+
+			local PlayerData = Core.GetPlayer(p)
+			local level = Admin.GetLevel(p)
+			local banned, reason = Admin.CheckBan(p)
+
+			if banned then
+				Remote.Clients[key] = nil;
+				p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
+				return
+			end
+
+			if Variables.ServerLock and level < 1 then
+				Remote.Clients[key] = nil;
+				p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
+				return
+			end
+
+			if Variables.Whitelist.Enabled then
+				local listed = false
+
+				for listName, list in next,Variables.Whitelist.Lists do
+					if Admin.CheckTable(p, list) then
+						listed = true
+						break;
+					end
+				end
+
+				if not listed and level == 0 then
+					Remote.Clients[key] = nil;
+					p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
+					return
+				end
+			end
+
+			if Remote.Clients[key] then
+				--Core.HookClient(p)
+
+				Logs.AddLog(Logs.Script,{
+					Text = p.Name .. " loading started";
+					Desc = p.Name .. " successfully joined the server";
+				})
+
+				Logs.AddLog(Logs.Joins,{
+					Text = p.Name;
+					Desc = p.Name.." joined the server";
 					Player = p;
-					Key = Functions:GetRandom();
-					Cache = {};
-					Sent = 0;
-					Received = 0;
-					LastUpdate = os.time();
-					FinishedLoading = false;
-					LoadingStatus = "WAITING_FOR_KEY";
+				})
 
-					Special = Core.MockClientKeys and Core.MockClientKeys.Special;
-					Module = Core.MockClientKeys and Core.MockClientKeys.Module;
-				}
-
-				Core.PlayerData[key] = nil
-				Remote.Clients[key] = keyData
-
-				Routine(function()
-					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
-					if playerGui then
-						if playerGui.Name ~= "PlayerGui" then
-							playerGui.Name = "PlayerGui"
-						end
-
-						playerGui:GetPropertyChangedSignal("Name"):Connect(function()
-							playerGui.Name = "PlayerGui"
-						end)
+				--// Get chats
+				p.Chatted:Connect(function(msg)
+						service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+				end)
+				--// Character added
+				p.CharacterAdded:Connect(function()
+					service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
+				end)
+				delay(600, function()
+					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
+						Logs.AddLog("Script", {
+							Text = p.Name .. " Failed to Load",
+							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+							Player = p;
+						});
+						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				end)
-
-				--p:SetSpecial("Kick", Anti.RemovePlayer)
-				--p:SetSpecial("Detected", Anti.Detected)
-				--Core.UpdateConnection(p)
-
-				local PlayerData = Core.GetPlayer(p)
-				local level = Admin.GetLevel(p)
-				local banned, reason = Admin.CheckBan(p)
-
-				if banned then
-					Remote.Clients[key] = nil;
-					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
-					return
-				end
-
-				if Variables.ServerLock and level < 1 then
-					Remote.Clients[key] = nil;
-					p:Kick(Variables.LockMessage)
-					return
-				end
-
-				if Variables.Whitelist.Enabled then
-					local listed = false
-
-					for listName, list in next,Variables.Whitelist.Lists do
-						if Admin.CheckTable(p, list) then
-							listed = true
-							break;
-						end
-					end
-
-					if not listed and level == 0 then
-						Remote.Clients[key] = nil;
-						p:Kick(Variables.LockMessage)
-						return
-					end
-				end
-
-				if Remote.Clients[key] then
-					--Core.HookClient(p)
-
-					Logs.AddLog(Logs.Script,{
-						Text = p.Name .. " loading started";
-						Desc = p.Name .. " successfully joined the server";
-					})
-
-					Logs.AddLog(Logs.Joins,{
-						Text = p.Name;
-						Desc = p.Name.." joined the server";
-						Player = p;
-					})
-
-					--// Get chats
-					p.Chatted:Connect(function(msg)
-							service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
-					end)
-
-					--// Character added
-					p.CharacterAdded:Connect(function()
-						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
-					end)
-
-					delay(600, function()
-						if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
-							Logs.AddLog("Script", {
-								Text = p.Name .. " Failed to Load",
-								Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
-								Player = p;
-							});
-							--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
-						end
-					end)
-				else
-					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
-				end
+			else
+				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
 

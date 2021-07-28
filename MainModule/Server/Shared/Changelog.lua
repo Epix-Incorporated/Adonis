@@ -1,6 +1,9 @@
 return {
-	"Version: 224.3";
+	"Version: 224.4";
 	"*Drag edges to expand*";
+	"";
+	"[v224.4 7.28.2021 14:08 EST]";
+	"*Minor changes";
 	"";
 	"[v224.3 7.27.2021 18:08 EST]";
 	"*Added :esp and :unesp";
