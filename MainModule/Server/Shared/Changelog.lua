@@ -3,7 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v224.4 7.28.2021 14:08 EST]";
-	"*Minor changes";
+	"*After months of investigation and changes, the loading failure and subsequent client timeout kick should now be resolved.";
+	"*If you or you're players continue to experience the aforementioned issue, don't hestitate to contact me as quickly as possible";
+	"*Client log dumping, as well as a number of other investigation-related changes will be removed/reverted following confirmation of success";
 	"";
 	"[v224.3 7.27.2021 18:08 EST]";
 	"*Added :esp and :unesp";
