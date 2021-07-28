@@ -115,7 +115,7 @@ return function()
 							taglabel.TextWrapped = true
 							taglabel.Parent = bb
 							bb.Parent = part
-							
+
 							if player ~= service.Player then
 								coroutine.wrap(function()
 									repeat
@@ -152,7 +152,7 @@ return function()
 						gui.AncestryChanged:Connect(function()
 							if not game.IsDescendantOf(gui,workspace) then
 								service.Debris:AddItem(gui,0)
-								
+
 								for i,v in pairs(Variables.ESPObjects) do
 									if v == gui then
 										table.remove(Variables.ESPObjects, i)
@@ -196,7 +196,7 @@ return function()
 							coroutine.wrap(Functions.ESPify)(obj, color);
 						end
 					end)
-					
+
 					for i,obj in ipairs(workspace:GetChildren()) do
 						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
 						if human then
