@@ -4,6 +4,7 @@ service = nil
 
 return function(data)
 	local Title = data.Title
+	local TitleButtons = data.TitleButtons or {}
 	local Tabs = data.Tabs
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
@@ -158,7 +159,7 @@ return function(data)
 	window = client.UI.Make("Window",{
 		Name  = "List";
 		Title = Title;
-		Size  = Size or {225, 200};
+		Size  = Size or {240, 225};
 		MinSize = {150, 100};
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
@@ -295,6 +296,10 @@ return function(data)
 			end
 		end
 	})
+
+	for i, v in ipairs(TitleButtons) do
+		window:AddTitleButton(v)
+	end
 
 	search = window:Add("TextBox", {
 		Size = UDim2.new(1, -10, 0, 20);

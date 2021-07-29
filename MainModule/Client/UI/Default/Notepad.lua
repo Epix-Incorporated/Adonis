@@ -48,7 +48,7 @@ return function(data)
 	
 	local fonts = {}
 	for _, font in ipairs(Enum.Font:GetEnumItems()) do
-		table.insert(fonts, tostring(font):sub(11))
+		table.insert(fonts, font.Name)
 	end
 	local fontSelector = topbar:Add("Dropdown", {
 		Size = UDim2.new(0, 140, 1, -8);
@@ -60,6 +60,30 @@ return function(data)
 		OnSelect = function(selection)
 			content.Font = selection
 		end;
+	})
+	
+	local sizeControl = topbar:Add("TextLabel", {
+		Text = "  Size: ";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 80, 1, -8);
+		Position = UDim2.new(0, 155, 0, 4);
+		TextXAlignment = "Left";
+		Children = {
+			TextBox = {
+				Text = "";
+				PlaceholderText = "18";
+				Size = UDim2.new(0, 26, 1, 0);
+				Position = UDim2.new(1, -31, 0, 0);
+				BackgroundTransparency = 1;
+				TextXAlignment = "Right";
+				ClipsDescendants = true;
+				TextChanged = function(text, enter, new)
+					if enter and tonumber(text) and text < 1000 then
+						content.TextSize = text;
+					end
+				end
+			}
+		}
 	})
 
 	window:Ready()

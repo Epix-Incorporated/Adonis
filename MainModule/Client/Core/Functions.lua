@@ -90,29 +90,70 @@ return function()
 		RunLast = RunLast;
 		Kill = client.Kill;
 
+		ESPFaces = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
 		ESPify = function(obj, color)
 			for i, part in ipairs(obj:GetChildren()) do
 				if part:IsA("BasePart") then
-					for i,surface in ipairs({"Front", "Back", "Top", "Bottom", "Left", "Right"}) do
-						local gui = service.New("SurfaceGui", {
-							Name = "__ADONISESP";
-							AlwaysOnTop = true;
-							ResetOnSpawn = false;
-							Face = surface;
-						})
+					if part.Name == "Head" and not part:FindFirstChild("__ADONIS_NAMETAG") then
+						local player = service.Players:GetPlayerFromCharacter(part.Parent)
 
-						service.New("Frame", {
-							Parent = gui;
-							Size = UDim2.new(1, 0, 1, 0);
-							BackgroundColor3 = color or Color3.fromRGB(255, 0, 234);
-						})
+						if player then
+							local bb = Instance.new("BillboardGui")
+							bb.Name = "__ADONIS_NAMETAG"
+							bb.Adornee = part
+							bb.AlwaysOnTop = true
+							bb.StudsOffset = Vector3.new(0,2,0)
+							bb.Size = UDim2.new(0,100,0,40)
+							local taglabel = Instance.new("TextLabel")
+							local pos = service.Player:DistanceFromCharacter(part.Position)
+							taglabel.BackgroundTransparency = 1
+							taglabel.TextColor3 = Color3.new(1,1,1)
+							taglabel.TextStrokeTransparency = 0
+							taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, pos and math.floor(pos) or 'N/A')
+							taglabel.Size = UDim2.new(1, 0, 1, 0)
+							taglabel.TextScaled = true
+							taglabel.TextWrapped = true
+							taglabel.Parent = bb
+							bb.Parent = part
+
+							if player ~= service.Player then
+								coroutine.wrap(function()
+									repeat
+										if not part then
+											break
+										end
+
+										local DIST = service.Player:DistanceFromCharacter(part.CFrame.Position)
+										taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, DIST and math.floor(DIST) or 'N/A')
+
+										service.RunService.Heartbeat:Wait()
+									until not part or not bb or not taglabel
+								end)()
+							end
+						end
+					end
+
+					for i,surface in ipairs(Functions.ESPFaces) do
+						local gui = Instance.new("SurfaceGui")
+						gui.Name = "__ADONISESP"
+						gui.AlwaysOnTop = true
+						gui.ResetOnSpawn = false
+						gui.Adornee = part
+						gui.Face = surface
+
+						do
+							local temp = Instance.new("Frame")
+							temp.Size = UDim2.new(1, 0, 1, 0)
+							temp.BackgroundColor3 = color or Color3.fromRGB(255, 0, 234)
+							temp.Parent = gui
+						end
 
 						gui.Parent = part;
 						gui.AncestryChanged:Connect(function()
-							if not gui:IsDescendantOf(workspace) then
-								gui:Destroy()
+							if not game.IsDescendantOf(gui,workspace) then
+								service.Debris:AddItem(gui,0)
 
-								for i,v in next,Variables.ESPObjects do
+								for i,v in pairs(Variables.ESPObjects) do
 									if v == gui then
 										table.remove(Variables.ESPObjects, i)
 										break;
@@ -133,9 +174,14 @@ return function()
 				Variables.ESPEvent = nil;
 			end
 
-			for obj in next,Variables.ESPObjects do
+			for obj in pairs(Variables.ESPObjects) do
 				if not mode or not target or (target and obj:IsDescendantOf(target)) then
-					pcall(function() obj:Destroy() end)
+					local __ADONIS_NAMETAG = obj.Parent:FindFirstChild("__ADONIS_NAMETAG")
+					if __ADONIS_NAMETAG then
+						__ADONIS_NAMETAG:Destroy()
+					end
+
+					service.Debris:AddItem(obj,0)
 					Variables.ESPObjects[obj] = nil;
 				end
 			end
@@ -143,16 +189,18 @@ return function()
 			if mode == true then
 				if not target then
 					Variables.ESPEvent = workspace.ChildAdded:Connect(function(obj)
-						local human = obj:FindFirstChildOfClass("Humanoid")
-						if obj:IsA("Model") and human then
-							Functions.ESPify(obj, color);
+						service.RunService.Heartbeat:Wait()
+						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
+
+						if human then
+							coroutine.wrap(Functions.ESPify)(obj, color);
 						end
 					end)
 
 					for i,obj in ipairs(workspace:GetChildren()) do
-						local human = obj:FindFirstChildOfClass("Humanoid")
-						if obj:IsA("Model") and human then
-							Functions.ESPify(obj, color);
+						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
+						if human then
+							coroutine.wrap(Functions.ESPify)(obj, color);
 						end
 					end
 				else

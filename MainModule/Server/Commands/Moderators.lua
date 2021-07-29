@@ -57,6 +57,10 @@ return function(Vargs, env)
 
 				if args[1] then
 					for _2,v2 in ipairs(service.GetPlayers(plr, args[1])) do
+						if not v2.Character then
+							continue
+						end
+
 						Remote.Send(plr, "Function", "CharacterESP", true, v2.Character, args[2] and BrickColor.new(args[2]).Color)
 					end
 				else
