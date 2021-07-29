@@ -210,10 +210,17 @@ return function()
 		end;
 
 		GetRandom = function(pLen)
-			local Len = (type(pLen) == "number" and pLen) or math.random(10,15) --// reru
+			--local str = ""
+			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
+			--return str
+
+			local random = math.random
+			local format = string.format
+
+			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 			local Res = {};
 			for Idx = 1, Len do
-				Res[Idx] = string.format('%02x', math.random(255));
+				Res[Idx] = format('%02x', random(126));
 			end;
 			return table.concat(Res)
 		end;
@@ -299,32 +306,61 @@ return function()
 		end;
 
 		Base64Encode = function(data)
-			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			return ((data:gsub('.', function(x)
-				local r,b='',string.byte(x)
-				for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+			local sub = string.sub
+			local byte = string.byte
+			local gsub = string.gsub
+			local char = string.char
+
+			return (gsub(gsub(data, '.', function(x) 
+				local r, b = "", byte(x)
+				for i = 8, 1, -1 do
+					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-				if (#x < 6) then return '' end
-				local c=0
-				for i=1,6 do c=c+(string.sub(x,i,i)=='1' and 2^(6-i) or 0) end
-				return string.sub(b,c+1,c+1)
-			end)..({ '', '==', '=' })[#data%3+1])
+			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
+				if (#(x) < 6) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 6 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
+				end
+				return sub('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', c + 1, c + 1)
+			end)..({
+				'',
+				'==',
+				'='
+			})[#(data) % 3 + 1])
 		end;
 
 		Base64Decode = function(data)
+			local sub = string.sub
+			local gsub = string.gsub
+			local find = string.find
+			local char = string.char
+
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			data = string.gsub(data, '[^'..b..'=]', '')
-			return (data:gsub('.', function(x)
-				if (x == '=') then return '' end
-				local r,f='',(string.find(b,x)-1)
-				for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+
+			data = gsub(data, '[^'..b..'=]', '')
+
+			return (gsub(gsub(data, '.', function(x)
+				if (x == '=') then
+					return ''
+				end
+				local r, f = '', (find(b, x) - 1)
+				for i = 6, 1, -1 do
+					r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then return '' end
-				local c=0
-				for i=1,8 do c=c+(string.sub(x,i,i)=='1' and 2^(7-i) or 0) end
-				return string.char(c)
+			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
+				if (#x ~= 8) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 8 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
+				end
+				return char(c)
 			end))
 		end;
 
