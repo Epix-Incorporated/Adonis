@@ -555,7 +555,7 @@ return function(Vargs)
 				warn(tostring(err))
 			end
 
-			if (ran and err ~= "REMOVED") and Remote.Clients[key] then
+			if Remote.Clients[key] then
 				Core.HookClient(p)
 
 				Logs.AddLog(Logs.Script,{
@@ -588,7 +588,7 @@ return function(Vargs)
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				end)
-			else
+			elseif (ran and err ~= "REMOVED") then
 				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
