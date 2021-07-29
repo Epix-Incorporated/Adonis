@@ -1008,38 +1008,15 @@ return function(Vargs)
 		end;
 
 		ConvertPlayerCharacterToRig = function(p, rigType)
-			rigType = rigType or "R15"
-
-			local char = p.Character
-			if not p.Character then
-				p:LoadCharacter()
-				p.CharacterAdded:Wait()
-				char = p.Character
-			end
-
-			local head = char:FindFirstChild"Head"
-			local human = char:FindFirstChildOfClass"Humanoid"
-
-			if head then
-				local rig = server.Deps.Assets["Rig"..rigType]:Clone()
-				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
-				local origHeadCF = head.CFrame
-				rig.Name = p.Name
-
-				for _,b in pairs(char:GetChildren()) do
-					if b:IsA("Accessory") or b:IsA("Pants") or b:IsA("Shirt") or b:IsA("ShirtGraphic") or b:IsA("BodyColors") then
-						b.Parent = rig
-					elseif b:IsA"BasePart" and b.Name == "Head" and b:FindFirstChild("face") then
-						rig.Head.face.Texture = b.face.Texture
-					end
-				end
-
-				p.Character = rig
-				rig.Parent = workspace
-				rig.Head.CFrame = origHeadCF
-
-				human.RigType = Enum.HumanoidRigType[rigType]
-			end
+			local rigType2 = rigType or Enum.HumanoidRigType.R15
+			local humd = p.Character:WaitForChildOfClass("Humanoid"):GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId)
+			local model = service.Players:CreateHumanoidModelFromDescription(humd, rigType2)
+			model.Parent = p.Character.Parent
+			local old = p.Character:WaitForChild("HumanoidRootPart").CFrame
+			p.Character:Destroy()
+			model:WaitForChild("HumanoidRootPart").CFrame=old
+			p.Character=model
+			return model
 		end;
 
 		CreateClothingFromImageId = function(clothingtype, Id)

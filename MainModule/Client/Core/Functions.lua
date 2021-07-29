@@ -176,7 +176,7 @@ return function()
 
 			for obj in pairs(Variables.ESPObjects) do
 				if not mode or not target or (target and obj:IsDescendantOf(target)) then
-					local __ADONIS_NAMETAG = obj.Parent:FindFirstChild("__ADONIS_NAMETAG")
+					local __ADONIS_NAMETAG = obj.Parent and obj.Parent:FindFirstChild("__ADONIS_NAMETAG")
 					if __ADONIS_NAMETAG then
 						__ADONIS_NAMETAG:Destroy()
 					end
