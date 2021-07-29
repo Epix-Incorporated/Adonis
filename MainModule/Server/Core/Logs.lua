@@ -93,6 +93,8 @@ return function(Vargs)
 		end;
 
 		SaveCommandLogs = function()
+			warn("Saving command logs...")
+
 			local logsToSave = Logs.Commands --{};
 			local maxLogs = Logs.OldCommandLogsLimit;
 			--local numLogsToSave = 200; --// Save the last X logs from this server
@@ -141,6 +143,8 @@ return function(Vargs)
 
 			 	return temp
 			end)
+
+			warn("Command logs saved!")
 		end;
 
 		ListUpdaters = {

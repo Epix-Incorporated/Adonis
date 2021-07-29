@@ -1102,40 +1102,42 @@ return function(data)
 		local realPos
 		local new
 		local original = Hide
+		local diff = (Hide.AbsolutePosition.X + Hide.AbsoluteSize.X) - Close.AbsolutePosition.X;
+		local far = Close;
 
-		if Hide.Visible then
-			startPos = startPos+1
-		end
+		for i,obj in ipairs(Drag:GetChildren()) do
+			if obj:IsA("TextButton") then
+				if obj.Visible and obj.AbsolutePosition.X < far.AbsolutePosition.X then
+					far = obj;
+				end
+			end
+		end;
 
-		if Close.Visible then
-			startPos = startPos+1
-		end
+		local size = data.Size or original.Size;
+		local xPos = far.Position.X.Offset - (size.X.Offset - diff);
+		realPos = UDim2.new(far.Position.X.Scale, xPos, original.Position.Y.Scale, original.Position.Y.Offset)
 
-		if Refresh.Visible then
-			startPos = startPos+1
-		end
-
-		realPos = UDim2.new(1, -(((30*startPos)+5)+(startPos-1)), 0, 0)
-		data.Position = data.Position or realPos
-		data.Size = data.Size or original.Size
-		data.BackgroundColor3 = data.BackgroundColor3 or original.BackgroundColor3
-		data.BackgroundTransparency = data.BackgroundTransparency or original.BackgroundTransparency
-		data.BorderSizePixel = data.BorderSizePixel or original.BorderSizePixel
+		data.Name = "__TITLEBUTTON"
+		data.Size = size
+		data.Parent = Drag
 		data.ZIndex = data.ZIndex or original.ZIndex
+		data.Position = data.Position or realPos
+		data.TextSize = data.TextSize or original.TextSize
 		data.TextColor3 = data.TextColor3 or original.TextColor3
 		data.TextScaled = data.TextScaled or original.TextScaled
-		data.TextStrokeColor3 = data.TextStrokeColor3 or original.TextStrokeColor3
-		data.TextSize = data.TextSize or original.TextSize
-		data.TextTransparency = data.TextTransparency or original.TextTransparency
-		data.TextStrokeTransparency = data.TextStrokeTransparency or original.TextStrokeTransparency
 		data.TextScaled = data.TextScaled or original.TextScaled
 		data.TextWrapped = data.TextWrapped or original.TextWrapped
+		data.TextStrokeColor3 = data.TextStrokeColor3 or original.TextStrokeColor3
+		data.TextTransparency = data.TextTransparency or original.TextTransparency
+		data.TextStrokeTransparency = data.TextStrokeTransparency or original.TextStrokeTransparency
+		data.BackgroundTransparency = data.BackgroundTransparency or original.BackgroundTransparency
+		data.BackgroundColor3 = data.BackgroundColor3 or original.BackgroundColor3
+		data.BorderSizePixel = data.BorderSizePixel or original.BorderSizePixel
 		--data.TextXAlignment = data.TextXAlignment or original.TextXAlignment
 		--data.TextYAlignment = data.TextYAlignment or original.TextYAlignment
 		data.Font = data.Font or original.Font
-		data.Parent = Drag
 
-		return create("TextButton", data)
+		create("TextButton", data)
 	end
 
 	function functionify(func, object)

@@ -374,7 +374,9 @@ return function(Vargs)
 						end
 					end
 
-					for i,v in pairs(service.GetPlayers(p,target,true)) do
+					for i,v in pairs(service.GetPlayers(p,target,{
+						DontError = true;
+					})) do
 						--Routine(function()
 						local a = service.Filter(a,p,v)
 						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
@@ -520,13 +522,13 @@ return function(Vargs)
 				if banned then
 					Remote.Clients[key] = nil;
 					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
-					return
+					return "REMOVED"
 				end
 
 				if Variables.ServerLock and level < 1 then
 					Remote.Clients[key] = nil;
 					p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
-					return
+					return "REMOVED"
 				end
 
 				if Variables.Whitelist.Enabled then
@@ -542,7 +544,7 @@ return function(Vargs)
 					if not listed and level == 0 then
 						Remote.Clients[key] = nil;
 						p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
-						return
+						return "REMOVED"
 					end
 				end
 			end)
@@ -553,7 +555,7 @@ return function(Vargs)
 				warn(tostring(err))
 			end
 
-			if Remote.Clients[key] then
+			if (ran and err ~= "REMOVED") and Remote.Clients[key] then
 				Core.HookClient(p)
 
 				Logs.AddLog(Logs.Script,{
@@ -602,7 +604,7 @@ return function(Vargs)
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
-			Remote.Clients[key] = nil
+			--Remote.Clients[key] = nil
 			Core.PlayerData[key] = nil
 
 			Logs.AddLog(Logs.Script,{

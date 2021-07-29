@@ -4,6 +4,13 @@ return {
 	"";
 	"[v225 7.29.2021 08:37 EST]";
 	"*Moved away from StarterPlayerScripts back to manually handling client loading due to an issue";
+	"*Fixed custom window title bar buttons not displaying correctly";
+	"*Admin ranks are now checked in order of highest to lowest (it already returned highest before, but the order was semi-random)";
+	"*GetLevel & related admin checking functions will now return the name of the rank a user belongs to (no more LevelToList calls for players)";
+	"*Fixed and optimized various things related to levels/ranks";
+	"*:setrank now saves! Added :settemprank as a non-saving alternative";
+	"*Fixed issues with being unable to unadmin people not currently in the game (USE THEIR FULL USERNAME!)";
+	"*Not going to allow admins to just remove whatever entry/user they want from lower tables since that can become an issue...";
 	"";
 	"[v224.5 7.28.2021 22:01 EST]";
 	"*Client checks won't start until after character loads for the first time";

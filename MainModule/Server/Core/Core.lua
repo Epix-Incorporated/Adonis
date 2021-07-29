@@ -619,6 +619,7 @@ return function(Vargs)
 					local data = service.CloneTable(pData);
 
 					data.LastChat = nil
+					data.AdminRank = nil
 					data.AdminLevel = nil
 					data.LastLevelUpdate = nil
 					data.LastDataSave = nil

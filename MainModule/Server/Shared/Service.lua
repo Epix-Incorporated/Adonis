@@ -679,7 +679,9 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					return "Filter Error"
 				end
 
-				if cmd and #service.GetPlayers(from, str, true) > 0 then
+				if cmd and #service.GetPlayers(from, str, {
+					DontError = true;
+				}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)

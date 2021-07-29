@@ -38,7 +38,7 @@ return function(Vargs)
 		end
 
 		--// Start key check loop
-		--service.StartLoop("ClientKeyCheck", 60, Remote.CheckKeys, true);
+		service.StartLoop("ClientKeyCheck", 60, Remote.CheckKeys, true);
 
 		Remote.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Remote Module RunAfterPlugins Finished");

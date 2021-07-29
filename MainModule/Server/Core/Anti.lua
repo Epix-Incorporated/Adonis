@@ -42,7 +42,7 @@ return function(Vargs)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 120; --// ... Two minutes without communication seems long enough right?
+		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
