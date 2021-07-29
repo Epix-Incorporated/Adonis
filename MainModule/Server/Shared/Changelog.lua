@@ -10,7 +10,7 @@ return {
 	"*Fixed and optimized various things related to levels/ranks";
 	"*:setrank now always saves! Added :settemprank as a non-saving alternative";
 	"*Fixed issues with being unable to unadmin people not currently in the game (USE THEIR FULL USERNAME!)";
-	"*Not going to allow (non-creator) admins to just remove whatever entry/user they want from  lower rank tables since that can become an issue...";
+	"*Not going to allow (non-creator) admins to just remove whatever entry/user they want from lower rank tables since that can become an issue...";
 	"*Players not in-game are now handled correctly by GetLevel()";
 	"(Git/Expertcoderz) Help button for command list + Notepad update #437";
 	"(Git/evanultra01) Updated ConvertPlayerCharacterToRig() #441";
