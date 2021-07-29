@@ -66,6 +66,12 @@ return function(Vargs, env)
 					{
 						Title = "Commands ("..cmdCount..")";
 						Table = tab;
+						TitleButtons = {
+							{
+								Text = "?";
+								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.PlayerPrefix.."usage')")
+							}
+						};
 					}
 				)
 			end
