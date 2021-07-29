@@ -43,12 +43,21 @@ return function(Vargs)
 	end;
 
 	local function RunAfterPlugins(data)
+		local existingPlayers = service.Players:GetPlayers();
+		
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 		service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
 		service.RbxEvent(service.LogService.MessageOut, Process.LogService)
 		service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
+
+		--// Load client onto existing players
+		if existingPlayers then
+			for i,p in ipairs(existingPlayers) do
+				Core.LoadExistingPlayer(p);
+			end
+		end
 
 		Process.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Process Module RunAfterPlugins Finished");
@@ -116,7 +125,7 @@ return function(Vargs)
 
 									Logs:AddLog("Script", string.format("%s requested client keys", tostring(p)))
 								else
-									Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
 								AddLog("RemoteFires", {
@@ -485,8 +494,8 @@ return function(Vargs)
 				LastUpdate = os.time();
 				FinishedLoading = false;
 				LoadingStatus = "WAITING_FOR_KEY";
-				Special = Core.MockClientKeys and Core.MockClientKeys.Special;
-				Module = Core.MockClientKeys and Core.MockClientKeys.Module;
+				--Special = Core.MockClientKeys and Core.MockClientKeys.Special;
+				--Module = Core.MockClientKeys and Core.MockClientKeys.Module;
 			}
 
 			Core.PlayerData[key] = nil
@@ -545,7 +554,7 @@ return function(Vargs)
 			end
 
 			if Remote.Clients[key] then
-				--Core.HookClient(p)
+				Core.HookClient(p)
 
 				Logs.AddLog(Logs.Script,{
 					Text = p.Name .. " loading started";

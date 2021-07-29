@@ -1,6 +1,9 @@
 return {
-	"Version: 224.5";
+	"Version: 224.6";
 	"*Drag edges to expand*";
+	"";
+	"[v224.6 7.29.2021 08:37 EST]";
+	"*Moved away from StarterPlayerScripts back to manually handling client loading due to an issue";
 	"";
 	"[v224.5 7.28.2021 22:01 EST]";
 	"*Client checks won't start until after character loads for the first time";

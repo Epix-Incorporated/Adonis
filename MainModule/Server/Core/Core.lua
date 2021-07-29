@@ -58,15 +58,8 @@ return function(Vargs)
 		Core.MakeEvent()
 
 		--// Prepare the client loader
-		local existingPlayers = service.Players:GetPlayers();
-		Core.MakeClient()
-
-		--// Load client onto existing players
-		if existingPlayers then
-			for i,p in ipairs(existingPlayers) do
-				Core.LoadExistingPlayer(p);
-			end
-		end
+		--local existingPlayers = service.Players:GetPlayers();
+		--Core.MakeClient()
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
@@ -449,7 +442,7 @@ return function(Vargs)
 
 			service.TrackTask("Thread: Setup Existing Player: ".. tostring(p), function()
 				Process.PlayerAdded(p)
-				Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
+				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
 		end;
 
