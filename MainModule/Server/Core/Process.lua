@@ -593,11 +593,11 @@ return function(Vargs)
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
-			--Remote.Clients[key] = nil
+			Remote.Clients[key] = nil
 			Core.PlayerData[key] = nil
 
 			Logs.AddLog(Logs.Script,{
-				Text = string.format("Removed Data for %s", tostring(p));
+				Text = string.format("Triggerd PlayerRemoving for %s", tostring(p));
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})

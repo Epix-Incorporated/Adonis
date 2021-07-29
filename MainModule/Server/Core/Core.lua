@@ -190,8 +190,8 @@ return function(Vargs)
 					local function secure(ev, name, parent)
 						return ev.Changed:Connect(function()
 							if Core.RemoteEvent == rTable and not secureTriggered then
-								if ev == rFunc then
-									rFunc.OnServerInvoke = Process.Remote
+								if ev == func then
+									func.OnServerInvoke = Process.Remote
 								end
 
 								if ev.Name ~= name then
@@ -348,14 +348,28 @@ return function(Vargs)
 					sec(child);
 				end
 
+				folder.DescendantAdded:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
+				folder.DescendantRemoving:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
 				Core.ClientLoader = clientLoader;
 			end
+
 
 			local ok,err = pcall(function()
 				folder.Parent = parentObj
 			end)
 
 			clientLoader.Removing = false;
+
 			Logs:AddLog("Script", "Created client");
 		end;
 
@@ -388,9 +402,9 @@ return function(Vargs)
 				specialVal.Name = "Special"
 				specialVal.Parent = folder
 
-				Special = depsName
-				EventName = eventName
-				Module = client
+				keys.Special = depsName
+				keys.EventName = eventName
+				keys.Module = client
 
 				acli.Parent = folder;
 				acli.Disabled = false;

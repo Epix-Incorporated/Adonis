@@ -67,6 +67,7 @@ local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
 	dumplog();
 end)
 
