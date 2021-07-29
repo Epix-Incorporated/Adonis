@@ -377,11 +377,16 @@ return function()
 				Ready = function()
 					if gTable.Config then gTable.Config.Parent = nil end
 					local ran,err = pcall(function()
+						local obj = gTable.Object;
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
-							gTable.Object.Parent = service.PlayerGui
-							gTable.Object.Enabled = true
+							if obj.DisplayOrder == 0 then
+								obj.DisplayOrder = 90000
+							end
+
+							obj.Enabled = true
+							obj.Parent = service.PlayerGui
 						else
-							gTable.Object.Parent = UI.GetHolder()
+							obj.Parent = UI.GetHolder()
 						end
 					end);
 

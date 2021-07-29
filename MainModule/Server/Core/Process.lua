@@ -44,7 +44,7 @@ return function(Vargs)
 
 	local function RunAfterPlugins(data)
 		local existingPlayers = service.Players:GetPlayers();
-		
+
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
