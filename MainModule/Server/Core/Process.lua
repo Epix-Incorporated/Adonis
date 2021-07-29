@@ -727,7 +727,13 @@ return function(Vargs)
 
 		CharacterAdded = function(p)
 			local key = tostring(p.UserId)
-			if p.Character and Remote.Clients[key] and Remote.Clients[key].FinishedLoading then
+			local keyData = Remote.Clients[key];
+
+			if keyData then
+				keyData.PlayerLoaded = true;
+			end
+
+			if p.Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Anti Exploit stuff

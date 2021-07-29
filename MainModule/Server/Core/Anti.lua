@@ -42,7 +42,7 @@ return function(Vargs)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 120; --// Two minutes without communication seems long enough right?
+		ClientTimeoutLimit = 120; --// ... Two minutes without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
@@ -70,15 +70,11 @@ return function(Vargs)
 
 				for ind,p in ipairs(service.Players:GetPlayers()) do
 					if p and p:IsA("Player") then
-						if Anti.ObjRLocked(p) then
-							Anti.Detected(p, "Log", "Player RobloxLocked")
-						else
-							local key = tostring(p.UserId)
-							local client = Remote.Clients[key]
-							if client and client.LastUpdate then
-								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]\n[Please open the developer console (F9) and screenshot any errors/warnings related to Adonis if this was done in error]")
-								end
+						local key = tostring(p.UserId)
+						local client = Remote.Clients[key]
+						if client and client.LastUpdate and client.PlayerLoaded then
+							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
+								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
 							end
 						end
 					end

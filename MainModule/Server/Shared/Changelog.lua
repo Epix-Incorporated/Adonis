@@ -1,6 +1,9 @@
 return {
-	"Version: 224.4";
+	"Version: 224.5";
 	"*Drag edges to expand*";
+	"";
+	"[v224.5 7.28.2021 22:01 EST]";
+	"*Client checks won't start until after character loads for the first time";
 	"";
 	"[v224.4 7.28.2021 14:08 EST]";
 	"*After months of investigation and changes, the loading failure and subsequent client timeout kick should now be resolved.";
