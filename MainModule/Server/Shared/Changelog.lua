@@ -1,6 +1,9 @@
 return {
-	"Version: 225";
+	"Version: 225.1";
 	"*Drag edges to expand*";
+	"";
+	"[v225.1 7.29.2021 16:33 EST]";
+	"*Fixed incorrect kick message about keys missing";
 	"";
 	"[v225 7.29.2021 12:20 EST]";
 	"*Moved away from StarterPlayerScripts back to manually handling client loading due to an issue";
