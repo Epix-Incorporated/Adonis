@@ -1009,15 +1009,19 @@ return function(Vargs)
 			end
 		end;
 
-		ConvertPlayerCharacterToRig = function(p, rigType)
+		ConvertPlayerCharacterToRig = function(plr, rigType)
 			local rigType2 = rigType or Enum.HumanoidRigType.R15
-			local humd = p.Character:WaitForChildOfClass("Humanoid"):GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId)
-			local model = service.Players:CreateHumanoidModelFromDescription(humd, rigType2)
-			model.Parent = p.Character.Parent
-			local old = p.Character:WaitForChild("HumanoidRootPart").CFrame
-			p.Character:Destroy()
-			model:WaitForChild("HumanoidRootPart").CFrame=old
-			p.Character=model
+			local humd = plr.Character:WaitForChild("Humanoid"):GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId) -- why is waitforchildofclass not a thing anymore :(
+			local model = game:GetService('Players'):CreateHumanoidModelFromDescription(humd,rigType2) --This code is basically PlrGear (:dollify) without the resizing and tool parts because it didnt work previously for some reason. Probably because of some internal roblox spaghetti.
+			model.Name=plr.DisplayName
+			local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
+			local oldparent = plr.Character.Parent
+			plr.Character:Destroy()
+			plr.Character=model
+			model:SetPrimaryPartCFrame(oldcframe)
+			local cfr = (plr.Character:FindFirstChild('HumanoidRootPart')).CFrame
+			model.Parent = oldparent
+			model:SetPrimaryPartCFrame(cfr)
 			return model
 		end;
 
