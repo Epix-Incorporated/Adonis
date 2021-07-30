@@ -1248,7 +1248,7 @@ return function(Vargs)
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
-				return keyCache[str]
+				return endStr
 			end
 		end;
 
