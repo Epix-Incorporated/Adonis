@@ -426,6 +426,8 @@ return function(Vargs)
 		end;
 
 		GetPlayers = function(plr, names, data)
+			if data and type(data) ~= "table" then data = {} end
+
 			local dontError = data and data.DontError;
 			local isServer = data and data.IsServer;
 			local isKicking = data and data.IsKicking;
