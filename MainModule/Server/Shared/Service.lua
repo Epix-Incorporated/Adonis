@@ -651,10 +651,16 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		Filter = function(str,from,to)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId) end)
+				local ran,newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId)
+				end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
@@ -669,7 +675,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
 			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
-				if cmd and #service.GetPlayers(from, str, true) > 0 then
+				if not utf8.len(str) then
+					return "Filter Error"
+				end
+
+				if cmd and #service.GetPlayers(from, str, {
+					DontError = true;
+				}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)
@@ -680,6 +692,10 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		BroadcastFilter = function(str,from)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do

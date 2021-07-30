@@ -43,12 +43,21 @@ return function(Vargs)
 	end;
 
 	local function RunAfterPlugins(data)
+		local existingPlayers = service.Players:GetPlayers();
+
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 		service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
 		service.RbxEvent(service.LogService.MessageOut, Process.LogService)
 		service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
+
+		--// Load client onto existing players
+		if existingPlayers then
+			for i,p in ipairs(existingPlayers) do
+				Core.LoadExistingPlayer(p);
+			end
+		end
 
 		Process.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Process Module RunAfterPlugins Finished");
@@ -113,8 +122,10 @@ return function(Vargs)
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
+
+									Logs:AddLog("Script", string.format("%s requested client keys", tostring(p)))
 								else
-									Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
 								AddLog("RemoteFires", {
@@ -363,7 +374,9 @@ return function(Vargs)
 						end
 					end
 
-					for i,v in pairs(service.GetPlayers(p,target,true)) do
+					for i,v in pairs(service.GetPlayers(p,target,{
+						DontError = true;
+					})) do
 						--Routine(function()
 						local a = service.Filter(a,p,v)
 						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
@@ -397,13 +410,9 @@ return function(Vargs)
 		end;
 
 		Chat = function(p, msg)
-			if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-				Anti.Detected(p, "kick", "Talking guest")
-			end
-
 			if RateLimit(p, "Chat") then
 				local isMuted = Admin.IsMuted(p);
-				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
+				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
@@ -475,54 +484,51 @@ return function(Vargs)
 		end;
 
 		PlayerAdded = function(p)
-			if Anti.RLocked(p) then
-				Anti.Detected(p, "kick", "Roblox Locked")
-			elseif Anti.UserSpoofCheck(p) then
-				Anti.Detected(p, "kick", "Username Spoofing");
-			else
-				local key = tostring(p.UserId)
-				local keyData = {
-					Player = p;
-					Key = Functions:GetRandom();
-					Cache = {};
-					Sent = 0;
-					Received = 0;
-					LastUpdate = os.time();
-					FinishedLoading = false;
-					LoadingStatus = "WAITING_FOR_KEY";
-				}
+			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. tostring(p))
 
-				Core.PlayerData[key] = nil
-				Remote.Clients[key] = keyData
+			local key = tostring(p.UserId)
+			local keyData = {
+				Player = p;
+				Key = Functions:GetRandom();
+				Cache = {};
+				Sent = 0;
+				Received = 0;
+				LastUpdate = os.time();
+				FinishedLoading = false;
+				LoadingStatus = "WAITING_FOR_KEY";
+				--Special = Core.MockClientKeys and Core.MockClientKeys.Special;
+				--Module = Core.MockClientKeys and Core.MockClientKeys.Module;
+			}
 
+			Core.PlayerData[key] = nil
+			Remote.Clients[key] = keyData
+
+			local ran, err = Pcall(function()
 				Routine(function()
-					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
-					if playerGui then
-						if playerGui.Name ~= "PlayerGui" then
-							playerGui.Name = "PlayerGui"
-						end
-						playerGui:GetPropertyChangedSignal("Name"):Connect(function()
-							playerGui.Name = "PlayerGui"
-						end)
+					if Anti.UserSpoofCheck(p) then
+						Remote.Clients[key] = nil;
+						Anti.Detected(p, "kick", "Username Spoofing");
 					end
 				end)
 
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
-				Core.UpdateConnection(p)
+				--Core.UpdateConnection(p)
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
 
 				if banned then
+					Remote.Clients[key] = nil;
 					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
-					return
+					return "REMOVED"
 				end
 
 				if Variables.ServerLock and level < 1 then
-					p:Kick(Variables.LockMessage)
-					return
+					Remote.Clients[key] = nil;
+					p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
+					return "REMOVED"
 				end
 
 				if Variables.Whitelist.Enabled then
@@ -536,44 +542,54 @@ return function(Vargs)
 					end
 
 					if not listed and level == 0 then
-						p:Kick(Variables.LockMessage)
-						return
+						Remote.Clients[key] = nil;
+						p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
+						return "REMOVED"
 					end
 				end
+			end)
 
-				if Remote.Clients[key] then
-					Core.HookClient(p)
+			if not ran then
+				Logs:AddLog("Errors", tostring(p) .." PlayerAdded Failed: ".. tostring(err))
+				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn(tostring(err))
+			end
 
-					Logs.AddLog(Logs.Script,{
-						Text = p.Name .. " joined";
-						Desc = p.Name .. " successfully joined the server";
-						Player = p;
-					})
+			if Remote.Clients[key] then
+				Core.HookClient(p)
 
+				Logs.AddLog(Logs.Script,{
+					Text = p.Name .. " loading started";
+					Desc = p.Name .. " successfully joined the server";
+				})
 
-					--// Get chats
-					p.Chatted:Connect(function(msg)
-							service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
-					end)
+				Logs.AddLog(Logs.Joins,{
+					Text = p.Name;
+					Desc = p.Name.." joined the server";
+					Player = p;
+				})
 
-					--// Character added
-					p.CharacterAdded:Connect(function()
-						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
-					end)
+				--// Get chats
+				p.Chatted:Connect(function(msg)
+						service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+				end)
+				--// Character added
+				p.CharacterAdded:Connect(function()
+					service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
+				end)
 
-					delay(600, function()
-						if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
-							Logs.AddLog("Script", {
-								Text = p.Name .. " Failed to Load",
-								Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
-								Player = p;
-							});
-							--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
-						end
-					end)
-				else
-					Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
-				end
+				delay(600, function()
+					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
+						Logs.AddLog("Script", {
+							Text = p.Name .. " Failed to Load",
+							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
+							Player = p;
+						});
+						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
+					end
+				end)
+			elseif (ran and err ~= "REMOVED") then
+				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
 
@@ -592,17 +608,12 @@ return function(Vargs)
 			Core.PlayerData[key] = nil
 
 			Logs.AddLog(Logs.Script,{
-				Text = string.format("Removed keys for %s", tostring(p));
+				Text = string.format("Triggerd PlayerRemoving for %s", tostring(p));
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
 
 			Core.SavePlayerData(p, data)
-			Logs.AddLog(Logs.Script,{
-				Text = tostring(p).." left";
-				Desc = tostring(p).." player removed";
-				Player = p;
-			})
 		end;
 
 		FinishLoading = function(p)
@@ -612,12 +623,6 @@ return function(Vargs)
 
 			--// Fire player added
 			service.Events.PlayerAdded:Fire(p)
-			Logs.AddLog(Logs.Joins,{
-				Text = p.Name;
-				Desc = p.Name.." joined the server";
-				Player = p;
-			})
-
 			Logs.AddLog(Logs.Script,{
 				Text = string.format("%s finished loading", p.Name);
 				Desc = "Client finished loading";
@@ -733,7 +738,13 @@ return function(Vargs)
 
 		CharacterAdded = function(p)
 			local key = tostring(p.UserId)
-			if p.Character and Remote.Clients[key] and Remote.Clients[key].FinishedLoading then
+			local keyData = Remote.Clients[key];
+
+			if keyData then
+				keyData.PlayerLoaded = true;
+			end
+
+			if p.Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Anti Exploit stuff

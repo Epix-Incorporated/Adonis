@@ -45,6 +45,7 @@ return function(Vargs)
 		ServerDetails = {};
 		DateTime = {};
 		TempUpdaters = {};
+		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
 			local indToName = {
@@ -92,10 +93,20 @@ return function(Vargs)
 		end;
 
 		SaveCommandLogs = function()
+			warn("Saving command logs...")
+
+			local logsToSave = Logs.Commands --{};
+			local maxLogs = Logs.OldCommandLogsLimit;
+			--local numLogsToSave = 200; --// Save the last X logs from this server
+
+			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
+			--	table.insert(logsToSave, Logs.Commands[i]);
+			--end
+
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				local temp = {}
 
-				for i,m in ipairs(Logs.Commands) do
+				for i,m in ipairs(logsToSave) do
 					local newTab = (type(m) == "table" and service.CloneTable(m)) or m;
 					if type(m) == "table" and newTab.Player then
 						local p = newTab.Player;
@@ -121,14 +132,19 @@ return function(Vargs)
 					end
 				end)
 
-				for i,v in ipairs(temp) do
-					if i > MaxLogs then
-						temp[i] = nil;
+				--// Trim logs, starting from the oldest
+				if #temp > maxLogs then
+					local diff = #temp - maxLogs;
+
+					for i = 1, diff do
+						table.remove(temp, 1)
 					end
 				end
 
 			 	return temp
 			end)
+
+			warn("Command logs saved!")
 		end;
 
 		ListUpdaters = {

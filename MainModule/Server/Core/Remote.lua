@@ -56,7 +56,7 @@ return function(Vargs)
 		EncodeCache = {};
 		DecodeCache = {};
 
-		TimeUntilKeyDestroyed = 60 * 10; --// How long until a player's key data should be completely removed?
+		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
 
 		Returnables = {
 			RateLimits = function(p, args)
@@ -618,10 +618,10 @@ return function(Vargs)
 		};
 
 		UnEncrypted = {
-			TrustCheck = function(p)
+			--[[TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;
+			end;--]]
 
 			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)
@@ -836,7 +836,8 @@ return function(Vargs)
 					service.Events.ClientLoaded:Fire(p)
 					Process.FinishLoading(p)
 				else
-					--warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
+					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
+					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
 			end;

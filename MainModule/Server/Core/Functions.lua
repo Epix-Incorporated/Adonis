@@ -239,24 +239,14 @@ return function(Vargs)
 						if foundNum == 0 then
 							local ran,name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
 							if ran and name then
-								local fakePlayer = service.Wrap(service.New("Folder"))
-								local data = {
+								local fakePlayer = server.Functions.GetFakePlayer({
 									Name = name;
 									ToString = name;
-									ClassName = "Player";
-									AccountAge = 0;
 									CharacterAppearanceId = tostring(matched);
 									UserId = tonumber(matched);
 									userId = tonumber(matched);
-									Parent = service.Players;
-									Character = Instance.new("Model");
-									Backpack = Instance.new("Folder");
-									PlayerGui = Instance.new("Folder");
-									PlayerScripts = Instance.new("Folder");
-									Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-									IsA = function(ignore, arg) if arg == "Player" then return true end end;
-								}
-								for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+								})
+
 								table.insert(players, fakePlayer)
 								plus()
 							end
@@ -326,7 +316,10 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("%-(.*)")
 					if matched then
-						local removes = service.GetPlayers(plr,matched,true)
+						local removes = service.GetPlayers(plr,matched, {
+							DontError = true;
+						})
+
 						for i,v in next,players do
 							for k,p in next,removes do
 								if v.Name == p.Name then
@@ -378,6 +371,35 @@ return function(Vargs)
 			};
 		};
 
+		GetFakePlayer = function(data2)
+			local fakePlayer = service.Wrap(service.New("Folder"))
+			local data = {
+				Name = "Fake Player";
+				ClassName = "Player";
+				UserId = 0;
+				userId = 0;
+				AccountAge = 0;
+				CharacterAppearanceId = 0;
+				Parent = service.Players;
+				Character = Instance.new("Model");
+				Backpack = Instance.new("Folder");
+				PlayerGui = Instance.new("Folder");
+				PlayerScripts = Instance.new("Folder");
+				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
+				IsA = function(ignore, arg) if arg == "Player" then return true end end;
+			}
+
+			data.ToString = data.Name;
+
+			for i,v in pairs(data2) do
+				data[i] = v;
+			end;
+
+			for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+
+			return fakePlayer;
+		end;
+
 		GetChatService = function()
 			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
 			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
@@ -403,11 +425,17 @@ return function(Vargs)
 			return str
 		end;
 
-		GetPlayers = function(plr, names, dontError, isServer, isKicking, noID)
+		GetPlayers = function(plr, names, data)
+			local dontError = data and data.DontError;
+			local isServer = data and data.IsServer;
+			local isKicking = data and data.IsKicking;
+			local noID = data and data.NoID;
+			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true;
+
 			local players = {}
-			local prefix = Settings.SpecialPrefix
+			local prefix = (data and data.Prefix) or Settings.SpecialPrefix
 			if isServer then prefix = "" end
-			local parent = service.NetworkServer or service.Players
+			local parent = (data and data.Parent) or service.Players
 
 			local function getplr(p)
 				if p and p:IsA("Player") then
@@ -471,27 +499,18 @@ return function(Vargs)
 								end
 							end
 
-							if plrs == 0 then
+							if plrs == 0 and useFakePlayer then
 								local ran,userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
 								if ran and tonumber(userid) then
-									local fakePlayer = service.Wrap(service.New("Folder"))
-									local data = {
+									local fakePlayer = Functions.GetFakePlayer({
 										Name = s;
 										ToString = s;
-										ClassName = "Player";
-										AccountAge = 0;
+										IsFakePlayer = true;
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
 										userId = tonumber(userid);
-										Parent = service.Players;
-										Character = Instance.new("Model");
-										Backpack = Instance.new("Folder");
-										PlayerGui = Instance.new("Folder");
-										PlayerScripts = Instance.new("Folder");
-										Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-										IsA = function(ignore, arg) if arg == "Player" then return true end end;
-									}
-									for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+									})
+									
 									table.insert(players, fakePlayer)
 									plus()
 								end
@@ -886,7 +905,7 @@ return function(Vargs)
 
 		Shutdown = function(reason)
 			if not Core.PanicMode then
-				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetChildren(), false, 5)
+				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetPlayers(), false, 5)
 				wait(1)
 			end
 
@@ -989,38 +1008,15 @@ return function(Vargs)
 		end;
 
 		ConvertPlayerCharacterToRig = function(p, rigType)
-			rigType = rigType or "R15"
-
-			local char = p.Character
-			if not p.Character then
-				p:LoadCharacter()
-				p.CharacterAdded:Wait()
-				char = p.Character
-			end
-
-			local head = char:FindFirstChild"Head"
-			local human = char:FindFirstChildOfClass"Humanoid"
-
-			if head then
-				local rig = server.Deps.Assets["Rig"..rigType]:Clone()
-				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
-				local origHeadCF = head.CFrame
-				rig.Name = p.Name
-
-				for _,b in pairs(char:GetChildren()) do
-					if b:IsA("Accessory") or b:IsA("Pants") or b:IsA("Shirt") or b:IsA("ShirtGraphic") or b:IsA("BodyColors") then
-						b.Parent = rig
-					elseif b:IsA"BasePart" and b.Name == "Head" and b:FindFirstChild("face") then
-						rig.Head.face.Texture = b.face.Texture
-					end
-				end
-
-				p.Character = rig
-				rig.Parent = workspace
-				rig.Head.CFrame = origHeadCF
-
-				human.RigType = Enum.HumanoidRigType[rigType]
-			end
+			local rigType2 = rigType or Enum.HumanoidRigType.R15
+			local humd = p.Character:WaitForChildOfClass("Humanoid"):GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId)
+			local model = service.Players:CreateHumanoidModelFromDescription(humd, rigType2)
+			model.Parent = p.Character.Parent
+			local old = p.Character:WaitForChild("HumanoidRootPart").CFrame
+			p.Character:Destroy()
+			model:WaitForChild("HumanoidRootPart").CFrame=old
+			p.Character=model
+			return model
 		end;
 
 		CreateClothingFromImageId = function(clothingtype, Id)

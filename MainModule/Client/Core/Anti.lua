@@ -59,7 +59,7 @@ return function()
 		service.Player.Changed:Connect(function()
 			if service.Player.Parent ~= service.Players then
 				wait(5)
-				Anti.Detected("kick", "Parent not players", true)
+				--Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
 				Anti.Detected("kick","Roblox Locked")
 			end

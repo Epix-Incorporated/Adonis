@@ -16,11 +16,17 @@ return function(Vargs, env)
 			Description = "Opens an audio player window";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for _,v in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
+				for _,v in ipairs(service.GetPlayers(plr, args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				})) do
 					Remote.MakeGui(v, "Music")
 				end
 			end
 		};
+
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick";};
@@ -30,7 +36,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args, data)
 				local plrLevel = data.PlayerData.Level
-				for _,v in ipairs(service.GetPlayers(plr, args[1], false, false, true)) do
+				for _,v in ipairs(service.GetPlayers(plr, args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						if not service.Players:FindFirstChild(v.Name) then
@@ -41,6 +52,42 @@ return function(Vargs, env)
 						Functions.Hint("Kicked "..tostring(v), {plr})
 					end
 				end
+			end
+		};
+
+		ESP = {
+			Prefix = Settings.Prefix;
+			Commands = {"esp";};
+			Args = {"target (optional)", "brickcolor (optional)"};
+			Filter = true;
+			Description = "Allows you to see <target> (or all humanoids if no target is supplied) through walls";
+			AdminLevel = "Moderators";
+			Function = function(plr, args, data)
+				Remote.Send(plr, "Function", "CharacterESP", false)
+
+				if args[1] then
+					for _2,v2 in ipairs(service.GetPlayers(plr, args[1])) do
+						if not v2.Character then
+							continue
+						end
+
+						Remote.Send(plr, "Function", "CharacterESP", true, v2.Character, args[2] and BrickColor.new(args[2]).Color)
+					end
+				else
+					Remote.Send(plr, "Function", "CharacterESP", true)
+				end
+			end
+		};
+
+		UnESP = {
+			Prefix = Settings.Prefix;
+			Commands = {"unesp";};
+			Args = {};
+			Filter = true;
+			Description = "Removes ESP";
+			AdminLevel = "Moderators";
+			Function = function(plr, args, data)
+				Remote.Send(plr, "Function", "CharacterESP", false)
 			end
 		};
 
@@ -180,8 +227,8 @@ return function(Vargs, env)
 					})
 				end
 				--for i = num, 1, -1 do
-				--Functions.Message("Countdown", tostring(i), service.Players:GetChildren(), false, 1.1)
-				--Functions.Message(" ", i, false, service.Players:GetChildren(), 0.8)
+				--Functions.Message("Countdown", tostring(i), service.Players:GetPlayers(), false, 1.1)
+				--Functions.Message(" ", i, false, service.Players:GetPlayers(), 0.8)
 				--wait(1)
 				--end
 			end
@@ -1777,24 +1824,31 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local adminDictionary = {}
 				for i,v in pairs(service.GetPlayers()) do
-					adminDictionary[v.Name] = Admin.LevelToListName(Admin.GetLevel(v))
+					local level, rank = Admin.GetLevel(v);
+					if level > 0 then
+						adminDictionary[v.Name] = rank or "Uknown"
+					end
 				end
+
 				local donorList = {}
 				for i,v in pairs(service.GetPlayers()) do
 					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
 						table.insert(donorList, v.Name)
 					end
 				end
+
 				local nilPlayers = 0
 				for i,v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
 				end
+
 				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
 				if s then
 					r = service.HttpService:JSONDecode(r)
 				end
+
 				local serverInfo = s and {
 					country = r.country,
 					city = r.city,
@@ -1804,6 +1858,7 @@ return function(Vargs, env)
 					query = r.query,
 					coords = r.lat .. " LAT ".. r.lon .. " LON"
 				} or nil
+				
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
@@ -2075,30 +2130,12 @@ return function(Vargs, env)
 				local unsorted = {};
 				local levelListCache = {}
 
-				local function levelToList(level)
-					local cached = levelListCache[level]
-					if cached then
-						return cached.List, cached.Name, cached.Data
-					else
-						local rankList, rankName, rankData = Admin.LevelToList(level)
-						local data = {
-							List = rankList;
-							Name = rankName;
-							Data = rankData;
-						}
-
-						levelListCache[level] = data;
-						return rankList, rankName, rankData
-					end
-				end
-
 				table.insert(temptable,'<b><font color="rgb(60, 180, 0)">==== Admins In-Game ====</font></b>')
 
 				for i,v in pairs(service.GetPlayers()) do
 					local data = Core.GetPlayer(v);
-					local level = data.AdminLevel or Admin.GetLevel(v);
+					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
-						local rankList, rankName, rankData = levelToList(level);
 						table.insert(unsorted, {
 							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
 							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
@@ -6491,6 +6528,7 @@ return function(Vargs, env)
 					local hasSafeChat
 					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
 					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
+					local level, rank = Admin.GetLevel(v);
 
 					do
 						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
@@ -6501,7 +6539,7 @@ return function(Vargs, env)
 						Target = v;
 						SafeChat = hasSafeChat;
 						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "["..Admin.GetLevel(v).."] "..Admin.LevelToListName(Admin.GetLevel(v));
+						AdminLevel = "[".. level .."] ".. (rank or "Unknown");
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
 						IsMuted = isMuted;
 						IsBanned = isBanned;
