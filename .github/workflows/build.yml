@@ -10,6 +10,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    env:
+      FILE_NAME: Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
 
     steps:
       - uses: actions/checkout@v1
@@ -19,9 +21,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build .github/build.project.json -o Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
+        run: rojo build .github/build.project.json -o $FILE_NAME
 
-      - name: Upload model as artifact
-        uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
-          path: Adonis_Nightly_*.rbxmx
+          name: model_artifact
+          path: $FILE_NAME
