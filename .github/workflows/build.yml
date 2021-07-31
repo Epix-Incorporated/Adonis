@@ -10,11 +10,17 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    env:
-      FILE_NAME: ${{ echo Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx }}
-
     steps:
       - uses: actions/checkout@v1
+      
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        
+      - name: Test with environment variables
+        run: echo $RELEASE_NAME
+        env:
+          FILE_NAME: Adonis_Nightly_${{ steps.date.outputs.date }}
 
       - uses: Roblox/setup-foreman@v1
         with:
