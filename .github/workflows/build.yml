@@ -11,7 +11,7 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     env:
-      FILE_NAME: Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
+      FILE_NAME: ${{ Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx }}
 
     steps:
       - uses: actions/checkout@v1
@@ -27,3 +27,11 @@ jobs:
         with:
           name: model_artifact
           path: $FILE_NAME
+      
+      
+      - name: Send file nightly build to Discord channel
+        uses: sinshutu/upload-to-discord@master
+        env:
+           DISCORD_WEBHOOK: ${{ secrets.NIGHTLY_WEBHOOK }}
+        with:
+           args: $FILE_NAME
