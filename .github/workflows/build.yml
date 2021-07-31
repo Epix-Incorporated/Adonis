@@ -11,7 +11,7 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     env:
-      FILE_NAME: ${{ Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx }}
+      FILE_NAME: Adonis_Nightly_$(date +"%Y_%m_%d_%H_%M").rbxmx
 
     steps:
       - uses: actions/checkout@v1
