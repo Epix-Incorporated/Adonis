@@ -26,9 +26,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: model_artifact
+          name: Adonis_Nightly
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
-      
       
       - name: Send file nightly build to Discord channel
         uses: sinshutu/upload-to-discord@master
