@@ -31,6 +31,7 @@ jobs:
       
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
+        if: github.event_name != 'pull_request'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
