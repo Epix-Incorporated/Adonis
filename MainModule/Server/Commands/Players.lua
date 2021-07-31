@@ -139,6 +139,23 @@ return function(Vargs, env)
 				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
 			end
 		};
+						
+		NotifyMe = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"notifyme"};
+			Args = {"time (in seconds) or inf";"message"};
+			Hidden = true;
+			Description = "Sends yourself a notification";
+			AdminLevel = "Players";
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument(s) missing or nil")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Notification";
+					Message = args[2];
+					Time = tonumber(args[1]);
+				})
+			end
+		};
 
 		ClientTab = {
 			Prefix = Settings.PlayerPrefix;
@@ -879,33 +896,39 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local usage={
+					'NOTE: This info is temporary.';
+					'A revamped user manual is being made.';
+					'';
 					'Mouse over things in lists to expand them';
-					'Commands: ';
-					'Timeban, Works with non-ingame players, '.. Settings.Prefix ..'tban Player time(d/h/m/s) | Example Usage: '.. Settings.Prefix ..'timeban Sceleratis 10h (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
-					'Special Functions: ';
-					'Ex: '..Settings.Prefix..'kill FUNCTION, so like '..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all';
-					'Put /e in front to make it silent (/e '..Settings.Prefix..'kill scel)';
-					Settings.SpecialPrefix..'me - Runs a command on you';
-					Settings.SpecialPrefix..'all - Runs a command on everyone';
-					Settings.SpecialPrefix..'admins - Runs a command on all admins in the game';
-					Settings.SpecialPrefix..'nonadmins - Same as !admins but for people who are not an admin';
-					Settings.SpecialPrefix..'others - Runs command on everyone BUT you';
-					Settings.SpecialPrefix..'random - Runs command on a random person';
-					Settings.SpecialPrefix..'friends - Runs command on anyone on your friends list';
-					'%TEAMNAME - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
-					'$GROUPID - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
-					'-PLAYERNAME - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
-					'#NUMBER - Will run command on NUMBER of random players. '..Settings.Prefix..'ff #5 will ff 5 random players.';
-					'radius-NUMBER -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
-					'Certain commands can be used by anyone, these commands have '..Settings.PlayerPrefix..' infront, such as '..Settings.PlayerPrefix..'clean and '..Settings.PlayerPrefix..'rejoin';
-					''..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel';
-					'Multiple Commands at a time - '..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim';
-					'You can add a wait if you want; '..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds';
-					''..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim';
+					'You can also resize windows by dragging the edges';
+					'';
+					'<b>Commands:</b>';
+					'Timeban, Works with non-ingame players, <i>'.. Settings.Prefix ..'tban Player time(d/h/m/s)</i> | Example: <i>'.. Settings.Prefix ..'timeban Sceleratis 10h</i> (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
+					'<b>Special Functions:</b>';
+					'Ex: <i>'..Settings.Prefix..'kill FUNCTION</i>, so like <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i>';
+					'Put <i>/e</i> in front to silence it (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
+					'<i>'..Settings.SpecialPrefix..'me</i> - Runs a command on you';
+					'<i>'..Settings.SpecialPrefix..'all</i> - Runs a command on everyone';
+					'<i>'..Settings.SpecialPrefix..'admins</i> - Runs a command on all admins in the game';
+					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Same as !admins but for people who are not an admin';
+					'<i>'..Settings.SpecialPrefix..'others</i> - Runs command on everyone BUT you';
+					'<i>'..Settings.SpecialPrefix..'random</i> - Runs command on a random person';
+					'<i>'..Settings.SpecialPrefix..'friends</i> - Runs command on anyone on your friends list';
+					'<i>%TEAMNAME</i> - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
+					'<i>$GROUPID</i> - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
+					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
+					'<i>#NUMBER</i> - Will run command on NUMBER of random players. <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
+					'<i>radius-NUMBER</i> -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
+					'';
+					'Certain commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'clean</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
+					'<i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel</i>';
+					'Multiple Commands at a time - <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim</i>';
+					'You can add a wait if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
+					'<i>'..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim</i>';
 					'Place HeadAdmins can edit some settings in-game via the '..Settings.Prefix..'settings command';
 					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
 				}
-				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage})
+				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {280, 240}, RichText = true})
 			end
 		};
 
