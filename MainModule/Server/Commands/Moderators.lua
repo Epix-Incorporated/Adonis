@@ -6550,6 +6550,23 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		ResetButtonEnabled = {
+			Prefix = Settings.Prefix;
+			Commands = {"resetbuttonenabled";"canreset"};
+			Args = {"player","can reset? (true/false)"};
+			Description = "Sets whether the target player(s) can reset their character";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				assert(args[1] and args[2], "Argument missing or nil")
+				assert(args[2]:lower() == "true" or args[2]:lower() == "false", "Invalid argument #2 (boolean expected)")
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(v,"service.StarterGui:SetCore('ResetButtonCallback',"..args[2]:lower()..")")
+				end
+			end
+		};
 
 	}
 end

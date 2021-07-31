@@ -1488,6 +1488,22 @@ return function(Vargs, env)
 					game:GetService("MarketplaceService"):PromptPremiumPurchase(v)
 				end
 			end
-		}
+		};
+		
+		RobloxNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify"};
+			Args = {"player","duration (seconds)","text"};
+			Filter = true;
+			Description = "Sends a Roblox default notification for the target player(s)";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(v,"service.StarterGui:SetCore('SendNotification',{Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
+				end
+			end
+		};
 	}
 end
