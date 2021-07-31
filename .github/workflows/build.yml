@@ -30,8 +30,7 @@ jobs:
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
       
       - name: Send file nightly build to Discord channel
-        uses: sinshutu/upload-to-discord@master
-        env:
-           DISCORD_WEBHOOK: ${{ secrets.NIGHTLY_WEBHOOK }}
+        uses: tsickert/discord-webhook@v3.0.0
         with:
-           args: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
+          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
+          content: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
