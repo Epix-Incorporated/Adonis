@@ -22,12 +22,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build .github/build.project.json -o Adonis_Nightly_${{ steps.date.outputs.date }}
+        run: rojo build .github/build.project.json -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
 
       - uses: actions/upload-artifact@v2
         with:
           name: model_artifact
-          path: $FILE_NAME
+          path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
       
       
       - name: Send file nightly build to Discord channel
@@ -35,4 +35,4 @@ jobs:
         env:
            DISCORD_WEBHOOK: ${{ secrets.NIGHTLY_WEBHOOK }}
         with:
-           args: Adonis_Nightly_${{ steps.date.outputs.date }}
+           args: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxmx
