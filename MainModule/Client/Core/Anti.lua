@@ -457,11 +457,11 @@ return function()
 				do
 					local Logs = service.LogService:GetLogHistory()
 					local First = Logs[1]
-					if #Logs == 1 and (not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "string") or not rawequal(type(First.timeStamp), "number") or ) then
+					if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "string") or not rawequal(type(First.timeStamp), "number") then
 						Detected("crash", "Bypass detected 5435345")
-					end
-					if #Logs <= 1 then
+					elseif #Logs <= 1 then
 						Detected("log", "Suspicious log amount detected 5435345")
+						print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
