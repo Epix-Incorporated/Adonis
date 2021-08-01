@@ -48,12 +48,13 @@ return function(Vargs)
 		RunAfterInit = AfterInit;
 		ZaWarudo = false;
 		CodeName = math.random();
+		AuthorizedToReply = {};
 		FrozenObjects = {};
 		ScriptBuilder = {};
 		CachedDonors = {};
 		BanMessage = "Banned";
 		LockMessage = "Not Whitelisted";
-		DonorPass = {1348327,1990427,1911740,167686,98593};
+		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605"}; --// Strings are items, numbers are gamepasses
 		WebPanel_Initiated = false;
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
@@ -203,9 +204,18 @@ return function(Vargs)
 			{Name="ba",Material='Plastic',Color='White',ID=172528001}
 		};
 
+		Blacklist = {
+			Enabled = (server.Settings.BlacklistEnabled ~= nil and server.Settings.BlacklistEnabled) or true;
+			Lists = {
+				Settings = server.Settings.Blacklist
+			};
+		};
+
 		Whitelist = {
 			Enabled = server.Settings.WhitelistEnabled;
-			List = server.Settings.Whitelist or {};
+			Lists = {
+				Settings = server.Settings.Whitelist
+			};
 		};
 	};
 end

@@ -2,26 +2,26 @@
 --[[
 	SERVER PLUGINS' NAMES MUST START WITH "Server:" OR "Server-"
 	CLIENT PLUGINS' NAMES MUST START WITH "Client:" OR "Client-"
-	
+
 	Plugins have full access to the server/client tables and most variables.
-	
+
 	You can use the MakePluginEvent to use the script instead of setting up an event.
-	PlayerChatted will get chats from the custom chat and nil players. 
+	PlayerChatted will get chats from the custom chat and nil players.
 	PlayerJoined will fire after the player finishes initial loading
 	CharacterAdded will also fire after the player is loaded, it does not use the CharacterAdded event.
-	
-	service.HookEvent('PlayerChatted',function(msg,plr) 
+
+	service.Events.PlayerChatted(function(plr, msg)
 		print(msg..' from '..plr.Name..' Example Plugin')
 	end)
-	
-	service.HookEvent('PlayerJoined',function(p) 
-		print(p.Name..' Joined! Example Plugin') 
+
+	service.Events.PlayerJoined(function(p)
+		print(p.Name..' Joined! Example Plugin')
 	end)
-	
-	service.HookEvent('CharacterAdded',function(plr) 
-		server.RunCommand('name',plr.Name,'BobTest Example Plugin') 
+
+	service.Events.CharacterAdded(function(p)
+		server.RunCommand('name',plr.Name,'BobTest Example Plugin')
 	end)
-	
+
 --]]
 
 return function()

@@ -118,7 +118,10 @@ return function()
 			if type(com) == "string" then
 				if com == client.DepsName.."GIVE_KEY" then
 					if not Core.Key then
+						log("~! Set remote key")
 						Core.Key = args[1]
+
+						log("~! Call Finish_Loading()")
 						client.Finish_Loading()
 					end
 				elseif Remote.UnEncrypted[com] then

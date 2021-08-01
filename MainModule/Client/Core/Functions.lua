@@ -90,11 +90,137 @@ return function()
 		RunLast = RunLast;
 		Kill = client.Kill;
 
+		ESPFaces = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
+		ESPify = function(obj, color)
+			for i, part in ipairs(obj:GetChildren()) do
+				if part:IsA("BasePart") then
+					if part.Name == "Head" and not part:FindFirstChild("__ADONIS_NAMETAG") then
+						local player = service.Players:GetPlayerFromCharacter(part.Parent)
+
+						if player then
+							local bb = Instance.new("BillboardGui")
+							bb.Name = "__ADONIS_NAMETAG"
+							bb.Adornee = part
+							bb.AlwaysOnTop = true
+							bb.StudsOffset = Vector3.new(0,2,0)
+							bb.Size = UDim2.new(0,100,0,40)
+							local taglabel = Instance.new("TextLabel")
+							local pos = service.Player:DistanceFromCharacter(part.Position)
+							taglabel.BackgroundTransparency = 1
+							taglabel.TextColor3 = Color3.new(1,1,1)
+							taglabel.TextStrokeTransparency = 0
+							taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, pos and math.floor(pos) or 'N/A')
+							taglabel.Size = UDim2.new(1, 0, 1, 0)
+							taglabel.TextScaled = true
+							taglabel.TextWrapped = true
+							taglabel.Parent = bb
+							bb.Parent = part
+
+							if player ~= service.Player then
+								coroutine.wrap(function()
+									repeat
+										if not part then
+											break
+										end
+
+										local DIST = service.Player:DistanceFromCharacter(part.CFrame.Position)
+										taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, DIST and math.floor(DIST) or 'N/A')
+
+										service.RunService.Heartbeat:Wait()
+									until not part or not bb or not taglabel
+								end)()
+							end
+						end
+					end
+
+					for i,surface in ipairs(Functions.ESPFaces) do
+						local gui = Instance.new("SurfaceGui")
+						gui.Name = "__ADONISESP"
+						gui.AlwaysOnTop = true
+						gui.ResetOnSpawn = false
+						gui.Adornee = part
+						gui.Face = surface
+
+						do
+							local temp = Instance.new("Frame")
+							temp.Size = UDim2.new(1, 0, 1, 0)
+							temp.BackgroundColor3 = color or Color3.fromRGB(255, 0, 234)
+							temp.Parent = gui
+						end
+
+						gui.Parent = part;
+						gui.AncestryChanged:Connect(function()
+							if not game.IsDescendantOf(gui,workspace) then
+								service.Debris:AddItem(gui,0)
+
+								for i,v in pairs(Variables.ESPObjects) do
+									if v == gui then
+										table.remove(Variables.ESPObjects, i)
+										break;
+									end
+								end
+							end
+						end)
+
+						Variables.ESPObjects[gui] = part;
+					end
+				end
+			end
+		end;
+
+		CharacterESP = function(mode, target, color)
+			if Variables.ESPEvent then
+				Variables.ESPEvent:Disconnect();
+				Variables.ESPEvent = nil;
+			end
+
+			for obj in pairs(Variables.ESPObjects) do
+				if not mode or not target or (target and obj:IsDescendantOf(target)) then
+					local __ADONIS_NAMETAG = obj.Parent and obj.Parent:FindFirstChild("__ADONIS_NAMETAG")
+					if __ADONIS_NAMETAG then
+						__ADONIS_NAMETAG:Destroy()
+					end
+
+					service.Debris:AddItem(obj,0)
+					Variables.ESPObjects[obj] = nil;
+				end
+			end
+
+			if mode == true then
+				if not target then
+					Variables.ESPEvent = workspace.ChildAdded:Connect(function(obj)
+						service.RunService.Heartbeat:Wait()
+						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
+
+						if human then
+							coroutine.wrap(Functions.ESPify)(obj, color);
+						end
+					end)
+
+					for i,obj in ipairs(workspace:GetChildren()) do
+						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
+						if human then
+							coroutine.wrap(Functions.ESPify)(obj, color);
+						end
+					end
+				else
+					Functions.ESPify(target, color);
+				end
+			end
+		end;
+
 		GetRandom = function(pLen)
-			local Len = (type(pLen) == "number" and pLen) or math.random(10,15) --// reru
+			--local str = ""
+			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
+			--return str
+
+			local random = math.random
+			local format = string.format
+
+			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 			local Res = {};
 			for Idx = 1, Len do
-				Res[Idx] = string.format('%02x', math.random(255));
+				Res[Idx] = format('%02x', random(255));
 			end;
 			return table.concat(Res)
 		end;
@@ -147,6 +273,14 @@ return function()
 			end
 		end;
 
+		Playlist = function()
+			return client.Remote.Get("Playlist")
+		end;
+
+		UpdatePlaylist = function(playlist)
+			client.Remote.Get("UpdatePlaylist", playlist)
+		end;
+
 		Dizzy = function(speed)
 			service.StopLoop("DizzyLoop")
 			if speed then
@@ -172,32 +306,61 @@ return function()
 		end;
 
 		Base64Encode = function(data)
-			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			return ((data:gsub('.', function(x)
-				local r,b='',string.byte(x)
-				for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+			local sub = string.sub
+			local byte = string.byte
+			local gsub = string.gsub
+			local char = string.char
+
+			return (gsub(gsub(data, '.', function(x) 
+				local r, b = "", byte(x)
+				for i = 8, 1, -1 do
+					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-				if (#x < 6) then return '' end
-				local c=0
-				for i=1,6 do c=c+(string.sub(x,i,i)=='1' and 2^(6-i) or 0) end
-				return string.sub(b,c+1,c+1)
-			end)..({ '', '==', '=' })[#data%3+1])
+			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
+				if (#(x) < 6) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 6 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
+				end
+				return sub('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', c + 1, c + 1)
+			end)..({
+				'',
+				'==',
+				'='
+			})[#(data) % 3 + 1])
 		end;
 
 		Base64Decode = function(data)
+			local sub = string.sub
+			local gsub = string.gsub
+			local find = string.find
+			local char = string.char
+
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			data = string.gsub(data, '[^'..b..'=]', '')
-			return (data:gsub('.', function(x)
-				if (x == '=') then return '' end
-				local r,f='',(string.find(b,x)-1)
-				for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+
+			data = gsub(data, '[^'..b..'=]', '')
+
+			return (gsub(gsub(data, '.', function(x)
+				if (x == '=') then
+					return ''
+				end
+				local r, f = '', (find(b, x) - 1)
+				for i = 6, 1, -1 do
+					r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then return '' end
-				local c=0
-				for i=1,8 do c=c+(string.sub(x,i,i)=='1' and 2^(7-i) or 0) end
-				return string.char(c)
+			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
+				if (#x ~= 8) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 8 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
+				end
+				return char(c)
 			end))
 		end;
 
@@ -626,15 +789,15 @@ return function()
 
 								local ang = 0.1
 								if wave then
-									if torso.Velocity.magnitude > 1 then
-										ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
+									if torso.Velocity.Magnitude > 1 then
+										ang = ang + ((torso.Velocity.Magnitude/10)*.05)+.05
 									end
 									v.Wave = false
 								else
 									v.Wave = true
 								end
-								ang = ang + math.min(torso.Velocity.magnitude/11, .8)
-								motor.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + 0.002
+								ang = ang + math.min(torso.Velocity.Magnitude/11, .8)
+								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + 0.002
 								if isPlayer then
 									motor.DesiredAngle = -ang
 								else
@@ -1055,23 +1218,23 @@ return function()
 				local wave = false
 				repeat wait(1/44)
 					local ang = 0.1
-					local oldmag = torso.Velocity.magnitude
+					local oldmag = torso.Velocity.Magnitude
 					local mv = .002
-					if wave then ang = ang + ((torso.Velocity.magnitude/10)*.05)+.05
+					if wave then ang = ang + ((torso.Velocity.Magnitude/10)*.05)+.05
 						wave = false
 					else
 						wave = true
 					end
-					ang = ang + math.min(torso.Velocity.magnitude/11, .5)
-					motor1.MaxVelocity = math.min((torso.Velocity.magnitude/111), .04) + mv
+					ang = ang + math.min(torso.Velocity.Magnitude/11, .5)
+					motor1.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + mv
 					motor1.DesiredAngle = -ang
 					if motor1.CurrentAngle < -.2 and motor1.DesiredAngle > -.2 then
 						motor1.MaxVelocity = .04
 					end
 
-					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.magnitude - oldmag) >=(torso.Velocity.magnitude/10) + 1
+					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.Magnitude - oldmag) >=(torso.Velocity.Magnitude/10) + 1
 
-					if torso.Velocity.magnitude < .1 then
+					if torso.Velocity.Magnitude < .1 then
 						wait(.1)
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()

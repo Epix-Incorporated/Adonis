@@ -18,31 +18,101 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
 				local tab = {}
-				local cStr
+				local cStr = ""
 
+				local cmdCount = 0
 				for i,v in next,commands do
 					if not v.Hidden and not v.Disabled then
-						if type(v.AdminLevel) == "table" then
-							cStr = ""
-							for k,m in ipairs(v.AdminLevel) do
-								cStr = cStr..m..", "
+						local lvl = v.AdminLevel;
+						local gotLevels = {};
+
+						if type(lvl) == "table" then
+							for i,v in pairs(lvl) do
+								table.insert(gotLevels, v);
 							end
-						else
-							cStr = tostring(v.AdminLevel)
+						elseif type(lvl) == "string" or type(lvl) == "number" then
+							table.insert(gotLevels, lvl);
+						end
+
+						for i,lvl in next,gotLevels do
+							local tempStr = "";
+
+							if type(lvl) == "number" then
+								local list, name, data = Admin.LevelToList(lvl);
+								--print(tostring(list), tostring(name), tostring(data))
+								tempStr = (name or "No Rank") .."; Level ".. lvl;
+							elseif type(lvl) == "string" then
+								local numLvl = Admin.StringToComLevel(lvl);
+								tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
+							end
+
+							if i > 1 then
+								tempStr = cStr.. ", ".. tempStr;
+							end
+
+							cStr = tempStr;
 						end
 
 						table.insert(tab, {
 							Text = Admin.FormatCommand(v),
 							Desc = "["..cStr.."] "..v.Description,
-							Filter = v.AdminLevel
+							Filter = cStr
 						})
+						cmdCount = cmdCount + 1
 					end
 				end
 
 				Remote.MakeGui(plr,"List",
 					{
-						Title = "Commands";
+						Title = "Commands ("..cmdCount..")";
 						Table = tab;
+						TitleButtons = {
+							{
+								Text = "?";
+								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.PlayerPrefix.."usage')")
+							}
+						};
+					}
+				)
+			end
+		};
+
+		CommandInfo = {
+			Prefix = Settings.Prefix;
+			Commands = {"cmdinfo","commandinfo","cmddetails"};
+			Args = {"command"};
+			Description = "Shows you information about a specific command";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				assert(args[1], "No command provided")
+
+				local commands = Admin.SearchCommands(plr,"all")
+				local cmd
+				for i,v in next,commands do
+					for _, p in pairs(v.Commands) do
+						if p:lower() == args[1]:lower() then
+							cmd = v
+							break
+						end
+					end
+				end
+				assert(cmd, "Command not found / don't include prefix")
+
+				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
+				if cmdArgs == "" then cmdArgs = "-" end
+				Remote.MakeGui(plr,"List",
+					{
+						Title = "Command Info";
+						Table = {
+							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
+							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
+							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
+							{Text = "Admin Level: "..cmd.AdminLevel, Desc = "Rank required to run the command"},
+							{Text = "Fun: "..tostring(cmd.Fun), Desc = "Is the command fun?"},
+							{Text = "Hidden: "..tostring(cmd.Hidden), Desc = "Is the command hidden from the command list?"},
+							{Text = "Description: "..cmd.Description, Desc = "Command description"}
+						};
+						Size = {400,220}
 					}
 				)
 			end
@@ -55,39 +125,7 @@ return function(Vargs, env)
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				Remote.MakeGui(plr,"Window",{
-					Name = "Notepad";
-					Title = "Notepad";
-					CanvasSize = UDim2.new(0,0,10,0);
-					Ready = true;
-					--Menu = {
-					--	{
-					--		Class = "TextButton";
-					--		Size = UDim2.new(0,50,1,0);
-					--		Text = "File";
-					--	};
-					--};
-
-					Content = {
-
-						{
-							Class = "TextBox";
-							Size = UDim2.new(1,-5,1,0);
-							Position = UDim2.new(0,0,0,0);
-							BackgroundColor3 = Color3.new(1,1,1);
-							TextColor3 = Color3.new(0,0,0);
-							Font = "Code";
-							FontSize = "Size18";
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							TextWrapped = true;
-							TextScaled = false;
-							ClearTextOnFocus = false;
-							MultiLine = true;
-							Text = "";
-						};
-					}
-				})
+				Remote.MakeGui(plr,"Notepad",{})
 			end
 		};
 
@@ -99,6 +137,23 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
+			end
+		};
+						
+		NotifyMe = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"notifyme"};
+			Args = {"time (in seconds) or inf";"message"};
+			Hidden = true;
+			Description = "Sends yourself a notification";
+			AdminLevel = "Players";
+			Function = function(plr, args)
+				assert(args[1] and args[2], "Argument(s) missing or nil")
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Notification";
+					Message = args[2];
+					Time = tonumber(args[1]);
+				})
 			end
 		};
 
@@ -135,7 +190,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Remove donor cape";
 			Fun = false;
-			AllowDonors = true;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				Functions.UnCape(plr)
@@ -149,7 +204,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Get donor cape";
 			Fun = false;
-			AllowDonors = true;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				Functions.Donor(plr)
@@ -163,6 +218,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Give you the shirt that belongs to <ID>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
@@ -194,6 +250,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Give you the pants that belongs to <id>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
@@ -227,10 +284,11 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you the face that belongs to <id>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				if plr.Character and plr.Character:findFirstChild("Head") and plr.Character.Head:findFirstChild("face") then
-					plr.Character.Head:findFirstChild("face"):Destroy()
+				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
+					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
 
 				local id = tonumber(args[1])
@@ -244,8 +302,13 @@ return function(Vargs, env)
 					humandescrip.Face = id
 				end
 
-				if info.AssetTypeId == 18 or info.AssetTypeId == 9 then
-					service.Insert(args[1]).Parent = plr.Character:FindFirstChild("Head")
+				if info.AssetTypeId == 18 then
+					if plr.Character:FindFirstChild("Head") then
+						local face = service.Insert(args[1])
+						if face then
+							face.Parent = plr.Character:FindFirstChild("Head")
+						end
+					end
 				else
 					error("Invalid face ID")
 				end
@@ -259,10 +322,11 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				if plr.Character then
-					for k,p in pairs(plr.Character:children()) do
+					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
 								local str = BrickColor.new('Institutional white').Color
@@ -284,6 +348,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you fire with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -326,6 +391,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you sparkles with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -366,6 +432,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -400,6 +467,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Put a custom particle emitter on your character";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
@@ -463,6 +531,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor particles on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -477,6 +546,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor fire on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -492,6 +562,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor sparkles on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -507,6 +578,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes donor light on you";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -521,6 +593,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Gives you the hat specified by <ID>";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
 				local id = tonumber(args[1])
@@ -559,7 +632,7 @@ return function(Vargs, env)
 
 						removeScripts(hat)
 						hat.Parent = plr.Character
-						hat.Changed:connect(function()
+						hat.Changed:Connect(function()
 							if hat.Parent ~= plr.Character then
 								hat:Destroy()
 							end
@@ -568,7 +641,28 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+ 		DonorRemoveHat = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removehat";};
+			Args = {"Accessory"};
+			Hidden = false;
+			Description = "Remove any accessories you are currently wearing";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr,args)
+				local hat = plr.Character:FindFirstChild(args[1])
+				if hat and hat:IsA("Accessory") then	
+					hat:Destroy()
+					Functions.Hint(args[1].." has been removed",{plr})	
+				else
+					Functions.Hint(args[1].." is not a valid accessory",{plr})
+				end
 
+			end
+		};
+    
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removehats";"nohats";};
@@ -576,26 +670,14 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Removes any hats you are currently wearing";
 			Fun = false;
+			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				for i,v in pairs(plr.Character:children()) do
+				for _,v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end
 				end
-			end
-		};
-
-		Keybinds = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
-			Args = {};
-			Hidden = false;
-			Description = "Opens the keybind manager";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
 			end
 		};
 
@@ -604,7 +686,7 @@ return function(Vargs, env)
 			Commands = {"getscript";"getadonis"};
 			Args = {};
 			Hidden = false;
-			Description = "Get this script.";
+			Description = "Prompts you to take a copy of the script";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -617,7 +699,7 @@ return function(Vargs, env)
 			Commands = {"ping";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you your current ping (in seconds)";
+			Description = "Shows you your current ping (latency)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -630,7 +712,7 @@ return function(Vargs, env)
 			Commands = {"getping";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Shows the target player's ping (in seconds)";
+			Description = "Shows the target player's ping";
 			Fun = false;
 			AdminLevel = "Helpers";
 			Function = function(plr,args)
@@ -650,7 +732,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local temptable = {}
-				for i,v in pairs(service.Players:children()) do
+				for _,v in pairs(service.Players:GetPlayers()) do
 					if Admin.CheckDonor(v) then
 						table.insert(temptable,v.Name)
 					end
@@ -734,12 +816,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(plr.userId)
-				if succeeded then
-					service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
-				else
-					Functions.Hint("Could not rejoin.")
-				end
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
 
@@ -763,23 +840,6 @@ return function(Vargs, env)
 				else
 					Functions.Hint(args[1].." is not a valid Roblox user",{plr})
 				end
-			end
-		};
-
-		Agents = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"agents";"trelloagents";"showagents";};
-			Args = {};
-			Hidden = false;
-			Description = "Shows a list of Trello agents pulled from the configured boards";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				local temp={}
-				for i,v in pairs(HTTP.Trello.Agents) do
-					table.insert(temp,{Text = v,Desc = "A Trello agent"})
-				end
-				Remote.MakeGui(plr,"List",{Title = "Agents", Tab = temp})
 			end
 		};
 
@@ -836,31 +896,39 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local usage={
+					'NOTE: This info is temporary.';
+					'A revamped user manual is being made.';
+					'';
 					'Mouse over things in lists to expand them';
-					'Special Functions: ';
-					'Ex: '..Settings.Prefix..'kill FUNCTION, so like '..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all';
-					'Put /e in front to make it silent (/e '..Settings.Prefix..'kill scel)';
-					Settings.SpecialPrefix..'me - Runs a command on you';
-					Settings.SpecialPrefix..'all - Runs a command on everyone';
-					Settings.SpecialPrefix..'admins - Runs a command on all admins in the game';
-					Settings.SpecialPrefix..'nonadmins - Same as !admins but for people who are not an admin';
-					Settings.SpecialPrefix..'others - Runs command on everyone BUT you';
-					Settings.SpecialPrefix..'random - Runs command on a random person';
-					Settings.SpecialPrefix..'friends - Runs command on anyone on your friends list';
-					'%TEAMNAME - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
-					'$GROUPID - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
-					'-PLAYERNAME - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
-					'#NUMBER - Will run command on NUMBER of random players. '..Settings.Prefix..'ff #5 will ff 5 random players.';
-					'radius-NUMBER -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
-					'Certain commands can be used by anyone, these commands have '..Settings.PlayerPrefix..' infront, such as '..Settings.PlayerPrefix..'clean and '..Settings.PlayerPrefix..'rejoin';
-					''..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel';
-					'Multiple Commands at a time - '..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim';
-					'You can add a wait if you want; '..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds';
-					''..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim';
+					'You can also resize windows by dragging the edges';
+					'';
+					'<b>Commands:</b>';
+					'Timeban, Works with non-ingame players, <i>'.. Settings.Prefix ..'tban Player time(d/h/m/s)</i> | Example: <i>'.. Settings.Prefix ..'timeban Sceleratis 10h</i> (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
+					'<b>Special Functions:</b>';
+					'Ex: <i>'..Settings.Prefix..'kill FUNCTION</i>, so like <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i>';
+					'Put <i>/e</i> in front to silence it (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
+					'<i>'..Settings.SpecialPrefix..'me</i> - Runs a command on you';
+					'<i>'..Settings.SpecialPrefix..'all</i> - Runs a command on everyone';
+					'<i>'..Settings.SpecialPrefix..'admins</i> - Runs a command on all admins in the game';
+					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Same as !admins but for people who are not an admin';
+					'<i>'..Settings.SpecialPrefix..'others</i> - Runs command on everyone BUT you';
+					'<i>'..Settings.SpecialPrefix..'random</i> - Runs command on a random person';
+					'<i>'..Settings.SpecialPrefix..'friends</i> - Runs command on anyone on your friends list';
+					'<i>%TEAMNAME</i> - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
+					'<i>$GROUPID</i> - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
+					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
+					'<i>#NUMBER</i> - Will run command on NUMBER of random players. <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
+					'<i>radius-NUMBER</i> -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
+					'';
+					'Certain commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'clean</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
+					'<i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel</i>';
+					'Multiple Commands at a time - <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim</i>';
+					'You can add a wait if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
+					'<i>'..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim</i>';
 					'Place HeadAdmins can edit some settings in-game via the '..Settings.Prefix..'settings command';
 					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
 				}
-				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage})
+				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {280, 240}, RichText = true})
 			end
 		};
 
@@ -896,7 +964,7 @@ return function(Vargs, env)
 			Commands = {"info";"about";"userpanel";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows info about the script";
+			Description = "Shows info about the script (Adonis)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
@@ -917,6 +985,19 @@ return function(Vargs, env)
 			end
 		};
 
+		Keybinds = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"keybinds";"binds";"bind";"keybind";"clearbinds";"removebind";};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the keybind manager";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				Remote.MakeGui(plr,"UserPanel",{Tab = "KeyBinds"})
+			end
+		};
+
 		Invite = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"invite";"invitefriends"};
@@ -926,7 +1007,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("SocialService"):PromptGameInvite(plr)
+				service.SocialService:PromptGameInvite(plr)
 			end
 		};
 
@@ -947,16 +1028,16 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
 			Args = {};
-			Description = "Lets you to purchase Roblox Premium";
+			Description = "Prompts you to purchase Roblox Premium";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				game:GetService("MarketplaceService"):PromptPremiumPurchase(plr)
+				service.MarketplaceService:PromptPremiumPurchase(plr)
 			end
 		};
 
-		AddFriend = {
+		--[[AddFriend = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"addfriend";"friendrequest";"sendfriendrequest";};
 			Args = {"player"};
@@ -968,7 +1049,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptSendFriendRequest",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,"service.StarterGui:SetCore("PromptSendFriendRequest",service.Players."..v.Name..")")
 				end
 			end
 		};
@@ -985,7 +1066,22 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr,[[service.StarterGui:SetCore("PromptUnfriend",game:GetService("Players").]]..v.Name..[[)]])
+					Remote.LoadCode(plr,"service.StarterGui:SetCore("PromptUnfriend",service.Players."..v.Name..")")
+				end
+			end
+		};]]
+		
+		InspectAvatar = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"inspectavatar";"avatarinspect";"viewavatar";"examineavatar";};
+			Args = {"player"};
+			Description = "Opens the Roblox avatar inspect menu for the specified player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Remote.LoadCode(plr,"service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
 				end
 			end
 		};

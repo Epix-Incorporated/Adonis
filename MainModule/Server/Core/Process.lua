@@ -43,12 +43,21 @@ return function(Vargs)
 	end;
 
 	local function RunAfterPlugins(data)
+		local existingPlayers = service.Players:GetPlayers();
+
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 		service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
 		service.RbxEvent(service.LogService.MessageOut, Process.LogService)
 		service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
+
+		--// Load client onto existing players
+		if existingPlayers then
+			for i,p in ipairs(existingPlayers) do
+				Core.LoadExistingPlayer(p);
+			end
+		end
 
 		Process.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Process Module RunAfterPlugins Finished");
@@ -89,25 +98,34 @@ return function(Vargs)
 		};
 
 		Remote = function(p, cliData, com, ...)
+			local key = tostring(p.UserId)
+			local keys = Remote.Clients[key]
+
 			if p and p:IsA("Player") then
 				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
+				--elseif cliData and keys and cliData.Module ~= keys.Module then
+				--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
 					local args = {...}
-					local key = tostring(p.userId)
-					local keys = Remote.Clients[key]
+					local rateLimitCheck = RateLimit(p, "Remote")
+
 					if keys then
-						keys.Received = keys.Received+1
-						if type(com) == "string" and cliData and cliData.Module == keys.Module then  -- and cliData.Sent == keys.Received then -- and cliData.Loader == keys.Loader
+						keys.LastUpdate = os.time()
+						keys.Received = keys.Received + 1
+
+						if type(com) == "string" then
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
 									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
+
+									Logs:AddLog("Script", string.format("%s requested client keys", tostring(p)))
 								else
-									Anti.Detected(p, "kick","Communication Key Error (r10003)")
+									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
 								AddLog("RemoteFires", {
@@ -123,7 +141,7 @@ return function(Vargs)
 								})
 
 								return {UnEncrypted[com](p,...)}
-							elseif RateLimit(p, "Remote") and string.len(com) <= Remote.MaxLen then
+							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
@@ -135,8 +153,6 @@ return function(Vargs)
 
 								if command then
 									local rets = {TrackTask("Remote: ".. tostring(p) ..": ".. tostring(comString), command, p, args)}
-									keys.LastUpdate = os.time()
-
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
 									else
@@ -145,13 +161,13 @@ return function(Vargs)
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
+							elseif rateLimitCheck and RateLimit(p, "RateLog") then
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
 						end
-					elseif RateLimit(p, "RateLog") then
-						Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
-						warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 					end
 				end
 			end
@@ -164,6 +180,10 @@ return function(Vargs)
 			local Remote = Remote
 			local Logs = Logs
 			local opts = opts or {}
+
+			if Admin.IsBlacklisted(p) then
+				return false
+			end
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit);
@@ -202,7 +222,6 @@ return function(Vargs)
 						local pDat = {
 							Player = opts.Player or p;
 							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isAgent = opts.IsAgent or HTTP.Trello.CheckAgent(p);
 							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
 						}
 
@@ -271,6 +290,7 @@ return function(Vargs)
 								local ran, error = service.TrackTask(taskName, command.Function, p, args, {PlayerData = pDat, Options = opts})
 								if not opts.IgnoreErrors then
 									if error and type(error) == "string" then
+										Logs:AddLog("Errors", tostring(error))
 										error =  (error and tostring(error):match(":(.+)$")) or error or "Unknown error"
 										if not isSystem then
 											Remote.MakeGui(p,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
@@ -354,7 +374,9 @@ return function(Vargs)
 						end
 					end
 
-					for i,v in pairs(service.GetPlayers(p,target,true)) do
+					for i,v in pairs(service.GetPlayers(p,target,{
+						DontError = true;
+					})) do
 						--Routine(function()
 						local a = service.Filter(a,p,v)
 						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
@@ -388,13 +410,9 @@ return function(Vargs)
 		end;
 
 		Chat = function(p, msg)
-			if Settings.Detection and p.userId < 0 and tostring(p):match("^Guest") then
-				Anti.Detected(p, "kick", "Talking guest")
-			end
-
 			if RateLimit(p, "Chat") then
 				local isMuted = Admin.IsMuted(p);
-				if #msg > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
+				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
@@ -403,7 +421,6 @@ return function(Vargs)
 					AddLog(Logs.Chats,{
 						Text = p.Name..": "..tostring(filtered);
 						Desc = tostring(filtered);
-						NoTime = true;
 						Player = p;
 					})
 
@@ -432,7 +449,6 @@ return function(Vargs)
 					AddLog(Logs.Chats,{
 						Text = "[MUTED] ".. p.Name ..": "..tostring(filtered);
 						Desc = tostring(filtered);
-						NoTime = true;
 						Player = p;
 					})
 				end
@@ -468,90 +484,102 @@ return function(Vargs)
 		end;
 
 		PlayerAdded = function(p)
-			if Anti.RLocked(p) then
-				Anti.Detected(p, "kick", "Roblox Locked")
-			elseif Anti.UserSpoofCheck(p) then
-				Anti.Detected(p, "kick", "Username Spoofing");
-			else
-				local key = tostring(p.UserId)
-				local keyData = {
-					Player = p;
-					Key = Functions:GetRandom();
-					Decoy1 = Functions:GetRandom();
-					Decoy2 = Functions:GetRandom();
-					Cache = {};
-					Sent = 0;
-					Received = 0;
-					LastUpdate = os.time();
-					FinishedLoading = false;
-					LoadingStatus = "WAITING_FOR_KEY";
-				}
+			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. tostring(p))
 
-				Core.PlayerData[key] = nil
-				Remote.Clients[key] = keyData
+			local key = tostring(p.UserId)
+			local keyData = {
+				Player = p;
+				Key = Functions:GetRandom();
+				Cache = {};
+				Sent = 0;
+				Received = 0;
+				LastUpdate = os.time();
+				FinishedLoading = false;
+				LoadingStatus = "WAITING_FOR_KEY";
+				--Special = Core.MockClientKeys and Core.MockClientKeys.Special;
+				--Module = Core.MockClientKeys and Core.MockClientKeys.Module;
+			}
 
+			Core.PlayerData[key] = nil
+			Remote.Clients[key] = keyData
+
+			local ran, err = Pcall(function()
 				Routine(function()
-					local playerGui = p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 600);
-					if playerGui then
-						if playerGui.Name ~= "PlayerGui" then
-							playerGui.Name = "PlayerGui"
-						end
-						playerGui:GetPropertyChangedSignal("Name"):Connect(function()
-							playerGui.Name = "PlayerGui"
-						end)
+					if Anti.UserSpoofCheck(p) then
+						Remote.Clients[key] = nil;
+						Anti.Detected(p, "kick", "Username Spoofing");
 					end
 				end)
 
 				--p:SetSpecial("Kick", Anti.RemovePlayer)
 				--p:SetSpecial("Detected", Anti.Detected)
-				Core.UpdateConnection(p)
+				--Core.UpdateConnection(p)
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
 
 				if banned then
+					Remote.Clients[key] = nil;
 					p:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (reason or "No reason provided")))
-					return
+					return "REMOVED"
 				end
 
 				if Variables.ServerLock and level < 1 then
-					p:Kick(Variables.LockMessage)
-					return
+					Remote.Clients[key] = nil;
+					p:Kick(Variables.LockMessage or "::Adonis::\nServer Locked")
+					return "REMOVED"
 				end
 
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-					for ind, admin in next,Variables.Whitelist.List do
-						if Admin.DoCheck(p,admin) then
+					for listName, list in next,Variables.Whitelist.Lists do
+						if Admin.CheckTable(p, list) then
 							listed = true
-							break
+							break;
 						end
 					end
 
 					if not listed and level == 0 then
-						p:Kick(Variables.LockMessage)
-						return
+						Remote.Clients[key] = nil;
+						p:Kick(Variables.LockMessage or "::Adonis::\nWhitelist Enabled")
+						return "REMOVED"
 					end
 				end
+			end)
 
-				if Remote.Clients[key] then
-					Core.HookClient(p)
+			if not ran then
+				Logs:AddLog("Errors", tostring(p) .." PlayerAdded Failed: ".. tostring(err))
+				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn(tostring(err))
+			end
 
-					Logs.AddLog(Logs.Script,{
-						Text = p.Name .. " joined";
-						Desc = p.Name .. " successfully joined the server";
-						Player = p;
-					})
+			if Remote.Clients[key] then
+				Core.HookClient(p)
 
-					p.CharacterAdded:Connect(function()
-						service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
-					end)
+				Logs.AddLog(Logs.Script,{
+					Text = p.Name .. " loading started";
+					Desc = p.Name .. " successfully joined the server";
+				})
 
-					wait(60*10)
+				Logs.AddLog(Logs.Joins,{
+					Text = p.Name;
+					Desc = p.Name.." joined the server";
+					Player = p;
+				})
 
-					if p.Parent and keyData and keyData.LoadingStatus ~= "READY" then
+				--// Get chats
+				p.Chatted:Connect(function(msg)
+						service.TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+				end)
+				--// Character added
+				p.CharacterAdded:Connect(function()
+					service.TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
+				end)
+
+				delay(600, function()
+					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						Logs.AddLog("Script", {
 							Text = p.Name .. " Failed to Load",
 							Desc = tostring(keyData.LoadingStatus)..": Client failed to load in time (10 minutes?)",
@@ -559,93 +587,46 @@ return function(Vargs)
 						});
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
-				else
-					Anti.RemovePlayer(p, ":: Adonis :: Loading Error [Missing player, keys, or removed]")
-				end
+				end)
+			elseif (ran and err ~= "REMOVED") then
+				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
 
 		PlayerRemoving = function(p)
-			--local key = tostring(p.userId)
-			--Core.SavePlayerData(p)
-			--Remote.Clients[key] = nil
-			service.Events.PlayerRemoving:fire(p)
+			service.Events.PlayerRemoving:Fire(p)
+
+			local data = Core.GetPlayer(p)
+			local key = tostring(p.UserId)
+
 			local level = (p and Admin.GetLevel(p)) or 0
 			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
+			--Remote.Clients[key] = nil
+			Core.PlayerData[key] = nil
+
 			Logs.AddLog(Logs.Script,{
-				Text = tostring(p).." left";
-				Desc = tostring(p).." player removed";
+				Text = string.format("Triggerd PlayerRemoving for %s", tostring(p));
+				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
-		end;
 
-		NetworkAdded = function(cli)
-			wait(0.25)
-			local tim = service.GetTime()
-			local p = cli:GetPlayer()
-			if p then
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
-					Text = tostring(p).." connected";
-					Desc = tostring(p).." successfully established a connection with the server";
-					Player = p;
-				})
-			else
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
-					Text = "<UNKNOWN> connected";
-					Desc = "An unknown user successfully established a connection with the server";
-				})
-			end
-			service.Events.NetworkAdded:fire(cli)
-		end;
-
-		NetworkRemoved = function(cli)
-			local tim = service.GetTime()
-			local p = cli:GetPlayer() or Core.Connections[cli]
-			Core.Connections[cli] = nil
-			if p then
-				local key = tostring(p.userId)
-				Core.SavePlayerData(p)
-				Remote.Clients[key] = nil
-				Logs.AddLog(Logs.Script,{
-					Text = tostring(p).." disconnected";
-					Desc = tostring(p).." disconnected from the server";
-					Player = p;
-				})
-			else
-				Logs.AddLog(Logs.Script,{
-					Time = tim;
-					Text = "<UNKNOWN> disconnected";
-					Desc = "An unknown user disconnected from the server";
-				})
-			end
-			service.Events.NetworkRemoved:fire(cli)
+			Core.SavePlayerData(p, data)
 		end;
 
 		FinishLoading = function(p)
 			local PlayerData = Core.GetPlayer(p)
 			local level = Admin.GetLevel(p)
-			local key = tostring(p.userId)
-
-			--// Finish loading
-			service.FireEvent(p.userId.."_CLIENTLOADER",p)
+			local key = tostring(p.UserId)
 
 			--// Fire player added
-			service.Events.PlayerAdded:fire(p)
-			Logs.AddLog(Logs.Joins,{
-				Text = p.Name;
-				Desc = p.Name.." joined the server";
-				Player = p;
+			service.Events.PlayerAdded:Fire(p)
+			Logs.AddLog(Logs.Script,{
+				Text = string.format("%s finished loading", p.Name);
+				Desc = "Client finished loading";
 			})
-
-			--// Get chats
-			service.RbxEvent(p.Chatted, function(msg)
-				Process.Chat(p, msg) --service.Threads.TimeoutRunTask(tostring(p)..";ProcessChatted",Process.Chat,60,p,msg)
-			end)
 
 			--// Start keybind listener
 			Remote.Send(p,"Function","KeyBindListener")
@@ -674,7 +655,7 @@ return function(Vargs)
 				if Settings.Detection then
 					Remote.Send(p,"LaunchAnti","MainDetection")
 				end
-				
+
 				if Settings.AntiBuildingTools then
 					Remote.Send(p,"LaunchAnti","AntiTools", {BTools = true})
 				end
@@ -757,7 +738,13 @@ return function(Vargs)
 
 		CharacterAdded = function(p)
 			local key = tostring(p.UserId)
-			if p.Character and Remote.Clients[key] and Remote.Clients[key].FinishedLoading then
+			local keyData = Remote.Clients[key];
+
+			if keyData then
+				keyData.PlayerLoaded = true;
+			end
+
+			if p.Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Anti Exploit stuff
@@ -776,7 +763,7 @@ return function(Vargs)
 				--end
 
 				--SanitizeCharacter()
-				--p.Character.DescendantAdded:connect(function(child)
+				--p.Character.DescendantAdded:Connect(function(child)
 				--	SanitizeCharacter()
 				--end)
 
@@ -843,6 +830,43 @@ return function(Vargs)
 					Admin.RunCommandAsPlayer(v,p)
 				end
 			end
+		end;
+
+		NetworkAdded = function(cli)
+			wait(0.25)
+			local p = cli:GetPlayer()
+			if p then
+				Core.Connections[cli] = p;
+				Logs.AddLog(Logs.Script, {
+					Text = tostring(p).." connected";
+					Desc = tostring(p).." successfully established a connection with the server";
+					Player = p;
+				})
+			else
+				Logs.AddLog(Logs.Script, {
+					Text = "<UNKNOWN> connected";
+					Desc = "An unknown user successfully established a connection with the server";
+				})
+			end
+			service.Events.NetworkAdded:fire(cli)
+		end;
+
+		NetworkRemoved = function(cli)
+			local p = cli:GetPlayer() or Core.Connections[cli]
+			Core.Connections[cli] = nil
+			if p then
+				Logs.AddLog(Logs.Script, {
+					Text = tostring(p).." disconnected";
+					Desc = tostring(p).." disconnected from the server";
+					Player = p;
+				})
+			else
+				Logs.AddLog(Logs.Script, {
+					Text = "<UNKNOWN> disconnected";
+					Desc = "An unknown user disconnected from the server";
+				})
+			end
+			service.Events.NetworkRemoved:Fire(cli)
 		end;
 
 		PlayerTeleported = function(p,data)

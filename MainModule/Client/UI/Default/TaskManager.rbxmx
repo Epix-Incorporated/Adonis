@@ -2300,11 +2300,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 local function Expand(ent, point)
-	ent.MouseLeave:connect(function(x,y)
+	ent.MouseLeave:Connect(function(x,y)
 		point.Visible = false
 	end)
 	
-	ent.MouseMoved:connect(function(x,y)
+	ent.MouseMoved:Connect(function(x,y)
 		point.Label.Text = ent.Desc.Value
 		point.Size = UDim2.new(0, 10000, 0, 10000)
 		local bounds = point.Label.TextBounds.X
@@ -2382,7 +2382,7 @@ return function(data)
 				frame.Resume.Text = "Suspend"
 			end
 			
-			frame.Resume.MouseButton1Down:connect(function()
+			frame.Resume.MouseButton1Down:Connect(function()
 				if frame.Resume.Text == "Resume" and task:Status() == "Suspended" then
 					task:Resume()
 				else
@@ -2392,13 +2392,13 @@ return function(data)
 				updateLists()
 			end)
 			
-			frame.Kill.MouseButton1Down:connect(function()
+			frame.Kill.MouseButton1Down:Connect(function()
 				task:Kill()
 				wait(0.5)
 				updateLists()
 			end)
 			
-			frame.Stop.MouseButton1Down:connect(function()
+			frame.Stop.MouseButton1Down:Connect(function()
 				task:Stop()
 				wait(0.5)
 				updateLists()
@@ -2411,10 +2411,10 @@ return function(data)
 		cFrame.CanvasSize =  UDim2.new(0, 0, 0, num*20)
 	end
 	
-	sTab.MouseButton1Down:connect(openServer)
-	cTab.MouseButton1Down:connect(openClient)
+	sTab.MouseButton1Down:Connect(openServer)
+	cTab.MouseButton1Down:Connect(openClient)
 	
-	Close.MouseButton1Click:connect(function()
+	Close.MouseButton1Click:Connect(function()
 		drag.Draggable = false
 		drag:TweenPosition(UDim2.new(drag.Position.X.Scale, drag.Position.X.Offset, 1,0), "Out", "Sine", 0.5, true)
 		wait(0.5)
@@ -2423,7 +2423,7 @@ return function(data)
 
 	drag.BackgroundColor3 = Main.BackgroundColor3
 	
-	Hide.MouseButton1Click:connect(function() 
+	Hide.MouseButton1Click:Connect(function() 
 		if Main.Visible then
 			Main.Visible = false
 			drag.BackgroundTransparency = Main.BackgroundTransparency
@@ -2435,7 +2435,7 @@ return function(data)
 		end
 	end)
 	
-	mouse.Move:connect(function(x,y) 
+	mouse.Move:Connect(function(x,y) 
 		if dragging then
 			nx=defx+(Dragger.Position.X.Offset+20)
 			ny=defy+(Dragger.Position.Y.Offset+20)
@@ -2457,11 +2457,11 @@ return function(data)
 		end
 	end)
 	
-	Dragger.DragBegin:connect(function(init)
+	Dragger.DragBegin:Connect(function(init)
 		dragging = true
 	end)
 	
-	Dragger.DragStopped:connect(function(x,y)
+	Dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		defx = nx
 		defy = ny

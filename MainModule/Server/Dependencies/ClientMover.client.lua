@@ -95,10 +95,21 @@ if module and module:IsA("ModuleScript") then
 	origName = (nameVal and nameVal.Value) or folder.Name
 	warn("Got name: "..tostring(origName))
 
+	warn("Removing old client folder...")
+	local starterPlayer = game:GetService("StarterPlayer");
+	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
+	local found = playerScripts:FindFirstChild(folder.Name);
+	warn("FOUND?! ".. tostring(found));
+	warn("LOOKED FOR : ".. tostring(folder.Name))
+	if found then
+		print("REMOVED!")
+		found:Destroy();
+	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	warn("Changing child parent...")
-	wait(0.01)
-	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+	folder.Name = "";
+	wait(0.01);
+	folder.Parent = nil; --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	warn("Destroying parent...")
 
@@ -111,6 +122,7 @@ if module and module:IsA("ModuleScript") then
 			Start = start,
 			Loader = script,
 			Name = origName,
+			Folder = folder;
 			LoadingTime = loadingTime,
 			CallCheck = callCheck,
 			Kill = Kill
@@ -118,12 +130,11 @@ if module and module:IsA("ModuleScript") then
 
 		warn("Got return: "..tostring(ret))
 		if ret ~= "SUCCESS" then
-			warn(ret)
+			realWarn(ret)
 			Kill("ACLI: Loading Error [Bad Module Return]")
 		else
 			print("Debug: The client was found and loaded?")
 			warn("Client Loaded")
-			--folder.Parent = nil
 
 			if container and container:IsA("ScreenGui") then
 				container:Destroy();

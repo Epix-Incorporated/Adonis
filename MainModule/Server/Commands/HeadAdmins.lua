@@ -14,12 +14,13 @@ return function(Vargs, env)
 			Commands = {"tban";"timedban";"timeban";};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
-			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :undataban";
+			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				local time = args[2] or '60'
 				assert(args[1] and args[2], "Argument missing or nil")
+				local time = args[2]
+
 				if time:lower():sub(#time)=='s' then
 					time = time:sub(1,#time-1)
 					time = tonumber(time)
@@ -34,11 +35,20 @@ return function(Vargs, env)
 					time = ((tonumber(time)*60)*60)*24
 				end
 
+				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
+
 				local level = data.PlayerData.Level;
-				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
+				local timebans = Core.Variables.TimeBans
+
+				for i,v in next,service.GetPlayers(plr, args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				}) do
 					if level > Admin.GetLevel(v) then
-						local endTime = tonumber(os.time())+tonumber(time)
-						local timebans = Core.Variables.TimeBans
+						local endTime = os.time() + tonumber(time)
+
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
@@ -46,15 +56,17 @@ return function(Vargs, env)
 						}
 
 						table.insert(timebans, data)
+
+						v:Kick("\nBanned until ".. service.FormatTime(endTime, true))
+						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...",{plr})
+
 						Core.DoSave({
 							Type = "TableAdd";
-							Table = "TimeBans";
-							Parent = "Variables";
+							Table = {"Core", "Variables", "TimeBans"};
 							Value = data;
 						})
 
-						v:Kick("Banned until "..endTime)
-						Functions.Hint("Banned "..v.Name.." for "..time,{plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for "..tostring(time),{plr})
 					end
 				end
 			end
@@ -62,22 +74,22 @@ return function(Vargs, env)
 
 		UnTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"untimeban";};
+			Commands = {"untimeban";"untimedban";"untban";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "UnBan";
+			Description = "Removes specified player from Timebans list";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				assert(args[1], "Argument missing or nil")
 				local timebans = Core.Variables.TimeBans or {}
+
 				for i, data in next, timebans do
 					if data.Name:lower():sub(1,#args[1]) == args[1]:lower() then
 						table.remove(timebans, i)
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = "TimeBans";
-							Parent = "Variables";
+							Table = {"Core", "Variables", "TimeBans"};
 							Value = data;
 						})
 
@@ -97,7 +109,12 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
 
-				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
+				for i,v in next,service.GetPlayers(plr,args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				}) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true)
 						Functions.Hint("Game banned "..tostring(v),{plr})
@@ -122,7 +139,7 @@ return function(Vargs, env)
 
 		Admin = {
 			Prefix = Settings.Prefix;
-			Commands = {"permadmin","pa","padmin","fulladmin","realadmin"};
+			Commands = {"permadmin","pa","padmin","fulladmin"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
@@ -133,8 +150,8 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						Admin.AddAdmin(v,2)
-						Remote.MakeGui(v,"Notification",{
+						Admin.AddAdmin(v, "Admins")
+						Remote.MakeGui(v, "Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
@@ -145,71 +162,6 @@ return function(Vargs, env)
 						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end
 				end
-			end
-		};
-
-		CustomRank = {
-			Prefix = Settings.Prefix;
-			Commands = {"customrank","ca","crank"};
-			Args = {"player";"rankName"};
-			Hidden = false;
-			Description = "Adds the player to a custom rank set in settings.CustomRanks; Does not save";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-
-				local rank = args[2]
-				local customRank = Settings.CustomRanks[rank]
-
-				assert(customRank,"Rank not found!")
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Hint("Added "..v.Name.." to "..rank,{plr})
-					table.insert(customRank,v.Name..":"..v.userId)
-				end
-			end
-		};
-
-		UnCustomRank = {
-			Prefix = Settings.Prefix;
-			Commands = {"uncustomrank","unca","uncrank"};
-			Args = {"player";"rankName"};
-			Hidden = false;
-			Description = "Removes the player from a custom rank set in settings.CustomRanks; Does not save";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
-
-				local rank = args[2]
-				local customRank = Settings.CustomRanks[rank]
-
-				assert(customRank,"Rank not found!")
-
-				service.Iterate(customRank,function(i,v)
-					if v:lower():sub(1,#args[1]) == args[1]:lower() then
-						table.remove(customRank,i)
-						Functions.Hint("Removed "..v.Name.." from "..rank,{plr})
-					end
-				end)
-			end
-		};
-
-		CustomRanks = {
-			Prefix = Settings.Prefix;
-			Commands = {"customranks","cranks"};
-			Args = {};
-			Hidden = false;
-			Description = "Shows custom ranks";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				local tab = {}
-				service.Iterate(Settings.CustomRanks,function(rank,tab)
-					table.insert(tab,{Text = rank, Desc = rank})
-				end)
-				Remote.MakeGui(plr,"List",{Title = "Custom Ranks";Table = tab})
 			end
 		};
 
@@ -224,7 +176,23 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 
-				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."m "..args[1]) then
+				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
+					for i,v in pairs(service.Players:GetPlayers()) do
+						Remote.RemoveGui(v, "Message")
+						Remote.MakeGui(v, "Message", {
+							Title = "Global Message from %s";
+							Message = "%s";
+							Scroll = true;
+							Time = (#("%s") / 19) + 2.5;
+						})
+					end
+				]], plr.Name, args[1], args[1])
+
+				if not Core.CrossServer("Loadstring", globalMessage) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;
@@ -241,7 +209,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.MakeList(Settings.Trello_Primary,args[1])
+				local list = trello.Boards.MakeList(Settings.Trello_Primary,args[1])
 				Functions.Hint("Made list "..list.name,{plr})
 			end
 		};
@@ -251,15 +219,15 @@ return function(Vargs, env)
 			Commands = {"viewlist";"viewtrellolist";};
 			Args = {"name";};
 			Hidden = false;
-			Description = "Views the specified Trello list from the board set in Settings.";
+			Description = "Views the specified Trello list from the primary board set in Settings.";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if not args[1] then error("Missing argument") end
-				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
-				local list = trello.GetList(Settings.Trello_Primary,args[1])
+				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
+				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
 				if not list then error("List not found.") end
-				local cards = trello.GetCards(list.id)
+				local cards = trello.Lists.GetCards(list.id)
 				local temp = {}
 				for i,v in pairs(cards) do
 					table.insert(temp,{Text=v.name,Desc=v.desc})
@@ -369,17 +337,6 @@ return function(Vargs, env)
 			end
 		};
 
-		DexExplore = {
-			Prefix = Settings.Prefix;
-			Commands = {"dex";"dexexplorer";"dexexplorer"};
-			Args = {};
-			Description = "Lets you explore the game using Dex [Credit to Raspberry Pi/Raspy_Pi/raspymgx/OpenOffset(?)][Useless buttons disabled]";
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				Remote.MakeLocal(plr,Deps.Assets.Dex_Explorer:Clone(),"PlayerGui")
-			end
-		};
-
 		PromptInvite = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptinvite";"inviteprompt";"forceinvite"};
@@ -387,7 +344,7 @@ return function(Vargs, env)
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
 			Hidden = false;
 			Fun = false;
-			AdminLevel = "Owners";
+			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					game:GetService("SocialService"):PromptGameInvite(v)
@@ -395,29 +352,25 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[FullShutdown = {
+		FullShutdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
 			AdminLevel = "HeadAdmins";
+			Filter = true;
 			Function = function(plr,args)
-				if not Core.PanicMode then
-					local logs = Core.GetData("ShutdownLogs") or {}
-					if plr then
-						table.insert(logs,1,{User=plr.Name,Time=service.GetTime(),Reason=args[2] or "N/A"})
-					else
-						table.insert(logs,1,{User="Server/Trello",Time=service.GetTime(),Reason=args[2] or "N/A"})
+				assert(args[1], "Reason must be supplied for this command!")
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
+				})
+				if ans == "Yes" then
+				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
+					error("An error has occured");
 					end
-					if #logs>1000 then
-						table.remove(logs,#logs)
-					end
-					Core.SaveData("ShutdownLogs",logs)
 				end
-
-				Core.SaveData("FullShutdown", {ID = game.PlaceId; User = tostring(plr or "Server"); Reason = args[2]})
-			end
-		};--]]
+			end;
+		};
 	}
 end

@@ -81,7 +81,7 @@ return function(Vargs)
 				Match = "@everyone";
 				Absolute = true;
 				Function = function(...)
-					return Functions.PlayerMatchers.all.Function(...)
+					return Functions.PlayerFinders.all.Function(...)
 				end
 			};
 
@@ -106,10 +106,10 @@ return function(Vargs)
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					if #players>=#parent:GetChildren() then return end
-					local rand = parent:GetChildren()[math.random(#parent:children())]
+					local rand = parent:GetChildren()[math.random(#parent:GetChildren())]
 					local p = getplr(rand)
 
-					for i,v in pairs(players) do
+					for _,v in pairs(players) do
 						if(v.Name == p.Name)then
 							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
 							return;
@@ -126,7 +126,7 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if Admin.CheckAdmin(p,false) then
 							table.insert(players, p)
@@ -141,7 +141,7 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if not Admin.CheckAdmin(p,false) then
 							table.insert(players,p)
@@ -156,11 +156,30 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					for i,v in next,parent:children() do
+					for i,v in next,parent:GetChildren() do
 						local p = getplr(v)
 						if p:IsFriendsWith(plr.userId) then
 							table.insert(players,p)
 							plus()
+						end
+					end
+				end;
+			};
+
+			["@username"] = {
+				Match = "@";
+				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+					local matched = tonumber(msg:match("@(.*)"))
+					local foundNum = 0
+
+					if matched then
+						for i,v in next,parent:GetChildren() do
+							local p = getplr(v)
+							if p and p.Name == matched then
+								table.insert(players,p)
+								plus()
+								foundNum = foundNum+1
+							end
 						end
 					end
 				end;
@@ -191,7 +210,7 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("%$(.*)")
 					if matched and tonumber(matched) then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p:IsInGroup(tonumber(matched)) then
 								table.insert(players,p)
@@ -208,7 +227,7 @@ return function(Vargs)
 					local matched = tonumber(msg:match("id%-(.*)"))
 					local foundNum = 0
 					if matched then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.userId == matched then
 								table.insert(players,p)
@@ -220,24 +239,14 @@ return function(Vargs)
 						if foundNum == 0 then
 							local ran,name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
 							if ran and name then
-								local fakePlayer = service.Wrap(service.New("Folder"))
-								local data = {
+								local fakePlayer = server.Functions.GetFakePlayer({
 									Name = name;
 									ToString = name;
-									ClassName = "Player";
-									AccountAge = 0;
 									CharacterAppearanceId = tostring(matched);
 									UserId = tonumber(matched);
 									userId = tonumber(matched);
-									Parent = service.Players;
-									Character = Instance.new("Model");
-									Backpack = Instance.new("Folder");
-									PlayerGui = Instance.new("Folder");
-									PlayerScripts = Instance.new("Folder");
-									Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-									IsA = function(ignore, arg) if arg == "Player" then return true end end;
-								}
-								for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+								})
+
 								table.insert(players, fakePlayer)
 								plus()
 							end
@@ -253,7 +262,7 @@ return function(Vargs)
 					local foundNum = 0
 
 					if matched then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.DisplayName == matched then
 								table.insert(players,p)
@@ -291,7 +300,7 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("group%-(.*)")
 					if matched and tonumber(matched) then
-						for i,v in next,parent:children() do
+						for _,v in next,parent:GetChildren() do
 							local p = getplr(v)
 							if p:IsInGroup(tonumber(matched)) then
 								table.insert(players,p)
@@ -307,7 +316,10 @@ return function(Vargs)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					local matched = msg:match("%-(.*)")
 					if matched then
-						local removes = service.GetPlayers(plr,matched,true)
+						local removes = service.GetPlayers(plr,matched, {
+							DontError = true;
+						})
+
 						for i,v in next,players do
 							for k,p in next,removes do
 								if v.Name == p.Name then
@@ -359,6 +371,35 @@ return function(Vargs)
 			};
 		};
 
+		GetFakePlayer = function(data2)
+			local fakePlayer = service.Wrap(service.New("Folder"))
+			local data = {
+				Name = "Fake Player";
+				ClassName = "Player";
+				UserId = 0;
+				userId = 0;
+				AccountAge = 0;
+				CharacterAppearanceId = 0;
+				Parent = service.Players;
+				Character = Instance.new("Model");
+				Backpack = Instance.new("Folder");
+				PlayerGui = Instance.new("Folder");
+				PlayerScripts = Instance.new("Folder");
+				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
+				IsA = function(ignore, arg) if arg == "Player" then return true end end;
+			}
+
+			data.ToString = data.Name;
+
+			for i,v in pairs(data2) do
+				data[i] = v;
+			end;
+
+			for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+
+			return fakePlayer;
+		end;
+
 		GetChatService = function()
 			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
 			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
@@ -376,12 +417,6 @@ return function(Vargs)
 			end
 		end;
 
-		PerformOnEach = function(itemList, func, ...)
-			for i,v in next,itemList do
-				pcall(func, v, ...)
-			end
-		end;
-
 		ArgsToString = function(args)
 			local str = ""
 			for i,arg in next,args do
@@ -390,11 +425,19 @@ return function(Vargs)
 			return str
 		end;
 
-		GetPlayers = function(plr, names, dontError, isServer, isKicking, noID)
+		GetPlayers = function(plr, names, data)
+			if data and type(data) ~= "table" then data = {} end
+
+			local dontError = data and data.DontError;
+			local isServer = data and data.IsServer;
+			local isKicking = data and data.IsKicking;
+			local noID = data and data.NoID;
+			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true;
+
 			local players = {}
-			local prefix = Settings.SpecialPrefix
+			local prefix = (data and data.Prefix) or Settings.SpecialPrefix
 			if isServer then prefix = "" end
-			local parent = service.NetworkServer or service.Players
+			local parent = (data and data.Parent) or service.Players
 
 			local function getplr(p)
 				if p and p:IsA("Player") then
@@ -440,35 +483,36 @@ return function(Vargs)
 						if matchFunc then
 							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
 						else
-							for i,v in next,parent:children() do
+							for i,v in next,parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.Name:lower():sub(1,#s)==s:lower() then
+								if p and p:IsA("Player") and p.DisplayName:lower():sub(1,#s) == s:lower() then
 									table.insert(players,p)
 									plus()
 								end
 							end
 
 							if plrs == 0 then
+								for i,v in next,parent:GetChildren() do
+									local p = getplr(v)
+									if p and p:IsA("Player") and p.Name:lower():sub(1,#s) == s:lower() then
+										table.insert(players,p)
+										plus()
+									end
+								end
+							end
+
+							if plrs == 0 and useFakePlayer then
 								local ran,userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
 								if ran and tonumber(userid) then
-									local fakePlayer = service.Wrap(service.New("Folder"))
-									local data = {
+									local fakePlayer = Functions.GetFakePlayer({
 										Name = s;
 										ToString = s;
-										ClassName = "Player";
-										AccountAge = 0;
+										IsFakePlayer = true;
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
 										userId = tonumber(userid);
-										Parent = service.Players;
-										Character = Instance.new("Model");
-										Backpack = Instance.new("Folder");
-										PlayerGui = Instance.new("Folder");
-										PlayerScripts = Instance.new("Folder");
-										Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-										IsA = function(ignore, arg) if arg == "Player" then return true end end;
-									}
-									for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+									})
+
 									table.insert(players, fakePlayer)
 									plus()
 								end
@@ -501,41 +545,72 @@ return function(Vargs)
 			--local str = ""
 			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
 			--return str
-			local Len = (type(pLen) == "number" and pLen) or math.random(5,10) --// reru
+
+			local random = math.random
+			local format = string.format
+
+			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
 			local Res = {};
 			for Idx = 1, Len do
-				Res[Idx] = string.format('%02x', math.random(126));
+				Res[Idx] = format('%02x', random(126));
 			end;
 			return table.concat(Res)
 		end;
 
 		Base64Encode = function(data)
-			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			return ((data:gsub('.', function(x)
-				local r,b='',x:byte()
-				for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+			local sub = string.sub
+			local byte = string.byte
+			local gsub = string.gsub
+
+			return (gsub(gsub(data, '.', function(x)
+				local r, b = "", byte(x)
+				for i = 8, 1, -1 do
+					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
-				if (#x < 6) then return '' end
-				local c=0
-				for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
-				return b:sub(c+1,c+1)
-			end)..({ '', '==', '=' })[#data%3+1])
+			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
+				if (#(x) < 6) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 6 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
+				end
+				return sub('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', c + 1, c + 1)
+			end)..({
+				'',
+				'==',
+				'='
+			})[#(data) % 3 + 1])
 		end;
 
 		Base64Decode = function(data)
+			local sub = string.sub
+			local gsub = string.gsub
+			local find = string.find
+			local char = string.char
+
 			local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-			data = string.gsub(data, '[^'..b..'=]', '')
-			return (data:gsub('.', function(x)
-				if (x == '=') then return '' end
-				local r,f='',(b:find(x)-1)
-				for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+
+			data = gsub(data, '[^'..b..'=]', '')
+			return (gsub(gsub(data, '.', function(x)
+				if (x == '=') then
+					return ''
+				end
+				local r, f = '', (find(b, x) - 1)
+				for i = 6, 1, -1 do
+					r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
 				return r;
-			end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then return '' end
-				local c=0
-				for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-				return string.char(c)
+			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
+				if (#x ~= 8) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 8 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
+				end
+				return char(c)
 			end))
 		end;
 
@@ -577,16 +652,6 @@ return function(Vargs)
 			weld.Part1 = b
 			weld.C0 = a.CFrame:inverse() * b.CFrame
 			return weld
-		end;
-
-		SetView = function(ob)
-			if ob == 'reset' then
-				workspace.CurrentCamera.CameraType = 'Custom'
-				workspace.CurrentCamera.CameraSubject = service.Player.Character.Humanoid
-				workspace.CurrentCamera.FieldOfView = 70
-			else
-				workspace.CurrentCamera.CameraSubject = ob
-			end
 		end;
 
 		SetLighting = function(prop,value)
@@ -649,6 +714,11 @@ return function(Vargs)
 		end;
 
 		Cape = function(player,isdon,material,color,decal,reflect)
+			material = material or "Neon"
+			if not Functions.GetEnumValue(Enum.Material, material) then
+				error("Invalid material value")
+			end
+
 			Functions.UnCape(player)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
@@ -691,6 +761,17 @@ return function(Vargs)
 			end
 		end;
 
+		GetEnumValue = function(enum, item)
+			local valid = false
+			for _,v in ipairs(enum:GetEnumItems()) do
+				if v.Name == item then
+					valid = v.Value
+					break
+				end
+			end
+			return valid
+		end;
+
 		ApplyBodyPart = function(character, model)
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
@@ -713,13 +794,10 @@ return function(Vargs)
 							v:Clone().Parent = character
 						end
 					elseif rigType == "R15" then
-						local validParts = {}
-						for _,x in pairs(Enum.BodyPartR15:GetEnumItems()) do
-							validParts[x.Name] = x.Value
-						end
 						for _,v in pairs(part:GetChildren()) do
-							if validParts[v.Name] then
-								humanoid:ReplaceBodyPartR15(validParts[v.Name], v:Clone())
+							local value = Functions.GetEnumValue(Enum.BodyPartR15, v.Name)
+							if value then
+								humanoid:ReplaceBodyPartR15(value, v:Clone())
 							end
 						end
 					end
@@ -787,25 +865,6 @@ return function(Vargs)
 			return num
 		end;
 
-		GetTextureUsingHttp = function(id)
-			if service.HttpService.HttpEnabled then
-				local id = tonumber(id);
-
-				if id then
-					if Functions.IsValidTexture(id) then
-						if info.AssetTypeId == 1 then
-							return id;
-						else
-						--// do http stuff?????
-							return 6825455804;
-						end
-					end
-				else
-					error("Invalid assetid provided");
-				end
-			end
-		end;
-
 		IsValidTexture = function(id)
 			local id = tonumber(id)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
@@ -839,7 +898,7 @@ return function(Vargs)
 		end;
 
 		CleanWorkspace = function()
-			for i,v in pairs(service.Workspace:children()) do
+			for i,v in pairs(service.Workspace:GetChildren()) do
 				if v:IsA("Tool") or v:IsA("Accessory") or v:IsA("Hat") then
 					v:Destroy()
 				end
@@ -847,10 +906,10 @@ return function(Vargs)
 		end;
 
 		RemoveSeatWelds = function(seat)
-			if seat~=nil then
-				for i,v in next,seat:GetChildren() do
+			if seat ~= nil then
+				for i,v in ipairs(seat:GetChildren()) do
 					if v:IsA("Weld") then
-						if v.Part1 ~= nil and v.Part1.Name=="HumanoidRootPart" then
+						if v.Part1 ~= nil and v.Part1.Name == "HumanoidRootPart" then
 							v:Destroy()
 						end
 					end
@@ -879,16 +938,16 @@ return function(Vargs)
 
 		Shutdown = function(reason)
 			if not Core.PanicMode then
-				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetChildren(), false, 5)
+				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetPlayers(), false, 5)
 				wait(1)
 			end
 
 			service.Players.PlayerAdded:Connect(function(p)
-				p:Kick("Game shutdown: ".. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
 			for i,p in next,service.Players:GetPlayers() do
-				p:Kick("Game shutdown: " .. tostring(reason or "No Reason Given"))
+				p:Kick("Game shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
 
@@ -908,7 +967,7 @@ return function(Vargs)
 					end
 					--[[
 					if Admin.CheckDonor(plr) and (Settings.DonorPerks or Admin.GetLevel(plr)>=4) then
-						local gear=service.InsertService:LoadAsset(57902997):children()[1]
+						local gear=service.InsertService:LoadAsset(57902997):GetChildren()[1]
 						if not plr.Backpack:FindFirstChild(gear.Name..'DonorTool') then
 							gear.Name=gear.Name..'DonorTool'
 							gear.Parent=plr.Backpack
@@ -921,9 +980,9 @@ return function(Vargs)
 		end;
 
 		CheckMatch = function(check,match)
-			if check==match then
+			if check == match then
 				return true
-			elseif type(check)=="table" and type(match)=="table" then
+			elseif type(check) == "table" and type(match) == "table" then
 				local good = false
 				local num = 0
 				for k,m in pairs(check) do
@@ -935,7 +994,8 @@ return function(Vargs)
 					end
 					num = num+1
 				end
-				if good and num==Functions.CountTable(check) then
+
+				if good and num == Functions.CountTable(check) then
 					return true
 				end
 			end
@@ -980,40 +1040,20 @@ return function(Vargs)
 			end
 		end;
 
-		--// Couldn't merge due to "conflicts" so just added manually.
-		ConvertPlayerCharacterToRig = function(p, rigType)
-			rigType = rigType or "R15"
-
-			local char = p.Character
-			if not p.Character then
-				p:LoadCharacter()
-				p.CharacterAdded:Wait()
-				char = p.Character
-			end
-
-			local head = char:FindFirstChild"Head"
-			local human = char:FindFirstChildOfClass"Humanoid"
-
-			if head then
-				local rig = server.Deps.Assets["Rig"..rigType]:Clone() -- requires R6 and R15 in Dependencies to retrieve the Rig Models !!
-				local rigHuman = rig:FindFirstChildOfClass"Humanoid"
-				local origHeadCF = head.CFrame
-				rig.Name = p.Name
-
-				for a,b in pairs(char:children()) do
-					if b:IsA("Accessory") or b:IsA("Pants") or b:IsA("Shirt") or b:IsA("ShirtGraphic") or b:IsA("BodyColors") then
-						b.Parent = rig
-					elseif b:IsA"BasePart" and b.Name == "Head" and b:FindFirstChild("face") then
-						rig.Head.face.Texture = b.face.Texture
-					end
-				end
-
-				p.Character = rig
-				rig.Parent = workspace
-				rig.Head.CFrame = origHeadCF
-
-				human.RigType = Enum.HumanoidRigType[rigType]
-			end
+		ConvertPlayerCharacterToRig = function(plr, rigType)
+			local rigType2 = rigType or Enum.HumanoidRigType.R15
+			local humd = plr.Character:WaitForChild("Humanoid"):GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId) -- why is waitforchildofclass not a thing anymore :(
+			local model = game:GetService('Players'):CreateHumanoidModelFromDescription(humd,rigType2) --This code is basically PlrGear (:dollify) without the resizing and tool parts because it didnt work previously for some reason. Probably because of some internal roblox spaghetti.
+			model.Name=plr.DisplayName
+			local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
+			local oldparent = plr.Character.Parent
+			plr.Character:Destroy()
+			plr.Character=model
+			model:SetPrimaryPartCFrame(oldcframe)
+			local cfr = (plr.Character:FindFirstChild('HumanoidRootPart')).CFrame
+			model.Parent = oldparent
+			model:SetPrimaryPartCFrame(cfr)
+			return model
 		end;
 
 		CreateClothingFromImageId = function(clothingtype, Id)
@@ -1021,6 +1061,6 @@ return function(Vargs)
 			Clothing.Name = clothingtype
 			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
 			return Clothing
-		end
+		end;
 	};
 end

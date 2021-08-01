@@ -6,6 +6,17 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
+local disableAllGUIs;
+function disableAllGUIs(folder)
+	for i,v in ipairs(folder:GetChildren()) do
+		if v:IsA("ScreenGui") then
+			v.Enabled = false;
+		elseif v:IsA("Folder") or v:IsA("Model") then
+			disableAllGUIs(v);
+		end
+	end
+end;
+
 --// Core
 return function(Vargs)
 	local server = Vargs.Server;
@@ -36,15 +47,23 @@ return function(Vargs)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
+		disableAllGUIs(server.Client.UI);
+
 		Core.Init = nil;
 		Logs:AddLog("Script", "Core Module Initialized")
 	end;
 
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
-		server.Core.MakeEvent()
-		service.JointsService.Changed:Connect(function(p) if server.Anti.RLocked(service.JointsService) then server.Core.PanicMode("JointsService RobloxLocked") end end)
-		service.JointsService.ChildRemoved:Connect(function(c)
+		Core.MakeEvent()
+
+		--// Prepare the client loader
+		--local existingPlayers = service.Players:GetPlayers();
+		--Core.MakeClient()
+
+		local remoteParent = service.ReplicatedStorage;
+		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
+		remoteParent.ChildRemoved:Connect(function(c)
 			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
 				wait();
 				server.Core.MakeEvent()
@@ -59,15 +78,13 @@ return function(Vargs)
 			end)
 		end
 
+		--// Save all data on server shutdown
+		game:BindToClose(Core.SaveAllPlayerData);
+
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
 			service.TrackTask("Thread: API Manager", Core.StartAPI)
-		end
-
-		--// Add existing players in case some are already in the server
-		for index,player in next,service.Players:GetPlayers() do
-			service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), Core.LoadExistingPlayer, player);
 		end
 
 		--// Occasionally save all player data to the datastore to prevent data loss if the server abruptly crashes
@@ -98,8 +115,8 @@ return function(Vargs)
 		};
 
 		--// Datastore update/queue timers/delays
-		DS_SetDataQueueDelay = 0.5;
-		DS_UpdateQueueDelay = 1;
+		DS_WriteQueueDelay = 1;
+		DS_ReadQueueDelay = 0.5;
 		DS_AllPlayerDataSaveInterval = 30;
 		DS_AllPlayerDataSaveQueueDelay = 0.5;
 
@@ -122,7 +139,7 @@ return function(Vargs)
 			--[[
 			for i,v in pairs(service.Players:GetPlayers()) do
 				cPcall(function()
-					v.Chatted:connect(function(msg)
+					v.Chatted:Connect(function(msg)
 						Process.Chat(v,msg)
 					end)
 				end)
@@ -138,65 +155,41 @@ return function(Vargs)
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true;
-				Core.RemoteEvent.FuncSec:Disconnect()
-				Core.RemoteEvent.Security:Disconnect()
-				Core.RemoteEvent.Event:Disconnect()
-				Core.RemoteEvent.DecoySecurity1:Disconnect()
-				Core.RemoteEvent.DecoySecurity2:Disconnect()
+
+				for name,event in next,Core.RemoteEvent.Events do
+					event:Disconnect()
+				end
+
 				pcall(function() service.Delete(Core.RemoteEvent.Object) end)
 				pcall(function() service.Delete(Core.RemoteEvent.Function) end)
-				pcall(function() service.Delete(Core.RemoteEvent.Decoy1) end)
-				pcall(function() service.Delete(Core.RemoteEvent.Decoy2) end)
+
 				Core.FixingEvent = false;
 				Core.RemoteEvent = nil;
 			end
 		end;
 
 		MakeEvent = function()
+			local remoteParent = service.ReplicatedStorage;
 			local ran,error = pcall(function()
-				if Anti.RLocked(service.JointsService) then
-					Core.Panic("JointsService RobloxLocked/Unusable")
+				if Anti.RLocked(remoteParent) then
+					Core.Panic("Remote Parent RobloxLocked/Unusable")
 				elseif server.Running then
 					local rTable = {};
-					local event = service.New("RemoteEvent")
-					local func = service.New("RemoteFunction", {Parent = event, Name = ""})
-					local decoy1 = event:Clone()
-					local decoy2 = event:Clone()
-					local secureTriggered = false
+					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false})
+					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event})
+					local secureTriggered = true
 					local tripDet = math.random()
 
-					Core.DisconnectEvent();
-					Core.RemoteEvent = rTable;
-					Core.TripDet = tripDet;
-
-					event.Name = Core.Name--..Functions.GetRandom() -- Core.Name
-					decoy1.Name = Core.Name..Functions.GetRandom()
-					decoy2.Name = Core.Name..Functions.GetRandom()
-
-					event.Archivable = false
-					decoy1.Archivable = false
-					decoy2.Archivable = false
-
-					Core.RemoteEvent.Object = event
-					Core.RemoteEvent.Function = func
-					Core.RemoteEvent.Decoy1 = decoy1
-					Core.RemoteEvent.Decoy2 = decoy2
-
-					event.Parent = service.JointsService
-					--decoy1.Parent = service.JointsService
-					--decoy2.Parent = service.JointsService
-
-					local function secure(ev, name)
-						return service.RbxEvent(ev.Changed, function(p)
-							if Core.RemoteEvent == rTable then
-								if ev and ev == Core.RemoteEvent.Function then
-									Core.RemoteEvent.Function.OnServerInvoke = Process.Remote
+					local function secure(ev, name, parent)
+						return ev.Changed:Connect(function()
+							if Core.RemoteEvent == rTable and not secureTriggered then
+								if ev == func then
+									func.OnServerInvoke = Process.Remote
 								end
 
-								if p == "Name" then
-									event.Name = name--..Functions.GetRandom()--Core.Name
-								elseif tripDet == Core.TripDet and wait() and not secureTriggered then
-									--print("Secure triggered");
+								if ev.Name ~= name then
+									ev.Name = name
+								elseif ev.Parent ~= parent then
 									secureTriggered = true;
 									Core.DisconnectEvent();
 									Core.MakeEvent()
@@ -205,27 +198,23 @@ return function(Vargs)
 						end)
 					end
 
-					Core.RemoteEvent.Event = service.RbxEvent(event.OnServerEvent, Process.Remote)
-					func.OnServerInvoke = Process.Remote
+					Core.DisconnectEvent();
+					Core.TripDet = tripDet;
 
-					service.RbxEvent(decoy1.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.UserId)]
-						if keys and com == "TrustCheck" and modu == keys.Module then
-							decoy1:FireClient(p,"TrustCheck",keys.Decoy1)
-						end
-					end)
+					rTable.Events = {};
+					rTable.Object = event;
+					rTable.Function = func;
 
-					service.RbxEvent(decoy2.OnServerEvent, function(p,modu,com,sub)
-						local keys = Remote.Clients[tostring(p.UserId)]
-						if keys and com == "TrustCheck" and modu == keys.Module then
-							decoy1:FireClient(p,"TrustCheck",keys.Decoy2)
-						end
-					end)
+					rTable.Events.Security = secure(event, event.Name, remoteParent);
+					rTable.Events.FuncSec = secure(func, func.Name, event);
 
-					Core.RemoteEvent.Security = secure(event, Core.Name)
-					Core.RemoteEvent.FuncSec = secure(func, "");
-					Core.RemoteEvent.DecoySecurity1 = secure(decoy1, Core.Name)
-					Core.RemoteEvent.DecoySecurity2 = secure(decoy2, Core.Name)
+					func.OnServerInvoke = Process.Remote;
+					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote);
+
+					Core.RemoteEvent = rTable;
+					event.Parent = remoteParent;
+					secureTriggered = false;
+
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";
@@ -267,52 +256,114 @@ return function(Vargs)
 			end
 		end;
 
-		SetupEvent = function(p)
-			local key = tostring(p.UserId)
-			local keys = Remote.Clients[key]
-			if keys and keys.EventName and p and not Anti.ObjRLocked(p) then
-				local event = Instance.new("RemoteEvent")
-				event.Name = keys.EventName
-				event.Changed:Connect(function()
-					if Anti.RLocked(event) or not event or event.Parent ~= p then
-						service.Delete(event)
-						Core.SetupEvent(p)
-					end
-				end)
-				event.OnServerEvent:Connect(function(np,...)
-					if np == p then
-						Process.Remote(np,...)
-					end
-				end)
-				event.Parent = p
-			else
-				p:Kick("Locked")
-			end
-		end;
+	 	MakeClient = function(parent)
+			if not parent and Core.ClientLoader then
+				local loader = Core.ClientLoader;
+				loader.Removing = true;
 
-		PrepareClient = function()
-			if service.NetworkServer and server.Running then
-				local ran,err = pcall(function()
-					if Core.ClientLoader then
-						pcall(function() Core.ClientLoaderEvent:Disconnect() service.Delete(Core.ClientLoader) end)
-					end
-
-					local loader = Deps.ClientLoader:Clone()
-					loader.Disabled = false
-					loader.Archivable = false
-					loader.Name = "\0"
-
-					loader.Parent = service.ReplicatedFirst
-					Core.ClientLoader = loader
-					Core.ClientLoaderEvent = loader.Changed:Connect(function()
-						Core.PrepareClient()
-					end)
-				end)
-
-				if err or not ran then
-					Core.Panic("Cannot load ClientLoader "..tostring(err))
+				for i,v in next,loader.Events do
+					v:Disconnect()
 				end
+
+				loader.Object:Destroy();
+			end;
+
+			local depsName = Functions:GetRandom()
+			local folder = server.Client:Clone()
+			local acli = server.Deps.ClientMover:Clone();
+			local client = folder.Client
+			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
+			local clientLoader = {
+				Removing = false;
+			};
+
+			Core.MockClientKeys = Core.MockClientKeys or {
+				Special = depsName;
+				Module = client;
+			}
+
+			local depsName = Core.MockClientKeys.Special;
+			local specialVal = service.New("StringValue")
+			specialVal.Value = Core.Name.."\\"..depsName
+			specialVal.Name = "Special"
+			specialVal.Parent = folder
+
+			acli.Parent = folder;
+			acli.Disabled = false;
+
+			folder.Archivable = false;
+			folder.Name = depsName; --"Adonis_Client"
+			folder.Parent = parentObj;
+
+			if not parent then
+				local oName = folder.Name;
+				clientLoader.Object = folder;
+				clientLoader.Events = {}
+
+				clientLoader.Events[folder] = folder.Changed:Connect(function()
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						if folder.Name ~= oName then
+							folder.Name = oName;
+						elseif folder.Parent ~= parentObj then
+							clientLoader.Removing = true;
+							Core.MakeClient();
+						end
+					end
+				end)
+
+				local function sec(child)
+					local oParent = child.Parent;
+					local oName = child.Name;
+
+					clientLoader.Events[child.Changed] = child.Changed:Connect(function(c)
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							if child.Parent ~= oParent or child == specialVal then
+								Core.MakeClient();
+							end
+						end
+					end)
+
+					local nameEvent = child:GetPropertyChangedSignal("Name"):Connect(function()
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							child.Name = oName;
+						end
+					end)
+
+					clientLoader.Events[nameEvent] = nameEvent;
+					clientLoader.Events[child.AncestryChanged] = child.AncestryChanged:Connect(function()
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							Core.MakeClient();
+						end
+					end)
+				end;
+
+				for i,child in ipairs(folder:GetDescendants()) do
+					sec(child);
+				end
+
+				folder.DescendantAdded:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
+				folder.DescendantRemoving:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
+				Core.ClientLoader = clientLoader;
 			end
+
+
+			local ok,err = pcall(function()
+				folder.Parent = parentObj
+			end)
+
+			clientLoader.Removing = false;
+
+			Logs:AddLog("Script", "Created client");
 		end;
 
 		HookClient = function(p)
@@ -324,60 +375,58 @@ return function(Vargs)
 				local folder = server.Client:Clone()
 				local acli = server.Deps.ClientMover:Clone();
 				local client = folder.Client
-
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
-				local playerGui = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
-
-				if playerGui and playerGui.ClassName ~= parentTo then
-					playerGui = p:FindFirstChildOfClass(parentTo);
-				end
+				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
 
 				if not p.Parent then
 					return false
-				elseif not playerGui then
-					p:Kick("Loading Error: PlayerGui Missing (Waited 10 Minutes)")
+				elseif not parentObj then
+					p:Kick("\n[CLI-102495] Loading Error \nPlayerGui Missing (Waited 10 Minutes)")
 					return false
 				end
-
-				folder.Name = "Adonis_Client" --Core.Name.."\\"..depsName
 
 				local container = service.New("ScreenGui");
 				container.ResetOnSpawn = false;
 				container.Enabled = false;
-				container.Name = "\0";--"Adonis_Container";
-				folder.Parent = container;
+				container.Name = "\0";
 
 				local specialVal = service.New("StringValue")
 				specialVal.Value = Core.Name.."\\"..depsName
 				specialVal.Name = "Special"
 				specialVal.Parent = folder
 
-				keys.Loader = Core.ClientLoader
 				keys.Special = depsName
 				keys.EventName = eventName
 				keys.Module = client
 
 				acli.Parent = folder;
+				acli.Disabled = false;
 
-				--[[service.Events[p.userId.."_CLIENTLOADER"]:connectOnce(function()
-					if container.Parent == playerGui then
-						container:Destroy()
+				folder.Name = "Adonis_Client"
+				folder.Parent = container;
+
+				--// Event only fires AFTER the client is alive and well
+				local event; event = service.Events.ClientLoaded:Connect(function(plr)
+					if p == plr and container.Parent == parentObj then
+						container:Destroy();
+						event:Disconnect();
 					end
-				end)--]]
+				end)
 
 				local ok,err = pcall(function()
-					container.Parent = playerGui
-					acli.Disabled = false;
+					container.Parent = parentObj
 				end)
 
 				if not Core.PanicMode and not ok then
-					p:Kick("Loading Error [HookClient Error: "..tostring(err).."]")
+					p:Kick("\n[CLI-192385] Loading Error \n[HookClient Error: "..tostring(err).."]")
 					return false
 				else
 					return true
 				end
 			else
-				if p then p:Kick("Loading Error [HookClient: Keys Missing]") end
+				if p and p.Parent then
+					p:Kick("\n[CLI-5691283] Loading Error \n[HookClient: Keys Missing]")
+				end
 			end
 		end;
 
@@ -390,76 +439,21 @@ return function(Vargs)
 
 		LoadExistingPlayer = function(p)
 			warn("Loading existing player: ".. tostring(p))
-			--Core.LoadClientLoader(p)
-			Process.PlayerAdded(p)
-		end;
 
-		MakeClient = function()
-			local ran,error = pcall(function()
-				if Anti.RLocked(service.StarterPlayer) then
-					Core.Panic("StarterPlayer RobloxLocked")
-				else
-					local starterScripts = service.StarterPlayer:FindFirstChild(Core.Name)
-					if not starterScripts then
-						starterScripts = service.New("StarterPlayerScripts", service.StarterPlayer)
-						starterScripts.Name = Core.Name
-						starterScripts.Changed:Connect(function(p)
-							if p=="Parent" then
-								Core.MakeClient()
-							elseif p=="Name" then
-								starterScripts.Name = Core.Name
-							elseif p=="RobloxLocked" and Anti.RLocked(starterScripts) then
-								Core.Panic("PlayerScripts RobloxLocked")
-							end
-						end)
-
-						starterScripts.ChildAdded:Connect(function(c)
-							if c.Name ~= Core.Name then
-								wait(0.5)
-								c:Destroy()
-							end
-						end)
-					end
-
-					starterScripts:ClearAllChildren()
-					if Anti.RLocked(starterScripts) then
-						Core.Panic("StarterPlayerScripts RobloxLocked")
-					else
-						if Core.Client then
-							local cli = Core.Client
-							if Anti.ObjRLocked(cli.Object) then
-								Core.Panic("Client RobloxLocked")
-							else
-								Core.Client.Security:Disconnect()
-								pcall(function() Core.Client.Object:Destroy() end)
-							end
-						end
-						Core.Client = {}
-						local client = Deps.Client:Clone()
-						client.Name = Core.Name
-						server.ClientDeps:Clone().Parent = client
-						client.Parent = starterScripts
-						client.Disabled = false
-						Core.Client.Object = client
-						Core.Client.Security = client.Changed:Connect(function(p)
-							if p == "Parent" or p == "RobloxLocked" then
-								Core.MakeClient()
-							end
-						end)
-					end
-				end
+			service.TrackTask("Thread: Setup Existing Player: ".. tostring(p), function()
+				Process.PlayerAdded(p)
+				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
-			if error then
-				print(error)
-				Core.Panic("Error while making client")
-			end
 		end;
 
 		ExecutePermission = function(scr, code, isLocal)
-			for i,val in next,Core.ExecuteScripts do
+			local fixscr = service.UnWrap(scr)
+
+			for _, val in pairs(Core.ExecuteScripts) do
 				if not isLocal or (isLocal and val.Type == "LocalScript") then
-					if (service.UnWrap(val.Script) == service.UnWrap(scr) or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
+					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions = val.Executions+1
+
 						return {
 							Source = val.Source;
 							noCache = val.noCache;
@@ -472,7 +466,7 @@ return function(Vargs)
 		end;
 
 		GetScript = function(scr,code)
-			for i,val in next,Core.ExecuteScripts do
+			for i,val in pairs(Core.ExecuteScripts) do
 				if val.Script == scr or code == val.Code then
 					return val,i
 				end
@@ -480,7 +474,7 @@ return function(Vargs)
 		end;
 
 		UnRegisterScript = function(scr)
-			for i,dat in next,Core.ExecuteScripts do
+			for i,dat in pairs(Core.ExecuteScripts) do
 				if dat.Script == scr or dat == scr then
 					table.remove(Core.ExecuteScripts, i)
 					return dat
@@ -503,7 +497,7 @@ return function(Vargs)
 				}
 			end)
 
-			for ind,scr in next,Core.ExecuteScripts do
+			for ind,scr in pairs(Core.ExecuteScripts) do
 				if scr.Script == data.Script then
 					return scr.Wrapped or scr.Script
 				end
@@ -560,71 +554,6 @@ return function(Vargs)
 
 				return wrapped or ScriptType, ScriptType, execCode
 			end
-		end;
-
-		DoSave = function(data)
-			local type = data.Type
-			if type == "ClearSettings" then
-				Core.SetData("SavedSettings",{});
-				Core.SetData("SavedTables",{});
-				Core.CrossServer("LoadData");
-			elseif type == "SetSetting" then
-				local setting = data.Setting
-				local value = data.Value
-
-				Core.UpdateData("SavedSettings", function(settings)
-					settings[setting] = value
-					return settings
-				end)
-
-				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
-			elseif type == "TableRemove" then
-				local tab = data.Table
-				local value = data.Value
-				data.Time = os.time()
-
-				Core.UpdateData("SavedTables", function(sets)
-					sets = sets or {}
-					for i,v in next,sets do
-						if tab == v.Table then
-							if Functions.CheckMatch(v.Value,value) then
-								table.remove(sets,i)
-							end
-						end
-					end
-
-					data.Action = "Remove"
-					table.insert(sets,data)
-					return sets
-				end)
-
-
-				Core.CrossServer("LoadData", "SavedTables");
-			elseif type == "TableAdd" then
-				local tab = data.Table
-				local value = data.Value
-				data.Time = os.time()
-				Core.UpdateData("SavedTables", function(sets)
-					sets = sets or {}
-					for i,v in next,sets do
-						if tab == v.Table then
-							if Functions.CheckMatch(v.Value,value) then
-								table.remove(sets,i)
-							end
-						end
-					end
-					data.Action = "Add"
-					table.insert(sets,data)
-					return sets
-				end)
-
-				Core.CrossServer("LoadData", "SavedTables");
-			end
-
-			Logs.AddLog(Logs.Script,{
-				Text = "Saved setting change to datastore";
-				Desc = "A setting change was issued and saved";
-			})
 		end;
 
 		SavePlayer = function(p,data)
@@ -690,6 +619,7 @@ return function(Vargs)
 					local data = service.CloneTable(pData);
 
 					data.LastChat = nil
+					data.AdminRank = nil
 					data.AdminLevel = nil
 					data.LastLevelUpdate = nil
 					data.LastDataSave = nil
@@ -698,7 +628,6 @@ return function(Vargs)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
 					Core.SetData(key, data)
-					Core.PlayerData[key] = nil
 					Logs.AddLog(Logs.Script,{
 						Text = "Saved data for "..tostring(p);
 						Desc = "Player data was saved to the datastore";
@@ -744,8 +673,51 @@ return function(Vargs)
 			return Core.SetData(...)
 		end;
 
+		DS_GetRequestDelay = function(type)
+			local reqPerMin = 60 + #service.Players:GetPlayers() * 10;
+			local reqDelay = 60/reqPerMin;
+			local requestType = nil;
+
+			if type == "Write" then
+				requestType = Enum.DataStoreRequestType.SetIncrementAsync;
+			elseif type == "Read" then
+				requestType = Enum.DataStoreRequestType.GetAsync;
+			elseif type == "Update" then
+				requestType = Enum.DataStoreRequestType.UpdateAsync;
+			end
+
+			local budget = nil
+
+			repeat
+				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
+			until budget > 0 and wait(1)
+
+			return reqDelay + 0.5;
+		end;
+
+		DS_WriteLimiter = function(type, func, ...)
+			local vararg = {...}
+			return service.Queue("DataStoreWriteData", function()
+				func(unpack(vararg))
+				wait(Core.DS_GetRequestDelay(type))
+			end, 120, true)
+		end;
+
 		RemoveData = function(key)
-			return pcall(Core.DataStore.RemoveAsync, Core.DataStore, Core.DataStoreEncode(key))
+			local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+				local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.RemoveAsync, Core.DataStore, Core.DataStoreEncode(key))
+				if ran then
+					Core.DataCache[key] = nil
+				else
+					logError("DataStore RemoveAsync Failed: ".. tostring(ret))
+				end
+
+				wait(6)
+			end, 120, true)
+
+			if not ran2 then
+				warn("DataStore RemoveData Failed: ".. tostring(err2))
+			end
 		end;
 
 		SetData = function(key, value)
@@ -753,19 +725,19 @@ return function(Vargs)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					local ran2, err2 = service.Queue("DataStoreSetData".. tostring(key), function()
-						local ran, ret = pcall(Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
+					local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+						local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
 						else
 							logError("DataStore SetAsync Failed: ".. tostring(ret))
 						end
 
-						wait(Core.DS_SetDataQueueDelay)
-					end, 300, true)
+						wait(6)
+					end, 120, true)
 
 					if not ran2 then
-						warn("DataStore UpdateData Failed: ".. tostring(err2))
+						warn("DataStore SetData Failed: ".. tostring(err2))
 					end
 				end
 			end
@@ -774,15 +746,15 @@ return function(Vargs)
 		UpdateData = function(key, func)
 			if Core.DataStore then
 				local err = false;
-				local ran2, err2 = service.Queue("DataStoreUpdateData".. tostring(key), function()
-					local ran, ret = pcall(Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
+				local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
+					local ran, ret = Core.DS_WriteLimiter("Update", Core.DataStore.UpdateAsync, Core.DataStore, Core.DataStoreEncode(key), func)
 
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
 					end
 
-					wait(Core.DS_UpdateQueueDelay)
+					wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
@@ -795,128 +767,290 @@ return function(Vargs)
 
 		GetData = function(key)
 			if Core.DataStore then
-				local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
-				if ran then
-					Core.DataCache[key] = ret
-					return ret
+				local ran2, err2 = service.Queue("DataStoreReadData", function()
+					local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
+					if ran then
+						Core.DataCache[key] = ret
+						return ret
+					else
+						logError("DataStore GetAsync Failed: ".. tostring(ret))
+						return Core.DataCache[key]
+					end
+					wait(Core.DS_GetRequestDelay("Read"))
+				end, 120, true)
+
+				if not ran2 then
+					warn("DataStore GetData Failed: ".. tostring(err2))
 				else
-					logError("DataStore GetAsync Failed: ".. tostring(ret))
-					return Core.DataCache[key]
+					return err2;
 				end
 			end
 		end;
 
-		LoadData = function(key, data)
-			local SavedSettings
-			local SavedTables
-			local Blacklist = {DataStoreKey = true;}
-			if Core.DataStore and Settings.DataStoreEnabled then
-				if not key then
-					SavedSettings = Core.GetData("SavedSettings")
-					SavedTables = Core.GetData("SavedTables")
-				elseif key and not data then
-					if key == "SavedSettings" then
+		IndexPathToTable = function(tableAncestry)
+			if type(tableAncestry) == "string" then
+				return server.Settings[tableAncestry], tableAncestry;
+			elseif type(tableAncestry) == "table" then
+				local curTable = server;
+				local curName = "Server";
+
+				for i,ind in ipairs(tableAncestry) do
+					curTable = curTable[ind];
+					curName = ind;
+
+					if not curTable then
+						--warn(tostring(ind) .." could not be found");
+						return nil;
+					end
+				end
+
+				return curTable, curName;
+			end
+		end;
+
+		ClearAllData = function()
+			local tabs = Core.GetData("SavedTables");
+
+			for i,v in next, tabs do
+				if v.TableKey then
+					Core.RemoveData(v.TableKey);
+				end
+			end
+
+			Core.SetData("SavedSettings",{});
+			Core.SetData("SavedTables",{});
+			Core.CrossServer("LoadData");
+		end;
+
+		GetTableKey = function(indList)
+			local tabs = Core.GetData("SavedTables") or {};
+			local realTable,tableName = Core.IndexPathToTable(indList);
+
+			local foundTable = nil;
+
+			for i,v in next,tabs do
+				if type(v) == "table" and v.TableName and v.TableName == tableName then
+					foundTable = v
+					break;
+				end
+			end
+
+			if not foundTable then
+				foundTable = {
+					TableName = tableName;
+					TableKey = "SAVEDTABLE_".. tableName;
+				}
+
+				table.insert(tabs, foundTable);
+				Core.SetData("SavedTables", tabs);
+			end
+
+			if not Core.GetData(foundTable.TableKey) then
+				Core.SetData(foundTable.TableKey, {});
+			end
+
+			return foundTable.TableKey;
+		end;
+
+		DoSave = function(data)
+			local type = data.Type
+			if type == "ClearSettings" then
+				Core.ClearAllData();
+			elseif type == "SetSetting" then
+				local setting = data.Setting
+				local value = data.Value
+
+				Core.UpdateData("SavedSettings", function(settings)
+					settings[setting] = value
+					return settings
+				end)
+
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
+			elseif type == "TableRemove" then
+				local key = Core.GetTableKey(data.Table);
+				local tab = data.Table
+				local value = data.Value
+
+				data.Action = "Remove"
+				data.Time = os.time()
+
+				Core.UpdateData(key, function(sets)
+					sets = sets or {}
+
+					for i,v in next,sets do
+						if Functions.CheckMatch(tab, v.Table) and Functions.CheckMatch(v.Value, value) then
+							table.remove(sets,i)
+						end
+					end
+
+					table.insert(sets, data)
+
+					return sets
+				end)
+
+				Core.CrossServer("LoadData", "TableUpdate", data);
+			elseif type == "TableAdd" then
+				local key = Core.GetTableKey(data.Table);
+				local tab = data.Table
+				local value = data.Value
+
+				data.Action = "Add"
+				data.Time = os.time()
+
+				Core.UpdateData(key, function(sets)
+					sets = sets or {}
+
+					for i,v in next,sets do
+						if Functions.CheckMatch(tab, v.Table) and Functions.CheckMatch(v.Value, value) then
+							table.remove(sets, i)
+						end
+					end
+
+					table.insert(sets, data)
+
+					return sets
+				end)
+
+				Core.CrossServer("LoadData", "TableUpdate", data);
+			end
+
+			Logs.AddLog(Logs.Script,{
+				Text = "Saved setting change to datastore";
+				Desc = "A setting change was issued and saved";
+			})
+		end;
+
+		LoadData = function(key, data, serverId)
+			if serverId and serverId == game.JobId then return end;
+
+			local CheckMatch = Functions.CheckMatch;
+			if key == "TableUpdate" then
+				local tab = data;
+				local indList = tab.Table;
+				local nameRankComp = {--// Old settings backwards compatability
+					Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
+					Creators = {"Settings", "Ranks", "Creators", "Users"};
+					HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
+					Admins = {"Settings", "Ranks", "Admins", "Users"};
+					Moderators = {"Settings", "Ranks", "Moderators", "Users"};
+				}
+
+				if type(indList) == "string" and nameRankComp[indList] then
+					indList = nameRankComp[indList];
+				end
+
+				local realTable,tableName = Core.IndexPathToTable(indList);
+				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
+
+				if realTable and tab.Action == "Add" then
+					for i,v in next,realTable do
+						if CheckMatch(v,tab.Value) then
+							table.remove(realTable, i)
+						end
+					end
+
+					Logs.AddLog("Script",{
+						Text = "Added value to ".. displayName;
+						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+					})
+
+					table.insert(realTable, tab.Value)
+				elseif realTable and tab.Action == "Remove" then
+					for i,v in next,realTable do
+						if CheckMatch(v, tab.Value) then
+							Logs.AddLog("Script",{
+								Text = "Removed value from ".. displayName;
+								Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
+							})
+
+							table.remove(realTable, i)
+						end
+					end
+				end
+			else
+				local SavedSettings
+				local SavedTables
+				local Blacklist = {DataStoreKey = true;}
+				if Core.DataStore and Settings.DataStoreEnabled then
+					if not key then
 						SavedSettings = Core.GetData("SavedSettings")
-					elseif key == "SavedTables" then
 						SavedTables = Core.GetData("SavedTables")
-					end
-				elseif key and data then
-					if key == "SavedSettings" then
-						SavedSettings = data
-					elseif key == "SavedTables" then
-						SavedTables = data
-					end
-				end
-
-				if not key and not data then
-					if not SavedSettings then
-						SavedSettings = {}
-						Core.SaveData("SavedSettings",{})
-					end
-
-					if not SavedTables then
-						SavedTables = {}
-						Core.SaveData("SavedTables",{})
-					end
-				end
-
-				if SavedSettings then
-					for setting,value in next,SavedSettings do
-						if not Blacklist[setting] then
-							if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
-								local orig = Settings[setting]
-								for i,v in pairs(server.Commands) do
-									if v.Prefix == orig then
-										v.Prefix = value
-									end
-								end
-							end
-
-							Settings[setting] = value
+					elseif key and not data then
+						if key == "SavedSettings" then
+							SavedSettings = Core.GetData("SavedSettings")
+						elseif key == "SavedTables" then
+							SavedTables = Core.GetData("SavedTables")
+						end
+					elseif key and data then
+						if key == "SavedSettings" then
+							SavedSettings = data
+						elseif key == "SavedTables" then
+							SavedTables = data
 						end
 					end
-				end
 
-				if SavedTables then
-					for ind,tab in next,SavedTables do
-						--// Owners to HeadAdmins compatability
-						if tab.Table == "Owners" then
-							tab.Table = "HeadAdmins"
+					if not key and not data then
+						if not SavedSettings then
+							SavedSettings = {}
+							Core.SaveData("SavedSettings",{})
 						end
 
-						local parentTab = (tab.Parent == "Variables" and Core.Variables) or Settings
-						if (not Blacklist[tab.Table]) and parentTab[tab.Table] ~= nil then
-							if tab.Action == "Add" then
-								local tabl = parentTab[tab.Table]
-								if tabl then
-									for i,v in next,tabl do
-										if Functions.CheckMatch(v,tab.Value) then
-											table.remove(parentTab[tab.Table],i)
+						if not SavedTables then
+							SavedTables = {}
+							Core.SaveData("SavedTables",{})
+						end
+					end
+
+					if SavedSettings then
+						for setting,value in next,SavedSettings do
+							if not Blacklist[setting] then
+								if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+									local orig = Settings[setting]
+									for i,v in pairs(server.Commands) do
+										if v.Prefix == orig then
+											v.Prefix = value
 										end
 									end
 								end
 
-								Logs.AddLog("Script",{
-									Text = "Added to "..tostring(tab.Table);
-									Desc = "Added "..tostring(tab.Value).." to "..tostring(tab.Table).." from datastore";
-								})
-								table.insert(parentTab[tab.Table],tab.Value)
-							elseif tab.Action == "Remove" then
-								local tabl = parentTab[tab.Table]
-								if tabl then
-									for i,v in next,tabl do
-										if Functions.CheckMatch(v,tab.Value) then
-											Logs.AddLog("Script",{
-												Text = "Removed from "..tostring(tab.Table);
-												Desc = "Removed "..tostring(tab.Value).." from "..tostring(tab.Table).." from datastore";
-											})
-											table.remove(parentTab[tab.Table],i)
-										end
+								Settings[setting] = value
+							end
+						end
+					end
+
+					if SavedTables then
+						for i,tData in next,SavedTables do
+							if tData.TableName and tData.TableKey then
+								local data = Core.GetData(tData.TableKey);
+								if data then
+									for k,v in ipairs(data) do
+										Core.LoadData("TableUpdate", v)
 									end
+								end
+							elseif tData.Table and tData.Action then
+								Core.LoadData("TableUpdate", tData)
+							end
+						end
+
+						if Core.Variables.TimeBans then
+							for i,v in next, Core.Variables.TimeBans do
+								if v.EndTime-os.time() <= 0 then
+									table.remove(Core.Variables.TimeBans, i)
+									Core.DoSave({
+										Type = "TableRemove";
+										Table = {"Core", "Variables", "TimeBans"};
+										Value = v;
+									})
 								end
 							end
 						end
 					end
 
-					if Core.Variables.TimeBans then
-						for i,v in next, Core.Variables.TimeBans do
-							if v.EndTime-os.time() <= 0 then
-								table.remove(Core.Variables.TimeBans, i)
-								Core.DoSave({
-									Type = "TableRemove";
-									Table = "TimeBans";
-									Parent = "Variables";
-									Value = v;
-								})
-							end
-						end
-					end
+					Logs.AddLog(Logs.Script,{
+						Text = "Loaded saved data";
+						Desc = "Data was retrieved from the datastore and loaded successfully";
+					})
 				end
-
-				Logs.AddLog(Logs.Script,{
-					Text = "Loaded saved data";
-					Desc = "Data was retrieved from the datastore and loaded successfully";
-				})
 			end
 		end;
 
@@ -1021,10 +1155,6 @@ return function(Vargs)
 					ExecutePermission = function(srcScript, code)
 						local exists;
 
-						if not Settings.CodeExecution then
-							return nil
-						end
-
 						for i,v in pairs(Core.ScriptCache) do
 							if v.Script == srcScript then
 								exists = v
@@ -1066,13 +1196,15 @@ return function(Vargs)
 
 				CheckAdmin = service.MetaFunc(Admin.CheckAdmin);
 
+				IsAdmin = service.MetaFunc(Admin.CheckAdmin);
+
+				IsBanned = service.MetaFunc(Admin.CheckBan);
+
 				IsMuted = service.MetaFunc(Admin.IsMuted);
 
 				CheckDonor = service.MetaFunc(Admin.CheckDonor);
 
 				GetLevel = service.MetaFunc(Admin.GetLevel);
-
-				CheckAgent = service.MetaFunc(HTTP.Trello.CheckAgent);
 
 				SetLighting = service.MetaFunc(Functions.SetLighting);
 

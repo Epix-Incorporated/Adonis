@@ -204,6 +204,58 @@ return function(data)
 		end
 
 		sound:Stop()
+	elseif mode == "trolling" then
+		local frame = Instance.new("Frame",gui)
+		frame.BackgroundColor3 = Color3.new(0,0,0)
+		frame.Size = UDim2.new(1,0,1,50)
+		frame.Position = UDim2.new(0,0,0,-50)
+		local img = Instance.new("ImageLabel",frame)
+		img.Position = UDim2.new(0,0,0,0)
+		img.Size = UDim2.new(1,0,1,0)
+		img.BorderSizePixel = 0
+		img.BackgroundColor3 = Color3.new(0,0,0)
+		local textures = {
+			"6172043688";
+			"6172044478";
+			"6172045193";
+			"6172045797";
+			"6172046490";
+			"6172047172";
+			"6172047947";
+			"6172048674";
+			"6172050195";
+			"6172050892";
+			"6172051669";
+			"6172053085";
+			"6172054752";
+			"6172054752";
+			"6172053085";
+			"6172051669";
+			"6172050892";
+			"6172050195";
+			"6172048674";
+			"6172047947";
+			"6172047172";
+			"6172046490";
+			"6172045797";
+			"6172045193";
+			"6172044478";
+			"6172043688";
+
+		}
+		local sound = Instance.new("Sound",gui)
+		sound.SoundId = "rbxassetid://229681899"
+		sound.Looped = true
+		sound:Play()
+
+		while gui and gui.Parent do
+			for i=1,#textures do
+				img.Image = "rbxassetid://"..textures[i]
+				wait(0.13)
+			end
+		end
+
+		sound:Stop()
 	elseif mode == "Strobe" then
 		local bg = Instance.new("Frame", gui)
 		bg.BackgroundColor3 = Color3.new(0,0,0)

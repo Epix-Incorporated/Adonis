@@ -53,9 +53,13 @@ return function(data)
 	})
 
 	local function showTable(tab, setting)
+		local tabPath = type(setting) == "table" and setting;
+		local setting = tabPath and tabPath[#tabPath-1] or setting;
+		local name = tabPath and table.concat(tabPath, ".") or setting;
+
 		local tabWindow = client.UI.Make("Window",{
-			Name  = setting .. "EditSettingsTable";
-			Title = setting .. " Table Editor";
+			Name  = name .. "EditSettingsTable";
+			Title = name;
 			Size  = {320, 300};
 			AllowMultiple = false;
 		})
@@ -68,7 +72,7 @@ return function(data)
 				BackgroundTransparency = 1;
 			})
 
-			if canEditTables[setting] then
+			if tabPath and tabPath[2] == "Ranks" or canEditTables[setting] then
 				local selected
 				local inputBlock
 
@@ -130,7 +134,7 @@ return function(data)
 								if not inputBlock then
 									inputBlock = true
 									if #entryText.Text > 0 then
-										client.Remote.Send("SaveTableAdd", setting, entryText.Text)
+										client.Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
 									wait(0.5)
@@ -175,7 +179,7 @@ return function(data)
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
-							client.Remote.Send("SaveTableRemove", setting, selected.Value)
+							client.Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
 							wait(0.5)
@@ -1164,7 +1168,7 @@ return function(data)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey
 							toggle.Text = "Waiting..."
-							local event = service.UserInputService.InputBegan:connect(function(InputObject)
+							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 								local textbox = service.UserInputService:GetFocusedTextBox()
 								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey = InputObject.KeyCode.Name
@@ -1262,6 +1266,7 @@ return function(data)
 		do
 			if settingsData then
 				local settings = settingsData.Settings
+				local ranks = settingsData.Ranks
 				local descs = settingsData.Descs
 				local order = settingsData.Order
 
@@ -1285,10 +1290,13 @@ return function(data)
 					}
 				})
 
-				for i, setting in next,order do
-					local i = i+1;
+				local i = 1;
+				for truei, setting in next,order do
+					i = i+1;
+
 					local value = settings[setting]
 					local desc = descs[setting]
+
 					if setting == "" or setting == " " and value == nil then
 
 					elseif value == nil then
@@ -1301,7 +1309,7 @@ return function(data)
 							TextXAlignment = "Left";
 							Children = {
 								TextLabel = {
-									Text = "Cannot Change";
+									Text = "Studio Only";
 									Size = UDim2.new(0, 100, 1, 0);
 									Position = UDim2.new(1, -100, 0, 0);
 									TextTransparency = 0.5;
@@ -1310,25 +1318,71 @@ return function(data)
 							}
 						})
 					elseif type(value) == "table" then
-						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-							TextXAlignment = "Left";
-							Children = {
-								TextButton = {
-									Text = "Open";
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									BackgroundTransparency = 1;
-									OnClick = function()
-										showTable(value, setting)
-									end
+						if setting == "Ranks" then
+							i = i-1;
+							for rank,data in next,value do
+								i = i+1;
+								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then
+									gameTab:Add("TextLabel", {
+										Text = "  "..rank..": ";
+										ToolTip = "Permission Level: ".. data.Level;
+										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+										Size = UDim2.new(1, -10, 0, 30);
+										Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+										TextXAlignment = "Left";
+										Children = {
+											TextLabel = {
+												Text = "Cannot Edit";
+												Size = UDim2.new(0, 100, 1, 0);
+												Position = UDim2.new(1, -100, 0, 0);
+												TextTransparency = 0.5;
+												BackgroundTransparency = 1;
+											}
+										}
+									})
+								else
+									gameTab:Add("TextLabel", {
+										Text = "  "..rank..": ";
+										ToolTip = "Permission Level: ".. data.Level;
+										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+										Size = UDim2.new(1, -10, 0, 30);
+										Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+										TextXAlignment = "Left";
+										Children = {
+											TextButton = {
+												Text = "Open";
+												Size = UDim2.new(0, 100, 1, 0);
+												Position = UDim2.new(1, -100, 0, 0);
+												BackgroundTransparency = 1;
+												OnClick = function()
+													showTable(data.Users, {"Settings", "Ranks", rank, "Users"})
+												end
+											}
+										}
+									})
+								end
+							end
+						else
+							gameTab:Add("TextLabel", {
+								Text = "  "..setting..": ";
+								ToolTip = desc;
+								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+								Size = UDim2.new(1, -10, 0, 30);
+								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								TextXAlignment = "Left";
+								Children = {
+									TextButton = {
+										Text = "Open";
+										Size = UDim2.new(0, 100, 1, 0);
+										Position = UDim2.new(1, -100, 0, 0);
+										BackgroundTransparency = 1;
+										OnClick = function()
+											showTable(value, setting)
+										end
+									}
 								}
-							}
-						})
+							})
+						end
 					elseif type(value) == "boolean" then
 						gameTab:Add("TextLabel", {
 							Text = "  ".. tostring(setting)..": ";

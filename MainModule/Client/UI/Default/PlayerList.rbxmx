@@ -2,11 +2,11 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBX7A8A9CB8420B4EF4B910EE9EA5D67212">
+	<Item class="ScreenGui" referent="RBXD7FBDEB339CA47199250E97B5A7A4EE8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
-			<int name="DisplayOrder">0</int>
+			<int name="DisplayOrder">900000</int>
 			<bool name="Enabled">false</bool>
 			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">PlayerList</string>
@@ -16,14 +16,14 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Folder" referent="RBX1200A5618BF0460CA57BBD99FEE1B934">
+		<Item class="Folder" referent="RBXBC3B1DE19AE74FAF97B99A10CBE1CF2C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="BoolValue" referent="RBXDF50331189E947E896A035D7607F6F10">
+			<Item class="BoolValue" referent="RBX22CB3ADEBD4F4DCD9AABAA65493B3AAA">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -32,12 +32,12 @@
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX7DA914FFE45A4BAD9961269C1AA1A384">
+			<Item class="ModuleScript" referent="RBX242C0A9BCA704D5984914476F67144F9">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid"></string>
+					<string name="ScriptGuid">{7D95AD0C-73F8-4E5A-A391-69274D730E5A}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -89,7 +89,7 @@ return function(data)
 	local function checkStats()
 		local stats = localplayer:FindFirstChild("leaderstats")
 		if stats and not dontSize then
-			nx = ((#stats:children()-1)*70)+210
+			nx = ((#stats:GetChildren()-1)*70)+210
 			defx = nx
 			drag.Size = UDim2.new(0,nx,0,30)
 			drag.Position = UDim2.new(1,-(nx),0,0)
@@ -127,7 +127,7 @@ return function(data)
 		local leaderstats = {}
 		local found = {}
 		
-		for i,v in pairs(service.Teams:children()) do
+		for i,v in pairs(service.Teams:GetChildren()) do
 			teams[v.Name] = {Color = v.TeamColor, Players = {}, Stats = {}, StatNames = {}}
 		end
 		
@@ -150,7 +150,7 @@ return function(data)
 			
 			local stats = v:FindFirstChild("leaderstats")
 			if stats then
-				for k,m in pairs(stats:children()) do
+				for k,m in pairs(stats:GetChildren()) do
 					if team.Stats[m.Name] and tonumber(team.Stats[m.Name]) and m:IsA("IntValue") and tonumber(m.Value) then
 						team.Stats[m.Name] = team.Stats[m.Name]+tonumber(m.Value)
 					elseif not team.Stats[m.Name] and m:IsA("IntValue") then
@@ -228,7 +228,7 @@ return function(data)
 						else
 							new.Text = ""
 						end
-						new.Position = UDim2.new(0,(#team.Stats:children()-1)*70,0,0)
+						new.Position = UDim2.new(0,(#team.Stats:GetChildren()-1)*70,0,0)
 					end
 				else
 					team.Stats.Visible = false
@@ -285,7 +285,7 @@ return function(data)
 				
 				local stats = p:FindFirstChild("leaderstats")
 				if stats and pstats and pstat then
-					stats = stats:children()
+					stats = stats:GetChildren()
 					pstats.Visible = true
 					local statEnt = pstat
 					for stat,k in pairs(stats) do
@@ -295,16 +295,16 @@ return function(data)
 						new.Text = k.Value
 						--[[
 						local event
-						event = k.Changed:connect(function()
+						event = k.Changed:Connect(function()
 							if k and k.Parent and new and new.Parent then
 								--new.Text = k.Value
 								populate()
 							else
-								event:disconnect()
+								event:Disconnect()
 							end
 						end)
 						--]]
-						new.Position = UDim2.new(0,(#pstats:children()-1)*70,0,0)
+						new.Position = UDim2.new(0,(#pstats:GetChildren()-1)*70,0,0)
 					end
 				elseif pstats then
 					pstats.Visible = false
@@ -331,15 +331,15 @@ return function(data)
 	
 	fadeOut()
 	
-	frame.MouseEnter:connect(function()
+	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
 	
-	frame.MouseLeave:connect(function()
+	frame.MouseLeave:Connect(function()
 		fadeOut()
 	end)
 	
-	service.UserInputService.InputBegan:connect(function(InputObject)
+	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
 			if drag.Visible then
@@ -350,7 +350,7 @@ return function(data)
 		end
 	end)
 	
-	mouse.Move:connect(function(x,y)
+	mouse.Move:Connect(function(x,y)
 		if dragging then
 			np=defp+(dragger.Position.X.Offset)
 			nx=defx-(dragger.Position.X.Offset)
@@ -373,13 +373,13 @@ return function(data)
 		end
 	end)
 	
-	dragger.DragBegin:connect(function(init)
+	dragger.DragBegin:Connect(function(init)
 		defp = drag.Position.X.Offset
 		dragging = true
 		dontSize = true
 	end)
 	
-	dragger.DragStopped:connect(function(x,y)
+	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
 		defx,defy,defp=nx,ny,drag.Position.X.Offset
@@ -389,29 +389,29 @@ return function(data)
 	
 	--[[
 	for k,p in pairs(service.Players:GetPlayers()) do
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			populate()
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 	end
 	
-	service.Players.PlayerAdded:connect(function(p)
+	service.Players.PlayerAdded:Connect(function(p)
 		populate()
-		p.Changed:connect(populate)
-		p.ChildAdded:connect(function(c)
+		p.Changed:Connect(populate)
+		p.ChildAdded:Connect(function(c)
 			if c.Name=="leaderstats" then
-				c.ChildAdded:connect(populate)
+				c.ChildAdded:Connect(populate)
 			end
 		end)
 		wait(0.5)
 		populate()
 	end)
 	
-	service.Teams.ChildAdded:connect(populate)
-	service.Teams.ChildRemoved:connect(populate)
+	service.Teams.ChildAdded:Connect(populate)
+	service.Teams.ChildRemoved:Connect(populate)
 	
 	wait(0.5)
 	populate()
@@ -425,7 +425,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXE0AE1B73CEFD47F4A48B14947BF8BCEE">
+			<Item class="BoolValue" referent="RBX1EA75CAD22E2406B8A7EDB2E068EA4E6">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -435,7 +435,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBXFC3A409476B14378883021B8FB25AFE9">
+		<Item class="Frame" referent="RBX233EEA6290F9403B9715C020AEFA9D47">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -489,7 +489,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX047F741C1E0D4BBEAF77C76E8DE8F1B7">
+			<Item class="Frame" referent="RBX4A7260B3B7AC4983B16C5957071ABCCB">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -543,7 +543,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBXBE7564B69CB84035AEC99F27E8EAE057">
+				<Item class="ScrollingFrame" referent="RBX52418D69A729488C99D63340C694FD8D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -624,7 +624,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXEFE224F183D3458D8363B2E19A937862">
+				<Item class="Frame" referent="RBXFE79132224F945CEBB66C4B8865B1C0C">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -679,7 +679,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX4E4F72AA705F4723A7FF2C64184D2FAF">
+				<Item class="ImageLabel" referent="RBX52F830045C414EFFB1DA61A2BE90CB7C">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -768,7 +768,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX545B369EB45E4D409C69C7981522C7AE">
+		<Item class="Frame" referent="RBX78CC6B2CA5E04B2EB2C48B350C532E6E">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -822,7 +822,7 @@ end]]></ProtectedString>
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">2</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBX082BAFE07C084B5682F6D87B67CEC50A">
+			<Item class="TextLabel" referent="RBXAE0CABA58D8B42CABF6E348226E05185">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -899,7 +899,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX00B30757CE7245E8AF641D382CA97FDB">
+			<Item class="TextLabel" referent="RBX8D85E14574C249B6A1210CBDBD44542D">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -976,7 +976,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBX6ED86D7390D8474482B9B8DB1F3F96BF">
+			<Item class="ImageLabel" referent="RBX7520B37692C44DF1A38A0D0116D13762">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1063,7 +1063,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX949569F313C546DA9B9BFB7A1A58C787">
+			<Item class="Frame" referent="RBX303DD7253D994E8D979F4F21D85F0B52">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">

@@ -90,7 +90,7 @@ return function(data)
 			TextStrokeTransparency = 0.8;
 		})
 		
-		search.FocusLost:connect(function(enter)
+		search.FocusLost:Connect(function(enter)
 			getList(curObject, search.Text)
 		end)
 		

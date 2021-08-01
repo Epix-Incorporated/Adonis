@@ -33,7 +33,7 @@ return function(Vargs)
 
 	local function RunAfterPlugins(data)
 		--// Fake finder
-		service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
+		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
 
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
@@ -42,12 +42,12 @@ return function(Vargs)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 120; --// Two minutes without communication seems long enough right?
+		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(info) end)
+			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
 
 			wait(1)
 
@@ -61,25 +61,20 @@ return function(Vargs)
 		end;
 
 		CheckAllClients = function()
+			--// Check if clients are alive
 			if Settings.CheckClients and (not Core.PanicMode) and server.Running then
 				Logs.AddLog(Logs.Script,{
 					Text = "Checking Clients";
 					Desc = "Making sure all clients are active";
 				})
 
-				local parent = service.NetworkServer or service.Players
-				local net = service.NetworkServer or false
-				for ind,p in next,parent:GetChildren() do
-					if net then p = p:GetPlayer() end
-					if p then
-						if Anti.ObjRLocked(p) then
-							Anti.Detected(p, "Log", "Player RobloxLocked")
-						else
-							local client = Remote.Clients[tostring(p.UserId)]
-							if client and client.LastUpdate then
-								if os.time() - lastTime > Anti.ClientTimeoutLimit then
-									Anti.Detected(p, "Kick", "Client Not Responding [Client hasn't checked in for >".. Anti.ClientTimeoutLimit .." seconds]")
-								end
+				for ind,p in ipairs(service.Players:GetPlayers()) do
+					if p and p:IsA("Player") then
+						local key = tostring(p.UserId)
+						local client = Remote.Clients[key]
+						if client and client.LastUpdate and client.PlayerLoaded then
+							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
+								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
 							end
 						end
 					end
@@ -136,7 +131,7 @@ return function(Vargs)
 			if Anti.ObjRLocked(p) or not p:IsA("Player") then
 				return true,1
 			else
-				local players = service.Players:GetChildren()
+				local players = service.Players:GetPlayers()
 				local found = 0
 
 				if service.NetworkServer then
@@ -174,7 +169,7 @@ return function(Vargs)
 		end;
 
 		FindFakePlayers = function()
-			for i,v in pairs(service.Players:GetChildren()) do
+			for i,v in pairs(service.Players:GetPlayers()) do
 				if Anti.isFake(v) then
 					Anti.RemovePlayer(v, "Fake")
 				end

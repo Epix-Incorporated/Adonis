@@ -5,20 +5,19 @@ Pcall = nil
 Routine = nil
 GetEnv = nil
 logError = nil
-sortedPairs = nil
 
 --// This module is for stuff specific to debugging
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	
+
 	local Core = server.Core;
 	local Settings = server.Settings;
 	local Functions = server.Functions;
 	local Commands = server.Commands;
 	local Remote = server.Remote;
-	
+
 	Commands.TestError = {
 		Hidden = true;
 		Prefix = ":";
@@ -40,7 +39,7 @@ return function(Vargs)
 			end
 		end;
 	};
-	
+
 	Commands.TestBigList = {
 		Hidden = true;
 		Prefix = ":";
@@ -50,11 +49,11 @@ return function(Vargs)
 		AdminLevel = "Creators";
 		Function = function(plr,args)
 			local list = {}
-			
+
 			for i = 1, 5000 do
 				table.insert(list, {Text = i});
 			end
-			
+
 			Remote.MakeGui(plr,"List",{
 				Title = "DebugBigList_PageSize250",
 				Table = list,
@@ -62,7 +61,7 @@ return function(Vargs)
 				PageSize = 250;
 				Size = {500, 400},
 			})
-			
+
 			Remote.MakeGui(plr,"List",{
 				Title = "DebugBigList_PageSize100",
 				Table = list,
@@ -70,7 +69,7 @@ return function(Vargs)
 				PageSize = 100;
 				Size = {500, 400},
 			})
-			
+
 			Remote.MakeGui(plr,"List",{
 				Title = "DebugBigList_PageSize25",
 				Table = list,
@@ -158,4 +157,6 @@ return function(Vargs)
 			end
 		end
 	};
+
+	Logs:AddLog("Script", "Debug Module Loaded");
 end;

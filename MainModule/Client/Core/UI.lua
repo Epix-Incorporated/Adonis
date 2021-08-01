@@ -218,7 +218,7 @@ return function()
 
 				--// Load all config values into the new Config folder
 				for i,v in next,endConfig do
-					v:Clone().Parent = confFolder
+					v:Clone().Parent = confFolder;
 				end
 
 				--// Find next module based theme GUI if code not found or first in sequence is module (in theme)
@@ -376,24 +376,31 @@ return function()
 				Active = true,
 				Ready = function()
 					if gTable.Config then gTable.Config.Parent = nil end
-					if pcall(function()
+					local ran,err = pcall(function()
+						local obj = gTable.Object;
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
-							gTable.Object.Parent = service.PlayerGui
-							gTable.Object.Enabled = true
+							if obj.DisplayOrder == 0 then
+								obj.DisplayOrder = 90000
+							end
+
+							obj.Enabled = true
+							obj.Parent = service.PlayerGui
 						else
-							gTable.Object.Parent = UI.GetHolder()
+							obj.Parent = UI.GetHolder()
 						end
-					end) then
+					end);
+
+					if ran then
 						gTable.Active = true
 					else
 						warn("Something happened while trying to set the parent of "..tostring(gTable.Name))
-						warn'Maybe it was locked (Destroyed)?'
+						warn(tostring(err))
 						gTable:Destroy()
 					end
 				end,
 
 				BindEvent = function(event, func)
-					local signal = event:connect(func)
+					local signal = event:Connect(func)
 					local origDisc = signal.Disconnect
 					local Events = gTable.Events
 					local disc = function()

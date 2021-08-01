@@ -64,13 +64,13 @@ end
 function jumpCheck()
 	local cframe = getCFrame()
 	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild('HumanoidRootPart') or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
-	if targ and (targ.Position-cframe.p).magnitude < 1 then
+	if targ and (targ.Position-cframe.p).Magnitude < 1 then
 		--// Do something?
 	else
 		local checkVector = (cframe*CFrame.new(0,0,-3.5)).p
 		local ray = Ray.new(cframe.p,(checkVector - cframe.p).unit)
 		local hit, pos = workspace:FindPartOnRay(ray,char)
-		if hit and (pos-cframe.p).magnitude < 0.7 then
+		if hit and (pos-cframe.p).Magnitude < 0.7 then
 			hum.Jump = true
 		end
 	end
@@ -83,7 +83,7 @@ function findTarget()
 		local vTorso = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("Torso") or v:FindFirstChild("UpperTorso")
 		local human = v:FindFirstChildOfClass("Humanoid")
 		if v~=char and v:IsA("Model") and torso and vTorso and human and human.Health>0 then
-			local dist = (torso.Position-vTorso.Position).magnitude
+			local dist = (torso.Position-vTorso.Position).Magnitude
 			if dist < prevDist and validTarget(v) then
 				prevDist = dist
 				closest = v
@@ -199,7 +199,7 @@ function walkPath()
 			end
 			
 			if #path>2 then
-				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).magnitude < 2.5
+				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).Magnitude < 2.5
 			end
 		end
 		
@@ -226,7 +226,7 @@ function init()
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
 	
-	hum.Died:connect(function()
+	hum.Died:Connect(function()
 		wait(1)
 		props.isDead = true
 		char:Destroy()
@@ -244,7 +244,7 @@ function init()
 end
 
 function doToucher(part)
-	part.Touched:connect(function(hit)
+	part.Touched:Connect(function(hit)
 		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChild("Humanoid") then
 			doAttack(hit.Parent)
 		end
@@ -256,7 +256,7 @@ doToucher(head)
 doToucher(lleg)
 doToucher(rleg)
 
-event.Event:connect(function(command,data)
+event.Event:Connect(function(command,data)
 	if command == "SetSetting" then
 		for i,v in next,data do
 			props[i] = v

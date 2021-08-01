@@ -58,12 +58,12 @@
 				waiting = false
 			end
 			
-			yes.MouseButton1Click:connect(function()
+			yes.MouseButton1Click:Connect(function()
 				ans = "Yes"
 				gTable:Destroy()
 			end)
 			
-			no.MouseButton1Click:connect(function()
+			no.MouseButton1Click:Connect(function()
 				ans = "No"
 				gTable:Destroy()
 			end)

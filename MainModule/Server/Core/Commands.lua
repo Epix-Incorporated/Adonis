@@ -5,7 +5,6 @@ Pcall = nil
 Routine = nil
 GetEnv = nil
 logError = nil
-sortedPairs = nil
 
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...
@@ -72,12 +71,61 @@ return function(Vargs)
 
 		--// Cache commands
 		Admin.CacheCommands();
-		
+
 		Commands.Init = nil;
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
 
+	function RunAfterPlugins()
+		--// Load custom user-supplied commands (settings.Commands)
+		for ind,cmd in next,Settings.Commands do
+			if cmd.Function then
+				setfenv(cmd.Function, getfenv());
+				Commands[ind] = cmd;
+			end
+		end
+
+		--// Change command permissions based on settings
+		for ind, cmd in next, Settings.Permissions or {} do
+			local com,level = cmd:match("^(.*):(.*)")
+			if com and level then
+				if level:find(",") then
+					local newLevels = {}
+					for lvl in level:gmatch("[^%,]+") do
+						table.insert(newLevels, service.Trim(lvl))
+					end
+
+					Admin.SetPermission(com, newLevels)
+				else
+					Admin.SetPermission(com, level)
+				end
+			end
+		end
+
+		--// Update existing permissions to new levels
+		for i,cmd in next,Commands do
+			if type(cmd) == "table" and cmd.AdminLevel then
+				local lvl = cmd.AdminLevel;
+				if type(lvl) == "string" then
+					cmd.AdminLevel = Admin.StringToComLevel(lvl);
+					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
+				elseif type(lvl) == "table" then
+					for b,v in next,lvl do
+						lvl[b] = Admin.StringToComLevel(v);
+					end
+				end
+
+				if not cmd.Prefix then
+					cmd.Prefix = Settings.Prefix;
+				end
+			end
+		end
+
+		Commands.RunAfterPlugins = nil;
+	end;
+
 	server.Commands = {
 		Init = Init;
+		RunAfterPlugins = RunAfterPlugins;
 	};
 end

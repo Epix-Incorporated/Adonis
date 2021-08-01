@@ -151,7 +151,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel>targLevel then
-						Admin.AddAdmin(v,3)
+						Admin.AddAdmin(v, "HeadAdmins")
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
@@ -236,7 +236,12 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1],false,false,true)) do
+				for i,v in pairs(service.GetPlayers(plr,args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				})) do
 					if not Admin.CheckAdmin(v) then
 						local ans = Remote.GetGui(plr,"YesNoPrompt",{
 							Question = "Are you sure you want to ban "..v.Name

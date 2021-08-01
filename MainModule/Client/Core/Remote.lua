@@ -48,12 +48,15 @@ return function()
 
 	local function RunAfterLoaded()
 		--// Report client finished loading
+		log("~! Fire client loaded")
 		client.Remote.Send("ClientLoaded")
 
 		--// Ping loop
+		log("~! Start ClientCheck loop");
 		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
+		log("Get settings");
 		local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
 		if settings then
 			client.G_API = settings.G_API
@@ -63,6 +66,7 @@ return function()
 			client.Allowed_API_Calls = settings.Allowed_API_Calls
 			client.HelpButtonImage = settings.HelpButtonImage
 		else
+			log("~! GET SETTINGS FAILED?")
 			warn("FAILED TO GET SETTINGS FROM SERVER");
 		end
 
@@ -120,15 +124,11 @@ return function()
 		Sent = 0;
 
 		CheckClient = function()
-			if tick() - Core.LastUpdate >= 55 then
-				wait(math.random()) --// De-sync everyone's client checks slightly
-				local returner = math.random()
-				local ret = Remote.Send("ClientCheck", {Sent = 0;--[[Remote.Sent]] Received = Remote.Received}, client.DepsName, returner)
-				--[[if ret and ret == returner then
-					Core.LastUpdate = tick()
-				else
-					client.Kill("Client check failed")
-				end--]]
+			if os.time() - Core.LastUpdate >= 10 then
+				Remote.Send("ClientCheck", {
+					Sent = Remote.Sent or 0;
+					Received = Remote.Received;
+				}, client.DepsName)
 			end
 		end;
 
@@ -282,6 +282,13 @@ return function()
 				end
 			end;
 
+			SessionData = function(args)
+				local sessionKey = args[1];
+				if sessionKey then
+					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2));
+				end
+			end;
+
 			SetVariables = function(args)
 				local vars = args[1]
 				for var,val in next,vars do
@@ -379,7 +386,7 @@ return function()
 		end;
 
 		Send = function(com,...)
-			Core.LastUpdate = tick()
+			Core.LastUpdate = os.time()
 			Remote.Fire(Remote.Encrypt(com,Core.Key),...)
 		end;
 
@@ -475,7 +482,7 @@ return function()
 			if not ping then return false end
 			local t2 = tick()
 			local mult = 10^3
-			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*100)
+			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
 			return ms
 		end;
 
@@ -484,23 +491,23 @@ return function()
 		end;
 
 		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
+			cache = cache or Remote.EncodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
-				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
+
+				local keyCache = cache[key] or {}				
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+				for i = 1, #str do
+					local keyPos = (i % #key) + 1
+					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
 
 				endStr = table.concat(endStr)
@@ -511,7 +518,8 @@ return function()
 		end;
 
 		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
+			cache = cache or Remote.DecodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -519,15 +527,13 @@ return function()
 			else
 				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+				for i = 1, #str do
+					local keyPos = (i % #key)+1
+					endStr[i] = char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
 
 				endStr = table.concat(endStr)

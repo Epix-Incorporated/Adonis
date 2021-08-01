@@ -8,8 +8,55 @@ local stm_lua_func
 -- SETLIST config
 local FIELDS_PER_FLUSH = 50
 
+-- remap for better lookup
+local OPCODE_RM = {
+	-- level 1
+	[22] = 18, -- JMP
+	[31] = 8, -- FORLOOP
+	[33] = 28, -- TFORLOOP
+	-- level 2
+	[0] = 3, -- MOVE
+	[1] = 13, -- LOADK
+	[2] = 23, -- LOADBOOL
+	[26] = 33, -- TEST
+	-- level 3
+	[12] = 1, -- ADD
+	[13] = 6, -- SUB
+	[14] = 10, -- MUL
+	[15] = 16, -- DIV
+	[16] = 20, -- MOD
+	[17] = 26, -- POW
+	[18] = 30, -- UNM
+	[19] = 36, -- NOT
+	-- level 4
+	[3] = 0, -- LOADNIL
+	[4] = 2, -- GETUPVAL
+	[5] = 4, -- GETGLOBAL
+	[6] = 7, -- GETTABLE
+	[7] = 9, -- SETGLOBAL
+	[8] = 12, -- SETUPVAL
+	[9] = 14, -- SETTABLE
+	[10] = 17, -- NEWTABLE
+	[20] = 19, -- LEN
+	[21] = 22, -- CONCAT
+	[23] = 24, -- EQ
+	[24] = 27, -- LT
+	[25] = 29, -- LE
+	[27] = 32, -- TESTSET
+	[32] = 34, -- FORPREP
+	[34] = 37, -- SETLIST
+	-- level 5
+	[11] = 5, -- SELF
+	[28] = 11, -- CALL
+	[29] = 15, -- TAILCALL
+	[30] = 21, -- RETURN
+	[35] = 25, -- CLOSE
+	[36] = 31, -- CLOSURE
+	[37] = 35, -- VARARG
+}
+
 -- opcode types for getting values
-local opcode_t = {
+local OPCODE_T = {
 	[0] = 'ABC',
 	'ABx',
 	'ABC',
@@ -50,7 +97,7 @@ local opcode_t = {
 	'ABC',
 }
 
-local opcode_m = {
+local OPCODE_M = {
 	[0] = {b = 'OpArgR', c = 'OpArgN'},
 	{b = 'OpArgK', c = 'OpArgN'},
 	{b = 'OpArgU', c = 'OpArgU'},
@@ -104,7 +151,7 @@ local function rd_int_basic(src, s, e, d)
 	-- 	bb[l] = bb[l] - 128
 	-- end
 
-	for i = s, e, d do num = num + src:byte(i, i) * 256 ^ (i - s) end
+	for i = s, e, d do num = num + string.byte(src, i, i) * 256 ^ (i - s) end
 
 	return num
 end
@@ -178,26 +225,26 @@ local function rd_int_be(src, s, e) return rd_int_basic(src, e - 1, s, -1) end
 -- float rd_flt_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian float
-local function rd_flt_le(src, s) return rd_flt_basic(src:byte(s, s + 3)) end
+local function rd_flt_le(src, s) return rd_flt_basic(string.byte(src, s, s + 3)) end
 
 -- float rd_flt_be(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of big endian float
 local function rd_flt_be(src, s)
-	local f1, f2, f3, f4 = src:byte(s, s + 3)
+	local f1, f2, f3, f4 = string.byte(src, s, s + 3)
 	return rd_flt_basic(f4, f3, f2, f1)
 end
 
 -- double rd_dbl_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian double
-local function rd_dbl_le(src, s) return rd_dbl_basic(src:byte(s, s + 7)) end
+local function rd_dbl_le(src, s) return rd_dbl_basic(string.byte(src, s, s + 7)) end
 
 -- double rd_dbl_be(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of big endian double
 local function rd_dbl_be(src, s)
-	local f1, f2, f3, f4, f5, f6, f7, f8 = src:byte(s, s + 7) -- same
+	local f1, f2, f3, f4, f5, f6, f7, f8 = string.byte(src, s, s + 7) -- same
 	return rd_dbl_basic(f8, f7, f6, f5, f4, f3, f2, f1)
 end
 
@@ -211,7 +258,7 @@ local float_types = {
 -- @S - Stream object to read from
 local function stm_byte(S)
 	local idx = S.index
-	local bt = S.source:byte(idx, idx)
+	local bt = string.byte(S.source, idx, idx)
 
 	S.index = idx + 1
 	return bt
@@ -222,7 +269,7 @@ end
 -- @len - Length of string being read
 local function stm_string(S, len)
 	local pos = S.index + len
-	local str = S.source:sub(S.index, pos - 1)
+	local str = string.sub(S.source, S.index, pos - 1)
 
 	S.index = pos
 	return str
@@ -234,7 +281,7 @@ local function stm_lstring(S)
 	local len = S:s_szt()
 	local str
 
-	if len ~= 0 then str = stm_string(S, len):sub(1, -2) end
+	if len ~= 0 then str = string.sub(stm_string(S, len), 1, -2) end
 
 	return str
 end
@@ -271,9 +318,9 @@ local function stm_instructions(S)
 	for i = 1, size do
 		local ins = S:s_ins()
 		local op = bit.band(ins, 0x3F)
-		local args = opcode_t[op]
-		local mode = opcode_m[op]
-		local data = {value = ins, op = op, A = bit.band(bit.rshift(ins, 6), 0xFF)}
+		local args = OPCODE_T[op]
+		local mode = OPCODE_M[op]
+		local data = {value = ins, op = OPCODE_RM[op], A = bit.band(bit.rshift(ins, 6), 0xFF)}
 
 		if args == 'ABC' then
 			data.B = bit.band(bit.rshift(ins, 23), 0x1FF)
@@ -463,13 +510,13 @@ local function wrap_lua_variadic(...) return select('#', ...), {...} end
 local function on_lua_error(exst, err)
 	local src = exst.source
 	local line = exst.lines[exst.pc - 1]
-	local psrc, pline, pmsg = err:match('^(.-):(%d+):%s+(.+)')
+	local psrc, pline, pmsg = string.match(err or '', '^(.-):(%d+):%s+(.+)')
 	local fmt = '%s:%i: [%s:%i] %s'
 
 	line = line or '0'
 	psrc = psrc or '?'
 	pline = pline or '0'
-	pmsg = pmsg or err
+	pmsg = pmsg or err or ''
 
 	error(string.format(fmt, src, line, psrc, pline, pmsg), 0)
 end
@@ -493,98 +540,19 @@ local function exec_lua_func(exst)
 		local op = inst.op
 		pc = pc + 1
 
-		if op < 19 then
-			if op < 9 then
-				if op < 4 then
-					if op < 2 then
-						if op < 1 then
-							--[[0 MOVE]]
-							stack[inst.A] = stack[inst.B]
-						else
-							--[[1 LOADK]]
-							stack[inst.A] = inst.const
-						end
-					elseif op > 2 then
-						--[[3 LOADNIL]]
+		if op < 18 then
+			if op < 8 then
+				if op < 3 then
+					if op < 1 then
+						--[[LOADNIL]]
 						for i = inst.A, inst.B do stack[i] = nil end
-					else
-						--[[2 LOADBOOL]]
-						stack[inst.A] = inst.B ~= 0
-
-						if inst.C ~= 0 then pc = pc + 1 end
-					end
-				elseif op > 4 then
-					if op < 7 then
-						if op < 6 then
-							--[[5 GETGLOBAL]]
-							stack[inst.A] = env[inst.const]
-						else
-							--[[6 GETTABLE]]
-							local index
-
-							if inst.is_KC then
-								index = inst.const_C
-							else
-								index = stack[inst.C]
-							end
-
-							stack[inst.A] = stack[inst.B][index]
-						end
-					elseif op > 7 then
-						--[[8 SETUPVAL]]
+					elseif op > 1 then
+						--[[GETUPVAL]]
 						local uv = upvs[inst.B]
 
-						uv.store[uv.index] = stack[inst.A]
+						stack[inst.A] = uv.store[uv.index]
 					else
-						--[[7 SETGLOBAL]]
-						env[inst.const] = stack[inst.A]
-					end
-				else
-					--[[4 GETUPVAL]]
-					local uv = upvs[inst.B]
-
-					stack[inst.A] = uv.store[uv.index]
-				end
-			elseif op > 9 then
-				if op < 14 then
-					if op < 12 then
-						if op < 11 then
-							--[[10 NEWTABLE]]
-							stack[inst.A] = {}
-						else
-							--[[11 SELF]]
-							local A = inst.A
-							local B = inst.B
-							local index
-
-							if inst.is_KC then
-								index = inst.const_C
-							else
-								index = stack[inst.C]
-							end
-
-							stack[A + 1] = stack[B]
-							stack[A] = stack[B][index]
-						end
-					elseif op > 12 then
-						--[[13 SUB]]
-						local lhs, rhs
-
-						if inst.is_KB then
-							lhs = inst.const_B
-						else
-							lhs = stack[inst.B]
-						end
-
-						if inst.is_KC then
-							rhs = inst.const_C
-						else
-							rhs = stack[inst.C]
-						end
-
-						stack[inst.A] = lhs - rhs
-					else
-						--[[12 ADD]]
+						--[[ADD]]
 						local lhs, rhs
 
 						if inst.is_KB then
@@ -601,27 +569,247 @@ local function exec_lua_func(exst)
 
 						stack[inst.A] = lhs + rhs
 					end
-				elseif op > 14 then
-					if op < 17 then
-						if op < 16 then
-							--[[15 DIV]]
-							local lhs, rhs
-
-							if inst.is_KB then
-								lhs = inst.const_B
-							else
-								lhs = stack[inst.B]
-							end
+				elseif op > 3 then
+					if op < 6 then
+						if op > 4 then
+							--[[SELF]]
+							local A = inst.A
+							local B = inst.B
+							local index
 
 							if inst.is_KC then
-								rhs = inst.const_C
+								index = inst.const_C
 							else
-								rhs = stack[inst.C]
+								index = stack[inst.C]
 							end
 
-							stack[inst.A] = lhs / rhs
+							stack[A + 1] = stack[B]
+							stack[A] = stack[B][index]
 						else
-							--[[16 MOD]]
+							--[[GETGLOBAL]]
+							stack[inst.A] = env[inst.const]
+						end
+					elseif op > 6 then
+						--[[GETTABLE]]
+						local index
+
+						if inst.is_KC then
+							index = inst.const_C
+						else
+							index = stack[inst.C]
+						end
+
+						stack[inst.A] = stack[inst.B][index]
+					else
+						--[[SUB]]
+						local lhs, rhs
+
+						if inst.is_KB then
+							lhs = inst.const_B
+						else
+							lhs = stack[inst.B]
+						end
+
+						if inst.is_KC then
+							rhs = inst.const_C
+						else
+							rhs = stack[inst.C]
+						end
+
+						stack[inst.A] = lhs - rhs
+					end
+				else --[[MOVE]]
+					stack[inst.A] = stack[inst.B]
+				end
+			elseif op > 8 then
+				if op < 13 then
+					if op < 10 then
+						--[[SETGLOBAL]]
+						env[inst.const] = stack[inst.A]
+					elseif op > 10 then
+						if op < 12 then
+							--[[CALL]]
+							local A = inst.A
+							local B = inst.B
+							local C = inst.C
+							local params
+							local sz_vals, l_vals
+
+							if B == 0 then
+								params = stktop - A
+							else
+								params = B - 1
+							end
+
+							sz_vals, l_vals = wrap_lua_variadic(stack[A](unpack(stack, A + 1, A + params)))
+
+							if C == 0 then
+								stktop = A + sz_vals - 1
+							else
+								sz_vals = C - 1
+							end
+
+							for i = 1, sz_vals do stack[A + i - 1] = l_vals[i] end
+						else
+							--[[SETUPVAL]]
+							local uv = upvs[inst.B]
+
+							uv.store[uv.index] = stack[inst.A]
+						end
+					else
+						--[[MUL]]
+						local lhs, rhs
+
+						if inst.is_KB then
+							lhs = inst.const_B
+						else
+							lhs = stack[inst.B]
+						end
+
+						if inst.is_KC then
+							rhs = inst.const_C
+						else
+							rhs = stack[inst.C]
+						end
+
+						stack[inst.A] = lhs * rhs
+					end
+				elseif op > 13 then
+					if op < 16 then
+						if op > 14 then
+							--[[TAILCALL]]
+							local A = inst.A
+							local B = inst.B
+							local params
+
+							if B == 0 then
+								params = stktop - A
+							else
+								params = B - 1
+							end
+
+							close_lua_upvalues(openupvs, 0)
+							return wrap_lua_variadic(stack[A](unpack(stack, A + 1, A + params)))
+						else
+							--[[SETTABLE]]
+							local index, value
+
+							if inst.is_KB then
+								index = inst.const_B
+							else
+								index = stack[inst.B]
+							end
+
+							if inst.is_KC then
+								value = inst.const_C
+							else
+								value = stack[inst.C]
+							end
+
+							stack[inst.A][index] = value
+						end
+					elseif op > 16 then
+						--[[NEWTABLE]]
+						stack[inst.A] = {}
+					else
+						--[[DIV]]
+						local lhs, rhs
+
+						if inst.is_KB then
+							lhs = inst.const_B
+						else
+							lhs = stack[inst.B]
+						end
+
+						if inst.is_KC then
+							rhs = inst.const_C
+						else
+							rhs = stack[inst.C]
+						end
+
+						stack[inst.A] = lhs / rhs
+					end
+				else
+					--[[LOADK]]
+					stack[inst.A] = inst.const
+				end
+			else
+				--[[FORLOOP]]
+				local A = inst.A
+				local step = stack[A + 2]
+				local index = stack[A] + step
+				local limit = stack[A + 1]
+				local loops
+
+				if step == math.abs(step) then
+					loops = index <= limit
+				else
+					loops = index >= limit
+				end
+
+				if loops then
+					stack[inst.A] = index
+					stack[inst.A + 3] = index
+					pc = pc + inst.sBx
+				end
+			end
+		elseif op > 18 then
+			if op < 28 then
+				if op < 23 then
+					if op < 20 then
+						--[[LEN]]
+						stack[inst.A] = #stack[inst.B]
+					elseif op > 20 then
+						if op < 22 then
+							--[[RETURN]]
+							local A = inst.A
+							local B = inst.B
+							local vals = {}
+							local size
+
+							if B == 0 then
+								size = stktop - A + 1
+							else
+								size = B - 1
+							end
+
+							for i = 1, size do vals[i] = stack[A + i - 1] end
+
+							close_lua_upvalues(openupvs, 0)
+							return size, vals
+						else
+							--[[CONCAT]]
+							local str = stack[inst.B]
+
+							for i = inst.B + 1, inst.C do str = str .. stack[i] end
+
+							stack[inst.A] = str
+						end
+					else
+						--[[MOD]]
+						local lhs, rhs
+
+						if inst.is_KB then
+							lhs = inst.const_B
+						else
+							lhs = stack[inst.B]
+						end
+
+						if inst.is_KC then
+							rhs = inst.const_C
+						else
+							rhs = stack[inst.C]
+						end
+
+						stack[inst.A] = lhs % rhs
+					end
+				elseif op > 23 then
+					if op < 26 then
+						if op > 24 then
+							--[[CLOSE]]
+							close_lua_upvalues(openupvs, inst.A)
+						else
+							--[[EQ]]
 							local lhs, rhs
 
 							if inst.is_KB then
@@ -636,13 +824,31 @@ local function exec_lua_func(exst)
 								rhs = stack[inst.C]
 							end
 
-							stack[inst.A] = lhs % rhs
+							if (lhs == rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
+
+							pc = pc + 1
 						end
-					elseif op > 17 then
-						--[[18 UNM]]
-						stack[inst.A] = -stack[inst.B]
+					elseif op > 26 then
+						--[[LT]]
+						local lhs, rhs
+
+						if inst.is_KB then
+							lhs = inst.const_B
+						else
+							lhs = stack[inst.B]
+						end
+
+						if inst.is_KC then
+							rhs = inst.const_C
+						else
+							rhs = stack[inst.C]
+						end
+
+						if (lhs < rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
+
+						pc = pc + 1
 					else
-						--[[17 POW]]
+						--[[POW]]
 						local lhs, rhs
 
 						if inst.is_KB then
@@ -660,58 +866,15 @@ local function exec_lua_func(exst)
 						stack[inst.A] = lhs ^ rhs
 					end
 				else
-					--[[14 MUL]]
-					local lhs, rhs
+					--[[LOADBOOL]]
+					stack[inst.A] = inst.B ~= 0
 
-					if inst.is_KB then
-						lhs = inst.const_B
-					else
-						lhs = stack[inst.B]
-					end
-
-					if inst.is_KC then
-						rhs = inst.const_C
-					else
-						rhs = stack[inst.C]
-					end
-
-					stack[inst.A] = lhs * rhs
+					if inst.C ~= 0 then pc = pc + 1 end
 				end
-			else
-				--[[9 SETTABLE]]
-				local index, value
-
-				if inst.is_KB then
-					index = inst.const_B
-				else
-					index = stack[inst.B]
-				end
-
-				if inst.is_KC then
-					value = inst.const_C
-				else
-					value = stack[inst.C]
-				end
-
-				stack[inst.A][index] = value
-			end
-		elseif op > 19 then
-			if op < 29 then
-				if op < 24 then
-					if op < 22 then
-						if op < 21 then
-							--[[20 LEN]]
-							stack[inst.A] = #stack[inst.B]
-						else
-							--[[21 CONCAT]]
-							local str = stack[inst.B]
-
-							for i = inst.B + 1, inst.C do str = str .. stack[i] end
-
-							stack[inst.A] = str
-						end
-					elseif op > 22 then
-						--[[23 EQ]]
+			elseif op > 28 then
+				if op < 33 then
+					if op < 30 then
+						--[[LE]]
 						local lhs, rhs
 
 						if inst.is_KB then
@@ -726,239 +889,128 @@ local function exec_lua_func(exst)
 							rhs = stack[inst.C]
 						end
 
-						if (lhs == rhs) ~= (inst.A ~= 0) then pc = pc + 1 end
-					else
-						--[[22 JMP]]
-						pc = pc + inst.sBx
-					end
-				elseif op > 24 then
-					if op < 27 then
-						if op < 26 then
-							--[[25 LE]]
-							local lhs, rhs
+						if (lhs <= rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
 
-							if inst.is_KB then
-								lhs = inst.const_B
-							else
-								lhs = stack[inst.B]
+						pc = pc + 1
+					elseif op > 30 then
+						if op < 32 then
+							--[[CLOSURE]]
+							local sub = subs[inst.Bx + 1] -- offset for 1 based index
+							local nups = sub.numupvals
+							local uvlist
+
+							if nups ~= 0 then
+								uvlist = {}
+
+								for i = 1, nups do
+									local pseudo = code[pc + i - 1]
+
+									if pseudo.op == OPCODE_RM[0] then -- @MOVE
+										uvlist[i - 1] = open_lua_upvalue(openupvs, pseudo.B, stack)
+									elseif pseudo.op == OPCODE_RM[4] then -- @GETUPVAL
+										uvlist[i - 1] = upvs[pseudo.B]
+									end
+								end
+
+								pc = pc + nups
 							end
 
-							if inst.is_KC then
-								rhs = inst.const_C
-							else
-								rhs = stack[inst.C]
-							end
-
-							if (lhs <= rhs) ~= (inst.A ~= 0) then pc = pc + 1 end
+							stack[inst.A] = wrap_lua_func(sub, env, uvlist)
 						else
-							--[[26 TEST]]
-							if (not stack[inst.A]) == (inst.C ~= 0) then pc = pc + 1 end
-						end
-					elseif op > 27 then
-						--[[28 CALL]]
-						local A = inst.A
-						local B = inst.B
-						local C = inst.C
-						local params
-						local sz_vals, l_vals
-
-						if B == 0 then
-							params = stktop - A
-						else
-							params = B - 1
-						end
-
-						sz_vals, l_vals = wrap_lua_variadic(stack[A](unpack(stack, A + 1, A + params)))
-
-						if C == 0 then
-							stktop = A + sz_vals - 1
-						else
-							sz_vals = C - 1
-						end
-
-						for i = 1, sz_vals do stack[A + i - 1] = l_vals[i] end
-					else
-						--[[27 TESTSET]]
-						local A = inst.A
-						local B = inst.B
-
-						if (not stack[B]) == (inst.C ~= 0) then
-							pc = pc + 1
-						else
-							stack[A] = stack[B]
-						end
-					end
-				else
-					--[[24 LT]]
-					local lhs, rhs
-
-					if inst.is_KB then
-						lhs = inst.const_B
-					else
-						lhs = stack[inst.B]
-					end
-
-					if inst.is_KC then
-						rhs = inst.const_C
-					else
-						rhs = stack[inst.C]
-					end
-
-					if (lhs < rhs) ~= (inst.A ~= 0) then pc = pc + 1 end
-				end
-			elseif op > 29 then
-				if op < 34 then
-					if op < 32 then
-						if op < 31 then
-							--[[30 RETURN]]
+							--[[TESTSET]]
 							local A = inst.A
 							local B = inst.B
-							local vals = {}
-							local size
 
-							if B == 0 then
-								size = stktop - A + 1
+							if (not stack[B]) == (inst.C ~= 0) then
+								pc = pc + 1
 							else
-								size = B - 1
-							end
-
-							for i = 1, size do vals[i] = stack[A + i - 1] end
-
-							close_lua_upvalues(openupvs, 0)
-							return size, vals
-						else
-							--[[31 FORLOOP]]
-							local A = inst.A
-							local step = stack[A + 2]
-							local index = stack[A] + step
-							local limit = stack[A + 1]
-							local loops
-
-							if step == math.abs(step) then
-								loops = index <= limit
-							else
-								loops = index >= limit
-							end
-
-							if loops then
-								stack[inst.A] = index
-								stack[inst.A + 3] = index
-								pc = pc + inst.sBx
+								stack[A] = stack[B]
 							end
 						end
-					elseif op > 32 then
-						--[[33 TFORLOOP]]
-						local A = inst.A
-						local func = stack[A]
-						local state = stack[A + 1]
-						local index = stack[A + 2]
-						local base = A + 3
-						local vals
+					else
+						--[[UNM]]
+						stack[inst.A] = -stack[inst.B]
+					end
+				elseif op > 33 then
+					if op < 36 then
+						if op > 34 then
+							--[[VARARG]]
+							local A = inst.A
+							local size = inst.B
 
-						stack[base + 2] = index
-						stack[base + 1] = state
-						stack[base] = func
+							if size == 0 then
+								size = vargs.size
+								stktop = A + size - 1
+							end
 
-						vals = {func(state, index)}
-
-						for i = 1, inst.C do stack[base + i - 1] = vals[i] end
-
-						if stack[base] ~= nil then
-							stack[A + 2] = stack[base]
+							for i = 1, size do stack[A + i - 1] = vargs.list[i] end
 						else
+							--[[FORPREP]]
+							local A = inst.A
+							local init, limit, step
+
+							init = assert(tonumber(stack[A]), '`for` initial value must be a number')
+							limit = assert(tonumber(stack[A + 1]), '`for` limit must be a number')
+							step = assert(tonumber(stack[A + 2]), '`for` step must be a number')
+
+							stack[A] = init - step
+							stack[A + 1] = limit
+							stack[A + 2] = step
+
+							pc = pc + inst.sBx
+						end
+					elseif op > 36 then
+						--[[SETLIST]]
+						local A = inst.A
+						local C = inst.C
+						local size = inst.B
+						local tab = stack[A]
+						local offset
+
+						if size == 0 then size = stktop - A end
+
+						if C == 0 then
+							C = inst[pc].value
 							pc = pc + 1
 						end
+
+						offset = (C - 1) * FIELDS_PER_FLUSH
+
+						for i = 1, size do tab[i + offset] = stack[A + i] end
 					else
-						--[[32 FORPREP]]
-						local A = inst.A
-						local init, limit, step
-
-						init = assert(tonumber(stack[A]), '`for` initial value must be a number')
-						limit = assert(tonumber(stack[A + 1]), '`for` limit must be a number')
-						step = assert(tonumber(stack[A + 2]), '`for` step must be a number')
-
-						stack[A] = init - step
-						stack[A + 1] = limit
-						stack[A + 2] = step
-
-						pc = pc + inst.sBx
-					end
-				elseif op > 34 then
-					if op < 36 then
-						--[[35 CLOSE]]
-						close_lua_upvalues(openupvs, inst.A)
-					elseif op > 36 then
-						--[[37 VARARG]]
-						local A = inst.A
-						local size = inst.B
-
-						if size == 0 then
-							size = vargs.size
-							stktop = A + size - 1
-						end
-
-						for i = 1, size do stack[A + i - 1] = vargs.list[i] end
-					else
-						--[[36 CLOSURE]]
-						local sub = subs[inst.Bx + 1] -- offset for 1 based index
-						local nups = sub.numupvals
-						local uvlist
-
-						if nups ~= 0 then
-							uvlist = {}
-
-							for i = 1, nups do
-								local pseudo = code[pc + i - 1]
-
-								if pseudo.op == 0 then -- @MOVE
-									uvlist[i - 1] = open_lua_upvalue(openupvs, pseudo.B, stack)
-								elseif pseudo.op == 4 then -- @GETUPVAL
-									uvlist[i - 1] = upvs[pseudo.B]
-								end
-							end
-
-							pc = pc + nups
-						end
-
-						stack[inst.A] = wrap_lua_func(sub, env, uvlist)
+						--[[NOT]]
+						stack[inst.A] = not stack[inst.B]
 					end
 				else
-					--[[34 SETLIST]]
-					local A = inst.A
-					local C = inst.C
-					local size = inst.B
-					local tab = stack[A]
-					local offset
-
-					if size == 0 then size = stktop - A end
-
-					if C == 0 then
-						C = inst[pc].value
-						pc = pc + 1
-					end
-
-					offset = (C - 1) * FIELDS_PER_FLUSH
-
-					for i = 1, size do tab[i + offset] = stack[A + i] end
+					--[[TEST]]
+					if (not stack[inst.A]) == (inst.C ~= 0) then pc = pc + 1 end
 				end
 			else
-				--[[29 TAILCALL]]
+				--[[TFORLOOP]]
 				local A = inst.A
-				local B = inst.B
-				local params
+				local func = stack[A]
+				local state = stack[A + 1]
+				local index = stack[A + 2]
+				local base = A + 3
+				local vals
 
-				if B == 0 then
-					params = stktop - A
+				stack[base + 2] = index
+				stack[base + 1] = state
+				stack[base] = func
+
+				vals = {func(state, index)}
+
+				for i = 1, inst.C do stack[base + i - 1] = vals[i] end
+
+				if stack[base] ~= nil then
+					stack[A + 2] = stack[base]
 				else
-					params = B - 1
+					pc = pc + 1
 				end
-
-				close_lua_upvalues(openupvs, 0)
-				return wrap_lua_variadic(stack[A](unpack(stack, A + 1, A + params)))
 			end
 		else
-			--[[19 NOT]]
-			stack[inst.A] = not stack[inst.B]
+			--[[JMP]]
+			pc = pc + inst.sBx
 		end
 
 		exst.pc = pc

@@ -48,7 +48,7 @@ local HttpFunctions; HttpFunctions = {
 
 	--// Same as the GetRandom() function
 	GenerateRequestID = function()
-		local Len = math.random(5,10) 
+		local Len = math.random(5,10)
 		local Res = {};
 		for Idx = 1, Len do
 			Res[Idx] = string.format('%02x', math.random(126));
@@ -175,7 +175,7 @@ local HttpFunctions; HttpFunctions = {
 
 return function(AppKey, Token)
 	if not HttpFunctions.CheckHttp() then
-		error("Could not connect to trello.com! Make sure HTTP is enabled")
+		error("Could not connect to Trello! Make sure HTTP is enabled")
 		return
 	end
 
@@ -240,11 +240,11 @@ return function(AppKey, Token)
 					return Response
 				else
 					return {}
-				end 
+				end
 			end;
 
 			GetList = function(BoardID, Name)
-				local Lists = API.GetLists(BoardID)
+				local Lists = API.Boards.GetLists(BoardID)
 				return HttpFunctions.GetListObject(Lists, Name)
 			end;
 
@@ -269,7 +269,7 @@ return function(AppKey, Token)
 			end;
 
 			GetCard = function(ListID, Name)
-				local Cards = API.GetCards(ListID)
+				local Cards = API.Lists.GetCards(ListID)
 				return HttpFunctions.GetListObject(Cards, Name)
 			end;
 
@@ -298,7 +298,7 @@ return function(AppKey, Token)
 			end;
 
 			DeleteCard = function(CardID)
-				local Request = HttpFunctions.Request(GetUrl("cards/"..tostring(CardID)),"DELETE",{},{})	
+				local Request = HttpFunctions.Request(GetUrl("cards/"..tostring(CardID)),"DELETE",{},{})
 				return HttpFunctions.Decode(Request)
 			end;
 

@@ -22,7 +22,7 @@ local char = target.Character
 local hum = char:FindFirstChild('Humanoid')
 if not hum then tool:Destroy() end
 
-hum.Died:connect(function() tool:Destroy() end)
+hum.Died:Connect(function() tool:Destroy() end)
 tool.Name = mode..' '..target.Name
 
 function onButton1Down(mouse)
@@ -47,7 +47,7 @@ function rotate()
   until not holding or not use
 end
 
-mouse.KeyDown:connect(function(key)
+mouse.KeyDown:Connect(function(key)
 if key:lower()=='r' and use then
   rotate()
 end
@@ -56,7 +56,7 @@ if key:lower()=='x' then
 end
 end)
 
-mouse.KeyUp:connect(function(key)
+mouse.KeyUp:Connect(function(key)
 if key:lower()=='r' then
   holding = false
 end
@@ -65,11 +65,11 @@ end)
 function onEquipped(mouse)
   use = true
   mouse.Icon = "rbxasset://textures\\ArrowCursor.png"
-  mouse.Button1Down:connect(function() onButton1Down(mouse) end)
+  mouse.Button1Down:Connect(function() onButton1Down(mouse) end)
 end
 
-game:service("UserInputService").InputBegan:connect(function(InputObject)
-if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
+game:service("UserInputService").InputBegan:Connect(function(InputObject,gpe)
+if  InputObject.UserInputType == Enum.UserInputType.Keyboard and not gpe then
   if InputObject.KeyCode == Enum.KeyCode.R then
     holding = true
     rotate()
@@ -79,7 +79,7 @@ if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
 end
 end)
 
-game:service("UserInputService").InputEnded:connect(function(InputObject)
+game:service("UserInputService").InputEnded:Connect(function(InputObject)
 if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
   if InputObject.KeyCode == Enum.KeyCode.R then
     holding = false
@@ -87,8 +87,8 @@ if  InputObject.UserInputType == Enum.UserInputType.Keyboard then
 end
 end)
 
-tool.Equipped:connect(onEquipped)
-tool.Unequipped:connect(function() use=false holding=false end)]]></ProtectedString>
+tool.Equipped:Connect(onEquipped)
+tool.Unequipped:Connect(function() use=false holding=false end)]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
