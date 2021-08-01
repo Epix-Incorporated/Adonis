@@ -1137,7 +1137,7 @@ return function(data)
 		--data.TextYAlignment = data.TextYAlignment or original.TextYAlignment
 		data.Font = data.Font or original.Font
 
-		create("TextButton", data)
+		return create("TextButton", data)
 	end
 
 	function functionify(func, object)
