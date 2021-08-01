@@ -108,7 +108,7 @@ return function()
 	getfenv().script = nil
 
 	local Detected = function(action, info, nocrash)
-		if NetworkClient and action ~= "_" then
+		if NetworkClient and action ~= "_" and action ~= "testcheckNJYEES" then
 			pcall(Send, "Detected", action, info)
 			wait(0.5)
 			if action == "kick" then
@@ -130,8 +130,8 @@ return function()
 		local OldEnviroment = getfenv()
 		local OldSuccess, OldError = pcall(function() return game:________() end)
 		Routine(function()
-			while wait(5) do
-				if not Detected("_", "_", true) then -- detects the current bypass
+			while wait(6) do
+				if not Detected("_", "_", true) or not Detected("testcheckNJYEES", "This is a test. If you see this something is wrong.", true) then -- detects the current bypass
 					while true do end
 				end
 
@@ -146,13 +146,13 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						--[[for i = 0, 11 do
+						--[[for i = 0, 10 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								warn("detected????")
 								--Detected("kick", "Metamethod tampering 5634345")
 							end
 						end--]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
-					end)
+					end) -- 
 
 					if Success then
 						Detected("crash", "Tamper Protection 906287")
