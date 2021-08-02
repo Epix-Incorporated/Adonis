@@ -975,14 +975,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 
-		Round = function(num)
-			if num >= 0.5 then
-				return math.ceil(num)
-			elseif num < 0.5 then
-				return math.floor(num)
-			end
-		end;
-
 		Yield = function()
 			local event = service.New("BindableEvent");
 			return {

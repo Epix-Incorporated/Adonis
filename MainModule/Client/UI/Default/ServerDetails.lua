@@ -120,7 +120,7 @@ return function(data)
 			end
 		end
 		i = i + 1
-		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
+		addOverviewEntry("Server Speed:", math.round(service.Workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
 		addOverviewEntry("Server Age:", data.ServerAge)
 
