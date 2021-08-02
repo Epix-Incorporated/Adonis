@@ -4,6 +4,8 @@ return {
 	"";
 	"[v226 WIP]";
 	"*Fixed Window not returning the instance created by AddTitleButton, leading to errors with :alert (for example)";
+	"*Disabled log dump on disconnect";
+	"(Git/ccuser44) Removed service.Round as math.round exist #450";
 	"(Git/fxeP1) Improvements to Encryption/Randomization #443";
 	"(Git/evanultra01) Fix ConvertPlayerCharacterToRig #445";
 	"(Git/Expertcoderz) Aero theme updates & patch #446";

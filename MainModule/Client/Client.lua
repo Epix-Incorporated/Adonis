@@ -66,10 +66,10 @@ local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in i
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
-game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+--[[game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
 	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
 	dumplog();
-end)
+end)--]]
 
 local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
