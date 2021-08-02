@@ -481,11 +481,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 		Wrapped = function(object)
-			if getmetatable(object) == "Adonis_Proxy" then
-				return true
-			else
-				return false
-			end
+			return getmetatable(object) == "Adonis_Proxy"
 		end;
 		UnWrap = function(object)
 			if type(object) == "table" then
