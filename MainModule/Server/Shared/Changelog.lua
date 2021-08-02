@@ -7,6 +7,7 @@ return {
 	"*Disabled log dump on disconnect";
 	"(Git/ccuser44) Removed service.Round as math.round exist #450";
 	"(Git/fxeP1) Improvements to Encryption/Randomization #443";
+	"(Git/fxeP1) Client/Service Optimization #452";
 	"(Git/evanultra01) Fix ConvertPlayerCharacterToRig #445";
 	"(Git/Expertcoderz) Aero theme updates & patch #446";
 	"(Git/Expertcoderz) Add :resetbuttonenabled and :rbxnotify (and other stuff) #447";
