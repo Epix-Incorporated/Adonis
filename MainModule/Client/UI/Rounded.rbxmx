@@ -1158,7 +1158,7 @@ end]]></ProtectedString>
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
-				<int name="DisplayOrder">0</int>
+				<int name="DisplayOrder">9000005</int>
 				<bool name="Enabled">false</bool>
 				<bool name="IgnoreGuiInset">false</bool>
 				<string name="Name">Output</string>

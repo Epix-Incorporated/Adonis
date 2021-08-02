@@ -2,7 +2,7 @@ return {
 	"Version: 226";
 	"*Drag edges to expand*";
 	"";
-	"[v226 WIP]";
+	"[v226 8.2.2021 11:40 EST]";
 	"*Fixed Window not returning the instance created by AddTitleButton, leading to errors with :alert (for example)";
 	"*Disabled log dump on disconnect";
 	"(Git/ccuser44) Removed service.Round as math.round exist #450";
