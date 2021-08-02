@@ -802,7 +802,7 @@ return function(Vargs)
 			end;
 
 			TrelloOperation = function(p,args)
-				if Admin.GetLevel(p) > 2 then
+				if Admin.GetLevel(p) > 200 then
 					local data = args[1]
 					if data.Action == "MakeCard" then
 						local list = data.List
@@ -1237,14 +1237,14 @@ return function(Vargs)
 				local sub = string.sub
 				local char = string.char
 
-				local keyCache = cache[key] or {}				
+				local keyCache = cache[key] or {}
 				local endStr = {}
 
 				for i = 1, #str do
 					local keyPos = (i % #key) + 1
 					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
-				
+
 				endStr = table.concat(endStr)
 				cache[key] = keyCache
 				keyCache[str] = endStr
