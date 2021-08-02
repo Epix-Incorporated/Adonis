@@ -336,7 +336,7 @@ return function()
 
 			local function soundIdCheck(Sound)
 				for _,v in pairs(soundIds) do
-					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)),tostring(v)) or Sound.SoundId == tostring(v)) then
+					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
 				end
@@ -401,9 +401,9 @@ return function()
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
 				if Script and Script=='tpircsnaisyle'then
-					Detected("kick","Elysian")
+					Detected("kick", "Elysian")
 				elseif check(Message) or check(Trace) or check(Script) then
-					Detected('crash','Exploit detected; '..Message.." "..Trace.." "..Script)
+					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
 				elseif not Script or ((not Trace or Trace == "")) then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
@@ -417,10 +417,10 @@ return function()
 						continue = true
 					end
 					if continue then
-						if string.match(Trace,"CoreGui") or string.match(Trace,"PlayerScripts") or string.match(Trace,"Animation_Scripts") or string.match(Trace,"^(%S*)%.(%S*)") then
+						if string.match(Trace, "CoreGui") or string.match(Trace, "PlayerScripts") or string.match(Trace, "Animation_Scripts") or string.match(Trace, "^(%S*)%.(%S*)") then
 							return
 						else
-							Detected("log","Traceless/Scriptless error")
+							Detected("log", "Traceless/Scriptless error")
 						end
 					end
 				end
@@ -435,46 +435,56 @@ return function()
 			end
 
 			--// Detection Loop
-			service.StartLoop("Detection",10,function()
+			service.StartLoop("Detection", 10, function()
 				--// Prevent event stopping
-				-- if tick()-lastUpdate > 60 then -- commented to stop vscode from yelling at me
-					--Detected("crash","Events stopped")
+				-- if tick() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
+					--Detected("crash", "Events stopped")
 					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
 				-- end
 
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
-					Detected("crash","Parent not players")
+					Detected("crash", "Parent not players")
 				end
 
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
-					Detected("log","ScriptContext error?")
+					Detected("log" ,"ScriptContext error?")
 				end
 
 				--// Check Log History
-				for _,v in next,service.LogService:GetLogHistory() do
-					if check(v.message) then
-						Detected('crash','Exploit detected')
+				do
+					local Logs = service.LogService:GetLogHistory()
+					local First = Logs[1]
+					if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "string") or not rawequal(type(First.timeStamp), "number") then
+						Detected("crash", "Bypass detected 5435345")
+					elseif #Logs <= 1 then
+						Detected("log", "Suspicious log amount detected 5435345")
+						print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
+					end
+					for _, v in ipairs(Logs) do
+						if check(v.message) then
+							Detected("crash", "Exploit detected")
+						end
 					end
 				end
 
 				--// Check Loadstring
-				local ran,_ = pcall(function()
+				local ran, _ = pcall(function()
 					local func,err = loadstring("print('LOADSTRING TEST')")
 				end)
 				if ran then
-					Detected('crash','Exploit detected; Loadstring usable')
+					Detected("crash", "Exploit detected; Loadstring usable")
 				end
 
 				--// Check Context Level
-				local ran,_ = pcall(function()
+				local ran, _ = pcall(function()
 					local test = Instance.new("StringValue")
 					test.RobloxLocked = true
 				end)
 				if ran then
-					Detected('crash','RobloxLocked usable')
+					Detected("crash", "RobloxLocked usable")
 				end
 			end)
 		end;

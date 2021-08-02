@@ -1,6 +1,13 @@
 return {
-	"Version: 225.1";
+	"Version: 226";
 	"*Drag edges to expand*";
+	"";
+	"[v226 WIP]";
+	"*Fixed Window not returning the instance created by AddTitleButton, leading to errors with :alert (for example)";
+	"(Git/fxeP1) Improvements to Encryption/Randomization #443";
+	"(Git/evanultra01) Fix ConvertPlayerCharacterToRig #445";
+	"(Git/Expertcoderz) Aero theme updates & patch #446";
+	"(Git/Expertcoderz) Add :resetbuttonenabled and :rbxnotify (and other stuff) #447";
 	"";
 	"[v225.1 7.29.2021 16:33 EST]";
 	"*Fixed incorrect kick message about keys missing";
