@@ -873,7 +873,7 @@ return function(Vargs, env)
 		Thanos = {
 			Prefix = Settings.Prefix;
 			Commands = {"thanos", "thanossnap","balancetheserver", "snap"};
-			Args = {"(opt)player"};
+			Args = {"player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
 			Fun = true;
 			Hidden = false;
@@ -881,7 +881,7 @@ return function(Vargs, env)
 			Function = function(plr,args, data)
 				local players = {}
 				local deliverUs = {}
-				local playerList = service.GetPlayers(args[1] and plr, args[1])
+				local playerList = service.GetPlayers(plr, args[1])
 				local plrLevel = data.PlayerData.Level
 
 				local audio = Instance.new("Sound")
