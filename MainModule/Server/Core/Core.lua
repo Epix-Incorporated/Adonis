@@ -583,6 +583,7 @@ return function(Vargs)
 		end;
 
 		GetPlayer = function(p)
+			if not p then return false end --hope this stops an issue where custom chat mod messages get triggered
 			local key = tostring(p.UserId)
 			local PlayerData = Core.DefaultPlayerData(p)
 
