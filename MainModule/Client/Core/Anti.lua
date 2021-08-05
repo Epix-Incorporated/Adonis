@@ -457,13 +457,18 @@ return function()
 				do
 					local Logs = service.LogService:GetLogHistory()
 					local First = Logs[1]
+					if not First then
+						print(" ")
+						print(" ")
+						Logs = service.LogService:GetLogHistory()
+						First = Logs[1]
+					end
 
-					--// Worried about this causing issues in Release, disabling for now pending further testing; First check false triggers in studio
-					if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "EnumItem") or not rawequal(type(First.timeStamp), "number") then
+					if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "EnumItem") or not rawequal(type(First.timestamp), "number") then
 						Detected("crash", "Bypass detected 5435345")
-					--elseif #Logs <= 1 then
-					--	Detected("log", "Suspicious log amount detected 5435345")
-					--	print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
+					elseif #Logs <= 1 then
+						Detected("log", "Suspicious log amount detected 5435345")
+						print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 
 					for _, v in ipairs(Logs) do
