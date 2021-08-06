@@ -4,6 +4,9 @@ return {
 	"";
 	"[v226.1 8.6.2021 16:39 EST]";
 	"*Minor changes";
+	"(Git/fxeP1) Client/Service Optimization #452";
+	"(Git/ccuser44) Adonis Anti Exploit Bypass detection (Redid #351) #449";
+	"(Git/ccuser44) Fixed my log detectection #455";
 	"";
 	"[v226 8.2.2021 11:40 EST]";
 	"*Fixed Window not returning the instance created by AddTitleButton, leading to errors with :alert (for example)";

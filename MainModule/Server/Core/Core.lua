@@ -729,7 +729,11 @@ return function(Vargs)
 			end
 		end;
 
-		SetData = function(key, value)
+		SetData = function(key, value, repeatCount)
+			if repeatCount then
+				warn("Retrying SetData request for ".. key);
+			end
+
 			if Core.DataStore then
 				if value == nil then
 					return Core.RemoveData(key)
@@ -739,20 +743,33 @@ return function(Vargs)
 						if ran then
 							Core.DataCache[key] = value
 						else
-							logError("DataStore SetAsync Failed: ".. tostring(ret))
+							logError("DataStore SetAsync Failed: ".. tostring(ret));
+							error(ret);
 						end
 
 						wait(6)
 					end, 120, true)
 
 					if not ran2 then
-						warn("DataStore SetData Failed: ".. tostring(err2))
+						logError("DataStore SetData Failed: ".. tostring(err2))
+
+						--// Attempt 3 times, with slight delay between if failed
+						wait(1);
+						if not repeatCount then
+							return Core.SetData(key, value, 3);
+						elseif repeatCount > 0 then
+							return Core.SetData(key, value, repeatCount - 1);
+						end
 					end
 				end
 			end
 		end;
 
-		UpdateData = function(key, func)
+		UpdateData = function(key, func, repeatCount)
+			if repeatCount then
+				warn("Retrying UpdateData request for ".. key);
+			end
+
 			if Core.DataStore then
 				local err = false;
 				local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
@@ -761,20 +778,33 @@ return function(Vargs)
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+						error(ret);
 					end
 
 					wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
-					warn("DataStore UpdateData Failed: ".. tostring(err2))
+					logError("DataStore UpdateData Failed: ".. tostring(err2))
+
+					--// Attempt 3 times, with slight delay between if failed
+					wait(1);
+					if not repeatCount then
+						return Core.UpdateData(key, func, 3);
+					elseif repeatCount > 0 then
+						return Core.UpdateData(key, func, repeatCount - 1);
+					end
 				end
 
 				return err
 			end
 		end;
 
-		GetData = function(key)
+		GetData = function(key, repeatCount)
+			if repeatCount then
+				warn("Retrying GetData request for ".. key);
+			end
+
 			if Core.DataStore then
 				local ran2, err2 = service.Queue("DataStoreReadData", function()
 					local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
@@ -783,13 +813,24 @@ return function(Vargs)
 						return ret
 					else
 						logError("DataStore GetAsync Failed: ".. tostring(ret))
-						return Core.DataCache[key]
+						if Core.DataCache[key] then
+							return Core.DataCache[key];
+						else
+							error(ret);
+						end
 					end
 					wait(Core.DS_GetRequestDelay("Read"))
 				end, 120, true)
 
 				if not ran2 then
-					warn("DataStore GetData Failed: ".. tostring(err2))
+					logError("DataStore GetData Failed: ".. tostring(err2))
+					--// Attempt 3 times, with slight delay between if failed
+					wait(1);
+					if not repeatCount then
+						return Core.GetData(key, 3);
+					elseif repeatCount > 0 then
+						return Core.GetData(key, repeatCount - 1);
+					end
 				else
 					return err2;
 				end
