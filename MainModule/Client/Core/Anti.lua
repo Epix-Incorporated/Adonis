@@ -146,7 +146,7 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						--[[for i = 0, 11 do
+						--[[for i = 0, 10 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								warn("detected????")
 								--Detected("kick", "Metamethod tampering 5634345")
@@ -195,11 +195,11 @@ return function()
 
 			service.StartLoop("NameIDCheck",10,function()
 				if service.Player.Name ~= realName then
-					Detected('log','Local username does not match server username')
+					Detected("log", "Local username does not match server username")
 				end
 
 				if service.Player.userId ~= realId then
-					Detected('log','Local userID does not match server userID')
+					Detected("log", "Local userID does not match server userID")
 				end
 			end)
 		end;
@@ -208,7 +208,7 @@ return function()
 			service.Player.DescendantAdded:Connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
 					c:Destroy()
-					Detected("log","Unknown GUI detected and destroyed")
+					Detected("log", "Unknown GUI detected and destroyed")
 				end
 			end)
 		end;
@@ -248,7 +248,7 @@ return function()
 					end
 					if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill","Noclipping")
+						Detected("kill", "Noclipping")
 						event:Disconnect()
 					end
 				end)
@@ -256,7 +256,7 @@ return function()
 				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill","Noclipping")
+						Detected("kill", "Noclipping")
 					end
 				end
 			end
@@ -269,7 +269,7 @@ return function()
 			local humPart = char:WaitForChild("HumanoidRootPart", 2)
 			local hum = char:WaitForChild("Humanoid", 2)
 			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
-				if (humPart.Position-torso.Position).Magnitude>10 and hum and hum.Health>0 then
+				if (humPart.Position-torso.Position).Magnitude > 10 and hum and hum.Health > 0 then
 					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
 				end
 			end
@@ -457,14 +457,19 @@ return function()
 				do
 					local Logs = service.LogService:GetLogHistory()
 					local First = Logs[1]
+					if not First then
+						print(" ")
+						print(" ")
+						Logs = service.LogService:GetLogHistory()
+						First = Logs[1]
+					end
 
-					--// Worried about this causing issues in Release, disabling for now pending further testing; First check false triggers in studio
-					--if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "string") or not rawequal(type(First.timeStamp), "number") then
-						--Detected("crash", "Bypass detected 5435345")
-					--elseif #Logs <= 1 then
-					--	Detected("log", "Suspicious log amount detected 5435345")
-					--	print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
-					--end
+					if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "EnumItem") or not rawequal(type(First.timestamp), "number") then
+						Detected("crash", "Bypass detected 5435345")
+					elseif #Logs <= 1 then
+						Detected("log", "Suspicious log amount detected 5435345")
+						print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
+					end
 
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
