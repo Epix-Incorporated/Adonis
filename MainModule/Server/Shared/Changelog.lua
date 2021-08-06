@@ -1,6 +1,9 @@
 return {
-	"Version: 226";
+	"Version: 226.1";
 	"*Drag edges to expand*";
+	"";
+	"[v226.1 8.6.2021 16:39 EST]";
+	"*Minor changes";
 	"";
 	"[v226 8.2.2021 11:40 EST]";
 	"*Fixed Window not returning the instance created by AddTitleButton, leading to errors with :alert (for example)";

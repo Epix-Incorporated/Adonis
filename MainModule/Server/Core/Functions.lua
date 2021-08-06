@@ -1005,13 +1005,13 @@ return function(Vargs)
 			local tab = {}
 
 			if reverse then
-				for i,v in next,intab do
+				for i,v in pairs(intab) do
 					if tonumber(i) then
 						tab[tonumber(i)] = v;
 					end
 				end
 			else
-				for i,v in next,intab do
+				for i,v in pairs(intab) do
 					tab[tostring(i)] = v;
 				end
 			end

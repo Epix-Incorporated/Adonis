@@ -169,8 +169,8 @@ return function(Vargs)
 
 							for k,t in next,cTasks do
 								table.insert(temp, {
-									Text = tostring(v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
-									Desc = v.Name;
+									Text = tostring(v.Name or v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
+									Desc = tostring(v.Function);
 								})
 							end
 
@@ -185,8 +185,8 @@ return function(Vargs)
 
 						for i,v in next,tasks do
 							table.insert(temp,{
-								Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
-								Desc = v.Name
+								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
+								Desc = tostring(v.Function);
 							})
 						end
 
@@ -198,8 +198,8 @@ return function(Vargs)
 
 						for i,v in pairs(cTasks) do
 							table.insert(temp,{
-								Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
-								Desc = v.Name
+								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+								Desc = tostring(v.Function);
 							})
 						end
 

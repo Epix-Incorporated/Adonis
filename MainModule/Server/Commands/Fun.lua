@@ -256,7 +256,7 @@ return function(Vargs, env)
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
 				end
-				
+
 				if pcall(function() service.GetPlayers(plr, args[1]) end) then
 					for _,v in pairs(service.GetPlayers(plr, args[1])) do
 						generate(v.UserId)
@@ -271,7 +271,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-												
+
 		PlrGear = {
 			Prefix = Settings.Prefix;
 			Commands = {"playergear", "dollify", "pgear", "plrgear"};
@@ -316,7 +316,7 @@ return function(Vargs, env)
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild('HumanoidRootPart')
 					else
-						error("That user is already a doll!")											
+						error("That user is already a doll!")
 					end
 				end
 			end
@@ -873,7 +873,7 @@ return function(Vargs, env)
 		Thanos = {
 			Prefix = Settings.Prefix;
 			Commands = {"thanos", "thanossnap","balancetheserver", "snap"};
-			Args = {"(opt)player"};
+			Args = {"player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
 			Fun = true;
 			Hidden = false;
@@ -903,22 +903,32 @@ return function(Vargs, env)
 				wait()
 				audio:Destroy()
 
-				for i = 1, #playerList*10 do
-					if #players < math.max((#playerList/2), 1) then
-						local index = math.random(1, #playerList)
-						local targPlayer = playerList[index]
-						if not deliverUs[targPlayer] then
-							local targLevel = server.Admin.GetLevel(targPlayer)
-							if targLevel < plrLevel then
-								deliverUs[targPlayer] = true
-								table.insert(players, targPlayer)
-							else
-								table.remove(playerList, index)
+				if #playerList == 1 then
+					local player = playerList[1];
+					local tLevel = Admin.GetLevel(player);
+
+					if tLevel < plrLevel then
+						deliverUs[player] = true
+						table.insert(players, player)
+					end
+				elseif #playerList > 1 then
+					for i = 1, #playerList*10 do
+						if #players < math.max((#playerList/2), 1) then
+							local index = math.random(1, #playerList)
+							local targPlayer = playerList[index]
+							if not deliverUs[targPlayer] then
+								local targLevel = Admin.GetLevel(targPlayer)
+								if targLevel < plrLevel then
+									deliverUs[targPlayer] = true
+									table.insert(players, targPlayer)
+								else
+									table.remove(playerList, index)
+								end
+								wait()
 							end
-							wait()
+						else
+							break
 						end
-					else
-						break
 					end
 				end
 

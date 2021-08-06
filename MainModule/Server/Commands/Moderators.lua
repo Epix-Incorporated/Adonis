@@ -1858,7 +1858,7 @@ return function(Vargs, env)
 					query = r.query,
 					coords = r.lat .. " LAT ".. r.lon .. " LON"
 				} or nil
-				
+
 				Remote.MakeGui(plr,"ServerDetails",{
 					CreatorId = game.CreatorId;
 					PrivateServerId = game.PrivateServerId;
@@ -2037,12 +2037,13 @@ return function(Vargs, env)
 
 						table.insert(temp,{
 							Text = "Client Tasks",
-							Desc = "Tasks their client is performing"})
+							Desc = "Tasks their client is performing"
+						})
 
 						for k,t in next,cTasks do
 							table.insert(temp, {
-								Text = tostring(v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
-								Desc = v.Name;
+								Text = tostring(v.Name or v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
+								Desc = tostring(v.Function);
 							})
 						end
 
@@ -2065,8 +2066,8 @@ return function(Vargs, env)
 
 					for i,v in next,tasks do
 						table.insert(temp,{
-							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
-							Desc = v.Name
+							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
+							Desc = tostring(v.Function)
 						})
 					end
 
@@ -2078,8 +2079,8 @@ return function(Vargs, env)
 
 					for i,v in pairs(cTasks) do
 						table.insert(temp,{
-							Text = tostring(v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
-							Desc = v.Name
+							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+							Desc = tostring(v.Function);
 						})
 					end
 
@@ -6550,7 +6551,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ResetButtonEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetbuttonenabled";"canreset"};

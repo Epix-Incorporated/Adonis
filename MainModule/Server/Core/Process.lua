@@ -594,18 +594,21 @@ return function(Vargs)
 		end;
 
 		PlayerRemoving = function(p)
-			service.Events.PlayerRemoving:Fire(p)
-
 			local data = Core.GetPlayer(p)
 			local key = tostring(p.UserId)
+
+			service.Events.PlayerRemoving:Fire(p)
 
 			local level = (p and Admin.GetLevel(p)) or 0
 			if Settings.AntiNil and level < 1 then
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
-			--Remote.Clients[key] = nil
-			Core.PlayerData[key] = nil
+			delay(1, function()
+				if not service.Players:GetPlayerByUserId(p.UserId) then
+					Core.PlayerData[key] = nil
+				end
+			end)
 
 			Logs.AddLog(Logs.Script,{
 				Text = string.format("Triggerd PlayerRemoving for %s", tostring(p));

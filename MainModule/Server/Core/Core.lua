@@ -584,10 +584,12 @@ return function(Vargs)
 
 		GetPlayer = function(p)
 			local key = tostring(p.UserId)
-			local PlayerData = Core.DefaultPlayerData(p)
 
 			if not Core.PlayerData[key] then
+				local PlayerData = Core.DefaultPlayerData(p)
+
 				Core.PlayerData[key] = PlayerData
+
 				if Core.DataStore then
 					local data = Core.GetData(key)
 					if data and type(data) == "table" then
@@ -599,11 +601,11 @@ return function(Vargs)
 						end
 					end
 				end
-			else
-				PlayerData = Core.PlayerData[key]
-			end
 
-			return PlayerData
+				return PlayerData
+			else
+				return Core.PlayerData[key]
+			end
 		end;
 
 		ClearPlayer = function(p)
@@ -634,13 +636,19 @@ return function(Vargs)
 					})
 
 					pData.LastDataSave = os.time();
-				elseif pData == false then
-					Core.SetData(key, nil);
 				end
 			end
 		end;
 
 		SaveAllPlayerData = function(queueWaitTime)
+			for key,pdata in pairs(Core.PlayerData) do
+				local id = tonumber(key);
+				local player = id and service.Players:GetPlayerByUserId(id);
+				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
+					service.TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, p);
+				end
+			end
+			--[[ --// OLD METHOD (Kept in case this messes anything up)
 			for i,p in next,service.Players:GetPlayers() do
 				local pdata = Core.PlayerData[tostring(p.UserId)];
 				--// Only save player's data if it has not been saved within the last INTERVAL (default 30s)
@@ -650,7 +658,7 @@ return function(Vargs)
 						wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
 					end)
 				end
-			end
+			end--]]
 		end;
 
 		GetDataStore = function()
@@ -698,8 +706,9 @@ return function(Vargs)
 		DS_WriteLimiter = function(type, func, ...)
 			local vararg = {...}
 			return service.Queue("DataStoreWriteData", function()
+				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg))
-				wait(Core.DS_GetRequestDelay(type))
+				wait(gotDelay)
 			end, 120, true)
 		end;
 
