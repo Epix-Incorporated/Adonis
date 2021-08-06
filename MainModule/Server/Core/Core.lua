@@ -78,8 +78,11 @@ return function(Vargs)
 			end)
 		end
 
-		--// Save all data on server shutdown
-		game:BindToClose(Core.SaveAllPlayerData);
+		--// Save all data on server shutdown & set GAME_CLOSING
+		game:BindToClose(function()
+			Core.GAME_CLOSING = true;
+			Core.SaveAllPlayerData();
+		end);
 
 		--// Start API
 		if service.NetworkServer then
