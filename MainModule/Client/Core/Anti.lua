@@ -458,8 +458,8 @@ return function()
 					local Logs = service.LogService:GetLogHistory()
 					local First = Logs[1]
 					if not First then
-						print(" ")
-						print(" ")
+						client.OldPrint(" ")
+						client.OldPrint(" ")
 						Logs = service.LogService:GetLogHistory()
 						First = Logs[1]
 					end
@@ -468,7 +468,7 @@ return function()
 						Detected("crash", "Bypass detected 5435345")
 					elseif #Logs <= 1 then
 						Detected("log", "Suspicious log amount detected 5435345")
-						print(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
+						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 
 					for _, v in ipairs(Logs) do

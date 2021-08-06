@@ -92,6 +92,7 @@ local function isModule(module)
 		end
 	end
 end
+
 local function logError(...)
 	warn("ERROR: ", ...)
 
@@ -99,9 +100,11 @@ local function logError(...)
 		client.Remote.Send("LogError", table.concat({...}, " "))
 	end
 end
+local oldPrint = print;
 local print = function(...)
-	print(":: Adonis ::", ...)
+	oldPrint(":: Adonis ::", ...)
 end
+
 --[[
 local warn = function(...)
 	warn(...)
@@ -117,6 +120,7 @@ local cPcall = function(func, ...)
 
 	return ran, err
 end
+
 local Pcall = function(func, ...)
 	local ran, err = pcall(func, ...)
 
@@ -126,9 +130,11 @@ local Pcall = function(func, ...)
 
 	return ran, err
 end
+
 local Routine = function(func, ...)
 	return coroutine.resume(coroutine.create(func), ...)
 end
+
 local Immutable = function(...)
 	local mut = coroutine.wrap(function(...)
 		while true do
@@ -138,6 +144,7 @@ local Immutable = function(...)
 	mut(...)
 	return mut
 end
+
 local player = game:GetService("Players").LocalPlayer
 local Fire, Detected
 local wrap = coroutine.wrap
@@ -229,6 +236,7 @@ client = setmetatable({
 	Pcall = Pcall;
 	cPcall = cPcall;
 	Routine = Routine;
+	OldPrint = oldPrint;
 	LogError = logError;
 	TestEvent = Instance.new("RemoteEvent");
 
