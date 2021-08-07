@@ -852,7 +852,9 @@ return function(Vargs)
 
 			ProcessCommand = function(p,args)
 				if Process.RateLimit(p, "Command") then
-					Process.Command(p,args[1],{Check=true})
+					Process.Command(p, args[1], {
+						Check = true
+					})
 				elseif Process.RateLimit(p, "RateLog") then
 					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
