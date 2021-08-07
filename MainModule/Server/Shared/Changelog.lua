@@ -1,6 +1,9 @@
 return {
-	"Version: 226.1";
+	"Version: 226.2";
 	"*Drag edges to expand*";
+	"";
+	"[v226.2 8.6.2021 20:18 EST]";
+	"*Disabled 'bypass detected' kick";
 	"";
 	"[v226.1 8.6.2021 16:39 EST]";
 	"*Minor changes";
