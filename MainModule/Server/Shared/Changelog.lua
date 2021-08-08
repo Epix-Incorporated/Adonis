@@ -1,6 +1,9 @@
 return {
-	"Version: 226.2";
+	"Version: 226.3";
 	"*Drag edges to expand*";
+	"";
+	"[v226.3 8.7.2021 16:10 EST]";
+	"*Disabled a detection that resulted in exploit log spam (no kicking, just logs)";
 	"";
 	"[v226.2 8.6.2021 20:18 EST]";
 	"*Disabled 'bypass detected' kick";

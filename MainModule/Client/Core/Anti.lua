@@ -468,10 +468,10 @@ return function()
 					--[[if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "EnumItem") or not rawequal(type(First.timestamp), "number") then
 						Detected("crash", "Bypass detected 5435345")
 					else--]]
-					if #Logs <= 1 then
+					--[[if #Logs <= 1 then
 						Detected("log", "Suspicious log amount detected 5435345")
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
-					end
+					end--]]
 
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
