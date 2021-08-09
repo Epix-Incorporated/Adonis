@@ -936,8 +936,9 @@ return function(Vargs)
 		end;
 
 		StringToComLevel = function(str)
-			if type(str) == "number" then return str end;
-			if string.lower(str) == "players" then return 0 end;
+			local strType = type(str)
+			if strType == "string" and string.lower(str) == "players" then return 0 end;
+			if strType == "number" then return str end;
 
 			local lvl = Settings.Ranks[str];
 			return (lvl and lvl.Level) or tonumber(str);
@@ -951,7 +952,7 @@ return function(Vargs)
 			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
 				return true;
 			elseif type(comLevel) == "table" then
-				for i,level in next, comLevel do
+				for i,level in pairs(comLevel) do
 					if plrAdminLevel == level then
 						return true;
 					end
@@ -968,8 +969,6 @@ return function(Vargs)
 		end;
 
 		CheckPermission = function(pDat, cmd)
-			local allowed = false
-			local p = pDat.Player
 			local adminLevel = pDat.Level
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel

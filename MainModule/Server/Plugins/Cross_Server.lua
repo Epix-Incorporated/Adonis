@@ -81,7 +81,9 @@ return function(Vargs)
 		end;
 
 		DataStoreUpdate = function(jobId, type, data)
-			server.Process.DataStoreUpdated(type, data)
+			if type and data then
+				Routine(Core.LoadData, type, data)
+			end
 		end;
 
 		UpdateSetting = function(jobId, setting, newValue)

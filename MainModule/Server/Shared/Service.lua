@@ -60,34 +60,38 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 	main = server or client
 	ErrorHandler = errorHandler
+
 	server = nil
 	client = nil
 
-	local Kill = main.Kill
 	local service;
+
 	local WaitingEvents = {}
 	local HookedEvents = {}
 	local Debounces = {}
 	local Queues = {}
 	local RbxEvents = {}
 	local LoopQueue = {}
-	local FilterCache = {}
 	local TrackedTasks = {}
 	local RunningLoops = {}
 	local TaskSchedulers = {}
 	local ServiceVariables = {}
-	local CreatedItems = setmetatable({},{__mode = "v"});
-	local Wrappers = setmetatable({},{__mode = "kv"});
+
+	local CreatedItems = setmetatable({}, {__mode = "v"})
+	local Wrappers = setmetatable({}, {__mode = "kv"})
+
 	local oldInstNew = Instance.new
 	local WrapService = Instance.new("Folder")
 	local ThreadService = Instance.new("Folder")
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
+
 	local Instance = {new = function(obj, parent) return service and client and service.Wrap(oldInstNew(obj, service.UnWrap(parent)), true) or oldInstNew(obj, parent) end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
-			local index = math.random()
+			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
+
 			local data = {
 				Name = name;
 				Status = "Waiting";
