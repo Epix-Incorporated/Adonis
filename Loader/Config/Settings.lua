@@ -148,7 +148,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-	settings.DefaultTheme = "New Userpanel" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme.
+	settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme.
 
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
