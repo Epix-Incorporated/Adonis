@@ -62,7 +62,7 @@ return function(Vargs)
 						speaker:SendSystemMessage("[Adonis] :: You are muted!", channelName)
 						return true
 					elseif speakerPlayer and Admin.SlowMode and not Admin.CheckAdmin(speakerPlayer) and slowCache[speakerPlayer] and os.time() - slowCache[speakerPlayer] < Admin.SlowMode then
-						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s))","10", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
+						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
 						return true
 					end
 
