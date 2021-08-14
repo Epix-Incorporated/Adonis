@@ -188,7 +188,7 @@ function Toggle()
 			flying = false
 			Stop()
 		end
-		wait(0.5)
+		task.wait(0.5)
 		debounce = false
 	end
 end

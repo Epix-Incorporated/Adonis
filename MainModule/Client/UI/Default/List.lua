@@ -322,7 +322,7 @@ return function(data)
 	genList(Tab)
 
 	if Update and AutoUpdate then
-		while gTable.Active and wait(AutoUpdate) do
+		while gTable.Active and task.wait(AutoUpdate) do
 			window:Refresh()
 		end
 	end

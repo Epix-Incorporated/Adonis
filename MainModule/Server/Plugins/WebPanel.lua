@@ -9,7 +9,7 @@ return function(Vargs)
 
 	--[[
 		settings.WebPanel_Enabled = true;
-		wait(1)
+		task.wait(1)
 		settings.WebPanel_ApiKey = _G.ADONIS_WEBPANEL_TESTING_APIKEY;
 	--]]
 

@@ -53,7 +53,7 @@ return function()
 
 		--// Ping loop
 		log("~! Start ClientCheck loop");
-		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
+		task.delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
 		log("Get settings");
@@ -247,7 +247,7 @@ return function()
 				Variables.LightingChanged = true
 				service.Lighting[prop] = val
 				Anti.LastChanges.Lighting = prop
-				wait(.1)
+				task.wait(.1)
 				Variables.LightingChanged = false
 				print("TICKLED :)",Variables.LightingChanged)
 				if Anti.LastChanges.Lighting == prop then
@@ -380,7 +380,7 @@ return function()
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
 					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
-					wait(limit);
+					task.wait(limit);
 				end)
 			end
 		end;
@@ -402,7 +402,7 @@ return function()
 
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
-					delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
+					task.delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
 						returns = {
 							RemoteEvent.Function:InvokeServer({
 								Mode = "Get",
@@ -416,7 +416,7 @@ return function()
 						Yield:Release(returns);
 					end)
 
-					wait(limit)
+					task.wait(limit)
 				end)
 
 				if not returns then
@@ -454,7 +454,7 @@ return function()
 			local returns
 			local key = Functions:GetRandom()
 			local waiter = service.New("BindableEvent");
-			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)

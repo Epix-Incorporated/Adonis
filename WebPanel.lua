@@ -91,7 +91,7 @@ return function(Vargs)
 		end
 
 		if not notBindToClose then
-			wait(4)
+			task.wait(4)
 		end
 	end
 
@@ -436,7 +436,7 @@ return function(Vargs)
 			if not Variables.WebPanel_Initiated then
 				Logs:AddLog("Script", "WebPanel Initialization Complete")
 				Variables.WebPanel_Initiated = true
-				wait(3)
+				task.wait(3)
 			end
 		else
 			if res == "HttpError: Timedout" then
@@ -447,7 +447,7 @@ return function(Vargs)
 
 				if not success and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
-					wait(30)
+					task.wait(30)
 				end
 
 				continue
@@ -460,10 +460,10 @@ return function(Vargs)
 				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
 				break
 			elseif code == 520 then
-				wait(5) --After the server restarts we want to make sure that it has time to inititate everything
+				task.wait(5) --After the server restarts we want to make sure that it has time to inititate everything
 			end
 		end
 
-		wait()
+		task.wait()
 	end
 end

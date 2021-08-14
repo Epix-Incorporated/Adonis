@@ -1,4 +1,4 @@
-wait()
+task.wait()
 local execute = script:FindFirstChild("Execute")
 local code, lbi = _G.Adonis.Scripts.ExecutePermission(script, execute and execute.Value)
 

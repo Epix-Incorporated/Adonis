@@ -199,7 +199,7 @@ return function(Vargs)
 						local num = string.sub(cmd, #waiter + 1)
 
 						if num and tonumber(num) then
-							wait(tonumber(num))
+							task.wait(tonumber(num))
 						end
 					else
 						Process.Command(p, cmd, opts, false)
@@ -614,7 +614,7 @@ return function(Vargs)
 					TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
 				end)
 
-				delay(600, function()
+				task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = p.Name .. " Failed to Load",
@@ -640,7 +640,7 @@ return function(Vargs)
 				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
 			end
 
-			delay(1, function()
+			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
 				end
@@ -713,7 +713,7 @@ return function(Vargs)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"));
 
 					if Settings.Notification then
-						wait(2)
+						task.wait(2)
 
 						Remote.MakeGui(p,"Notification",{
 							Title = "Welcome.";
@@ -722,7 +722,7 @@ return function(Vargs)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						wait(1)
+						task.wait(1)
 
 						if oldVer and newVer and newVer>oldVer and level > 300 then
 							Remote.MakeGui(p,"Notification",{
@@ -733,7 +733,7 @@ return function(Vargs)
 							})
 						end
 
-						wait(1)
+						task.wait(1)
 
 						if level > 300 and Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
 							Remote.MakeGui(p,"Notification",{
@@ -813,7 +813,7 @@ return function(Vargs)
 				--end)
 
 				--// Wait for UI stuff to finish
-				wait(1);
+				task.wait(1);
 				p:WaitForChild("PlayerGui", 9e9);
 				Remote.Get(p,"UIKeepAlive");
 
@@ -878,7 +878,7 @@ return function(Vargs)
 		end;
 
 		NetworkAdded = function(cli)
-			wait(0.25)
+			task.wait(0.25)
 
 			local p = cli:GetPlayer()
 

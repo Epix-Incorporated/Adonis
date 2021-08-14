@@ -16,6 +16,6 @@ local textures = {
 while true do
   for i=1,#textures do
     script.Parent.Texture = "http://www.roblox.com/asset/?id="..textures[i]
-    wait(0.1)
+    task.wait(0.1)
   end
 end

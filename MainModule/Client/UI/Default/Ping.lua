@@ -33,7 +33,7 @@ return function(data)
 		
 		repeat
 			label.Text = client.Remote.Ping().."ms"
-			wait(2)
+			task.wait(2)
 		until not pinging or not gTable.Active
 	end
 end

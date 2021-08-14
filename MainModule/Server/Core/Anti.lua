@@ -49,7 +49,7 @@ return function(Vargs)
 
 			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
 
-			wait(1)
+			task.wait(1)
 
 			pcall(p.Destroy, p)
 			pcall(service.Delete, p)
@@ -218,7 +218,7 @@ return function(Vargs)
 						player.Character:BreakJoints()
 					elseif action:lower() == 'crash' then
 						Remote.Send(player,'Function','Kill')
-						wait(5)
+						task.wait(5)
 						pcall(function()
 							local scr = Core.NewScript("LocalScript",[[while true do end]])
 							scr.Parent = player.Backpack

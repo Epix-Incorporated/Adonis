@@ -56,9 +56,9 @@ return function(data)
 			end
 		end
 
-		while wait() and not gTable.Destroyed and gui.Parent do
+		while task.wait() and not gTable.Destroyed and gui.Parent do
 			if not gTable.Destroyed and not gTable.Active then
-				wait(5)
+				task.wait(5)
 			else
 				renderScreen()
 			end

@@ -61,7 +61,7 @@ function Deactivate()
 	end
 	Tools:Destroy()
 	Gui.Parent=script
-	wait(0.5)
+	task.wait(0.5)
 	script:Destroy()
 end
 

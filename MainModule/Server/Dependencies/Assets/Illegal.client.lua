@@ -47,7 +47,7 @@ local stop = false
 
 hum.Died:Connect(function()
 stop = true
-wait(0.5)
+task.wait(0.5)
 workspace.CurrentCamera.FieldOfView = 70
 end)
 
@@ -63,7 +63,7 @@ chat:Chat(head,m.Msg,m.Color)
 end
 end
 end
-wait(5)
+task.wait(5)
 end
 end)()
 
@@ -73,7 +73,7 @@ local startspaz = false
 
 coroutine.wrap(function()
 repeat
-wait(0.1)
+  task.wait(0.1)
 workspace.CurrentCamera.FieldOfView = math.random(20,80)
 hum.Health = hum.Health-0.5
 if startspaz then
@@ -84,7 +84,7 @@ end
 until stop or not hum or not hum.Parent or hum.Health<=0 or not torso
 end)()
 
-wait(10)
+task.wait(10)
 
 local bg = service.New("BodyGyro", torso)
 bg.Name = "SPINNER"
@@ -93,10 +93,10 @@ bg.P = 11111
 bg.cframe = torso.CFrame
 
 coroutine.wrap(function()
-repeat wait(1/44)
+repeat task.wait(1/44)
 bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
 until stop or not bg or bg.Parent ~= torso
 end)()
 
-wait(20)
+task.wait(20)
 startspaz = true

@@ -81,7 +81,7 @@ this = {
 			end
 		end)
 		
-		spawn(function() newThread.Disabled = false end)
+		task.spawn(function() newThread.Disabled = false end)
 		return retBind.Event:Wait()
 	end;
 	

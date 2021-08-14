@@ -716,7 +716,7 @@ return function(Vargs, env)
 									ice.Size = Vector3.new(5, ice.Size.Y - i, 5)
 									ice.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -i, 0)
 									plate.Size = Vector3.new(i + 5, 0.2, i + 5)
-									wait()
+									task.wait()
 								end
 								ice:Destroy()
 							end
@@ -724,7 +724,7 @@ return function(Vargs, env)
 							for a, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" and obj ~= plate then obj.Anchored = false end
 							end
-							wait(3)
+							task.wait(3)
 							pcall(function() plate:Destroy() end)
 						end
 					end)
@@ -931,7 +931,7 @@ return function(Vargs, env)
 						local orig = hum.MaxHealth
 						local tools = service.New("Model")
 						hum.MaxHealth = math.huge
-						wait()
+						task.wait()
 						hum.Health = hum.MaxHealth
 						for k, t in pairs(v.Backpack:GetChildren()) do
 							t.Parent = tools
@@ -952,7 +952,7 @@ return function(Vargs, env)
 							Admin.RunCommand(Settings.Prefix.."unname",v.Name)
 							event:Disconnect()
 						end)
-						repeat torso.CFrame = pos wait() until not v or not v.Character or not torso or not running or not torso.Parent
+						repeat torso.CFrame = pos task.wait() until not v or not v.Character or not torso or not running or not torso.Parent
 					end)
 				end
 			end
@@ -1914,7 +1914,7 @@ return function(Vargs, env)
 				for i = 1,amount do
 					if not Variables.CommandLoops[name..command] then break end
 					Process.Command(plr,command,{Check = false;})
-					wait(timer)
+					task.wait(timer)
 				end
 				Variables.CommandLoops[name..command] = nil
 			end
@@ -2314,7 +2314,7 @@ return function(Vargs, env)
 					AutoUpdate = 1,
 				})
 
-				delay(120, function() Logs.TempUpdaters[voteKey] = nil;end)
+				task.delay(120, function() Logs.TempUpdaters[voteKey] = nil;end)
 				--[[
 				if not answers then
 					anstab = {"Yes","No"}
@@ -2971,10 +2971,10 @@ return function(Vargs, env)
 						local enabled = old:FindFirstChild("Enabled")
 						if enabled then
 							enabled.Value = false
-							wait(0.5)
+							task.wait(0.5)
 						end
 						old.Parent = nil
-						wait(0.5)
+						task.wait(0.5)
 						old:Destroy()
 					end
 				end
@@ -3077,7 +3077,7 @@ return function(Vargs, env)
 						end
 
 						service.TrackTask("Thread: JailLoop"..tostring(ind), function()
-							while wait() and Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
+							while task.wait() and Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if v.Character then
 										local torso = v.Character:FindFirstChild('HumanoidRootPart')
@@ -3346,8 +3346,8 @@ return function(Vargs, env)
 							cl:MakeJoints()
 							cl:WaitForChild("Humanoid")
 							v.Character.Archivable = false
-							repeat wait(0.5) until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
-							wait(5)
+							repeat task.wait(0.5) until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
+							task.wait(5)
 							if cl then cl:Destroy() end
 						end
 					end)
@@ -3607,7 +3607,7 @@ return function(Vargs, env)
 					--// Handle respawn and repositioning
 					local newChar, newHumanoid, newPrimary;
 
-					delay(0.1, function() p:LoadCharacter() end);
+					task.delay(0.1, function() p:LoadCharacter() end);
 
 					--// Reposition if possible
 					if oPos then
@@ -3618,7 +3618,7 @@ return function(Vargs, env)
 						end
 
 						if newChar then
-							wait(); -- Let it finish loading character contents
+							task.wait(); -- Let it finish loading character contents
 
 							newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
 							newPrimary = newChar.PrimaryPart or (Humanoid and Humanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
@@ -4795,7 +4795,7 @@ return function(Vargs, env)
 								v.Character.Humanoid.Sit = false
 								v.Character.Humanoid.Jump = true
 							end
-							wait()
+							task.wait()
 							v.Character:MoveTo(point)
 						end
 					end
@@ -4811,7 +4811,7 @@ return function(Vargs, env)
 							v.Character.Humanoid.Sit = false
 							v.Character.Humanoid.Jump = true
 						end
-						wait()
+						task.wait()
 						v.Character:MoveTo(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
 					end
 				else
@@ -4827,7 +4827,7 @@ return function(Vargs, env)
 								n.Character.Humanoid.Sit = false
 								n.Character.Humanoid.Jump = true
 							end
-							wait()
+							task.wait()
 							n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*1),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 						end
 					else
@@ -4840,7 +4840,7 @@ return function(Vargs, env)
 									n.Character.Humanoid.Sit = false
 									n.Character.Humanoid.Jump = true
 								end
-								wait()
+								task.wait()
 								if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 									n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 								end
@@ -5291,9 +5291,9 @@ return function(Vargs, env)
 						s.SoundId = "http://www.roblox.com/asset/?id=" .. ind.ID
 						s.Pitch = ind.Pitch
 						s:Play()
-						wait(0.5)
-						wait(s.TimeLength+1)
-						wait(1)
+						task.wait(0.5)
+						task.wait(s.TimeLength+1)
+						task.wait(1)
 					end)
 
 					s:Stop()
@@ -5394,7 +5394,7 @@ return function(Vargs, env)
 					s.Looped = looped
 					s.Archivable = false
 					s.Parent = service.Workspace
-					wait(0.5)
+					task.wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
 					for i, v in pairs(service.Workspace:GetChildren()) do
@@ -5682,7 +5682,7 @@ return function(Vargs, env)
 						cl.Parent = mod
 						hum.Name = "NameTag"
 						hum.MaxHealth=v.Character.Humanoid.MaxHealth
-						wait()
+						task.wait()
 						hum.Health=v.Character.Humanoid.Health
 
 						if args[2]:lower()=='hide' then
@@ -5692,7 +5692,7 @@ return function(Vargs, env)
 						else
 							v.Character.Humanoid.Changed:Connect(function(c)
 								hum.MaxHealth = v.Character.Humanoid.MaxHealth
-								wait()
+								task.wait()
 								hum.Health = v.Character.Humanoid.Health
 							end)
 						end
@@ -6424,7 +6424,7 @@ return function(Vargs, env)
 						brain.Parent = new
 						brain.Disabled = false
 
-						wait()
+						task.wait()
 
 						event:Fire("SetSetting",{
 							Creator = player;

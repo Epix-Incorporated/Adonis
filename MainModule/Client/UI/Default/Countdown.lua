@@ -74,7 +74,7 @@ return function(data)
 		else
 			break
 		end
-		wait(1)
+		task.wait(1)
 	end
 	
 	buzzer:Play()
@@ -83,12 +83,12 @@ return function(data)
 		buzzer:Play()
 		for i = 1, 0, -0.1 do
 			label.TextTransparency = i
-			wait(0.05)
+			task.wait(0.05)
 		end
 		
 		for i = 0, 1, 0.1 do
 			label.TextTransparency = i
-			wait(0.05)
+			task.wait(0.05)
 		end
 	end
 	

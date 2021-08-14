@@ -284,7 +284,7 @@ return function(Vargs)
 
 								for i = 0.1,5,0.1 do
 									if ping then break end
-									wait(0.1)
+									task.wait(0.1)
 								end
 
 								if not ping then
@@ -319,7 +319,7 @@ return function(Vargs)
 
 					for i = 0.1,5,0.1 do
 						if Functions.CountTable(plrs) >= Functions.CountTable(playz) then break end
-						wait(0.1)
+						task.wait(0.1)
 					end
 
 					return plrs

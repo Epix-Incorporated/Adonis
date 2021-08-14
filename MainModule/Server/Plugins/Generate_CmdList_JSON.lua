@@ -6,7 +6,7 @@ service = nil;
 return function(Vargs)
 	--if true then return end --// fully disabled
 	service.TrackTask("Thread: WEBPANEL_JSON_UPDATE", function()
-		wait(1)
+		task.wait(1)
 		local enabled = _G.ADONISWEB_CMD_JSON_DOUPDATE;
 		local secret = _G.ADONISWEB_CMD_JSON_SECRET;
 		local endpoint = _G.ADONISWEB_CMD_JSON_ENDPOINT;
@@ -22,7 +22,7 @@ return function(Vargs)
 		
 		if Core.DebugMode and enabled then
 			print("DEBUG DO LAUNCH ENABLED");
-			wait(5)
+			task.wait(5)
 			
 			local list = {};
 			local HTTP = service.HttpService;

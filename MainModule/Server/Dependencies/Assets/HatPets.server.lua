@@ -39,6 +39,6 @@ if hats then
 				end
 			end
 		end
-		wait(0.5)
+		task.wait(0.5)
 	until not script.Parent
 end

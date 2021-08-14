@@ -71,7 +71,7 @@ end
 local function Kill(info)
 	if DebugMode then warn(info) return end
 	pcall(function() Kick(player, info) end)
-	wait(1)
+	task.wait(1)
 	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
 end
 
@@ -153,8 +153,8 @@ local function checkChild(child)
 
 		warn("Destroying parent...")
 		if container and container:IsA("ScreenGui") and container.Name == "Adonis_Container" then
-			spawn(function()
-				wait(0.5);
+			task.spawn(function()
+				task.wait(0.5);
 				container:Destroy();
 			end)
 		end
@@ -260,7 +260,7 @@ else
 	warn("Waiting and scanning (incase event fails)...")
 	repeat
 		scan(playerGui);
-		wait(5);
+		task.wait(5);
 	until (tick() - start > 600) or foundClient
 
 	warn("Elapsed: ".. tostring(tick() - start));

@@ -5643,7 +5643,7 @@ local Humanoid = Character:WaitForChild'Humanoid'
 
 while true do
 	while Humanoid.Health < Humanoid.MaxHealth do
-		local dt = wait(REGEN_STEP)
+		local dt = task.wait(REGEN_STEP)
 		local dh = dt*REGEN_RATE*Humanoid.MaxHealth
 		Humanoid.Health = math.min(Humanoid.Health + dh, Humanoid.MaxHealth)
 	end

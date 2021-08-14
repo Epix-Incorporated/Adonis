@@ -65,7 +65,7 @@ return function(Vargs)
 		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
 		remoteParent.ChildRemoved:Connect(function(c)
 			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
-				wait();
+				task.wait();
 				server.Core.MakeEvent()
 			end
 		end)
@@ -658,7 +658,7 @@ return function(Vargs)
 				if pdata and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval) then
 					service.Queue("SavePlayerData", function()
 						Core.SavePlayerData(p)
-						wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
+						task.wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
 					end)
 				end
 			end--]]
@@ -701,7 +701,7 @@ return function(Vargs)
 
 			repeat
 				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
-			until budget > 0 and wait(1)
+			until budget > 0 and task.wait(1)
 
 			return reqDelay + 0.5;
 		end;
@@ -711,7 +711,7 @@ return function(Vargs)
 			return service.Queue("DataStoreWriteData", function()
 				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg))
-				wait(gotDelay)
+				task.wait(gotDelay)
 			end, 120, true)
 		end;
 
@@ -724,7 +724,7 @@ return function(Vargs)
 					logError("DataStore RemoveAsync Failed: ".. tostring(ret))
 				end
 
-				wait(6)
+				task.wait(6)
 			end, 120, true)
 
 			if not ran2 then
@@ -750,14 +750,14 @@ return function(Vargs)
 							error(ret);
 						end
 
-						wait(6)
+						task.wait(6)
 					end, 120, true)
 
 					if not ran2 then
 						logError("DataStore SetData Failed: ".. tostring(err2))
 
 						--// Attempt 3 times, with slight delay between if failed
-						wait(1);
+						task.wait(1);
 						if not repeatCount then
 							return Core.SetData(key, value, 3);
 						elseif repeatCount > 0 then
@@ -784,14 +784,14 @@ return function(Vargs)
 						error(ret);
 					end
 
-					wait(6)
+					task.wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
 					logError("DataStore UpdateData Failed: ".. tostring(err2))
 
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1);
+					task.wait(1);
 					if not repeatCount then
 						return Core.UpdateData(key, func, 3);
 					elseif repeatCount > 0 then
@@ -822,13 +822,13 @@ return function(Vargs)
 							error(ret);
 						end
 					end
-					wait(Core.DS_GetRequestDelay("Read"))
+					task.wait(Core.DS_GetRequestDelay("Read"))
 				end, 120, true)
 
 				if not ran2 then
 					logError("DataStore GetData Failed: ".. tostring(err2))
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1);
+					task.wait(1);
 					if not repeatCount then
 						return Core.GetData(key, 3);
 					elseif repeatCount > 0 then

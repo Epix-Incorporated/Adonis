@@ -25,12 +25,12 @@ local WaitTime = 10
 local RateLimit = function()
 	if Requests >= MaxRequests then
 		warn("Trello RateLimit Reached! Waiting 10 seconds...")
-		wait(WaitTime)
+		task.wait(WaitTime)
 		Requests = 0
 	end
 	Requests += 1
 	coroutine.wrap(function()
-		wait(WaitTime/2)
+		task.wait(WaitTime/2)
 		if #Queue == 0 then
 			Requests = 0
 		end

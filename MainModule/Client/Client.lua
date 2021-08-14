@@ -159,15 +159,15 @@ local Kill; Kill = Immutable(function(info)
 		end) end)()
 
 	wrap(function() pcall(function()
-			wait(1)
+			task.wait(1)
 			service.Player:Kick(info)
 		end) end)()
 
 	wrap(function() pcall(function()
-			wait(5)
+			task.wait(5)
 			while true do
-				pcall(spawn,function()
-					spawn(Kill())
+				pcall(task.spawn,function()
+					task.spawn(Kill())
 					-- memes
 				end)
 			end
@@ -242,7 +242,7 @@ client = setmetatable({
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
-		--wait(30)
+		--task.wait(30)
 		--client.Kill()(info)
 	end;
 
@@ -419,7 +419,7 @@ for ind,loc in next,{
 	require = require;
 	table = table;
 	type = type;
-	wait = wait;
+	wait = task.wait;
 	Enum = Enum;
 	UDim = UDim;
 	UDim2 = UDim2;

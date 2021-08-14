@@ -19,6 +19,6 @@ local frames = {
 while true do
   for n,id in next,frames do
     script.Parent.Texture = "http://www.roblox.com/asset/?id="..id
-    wait(0.1)
+    task.wait(0.1)
   end
 end

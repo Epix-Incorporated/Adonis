@@ -297,7 +297,7 @@ return function(Vargs, env)
 
 				for i,v in pairs(service.Workspace:GetChildren()) do
 					if v and not v:IsA('Terrain') then
-						wait()
+						task.wait()
 						pcall(function()
 							local archive = v.Archivable
 							v.Archivable = true

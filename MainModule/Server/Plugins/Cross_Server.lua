@@ -202,7 +202,7 @@ return function(Vargs)
 					AutoUpdate = 1,
 				})
 
-				delay(500, doDisconnect)
+				task.delay(500, doDisconnect)
 			end
 		end;
 	};
@@ -286,7 +286,7 @@ return function(Vargs)
 				AutoUpdate = 1,
 			})
 
-			delay(120, function() Logs.TempUpdaters[voteKey] = nil; msgSub:Disconnect(); end)
+			task.delay(120, function() Logs.TempUpdaters[voteKey] = nil; msgSub:Disconnect(); end)
 		end
 	};
 
@@ -298,7 +298,7 @@ return function(Vargs)
 			counter = counter+1;
 			if not lastTick then lastTick = os.time() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60;
+				repeat task.wait() until os.time()-lastTick > 60;
 			end
 
 			if os.time()-lastTick > 60 then

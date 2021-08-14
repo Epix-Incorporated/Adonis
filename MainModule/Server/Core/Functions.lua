@@ -939,7 +939,7 @@ return function(Vargs)
 		Shutdown = function(reason)
 			if not Core.PanicMode then
 				Functions.Message("SYSTEM MESSAGE", "Shutting down...", service.Players:GetPlayers(), false, 5)
-				wait(1)
+				task.wait(1)
 			end
 
 			service.Players.PlayerAdded:Connect(function(p)

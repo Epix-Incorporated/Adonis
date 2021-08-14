@@ -26,10 +26,10 @@ return function(Vargs, env)
 					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
 					rebootHandler.Model.Value = service.UnWrap(server.Model);
 					rebootHandler.Mode.Value = "REBOOT";
-					wait()
+					task.wait()
 					rebootHandler.Parent = service.ServerScriptService;
 					rebootHandler.Disabled = false;
-					wait()
+					task.wait()
 					server.CleanUp();
 				else
 					error("Unable to reload: Runner missing");
@@ -737,7 +737,7 @@ return function(Vargs, env)
 							end
 
 							clicks = clicks + 1
-							delay(0.4, function()
+							task.delay(0.4, function()
 								clicks = clicks - 1
 							end)
 
@@ -776,7 +776,7 @@ return function(Vargs, env)
 								soundinfo = prodinfo
 								prevname = spart.Name
 								sound.SoundId = "rbxassetid://"..spart.Name
-								wait(2)
+								task.wait(2)
 							elseif not suc then
 								spart.Name = prevname
 							end
@@ -789,7 +789,7 @@ return function(Vargs, env)
 
 					if not toggable then
 						sound:Play()
-						wait(2)
+						task.wait(2)
 					end
 
 					sound.Parent = spart
@@ -985,7 +985,7 @@ return function(Vargs, env)
 							sb[class][name].Script.Parent = service.ServerScriptService
 						end
 						sb[class][name].Script.Disabled = true
-						wait()
+						task.wait()
 						sb[class][name].Script.Disabled = false
 						Functions.Hint("Running "..class.." "..name,{plr})
 					else
@@ -1031,7 +1031,7 @@ return function(Vargs, env)
 				local cl = Core.NewScript('Script', args[1], true)
 				cl.Name = "[Adonis] Script"
 				cl.Parent = service.ServerScriptService
-				wait()
+				task.wait()
 				cl.Disabled = false
 				Functions.Hint("Ran Script",{plr})
 			end
@@ -1054,7 +1054,7 @@ return function(Vargs, env)
 				cl.Name = "[Adonis] LocalScript"
 				cl.Disabled = true
 				cl.Parent = plr.Backpack
-				wait()
+				task.wait()
 				cl.Disabled = false
 				Functions.Hint("Ran LocalScript",{plr})
 			end
@@ -1079,7 +1079,7 @@ return function(Vargs, env)
 					cl.Name = "[Adonis] LocalScript"
 					cl.Disabled = true
 					cl.Parent = v.Backpack
-					wait()
+					task.wait()
 					cl.Disabled = false
 					Functions.Hint("Ran LocalScript on "..v.Name,{plr})
 				end

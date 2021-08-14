@@ -65,7 +65,7 @@ return function(data)
 				Position = UDim2.new(1, -120, 0, 0);
 				TextXAlignment = "Right";
 			})
-			spawn(function()
+			task.spawn(function()
 				entry:Add("ImageLabel", {
 					Image = game:GetService("Players"):GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 					BackgroundTransparency = 1;

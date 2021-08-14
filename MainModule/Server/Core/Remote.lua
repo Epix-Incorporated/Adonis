@@ -1042,7 +1042,7 @@ return function(Vargs)
 				print("GETTING RETURN");
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
-					delay(600, function() if not finished then event:Fire() end end)
+					task.delay(600, function() if not finished then event:Fire() end end)
 					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
 					--returns = returns or {event:Wait()}
 					Yield:Wait();
@@ -1139,7 +1139,7 @@ return function(Vargs)
 
 		MakeLocal = function(p,object,parent,clone)
 			object.Parent = p
-			wait(0.5)
+			task.wait(0.5)
 			Remote.Send(p,"Function","MakeLocal",object,parent,clone)
 		end;
 

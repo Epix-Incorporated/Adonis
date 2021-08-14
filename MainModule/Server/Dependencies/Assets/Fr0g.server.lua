@@ -1,21 +1,21 @@
-while wait(.1)do
+while task.wait(.1)do
 	script.Parent.Texture='rbxassetid://185945467'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945486'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945493'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945515'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945527'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945553'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945573'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945586'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945612'
-	wait(.1)
+	task.wait(.1)
 	script.Parent.Texture='rbxassetid://185945634'
 end

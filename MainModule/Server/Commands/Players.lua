@@ -792,7 +792,7 @@ return function(Vargs, env)
 							end
 
 							local w = tick()
-							repeat wait(0.5) until tick()-w>30 or answered
+							repeat task.wait(0.5) until tick()-w>30 or answered
 
 							pending.Pending = false;
 

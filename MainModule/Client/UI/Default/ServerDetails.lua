@@ -239,7 +239,7 @@ return function(data)
 					playerCount = playerCount + 1
 				end
 
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = game:GetService("Players"):GetUserThumbnailAsync(Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
 						BackgroundTransparency = 1;

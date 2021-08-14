@@ -170,7 +170,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end)
 
 			if props.Interval then
-				while wait(props.Interval) and new.Running do
+				while task.wait(props.Interval) and new.Running do
 					new:Trigger(os.time());
 				end
 			end
@@ -267,7 +267,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 					if timeout and type(timeout) == "number" and timeout > 0 then
 						Routine(function()
-							wait(timeout)
+							task.wait(timeout)
 							if not done then
 								UnWrap(event):Fire(special)
 							end
@@ -819,7 +819,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						func.Running = true;
 
 						if func.Timeout then
-							delay(func.Timeout, function()
+							task.delay(func.Timeout, function()
 								if not func.Finished then
 									Yield:Release();
 									warn("Queue Timeout Reached for ".. tostring(key or "Unknown"))
@@ -1006,7 +1006,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				if tonumber(delay) then
 					repeat
 						func()
-						wait(tonumber(delay))
+						task.wait(tonumber(delay))
 					until RunningLoops[index] ~= tab or not tab.Running
 					kill()
 				elseif delay == "Heartbeat" then
@@ -1135,7 +1135,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			elseif mode == "Heartbeat" then
 				service.RunService.Heartbeat:wait()
 			elseif mode and tonumber(mode) then
-				wait(tonumber(mode))
+				task.wait(tonumber(mode))
 			end
 		end;
 		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;

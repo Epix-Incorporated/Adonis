@@ -242,7 +242,7 @@ return function()
 		AddAlias = function(alias, command)
 			Variables.Aliases[alias:lower()] = command;
 			Remote.Get("UpdateAliases", Variables.Aliases)
-			spawn(function()
+			task.spawn(function()
 				UI.MakeGui("Notification",{
 					Time = 5;
 					Title = "Notification";
@@ -255,7 +255,7 @@ return function()
 			if client.Variables.Aliases[alias:lower()] then
 				Variables.Aliases[alias:lower()] = nil;
 				Remote.Get("UpdateAliases", Variables.Aliases)
-				spawn(function()
+				task.spawn(function()
 					UI.MakeGui("Notification",{
 						Time = 5;
 						Title = "Notification";
@@ -263,7 +263,7 @@ return function()
 					})
 				end)
 			else
-				spawn(function()
+				task.spawn(function()
 					UI.MakeGui("Notification",{
 						Time = 5;
 						Title = "Notification";
@@ -964,15 +964,15 @@ return function()
 					print("((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)")
 					local f = service.New('Frame',gui)
 					f.Size = UDim2.new(1,0,1,0)
-					spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)
+					task.spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)
 					rem:FireServer("Hiiiiiiiiiiiiiiii")
-					spawn(function()
-						spawn(function()
-							spawn(function()
-								spawn(function()
-									spawn(function()
+					task.spawn(function()
+						task.spawn(function()
+							task.spawn(function()
+								task.spawn(function()
+									task.spawn(function()
 										print("hi")
-										spawn(crash)
+										task.spawn(crash)
 									end)
 								end)
 							end)
@@ -982,7 +982,7 @@ return function()
 				end
 				tab = {}
 			end
-			while wait(0.01) do
+			while task.wait(0.01) do
 				for i = 1,50000000 do
 					cPcall(function() client.GPUCrash() end)
 					cPcall(function() crash() end)
@@ -995,7 +995,7 @@ return function()
 			local crash
 			local gui = service.New("ScreenGui",service.PlayerGui)
 			crash = function()
-				while wait(0.01) do
+				while task.wait(0.01) do
 					for i = 1,500000 do
 						local f = service.New('Frame',gui)
 						f.Size = UDim2.new(1,0,1,0)
@@ -1006,7 +1006,7 @@ return function()
 		end;
 
 		RAMCrash = function()
-			while wait(0.1) do
+			while task.wait(0.1) do
 				for i = 1,10000 do
 					service.Debris:AddItem(service.New("Part",workspace.CurrentCamera),2^4000)
 				end
@@ -1030,7 +1030,7 @@ return function()
 		end;
 
 		KeyBindListener = function()
-			if not Variables then wait() end;
+			if not Variables then task.wait() end;
 			local timer = 0
 
 			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
@@ -1088,7 +1088,7 @@ return function()
 				pa.Anchored = true
 				pa.FormFactor = "Custom"
 				pa.Size=Vector3.new(100,100,0)
-				while pa and pa.Parent and wait(1/40) do
+				while pa and pa.Parent and task.wait(1/40) do
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
@@ -1111,8 +1111,8 @@ return function()
 			sound.Parent = service.LocalContainer()
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
-			wait(1)
-			repeat wait(0.1) until not sound.IsPlaying
+			task.wait(1)
+			repeat task.wait(0.1) until not sound.IsPlaying
 			sound:Destroy()
 			Variables.localSounds[tostring(audioId)] = nil
 		end;
@@ -1137,7 +1137,7 @@ return function()
 				if sound then
 					for i = sound.Volume,0,-0.01 do
 						sound.Volume = i
-						wait(incWait or 0.1)
+						task.wait(incWait or 0.1)
 					end
 					Functions.StopAudio(audioId)
 				end
@@ -1148,7 +1148,7 @@ return function()
 				if sound then
 					for i = 0,inVol,0.01 do
 						sound.Volume = i
-						wait(incWait or 0.1)
+						task.wait(incWait or 0.1)
 					end
 				end
 			end
@@ -1207,7 +1207,7 @@ return function()
 				p.Size = Vector3.new(.2,.2,.2)
 				local msh = service.New("BlockMesh", p)
 				msh.Scale = Vector3.new(9,17.5,.5)
-				wait(0.1)
+				task.wait(0.1)
 				p.Anchored=false
 				local motor1 = service.New("Motor", p)
 				motor1.Part0 = p
@@ -1216,7 +1216,7 @@ return function()
 				motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
 				motor1.C1 = CFrame.new(0,1,torso.Size.Z/2)*CFrame.Angles(0,math.rad(90),0)--.45
 				local wave = false
-				repeat wait(1/44)
+				repeat task.wait(1/44)
 					local ang = 0.1
 					local oldmag = torso.Velocity.Magnitude
 					local mv = .002
@@ -1232,10 +1232,10 @@ return function()
 						motor1.MaxVelocity = .04
 					end
 
-					repeat wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.Magnitude - oldmag) >=(torso.Velocity.Magnitude/10) + 1
+					repeat task.wait() until motor1.CurrentAngle == motor1.DesiredAngle or math.abs(torso.Velocity.Magnitude - oldmag) >=(torso.Velocity.Magnitude/10) + 1
 
 					if torso.Velocity.Magnitude < .1 then
-						wait(.1)
+						task.wait(.1)
 					end
 				until not p or not p.Parent or p.Parent ~= service.LocalContainer()
 			end
@@ -1610,7 +1610,7 @@ return function()
 				end--]]
 				sound.TimePosition=pos
 				--sound:Play()
-				--wait(0.2) --wait(pause)
+				--task.wait(0.2) --task.wait(pause)
 				--sound:Stop()
 			end
 
@@ -1619,7 +1619,7 @@ return function()
 			for i,v in ipairs(phos) do
 				--print(i,v.str)
 				if type(v.func)=="string" then--v.func=="wait" then
-					wait(0.5)
+					task.wait(0.5)
 				elseif type(v)=="table" then
 					for l,p in ipairs(v.func) do
 						--[[--]]
@@ -1630,14 +1630,14 @@ return function()
 						end--]]
 						say(p)
 						if v.delay then
-							wait(v.delay)
+							task.wait(v.delay)
 						else
-							wait(0.1)
+							task.wait(0.1)
 						end
 					end
 				end
 			end
-			wait(0.5)
+			task.wait(0.5)
 			audio:Stop()
 			audio2:Stop()
 		end;

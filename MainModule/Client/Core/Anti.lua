@@ -58,7 +58,7 @@ return function()
 	local function RunAfterLoaded()
 		service.Player.Changed:Connect(function()
 			if service.Player.Parent ~= service.Players then
-				wait(5)
+				task.wait(5)
 				--Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
 				Anti.Detected("kick","Roblox Locked")
@@ -110,7 +110,7 @@ return function()
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "Detected", action, info)
-			wait(0.5)
+			task.wait(0.5)
 			if action == "kick" then
 				if not service.RunService:IsStudio() then
 					if nocrash then
@@ -130,14 +130,14 @@ return function()
 		local OldEnviroment = getfenv()
 		local OldSuccess, OldError = pcall(function() return game:________() end)
 		Routine(function()
-			while wait(5) do
+			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
 				if OldSuccess or not rawequal(OldSuccess, OldSuccess) or not rawequal(OldError, OldError) or rawequal(OldError, "new") or not OldError == OldError or OldError == "new" or rawequal(OldEnviroment, {1}) or OldEnviroment == {1} or not OldEnviroment == OldEnviroment then
 					Detected("crash", "Tamper Protection 658947")
-					wait(1)
+					task.wait(1)
 					pcall(Disconnect, "Adonis_658947")
 					pcall(Kill, "Adonis_658947")
 					pcall(Kick, Player, "Adonis_658947")
@@ -156,7 +156,7 @@ return function()
 
 					if Success then
 						Detected("crash", "Tamper Protection 906287")
-						wait(1)
+						task.wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -237,7 +237,7 @@ return function()
 		end;
 
 		HumanoidState = function()
-			wait(1)
+			task.wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
@@ -253,7 +253,7 @@ return function()
 					end
 				end)
 
-				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
+				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and task.wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
 						Detected("kill", "Noclipping")
@@ -263,12 +263,12 @@ return function()
 		end;
 
 		Paranoid = function()
-			wait(1)
+			task.wait(1)
 			local char = service.Player.Character
 			local torso = char:WaitForChild("Head")
 			local humPart = char:WaitForChild("HumanoidRootPart", 2)
 			local hum = char:WaitForChild("Humanoid", 2)
-			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
+			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and task.wait(1) do
 				if (humPart.Position-torso.Position).Magnitude > 10 and hum and hum.Health > 0 then
 					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
 				end
@@ -374,7 +374,7 @@ return function()
 					if soundIdCheck(child) then
 						Detected("crash","CMDx Detected; "..tostring(child))
 					else
-						wait()
+						task.wait()
 						if soundIdCheck(child) then
 							Detected("crash","CMDx Detected; "..tostring(child))
 						end
@@ -552,7 +552,7 @@ return function()
 			if err and string.find(err, testName) and string.find(err, "GuiService:") then
 				return true
 			else
-				wait(0.5)
+				task.wait(0.5)
 				for _,v in next,service.LogService:GetLogHistory() do
 					if string.find(v.message,testName) and string.find(v.message,"GuiService:") then
 						return true
