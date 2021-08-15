@@ -543,26 +543,40 @@ return function(Vargs, env)
 
 		BuildingTools = {
 			Prefix = Settings.Prefix;
-			Commands = {"btools";"buildtools";"buildingtools";"buildertools";};
+			Commands = {"btools";"f3x";"buildtools";"buildingtools";"buildertools";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Gives the target player(s) basic building tools and the F3X tool";
+			Description = "Gives the target player(s) F3X building tools.";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local f3x = service.New("Tool")
-				f3x.CanBeDropped = false
-				f3x.ManualActivationOnly = false
-				f3x.ToolTip = "Building Tools by F3X"
-				for k,m in pairs(Deps.Assets['F3X Deps']:GetChildren()) do
-					m:Clone().Parent = f3x
-				end
-				f3x.Name='Building Tools'
-				service.New("StringValue",f3x).Name = Variables.CodeName
+				local F3X = service.New("Tool", {
+					GripPos = Vector3.new(0, 0, 0.4),
+					CanBeDropped = false,
+					ManualActivationOnly = false,
+					ToolTip = "Building Tools by F3X",
+					Name = "Building Tools"
+				})
+				service.New("StringValue", {
+					Name = "__ADONIS_VARIABLES_" .. Variables.CodeName,
+					Parent = F3X
+				})
 
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:FindFirstChild("Backpack") then
-						f3x:Clone().Parent = v.Backpack
+				local clonedDeps = Deps.Assets:FindFirstChild("F3X Deps"):Clone()
+				for _, SourceContainer in ipairs(clonedDeps:GetDescendants()) do
+					if SourceContainer.ClassName == "LocalScript" or SourceContainer.ClassName == "Script" then
+						SourceContainer.Disabled = false
+					end
+				end
+				for _, Child in ipairs(clonedDeps:GetChildren()) do
+					Child.Parent = F3X
+				end
+
+				for _, v in pairs(service.GetPlayers(plr,args[1])) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+
+					if Backpack then
+						F3X:Clone().Parent = Backpack
 					end
 				end
 			end
@@ -1489,7 +1503,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RobloxNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify"};

@@ -12,6 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
+	local AddLog
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -25,42 +26,57 @@ return function(Vargs)
 		Settings = server.Settings;
 		Commands = server.Commands;
 
+		AddLog = Logs.AddLog;
+
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService();
 
 			if chatService then
-				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message, channelName)
-					if server.Admin.DoHideChatCmd(service.Players:FindFirstChild(speakerName), message) then
+				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
+					local speaker = chatService:GetSpeaker(speakerName)
+					local speakerPlayer = speaker and speaker:GetPlayer()
+
+					if not speakerPlayer then
+						return false
+					end
+
+					if Admin.DoHideChatCmd(speakerPlayer, message) then
 						return true
 					end
 
 					return false
 				end);
 
-				chatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+				chatService:RegisterProcessCommandsFunction("ADONIS_MUTE_SERVER", function(speakerName, _, channelName)
 					local slowCache = Admin.SlowCache;
+
 					local speaker = chatService:GetSpeaker(speakerName)
-					local player = speaker:GetPlayer()
-					if player and Admin.IsMuted(player) then
-						speaker:SendSystemMessage("You are muted!", channelName)
+					local speakerPlayer = speaker and speaker:GetPlayer()
+
+					if not speakerPlayer then
+						return false
+					end
+
+					if speakerPlayer and Admin.IsMuted(speakerPlayer) then
+						speaker:SendSystemMessage("[Adonis] :: You are muted!", channelName)
 						return true
-					elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-						speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+					elseif speakerPlayer and Admin.SlowMode and not Admin.CheckAdmin(speakerPlayer) and slowCache[speakerPlayer] and os.time() - slowCache[speakerPlayer] < Admin.SlowMode then
+						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
 						return true
 					end
 
 					if Admin.SlowMode then
-						slowCache[player] = os.time()
+						slowCache[speakerPlayer] = os.time()
 					end
 
 					return false
 				end)
 
-				Logs:AddLog("Script", "ChatService Handler Loaded")
+				AddLog("Script", "ChatService Handler Loaded")
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
-				Logs:AddLog("Script", "ChatService Handler Not Found")
+				AddLog("Script", "ChatService Handler Not Found")
 			end
 		end)
 
@@ -108,7 +124,7 @@ return function(Vargs)
 		end
 
 		Admin.Init = nil;
-		Logs:AddLog("Script", "Admin Module Initialized")
+		AddLog("Script", "Admin Module Initialized")
 	end;
 
 	local function RunAfterPlugins(data)
@@ -121,7 +137,7 @@ return function(Vargs)
 		for i,v in next,Settings.OnStartup do
 			warn("Running startup command ".. tostring(v))
 			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
-			Logs:AddLog("Script",{
+			AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
 				Desc = "Executed startup command; "..tostring(v)
 			})
@@ -133,7 +149,7 @@ return function(Vargs)
 		end
 
 		Admin.RunAfterPlugins = nil;
-		Logs:AddLog("Script", "Admin Module RunAfterPlugins Finished");
+		AddLog("Script", "Admin Module RunAfterPlugins Finished");
 	end
 
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
@@ -363,7 +379,7 @@ return function(Vargs)
 			data.AdminRank = rank;
 			data.LastLevelUpdate = os.time()
 
-			Logs.AddLog("Script", {
+			AddLog("Script", {
 				Text = "Updating cached level for ".. tostring(p);
 				Desc = "Updating the cached admin level for ".. tostring(p);
 				Player = p;
