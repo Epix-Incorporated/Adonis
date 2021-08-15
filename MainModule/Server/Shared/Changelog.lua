@@ -9,6 +9,7 @@ return {
 	"(Git/fxeP1) Admin.lua/Admins/Service || chatService fix/Service fixes/F3X Updates. #462";
 	"(Git/SlipperySpelunky)  Update Teleport to CFrame #461";
 	"(Git/c6lvnss)  Migration to task library. #463";
+	"(Git/P3tray)  Added DefaultTheme setting and improved Base_Theme's functionalities #460";
 	"";
 	"[v226.3 8.7.2021 16:10 EST]";
 	"*Disabled a detection that resulted in exploit log spam (no kicking, just logs)";
