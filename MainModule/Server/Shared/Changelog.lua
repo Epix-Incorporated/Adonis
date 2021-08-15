@@ -1,6 +1,13 @@
 return {
-	"Version: 226.3";
+	"Version: 227";
 	"*Drag edges to expand*";
+	"";
+	"[v227 WIP]";
+	"(Git/Expertcoderz) Added !paint #465";
+	"(Git/P3tray) Exploit patch & data.OnClicked functionality for ImageButtons #458";
+	"(Git/fxeP1) Admin/Remote/Process/Service/CRS Updates #457";
+	"(Git/fxeP1) Admin.lua/Admins/Service || chatService fix/Service fixes/F3X Updates. #462";
+	"(Git/SlipperySpelunky)  Update Teleport to CFrame #461";
 	"";
 	"[v226.3 8.7.2021 16:10 EST]";
 	"*Disabled a detection that resulted in exploit log spam (no kicking, just logs)";
