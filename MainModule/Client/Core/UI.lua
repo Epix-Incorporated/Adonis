@@ -211,8 +211,6 @@ return function()
 			--// Create the final config for the found GUI.
 
 			if #foundConfigs > 0 then
-				print(foundConfigs)
-
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
 				for i,v in next,foundConfigs do
 					if v.Config then
