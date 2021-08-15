@@ -35,6 +35,7 @@ return function()
 	local service = service
 	local client = client
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
+	local DefaultTheme = Remote.Get("Setting","DefaultTheme");
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
@@ -167,7 +168,6 @@ return function()
 			local endConfValues = {}
 			local confFolder = Instance.new("Folder")
 			local func
-			local DefaultTheme = Remote.Get("Setting","DefaultTheme");
 			local debounce = false
 			function func(theme, name, depth)
 				local depth = (depth or 11) - 1
