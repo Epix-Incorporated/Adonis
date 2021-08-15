@@ -6,7 +6,6 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "Notepad";
 		Title = "Notepad";
-		AllowMultiple = false;
 	})
 
 	local topbar = window:Add("Frame", {
@@ -78,8 +77,12 @@ return function(data)
 				TextXAlignment = "Right";
 				ClipsDescendants = true;
 				TextChanged = function(text, enter, new)
-					if enter and tonumber(text) and text < 1000 then
-						content.TextSize = text;
+					if enter and tonumber(text) then
+						if tonumber(text) < 100 then
+							content.TextSize = text;
+						else
+							content.TextSize = 99;
+						end
 					end
 				end
 			}
