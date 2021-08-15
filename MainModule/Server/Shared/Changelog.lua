@@ -3,6 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v227 WIP]";
+	"*Fixed Window.ScrollingFrame:GenerateList() bugging out on refresh";
 	"(Git/Expertcoderz) Added !paint #465";
 	"(Git/P3tray) Exploit patch & data.OnClicked functionality for ImageButtons #458";
 	"(Git/fxeP1) Admin/Remote/Process/Service/CRS Updates #457";

@@ -1695,6 +1695,16 @@ return function(data)
 				genning = genHold
 				new:ClearAllChildren()
 
+				new.AutomaticCanvasSize = "Y"
+
+				local layout = service.New("UIListLayout", {
+					Parent = new;
+					Name = "LayoutOrder";
+					FillDirection = data.Layout_FillDirection or "Vertical";
+					VerticalAlignment = data.Layout_VerticalAlignment or "Top";
+					HorizontalAlignment = data.Layout_HorizontalAlignment or "Left";
+				})
+
 				local num = 0
 				for i,v in next,list do
 					local text = v;
@@ -1731,7 +1741,7 @@ return function(data)
 					end
 
 					if labelProperties then
-						for i,v in next,entProps do
+						for i,v in pairs(entProps) do
 							if checkProperty(label, i) then
 								label[i] = v
 							end
@@ -1756,7 +1766,11 @@ return function(data)
 					end
 				end
 
-				new:ResizeCanvas(false, true, false, bottom, 5, 5, 50)
+				--new:ResizeCanvas(false, true, false, bottom, 5, 5, 50)
+				if bottom then
+					new.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y);
+				end
+
 				genning = nil
 			end)
 
