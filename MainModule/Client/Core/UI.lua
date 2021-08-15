@@ -35,7 +35,6 @@ return function()
 	local service = service
 	local client = client
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
-	local DefaultTheme = Remote.Get("Setting","DefaultTheme");
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
@@ -80,7 +79,7 @@ return function()
 				RunAfterLoaded = true;
 				RunAfterPlugins = true;
 			}, true)--]]
-
+			UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
 			UI.RunLast = nil;
 	end
 
@@ -194,8 +193,8 @@ return function()
 						end
 					end 
 					if baseTheme and depth > 0 then
-						if DefaultTheme and baseTheme == "Default" and theme ~= DefaultTheme and not debounce then
-							func(DefaultTheme, name, depth)
+						if UI.DefaultTheme and baseTheme == "Default" and theme ~= UI.DefaultTheme and not debounce then
+							func(UI.DefaultTheme, name, depth)
 						else
 							debounce = true
 							func(baseTheme, name, depth)
