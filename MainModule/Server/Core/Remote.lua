@@ -699,7 +699,15 @@ return function(Vargs)
 
 					if obj then
 						if com == "Delete" then
-							obj:Destroy()
+							if not pcall(function()
+									obj:Destroy()
+								end) then
+								Remote.MakeGui(p ,"Notification", {
+									Title = "Error";
+									Message = "Cannot delete object.";
+									Time = 2;
+								})
+							end
 						end
 					end
 				end
