@@ -859,20 +859,17 @@ return function(Vargs, env)
 			Commands = {"credit";"credits";};
 			Args = {};
 			Hidden = false;
-			Description = "Credits";
+			Description = "Shows you Adonis development credits";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr,args)
-				Remote.MakeGui(plr,"List",{
-					Title = 'Credits',
-					Tab = server.Credits
-				})
+				Remote.MakeGui(plr,"Credits",{})
 			end
 		};
 
 		ChangeLog = {
 			Prefix = Settings.Prefix;
-			Commands = {"changelog";"changes";};
+			Commands = {"changelog";"changes";"updates"};
 			Args = {};
 			Description = "Shows you the script's changelog";
 			AdminLevel = "Players";
