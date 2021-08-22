@@ -3150,7 +3150,7 @@ return function(Vargs, env)
 							f.BackgroundTransparency = 1
 							f.Size = UDim2.new(1,0,1,0)
 							local name = service.New('TextLabel',f)
-							name.Text = v.Name
+							name.Text = v.DisplayName.."\n(@"..v.Name..")"
 							name.BackgroundTransparency = 1
 							name.Font = "Arial"
 							name.TextColor3 = Color3.new(1,1,1)
