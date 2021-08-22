@@ -696,7 +696,16 @@ return function(Vargs)
 			end;
 
 			HandleExplore = function(p, args)
-				if Admin.CheckAdmin(p) then
+				--// TODO
+				--// Make this a separate Admin method										
+				local Command = Commands.Explore
+				if not Command then return end
+				local Level = Command.AdminLevel
+				if not Level then return end
+				local Rank = Settings.Ranks[Level]
+				if not Rank then return end
+				if not Rank.Level then return end										
+				if Admin.GetLevel(p) >= Rank.Level then										
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
