@@ -568,8 +568,12 @@ return function(Vargs)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
 							for i,v in pairs(plrs) do
-								v.Character:BreakJoints()
-								return {"Killed "..tostring(v.Name)}
+								if v.Character and v.Character ~= nil then
+									v.Character:BreakJoints()
+									return {"Killed "..tostring(v.Name)}
+								else
+									return {tostring(v.Name).." has no character"}
+								end
 							end
 						else
 							return {"No players matching '"..args[1].."' found"}
