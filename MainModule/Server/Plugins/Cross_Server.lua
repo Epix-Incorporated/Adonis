@@ -44,7 +44,7 @@ return function(Vargs)
 		Ping = function(jobId, data)
 			Core.CrossServer("Pong", {
 				JobId = game.JobId;
-				NumPlayers = #service.Players:GetChildren();
+				NumPlayers = #service.Players:GetPlayers();
 			})
 		end;
 
@@ -81,7 +81,9 @@ return function(Vargs)
 		end;
 
 		DataStoreUpdate = function(jobId, type, data)
-			server.Process.DataStoreUpdated(type, data)
+			if type and data then
+				Routine(Core.LoadData, type, data)
+			end
 		end;
 
 		UpdateSetting = function(jobId, setting, newValue)

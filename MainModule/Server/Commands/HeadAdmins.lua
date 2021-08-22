@@ -40,7 +40,12 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level;
 				local timebans = Core.Variables.TimeBans
 
-				for i,v in next,service.GetPlayers(plr, args[1], false, false, true) do
+				for i,v in next,service.GetPlayers(plr, args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				}) do
 					if level > Admin.GetLevel(v) then
 						local endTime = os.time() + tonumber(time)
 
@@ -104,7 +109,12 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
 
-				for i,v in next,service.GetPlayers(plr,args[1],false,false,true) do
+				for i,v in next,service.GetPlayers(plr,args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = true;
+					UseFakePlayer = true;
+				}) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true)
 						Functions.Hint("Game banned "..tostring(v),{plr})

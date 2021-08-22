@@ -22,7 +22,7 @@ local methods = setmetatable({},{
 
 				if RealMethods[class][index] ~= obj[index] or pcall(function() return coroutine.create(obj[index]) end) then
 					if ErrorHandler then
-						ErrorHandler("MethodError", "Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
+						ErrorHandler("MethodError", debug.traceback() .. " || Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
 				end
 
@@ -60,34 +60,38 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 	main = server or client
 	ErrorHandler = errorHandler
+
 	server = nil
 	client = nil
 
-	local Kill = main.Kill
 	local service;
+
 	local WaitingEvents = {}
 	local HookedEvents = {}
 	local Debounces = {}
 	local Queues = {}
 	local RbxEvents = {}
 	local LoopQueue = {}
-	local FilterCache = {}
 	local TrackedTasks = {}
 	local RunningLoops = {}
 	local TaskSchedulers = {}
 	local ServiceVariables = {}
-	local CreatedItems = setmetatable({},{__mode = "v"});
-	local Wrappers = setmetatable({},{__mode = "kv"});
+
+	local CreatedItems = setmetatable({}, {__mode = "v"})
+	local Wrappers = setmetatable({}, {__mode = "kv"})
+
 	local oldInstNew = Instance.new
 	local WrapService = Instance.new("Folder")
 	local ThreadService = Instance.new("Folder")
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
+
 	local Instance = {new = function(obj, parent) return service and client and service.Wrap(oldInstNew(obj, service.UnWrap(parent)), true) or oldInstNew(obj, parent) end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
-			local index = math.random()
+			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
+
 			local data = {
 				Name = name;
 				Status = "Waiting";
@@ -481,11 +485,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			end
 		end;
 		Wrapped = function(object)
-			if getmetatable(object) == "Adonis_Proxy" then
-				return true
-			else
-				return false
-			end
+			return getmetatable(object) == "Adonis_Proxy"
 		end;
 		UnWrap = function(object)
 			if type(object) == "table" then
@@ -651,10 +651,16 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		Filter = function(str,from,to)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
-				local ran,newl = pcall(function() return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId) end)
+				local ran,newl = pcall(function()
+					return service.TextService:FilterStringAsync(lines[i],from.UserId):GetChatForUserAsync(to.UserId)
+				end)
 				newl = (ran and newl) or lines[i] or ""
 				if i > 1 then
 					new = new.."\n"..newl
@@ -669,7 +675,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if tonumber(str) then				-- to avoid major filter related problems (like commands becoming unusable due to numbers or names being filtered)
 				return str						-- Please consider dropping the filter rules down a notch or improving on the existing filtering methods
 			elseif type(str) == "string" then	-- Also always feel free to message me with any concerns you have :)!
-				if cmd and #service.GetPlayers(from, str, true) > 0 then
+				if not utf8.len(str) then
+					return "Filter Error"
+				end
+
+				if cmd and #service.GetPlayers(from, str, {
+					DontError = true;
+				}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)
@@ -680,6 +692,10 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		BroadcastFilter = function(str,from)
+			if not utf8.len(str) then
+				return "Filter Error"
+			end
+
 			local new = ""
 			local lines = service.ExtractLines(str)
 			for i = 1,#lines do
@@ -956,14 +972,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				return message:sub(1,length).."..."
 			else
 				return message
-			end
-		end;
-
-		Round = function(num)
-			if num >= 0.5 then
-				return math.ceil(num)
-			elseif num < 0.5 then
-				return math.floor(num)
 			end
 		end;
 

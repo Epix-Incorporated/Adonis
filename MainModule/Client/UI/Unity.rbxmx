@@ -2,14 +2,14 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBXF998F0BB48D34C14B61EA8A9366DADE3">
+	<Item class="Folder" referent="RBX648938FB2BAC446C8BDBB0A85E3D1105">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Unity</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="Frame" referent="RBX410AD86BE95D4E5A80C1243886C9E71A">
+		<Item class="Frame" referent="RBX67CCB653666E4C719FE900D8C4F8A067">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -63,19 +63,19 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">9</int>
 			</Properties>
-			<Item class="Folder" referent="RBX567343EEB856418A8AFF9ADBC64ADCBF">
+			<Item class="Folder" referent="RBXD2F8FD35A5BB4EF28D8328FB005CFBF3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXADA3F228F4044327929C00FC25E7257C">
+				<Item class="ModuleScript" referent="RBXB0FDD15403644645A1E088034106F400">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{3C3F2E4F-1BE4-4C64-B008-D1AD51124E58}</string>
+						<string name="ScriptGuid">{D8E8FAB3-F126-4835-8604-44B5CA141356}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -89,24 +89,24 @@ gTable = nil
 return function(data)
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
-	
+
 	local frame = script.Parent.Parent
 	local close = frame.Frame.Close
 	local main = frame.Frame.Main
 	local title = frame.Frame.Title
 	local timer = frame.Frame.Timer
-	
+
 	local gTable = data.gTable
 	local clickfunc = data.OnClick
 	local closefunc = data.OnClose
 	local ignorefunc = data.OnIgnore
-	
+
 	local name = data.Title
 	local text = data.Message or data.Text or ""
 	local time = data.Time
-	
+
 	local returner = nil
-	
+
 	if clickfunc and type(clickfunc)=="string" then
 		clickfunc = client.Core.LoadCode(clickfunc, GetEnv())
 	end
@@ -116,10 +116,10 @@ return function(data)
 	if ignorefunc and type(ignorefunc)=="string" then
 		ignorefunc = client.Core.LoadCode(ignorefunc, GetEnv())
 	end
-	
+
 	--client.UI.Make("NotificationHolder")
 	local holder = client.UI.Get("NotificationHolder",nil,true)
-	if not holder then 
+	if not holder then
 		local hold = service.New("ScreenGui")
 		local hTable = client.UI.Register(hold)
 		local frame = service.New("ScrollingFrame", hold)
@@ -137,7 +137,7 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
@@ -145,11 +145,11 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		holder = hTable
 		hTable:Ready()
 	end
-	
+
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
 		for i,v in pairs(holder:GetChildren()) do
@@ -163,12 +163,12 @@ return function(data)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end
-	
+
 	holder = holder.Object.Frame
 	title.Text = name
 	frame.Name = name
 	main.Text = text
-	
+
 	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
@@ -178,7 +178,7 @@ return function(data)
 			moveGuis(holder,0)
 		end
 	end)
-	
+
 	close.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if closefunc then
@@ -188,11 +188,11 @@ return function(data)
 			moveGuis(holder,0)
 		end
 	end)
-	
+
 	moveGuis(holder,1)
 	frame.Parent = holder
 	frame:TweenPosition(UDim2.new(0,0,1,-75),'Out','Linear',0.2)
-	
+
 	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = 'http://www.roblox.com/asset/?id='.."203785584"--client.NotificationSound
@@ -202,7 +202,7 @@ return function(data)
 		wait(0.5)
 		sound:Destroy()
 	end)
-	
+
 	if time then
 		timer.Visible = true
 		spawn(function()
@@ -212,7 +212,7 @@ return function(data)
 				wait(1)
 				time = time-1
 			until time<=0 or not frame or not frame.Parent
-			
+
 			if frame and frame.Parent then
 				if ignorefunc then
 					returner = ignorefunc()
@@ -222,16 +222,16 @@ return function(data)
 			end
 		end)
 	end
-	
+
 	repeat wait() until returner ~= nil or not frame or not frame.Parent
-	
+
 	return returner
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXB01DC9F5F5C94865956CCFECA1F31B6A">
+				<Item class="BoolValue" referent="RBX4647818F99D74255A94CF0D1DB66B5D4">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -240,7 +240,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX324A9EE54BB34BA1868269CBB59DAE15">
+				<Item class="BoolValue" referent="RBX175BE1528B1246DF925926CC13EE9277">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -250,7 +250,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXFB0BE4ED40C74927BECE28C019BA7FD5">
+			<Item class="Frame" referent="RBXBF015B5AA69C468E9E39757931CDC99C">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -304,7 +304,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX96DF0074BD0647A2BA51B1C714CCD815">
+				<Item class="TextButton" referent="RBXB552702B51724923BFD8746E735CB50A">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -384,7 +384,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">10</int>
 					</Properties>
-					<Item class="UICorner" referent="RBXDC97CE353B8945A5ABAC9BB35EE050A5">
+					<Item class="UICorner" referent="RBXB0E3D0E0B7394A29BE47CB4A6561C4C0">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -397,7 +397,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextButton" referent="RBXFDC9F718A3CF42B3A3EA1C8E0D082DD3">
+				<Item class="TextButton" referent="RBX5F047D0DE02C4944BF01F853B72A41F4">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -478,7 +478,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX2D388DAEE5F641998675A1BD7DAD7985">
+				<Item class="TextLabel" referent="RBXD433A87FEFDD40B8B03DD8C549778998">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -555,7 +555,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX4B6DEDAD293C4FF9A9FFBDDE3BEF1154">
+				<Item class="TextLabel" referent="RBX1214703A04524AF5B1AB11FFA1D24196">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -633,7 +633,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="UICorner" referent="RBX397CDF1028CB450B87221E3F7FAFBBA2">
+			<Item class="UICorner" referent="RBXEA70F29B0371479E9E0AC98C5B81BED1">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<UDim name="CornerRadius">
@@ -646,7 +646,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX3FE52D79ABBF494AB1D20CD8228DD2F6">
+		<Item class="ScreenGui" referent="RBXED0E53EFF1624D45AAFA2E9158D46705">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -660,7 +660,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBX7F2E217A8C3D47499AE15327DA0CC178">
+			<Item class="Frame" referent="RBX7A61F30F805D4894857E0778BCE735BD">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -714,7 +714,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">7</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBXB6B26FEAD4AE45608D5AFE1282245FF6">
+				<Item class="TextLabel" referent="RBXA6C4D8F4B4A94418B31C95B7E3403149">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -791,7 +791,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">7</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXFEA60FA311C040C4A9BC581EB206A804">
+				<Item class="TextLabel" referent="RBX797884B1881B40C19813628E9D04939A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -869,19 +869,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX2BECD94828554BFAB353A12B6CDC6573">
+			<Item class="Folder" referent="RBXEF8273A6DCB3479EB9B155D68BA36B50">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXF1E82A4E2499433681C7DF123215EDF5">
+				<Item class="ModuleScript" referent="RBXCB4727BBC2BF47D08C0001A37A6BD464">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{B1FD8FED-094D-49F4-A0E8-CB154B953A3F}</string>
+						<string name="ScriptGuid">{C31759E4-ABC9-4F1E-8319-574A0684895E}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -896,17 +896,17 @@ return function(data)
 	local frame = gui.Frame
 	local msg = gui.Frame.Message
 	local ttl = gui.Frame.Title
-	
+
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	
+
 	local title = data.Title
 	local message = data.Message
 	local scroll = data.Scroll
 	local tim = data.Time
-	
+
 	if not data.Message or not data.Title then gui:Destroy() end
-	
+
 	ttl.Text = title
 	msg.Text = message
 	ttl.TextTransparency = 1
@@ -914,25 +914,25 @@ return function(data)
 	ttl.TextStrokeTransparency = 1
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
-	
-	
+
+
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
 	blur.Parent = service.Workspace.CurrentCamera
-	
+
 	local fadeSteps = 10
 	local blurSize = 10
 	local textFade = 0.1
 	local strokeFade = 0.5
 	local frameFade = 0.3
-	
+
 	local blurStep = blurSize/fadeSteps
 	local frameStep = frameFade/fadeSteps
 	local textStep = 0.1
 	local strokeStep = 0.1
 	local gone = false
-	
+
 	local function fadeIn()
 		if not gone then
 			blur.Enabled = true
@@ -957,7 +957,7 @@ return function(data)
 			end
 		end
 	end
-	
+
 	local function fadeOut()
 		if not gone then
 			for i = 1,fadeSteps do
@@ -983,56 +983,56 @@ return function(data)
 			gone = true
 		end
 	end
-	
+
 	gTable.CustomDestroy = function()
 		if not gone then
 			gone = true
 			pcall(fadeOut)
 		end
-		
+
 		pcall(function() service.UnWrap(gui):Destroy() end)
 		pcall(function() blur:Destroy() end)
 	end
-	
-	
+
+
 	--[[if not scroll then
 		msg.Text = message
 	else
 		Routine(function()
 			wait(0.5)
-			for i = 1, #message do 
-				msg.Text = msg.Text .. message:sub(i,i) 
-				wait(0.05) 
-			end 
+			for i = 1, #message do
+				msg.Text = msg.Text .. message:sub(i,i)
+				wait(0.05)
+			end
 		end)
 	end--]] -- For now?
-	
+
 	fadeIn()
 	wait(tim or 5)
 	if not gone then
 		fadeOut()
 	end
-	
+
 	--[[
-	
+
 	frame.Position = UDim2.new(0.5,-175,-1.5,0)
-	
+
 	gui.Parent = playergui
-	
+
 	frame:TweenPosition(UDim2.new(0.5,-175,0.25,0),nil,nil,0.5)
-	
+
 	if not scroll then
 		msg.Text = message
 		wait(tim or 10)
 	else
 		wait(0.5)
-		for i = 1, #message do 
-			msg.Text = msg.Text .. message:sub(i,i) 
-			wait(0.05) 
-		end 
-		wait(tim or 5) 
+		for i = 1, #message do
+			msg.Text = msg.Text .. message:sub(i,i)
+			wait(0.05)
+		end
+		wait(tim or 5)
 	end
-	
+
 	if frame then
 		frame:TweenPosition(UDim2.new(0.5,-175,-1.5,0),nil,nil,0.5)
 		wait(1)
@@ -1044,7 +1044,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX2BDC9DD601A942739A7659E140266972">
+				<Item class="BoolValue" referent="RBXEC732E53C3D74F7B8EA0B7460C827115">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1053,7 +1053,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXBF36D38E2D0B4E4DB6080AD29F65AE88">
+				<Item class="BoolValue" referent="RBXAC38885332DB48DF864913019C9A0015">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1064,7 +1064,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX316B5DDC994E42BBA84298224F8C38BB">
+		<Item class="ScreenGui" referent="RBXBBA76419461D4C23A8542FA42279F44A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -1078,7 +1078,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBX3D4D8BC73D824BF1830C4B10D5B7983D">
+			<Item class="Frame" referent="RBX6E470ABD61D5401DAB5C374FB68B1F4E">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1132,7 +1132,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">10</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX1DBC28EF64DF4EB7B730317C513A8F68">
+				<Item class="TextLabel" referent="RBX8AF43E57D12040ADA0BD9A05F12A99BF">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1209,7 +1209,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXB0CDA71846474BF08D8275CB092E384A">
+				<Item class="TextLabel" referent="RBXB13C1D19983F45ED91795E79F760E71B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1286,7 +1286,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">10</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX72D6C795411D4470B763467804810F78">
+				<Item class="Frame" referent="RBXE108421076D943D6B2A13F9DD5A7F097">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1340,7 +1340,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">12</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX1C657FD8C976497DAD09F8C9687313A4">
+					<Item class="UICorner" referent="RBX5347656F78464B2A8227611ED8468B92">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -1353,7 +1353,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBXDEE75BE70B5B4513A1794DC8BF7F762F">
+				<Item class="UICorner" referent="RBXA7DE679419D24E509DDC2B1967AD7C6A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -1366,19 +1366,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX06BB54399D9541A79DB3DBEF19A76CFC">
+			<Item class="Folder" referent="RBXE2F5B1BB751E412BA90662CC463D5481">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXF8C6379600224F7490930E0720EEA7A0">
+				<Item class="ModuleScript" referent="RBX24FA7195293A46339EF7FEC1A53BB03F">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{B8EFCB71-7C30-41C0-B5EF-F644131ECD31}</string>
+						<string name="ScriptGuid">{2EF2B5B2-3096-44C6-9AFD-2C520FB6B2BF}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1397,14 +1397,14 @@ return function(data)
 	local t2 = main.Message
 	local msg = data.Message
 	local color = data.Color or Color3.fromRGB(255, 78, 78)
-	
+
 	local found = client.UI.Get("Output")
 	if found then
 		for i,v in pairs(found) do
 			local p = v.Object
 			if p and p.Parent then
 				p.Main.Position = UDim2.new(0, 0, 0.35, p.Main.Position.Y.Offset+50)
-			
+
 			end
 		end
 	end
@@ -1421,7 +1421,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX6E94E9AF09D5480494A8E9E466AA7036">
+				<Item class="BoolValue" referent="RBX6964A95508C44BA69728EDE4ECF3C236">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1430,7 +1430,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXCA9CF6ECF3A048E8AD503E9B78428A24">
+				<Item class="BoolValue" referent="RBXDFBF25D8885244E596B339F741601E14">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1441,7 +1441,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXFC5F5E8563FA4E30B63F5A38EF18E1F7">
+		<Item class="ScreenGui" referent="RBX073039E1C2F94579A8400F3350C2D8F7">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -1455,19 +1455,19 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBXE151549B353543A8804610E586373AA9">
+			<Item class="Folder" referent="RBX7A3593B4D77E425F98CC80B0BAE535D3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX84B84F5252884009A428869E7648E78D">
+				<Item class="ModuleScript" referent="RBXD88535CE04204DAFB057761805CCEA69">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{60B6A49C-EAA7-4EFE-949A-2AC8F800F8EA}</string>
+						<string name="ScriptGuid">{87FE1A59-8510-4094-AB40-3CE7BD31B4A2}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -1482,9 +1482,9 @@ return function(data)
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
 	local str = data.Message
-	
+
 	client.UI.Remove("Notif",script.Parent.Parent)
-	
+
 	if str and type(str)=="string" then
 		label.Text = str
 		gTable:Ready()
@@ -1496,7 +1496,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXCD4F04B82FB94D1ABCD8762A367F44DF">
+				<Item class="BoolValue" referent="RBX21FA8339668F40848343D4E560A72FB6">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -1505,7 +1505,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXCC69D4366B634A55B9F6FBB1C887E63F">
+				<Item class="BoolValue" referent="RBX88AADF6AC2CD428096ACBF0F571F11D3">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -1515,7 +1515,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX56AD3FE4D56F49258C275CF8EDEECB8D">
+			<Item class="TextLabel" referent="RBX3B676D0EE692435A86BB84C91E3A566E">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1591,7 +1591,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="UICorner" referent="RBXD58189EE45A24EBD9F9C149C7E90C339">
+				<Item class="UICorner" referent="RBXB973A6652EB34546A019B44EC7327DFC">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -1605,11 +1605,11 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXE58CA8BD8B4048528500B504BDC2BD66">
+		<Item class="ScreenGui" referent="RBX70590E57B99243ACB07B7666BA54467A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
-				<int name="DisplayOrder">100</int>
+				<int name="DisplayOrder">0</int>
 				<bool name="Enabled">true</bool>
 				<bool name="IgnoreGuiInset">false</bool>
 				<string name="Name">Window</string>
@@ -1619,7 +1619,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="TextLabel" referent="RBXACEBE05B78CA4ABB94BD8D052F2BD4E6">
+			<Item class="TextLabel" referent="RBXBCA8550D86D8479DBA842EA7D1638DBD">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1695,7 +1695,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextBox" referent="RBXEDD63E4FDCC6419C9CCBC72A0A805634">
+				<Item class="TextBox" referent="RBX8442948B96CA4A3185545E362C0CB0A0">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1782,7 +1782,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBX0F2E82D35FEE45DDB163B7D8F34498B5">
+				<Item class="StringValue" referent="RBX83CED0B3AA914456927BE90C564CAEF2">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -1792,7 +1792,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXCE8D16546E7E4BC0A9B0F4E379AD1377">
+			<Item class="Frame" referent="RBX1DE623A993674011BB85B084286B1D4F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1846,7 +1846,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="NumberValue" referent="RBX58A85E74470845BDBF0CDA5D619912DE">
+				<Item class="NumberValue" referent="RBX7CF80DD5F834480E88C516F5D73F833C">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Percentage</string>
@@ -1855,7 +1855,7 @@ end]]></ProtectedString>
 						<double name="Value">0</double>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX116A99A640D6436697FFE19A0A760114">
+				<Item class="Frame" referent="RBXE52F4AD488A24436B587AA358595C7FA">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1910,7 +1910,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX5AA01AF7FCEF4D28B02139554B4D6233">
+				<Item class="ImageLabel" referent="RBX26325091C6B74753B2940078B3686AD6">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1997,7 +1997,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX4E0CFF39CE3D461BBAC7D41337BFD3DF">
+				<Item class="ImageLabel" referent="RBX03D858EDE2C240B989DD4101412FFE94">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2085,7 +2085,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXF9AEDC0153DF4C78B9D3BDD57001E047">
+			<Item class="Frame" referent="RBX6CBAF08CE8BD45C48C0C358233CDDB18">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -2139,7 +2139,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">999999</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX15AF084A6C734D6DA9E64D056C703D05">
+				<Item class="TextLabel" referent="RBXD3197432BC6E4A0B873E942AAA8C7207">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2217,7 +2217,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX5555E88A5B4A4EEC8E0B441241845034">
+			<Item class="Frame" referent="RBXD711663601BD491895A6A2C009D17C84">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -2271,7 +2271,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXBF42E31EF157473FAC4C94D49CE2DCF7">
+				<Item class="TextButton" referent="RBX3902526091FA4E0A8AD8AA91B7DA45AA">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -2352,7 +2352,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageButton" referent="RBX6B142DEEA7394D33B1F9C9E4554FACE5">
+				<Item class="ImageButton" referent="RBX635D14D92D7F4DA9B02974DB21D8A904">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -2445,7 +2445,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX190103459F3E4572B8773F9A946B986F">
+				<Item class="Frame" referent="RBXD3F51C7159014000BB394A62EA7FF821">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -2499,7 +2499,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX1EFD7786400E40EE831110142D45F075">
+					<Item class="UICorner" referent="RBX21DF133DAC7143B08333624D595AEBF8">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -2512,7 +2512,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBX41EBBB29010B4042927BB23B86DA61F2">
+				<Item class="UICorner" referent="RBXA9727751297747849512A31D9A36CBB7">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -2525,14 +2525,14 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBXA65F55DA42034C3F872FF693402A241E">
+			<Item class="Folder" referent="RBX249F45D86F5A49ADBE355D453D5E5890">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BoolValue" referent="RBXAF9401F626DA4E3F87569268E454B000">
+				<Item class="BoolValue" referent="RBX405980EBBECE4F81BB3E740474F5E1F0">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -2541,12 +2541,12 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBXE0298C0F9B694871849112EADED48218">
+				<Item class="ModuleScript" referent="RBX851578C6B31E4E46B76661B35CDAB920">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{E8EB4240-A99E-49A5-AE26-F937AEC19D95}</string>
+						<string name="ScriptGuid">{61AB9874-C8BE-4602-8776-78A6FB5E50AF}</string>
 						<ProtectedString name="Source"><![CDATA[																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -2554,14 +2554,14 @@ end]]></ProtectedString>
 I worry about the fact that Code.lua could be outdated, also, the notepad script textbox needs a name so i can detect it and not make it rounded
 	Window is a special UI object that can be used to easily make new Adonis UI windows.
 	Refer to modules in the Default theme for examples of how Adonis windows work.
-		
+
 	Window Data Table Properties: [Supplied when creating] [{Name = "Window", Size = {120,70}, Title = "Some Window"}]
 		[String] 	Name 		 - Name of the UI object being created [Used when finding duplicates or removing the window via client.UI.Remove()]
 		[String] 	Title		 - Window title
 		[String] 	Icon		 - The window's icon
 		[Vector2]	CanvasSize	 - Sets the window's canvas size
 		[Table]		Size		 - Size of the window in absolute X,Y values
-		[UDim2] 	Position 	 - The window''s position on the screen 
+		[UDim2] 	Position 	 - The window''s position on the screen
 		[Table]		MinSize		 - The minimum AbsoluteSize of the window
 		[Table]		MaxSize		 - The maximum Absolutesize of the window
 		[Bool] 		NoHide		 - If true the minimize button will be removed
@@ -2575,7 +2575,7 @@ I worry about the fact that Code.lua could be outdated, also, the notepad script
 		[Function]	OnRefresh	 - Called when the window is refreshed and causes the refresh button to appear
 		[Function]	OnMinimize	 - Called when the window is minimized or maximized; a bool is passed indicated whether it's opened or closed
 		[Function]  IconClicked	 - Called when the window icon is clicked
-		
+
 	Window Properties:	[window.IsVisible]
 		gTable		- The window's UI table
 		Window 		- The window's ScreenGui
@@ -2583,18 +2583,18 @@ I worry about the fact that Code.lua could be outdated, also, the notepad script
 		Title		- The title TextLabel
 		Dragger		- The drag bar that contains all window frames
 		Object		- The ScrollingFrame that contains added elements and is returned when a window is created [Containing all window properties & methods]
-	 	IsVisible 	- If window is minimized, IsVisible will be false	
+	 	IsVisible 	- If window is minimized, IsVisible will be false
 		Closed 		- If window is closed, Closed will be true
-	
+
 	Window Methods: [window:Close()]
 		:Destroy()	- Closes the window
-		:Close() 	- Closes the window	
+		:Close() 	- Closes the window
 		:Refresh() 	- Forces a refresh as if the player clicked the refresh button
 		:Ready()	- Sets the window as ready and displays it on the screen
 		:Init()		- Same as window:Ready()
 		:IsVisible() - Returns whether or not the window is minimized
 		:IsClosed()	- Returns whether or not the window is closed
-	
+
 		:Add(string Class, table Data)	- Adds a new object of Class to the window with properties specified by Data
 		:Hide(bool doHide)				- Forces the window to minimize or maximize
 		:SetTitle(string newTitle)		- Sets the window's title
@@ -2603,33 +2603,33 @@ I worry about the fact that Code.lua could be outdated, also, the notepad script
 		:GetPosition()					- Gets the window's position
 		:GetSize()						- Gets the window's AbsoluteSize
 		:BindEvent(Event, Function) 	- Binds an event to the window, disconnecting it when the window closes
-	
+
 	Object Methods:
 		:SetPosition(UDim2 newPos) 		- Sets the position of object
 		:SetSize(UDim2 newSize) 		- Sets the size of the object
 		:Add(string Class, table Data)	- Adds a new object of Class to the object with properties specified by Data
-		
+
 	Boolean Class:
 		:Toggle		- Enables/Disables the boolean object
-	
+
 	String Class:
 		- BoxText			- Starting text
 		- BoxProperties		- Properties of the TextBox
 		- TextChanged		- Function fired when text is changed
-		
+
 	Slider Class:
 		- Value 				- 0 - 1 Decimal representing slider position percentage
 		- :SetValue(decimal)	- Sets the slider positional value
-		
+
 	Dropdown Class:
 		- Selected				- String for currently selected option
 		- Options 				- Table containing dropdown menu options
 		- OnSelect 				- Function ran when an option is selected
-		
+
 	TabFrame Class:
 		:NewTab(string, table)	- Makes a new tab
 		:GetTab(string)			- Gets an existing tab's frame
-	
+
 	ScrollingFrame Class:
 		:GenerateList(table)				- Generates a list and resizes the canvas
 		:ResizeCanvas(bool onX, bool onY)	- Resizes based on it's contents
@@ -2638,11 +2638,11 @@ I worry about the fact that Code.lua could be outdated, also, the notepad script
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 																																																				--]]
-	
+
 	--// Todo:
 	--//	Window frame support for fullscreen/scale (pseudo-scale)
 	--//	Optimize/fix some stuff
-	
+
 --/////////////////////////////////////////////////////////--
 
 local dZIndex 	 = 2
@@ -2682,7 +2682,7 @@ local getNextPos
 local wallPosition
 local setPosition
 local checkMouse
-local isInFrame 
+local isInFrame
 local setSize
 local apiIfy
 
@@ -2705,7 +2705,7 @@ return function(data)
 	local InputService = service.UserInputService
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	
+
 	local Event = gTable.BindEvent
 	local GUI = gTable.Object
 	local Name = data.Name
@@ -2743,7 +2743,7 @@ return function(data)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
-	
+
 	local Drag = GUI.Drag
 	local Close = Drag.Close
 	local Hide = Drag.Hide
@@ -2764,17 +2764,17 @@ return function(data)
 	local TopLeft = Main.TopLeft
 	local Bottom = Main.Bottom
 	local Top = Main.Top
-	
+
 	function Expand(ent, point, text)
 		local label = point:FindFirstChild("Label")
-		
+
 		if label then
 			ent.MouseLeave:Connect(function(x,y)
 				if inExpandable == ent then
 					point.Visible = false
 				end
 			end)
-			
+
 			ent.MouseMoved:Connect(function(x,y)
 				inExpandable = ent
 				label.Text = text or ent.Desc.Value
@@ -2797,7 +2797,7 @@ return function(data)
 			end)
 		end
 	end
-	
+
 	function getNextPos(frame)
 		local farXChild, farYChild
 		for i,v in next,frame:GetChildren() do
@@ -2805,16 +2805,16 @@ return function(data)
 				if not farXChild or (v.AbsolutePosition.X + v.AbsoluteSize.X) > (farXChild.AbsolutePosition.X + farXChild.AbsoluteSize.X) then
 					farXChild = v
 				end
-				
+
 				if not farYChild or (v.AbsolutePosition.Y + v.AbsoluteSize.Y) > (farXChild.AbsolutePosition.Y + farXChild.AbsoluteSize.Y) then
 					farYChild = v
 				end
 			end
 		end
-		
+
 		return ((not farXChild or not farYChild) and UDim2.new(0,0,0,0)) or UDim2.new(farXChild.Position.X.Scale, farXChild.Position.X.Offset + farXChild.AbsoluteSize.X, farYChild.Position.Y.Scale, farYChild.Position.Y.Offset + farYChild.AbsoluteSize.Y)
 	end
-	
+
 	function LoadChildren(Obj, Children)
 		if Children then
 			local runWhenDone = Children.RunWhenDone and functionify(Children.RunWhenDone, Obj)
@@ -2826,41 +2826,41 @@ return function(data)
 					runWhenDone = functionify(data, Obj)
 				end
 			end
-			
+
 			if runWhenDone then
 				runWhenDone(Obj)
 			end
 		end
 	end
-	
+
 	function BringToFront()
 		for i,v in ipairs(Player.PlayerGui:GetChildren()) do
 			if v:FindFirstChild("__ADONIS_WINDOW") then
 				v.DisplayOrder = 100
 			end
 		end
-		
+
 		GUI.DisplayOrder = 101
 	end
-	
+
 	function addTitleButton(data)
 		local startPos = 1
 		local realPos
-		local new 
+		local new
 		local original = Hide
-		
+
 		if Hide.Visible then
 			startPos = startPos+1
 		end
-		
+
 		if Close.Visible then
 			startPos = startPos+1
 		end
-		
+
 		if Refresh.Visible then
 			startPos = startPos+1
 		end
-		
+
 		realPos = UDim2.new(1, -(((30*startPos)+5)+(startPos-1)), 0, 0)
 		data.Position = data.Position or realPos
 		data.Size = data.Size or original.Size
@@ -2878,13 +2878,13 @@ return function(data)
 		data.TextWrapped = data.TextWrapped or original.TextWrapped
 		data.Font = Enum.Font.Ubuntu
 		data.Parent = Drag
-		
+
 		--local round = Drag.Close.UICorner:Clone()
 	--	round.Parent = data
 		--data.TextXAlignment = data.TextXAlignment or original.TextXAlignment
 		--data.TextYAlignment = data.TextYAlignment or original.TextYAlignment
-		
-		
+
+
 		local instancefinally = create("TextButton", data)
 		local rounder = service.New("UICorner",{
 			CornerRadius = UDim.new(0.2,0);
@@ -2892,7 +2892,7 @@ return function(data)
 		});
 		return instancefinally
 	end
-	
+
 	function functionify(func, object)
 		if type(func) == "string" then
 			if object then
@@ -2906,107 +2906,107 @@ return function(data)
 			return func
 		end
 	end
-	
+
 	function create(class, dataFound, existing)
 		local data = dataFound or {}
 		local class = data.Class or data.ClassName or class
 		local new = existing or (specialInsts[class] and specialInsts[class]:Clone()) or service.New(class)
 		local parent = data.Parent or new.Parent
-		
+
 		if dataFound then
 			data.Parent = nil
-			
+
 			if data.Class or data.ClassName then
 				data.Class = nil
 				data.ClassName = nil
 			end
-			
+
 			if not data.BorderColor3 and checkProperty(new,"BorderColor3") then
 				new.BorderColor3 = dBorder
 			end
-			
+
 			if not data.CanvasSize and checkProperty(new,"CanvasSize") then
 				new.CanvasSize = dCanvasSize
 			end
-			
+
 			if not data.BorderSizePixel and checkProperty(new,"BorderSizePixel") then
 				new.BorderSizePixel = dPixelSize
 			end
-			
+
 			if not data.BackgroundColor3 and checkProperty(new,"BackgroundColor3") then
 				new.BackgroundColor3 = dBackground
 			end
-			
+
 			if not data.PlaceholderColor3 and checkProperty(new,"PlaceholderColor3") then
 				new.PlaceholderColor3 = dPlaceholderColor
 			end
-			
+
 			if not data.Transparency and not data.BackgroundTransparency and checkProperty(new,"Transparency") then
 				new.BackgroundTransparency = dTransparency
 			elseif data.Transparency then
 				new.BackgroundTransparency = data.Transparency
 			end
-			
+
 			if not data.TextColor3 and not data.TextColor and checkProperty(new,"TextColor3") then
 				new.TextColor3 =  dTextColor
 			elseif data.TextColor then
 				new.TextColor3 = data.TextColor
 			end
-			
+
 			if not data.Font and checkProperty(new, "Font") then
 				data.Font = dFont
 			end
-			
+
 			if not data.TextSize and checkProperty(new, "TextSize") then
 				data.TextSize = dTextSize
 			end
-			
+
 			if not data.BottomImage and not data.MidImage and not data.TopImage and class == "ScrollingFrame" then
-				new.BottomImage = dScrollImage 
+				new.BottomImage = dScrollImage
 				new.MidImage = dScrollImage
 				new.TopImage = dScrollImage
 			end
-			
+
 			if not data.Size and checkProperty(new,"Size") then
 				new.Size = dSize
 			end
-			
+
 			if not data.Position and checkProperty(new,"Position") then
 				new.Position = dPosition
 			end
-			
+
 			if not data.ZIndex and checkProperty(new,"ZIndex") then
 				new.ZIndex = dZIndex
 				if parent and checkProperty(parent, "ZIndex") then
-					
+
 					new.ZIndex = parent.ZIndex
 				end
 			end
-			
+
 			if data.TextChanged and class == "TextBox" then
 				local textChanged = functionify(data.TextChanged, new)
 				new.FocusLost:Connect(function(enterPressed)
 					textChanged(new.Text, enterPressed, new)
 				end)
-			end 
-			
+			end
+
 			if (data.OnClicked or data.OnClick) and class == "TextButton" then
 				local debounce = false;
 				local doDebounce = data.Debounce;
 				local onClick = functionify((data.OnClicked or data.OnClick), new)
 				new.MouseButton1Down:Connect(function()
-					if not debounce then 
+					if not debounce then
 						if doDebounce then
 							debounce = true
 						end
-						
+
 						onClick(new);
-						
+
 						debounce = false;
 					end
 				end)
 			end
-			
+
 			if data.Events then
 				for event,func in pairs(data.Events) do
 					local realFunc = functionify(func, new)
@@ -3015,47 +3015,47 @@ return function(data)
 					end)
 				end
 			end
-			
+
 			if data.Visible == nil then
 				data.Visible = true
 			end
-			
+
 			if data.LabelProps then
 				data.LabelProperties = data.LabelProps
 			end
 		end
-		
+
 		if class == "Entry" then
 			local label = new.Text
 			local dots = new.Dots
 			local desc = new.Desc
-			
+
 			label.ZIndex = data.ZIndex or new.ZIndex
 			dots.ZIndex = data.ZIndex or new.ZIndex
-			
+
 			if data.Text then
 				new.Text.Text = data.Text
 				new.Text.Visible = true
 				data.Text = nil
 			end
-			
+
 			if data.Desc or data.ToolTip then
 				new.Desc.Value = data.Desc or data.ToolTip
 				data.Desc = nil
 			end
-			
+
 			Expand(new, Tooltip)
 		else
 			if data.ToolTip then
 				Expand(new, Tooltip, data.ToolTip)
 			end
 		end
-		
+
 		if class == "ButtonEntry" then
 			local button = new.Button
 			local debounce = false
 			local onClicked = functionify(data.OnClicked, button)
-			
+
 			new:SetSpecial("DoClick",function()
 				if not debounce then
 					debounce = true
@@ -3065,12 +3065,12 @@ return function(data)
 					debounce = false
 				end
 			end)
-			
+
 			new.Text = data.Text or new.Text
 			button.ZIndex = data.ZIndex or new.ZIndex
 			button.MouseButton1Down:Connect(new.DoClick)
 		end
-		
+
 		if class == "Boolean" then
 			local enabled = data.Enabled
 			local debounce = false
@@ -3085,14 +3085,14 @@ return function(data)
 						enabled = true
 						new.Text = "[ON]"
 					end
-					
+
 					if onToggle then
 						onToggle(enabled, new)
 					end
 					debounce = false
 				end
 			end
-			
+
 			--new.ZIndex = data.ZIndex
 			new.Text = (enabled and "[ON]") or "[OFF]"
 			new.MouseButton1Down:Connect(function()
@@ -3100,14 +3100,14 @@ return function(data)
 					toggle()
 				end
 			end)
-			
+
 			new:SetSpecial("Toggle",function(ignore, isEnabled) toggle(isEnabled) end)
 		end
 		if class == "TextString" then
 			local enabled = data.Text
 			local ColorText = data.ColorText
 			local onToggle = functionify(data.OnToggle, new)
-			
+
 			--new.ZIndex = data.ZIndex
 			new.Text = enabled
 			new.TextColor3 = ColorText
@@ -3115,14 +3115,14 @@ return function(data)
 		if class == "StringEntry" then
 			local box = new.Box
 			local ignore
-			
+
 			new.Text = data.Text or new.Text
 			box.ZIndex = data.ZIndex or new.ZIndex
-			
+
 			if data.BoxText then
 				box.Text = data.BoxText
 			end
-			
+
 			if data.BoxProperties then
 				for i,v in next,data.BoxProperties do
 					if checkProperty(box, i) then
@@ -3130,7 +3130,7 @@ return function(data)
 					end
 				end
 			end
-			
+
 			if data.TextChanged then
 				local textChanged = functionify(data.TextChanged, box)
 				box.Changed:Connect(function(p)
@@ -3138,7 +3138,7 @@ return function(data)
 						textChanged(box.Text)
 					end
 				end)
-				
+
 				box.FocusLost:Connect(function(enter)
 					local change = textChanged(box.Text, true, enter)
 					if change then
@@ -3148,10 +3148,10 @@ return function(data)
 					end
 				end)
 			end
-			
+
 			new:SetSpecial("SetValue",function(ignore, newValue) box.Text = newValue end)
 		end
-		
+
 		if class == "Slider" then
 			local mouseIsIn = false
 			local posValue = new.Percentage
@@ -3161,67 +3161,67 @@ return function(data)
 			local moving = false
 			local value = 0
 			local onSlide = functionify(data.OnSlide, new)
-			
+
 			bar.ZIndex = data.ZIndex or new.ZIndex
 			slider.ZIndex = bar.ZIndex+1
 			drag.ZIndex = slider.ZIndex+1
 			drag.Active = true
-			
+
 			if data.Value then
 				slider.Position = UDim2.new(0.5, -10, 0.5, -10)
 				drag.Position = slider.Position
 			end
-			
+
 			bar.InputBegan:Connect(function(input)
 				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
-					
+
 					if value < 0 then
 						value = 0
 					elseif value > 1 then
 						value = 1
 					end
-					
+
 					slider.Position = UDim2.new(value, -10, 0.5, -10)
 					drag.Position = slider.Position
 					posValue.Value = value
-					
+
 					if onSlide then
 						onSlide(value)
 					end
 				end
 			end)
-			
+
 			drag.DragBegin:Connect(function()
 				moving = true
 			end)
-			
+
 			drag.DragStopped:Connect(function()
 				moving = false
 				drag.Position = slider.Position
 			end)
-			
+
 			drag.Changed:Connect(function()
 				if moving then
 					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
-					
+
 					if value < 0 then
 						value = 0
 					elseif value > 1 then
 						value = 1
 					end
-					
+
 					slider.Position = UDim2.new(value, -10, 0.5, -10)
 					posValue.Value = value
-					
+
 					if onSlide then
 						onSlide(value)
 					end
 				end
 			end)
-			
-			new:SetSpecial("SetValue",function(ignore, newValue) 
-				if newValue and tonumber(newValue) then 
+
+			new:SetSpecial("SetValue",function(ignore, newValue)
+				if newValue and tonumber(newValue) then
 					value = tonumber(newValue)
 					posValue.Value = value
 					slider.Position = UDim2.new(value, -10, 0.5, -10)
@@ -3229,7 +3229,7 @@ return function(data)
 				end
 			end)
 		end
-		
+
 		if class == "Dropdown" then
 			local menu = new.Menu
 			local downImg = new.Down
@@ -3245,24 +3245,24 @@ return function(data)
 				BackgroundTransparency = 1;
 				ZIndex = 100;
 			})
-			
+
 			menu.ZIndex = scroller.ZIndex
 			menu.Parent = GUI
 			menu.Visible = false
 			menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 100);
 			menu.BackgroundColor3 = data.BackgroundColor3 or new.BackgroundColor3
-			
+
 			if data.TextAlignment then
 				selected.TextXAlignment = data.TextAlignment
 				selected.Position = UDim2.new(0, 30, 0, 0);
 			end
-			
+
 			if data.NoArrow then
 				downImg.Visible = false
 			end
-			
+
 			new:SetSpecial("MenuContainer", menu)
-			
+
 			new.Changed:Connect(function(p)
 				if p == "AbsolutePosition" and menu.Visible then
 					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
@@ -3274,9 +3274,9 @@ return function(data)
 					else
 						downImg.Position = UDim2.new(1, -downImg.AbsoluteSize.X, 0.5, -(downImg.AbsoluteSize.X/2))
 					end
-					
+
 					selected.Size = UDim2.new(1, -downImg.AbsoluteSize.X, 1, 0);
-					
+
 					if options and #options <= 6 then
 						menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 30*#options);
 					else
@@ -3285,16 +3285,16 @@ return function(data)
 					end
 				end
 			end)
-			
+
 			selected.ZIndex = new.ZIndex
 			downImg.ZIndex = new.ZIndex
-			
+
 			if textProps then
 				for i,v in next,textProps do
 					selected[i] = v
 				end
 			end
-			
+
 			if options then
 				for i,v in next,options do
 					local button = scroller:Add("TextButton", {
@@ -3309,41 +3309,41 @@ return function(data)
 							menu.Visible = false
 						end
 					})
-					
+
 					if textProps then
 						for i,v in next,textProps do
 							button[i] = v
 						end
 					end
 				end
-				
+
 				if curSelected then
 					selected.Text = curSelected
 				else
 					selected.Text = "No Selection"
 				end
-				
+
 				selected.MouseButton1Down:Connect(function()
 					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 					menu.Visible = not menu.Visible
 				end)
 			end
 		end
-		
+
 		if class == "TabFrame" then
 			local buttons = create("ScrollingFrame", nil, new.Buttons)
 			local frames = new.Frames
 			local numTabs = 0
 			local buttonSize = data.ButtonSize or 60
-			
+
 			new.BackgroundTransparency = data.BackgroundTransparency or 1
 			buttons.ZIndex = data.ZIndex or new.ZIndex
 			frames.ZIndex = buttons.ZIndex
-			
+
 			new:SetSpecial("GetTab", function(ignore, name)
 				return frames:FindFirstChild(name)
 			end)
-			
+
 			new:SetSpecial("NewTab", function(ignore, name, data)
 				local data = data or {}
 				--local numChildren = #frames:GetChildren()
@@ -3362,7 +3362,7 @@ return function(data)
 					ZIndex = buttons.ZIndex;
 					Visible = false;
 				})
-				
+
 				local tabButton = create("TextButton",{
 					Name = name;
 					Text = data.Text or name;
@@ -3379,7 +3379,7 @@ return function(data)
 				local round1 = Instance.new("UICorner")
 				round1.Parent = tabButton
 				round1.CornerRadius = UDim.new(0.2,0)
-				
+
 				tabFrame:SetSpecial("FocusTab",function()
 					for i,v in next,buttons:GetChildren() do if isGui(v) then v.BackgroundTransparency = 0.7 v.TextTransparency = 0.7 end end
 					for i,v in next,frames:GetChildren() do if isGui(v) then v.Visible = false end end
@@ -3397,66 +3397,66 @@ return function(data)
 					tabFrame.Visible = true
 					tabButton.BackgroundTransparency = data.Transparency or 0
 				end
-				
+
 				tabButton.MouseButton1Down:Connect(function()
 					if not disabled then
 						tabFrame:FocusTab()
 					end
 				end)
-				
+
 				tabButton.Parent = buttons
 				tabFrame.Parent = frames
 				buttons:ResizeCanvas(true, false)
-				
+
 				tabFrame:SetSpecial("Disable", function()
 					disabled = true;
 					tabButton.BackgroundTransparency = 0.9;
 					tabButton.TextTransparency = 0.9
 				end)
-				
+
 				tabFrame:SetSpecial("Enable", function()
 					disabled = false;
 					tabButton.BackgroundTransparency = 0.7;
 					tabButton.TextTransparency = data.TextTransparency or 0;
 				end)
-				
+
 				numTabs = numTabs+1;
-				
+
 				return tabFrame,tabButton
 			end)
 		end
-		
+
 		if class == "ScrollingFrame" then
 			local genning = false
 			if not data.ScrollBarThickness then
 				data.ScrollBarThickness = dScrollBar
 			end
-			
+
 			new:SetSpecial("GenerateList", function(obj, list, labelProperties, bottom)
 				local list = list or obj;
 				local genHold = {}
 				local entProps = labelProperties or {}
-				
+
 				genning = genHold
 				new:ClearAllChildren()
-				
+
 				local num = 0
 				for i,v in next,list do
 					local text = v;
 					local desc;
 					local color
 					local richText;
-					
+
 					if type(v) == "table" then
 						text = v.Text
 						desc = v.Desc
 						color = v.Color
-						
+
 						if v.RichTextAllowed or entProps.RichTextAllowed then
 							richText = true
 						end
 					end
-					
+
 					local label = create("TextLabel",{
 						Text = " "..tostring(text);
 						ToolTip = desc;
@@ -3470,11 +3470,11 @@ return function(data)
 						Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
 						RichText = richText or false;
 					})
-					
+
 					if color then
 						label.TextColor3 = color
 					end
-					
+
 					if labelProperties then
 						for i,v in next,entProps do
 							if checkProperty(label, i) then
@@ -3482,33 +3482,33 @@ return function(data)
 							end
 						end
 					end
-					
+
 					if genning == genHold then
 						label.Parent = new;
 					else
 						label:Destroy()
 						break
 					end
-					
+
 					num = num+1
-					
-					if data.Delay then 
+
+					if data.Delay then
 						if type(data.Delay) == "number" then
-							wait(data.Delay) 
-						elseif i%100 == 0 then 
-							wait(0.1) 
+							wait(data.Delay)
+						elseif i%100 == 0 then
+							wait(0.1)
 						end
 					end
 				end
-				
+
 				new:ResizeCanvas(false, true, false, bottom, 5, 5, 50)
 				genning = nil
 			end)
-			
+
 			new:SetSpecial("ResizeCanvas", function(ignore, onX, onY, xMax, yMax, xPadding, yPadding, modBreak)
 				local xPadding,yPadding = data.xPadding or 5, data.yPadding or 5
 				local newY, newX = 0,0
-				
+
 				if not onX and not onY then onX = false onY = true end
 				for i,v in next,new:GetChildren() do
 					if v:IsA("GuiObject") then
@@ -3516,60 +3516,60 @@ return function(data)
 							v.Size = UDim2.new(v.Size.X.Scale, v.Size.X.Offset, 0, v.AbsoluteSize.Y)
 							v.Position = UDim2.new(v.Position.X.Scale, v.Position.X.Offset, 0, v.AbsolutePosition.Y-new.AbsolutePosition.Y)
 						end
-						
+
 						if onX then
 							v.Size = UDim2.new(0, v.AbsoluteSize.X, v.Size.Y.Scale, v.Size.Y.Offset)
 							v.Position = UDim2.new(0, v.AbsolutePosition.X-new.AbsolutePosition.X, v.Position.Y.Scale, v.Position.Y.Offset)
 						end
-						
+
 						local yLower = v.Position.Y.Offset + v.Size.Y.Offset
 						local xLower = v.Position.X.Offset + v.Size.X.Offset
 						newY = math.max(newY, yLower)
 						newX = math.max(newX, xLower)
 						if modBreak then
-							if i%modBreak == 0 then 
+							if i%modBreak == 0 then
 								wait(1/60)
 							end
 						end
 					end
 				end
-				
+
 				if onY then
 					new.CanvasSize = UDim2.new(new.CanvasSize.X.Scale, new.CanvasSize.X.Offset, 0, newY+yPadding)
 				end
-				
+
 				if onX then
 					new.CanvasSize = UDim2.new(0, newX + xPadding, new.CanvasSize.Y.Scale, new.CanvasSize.Y.Offset)
 				end
-				
+
 				if xMax then
 					new.CanvasPosition = Vector2.new((newX + xPadding)-new.AbsoluteSize.X, new.CanvasPosition.Y)
 				end
-				
+
 				if yMax then
 					new.CanvasPosition = Vector2.new(new.CanvasPosition.X, (newY+yPadding)-new.AbsoluteSize.Y)
 				end
 			end)
-			
+
 			if data.List then new:GenerateList(data.List) data.List = nil end
 		end
-		
+
 		LoadChildren(new, data.Content or data.Children)
-		
+
 		data.Children = nil
 		data.Content = nil
-		
+
 		for i,v in next,data do
 			if checkProperty(new, i) then
 				new[i] = v
 			end
 		end
-		
+
 		new.Parent = parent
-		
+
 		return apiIfy(new, data, class),data
 	end
-	
+
 	function apiIfy(gui, data, class)
 		local newGui = service.Wrap(gui)
 		gui:SetSpecial("Object", gui)
@@ -3581,38 +3581,38 @@ return function(data)
 			new.Parent = gui;
 			return apiIfy(new, data, class)
 		end)
-		
+
 		gui:SetSpecial("Copy", function(ignore, class, gotData)
 			local newData = {}
 			local new
-			
+
 			for i,v in next,data do
 				newData[i] = v
 			end
-			
+
 			for i,v in next,gotData do
 				newData[i] = v
 			end
-			
+
 			new = create(class or data.Class or gui.ClassName, newData);
 			new.Parent = gotData.Parent or gui.Parent;
 			return apiIfy(new, data, class)
 		end)
-		
+
 		return newGui
 	end
-	
+
 	function doClose()
 		if not isClosed then
 			isClosed = true
 			gTable:Destroy()
 		end
 	end
-	
+
 	function isVisible()
 		return Main.Visible
 	end
-	
+
 	function doHide(doHide)
 		local origLH = Hide.LineHeight
 		if doHide or (doHide == nil and Main.Visible) then
@@ -3632,16 +3632,16 @@ return function(data)
 			Hide.LineHeight = origLH
 			gTable.Minimized = false
 		end
-		
+
 		if onMinimize then
 			onMinimize(Main.Visible)
 		end
-		
+
 		if Walls then
 			wallPosition()
 		end
 	end
-	
+
 	function isInFrame(x, y, frame)
 		if x > frame.AbsolutePosition.X and x < (frame.AbsolutePosition.X+frame.AbsoluteSize.X) and y > frame.AbsolutePosition.Y and y < (frame.AbsolutePosition.Y+frame.AbsoluteSize.Y) then
 			return true
@@ -3649,41 +3649,41 @@ return function(data)
 			return false
 		end
 	end
-	
+
 	function wallPosition()
 		if gTable.Active then
 			local x,y = Drag.AbsolutePosition.X, Drag.AbsolutePosition.Y
 			local abx, gx, gy = Drag.AbsoluteSize.X, GUI.AbsoluteSize.X, GUI.AbsoluteSize.Y
 			local ySize = (Main.Visible and Main.AbsoluteSize.Y) or Drag.AbsoluteSize.Y
-			
+
 			if x < 0 then
 				Drag.Position = UDim2.new(0, 0, Drag.Position.Y.Scale, Drag.Position.Y.Offset)
 			end
-			
+
 			if y < 0 then
 				Drag.Position = UDim2.new(Drag.Position.X.Scale, Drag.Position.X.Offset, 0, 0)
 			end
-			
+
 			if x + abx > gx then
 				Drag.Position = UDim2.new(0, GUI.AbsoluteSize.X - Drag.AbsoluteSize.X, Drag.Position.Y.Scale, Drag.Position.Y.Offset)
 			end
-			
+
 			if y + ySize > gy then
 				Drag.Position = UDim2.new(Drag.Position.X.Scale, Drag.Position.X.Offset, 0, GUI.AbsoluteSize.Y - ySize)
 			end
 		end
 	end
-	
+
 	function setSize(newSize)
 		if newSize and type(newSize) == "table" then
 			if newSize[1] < 50 then newSize[1] = 50 end
 			if newSize[2] < 50 then newSize[2] = 50 end
-			
+
 			Drag.Size = UDim2.new(0,newSize[1],0,25)
 			Main.Size = UDim2.new(1,0,0,newSize[2])
-		end 
+		end
 	end
-	
+
 	function setPosition(newPos)
 		if newPos and typeof(newPos) == "UDim2" then
 			Drag.Position = newPos
@@ -3691,9 +3691,9 @@ return function(data)
 			Drag.Position = UDim2.new(0, newPos[1], 0, newPos[2])
 		elseif Size and not newPos then
 			Drag.Position = UDim2.new(0.5, -Drag.AbsoluteSize.X/2, 0.5, -Main.AbsoluteSize.Y/2)
-		end 
+		end
 	end
-	
+
 	if Name then
 		gTable.Name = Name
 		if data.AllowMultiple ~= nil and data.AllowMultiple == false then
@@ -3704,19 +3704,19 @@ return function(data)
 			end
 		end
 	end
-	
+
 	if Size then
 		setSize(Size)
 	end
-	
+
 	if Position then
 		setPosition(Position)
-	end 
-	
+	end
+
 	if Title then
 		Titlef.Text = Title
 	end
-	
+
 	if CanKeepAlive or not ResetOnSpawn then
 		gTable.CanKeepAlive = true
 		GUI.ResetOnSpawn = false
@@ -3724,40 +3724,40 @@ return function(data)
 		gTable.CanKeepAlive = false
 		GUI.ResetOnSpawn = true
 	end
-	
+
 	if Icon then
 		Iconf.Visible = true
 		Iconf.Image = Icon
 	end
-	
+
 	if CanvasSize then
 		ScrollFrame.CanvasSize = CanvasSize
 	end
-	
+
 	if noClose then
 		Close.Visible = false
 		Refresh.Position = Hide.Position
 		Hide.Position = Close.Position
 	end
-	
+
 	if noHide then
 		Hide.Visible = false
 		Refresh.Position = Hide.Position
 	end
-	
+
 	if Walls then
 		Drag.DragStopped:Connect(function()
 			wallPosition()
 		end)
 	end
-	
+
 	if onRefresh then
 		local debounce = false
 		function DoRefresh()
 			if not Refreshing then
 				local done = false
 				Refreshing = true
-				
+
 				spawn(function()
 					while gTable.Active and not done do
 						for i = 0,180,10 do
@@ -3766,14 +3766,14 @@ return function(data)
 						end
 					end
 				end)
-				
+
 				onRefresh()
 				wait(1)
 				done = true
 				Refreshing = false
 			end
 		end
-		
+
 		Refresh.MouseButton1Down:Connect(function()
 			if not debounce then
 				debounce = true
@@ -3781,18 +3781,18 @@ return function(data)
 				debounce = false
 			end
 		end)
-		
+
 		Titlef.Size = UDim2.new(1, -130, Titlef.Size.Y.Scale, Titlef.Size.Y.Offset)
 	else
 		Refresh.Visible = false
 	end
-	
+
 	if iconClicked then
 		Iconf.MouseButton1Down(function()
 			iconClicked(data, GUI, Iconf)
 		end)
 	end
-	
+
 	if Menu then
 		data.Menu.Text     = ""
 		data.Menu.Parent   = Main
@@ -3804,7 +3804,7 @@ return function(data)
 		data.Menu.BorderSizePixel  = 0
 		create("TextLabel",data.Menu)
 	end
-	
+
 	if not SizeLocked then
 		local startXPos = Drag.AbsolutePosition.X
 		local startYPos = Drag.AbsolutePosition.Y
@@ -3814,19 +3814,19 @@ return function(data)
 		local newIcon
 		local inFrame
 		local ReallyInFrame
-		
+
 		local function readify(obj)
 			obj.MouseEnter:Connect(function()
 				ReallyInFrame = obj
 			end)
-			
+
 			obj.MouseLeave:Connect(function()
 				if ReallyInFrame == obj then
 					ReallyInFrame = nil
 				end
 			end)
 		end
-		
+
 		--[[
 		readify(Drag)
 		readify(ScrollFrame)
@@ -3839,9 +3839,9 @@ return function(data)
 		readify(Bottom)
 		readify(Top)
 		--]]
-		
+
 		function checkMouse(x, y) --// Update later to remove frame by frame pos checking
-			if gTable.Active and Main.Visible then 
+			if gTable.Active and Main.Visible then
 				if isInFrame(x, y, Drag) or isInFrame(x, y, ScrollFrame) then
 					inFrame = nil
 					newIcon = nil
@@ -3876,7 +3876,7 @@ return function(data)
 			else
 				inFrame = nil
 			end
-			
+
 			if (not client.Variables.MouseLockedBy) or client.Variables.MouseLockedBy == gTable then
 				if inFrame and newIcon then
 					Mouse.Icon = newIcon
@@ -3887,7 +3887,7 @@ return function(data)
 				end
 			end
 		end
-		
+
 		local function inputStart(x, y)
 			checkMouse(x, y)
 			if gTable.Active and inFrame and not Resizing and not isInFrame(x, y, ScrollFrame) and not isInFrame(x, y, Drag) then
@@ -3898,13 +3898,13 @@ return function(data)
 				startYSize = Main.AbsoluteSize.Y
 			end
 		end
-		
+
 		local function inputEnd()
 			if gTable.Active then
 				if Resizing and onResize then
 					onResize(UDim2.new(Drag.Size.X.Scale, Drag.Size.X.Offset, Main.Size.Y.Scale, Main.Size.Y.Offset))
 				end
-				
+
 				Resizing = nil
 				Mouse.Icon = curIcon
 				--DragEnabled = true
@@ -3913,22 +3913,22 @@ return function(data)
 				--end
 			end
 		end
-		
+
 		local function inputMoved(x, y)
 			if gTable.Active then
 				if Mouse.Icon ~= MouseIcons.TopRight and Mouse.Icon ~= MouseIcons.TopLeft and Mouse.Icon ~= MouseIcons.RightCorner and Mouse.Icon ~= MouseIcons.LeftCorner and Mouse.Icon ~= MouseIcons.Horizontal and Mouse.Icon ~= MouseIcons.Vertical then
 					curIcon = Mouse.Icon
 				end
-				
+
 				if Resizing then
 					local moveX = false
 					local moveY = false
 					local newPos = Drag.Position
 					local xPos, yPos = x, y
 					local newX, newY = startXSize, startYSize
-					
+
 					--DragEnabled = false
-					
+
 					if Resizing == "TopRight" then
 						newX = (xPos - startXPos) + 3
 						newY = (startYPos - yPos) + startYSize -1
@@ -3960,24 +3960,24 @@ return function(data)
 						newY = (startYPos - yPos) + startYSize - 1
 						moveY = true
 					end
-					
+
 					if newX < MinSize[1] then newX = MinSize[1]  end
 					if newY < MinSize[2] then newY = MinSize[2] end
 					if newX > MaxSize[1] then newX = MaxSize[1] end
 					if newY > MaxSize[2] then newY = MaxSize[2] end
-					
+
 					if moveX then
 						newPos = UDim2.new(0, (startXPos+startXSize)-newX, newPos.Y.Scale, newPos.Y.Offset)
 					end
-					
+
 					if moveY then
 						newPos  = UDim2.new(newPos.X.Scale, newPos.X.Offset, 0, (startYPos+startYSize)-newY)
 					end
-					
+
 					Drag.Position = newPos
 					Drag.Size = UDim2.new(0, newX, Drag.Size.Y.Scale, Drag.Size.Y.Offset)
 					Main.Size = UDim2.new(Main.Size.X.Scale, Main.Size.X.Offset, 0, newY)
-					
+
 					if not Titlef.TextFits then
 						Titlef.Visible = false
 					else
@@ -3988,25 +3988,25 @@ return function(data)
 				end
 			end
 		end
-		
+
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 				inputStart(Mouse.X, Mouse.Y)
 			end
 		end)
-		
+
 		Event(InputService.InputChanged, function(input, gameHandled)
 			if (input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch) then
 				inputMoved(input.Position.X, input.Position.Y)
 			end
 		end)
-		
+
 		Event(InputService.InputEnded, function(input, gameHandled)
 			if (input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) then
 				inputEnd()
 			end
 		end)
-		
+
 		--[[Event(Mouse.Button1Down, function()
 			if gTable.Active and inFrame and not Resizing and not isInFrame(Mouse.X, Mouse.Y, ScrollFrame) and not isInFrame(Mouse.X, Mouse.Y, Drag) then
 				Resizing = inFrame
@@ -4017,13 +4017,13 @@ return function(data)
 				checkMouse()
 			end
 		end)
-		
+
 		Event(Mouse.Button1Up, function()
 			if gTable.Active then
 				if Resizing and onResize then
 					onResize(UDim2.new(Drag.Size.X.Scale, Drag.Size.X.Offset, Main.Size.Y.Scale, Main.Size.Y.Offset))
 				end
-				
+
 				Resizing = nil
 				Mouse.Icon = curIcon
 				--if Walls then
@@ -4035,8 +4035,8 @@ return function(data)
 		LeftSizeIcon.Visible  = false
 		RightSizeIcon.Visible = false
 	end
-	
-	
+
+
 	Close.MouseButton1Down:Connect(doClose)
 	Hide.MouseButton1Down:Connect(function() doHide() end)
 	gTable.CustomDestroy = function()
@@ -4045,7 +4045,7 @@ return function(data)
 			Mouse.Icon = curIcon
 			client.Variables.MouseLockedBy = nil
 		end
-		
+
 		if not isClosed then
 			isClosed = true
 			if onClose then
@@ -4053,49 +4053,49 @@ return function(data)
 			end
 		end
 	end
-	
+
 	for i,child in next,GUI:GetChildren() do
 		if child.Name ~= "Desc" and child.Name ~= "Drag" then
 			specialInsts[child.Name] = child
 			child.Parent = nil
 		end
 	end
-	
+
 	--// Drag & DisplayOrder Handler
 	do
 		local windowValue = Instance.new("BoolValue", GUI)
 		local dragDragging = false
 		local dragOffset
 		local inFrame
-		
+
 		windowValue.Name = "__ADONIS_WINDOW"
-		
+
 		Event(Main.InputBegan, function(input)
 			if gTable.Active and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 				BringToFront()
 			end
 		end)
-		
+
 		Event(Drag.InputBegan, function(input)
 			if gTable.Active then
 				inFrame = true
-				
+
 				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 					BringToFront()
 				end
 			end
 		end)
-		
+
 		Event(Drag.InputChanged, function(input)
 			if gTable.Active then
 				inFrame = true
 			end
 		end)
-		
+
 		Event(Drag.InputEnded, function(input)
 			inFrame = false
 		end)
-		
+
 		Event(InputService.InputBegan, function(input)
 			if inFrame and GUI.DisplayOrder == 101 and not dragDragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then--isInFrame(input.Position.X, input.Position.Y, object) then
 				dragDragging = true
@@ -4103,13 +4103,13 @@ return function(data)
 				dragOffset = Vector2.new(Drag.AbsolutePosition.X - input.Position.X, Drag.AbsolutePosition.Y - input.Position.Y)
 			end
 		end)
-		
+
 		Event(InputService.InputChanged, function(input)
 			if dragDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 				Drag.Position = UDim2.new(0, dragOffset.X + input.Position.X, 0, dragOffset.Y + input.Position.Y)
 			end
 		end)
-		
+
 		Event(InputService.InputEnded, function(input)
 			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 				dragDragging = false
@@ -4122,10 +4122,10 @@ return function(data)
 	local meta = api:GetMetatable()
 	local oldNewIndex = meta.__newindex
 	local oldIndex = meta.__index
-	
+
 	create("ScrollingFrame", nil, ScrollFrame)
 	LoadChildren(api, Content)
-	
+
 	api:SetSpecial("gTable", gTable)
 	api:SetSpecial("Window", GUI)
 	api:SetSpecial("Main", Main)
@@ -4134,10 +4134,10 @@ return function(data)
 	api:SetSpecial("Destroy", doClose)
 	api:SetSpecial("Close", doClose)
 	api:SetSpecial("Object", ScrollFrame)
-	api:SetSpecial("Refresh", DoRefresh) 
+	api:SetSpecial("Refresh", DoRefresh)
 	api:SetSpecial("AddTitleButton", function(ignore, data) if type(ignore) == "table" and not data then data = ignore end return addTitleButton(data) end)
 	api:SetSpecial("Ready", function() if onReady then onReady() end gTable.Ready() BringToFront() end)
-	api:SetSpecial("BindEvent", function(ignore, ...) Event(...) end)	
+	api:SetSpecial("BindEvent", function(ignore, ...) Event(...) end)
 	api:SetSpecial("Hide", function(ignore, hide) doHide(hide) end)
 	api:SetSpecial("SetTitle", function(ignore, newTitle) Titlef.Text = newTitle end)
 	api:SetSpecial("SetPosition", function(ignore, newPos) setPosition(newPos) end)
@@ -4146,7 +4146,7 @@ return function(data)
 	api:SetSpecial("GetSize", function() return Main.AbsoluteSize end)
 	api:SetSpecial("IsVisible", isVisible)
 	api:SetSpecial("IsClosed", isClosed)
-	
+
 	meta.__index = function(tab, ind)
 		if ind == "IsVisible" then
 			return isVisible()
@@ -4156,22 +4156,22 @@ return function(data)
 			return oldIndex(tab, ind)
 		end
 	end
-	
+
 	setSize(Size)
 	setPosition(Position)
-	
+
 	if Ready then
 		gTable:Ready()
 		BringToFront()
 	end
-	
+
 	return api,GUI
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXAD112317CD1740CFB0C4577A5B77DA89">
+				<Item class="BoolValue" referent="RBX190C8E408C05452AB9A72D514D3B57D0">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -4180,21 +4180,21 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBXBA39A37F47C84D30A6BC401CDACEF90A">
+				<Item class="ModuleScript" referent="RBXAAAF5D56FE6047CD9A81688020C94116">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Modifier</string>
-						<string name="ScriptGuid">{C7EFB92F-AAD9-4DA0-A288-C426FD9FDE4E}</string>
+						<string name="ScriptGuid">{B9417E39-DC92-462D-8B1B-F19312EE2DF7}</string>
 						<ProtectedString name="Source"><![CDATA[service = nil;
 client = nil;
 
 local function ignore(child)
 	if child.Parent and child.Parent.Parent then
-		
+
 	end
-	
-	
+
+
 	if child.BackgroundTransparency == 1 then
 		return true;
 	end
@@ -4218,7 +4218,7 @@ return function(data)
 	local gui = script.Parent.Parent;--data.GUI;
 
 	local function apply(child)
-		
+
 		if not child:IsA("TextLabel") and not child:IsA("ImageLabel") then
 			local rounder = service.New("UICorner",{
 				CornerRadius = UDim.new(0,8);
@@ -4227,9 +4227,9 @@ return function(data)
 
 		end
 
-	
+
 		if child:IsA("TextLabel") then
-			
+
 			local rounder = service.New("UICorner",{
 				CornerRadius = UDim.new(0,8);
 				Parent = child;
@@ -4238,9 +4238,9 @@ return function(data)
 			child.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 
 		end
-		
 
-		
+
+
 		if child:IsA("ScrollingFrame") then
 			child.BackgroundTransparency = 1;
 			--local propList = {
@@ -4281,7 +4281,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX3A166898A87347CF97FEACE0BE45AD8F">
+			<Item class="TextLabel" referent="RBXF84EF0B294EA49ACA933E4E51811A073">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4357,7 +4357,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX90A548DB0BBA4CE787BE30404F073B98">
+				<Item class="TextButton" referent="RBX7E8B4269A9A246C9977AF89C5B7423B3">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4438,7 +4438,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBX5D9BA4CDF2CF411381493208DD438FE1">
+				<Item class="StringValue" referent="RBXA896F542E7124DAD897B410C473B53BF">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4448,7 +4448,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX14DE1042D0124EB3B9937318E3239003">
+			<Item class="TextLabel" referent="RBXEC1CA220493944B5BB6BA9D61517E30A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4524,7 +4524,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXEA15EFF68EE74A4DBB94672C8FCBF4A6">
+				<Item class="TextButton" referent="RBXB60C2E2274E74266867841BF334B169C">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4605,7 +4605,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBX90736ABF81C147D1BA7019C94338FB9F">
+				<Item class="StringValue" referent="RBX0902FDF62D03413A91AD142427580366">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4615,7 +4615,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="BoolValue" referent="RBX3700B8626AD243EC98030EC916DD4355">
+			<Item class="BoolValue" referent="RBX8020ECD1E9F64435BA5E89C538A65DF5">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Check</string>
@@ -4624,7 +4624,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBXA7D19E29F0494BE79815BCB7BB3262B3">
+			<Item class="Frame" referent="RBX6848C3A6838148A2813D92B15495A3BC">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4678,7 +4678,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBX9A629F5DD4CA46B682B8F9316C143E34">
+				<Item class="ScrollingFrame" referent="RBX36DE361DC3D9449DB922E344E8B43B29">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4759,7 +4759,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX67FBABD7FA5040BBB7BB2B7B366FBDC1">
+				<Item class="Frame" referent="RBX925CBCD1A59F491B95C79E0982710A6D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -4815,7 +4815,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX96EFE98850EC42EEBA14514EC9AD03AC">
+			<Item class="TextLabel" referent="RBX1DEB1BF32EFE48038E042EE043E79D9B">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -4891,7 +4891,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBXF9285A0A3A914AB391F83EC5F7A548A8">
+				<Item class="TextButton" referent="RBX3630736EFEA74D469AF2FC8EB0079906">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -4972,7 +4972,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="StringValue" referent="RBX06BC75223E2045BAB412B16B63A455EF">
+				<Item class="StringValue" referent="RBX9A9FD3F26FB249C49D42222776D3D0C7">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -4982,7 +4982,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXBF99CD606D9E4A21809B2723702BC656">
+			<Item class="Frame" referent="RBX1049FCEC50424E769DB9CAEEA4C38E0D">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -5036,7 +5036,7 @@ end]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="StringValue" referent="RBX3F726A8DC7BB4285AACEED0D99A6AF85">
+				<Item class="StringValue" referent="RBXAC8BC6446B88454E9FA9AB4E0D1193D1">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">Desc</string>
@@ -5045,7 +5045,7 @@ end]]></ProtectedString>
 						<string name="Value">TestDesc</string>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXB1D7C7284E8345F98CAFAF3457C4508B">
+				<Item class="TextLabel" referent="RBX4768097A30C1412AA663B831A54878B5">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -5122,7 +5122,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXFB6075912A5D4C699C753EAD7B7D557C">
+				<Item class="TextLabel" referent="RBXE2DCE01F9E64426B9DFD91AC0136A79A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -5199,7 +5199,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextBox" referent="RBXF5AA4E465266416B9F4445459B31F1B0">
+				<Item class="TextBox" referent="RBXC36253F954B24729BA5F56CF42479E63">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5287,7 +5287,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextButton" referent="RBXBB08C1066600458FBDD629C20889FCFA">
+			<Item class="TextButton" referent="RBX7F59CF3100C247E082B95ACDDE46F253">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -5368,7 +5368,7 @@ end]]></ProtectedString>
 					<int name="ZIndex">2</int>
 				</Properties>
 			</Item>
-			<Item class="TextButton" referent="RBX8043D25E0E684D38A61C86CD24D722B2">
+			<Item class="TextButton" referent="RBX7791FE2F7C6F4A58A103B10B821DE9A6">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -5448,7 +5448,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX8F638A57F42F4E20A2B3D816AEDFF7E9">
+				<Item class="TextButton" referent="RBXBD6C7843EE5A40D1B43D8546FF138C2E">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5528,7 +5528,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="ImageLabel" referent="RBX529302C038DD4DD89DEB01C11368CC87">
+					<Item class="ImageLabel" referent="RBX7808F5908F384AE98A9129A48817E30A">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -5615,7 +5615,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">10</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBXCAAE7C84F7314569B0A38B0DC9185141">
+					<Item class="UICorner" referent="RBX0A9CC80E396B459393250533C3C2D31E">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5628,7 +5628,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="ImageButton" referent="RBXFFC2EA8E9A044004A649010C51BA7FC2">
+				<Item class="ImageButton" referent="RBX094D32BD71934F2DBC342F5880531851">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5721,7 +5721,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">-5</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBX524AAABF076741478EC86B46BB982FC1">
+				<Item class="TextButton" referent="RBX41E03018990A498CBAE3C01FBA4DDA85">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5801,7 +5801,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="UICorner" referent="RBX477DFB7D4F304E24AF00F1C31F49B661">
+					<Item class="UICorner" referent="RBX0E4F57462C004D91AF9097978EE324D9">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5814,7 +5814,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextButton" referent="RBX10D9ECB9D7D94F27AEDDC9EE7CA33925">
+				<Item class="TextButton" referent="RBX918DEDAF38304C1084E9E1B5BFDD2753">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -5894,7 +5894,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">2</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBXAFBA141675A5478C945115D9B3B83E7C">
+					<Item class="TextLabel" referent="RBXF855161EEAEC4E6789801864412F9163">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -5971,7 +5971,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">10</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBX1BEBB1AD3813495CBF6EFD9D21C05527">
+					<Item class="UICorner" referent="RBXFDEC9B97E9834405A30E686E9D930DF9">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -5984,7 +5984,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextLabel" referent="RBXE32AD6042CCD4C01AEF537524FC1B73D">
+				<Item class="TextLabel" referent="RBX9425FD5C6E1B41628944E0FDD9010C67">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -6061,7 +6061,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">9</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXB94F687CA0E54A74A4F1F525D899227C">
+				<Item class="Frame" referent="RBXE452C9FDFFFA44D39970D56C4BEB92A1">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -6115,7 +6115,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="ImageButton" referent="RBX9CBCBCDBAC004A5286AD9FBF0989313B">
+					<Item class="ImageButton" referent="RBX3D9835BB8DBD4DA9998CD473BD30FAEA">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6208,7 +6208,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX3EB0DAA067DC4F148C5ED94EDB4A16BA">
+					<Item class="ImageButton" referent="RBX9F5619D970424336B01DE2897E663CAB">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6301,7 +6301,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBX7DD509B024B24FB0AFDF9A21ACD781D8">
+					<Item class="ScrollingFrame" referent="RBXBEEAE5130ABE41ED8CA1732062A462E4">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -6382,7 +6382,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX0FD77E0966744090BCC92A61B4A4DEBE">
+					<Item class="ImageButton" referent="RBXEAC218868BE5403294C7162A03823D49">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6475,7 +6475,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBXA788DDE4CE134A2EB509D525E5989BE2">
+					<Item class="ImageButton" referent="RBX3682FA6E9AA84AC18DC034C00BE49370">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6568,7 +6568,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBXBEB350ADF5FB46C89FEA375B9146B205">
+					<Item class="ImageButton" referent="RBXC95807C65FD44DFEB900073D1D74F06B">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6661,7 +6661,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBXE84F4A91D40441EDA05EBEA2A3AE824C">
+					<Item class="ImageButton" referent="RBX175A9BD11AC0415DBA290DEB5E5CB7A7">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6754,7 +6754,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageLabel" referent="RBX6D9DE6228D1240AAAEADEB5A010F091C">
+					<Item class="ImageLabel" referent="RBXB8FBC6733B734E9795BB6B3CA7349209">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6841,7 +6841,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageLabel" referent="RBX25DC859E398F44E195E23B5AC7AC6B84">
+					<Item class="ImageLabel" referent="RBX3FDE40F95B5B4BC08EA838203AE23698">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -6928,7 +6928,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX20C7FAEC518C4CDBA42F369F2A7C6ACC">
+					<Item class="ImageButton" referent="RBX7BF4403DC8644CED9580C51F0070D16D">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7021,7 +7021,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ImageButton" referent="RBX545B50EC0BA84230B14D4CDB26DDEB65">
+					<Item class="ImageButton" referent="RBX7949CC1544D641A4982189AE13FCEC69">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7114,7 +7114,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="Frame" referent="RBX670BC0DB3C39410AA88611D2319F35BF">
+					<Item class="Frame" referent="RBXA49DD1522E02428D824D71174DD64240">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -7168,7 +7168,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX07BDDA631B5E4481B905281E99E0FF1A">
+						<Item class="UICorner" referent="RBXFE4D0C5B86D244DCA967BAD490570D9F">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -7181,7 +7181,7 @@ end]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="UICorner" referent="RBX942AE9BBCBC846CFA6B38EE9457B4440">
+					<Item class="UICorner" referent="RBX1AA0450C3F3C4E6CB35305557AFF1E67">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -7194,7 +7194,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX293252D41E1643C0AA4D207ED398D74A">
+				<Item class="Frame" referent="RBX5A488DA840314077BECA054840E1BB67">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -7248,7 +7248,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="UICorner" referent="RBXC08C7D21FD6A461CA78E5CD54C287501">
+					<Item class="UICorner" referent="RBX61AB4A35F7644BFEB082EC06D512A818">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -7263,7 +7263,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX09A65844C752476D8070D51396846FAA">
+		<Item class="ScreenGui" referent="RBX4E45351372FF4457A190B362C97C10CC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -7277,7 +7277,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="TextLabel" referent="RBXCF03D7B1C11A43EEB4436BC49BA4AF71">
+			<Item class="TextLabel" referent="RBX0090567555B44D34BD49B8C3C9A0BB9B">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -7353,7 +7353,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="UICorner" referent="RBX43FC87FBB34048CFB48FA52EE184ACE6">
+				<Item class="UICorner" referent="RBX9B918121420F4E2D8918ED8F4CABCF7D">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -7366,7 +7366,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX23B321632D4245449A406076327D6AB7">
+			<Item class="Frame" referent="RBX69CA3BC105AC4A309876B833ED4D695F">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -7421,19 +7421,19 @@ end]]></ProtectedString>
 					<int name="ZIndex">3</int>
 				</Properties>
 			</Item>
-			<Item class="Folder" referent="RBX6B0AADAB36CE4471A039CEE046D0B53D">
+			<Item class="Folder" referent="RBX56198DD7220C4AD7A74C0AE3CF93F08C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX42EACE5EA62741D9A9BA7F2F54E55B6E">
+				<Item class="ModuleScript" referent="RBX66A7B47C9FF147348646630F92D335BD">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{29D46FEA-F544-40D0-A6D5-AD88010AF0C8}</string>
+						<string name="ScriptGuid">{E401CE33-7963-473D-A393-B36048A76561}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7448,13 +7448,13 @@ return function(data)
 	local gui = script.Parent.Parent
 	local bar = gui.TextLabel
 	local playergui = service.PlayerGui
-	
+
 	--[[
 	local TopbarMatchAdmin = client.GetReturn("Setting","TopbarMatchAdmin")
 	local TopbarColor = client.GetReturn("Setting","TopbarColor")
 	local TopbarTransparency = client.GetReturn("Setting","TopbarTransparency")
 	local TopbarText = client.GetReturn("Setting","TopbarText")
-	
+
 	if not TopbarMatchAdmin then
 		local text=TopbarText
 		if text=="%TIME" then
@@ -7479,7 +7479,7 @@ return function(data)
 		bar.BackgroundTransparency=TopbarTransparency
 	end
 	--]]
-	
+
 	bar.Position=UDim2.new(0,0,0,-40)
 	gTable:Ready()
 end]]></ProtectedString>
@@ -7487,7 +7487,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX92FD11AAF9074629A91D7EC5C1ECFA78">
+				<Item class="BoolValue" referent="RBXA5273D0B5964440DB208C52731F14C6D">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7496,7 +7496,7 @@ end]]></ProtectedString>
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX5E54988EDFEA4FC585D053E892EB6E98">
+				<Item class="BoolValue" referent="RBXC3D99D50D82344FB970586C154FF3F51">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -7507,7 +7507,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX2C87C0DD61364597BF47E8D015A176C7">
+		<Item class="Frame" referent="RBX0B3AD6C1698A43069C5503411D8316C4">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -7561,7 +7561,7 @@ end]]></ProtectedString>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX3DC0FA14163D46B381E45B892AD0E982">
+			<Item class="Frame" referent="RBXE19C014B08BA4C3F97FAA6A3839CA752">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -7615,7 +7615,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX140C271CC2594C919F93FE8DCDD84ABA">
+				<Item class="TextLabel" referent="RBXDF0C708CD39D4B83823EF8A44BA9EC96">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -7692,7 +7692,7 @@ end]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="UICorner" referent="RBXB1EE1F214BC94464AD638EDB8E8F7978">
+				<Item class="UICorner" referent="RBXAF6D57EC5B8B48619B847CE6C4B62912">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -7705,19 +7705,19 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX0273C4FF9BB340D481E787543198B78A">
+			<Item class="Folder" referent="RBX21CE20B5EC954A2EB9795A384F5020D5">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX6359B47F18784833A76B89E3EFA65C1D">
+				<Item class="ModuleScript" referent="RBX65330C7CA2C9483CB28598E98FAE0446">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{9A043494-5CD2-4F2F-B946-14B5F1B72D3B}</string>
+						<string name="ScriptGuid">{A8D96EEE-0431-449B-9A47-F2C64797A52C}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7733,10 +7733,10 @@ return function(data)
 	local playergui = service.PlayerGui
 	local str = data.Message
 	local time = data.Time or 15
-	
+
 	--client.UI.Make("HintHolder")
 	local container = client.UI.Get("HintHolder",nil,true)
-	if not container then 
+	if not container then
 		local holder = service.New("ScreenGui")
 		local hTable = client.UI.Register(holder)
 		local frame = service.New("ScrollingFrame", holder)
@@ -7753,7 +7753,7 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
@@ -7761,12 +7761,12 @@ return function(data)
 				frame.Visible = true
 			end
 		end)
-		
+
 		container = hTable
 		hTable:Ready()
 	end
 	container = container.Object.Frame
-	
+
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
 	if notif then
@@ -7774,13 +7774,13 @@ return function(data)
 	else
 		container.Position = UDim2.new(0,0,0,0)
 	end
-	
+
 	local children = container:GetChildren()
-	
+
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
 	local bounds = gui.Frame.msg.TextBounds.X
-	
+
 	local function moveGuis(m,ignore)
 		m = m or 0
 		local max = #container:GetChildren()
@@ -7792,7 +7792,7 @@ return function(data)
 			end
 		end
 	end
-	
+
 	local lom = -1
 	moveGuis(-1)
 	gui.Parent = container
@@ -7800,17 +7800,17 @@ return function(data)
 	UDim2.new(0,0,0,(#container:GetChildren()+lom)*28)
 	moveGuis(-1)
 	--gui:TweenPosition(UDim2.new(0,0,0,(#container:GetChildren()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
-	
+
 	if #container:GetChildren()>5 then
 		local gui = container:GetChildren()[1]
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
 	end
-	
+
 	wait(data.Time or 5)
-	
-	if gui and gui.Parent then 
+
+	if gui and gui.Parent then
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
@@ -7820,7 +7820,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXCE3D4BCD59434C3A9D3A6896F4DC187D">
+				<Item class="BoolValue" referent="RBX7346CE4042904579A940CCD9C2C5A7BD">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7829,7 +7829,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXF78AA4DFA8E64DE090275CF9B056CA1E">
+				<Item class="BoolValue" referent="RBXE27456B2268A4DF79C4EE9945628A8C8">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -7840,7 +7840,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXE1DED6C8AD544E0AA9B556B2CA69E247">
+		<Item class="ScreenGui" referent="RBX9D0D02CAA98D45FD875E40FBF5C31A1D">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">true</bool>
@@ -7854,19 +7854,19 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBXEE269006D6594C6AA2704DD268309EBD">
+			<Item class="Folder" referent="RBX4AF4D9C1F8EC461C8083E65C61795514">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXAA8B50B7B3A745E4BCCEF0E89C40934A">
+				<Item class="ModuleScript" referent="RBXC49F1D1D33564D968BBE13DDAACE952C">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{172744EE-263C-4295-9CF0-49A16A3D5BE4}</string>
+						<string name="ScriptGuid">{129677B3-E1DB-4AEF-88B2-907306D298C1}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -7885,16 +7885,16 @@ return function(data)
 
 	local gIndex = data.gIndex
 	local gTable = data.gTable
-	
+
 	local title = data.Title
 	local message = data.Message
 	local scroll = data.Scroll
 	local tim = data.Time
-	
+
 	local gone = false
-	
+
 	if not data.Message or not data.Title then gTable:Destroy() end
-	
+
 	ttl.Text = title
 	msg.Text = message
 	ttl.TextTransparency = 1
@@ -7902,18 +7902,18 @@ return function(data)
 	ttl.TextStrokeTransparency = 1
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
-	
+
 	local fadeSteps = 20
 	local blurSize = 10
 	local textFade = 0.1
 	local strokeFade = 0.5
 	local frameFade = 0.3
-	
+
 	local blurStep = blurSize/fadeSteps
 	local frameStep = frameFade/fadeSteps
 	local textStep = 0.8
 	local strokeStep = 0.9
-	
+
 	local function fadeIn()
 		gTable:Ready()
 		for i = 1,fadeSteps do
@@ -7928,7 +7928,7 @@ return function(data)
 			service.Wait("Stepped")
 		end
 	end
-	
+
 	local function fadeOut()
 		if not gone then
 			gone = true
@@ -7950,15 +7950,15 @@ return function(data)
 			service.UnWrap(gui):Destroy()
 		end
 	end
-	
+
 	gTable.CustomDestroy = function()
 		fadeOut()
 	end
-	
+
 	fadeIn()
-	
-	
-	
+
+
+
 	if not tim then
 		local _,time = message:gsub(" ","")
 		time = math.clamp(time/2,4,11)+1
@@ -7976,7 +7976,7 @@ return function(data)
 			wait(1)
 		end
 	end
-	
+
 	Left.Text = '[Closing]'
 	wait(0.3)
 	if not gone then
@@ -7987,7 +7987,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXB0E2B91EA2BD436E8C99EB9A133C8890">
+				<Item class="BoolValue" referent="RBXE5220B03D0FA4FCB8C584942998476CA">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -7996,7 +7996,7 @@ end]]></ProtectedString>
 						<bool name="Value">true</bool>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX1B8B8ED34DF4400C911126DB64CE627B">
+				<Item class="BoolValue" referent="RBX4E2375E9641749F48E778272882502EA">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -8006,7 +8006,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX63053651373A4C89985276AEC5131214">
+			<Item class="Frame" referent="RBXE87DF5DC66D94922AADDAE53D38E6407">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -8060,7 +8060,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">4888894</int>
 				</Properties>
-				<Item class="Frame" referent="RBXDEC52E4DB7FC4BD58E755B85FB2EC4B9">
+				<Item class="Frame" referent="RBXA2D4B747A8284E008848C223929C88A7">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8114,7 +8114,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">4888899</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX80685E06B1A748B98B1148D78B7E2F04">
+					<Item class="TextLabel" referent="RBX4F66B59E62F644C0AAC9808DABC632E8">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8191,7 +8191,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">488810000</int>
 						</Properties>
 					</Item>
-					<Item class="TextLabel" referent="RBX47B472FFE21849B494E3AF9D05C657B3">
+					<Item class="TextLabel" referent="RBXAB5D83EDAAC04B05B01203971C3EF020">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8268,7 +8268,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">488810000</int>
 						</Properties>
 					</Item>
-					<Item class="UICorner" referent="RBXAA15652E29AA429AB9421752635EEEB1">
+					<Item class="UICorner" referent="RBX07DB34F8829843A29802EDE150E3ED4E">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -8280,7 +8280,7 @@ end]]></ProtectedString>
 							<BinaryString name="Tags"></BinaryString>
 						</Properties>
 					</Item>
-					<Item class="TextLabel" referent="RBX9B88AF16F2A44AED9ABD9887407484DE">
+					<Item class="TextLabel" referent="RBX853FC9D8576B452B8F31D1633F56D439">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -8358,7 +8358,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="UICorner" referent="RBXF64FD032B2F84A238531A9CF84AF8ABD">
+				<Item class="UICorner" referent="RBX1A2385DC79884395981034BC95B8D30B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -8372,7 +8372,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="StringValue" referent="RBX81E3A167FB864553BE4574818C1B0958">
+		<Item class="StringValue" referent="RBX521C8C5355A142C0A71CF4012815D28A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
@@ -8381,12 +8381,12 @@ end]]></ProtectedString>
 				<string name="Value">Default</string>
 			</Properties>
 		</Item>
-		<Item class="ModuleScript" referent="RBXBBB5AA5097FE416AA0C393899EECFCF5">
+		<Item class="ModuleScript" referent="RBX46EDD1BB0A894B0A91243E24E6300F33">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">HelpButton</string>
-				<string name="ScriptGuid">{A9802618-A9B2-4A19-A431-3B3F2B5E4330}</string>
+				<string name="ScriptGuid">{8A2308C8-5427-49FA-B0D4-8D98F843D033}</string>
 				<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -8441,7 +8441,7 @@ return function(data)
 		toggle.Image =
 			"https://www.roblox.com/headshot-thumbnail/image?userId=" ..
 			localplayer.UserId .. "&width=420&height=420&format=png"
-	
+
 
 
 	toggle.ImageTransparency = 0
@@ -8468,11 +8468,11 @@ end
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ScreenGui" referent="RBXD62975DC9D9A4E94BE7C5F0C4629DC37">
+		<Item class="ScreenGui" referent="RBX97C7AE11D4D44753850017A5AEF02918">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
-				<int name="DisplayOrder">0</int>
+				<int name="DisplayOrder">9000000</int>
 				<bool name="Enabled">true</bool>
 				<bool name="IgnoreGuiInset">false</bool>
 				<string name="Name">Console</string>
@@ -8482,7 +8482,7 @@ end
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Frame" referent="RBX0A04340AC7894E2D9F4DCDFC61B30BA3">
+			<Item class="Frame" referent="RBX0C6AA3C78CFA4FCD8D9C9DCD458FEB13">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -8536,7 +8536,7 @@ end
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="ScrollingFrame" referent="RBX40B2E1B6FCD644EF9FE37DBF1975A400">
+				<Item class="ScrollingFrame" referent="RBX17EB9D10CCFB4C97B335182CBEA11EAA">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8617,7 +8617,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextBox" referent="RBX2F7D59B1D84A46C79CADCEFBD5F68704">
+				<Item class="TextBox" referent="RBXB68710417C8242389047FC8C6EF08970">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -8704,7 +8704,7 @@ end
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX7D53734B633E42C4ABC28095F52AB515">
+				<Item class="Frame" referent="RBXD46328073EC64F69B1518200DCC78A3D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8759,7 +8759,7 @@ end
 						<int name="ZIndex">5</int>
 					</Properties>
 				</Item>
-				<Item class="ScrollingFrame" referent="RBXC8843A44C31248AE81F94A13C2074670">
+				<Item class="ScrollingFrame" referent="RBX8EE2352376DB400EB7D15E086FAE38A2">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -8840,7 +8840,7 @@ end
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="UICorner" referent="RBX63C7047775C746FB809EA94E9BD08C87">
+				<Item class="UICorner" referent="RBX767A01591E5F4610BEA796969C200CBD">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -8853,7 +8853,7 @@ end
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextButton" referent="RBX829841EAFB364C13B41099BB683C79A6">
+			<Item class="TextButton" referent="RBX8CA6A47BA74146C1A2DD2C5294F12A81">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -8934,14 +8934,14 @@ end
 					<int name="ZIndex">3</int>
 				</Properties>
 			</Item>
-			<Item class="Folder" referent="RBXC93A8B0B4F424202B2CA4981091E80CE">
+			<Item class="Folder" referent="RBXD2CC8DE755874FFA9C5A6271661B3846">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BoolValue" referent="RBXE8D33D71A3724CECB99FE58F30F2B050">
+				<Item class="BoolValue" referent="RBX63BDDA2E2F2746C3BF65850F8A190B26">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">CanKeepAlive</string>
@@ -8950,12 +8950,12 @@ end
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX5B44CF8878404521AA0B6405307FBD59">
+				<Item class="ModuleScript" referent="RBXB397774426AC413EA37E2750705EA913">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="ScriptGuid">{DEF1DC4E-336D-4312-8BD0-4790FC599D8A}</string>
+						<string name="ScriptGuid">{0279D2F9-F043-44B2-9EAA-CC77366D6011}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -8976,7 +8976,7 @@ return function(data)
 	local players = gui.Frame.PlayerList
 	local entry = gui.Entry
 	local BindEvent = gTable.BindEvent
-	
+
 	local opened = false
 	local scrolling = false
 	local debounce = false
@@ -8985,54 +8985,54 @@ return function(data)
 	local consoleKey = settings.ConsoleKeyCode
 	local batchKey = settings.BatchKey
 	local commands = client.Remote.Get('FormattedCommands') or {}
-	
+
 	local tweenInfo = TweenInfo.new(0.15)----service.SafeTweenSize(frame,UDim2.new(1,0,0,40),nil,nil,0.3,nil,function() if scrollOpen then frame.Size = UDim2.new(1,0,0,140) end end)
 	local scrollOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 140);
 	})
-	
+
 	local scrollCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Size = UDim2.new(1, 0, 0, 40);
 	})
-	
+
 	local consoleOpenTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = UDim2.new(0, 0, 0, 0);
 	})
-	
+
 	local consoleCloseTween = service.TweenService:Create(frame, tweenInfo, {
 		Position = UDim2.new(0, 0, 0, -200);
 	})
-		
+
 	frame.Position = UDim2.new(0,0,0,-200)
 	frame.Visible = false
 	frame.Size = UDim2.new(1,0,0,40)
 	scroll.Visible = false
-	
+
 	if client.Variables.ConsoleOpen then
-		if client.Variables.ChatEnabled then 
-			service.StarterGui:SetCoreGuiEnabled("Chat",true) 
+		if client.Variables.ChatEnabled then
+			service.StarterGui:SetCoreGuiEnabled("Chat",true)
 		end
-		
-		if client.Variables.PlayerListEnabled then 
-			service.StarterGui:SetCoreGuiEnabled('PlayerList',true) 
+
+		if client.Variables.PlayerListEnabled then
+			service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
 		end
-		if client.UI.Get("Notif") then 
-			client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true 
+		if client.UI.Get("Notif") then
+			client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true
 		end
-		
+
 		local scr = client.UI.Get("Chat",nil,true)
 		if scr then scr.Object.Drag.Visible = true end
-		
+
 		local scr = client.UI.Get("PlayerList",nil,true)
 		if scr then scr.Object.Drag.Visible = true end
-		
+
 		local scr = client.UI.Get("HintHolder",nil,true)
 		if scr then scr.Object.Frame.Visible = true end
 	end
-	
+
 	client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
 	client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-	
+
 	local function close()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
@@ -9043,28 +9043,28 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			
-			if client.Variables.ChatEnabled then 
-				service.StarterGui:SetCoreGuiEnabled("Chat",true) 
+
+			if client.Variables.ChatEnabled then
+				service.StarterGui:SetCoreGuiEnabled("Chat",true)
 			end
-			
-			if client.Variables.PlayerListEnabled then 
-				service.StarterGui:SetCoreGuiEnabled('PlayerList',true) 
+
+			if client.Variables.PlayerListEnabled then
+				service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
 			end
-			
-			if client.UI.Get("Notif") then 
-				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true 
+
+			if client.UI.Get("Notif") then
+				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = true
 			end
-			
+
 			local scr = client.UI.Get("Chat",nil,true)
 			if scr then scr.Object.Drag.Visible = true end
-			
+
 			local scr = client.UI.Get("PlayerList",nil,true)
 			if scr then scr.Object.Drag.Visible = true end
-			
+
 			local scr = client.UI.Get("HintHolder",nil,true)
 			if scr then scr.Object.Frame.Visible = true end
-			
+
 			consoleCloseTween:Play();
 			--service.SafeTweenPos(frame,UDim2.new(0,0,0,-200),'Out','Linear',0.2,true)
 			--frame:TweenPosition(UDim2.new(0,0,0,-200),'Out','Linear',0.2,true)
@@ -9072,34 +9072,34 @@ return function(data)
 			opened = false
 		end
 	end
-	
+
 	local function open()
 		if gui:IsDescendantOf(game) and not debounce then
 			debounce = true
 			client.Variables.ChatEnabled = service.StarterGui:GetCoreGuiEnabled("Chat")
 			client.Variables.PlayerListEnabled = service.StarterGui:GetCoreGuiEnabled('PlayerList')
-			
+
 			service.StarterGui:SetCoreGuiEnabled("Chat",false)
 			service.StarterGui:SetCoreGuiEnabled('PlayerList',false)
-					
+
 			scroll.ScrollingEnabled = true
 			players.ScrollingEnabled = true
-					
-			if client.UI.Get("Notif") then 
-				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = false 
+
+			if client.UI.Get("Notif") then
+				client.UI.Get("Notif",nil,true).Object.LABEL.Visible = false
 			end
-					
+
 			local scr = client.UI.Get("Chat",nil,true)
 			if scr then scr.Object.Drag.Visible = false end
-					
+
 			local scr = client.UI.Get("PlayerList",nil,true)
 			if scr then scr.Object.Drag.Visible = false end
-					
+
 			local scr = client.UI.Get("HintHolder",nil,true)
 			if scr then scr.Object.Frame.Visible = false end
-			
+
 			consoleOpenTween:Play();
-			
+
 			frame.Size = UDim2.new(1,0,0,40)
 			scroll.Visible = false
 			players.Visible = false
@@ -9115,31 +9115,31 @@ return function(data)
 			opened = true
 		end
 	end
-	
+
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				client.Remote.Send('ProcessCommand',text.Text)
 			end
 		end
-		
+
 		close()
 	end)
-	
+
 	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
-			
+
 			local nText = text.Text
 			if string.match(nText,".*"..batchKey.."([^']+)") then
 				nText = string.match(nText,".*"..batchKey.."([^']+)")
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
-			
+
 			local pNum = 0
 			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
-			for i,v in next,service.Players:GetChildren() do
+			for i,v in next,service.Players:GetPlayers() do
 				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
 					local new = entry:Clone()
 					new.Text = tostring(v)
@@ -9154,9 +9154,9 @@ return function(data)
 					pNum = pNum+1
 				end
 			end
-				
+
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
-				
+
 			local num = 0
 			for i,v in next,commands do
 				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
@@ -9187,11 +9187,11 @@ return function(data)
 			scroll.Visible = false
 			players.Visible = false
 			scrollOpen = false
-			scroll:ClearAllChildren() 
+			scroll:ClearAllChildren()
 			scroll.CanvasSize = UDim2.new(0,0,0,0)
 		end
 	end)
-	
+
 	BindEvent(service.UserInputService.InputBegan, function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
@@ -9203,14 +9203,14 @@ return function(data)
 			client.Variables.ConsoleOpen = opened
 		end
 	end)
-	
+
 	gTable:Ready()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBX9F424A6B8BCB4FC897AD766D7871B308">
+				<Item class="BoolValue" referent="RBXFF331CCF51694945A6FA1B362361F0B4">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>

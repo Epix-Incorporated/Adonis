@@ -148,7 +148,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
-
+	settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme.
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
 		Below are the administrator permission levels/ranks (Mods, Admins, HeadAdmins, Creators, StuffYouAdd, etc)
@@ -334,6 +334,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
+	descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme. ]]
 
 	descs.Ranks = [[ All admin permission level ranks; ]];
 	descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]

@@ -2,11 +2,11 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXC3F7B73CDF0F4D73AC076D6104D044AC">
+	<Item class="ScreenGui" referent="RBX46D148F3C14B4540A1453DFBBC4F4C74">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
-			<int name="DisplayOrder">0</int>
+			<int name="DisplayOrder">9000005</int>
 			<bool name="Enabled">false</bool>
 			<bool name="IgnoreGuiInset">false</bool>
 			<string name="Name">Output</string>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBX3AD75ACBC54F44069A45354AA91350C7">
+		<Item class="Frame" referent="RBXB7D629046AA3465FA07A137C77724643">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -70,7 +70,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">10</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBXD86CE5CB5D104182A6A36AE2EAD82657">
+			<Item class="TextLabel" referent="RBXB9803BA91E7C41E3AD386CFA88A4A1C0">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -147,7 +147,7 @@
 					<int name="ZIndex">10</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX5B76F3000071485889820EF71C4F6E3C">
+			<Item class="TextLabel" referent="RBXC1602DC3FF2A4ECBBA8949240780C042">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -225,14 +225,14 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBX894EE52066964261BEE13591B29A69EC">
+		<Item class="Folder" referent="RBXC4AA9A6E69AF4168BFC4D2463E8E1E1C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX47BC165E7DCC44C0A056309334EF228E">
+			<Item class="ModuleScript" referent="RBX69F4132FB6284A8CB1C033B23F2D5C28">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -278,7 +278,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX331F1C67819046D79ABA03C440B1682A">
+			<Item class="BoolValue" referent="RBX5306E7B6CA044DE2A46428155FFE7AE5">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -287,7 +287,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX89B3A3321BDC40C6B7651C46B4B4346B">
+			<Item class="BoolValue" referent="RBXA6CED14EB61C4B0FA31ED28180800D72">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>

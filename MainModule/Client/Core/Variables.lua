@@ -110,6 +110,7 @@ return function()
 		Capes = {};
 		savedUI = {};
 		localSounds = {};
+		ESPObjects = {};
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			Brightness = service.Lighting.Brightness;

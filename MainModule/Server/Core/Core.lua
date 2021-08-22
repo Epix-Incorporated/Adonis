@@ -55,7 +55,11 @@ return function(Vargs)
 
 	local function RunAfterPlugins(data)
 		--// RemoteEvent Handling
-		server.Core.MakeEvent()
+		Core.MakeEvent()
+
+		--// Prepare the client loader
+		--local existingPlayers = service.Players:GetPlayers();
+		--Core.MakeClient()
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
@@ -74,18 +78,16 @@ return function(Vargs)
 			end)
 		end
 
-		--// Save all data on server shutdown
-		game:BindToClose(Core.SaveAllPlayerData);
+		--// Save all data on server shutdown & set GAME_CLOSING
+		game:BindToClose(function()
+			Core.GAME_CLOSING = true;
+			Core.SaveAllPlayerData();
+		end);
 
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
 			service.TrackTask("Thread: API Manager", Core.StartAPI)
-		end
-
-		--// Add existing players in case some are already in the server
-		for index,player in next,service.Players:GetPlayers() do
-			service.TrackTask("Thread: LoadPlayer ".. tostring(player.Name), Core.LoadExistingPlayer, player);
 		end
 
 		--// Occasionally save all player data to the datastore to prevent data loss if the server abruptly crashes
@@ -156,11 +158,14 @@ return function(Vargs)
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true;
-				Core.RemoteEvent.FuncSec:Disconnect()
-				Core.RemoteEvent.Security:Disconnect()
-				Core.RemoteEvent.Event:Disconnect()
+
+				for name,event in next,Core.RemoteEvent.Events do
+					event:Disconnect()
+				end
+
 				pcall(function() service.Delete(Core.RemoteEvent.Object) end)
 				pcall(function() service.Delete(Core.RemoteEvent.Function) end)
+
 				Core.FixingEvent = false;
 				Core.RemoteEvent = nil;
 			end
@@ -173,35 +178,21 @@ return function(Vargs)
 					Core.Panic("Remote Parent RobloxLocked/Unusable")
 				elseif server.Running then
 					local rTable = {};
-					local event = service.New("RemoteEvent")
-					local func = service.New("RemoteFunction", {Parent = event, Name = ""})
-					local secureTriggered = false
+					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false})
+					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event})
+					local secureTriggered = true
 					local tripDet = math.random()
 
-					Core.DisconnectEvent();
-					Core.RemoteEvent = rTable;
-					Core.TripDet = tripDet;
-
-					event.Name = Core.Name--..Functions.GetRandom() -- Core.Name
-
-					event.Archivable = false
-
-					Core.RemoteEvent.Object = event
-					Core.RemoteEvent.Function = func
-
-					event.Parent = remoteParent
-
-					local function secure(ev, name)
-						return service.RbxEvent(ev.Changed, function(p)
-							if Core.RemoteEvent == rTable then
-								if ev and ev == Core.RemoteEvent.Function then
-									Core.RemoteEvent.Function.OnServerInvoke = Process.Remote
+					local function secure(ev, name, parent)
+						return ev.Changed:Connect(function()
+							if Core.RemoteEvent == rTable and not secureTriggered then
+								if ev == func then
+									func.OnServerInvoke = Process.Remote
 								end
 
-								if p == "Name" then
-									event.Name = name--..Functions.GetRandom()--Core.Name
-								elseif tripDet == Core.TripDet and wait() and not secureTriggered then
-									--print("Secure triggered");
+								if ev.Name ~= name then
+									ev.Name = name
+								elseif ev.Parent ~= parent then
 									secureTriggered = true;
 									Core.DisconnectEvent();
 									Core.MakeEvent()
@@ -210,11 +201,22 @@ return function(Vargs)
 						end)
 					end
 
-					Core.RemoteEvent.Event = service.RbxEvent(event.OnServerEvent, Process.Remote)
-					func.OnServerInvoke = Process.Remote
+					Core.DisconnectEvent();
+					Core.TripDet = tripDet;
 
-					Core.RemoteEvent.Security = secure(event, Core.Name)
-					Core.RemoteEvent.FuncSec = secure(func, "");
+					rTable.Events = {};
+					rTable.Object = event;
+					rTable.Function = func;
+
+					rTable.Events.Security = secure(event, event.Name, remoteParent);
+					rTable.Events.FuncSec = secure(func, func.Name, event);
+
+					func.OnServerInvoke = Process.Remote;
+					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote);
+
+					Core.RemoteEvent = rTable;
+					event.Parent = remoteParent;
+					secureTriggered = false;
 
 					Logs.AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
@@ -257,52 +259,114 @@ return function(Vargs)
 			end
 		end;
 
-		SetupEvent = function(p)
-			local key = tostring(p.UserId)
-			local keys = Remote.Clients[key]
-			if keys and keys.EventName and p and not Anti.ObjRLocked(p) then
-				local event = Instance.new("RemoteEvent")
-				event.Name = keys.EventName
-				event.Changed:Connect(function()
-					if Anti.RLocked(event) or not event or event.Parent ~= p then
-						service.Delete(event)
-						Core.SetupEvent(p)
-					end
-				end)
-				event.OnServerEvent:Connect(function(np,...)
-					if np == p then
-						Process.Remote(np,...)
-					end
-				end)
-				event.Parent = p
-			else
-				p:Kick("Locked")
-			end
-		end;
+	 	MakeClient = function(parent)
+			if not parent and Core.ClientLoader then
+				local loader = Core.ClientLoader;
+				loader.Removing = true;
 
-		PrepareClient = function()
-			if service.NetworkServer and server.Running then
-				local ran,err = pcall(function()
-					if Core.ClientLoader then
-						pcall(function() Core.ClientLoaderEvent:Disconnect() service.Delete(Core.ClientLoader) end)
-					end
-
-					local loader = Deps.ClientLoader:Clone()
-					loader.Disabled = false
-					loader.Archivable = false
-					loader.Name = "\0"
-
-					loader.Parent = service.ReplicatedFirst
-					Core.ClientLoader = loader
-					Core.ClientLoaderEvent = loader.Changed:Connect(function()
-						Core.PrepareClient()
-					end)
-				end)
-
-				if err or not ran then
-					Core.Panic("Cannot load ClientLoader "..tostring(err))
+				for i,v in next,loader.Events do
+					v:Disconnect()
 				end
+
+				loader.Object:Destroy();
+			end;
+
+			local depsName = Functions:GetRandom()
+			local folder = server.Client:Clone()
+			local acli = server.Deps.ClientMover:Clone();
+			local client = folder.Client
+			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
+			local clientLoader = {
+				Removing = false;
+			};
+
+			Core.MockClientKeys = Core.MockClientKeys or {
+				Special = depsName;
+				Module = client;
+			}
+
+			local depsName = Core.MockClientKeys.Special;
+			local specialVal = service.New("StringValue")
+			specialVal.Value = Core.Name.."\\"..depsName
+			specialVal.Name = "Special"
+			specialVal.Parent = folder
+
+			acli.Parent = folder;
+			acli.Disabled = false;
+
+			folder.Archivable = false;
+			folder.Name = depsName; --"Adonis_Client"
+			folder.Parent = parentObj;
+
+			if not parent then
+				local oName = folder.Name;
+				clientLoader.Object = folder;
+				clientLoader.Events = {}
+
+				clientLoader.Events[folder] = folder.Changed:Connect(function()
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						if folder.Name ~= oName then
+							folder.Name = oName;
+						elseif folder.Parent ~= parentObj then
+							clientLoader.Removing = true;
+							Core.MakeClient();
+						end
+					end
+				end)
+
+				local function sec(child)
+					local oParent = child.Parent;
+					local oName = child.Name;
+
+					clientLoader.Events[child.Changed] = child.Changed:Connect(function(c)
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							if child.Parent ~= oParent or child == specialVal then
+								Core.MakeClient();
+							end
+						end
+					end)
+
+					local nameEvent = child:GetPropertyChangedSignal("Name"):Connect(function()
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							child.Name = oName;
+						end
+					end)
+
+					clientLoader.Events[nameEvent] = nameEvent;
+					clientLoader.Events[child.AncestryChanged] = child.AncestryChanged:Connect(function()
+						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+							Core.MakeClient();
+						end
+					end)
+				end;
+
+				for i,child in ipairs(folder:GetDescendants()) do
+					sec(child);
+				end
+
+				folder.DescendantAdded:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
+				folder.DescendantRemoving:Connect(function(d)
+					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
+						Core.MakeClient();
+					end
+				end)
+
+				Core.ClientLoader = clientLoader;
 			end
+
+
+			local ok,err = pcall(function()
+				folder.Parent = parentObj
+			end)
+
+			clientLoader.Removing = false;
+
+			Logs:AddLog("Script", "Created client");
 		end;
 
 		HookClient = function(p)
@@ -334,7 +398,6 @@ return function(Vargs)
 				specialVal.Name = "Special"
 				specialVal.Parent = folder
 
-				keys.Loader = Core.ClientLoader
 				keys.Special = depsName
 				keys.EventName = eventName
 				keys.Module = client
@@ -379,69 +442,11 @@ return function(Vargs)
 
 		LoadExistingPlayer = function(p)
 			warn("Loading existing player: ".. tostring(p))
-			--Core.LoadClientLoader(p)
-			Process.PlayerAdded(p)
-		end;
 
-		MakeClient = function()
-			local ran,error = pcall(function()
-				if Anti.RLocked(service.StarterPlayer) then
-					Core.Panic("StarterPlayer RobloxLocked")
-				else
-					local starterScripts = service.StarterPlayer:FindFirstChild(Core.Name)
-					if not starterScripts then
-						starterScripts = service.New("StarterPlayerScripts", service.StarterPlayer)
-						starterScripts.Name = Core.Name
-						starterScripts.Changed:Connect(function(p)
-							if p=="Parent" then
-								Core.MakeClient()
-							elseif p=="Name" then
-								starterScripts.Name = Core.Name
-							elseif p=="RobloxLocked" and Anti.RLocked(starterScripts) then
-								Core.Panic("PlayerScripts RobloxLocked")
-							end
-						end)
-
-						starterScripts.ChildAdded:Connect(function(c)
-							if c.Name ~= Core.Name then
-								wait(0.5)
-								c:Destroy()
-							end
-						end)
-					end
-
-					starterScripts:ClearAllChildren()
-					if Anti.RLocked(starterScripts) then
-						Core.Panic("StarterPlayerScripts RobloxLocked")
-					else
-						if Core.Client then
-							local cli = Core.Client
-							if Anti.ObjRLocked(cli.Object) then
-								Core.Panic("Client RobloxLocked")
-							else
-								Core.Client.Security:Disconnect()
-								pcall(function() Core.Client.Object:Destroy() end)
-							end
-						end
-						Core.Client = {}
-						local client = Deps.Client:Clone()
-						client.Name = Core.Name
-						server.ClientDeps:Clone().Parent = client
-						client.Parent = starterScripts
-						client.Disabled = false
-						Core.Client.Object = client
-						Core.Client.Security = client.Changed:Connect(function(p)
-							if p == "Parent" or p == "RobloxLocked" then
-								Core.MakeClient()
-							end
-						end)
-					end
-				end
+			service.TrackTask("Thread: Setup Existing Player: ".. tostring(p), function()
+				Process.PlayerAdded(p)
+				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
-			if error then
-				print(error)
-				Core.Panic("Error while making client")
-			end
 		end;
 
 		ExecutePermission = function(scr, code, isLocal)
@@ -582,10 +587,12 @@ return function(Vargs)
 
 		GetPlayer = function(p)
 			local key = tostring(p.UserId)
-			local PlayerData = Core.DefaultPlayerData(p)
 
 			if not Core.PlayerData[key] then
+				local PlayerData = Core.DefaultPlayerData(p)
+
 				Core.PlayerData[key] = PlayerData
+
 				if Core.DataStore then
 					local data = Core.GetData(key)
 					if data and type(data) == "table" then
@@ -597,11 +604,11 @@ return function(Vargs)
 						end
 					end
 				end
-			else
-				PlayerData = Core.PlayerData[key]
-			end
 
-			return PlayerData
+				return PlayerData
+			else
+				return Core.PlayerData[key]
+			end
 		end;
 
 		ClearPlayer = function(p)
@@ -617,6 +624,7 @@ return function(Vargs)
 					local data = service.CloneTable(pData);
 
 					data.LastChat = nil
+					data.AdminRank = nil
 					data.AdminLevel = nil
 					data.LastLevelUpdate = nil
 					data.LastDataSave = nil
@@ -631,13 +639,19 @@ return function(Vargs)
 					})
 
 					pData.LastDataSave = os.time();
-				elseif pData == false then
-					Core.SetData(key, nil);
 				end
 			end
 		end;
 
 		SaveAllPlayerData = function(queueWaitTime)
+			for key,pdata in pairs(Core.PlayerData) do
+				local id = tonumber(key);
+				local player = id and service.Players:GetPlayerByUserId(id);
+				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
+					service.TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, p);
+				end
+			end
+			--[[ --// OLD METHOD (Kept in case this messes anything up)
 			for i,p in next,service.Players:GetPlayers() do
 				local pdata = Core.PlayerData[tostring(p.UserId)];
 				--// Only save player's data if it has not been saved within the last INTERVAL (default 30s)
@@ -647,7 +661,7 @@ return function(Vargs)
 						wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
 					end)
 				end
-			end
+			end--]]
 		end;
 
 		GetDataStore = function()
@@ -695,8 +709,9 @@ return function(Vargs)
 		DS_WriteLimiter = function(type, func, ...)
 			local vararg = {...}
 			return service.Queue("DataStoreWriteData", function()
+				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg))
-				wait(Core.DS_GetRequestDelay(type))
+				wait(gotDelay)
 			end, 120, true)
 		end;
 
@@ -717,7 +732,11 @@ return function(Vargs)
 			end
 		end;
 
-		SetData = function(key, value)
+		SetData = function(key, value, repeatCount)
+			if repeatCount then
+				warn("Retrying SetData request for ".. key);
+			end
+
 			if Core.DataStore then
 				if value == nil then
 					return Core.RemoveData(key)
@@ -727,20 +746,33 @@ return function(Vargs)
 						if ran then
 							Core.DataCache[key] = value
 						else
-							logError("DataStore SetAsync Failed: ".. tostring(ret))
+							logError("DataStore SetAsync Failed: ".. tostring(ret));
+							error(ret);
 						end
 
 						wait(6)
 					end, 120, true)
 
 					if not ran2 then
-						warn("DataStore SetData Failed: ".. tostring(err2))
+						logError("DataStore SetData Failed: ".. tostring(err2))
+
+						--// Attempt 3 times, with slight delay between if failed
+						wait(1);
+						if not repeatCount then
+							return Core.SetData(key, value, 3);
+						elseif repeatCount > 0 then
+							return Core.SetData(key, value, repeatCount - 1);
+						end
 					end
 				end
 			end
 		end;
 
-		UpdateData = function(key, func)
+		UpdateData = function(key, func, repeatCount)
+			if repeatCount then
+				warn("Retrying UpdateData request for ".. key);
+			end
+
 			if Core.DataStore then
 				local err = false;
 				local ran2, err2 = service.Queue("DataStoreWriteData" .. tostring(key), function()
@@ -749,20 +781,33 @@ return function(Vargs)
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+						error(ret);
 					end
 
 					wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
-					warn("DataStore UpdateData Failed: ".. tostring(err2))
+					logError("DataStore UpdateData Failed: ".. tostring(err2))
+
+					--// Attempt 3 times, with slight delay between if failed
+					wait(1);
+					if not repeatCount then
+						return Core.UpdateData(key, func, 3);
+					elseif repeatCount > 0 then
+						return Core.UpdateData(key, func, repeatCount - 1);
+					end
 				end
 
 				return err
 			end
 		end;
 
-		GetData = function(key)
+		GetData = function(key, repeatCount)
+			if repeatCount then
+				warn("Retrying GetData request for ".. key);
+			end
+
 			if Core.DataStore then
 				local ran2, err2 = service.Queue("DataStoreReadData", function()
 					local ran, ret = pcall(Core.DataStore.GetAsync, Core.DataStore, Core.DataStoreEncode(key))
@@ -771,13 +816,24 @@ return function(Vargs)
 						return ret
 					else
 						logError("DataStore GetAsync Failed: ".. tostring(ret))
-						return Core.DataCache[key]
+						if Core.DataCache[key] then
+							return Core.DataCache[key];
+						else
+							error(ret);
+						end
 					end
 					wait(Core.DS_GetRequestDelay("Read"))
 				end, 120, true)
 
 				if not ran2 then
-					warn("DataStore GetData Failed: ".. tostring(err2))
+					logError("DataStore GetData Failed: ".. tostring(err2))
+					--// Attempt 3 times, with slight delay between if failed
+					wait(1);
+					if not repeatCount then
+						return Core.GetData(key, 3);
+					elseif repeatCount > 0 then
+						return Core.GetData(key, repeatCount - 1);
+					end
 				else
 					return err2;
 				end

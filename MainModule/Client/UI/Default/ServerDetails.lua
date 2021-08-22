@@ -60,12 +60,12 @@ return function(data)
 				end
 			end
 		end
-		
-		
-		
 
-		
-		
+
+
+
+
+
 		local i = 1
 		local function addOverviewEntry(name, value, toolTip)
 			local entry = overviewtab:Add("TextLabel", {
@@ -86,7 +86,7 @@ return function(data)
 
 			i = i + 1
 		end
-  
+
 		addOverviewEntry("Place Name:", service.MarketPlace:GetProductInfo(game.PlaceId).Name)
 		addOverviewEntry("Place ID:", game.PlaceId)
 		addOverviewEntry("Place Version:", game.PlaceVersion)
@@ -113,15 +113,14 @@ return function(data)
 			if game:GetService("RunService"):IsStudio() then else
 				addOverviewEntry("Region:", serii.region or "[Error]")
 				addOverviewEntry("City:", serii.city or "[Error]")
-			        addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
+			  addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
 				addOverviewEntry("IP Address:", serii.query or "[Error]")
 				addOverviewEntry("Coordinates:", serii.coords or "[Error]") --"0 LAT 0 LON"
 				--Sensitive Data when running on studio
-				end
-			
+			end
 		end
 		i = i + 1
-		addOverviewEntry("Server Speed:", service.Round(service.Workspace:GetRealPhysicsFPS()))
+		addOverviewEntry("Server Speed:", math.round(service.Workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
 		addOverviewEntry("Server Age:", data.ServerAge)
 
@@ -178,7 +177,7 @@ return function(data)
 
 	do
 
-		local Players = game:GetService("Players")
+		local Players = service.Players
 		local sortedPlayers = {}
 
 		for _, player in ipairs(Players:GetPlayers()) do
@@ -192,56 +191,64 @@ return function(data)
 		local adminCount = 0
 		for _, playerName in ipairs(sortedPlayers) do
 			local entryText = ""
-			if playerName == Players[playerName].DisplayName then
-				entryText = playerName
-			else
-				entryText = Players[playerName].DisplayName.." (@"..playerName..")"
-			end
-			local entry = playerstab:Add("TextLabel", {
-				Text = "             "..entryText;
-				ToolTip = "ID: "..Players[playerName].UserId;
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-				TextXAlignment = "Left";
-				--[[OnClicked = function()
-					client.Remote.Send("InspectPlayer")
-				end;]]
-			})
-			if data.Admins[playerName] ~= "Player" then
-				adminCount = adminCount + 1
-				local subEntryText = data.Admins[playerName]
-				if table.find(data.Donors, playerName) then
-					subEntryText = subEntryText.." | Donor"
+			local player = Players:FindFirstChild(playerName);
+			if player then
+				if playerName == player.DisplayName then
+					entryText = playerName
+				else
+					entryText = player.DisplayName.." (@"..playerName..")"
 				end
-				entry:Add("TextLabel", {
-					Text = " "..subEntryText.."  ";
-					BackgroundTransparency = 1;
-					Size = UDim2.new(0, 120, 1, 0);
-					Position = UDim2.new(1, -120, 0, 0);
-					TextXAlignment = "Right";
+
+				local entry = playerstab:Add("TextLabel", {
+					Text = "             "..entryText;
+					ToolTip = "ID: "..Players[playerName].UserId;
+					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Size = UDim2.new(1, -10, 0, 30);
+					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+					TextXAlignment = "Left";
+					--[[OnClicked = function()
+						client.Remote.Send("InspectPlayer")
+					end;]]
 				})
-			elseif table.find(data.Donors, playerName) then
-				playerCount = playerCount + 1
-				entry:Add("TextLabel", {
-					Text = " Donor  ";
-					BackgroundTransparency = 1;
-					Size = UDim2.new(0, 120, 1, 0);
-					Position = UDim2.new(1, -120, 0, 0);
-					TextXAlignment = "Right";
-				})
-			else
-				playerCount = playerCount + 1
+
+				local subEntryText = data.Admins[playerName]
+				if subEntryText and subEntryText ~= "Player" then
+					adminCount = adminCount + 1
+
+					if table.find(data.Donors, playerName) then
+						subEntryText = subEntryText.." | Donor"
+					end
+
+					entry:Add("TextLabel", {
+						Text = " "..subEntryText.."  ";
+						BackgroundTransparency = 1;
+						Size = UDim2.new(0, 120, 1, 0);
+						Position = UDim2.new(1, -120, 0, 0);
+						TextXAlignment = "Right";
+					})
+				elseif table.find(data.Donors, playerName) then
+					playerCount = playerCount + 1
+					entry:Add("TextLabel", {
+						Text = " Donor  ";
+						BackgroundTransparency = 1;
+						Size = UDim2.new(0, 120, 1, 0);
+						Position = UDim2.new(1, -120, 0, 0);
+						TextXAlignment = "Right";
+					})
+				else
+					playerCount = playerCount + 1
+				end
+
+				spawn(function()
+					entry:Add("ImageLabel", {
+						Image = game:GetService("Players"):GetUserThumbnailAsync(Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+						BackgroundTransparency = 1;
+						Size = UDim2.new(0, 30, 0, 30);
+						Position = UDim2.new(0, 0, 0, 0);
+					})
+				end)
+				i = i + 1
 			end
-			spawn(function()
-				entry:Add("ImageLabel", {
-					Image = game:GetService("Players"):GetUserThumbnailAsync(Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-					BackgroundTransparency = 1;
-					Size = UDim2.new(0, 30, 0, 30);
-					Position = UDim2.new(0, 0, 0, 0);
-				})
-			end)
-			i = i + 1
 		end
 
 		playerstab:Add("TextLabel", {

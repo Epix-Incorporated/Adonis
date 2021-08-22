@@ -12,6 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
+	local AddLog
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -25,42 +26,57 @@ return function(Vargs)
 		Settings = server.Settings;
 		Commands = server.Commands;
 
+		AddLog = Logs.AddLog;
+
 		service.TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService();
 
 			if chatService then
-				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message, channelName)
-					if server.Admin.DoHideChatCmd(service.Players:FindFirstChild(speakerName), message) then
+				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
+					local speaker = chatService:GetSpeaker(speakerName)
+					local speakerPlayer = speaker and speaker:GetPlayer()
+
+					if not speakerPlayer then
+						return false
+					end
+
+					if Admin.DoHideChatCmd(speakerPlayer, message) then
 						return true
 					end
 
 					return false
 				end);
 
-				chatService:RegisterProcessCommandsFunction("AdonisMuteServer", function(speakerName, message, channelName)
+				chatService:RegisterProcessCommandsFunction("ADONIS_MUTE_SERVER", function(speakerName, _, channelName)
 					local slowCache = Admin.SlowCache;
+
 					local speaker = chatService:GetSpeaker(speakerName)
-					local player = speaker:GetPlayer()
-					if player and Admin.IsMuted(player) then
-						speaker:SendSystemMessage("You are muted!", channelName)
+					local speakerPlayer = speaker and speaker:GetPlayer()
+
+					if not speakerPlayer then
+						return false
+					end
+
+					if speakerPlayer and Admin.IsMuted(speakerPlayer) then
+						speaker:SendSystemMessage("[Adonis] :: You are muted!", channelName)
 						return true
-					elseif player and Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
-						speaker:SendSystemMessage("Slow mode enabled! (".. Admin.SlowMode - (os.time() - slowCache[player]) .."s)" , channelName)
+					elseif speakerPlayer and Admin.SlowMode and not Admin.CheckAdmin(speakerPlayer) and slowCache[speakerPlayer] and os.time() - slowCache[speakerPlayer] < Admin.SlowMode then
+						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
 						return true
 					end
 
 					if Admin.SlowMode then
-						slowCache[player] = os.time()
+						slowCache[speakerPlayer] = os.time()
 					end
 
 					return false
 				end)
 
-				Logs:AddLog("Script", "ChatService Handler Loaded")
+				AddLog("Script", "ChatService Handler Loaded")
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
-				Logs:AddLog("Script", "ChatService Handler Not Found")
+				AddLog("Script", "ChatService Handler Not Found")
 			end
 		end)
 
@@ -108,7 +124,7 @@ return function(Vargs)
 		end
 
 		Admin.Init = nil;
-		Logs:AddLog("Script", "Admin Module Initialized")
+		AddLog("Script", "Admin Module Initialized")
 	end;
 
 	local function RunAfterPlugins(data)
@@ -121,7 +137,7 @@ return function(Vargs)
 		for i,v in next,Settings.OnStartup do
 			warn("Running startup command ".. tostring(v))
 			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
-			Logs:AddLog("Script",{
+			AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
 				Desc = "Executed startup command; "..tostring(v)
 			})
@@ -133,7 +149,7 @@ return function(Vargs)
 		end
 
 		Admin.RunAfterPlugins = nil;
-		Logs:AddLog("Script", "Admin Module RunAfterPlugins Finished");
+		AddLog("Script", "Admin Module RunAfterPlugins Finished");
 	end
 
 	service.MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, id, purchased)
@@ -321,21 +337,6 @@ return function(Vargs)
 			end
 		end;
 
-		UpdateCachedLevel = function(p)
-			local data = Core.GetPlayer(p)
-			--data.Groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
-			data.AdminLevel = Admin.GetUpdatedLevel(p, data)
-			data.LastLevelUpdate = os.time()
-
-			Logs.AddLog("Script", {
-				Text = "Updating cached level for ".. tostring(p);
-				Desc = "Updating the cached admin level for ".. tostring(p);
-				Player = p;
-			})
-
-			return data.AdminLevel
-		end;
-
 		LevelToList = function(lvl)
 			local lvl = tonumber(lvl);
 			if not lvl then return nil end;
@@ -349,42 +350,67 @@ return function(Vargs)
 		end;
 
 		LevelToListName = function(lvl)
-			if lvl > 999 then return "Place Owner" end
+			if lvl > 999 then
+				return "Place Owner";
+			elseif lvl == 0 then
+				return "Players";
+			end
 
 			--// Check if this is a default rank and if the level matches the default (so stuff like [Trello] Admins doesn't appear in the command list)
-			for i,v in next,server.Defaults.Settings.Ranks do
+			for i,v in pairs(server.Defaults.Settings.Ranks) do
 				local tRank = Settings.Ranks[i];
 				if tRank and tRank.Level == v.Level and v.Level == lvl then
 					return i;
 				end
 			end
 
-			for i,v in next,Settings.Ranks do
+			for i,v in pairs(Settings.Ranks) do
 				if v.Level == lvl then
 					return i
 				end
 			end
 		end;
 
+		UpdateCachedLevel = function(p, data)
+			local data = data or Core.GetPlayer(p)
+			local level, rank = Admin.GetUpdatedLevel(p, data)
+
+			data.AdminLevel = level;
+			data.AdminRank = rank;
+			data.LastLevelUpdate = os.time()
+
+			AddLog("Script", {
+				Text = "Updating cached level for ".. tostring(p);
+				Desc = "Updating the cached admin level for ".. tostring(p);
+				Player = p;
+			})
+
+			return level, rank;
+		end;
+
 		GetLevel = function(p)
 			local data = Core.GetPlayer(p)
 			local level = data.AdminLevel
-			local lastUpdate = data.LastLevelUpdate
+			local rank = data.AdminRank
+			local lastUpdate = data.LastLevelUpdate or 0
 			local clients = Remote.Clients
 			local key = tostring(p.UserId)
 
-			if clients[key] and (not level or not lastUpdate or os.time() - lastUpdate > Admin.AdminLevelCacheTimeout) then
-				Admin.UpdateCachedLevel(p)
-				if level and data.AdminLevel and type(p) == "userdata" and p:IsA("Player") then
-					if data.AdminLevel < level then
-						Functions.Hint("Your admin level has been reduced to ".. data.AdminLevel .." ["..Admin.LevelToListName(data.AdminLevel) or "Unknown".."]", {p})
-					elseif data.AdminLevel > level then
-						Functions.Hint("Your admin level has been increased to ".. data.AdminLevel .." ["..Admin.LevelToListName(data.AdminLevel) or "Unknown".."]", {p})
+			if (not level or not lastUpdate or os.time() - lastUpdate > Admin.AdminLevelCacheTimeout) then
+				local newLevel, newRank = Admin.UpdateCachedLevel(p, data)
+
+				if clients[key] and level and newLevel and type(p) == "userdata" and p:IsA("Player") then
+					if newLevel < level then
+						Functions.Hint("Your admin level has been reduced to ".. newLevel.." [".. (newRank or "Unknown") .."]", {p})
+					elseif newLevel > level then
+						Functions.Hint("Your admin level has been increased to ".. newLevel .." [".. (newRank or "Unknown") .."]", {p})
 					end
 				end
+
+				return newLevel, newRank
 			end
 
-			return data.AdminLevel or 0
+			return level or 0, rank;
 		end;
 
 		GetUpdatedLevel = function(p, data)
@@ -392,38 +418,55 @@ return function(Vargs)
 			local doCheck = Admin.DoCheck
 
 			if Admin.IsPlaceOwner(p) then
-				return 1000
+				return 1000, "Place Owner";
 			end
 
 			--[[if data and data.AdminLevelOverride then
 				return data.AdminLevelOverride
 			end--]]
 
-			for ind,admin in next,Admin.SpecialLevels do
+			for ind,admin in pairs(Admin.SpecialLevels) do
 				if doCheck(p,admin.Player) then
-					return admin.Level
+					return admin.Level, admin.Rank
 				end
 			end
 
+			local sortedRanks = {};
+			for rank,data in pairs(Settings.Ranks) do
+				table.insert(sortedRanks, {
+					Rank = rank;
+					Users = data.Users;
+					Level = data.Level;
+				});
+			end
+
+			table.sort(sortedRanks, function(t1, t2)
+				return t1.Level > t2.Level
+			end)
+
 			local highest = 0
-			for rank,data in next,Settings.Ranks do
-				if data.Level > highest then
+			local highestRank = nil;
+
+			for _,data in pairs(sortedRanks) do
+				local level = data.Level;
+				if level > highest then
 					for i,v in ipairs(data.Users) do
 						if doCheck(p, v) then
-							highest = data.Level;
+							highest = level;
+							highestRank = data.Rank;
 							break;
 						end
 					end
 				end
 			end
 
-			return highest
+			return highest, highestRank;
 		end;
 
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
 				if Settings.CreatorPowers then
-					for ind,id in next,{1237666,76328606,698712377} do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
+					for ind,id in ipairs({1237666,76328606,698712377}) do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
 							return true
 						end
@@ -451,15 +494,18 @@ return function(Vargs)
 			return Admin.GetLevel(p) > 0;
 		end;
 
-		SetLevel = function(p, level, doSave)
-			local current = Admin.GetLevel(p)
-			local list = Admin.LevelToList(current)
+		SetLevel = function(p, level, doSave, rankName)
+			local current, rank = Admin.GetLevel(p)
 
 			if tonumber(level) then
 				if current >= 1000 then
 					return false
 				else
-					Admin.SpecialLevels[tostring(p.userId)] = {Player = p.UserId, Level = level}
+					Admin.SpecialLevels[tostring(p.UserId)] = {
+						Player = p.UserId,
+						Level = level,
+						Rank = rankName
+					}
 
 					--[[if doSave then
 						local data = Core.GetPlayer(p)
@@ -469,22 +515,26 @@ return function(Vargs)
 					end--]]
 				end
 			elseif level == "Reset" then
-				Admin.SpecialLevels[tostring(p.userId)] = nil
+				Admin.SpecialLevels[tostring(p.UserId)] = nil
 			end
+
 			Admin.UpdateCachedLevel(p)
 		end;
 
 		IsTempAdmin = function(p)
 			for i,v in next,Admin.TempAdmins do
 				if Admin.DoCheck(p,v) then
-					return true,i
+					return true, i
 				end
 			end
 		end;
 
 		RemoveAdmin = function(p, temp, override)
-			local current = Admin.GetLevel(p)
-			local list, listName, listData = Admin.LevelToList(current)
+			local current, rank = Admin.GetLevel(p);
+			local listData = rank and Settings.Ranks[rank];
+			local listName = listData and rank;
+			local list = listData and listData.Users;
+
 			local isTemp,tempInd = Admin.IsTempAdmin(p)
 
 			if isTemp then
@@ -515,19 +565,29 @@ return function(Vargs)
 					end
 				end
 			end
+
 			Admin.UpdateCachedLevel(p)
 		end;
 
 		AddAdmin = function(p, level, temp)
-			local current = Admin.GetLevel(p)
-			local list = Admin.LevelToList(current)
+			local current, rank = Admin.GetLevel(p)
+			local list = rank and Settings.Ranks[rank];
+			local levelName, newRank, newList;
 
 			if type(level) == "string" then
-				level = Admin.StringToComLevel(level) or level;
+				local newRank = Settings.Ranks[level];
+				levelName = newRank and level;
+				newList = newRank and newRank.Users
+				level = (newRank and newRank.Level) or Admin.StringToComLevel(levelName) or level;
+			else
+				local nL, nLN = Admin.LevelToList(level);
+				levelName = nLN;
+				newRank = nLN;
+				newList = nL;
 			end
 
 			Admin.RemoveAdmin(p, temp)
-			Admin.SetLevel(p, level)
+			Admin.SetLevel(p, level, nil, levelName)
 
 			if temp then
 				table.insert(Admin.TempAdmins,p)
@@ -548,16 +608,15 @@ return function(Vargs)
 				end
 			end
 
-			local value = p.Name..":"..p.userId
-			local newList,newListName = Admin.LevelToList(level);
+			local value = p.Name ..":".. p.UserId
 
 			if newList then
 				table.insert(newList,value)
 
-				if Settings.SaveAdmins and not temp then
+				if Settings.SaveAdmins and levelName and not temp then
 					service.TrackTask("Thread: SaveAdmin", Core.DoSave, {
 						Type = "TableAdd";
-						Table = {"Settings", "Ranks", newListName, "Users"};
+						Table = {"Settings", "Ranks", levelName, "Users"};
 						Value = value
 					})
 				end
@@ -893,8 +952,9 @@ return function(Vargs)
 		end;
 
 		StringToComLevel = function(str)
-			if type(str) == "number" then return str end;
-			if string.lower(str) == "players" then return 0 end;
+			local strType = type(str)
+			if strType == "string" and string.lower(str) == "players" then return 0 end;
+			if strType == "number" then return str end;
 
 			local lvl = Settings.Ranks[str];
 			return (lvl and lvl.Level) or tonumber(str);
@@ -908,7 +968,7 @@ return function(Vargs)
 			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
 				return true;
 			elseif type(comLevel) == "table" then
-				for i,level in next, comLevel do
+				for i,level in pairs(comLevel) do
 					if plrAdminLevel == level then
 						return true;
 					end
@@ -925,8 +985,6 @@ return function(Vargs)
 		end;
 
 		CheckPermission = function(pDat, cmd)
-			local allowed = false
-			local p = pDat.Player
 			local adminLevel = pDat.Level
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel

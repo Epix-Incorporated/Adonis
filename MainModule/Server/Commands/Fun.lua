@@ -174,15 +174,14 @@ return function(Vargs, env)
 
 		Brazil = {
 			Prefix = Settings.Prefix;
-			Commands = {"brazil";};
+			Commands = {"brazil";"sendtobrazil"};
 			Args = {"players"};
 			AdminLevel = "Moderators";
 			Fun = true;
 			Description = "You're going to";
-			Function = function (runner, args)
-				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
-					local character = plr.Character
-					local root = character:FindFirstChild("HumanoidRootPart")
+			Function = function (plr, args)
+				for _,v in pairs(service.GetPlayers(plr, args[1])) do
+					local root = v.Character:FindFirstChild("HumanoidRootPart")
 					local sound = Instance.new("Sound", root)
 					sound.SoundId = "rbxassetid://5816432987"
 					sound.Volume = 10
@@ -211,36 +210,101 @@ return function(Vargs, env)
 			end
 		};
 
-		-- maybe make it work with players not in-game
 		CharGear = {
 			Prefix = Settings.Prefix;
 			Commands = {"chargear";"charactergear";"doll";"cgear"};
-			Args = {"player";};
+			Args = {"player/username";};
 			Fun = true;
 			Hidden = false;
 			AdminLevel = "Moderators";
-			Description = "Gives you a doll of a player.";
-			Function = function(runner,args)
-				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
-					local tool = Instance.new('Tool', runner:FindFirstChildWhichIsA('Backpack'))
-					tool.ToolTip = plr.DisplayName .. ' as a tool, generated with Adonis.'
-					tool.Name = plr.Name
+			Description = "Gives you a doll of a player";
+			Function = function(plr,args)
+				local function generate(userId)
+					local tool = Instance.new('Tool', plr:FindFirstChildWhichIsA('Backpack'))
+					local targetName = service.Players:GetNameFromUserIdAsync(userId)
+					if service.Players:GetPlayerByUserId(userId) then
+						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
+					else
+						tool.ToolTip = "@"..targetName.." as a tool"
+					end
+					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
 					local handle = Instance.new('Part', tool)
 					handle.Name = 'Handle'
 					handle.CanCollide = false
 					handle.Transparency = 1
-					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
-					model.Name = plr.displayName
-					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
-	      	local bHeight = hum:WaitForChild('BodyHeightScale')
-	      	local bDepth = hum:WaitForChild('BodyDepthScale')
+					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
+					model.Name = targetName
+					local hum = model:WaitForChild("Humanoid")
+					local bHeight = hum:WaitForChild('BodyHeightScale')
+					local bDepth = hum:WaitForChild('BodyDepthScale')
 					local bWidth = hum:WaitForChild('BodyWidthScale')
-	        bHeight.Value = bHeight.Value / 2
-	        bDepth.Value = bDepth.Value / 2
-	        bWidth.Value = bWidth.Value / 2
-					local cfr = (runner.Character:FindFirstChild('Right Arm') or runner.Character:FindFirstChild('RightFoot')).CFrame
+					bHeight.Value = bHeight.Value / 2
+					bDepth.Value = bDepth.Value / 2
+					bWidth.Value = bWidth.Value / 2
+					local cfr = (plr.Character:FindFirstChild('Right Arm') or plr.Character:FindFirstChild('RightFoot')).CFrame
 					handle.CFrame = cfr
 					model:FindFirstChild('Animate').Disabled = true
+					for _,obj in pairs(model:GetDescendants()) do
+						if obj:IsA('BasePart') then
+							obj.Massless = true
+							obj.CanCollide = false
+						end
+					end
+					model.Parent = tool
+					model:SetPrimaryPartCFrame(cfr)
+					local weld = Instance.new('WeldConstraint', tool)
+					weld.Part0 = handle
+					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
+				end
+
+				if pcall(function() service.GetPlayers(plr, args[1]) end) then
+					for _,v in pairs(service.GetPlayers(plr, args[1])) do
+						generate(v.UserId)
+					end
+				else
+					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+					if success then
+						generate(id)
+					else
+						error("Unable to find target user")
+					end
+				end
+			end
+		};
+
+		PlrGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"playergear", "dollify", "pgear", "plrgear"};
+			Args = {"player";};
+			Fun = true;
+			Hidden = false;
+			AdminLevel = "Moderators";
+			Description = "Turns a player into a doll which can be picked up";
+			Function = function(runner,args)
+				for _,plr in pairs(service.GetPlayers(runner, args[1])) do
+					if plr.Character.Parent:IsA("Tool") ~= true then
+					local tool = Instance.new('Tool', workspace)
+					tool.ToolTip = plr.DisplayName .. ' as a tool, converted with Adonis.'
+					tool.Name = plr.Name
+					local handle = Instance.new('Part', tool)
+					handle.Name = 'Handle'
+					handle.Transparency = 1
+					local model = game:GetService('Players'):CreateHumanoidModelFromDescription(game:GetService('Players'):GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
+					model.Name=plr.DisplayName
+					local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
+					plr.Character:Destroy()
+					plr.Character=model
+					model:SetPrimaryPartCFrame(oldcframe)
+					local hum = model:WaitForChild("Humanoid") -- U forgot that variable
+					local bHeight = hum:WaitForChild('BodyHeightScale')
+					local bDepth = hum:WaitForChild('BodyDepthScale')
+					local bWidth = hum:WaitForChild('BodyWidthScale')
+					bHeight.Value = bHeight.Value / 2
+					bDepth.Value = bDepth.Value / 2
+					bWidth.Value = bWidth.Value / 2
+					local cfr = (plr.Character:FindFirstChild('HumanoidRootPart')).CFrame
+					handle.CFrame = cfr
+					handle.CanCollide = false
 					for _,v in pairs(model:GetDescendants()) do
 						if v:IsA('BasePart') then
 							v.Massless = true
@@ -250,10 +314,13 @@ return function(Vargs, env)
 					model:SetPrimaryPartCFrame(cfr)
 					local weld = Instance.new('WeldConstraint', tool)
 					weld.Part0 = handle
-					weld.Part1 = model:FindFirstChild('Left Leg') or model:FindFirstChild('LeftFoot')
+					weld.Part1 = model:FindFirstChild('HumanoidRootPart')
+					else
+						error("That user is already a doll!")
+					end
 				end
 			end
-		},
+		};
 
 		LowRes = {
 			Prefix = Settings.Prefix;
@@ -806,7 +873,7 @@ return function(Vargs, env)
 		Thanos = {
 			Prefix = Settings.Prefix;
 			Commands = {"thanos", "thanossnap","balancetheserver", "snap"};
-			Args = {"(opt)player"};
+			Args = {"player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
 			Fun = true;
 			Hidden = false;
@@ -836,22 +903,32 @@ return function(Vargs, env)
 				wait()
 				audio:Destroy()
 
-				for i = 1, #playerList*10 do
-					if #players < math.max((#playerList/2), 1) then
-						local index = math.random(1, #playerList)
-						local targPlayer = playerList[index]
-						if not deliverUs[targPlayer] then
-							local targLevel = server.Admin.GetLevel(targPlayer)
-							if targLevel < plrLevel then
-								deliverUs[targPlayer] = true
-								table.insert(players, targPlayer)
-							else
-								table.remove(playerList, index)
+				if #playerList == 1 then
+					local player = playerList[1];
+					local tLevel = Admin.GetLevel(player);
+
+					if tLevel < plrLevel then
+						deliverUs[player] = true
+						table.insert(players, player)
+					end
+				elseif #playerList > 1 then
+					for i = 1, #playerList*10 do
+						if #players < math.max((#playerList/2), 1) then
+							local index = math.random(1, #playerList)
+							local targPlayer = playerList[index]
+							if not deliverUs[targPlayer] then
+								local targLevel = Admin.GetLevel(targPlayer)
+								if targLevel < plrLevel then
+									deliverUs[targPlayer] = true
+									table.insert(players, targPlayer)
+								else
+									table.remove(playerList, index)
+								end
+								wait()
 							end
-							wait()
+						else
+							break
 						end
-					else
-						break
 					end
 				end
 

@@ -48,12 +48,15 @@ return function()
 
 	local function RunAfterLoaded()
 		--// Report client finished loading
+		log("~! Fire client loaded")
 		client.Remote.Send("ClientLoaded")
 
 		--// Ping loop
+		log("~! Start ClientCheck loop");
 		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
+		log("Get settings");
 		local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
 		if settings then
 			client.G_API = settings.G_API
@@ -63,6 +66,7 @@ return function()
 			client.Allowed_API_Calls = settings.Allowed_API_Calls
 			client.HelpButtonImage = settings.HelpButtonImage
 		else
+			log("~! GET SETTINGS FAILED?")
 			warn("FAILED TO GET SETTINGS FROM SERVER");
 		end
 
@@ -487,23 +491,23 @@ return function()
 		end;
 
 		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
+			cache = cache or Remote.EncodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
-				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
+
+				local keyCache = cache[key] or {}				
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+				for i = 1, #str do
+					local keyPos = (i % #key) + 1
+					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
 
 				endStr = table.concat(endStr)
@@ -514,7 +518,8 @@ return function()
 		end;
 
 		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
+			cache = cache or Remote.DecodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -522,15 +527,13 @@ return function()
 			else
 				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+				for i = 1, #str do
+					local keyPos = (i % #key)+1
+					endStr[i] = char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
 
 				endStr = table.concat(endStr)

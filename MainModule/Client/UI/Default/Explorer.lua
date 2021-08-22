@@ -37,7 +37,6 @@ return function(data)
 			OnClick = function()
 				curObject = curObject.Parent or game
 				client.Remote.Send("HandleExplore", obj, "Delete")
-				obj:Destroy()
 				getList(curObject)
 			end;
 		})

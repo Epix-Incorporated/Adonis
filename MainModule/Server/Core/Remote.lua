@@ -56,7 +56,7 @@ return function(Vargs)
 		EncodeCache = {};
 		DecodeCache = {};
 
-		TimeUntilKeyDestroyed = 60 * 10; --// How long until a player's key data should be completely removed?
+		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
 
 		Returnables = {
 			RateLimits = function(p, args)
@@ -618,10 +618,10 @@ return function(Vargs)
 		};
 
 		UnEncrypted = {
-			TrustCheck = function(p)
+			--[[TrustCheck = function(p)
 				local keys = Remote.Clients[tostring(p.userId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;
+			end;--]]
 
 			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)
@@ -802,7 +802,7 @@ return function(Vargs)
 			end;
 
 			TrelloOperation = function(p,args)
-				if Admin.GetLevel(p) > 2 then
+				if Admin.GetLevel(p) > 200 then
 					local data = args[1]
 					if data.Action == "MakeCard" then
 						local list = data.List
@@ -836,7 +836,8 @@ return function(Vargs)
 					service.Events.ClientLoaded:Fire(p)
 					Process.FinishLoading(p)
 				else
-					--warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
+					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
+					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
 					--p:Kick("Loading error [ClientLoaded Failed]")
 				end
 			end;
@@ -851,7 +852,9 @@ return function(Vargs)
 
 			ProcessCommand = function(p,args)
 				if Process.RateLimit(p, "Command") then
-					Process.Command(p,args[1],{Check=true})
+					Process.Command(p, args[1], {
+						Check = true
+					})
 				elseif Process.RateLimit(p, "RateLog") then
 					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
@@ -1225,23 +1228,23 @@ return function(Vargs)
 		end;
 
 		Encrypt = function(str, key, cache)
-			local cache = cache or Remote.EncodeCache or {}
+			cache = cache or Remote.EncodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
 				return cache[key][str]
 			else
-				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
+
+				local keyCache = cache[key] or {}
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
+				for i = 1, #str do
+					local keyPos = (i % #key) + 1
+					endStr[i] = char(((byte(sub(str, i, i)) + byte(sub(key, keyPos, keyPos)))%126) + 1)
 				end
 
 				endStr = table.concat(endStr)
@@ -1252,7 +1255,8 @@ return function(Vargs)
 		end;
 
 		Decrypt = function(str, key, cache)
-			local cache = cache or Remote.DecodeCache or {}
+			cache = cache or Remote.DecodeCache or {}
+
 			if not key or not str then
 				return str
 			elseif cache[key] and cache[key][str] then
@@ -1260,15 +1264,13 @@ return function(Vargs)
 			else
 				local keyCache = cache[key] or {}
 				local byte = string.byte
-				local abs = math.abs
 				local sub = string.sub
-				local len = string.len
 				local char = string.char
 				local endStr = {}
 
-				for i = 1,len(str) do
-					local keyPos = (i%len(key))+1
-					endStr[i] = string.char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
+				for i = 1, #str do
+					local keyPos = (i % #key)+1
+					endStr[i] = char(((byte(sub(str, i, i)) - byte(sub(key, keyPos, keyPos)))%126) - 1)
 				end
 
 				endStr = table.concat(endStr)

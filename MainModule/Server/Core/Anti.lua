@@ -33,7 +33,7 @@ return function(Vargs)
 
 	local function RunAfterPlugins(data)
 		--// Fake finder
-		service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
+		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
 
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
@@ -42,12 +42,12 @@ return function(Vargs)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 120; --// Two minutes without communication seems long enough right?
+		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(info) end)
+			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
 
 			wait(1)
 
@@ -70,15 +70,11 @@ return function(Vargs)
 
 				for ind,p in ipairs(service.Players:GetPlayers()) do
 					if p and p:IsA("Player") then
-						if Anti.ObjRLocked(p) then
-							Anti.Detected(p, "Log", "Player RobloxLocked")
-						else
-							local key = tostring(p.UserId)
-							local client = Remote.Clients[key]
-							if client and client.LastUpdate then
-								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
-								end
+						local key = tostring(p.UserId)
+						local client = Remote.Clients[key]
+						if client and client.LastUpdate and client.PlayerLoaded then
+							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
+								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
 							end
 						end
 					end
@@ -135,7 +131,7 @@ return function(Vargs)
 			if Anti.ObjRLocked(p) or not p:IsA("Player") then
 				return true,1
 			else
-				local players = service.Players:GetChildren()
+				local players = service.Players:GetPlayers()
 				local found = 0
 
 				if service.NetworkServer then
@@ -173,7 +169,7 @@ return function(Vargs)
 		end;
 
 		FindFakePlayers = function()
-			for i,v in pairs(service.Players:GetChildren()) do
+			for i,v in pairs(service.Players:GetPlayers()) do
 				if Anti.isFake(v) then
 					Anti.RemovePlayer(v, "Fake")
 				end
