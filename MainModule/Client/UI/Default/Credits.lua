@@ -1,3 +1,4 @@
+
 client = nil
 service = nil
 
@@ -24,8 +25,8 @@ return function(data)
 			List = {};
 			ScrollBarThickness = 3;
 			BackgroundTransparency = 1;
-			Position = UDim2.new(0, 0, 0, 25);
-			Size = UDim2.new(1, 0, 1, -25);
+			Position = UDim2.new(0, 0, 0, 28);
+			Size = UDim2.new(1, 0, 1, -28);
 		})
 
 		local search = tab:Add("TextBox", {
@@ -50,10 +51,10 @@ return function(data)
 						ToolTip = credit.Desc;
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, -10, 0, 30);
-						Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+						Position = UDim2.new(0, 5, 0, (30*(i-1)));
 						TextXAlignment = "Left";
 					})
-					i = i + 1
+					i += 1
 				end
 			end
 			scroller:ResizeCanvas(false, true, false, false, 5, 5)
