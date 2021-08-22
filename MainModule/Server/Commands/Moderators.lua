@@ -4764,7 +4764,7 @@ return function(Vargs, env)
 							v.Character.Humanoid.Jump = true
 						end
 						wait()
-						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z))))
+						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
 					end
 				else
 					local target = service.GetPlayers(plr,args[2])[1]
