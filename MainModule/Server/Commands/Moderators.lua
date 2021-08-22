@@ -522,31 +522,6 @@ return function(Vargs, env)
 			end
 		};
 
-		NumPlayers = {
-			Prefix = Settings.Prefix;
-			Commands = {"pnum","numplayers","howmanyplayers"};
-			Args = {};
-			Description = "Tells you how many players are in the server";
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local num = 0
-				local nilNum = 0
-				for _, v in ipairs(service.GetPlayers()) do
-					if v.Parent ~= service.Players then
-						nilNum += 1
-					end
-
-					num += 1
-				end
-
-				if nilNum > 0 then
-					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading", {plr})
-				else
-					Functions.Hint("There are "..tostring(num).." players", {plr})
-				end
-			end
-		};
-
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk";"maketalk";};
@@ -2683,29 +2658,6 @@ return function(Vargs, env)
 				else
 					Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
 					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
-				end
-			end
-		};
-
-		Info = {
-			Prefix = Settings.Prefix;
-			Commands = {"info";"age";};
-			Args = {"player";"groupid";};
-			Hidden = false;
-			Description = "Shows you information about the target player";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local plz = service.GetPlayers(plr, (args[1] and args[1]:lower()) or plr.Name:lower())
-				for i,v in pairs(plz) do
-					if args[2] and tonumber(args[2]) then
-						local role = v:GetRoleInGroup(tonumber(args[2]))
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat).." Rank: "..tostring(role),{plr})
-					else
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat),{plr})
-					end
 				end
 			end
 		};
