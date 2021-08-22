@@ -1106,5 +1106,30 @@ return function(Vargs, env)
 				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
+		
+		NumPlayers = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"pnum","numplayers","playercount"};
+			Args = {};
+			Description = "Tells you how many players are in the server";
+			AdminLevel = "Players";
+			Function = function(plr, args)
+				local num = 0
+				local nilNum = 0
+				for _, v in ipairs(service.GetPlayers()) do
+					if v.Parent ~= service.Players then
+						nilNum += 1
+					end
+
+					num += 1
+				end
+
+				if nilNum > 0 and Admin.GetLevel(plr) >= 100 then
+					Functions.Hint("There are currently "..tostring(num).." player(s); "..tostring(nilNum).." are nil or loading", {plr})
+				else
+					Functions.Hint("There are "..tostring(num).." player(s)", {plr})
+				end
+			end
+		};
 	}
 end
