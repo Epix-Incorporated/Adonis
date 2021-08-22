@@ -12,6 +12,7 @@ return function(data)
 		Size  = {150,70};
 		Position = UDim2.new(0, 10, 1, -80);
 		AllowMultiple = false;
+		NoHide = true;
 		OnClose = function()
 			pinging = false
 		end

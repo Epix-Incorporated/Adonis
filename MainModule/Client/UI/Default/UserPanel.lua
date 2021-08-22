@@ -312,10 +312,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						client.UI.Make("List", {
-							Title = "Credits";
-							Table = require(client.Shared.Credits);
-						})
+						client.UI.Make("Credits", {})
 					end
 				}
 			})
