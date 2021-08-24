@@ -2990,7 +2990,7 @@ return function(data)
 				end)
 			end
 
-			if (data.OnClicked or data.OnClick) and class == "TextButton" then
+			if (data.OnClicked or data.OnClick) and (class == "TextButton" or class == "ImageButton") then
 				local debounce = false;
 				local doDebounce = data.Debounce;
 				local onClick = functionify((data.OnClicked or data.OnClick), new)
@@ -9128,6 +9128,17 @@ return function(data)
 
 	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
+			if string.sub(text.Text, string.len(text.Text)) == "	" then
+				if players:FindFirstChild("Entry 0") then
+					text.Text = (string.sub(text.Text, 1, (string.len(text.Text) - 1))..players["Entry 0"].Text).." "
+				elseif scroll:FindFirstChild("Entry 0") then
+					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
+				else
+					text.Text = text.Text..prefix
+				end
+				text.CursorPosition = string.len(text.Text) + 1
+				text.Text = string.gsub(text.Text, "	", "")
+			end
 			scroll:ClearAllChildren()
 			players:ClearAllChildren()
 

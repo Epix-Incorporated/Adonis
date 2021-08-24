@@ -522,31 +522,6 @@ return function(Vargs, env)
 			end
 		};
 
-		NumPlayers = {
-			Prefix = Settings.Prefix;
-			Commands = {"pnum","numplayers","howmanyplayers"};
-			Args = {};
-			Description = "Tells you how many players are in the server";
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local num = 0
-				local nilNum = 0
-				for _, v in ipairs(service.GetPlayers()) do
-					if v.Parent ~= service.Players then
-						nilNum += 1
-					end
-
-					num += 1
-				end
-
-				if nilNum > 0 then
-					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading", {plr})
-				else
-					Functions.Hint("There are "..tostring(num).." players", {plr})
-				end
-			end
-		};
-
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk";"maketalk";};
@@ -2687,29 +2662,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Info = {
-			Prefix = Settings.Prefix;
-			Commands = {"info";"age";};
-			Args = {"player";"groupid";};
-			Hidden = false;
-			Description = "Shows you information about the target player";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local plz = service.GetPlayers(plr, (args[1] and args[1]:lower()) or plr.Name:lower())
-				for i,v in pairs(plz) do
-					if args[2] and tonumber(args[2]) then
-						local role = v:GetRoleInGroup(tonumber(args[2]))
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat).." Rank: "..tostring(role),{plr})
-					else
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat),{plr})
-					end
-				end
-			end
-		};
-
 		ResetStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats","rs"};
@@ -3198,7 +3150,7 @@ return function(Vargs, env)
 							f.BackgroundTransparency = 1
 							f.Size = UDim2.new(1,0,1,0)
 							local name = service.New('TextLabel',f)
-							name.Text = v.Name
+							name.Text = v.DisplayName.."\n(@"..v.Name..")"
 							name.BackgroundTransparency = 1
 							name.Font = "Arial"
 							name.TextColor3 = Color3.new(1,1,1)
@@ -4812,7 +4764,7 @@ return function(Vargs, env)
 							v.Character.Humanoid.Jump = true
 						end
 						wait()
-						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z))))
+						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
 					end
 				else
 					local target = service.GetPlayers(plr,args[2])[1]

@@ -39,7 +39,7 @@ return function(data)
 
 			if good then
 				table.insert(list, {
-					Text = string.format("%s (%s)", v.Name, v.DisplayName);
+					Text = string.format("@%s (%s)", v.Name, v.DisplayName);
 					Data = service.UnWrap(v);
 				});
 			end
@@ -69,9 +69,10 @@ return function(data)
 
 		for i,peer in next,peers do
 			local pBut = playerList:Add("TextButton", {
-				Text = string.format("%s (%s)", peer.Name, peer.DisplayName);
+				Text = string.format("@%s (%s)", peer.Name, peer.DisplayName);
 				Size = UDim2.new(1, 0, 0, 25);
-				TextSize = 12;
+				TextScaled = true;
+				TextWarped = true;
 				BackgroundTransparency = 1;
 			})
 
@@ -104,52 +105,97 @@ return function(data)
 		local msg = data.Message;
 		local icon = data.Icon or 0;
 
-		local newMsg = chatlog:Add("Frame", {
-			Size = UDim2.new(1, 0, 0, 50);
-			BackgroundTransparency = 1;
-			AutomaticSize = "Y";
-			Children = {
-				{ClassName = "Frame";
-					Name = "CHATFRAME";
-					Size = UDim2.new(1, -10, 1, -10);
-					Position = UDim2.new(0, 5, 0, 5);
-					BackgroundTransparency = 0.5;
-					AutomaticSize = "Y";
-					Children = {
-						{ClassName = "ImageButton";
-							Name = "Icon";
-							Size = UDim2.new(0, 48, 0, 48);
-							Position = UDim2.new(0, 1, 0, 1);
-							Image = icon;
-						};
+		local newMsg
 
-						{ClassName = "TextLabel";
-							Name = "PlayerName";
-							Size = UDim2.new(1, -55, 0, 15);
-							Position = UDim2.new(0, 55, 0, 0);
-							Text = not pDisplayName and pName or string.format("%s (%s)", pName, pDisplayName);
-							TextSize = "12";
-							TextXAlignment = "Left";
-							BackgroundTransparency = 1;
-						};
+		if pName == "*SYSTEM*" then
+			newMsg = chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 25);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
 
-						{ClassName = "TextLabel";
-							Name = "Message";
-							Size = UDim2.new(1, -55, 0, 10);
-							Position = UDim2.new(0, 55, 0, 15);
-							Text = msg;
-							TextXAlignment = "Left";
-							TextYAlignment = "Top";
-							AutomaticSize = "Y";
-							TextWrapped = true;
-							TextScaled = false;
-							RichText = true;
-							BackgroundTransparency = 1;
-						};
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(0, 0, 0, 14);
+								Position = UDim2.new(0, 1, 0, 1);
+								Text = "   "..pName;
+								TextSize = "14";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, 0, 0, 10);
+								Position = UDim2.new(0, 0, 0, 14);
+								Text = "   "..(msg or "<font color='rgb(230,0,0)'>An error has occured</font>");
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								RichText = true;
+								BackgroundTransparency = 1;
+							};
+						}
 					}
 				}
-			}
-		})
+			})
+		else
+			chatlog:Add("Frame", {
+				Size = UDim2.new(1, 0, 0, 50);
+				BackgroundTransparency = 1;
+				AutomaticSize = "Y";
+				Children = {
+					{ClassName = "Frame";
+						Name = "CHATFRAME";
+						Size = UDim2.new(1, -10, 1, -10);
+						Position = UDim2.new(0, 5, 0, 5);
+						BackgroundTransparency = 0.5;
+						AutomaticSize = "Y";
+						Children = {
+							{ClassName = "ImageButton";
+								Name = "Icon";
+								Size = UDim2.new(0, 48, 0, 48);
+								Position = UDim2.new(0, 1, 0, 1);
+								Image = icon;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "PlayerName";
+								Size = UDim2.new(1, -55, 0, 15);
+								Position = UDim2.new(0, 55, 0, 0);
+								Text = not pDisplayName and pName or string.format("@%s (%s)", pName, pDisplayName);
+								TextSize = "14";
+								TextXAlignment = "Left";
+								BackgroundTransparency = 1;
+							};
+
+							{ClassName = "TextLabel";
+								Name = "Message";
+								Size = UDim2.new(1, -55, 0, 10);
+								Position = UDim2.new(0, 55, 0, 15);
+								Text = msg;
+								TextXAlignment = "Left";
+								TextYAlignment = "Top";
+								AutomaticSize = "Y";
+								TextWrapped = true;
+								TextScaled = false;
+								RichText = true;
+								BackgroundTransparency = 1;
+							};
+						}
+					}
+				}
+			})
+		end
 
 		table.insert(messageObjs, newMsg);
 
@@ -207,7 +253,7 @@ return function(data)
 		AutomaticCanvasSize = "Y";
 	})
 
-	add = window:Add("TextButton", {
+	local add = window:Add("TextButton", {
 		Text = "+";
 		Size = UDim2.new(0, 30, 0, 30);
 		Position = UDim2.new(1, -100, 1, -70);
@@ -220,7 +266,7 @@ return function(data)
 		end
 	})
 
-	remove = window:Add("TextButton", {
+	local remove = window:Add("TextButton", {
 		Text = "-";
 		Size = UDim2.new(0, 30, 0, 30);
 		Position = UDim2.new(1, -35, 1, -70);
