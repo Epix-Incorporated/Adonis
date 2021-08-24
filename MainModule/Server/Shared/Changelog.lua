@@ -11,6 +11,13 @@ return {
 	"(Git/SlipperySpelunky)  Update Teleport to CFrame #461";
 	"(Git/c6lvnss)  Migration to task library. #463";
 	"(Git/P3tray)  Added DefaultTheme setting and improved Base_Theme's functionalities #460";
+	"(Git/Coasterteam) Fixed extra parantheses in a command";
+	"(Git/Coasterteam) Secure HandleExplore remote endpoint";
+	"(Git/GalacticInspired) Update Moderators.lua #471";
+	"(Git/Expertcoderz) Explorer improvements + permission fix (serverinfo UI) #468";
+	"(Git/Expertcoderz) Random changes & improvements #470";
+	"(Git/P3tray) Updated all theme's Window.Code and Console.Code #469";
+	"(Git/Mudock-Yatho) Performance improvements/minor code changes in Admins.lua #472";
 	"";
 	"[v226.3 8.7.2021 16:10 EST]";
 	"*Disabled a detection that resulted in exploit log spam (no kicking, just logs)";
