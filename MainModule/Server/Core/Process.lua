@@ -248,7 +248,7 @@ return function(Vargs)
 							Remote.MakeGui(p, 'Output', {
 								Title = '',
 								Color = Color3.new(1,0,0),
-								Message = 'You are not permitted this in chat: '..msg
+								Message = "Specified command not permitted as chat message (Command not chattable)"
 							})
 
 							return
