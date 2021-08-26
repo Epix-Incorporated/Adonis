@@ -57,7 +57,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay =
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, elapsedTime, require, table, type, task.wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.spawn, task.delay;
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay;
 
 local ServicesWeUse = {
 	"Workspace";

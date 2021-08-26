@@ -2,6 +2,9 @@ return {
 	"Version: 227";
 	"*Drag edges to expand*";
 	"";
+	"[v227.1 WIP]";
+	"*Switched spawn from task.spawn to task.defer to maintain expected non-yielding functionality";
+	"";
 	"[v227 8.26.2021 13:03 EST]";
 	"*Fixed Window.ScrollingFrame:GenerateList() bugging out on refresh";
 	"*Fixed usage of a non-existent variable in SaveAllPlayerData";

@@ -40,7 +40,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.spawn;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer;
 
 local ServicesWeUse = {
 	"Workspace";
