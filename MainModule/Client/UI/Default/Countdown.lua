@@ -19,11 +19,14 @@ return function(data)
 	buzzer.Looped = false
 	buzzer.SoundId = 'http://www.roblox.com/asset/?id=267883066'
 	
+	local textSize = service.TextService:GetTextSize(tLimit, 100, Enum.Font.SourceSans, Vector2.new(math.huge,math.huge))	
+	if textSize.X < 150 then textSize = Vector2.new(175, textSize.Y) end
+	
 	local window = client.UI.Make("Window", {
 		Name = "Countdown";
 		Title = "Countdown";
-		Size = {300, 150};
-		Position = UDim2.new(0, 10, 1, -160);
+		Size = {textSize.X + 20, textSize.Y + 20};
+		Position = UDim2.new(0, 10, 1, -(textSize.Y + 30));
 		OnClose = function()
 			tock:Stop()
 			buzzer:Stop()
@@ -56,8 +59,9 @@ return function(data)
 	})
 	
 	sImg = muteButton:Add("ImageLabel", {
-		Size = UDim2.new(0, 20, 0, 20);
-		Position = UDim2.new(0, 5, 0, 0);
+		Size = UDim2.new(1,0,1,0);
+		Position = UDim2.new(0,0,0,0);
+		ScaleType = Enum.ScaleType.Fit;
 		Image = "rbxassetid://1638551696";
 		BackgroundTransparency = 1;
 	})
@@ -65,17 +69,26 @@ return function(data)
 	tock.Parent = label
 	buzzer.Parent = label
 	gTable = window.gTable
-	gTable:Ready()						
+	gTable:Ready()
 	
-	for i = tLimit, 0, -1 do
+	local startTime = os.clock()
+	local expectedDelay = 0
+	local waitTime = 1
+	local timeOff = 0
+	
+	for i = tLimit, 1, -1 do
 		if gTable.Active then
 			tock:Play()
 			label.Text = i
 		else
 			break
 		end
-		wait(1)
+		wait(waitTime - timeOff)
+		expectedDelay += waitTime
+		timeOff = os.clock() - startTime - expectedDelay
 	end
+	
+	label.Text = "0"
 	
 	buzzer:Play()
 	
