@@ -41,7 +41,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -51,7 +51,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -192,7 +192,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if true then return "Disabled" end
 			if waiting then
 				for ind,waiter in next,WaitingEvents do
-					if waiter.Waiting and waiter.Timeout ~= 0 and tick() - waiter.Last > waiter.Timeout then
+					if waiter.Waiting and waiter.Timeout ~= 0 and time() - waiter.Last > waiter.Timeout then
 						waiter:Remove()
 					end
 				end
@@ -202,7 +202,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						HookedEvents[i] = nil
 					else
 						for ind,waiter in pairs(WaitingEvents) do
-							if waiter.Waiting and waiter.Timeout ~= 0 and tick() - waiter.Last > waiter.Timeout then
+							if waiter.Waiting and waiter.Timeout ~= 0 and time() - waiter.Last > waiter.Timeout then
 								waiter:Remove()
 							end
 						end
@@ -378,7 +378,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		NewTask = function(name,func,timeout)
-			local pid = math.random()*tick()/1000
+			local pid = math.random()*os.time()/1000
 			local index = pid..":"..tostring(func)
 			local newTask; newTask = {
 				PID = pid;
@@ -612,9 +612,9 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
 
 		Timer = function(t,func,check)
-			local start = tick()
+			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
-				if tick()-start>t or (check and check()) then
+				if time()-start>t or (check and check()) then
 					func()
 					event:Disconnect()
 				end
@@ -866,7 +866,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 		ProcessLoopQueue = function()
 			for ind,data in next,LoopQueue do
-				if not data.LastRun or (data.LastRun and tick()-data.LastRun>data.Delay) then
+				if not data.LastRun or (data.LastRun and time()-data.LastRun>data.Delay) then
 					if data.MaxRuns and data.NumRuns and data.MaxRuns<=data.NumRuns then
 						LoopQueue[ind] = nil
 					else
@@ -874,7 +874,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 							data.NumRuns = data.NumRuns+1
 						end
 						Pcall(data.Function)
-						data.LastRun = tick()
+						data.LastRun = time()
 					end
 				end
 			end
