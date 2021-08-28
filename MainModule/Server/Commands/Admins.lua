@@ -140,7 +140,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unpa";"unoa";"unta";};
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
@@ -309,8 +309,8 @@ return function(Vargs, env)
 			Description = "Makes a message in the chat window";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers())do
-					Remote.Send(v,"Function","ChatMessage","["..Settings.SystemTitle.."] "..service.Filter(args[1],plr,v),Color3.new(1,64/255,77/255))
+				for i,v in pairs(service.GetPlayers()) do
+					Remote.Send(v, "Function", "ChatMessage", string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)), Color3.new(1,64/255,77/255))
 				end
 			end
 		};
@@ -399,6 +399,25 @@ return function(Vargs, env)
 					end
 				else
 					error("Invalid action; (on/off/add/remove)")
+				end
+			end
+		};
+
+		SystemNotify = {
+			Prefix = Settings.Prefix;
+			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
+			Args = {"message";};
+			Filter = true;
+			Description = "Makes a system small message,";
+			AdminLevel = "Admins";
+			Function = function(plr, args)
+				assert(args[1], "Argument missing or nil")
+				for _, v in ipairs(service.GetPlayers()) do
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
+						Title = Settings.SystemTitle;
+						Message = service.Filter(args[1], plr, v);
+					})
 				end
 			end
 		};

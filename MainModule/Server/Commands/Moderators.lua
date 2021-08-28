@@ -44,12 +44,14 @@ return function(Vargs, env)
 				})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
+						local PlayerName = v.Name
 						if not service.Players:FindFirstChild(v.Name) then
 							Remote.Send(v, "Function", "Kill")
 						else
 							v:Kick(args[2])
 						end
-						Functions.Hint("Kicked "..tostring(v), {plr})
+
+						Functions.Hint("Kicked ".. PlayerName, {plr})
 					end
 				end
 			end
@@ -185,7 +187,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing or nil")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.MakeGui(v ,"Notification", {
+					Remote.MakeGui(v, "Notification", {
 						Title = "Notification";
 						Message = service.Filter(args[2], plr, v);
 					})
@@ -298,7 +300,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = "Message from " .. plr.Name;
+						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
 						Message = args[2];
 						Time = tonumber(args[1]);
 					})
@@ -318,10 +320,10 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = "Message from " .. plr.Name;
-						Message = args[1];--service.Filter(args[1],plr,v);
-						Scroll = true;
+						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
+						Message = args[1]; --service.Filter(args[1],plr,v);
 						Time = (#tostring(args[1]) / 19) + 2.5;
+						Scroll = true;
 					})
 				end
 			end
@@ -337,7 +339,7 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message("Message from "..plr.Name, service.Filter(args[2], plr, v), {v})
+					Functions.Message(string.format("Message from %s (@%s)", plr.DisplayName, plr.Name), service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -354,27 +356,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = "Message from " .. plr.Name;
-						Message = service.Filter(args[1], plr, v);
-					})
-				end
-			end
-		};
-
-
-		SystemNotify = {
-			Prefix = Settings.Prefix;
-			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
-			Args = {"message";};
-			Filter = true;
-			Description = "Makes a system small message,";
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.RemoveGui(v, "Notify")
-					Remote.MakeGui(v, "Notify", {
-						Title = Settings.SystemTitle;
+						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
 						Message = service.Filter(args[1], plr, v);
 					})
 				end
@@ -393,7 +375,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = "Message from " .. plr.Name;
+						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
 						Message = service.Filter(args[2], plr, v);
 					})
 				end
@@ -411,7 +393,7 @@ return function(Vargs, env)
 				assert(args[1], "Argument missing or nil")
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
-						Message = tostring(plr or "")..": "..service.Filter(args[1], plr, v);
+						Message = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, service.Filter(args[1], plr, v));
 					})
 				end
 			end
@@ -438,11 +420,9 @@ return function(Vargs, env)
 							Message = args[2];
 						})
 
-						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr, "Hint", {
-								Message = "Warned "..tostring(v);
-							})
-						end
+						Remote.MakeGui(plr, "Hint", {
+							Message = "Warned ".. v.Name;
+						})
 					end
 				end
 			end
@@ -464,13 +444,12 @@ return function(Vargs, env)
 						local data = Core.GetPlayer(v)
 
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
+						local PlayerName = v.Name
 						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
 
-						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr, "Hint", {
-								Message = "Warned "..tostring(v);
-							})
-						end
+						Remote.MakeGui(plr, "Hint", {
+							Message = "Warned ".. PlayerName;
+						})
 					end
 				end
 			end
@@ -513,11 +492,9 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					data.Warnings = {}
-					if plr and type(plr) == "userdata" then
-						Remote.MakeGui(plr, "Hint", {
-							Message = "Cleared warnings for "..tostring(v);
-						})
-					end
+					Remote.MakeGui(plr, "Hint", {
+						Message = "Cleared warnings for ".. v.Name;
+					})
 				end
 			end
 		};
@@ -1188,7 +1165,7 @@ return function(Vargs, env)
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
-							Title = "Message from "..plr.Name;
+							Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
 							Player = plr;
 							Message = service.Filter(args[2], plr, v);
 						})
@@ -2559,15 +2536,17 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
 					if tostring(args[2]):lower() == "yes" or tostring(args[2]):lower() == "true" then
-						Remote.RemoveGui(v,true)
+						Routine(Remote.RemoveGui, v, true)
 					else
-						Remote.RemoveGui(v,"Message")
-						Remote.RemoveGui(v,"Hint")
-						Remote.RemoveGui(v,"Notification")
-						Remote.RemoveGui(v,"PM")
-						Remote.RemoveGui(v,"Output")
-						Remote.RemoveGui(v,"Effect")
-						Remote.RemoveGui(v,"Alert")
+						Routine(function()
+							Remote.RemoveGui(v,"Message")
+							Remote.RemoveGui(v,"Hint")
+							Remote.RemoveGui(v,"Notification")
+							Remote.RemoveGui(v,"PM")
+							Remote.RemoveGui(v,"Output")
+							Remote.RemoveGui(v,"Effect")
+							Remote.RemoveGui(v,"Alert")
+						end)
 					end
 				end
 			end
