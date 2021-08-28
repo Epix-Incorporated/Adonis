@@ -139,7 +139,7 @@ return function(Vargs, env)
 
 		Admin = {
 			Prefix = Settings.Prefix;
-			Commands = {"permadmin","pa","padmin","fulladmin"};
+			Commands = {"admin","permadmin","pa","padmin","fulladmin"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
