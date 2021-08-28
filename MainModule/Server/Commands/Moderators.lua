@@ -297,10 +297,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2] and tonumber(args[1]), "Argument missing or invalid")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
+						Title = messageRecipient;
 						Message = args[2];
 						Time = tonumber(args[1]);
 					})
@@ -317,11 +318,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
-						Message = args[1]; --service.Filter(args[1],plr,v);
+						Title = messageRecipient;
+						Message = args[1]; --service.Filter(args[1], plr, v);
 						Time = (#tostring(args[1]) / 19) + 2.5;
 						Scroll = true;
 					})
@@ -338,8 +340,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message(string.format("Message from %s (@%s)", plr.DisplayName, plr.Name), service.Filter(args[2], plr, v), {v})
+					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -353,10 +356,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
+						Title = messageRecipient;
 						Message = service.Filter(args[1], plr, v);
 					})
 				end
@@ -372,10 +376,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
+						Title = messageRecipient;
 						Message = service.Filter(args[2], plr, v);
 					})
 				end
@@ -391,9 +396,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[1])
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
-						Message = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, service.Filter(args[1], plr, v));
+						Message = HintFormat; --service.Filter(args[1], plr, v)
 					})
 				end
 			end
@@ -1161,11 +1167,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
+
 				if Admin.CheckAdmin(plr) then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
-							Title = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name);
+							Title = messageRecipient;
 							Player = plr;
 							Message = service.Filter(args[2], plr, v);
 						})
