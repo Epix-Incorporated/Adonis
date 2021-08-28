@@ -158,7 +158,7 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now an owner',{plr})
+						Functions.Hint(v.Name..' is now a head admin',{plr})
 					else
 						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end

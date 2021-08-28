@@ -210,7 +210,7 @@ return function(Vargs)
 	Commands.CrossServerVote = {
 		Prefix = Settings.Prefix;
 		Commands = {"crossservervote", "crsvote"};
-		Args = {"anwser1,answer2,etc (NO SPACES)";"question";};
+		Args = {"answer1,answer2,etc (NO SPACES)";"question";};
 		Filter = true;
 		Description = "Lets you ask players in all servers a question with a list of answers and get the results";
 		AdminLevel = "Moderators";

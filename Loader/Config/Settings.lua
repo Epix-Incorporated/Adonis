@@ -218,7 +218,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
 	settings.OnSpawn = {};		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
-	settings.SaveAdmins = true		  -- If true anyone you :admin or :owner in-game will save
+	settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
 	settings.Prefix = ":"				-- The : in :kill me
@@ -358,7 +358,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"} ]]
 	descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
-	descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :owner in-game will save; This does not apply to helpers as they are considered temporary ]]
+	descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
 	descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
 	descs.Prefix = [[ The : in :kill me ]]

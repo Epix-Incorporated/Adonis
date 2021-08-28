@@ -2216,7 +2216,7 @@ return function(Vargs, env)
 		Vote = {
 			Prefix = Settings.Prefix;
 			Commands = {"vote";"makevote";"startvote";"question";"survey";};
-			Args = {"player";"anwser1,answer2,etc (NO SPACES)";"question";};
+			Args = {"player";"answer1,answer2,etc (NO SPACES)";"question";};
 			Filter = true;
 			Description = "Lets you ask players a question with a list of answers and get the results";
 			AdminLevel = "Moderators";
