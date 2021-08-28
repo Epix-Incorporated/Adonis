@@ -140,7 +140,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unpa";"unoa";"unta";};
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank","unpa";"unoa";"unta";};
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
