@@ -247,7 +247,7 @@ return function(Vargs, env)
 
 		TempModerator = {
 			Prefix = Settings.Prefix;
-			Commands = {"tempmod","tempadmin","tm","ta","temp","helper";};
+			Commands = {"tempmod","tm","temp","helper";};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) a temporary moderator; Does not save";
