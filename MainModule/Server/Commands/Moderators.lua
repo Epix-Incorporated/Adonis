@@ -100,7 +100,17 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+.2,0,0))*CFrame.Angles(0,math.rad(90),0)
+				if plr.Character:FindFirstChild("HumanoidRootPart") then
+					if plr.Character.Humanoid.SeatPart~=nil then
+						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
+					end
+					if plr.Character.Humanoid.Sit then
+						plr.Character.Humanoid.Sit = false
+						plr.Character.Humanoid.Jump = true
+					end
+					wait()
+					plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+.2,0,0))*CFrame.Angles(0,math.rad(90),0)
+				end
 			end
 		};
 
