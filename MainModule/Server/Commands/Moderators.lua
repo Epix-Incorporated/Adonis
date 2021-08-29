@@ -100,7 +100,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				Admin.RunCommand(Settings.Prefix.."tp", plr.Name, plr.Name)
+				plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+.2,0,0))*CFrame.Angles(0,math.rad(90),0)
 			end
 		};
 
