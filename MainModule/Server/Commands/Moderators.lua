@@ -2083,7 +2083,7 @@ return function(Vargs, env)
 
 		JoinServer = {
 			Prefix = Settings.Prefix;
-			Commands = {"toserver", "joinserver"};
+			Commands = {"toserver", "joinserver", "jserver", "jplace"};
 			Args = {"player", "jobid"};
 			Hidden = false;
 			Description = "Send player(s) to a server using the server's JobId";
@@ -2096,7 +2096,7 @@ return function(Vargs, env)
 					error("Command cannot be used in studio.",0)
 				else
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						Functions.Message("Adonis", "Teleporting please wait.", {v}, false, 10)
+						Functions.Message("Adonis", "Teleporting to server \""..jobId.."\"\nPlease wait", {v}, false, 10)
 						service.TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, v)
 					end
 				end
