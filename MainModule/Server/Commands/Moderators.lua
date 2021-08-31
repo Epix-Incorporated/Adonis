@@ -11,8 +11,8 @@ return function(Vargs, env)
 	return {		
 		JobIdTP = {
 			Prefix = Settings.Prefix;
-			Commands = {"jplace", "toserver"};
-			Args = {"time";};
+			Commands = {"jplace", "toserver", "joinserver"};
+			Args = {"jobid";};
 			Description = "Allows you teleport to a server via JobId";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
