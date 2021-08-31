@@ -8,7 +8,21 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
-	return {
+	return {		
+		JobIdTP = {
+			Prefix = Settings.Prefix;
+			Commands = {"jplace", "toserver"};
+			Args = {"time";};
+			Description = "Allows you teleport to a server via JobId";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				--Inspired by PB Kronos
+				assert(args[1], "Argument missing or nil")
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, args[1], plr)
+				server.Functions.Hint("Attempting to teleport to the server with the JobId "..args[1].."...",{plr})
+			end
+		};
+			
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
 			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
