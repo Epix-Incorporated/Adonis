@@ -140,7 +140,11 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
+<<<<<<< HEAD
 			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unpa";"unoa";"unta";};
+=======
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank","unpa";"unoa";"unta";};
+>>>>>>> upstream/master
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
@@ -247,7 +251,7 @@ return function(Vargs, env)
 
 		TempModerator = {
 			Prefix = Settings.Prefix;
-			Commands = {"admin","tempadmin","ta","temp","helper";};
+			Commands = {"tempmod","tm","temp","helper";};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) a temporary moderator; Does not save";

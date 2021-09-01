@@ -139,7 +139,7 @@ return function(Vargs, env)
 
 		Admin = {
 			Prefix = Settings.Prefix;
-			Commands = {"permadmin","pa","padmin","fulladmin"};
+			Commands = {"admin","permadmin","pa","padmin","fulladmin"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
@@ -158,6 +158,34 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now an admin',{plr})
+					else
+						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
+					end
+				end
+			end
+		};
+
+		TempAdmin = {
+			Prefix = Settings.Prefix;
+			Commands = {"tempadmin","ta"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Makes the target player(s) a temporary admin; Does not save";
+			Fun = false;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr, args, data)
+				local sendLevel = data.PlayerData.Level
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local targLevel = Admin.GetLevel(v)
+					if sendLevel>targLevel then
+						Admin.AddAdmin(v, "Admins", true)
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "You are an administrator. Click to view commands.";
+							Time = 10;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+						})
+						Functions.Hint(v.Name..' is now a temp admin',{plr})
 					else
 						Functions.Hint(v.Name.." is the same admin level as you or higher",{plr})
 					end

@@ -2080,7 +2080,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";};
+			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";"ranks"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -2165,7 +2165,7 @@ return function(Vargs, env)
 
 		BanList = {
 			Prefix = Settings.Prefix;
-			Commands = {"banlist";"banned";"bans";};
+			Commands = {"banlist";"banned";"bans";"banland"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the normal ban list";

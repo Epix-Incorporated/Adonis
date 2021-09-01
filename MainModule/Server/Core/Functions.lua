@@ -371,6 +371,16 @@ return function(Vargs)
 			};
 		};
 
+		CatchError = function(func, ...)
+			local ret = {pcall(func, ...)};
+
+			if not ret[1] then
+				logError(ret[2] or "Unknown error occurred");
+			else
+				return unpack(ret, 2);
+			end
+		end;
+
 		GetFakePlayer = function(data2)
 			local fakePlayer = service.Wrap(service.New("Folder"))
 			local data = {
