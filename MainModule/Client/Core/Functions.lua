@@ -311,7 +311,7 @@ return function()
 			local gsub = string.gsub
 			local char = string.char
 
-			return (gsub(gsub(data, '.', function(x) 
+			return (gsub(gsub(data, '.', function(x)
 				local r, b = "", byte(x)
 				for i = 8, 1, -1 do
 					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
@@ -1029,11 +1029,12 @@ return function()
 			return "UNKNOWN";
 		end;
 
-		KeyBindListener = function()
+		KeyBindListener = function(keybinds)
 			if not Variables then wait() end;
 			local timer = 0
+			local data = (not keybinds) and Remote.Get("PlayerData");
 
-			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
+			Variables.KeyBinds = keybinds or (data and data.Keybinds) or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)

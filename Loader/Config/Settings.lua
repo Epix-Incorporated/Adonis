@@ -281,7 +281,7 @@ local descs = {};			--// Contains settings descriptions
 	}
 
 	settings.FunCommands = true			-- Are fun commands enabled?
-	settings.PlayerCommands = true 		-- Are players commands enabled?
+	settings.PlayerCommands = true 	-- Are players commands enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 	settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
@@ -297,14 +297,16 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
-	settings.AutoBackup = false -- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
+	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist
-	settings.Console = true			-- Command console
+
+	settings.Console = true							-- Command console
+	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
 	settings.HelpSystem = true		-- Allows players to call admins for help using !help
-	settings.HelpButton = true    	-- Shows a little help button in the bottom right corner.
+	settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
 	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
 
 	settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
@@ -402,7 +404,9 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.CustomChat = [[ Custom chat ]]
 	descs.PlayerList = [[ Custom playerlist ]]
+
 	descs.Console = [[ Command console ]]
+	descs.Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]]
 
 	descs.DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]]
 	descs.DonorCapes = [[ Determines if donors have capes ]]
@@ -495,7 +499,9 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"CustomChat";
 		"PlayerList";
+		" ";
 		"Console";
+		"Console_AdminsOnly";
 		" ";
 		"HelpSystem";
 		"HelpButton";

@@ -607,11 +607,18 @@ return function(Vargs)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
+					local ran,err = TrackTask(p.Name .. "Chatted", Process.Chat, p, msg);
+					if not ran then
+						logError(err);
+					end
 				end)
+
 				--// Character added
 				p.CharacterAdded:Connect(function()
-					TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p)
+					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p);
+					if not ran then
+						logError(err);
+					end
 				end)
 
 				delay(600, function()
@@ -668,7 +675,7 @@ return function(Vargs)
 			})
 
 			--// Start keybind listener
-			Remote.Send(p,"Function","KeyBindListener")
+			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
 			--// Load some playerdata stuff
 			if PlayerData.Client and type(PlayerData.Client) == "table" then
@@ -705,7 +712,10 @@ return function(Vargs)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == service.Workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
-					TrackTask("Thread: ".. p.Name .." CharacterAdded", Process.CharacterAdded, p)
+					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p);
+					if not ran then
+						logError(err)
+					end
 				end
 
 				if level>0 then
@@ -824,7 +834,7 @@ return function(Vargs)
 					})
 				end
 
-				if Settings.Console then
+				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
 					Remote.MakeGui(p,"Console")
 				end
 
