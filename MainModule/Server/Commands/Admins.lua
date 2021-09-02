@@ -162,7 +162,7 @@ return function(Vargs, env)
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
-								Remote.MakeGui(p,"Notification",{
+								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been removed";
 									Time = 10;
@@ -239,7 +239,7 @@ return function(Vargs, env)
 							if sendLevel>targLevel then
 								Admin.RemoveAdmin(v,true)
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
-								Remote.MakeGui(p,"Notification",{
+								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
 									Time = 10;
