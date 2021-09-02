@@ -109,7 +109,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setlevel", "setadminlevel"};
 			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level for the current server";
+			Description = "Sets the target player(s) permission level for the current server; Does not save";
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local senderLevel = data.PlayerData.Level;
@@ -126,7 +126,7 @@ return function(Vargs, env)
 						Admin.SetLevel(p, newLevel)--, args[3] == "true")
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "Your admin permission level was set to "..newLevel.." for this server only. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
