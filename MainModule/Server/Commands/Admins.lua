@@ -60,7 +60,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a(n)"..rankName..". Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -94,7 +94,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName, true)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a temp "..rankName..". Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -162,6 +162,11 @@ return function(Vargs, env)
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
+								Remote.MakeGui(p,"Notification",{
+									Title = "Notification";
+									Message = "Your admin powers have been removed";
+									Time = 10;
+								})
 							else
 								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
 							end
@@ -234,6 +239,11 @@ return function(Vargs, env)
 							if sendLevel>targLevel then
 								Admin.RemoveAdmin(v,true)
 								Functions.Hint("Removed "..v.Name.."'s admin powers",{plr})
+								Remote.MakeGui(p,"Notification",{
+									Title = "Notification";
+									Message = "Your admin powers have been temporarily removed";
+									Time = 10;
+								})
 							else
 								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers",{plr})
 							end
@@ -261,7 +271,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, "Moderators", true)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a temp moderator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -289,7 +299,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, "Moderators")
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a moderator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
