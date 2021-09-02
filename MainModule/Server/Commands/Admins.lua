@@ -60,7 +60,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
-							Message = "You are a(n)"..rankName..". Click to view commands.";
+							Message = "You are a(n) "..rankName..". Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
