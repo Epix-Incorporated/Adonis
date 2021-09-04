@@ -289,7 +289,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end)
 
 				event:SetSpecial("Fire", function(i, ...)
-					UnWrap(event):Fire(2, unpack(UnWrapArgs({...})))
+					local packedResult = table.pack(...)
+					UnWrap(event):Fire(2, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
 				end)
 
 				event:SetSpecial("ConnectOnce", function(i, func)
@@ -304,13 +305,15 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				event:SetSpecial("Connect", function(i, func)
 					local special = math.random()
 					local event2 = Wrap(UnWrap(event.Event):Connect(function(con, ...)
+						local packedResult = table.pack(...)
 						if con == 2 or con == special then
-							func(unpack(WrapArgs({...})))
+							func(unpack(WrapArgs(packedResult), 1, packedResult.n))
 						end
 					end), client)
 
 					event2:SetSpecial("Fire", function(i, ...)
-						UnWrap(event):Fire(special, unpack(UnWrapArgs({...})))
+						local packedResult = table.pack(...)
+						UnWrap(event):Fire(special, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
 					end)
 
 					event2:SetSpecial("Wait", function(i, timeout)
@@ -488,9 +491,16 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return getmetatable(object) == "Adonis_Proxy"
 		end;
 		UnWrap = function(object)
-			if type(object) == "table" then
+			local OBJ_Type = typeof(object)
+
+			if OBJ_Type == "Instance" then
+				return object
+			elseif OBJ_Type == "table" then
+				local UnWrap = service.UnWrap
 				local tab = {}
-				for i,v in next,object do tab[i] = service.UnWrap(v) end
+				for i, v in pairs(object) do
+					tab[i] = UnWrap(v)
+				end
 				return tab
 			elseif service.Wrapped(object) then
 				return object:GetObject()
@@ -505,8 +515,15 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			elseif Wrappers[object] then
 				return Wrappers[object]
 			elseif type(object) == "table" then
-				local tab = setmetatable({},{__eq = function(tab,val) return object end})
-				for i,v in next,object do tab[i] = service.Wrap(v, fullWrap) end
+				local Wrap = service.Wrap
+				local tab = setmetatable({	}, {
+					__eq = function(tab,val)
+						return object
+					end
+				})
+				for i,v in pairs(object) do
+					tab[i] = Wrap(v, fullWrap)
+				end
 				return tab
 			--[[elseif type(object) == "function" then
 				return function(...)
@@ -514,10 +531,18 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					return unpack(service.Wrap({object(...)}))
 				end--]]
 			elseif (typeof(object) == "Instance" or typeof(object) == "RBXScriptSignal" or typeof(object) == "RBXScriptConnection") and not service.Wrapped(object) then
-				local Wrap = (not fullWrap and function(...) return ... end) or function(obj) return service.Wrap(obj, fullWrap) end
 				local UnWrap = service.UnWrap
+				local sWrap = service.Wrap
+
+				local Wrap = (not fullWrap and function(...)
+					return ...
+				end) or function(obj)
+					return sWrap(obj, fullWrap)
+				end
+
 				local newObj = newproxy(true)
 				local newMeta = getmetatable(newObj)
+
 				local custom; custom = {
 					GetMetatable = function()
 						return newMeta
@@ -526,14 +551,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					AddToCache = function()
 						Wrappers[object] = newObj;
 					end;
-
-					IsRobloxLocked = function()
-						return main.Anti.RLocked(object)
-					end;
-
 					RemoveFromCache = function()
 						Wrappers[object] = nil
 					end;
+
+					IsRobloxLocked = main and main.Anti and function()
+						return main.Anti.RLocked(object)
+					end or function() end;
 
 					GetObject = function()
 						return object
@@ -541,6 +565,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 					SetSpecial = function(ignore, name, val)
 						custom[name] = val
+						return custom
 					end;
 
 					Clone = function(self, noAdd)
@@ -548,12 +573,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						if not noAdd then
 							table.insert(CreatedItems, new)
 						end
-						return service.Wrap(new)
+						return sWrap(new)
 					end;
 
 					connect = function(ignore, func)
 						return Wrap(object:Connect(function(...)
-							return func(unpack(service.Wrap{...}))
+							local packedResult = table.pack(...)
+							return func(unpack(sWrap(packedResult), 1, packedResult.n))
 						end))
 					end;
 
@@ -565,15 +591,17 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				custom.Connect = custom.connect
 				custom.Wait = custom.wait
 
-				newMeta.__tostring = function() return custom.ToString or tostring(object) end
-				newMeta.__metatable = "Adonis_Proxy"
 				newMeta.__index = function(tab, ind)
 					local target = custom[ind] or object[ind]
+
 					if custom[ind] then
 						return custom[ind]
 					elseif type(target) == "function" then
 						return function(ignore, ...)
-							return unpack(Wrap{methods[ind](object, unpack(UnWrap{...}))})
+							local packedResult = table.pack(...)
+							return unpack(Wrap({
+								methods[ind](object, unpack(UnWrap(packedResult), 1, packedResult.n))
+							}))
 						end
 					else
 						return Wrap(target)
@@ -584,11 +612,19 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					object[ind] = UnWrap(val)
 				end
 
-				newMeta.__gc = function(tab)
-					custom:RemoveFromCache()
-				end
-
+				local ToString = custom.ToString
 				newMeta.__eq = service.RawEqual
+				newMeta.__tostring = ToString and function()
+					return ToString
+				end or function()
+					return tostring(object)
+				end
+				-- Roblox doesn't respect this afaik.
+				--newMeta.__gc = function(tab)
+				--	custom:RemoveFromCache()
+				--end
+				newMeta.__metatable = "Adonis_Proxy"
+
 
 				custom:AddToCache()
 				return newObj
@@ -1126,7 +1162,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end;
 
 				__metatable = "ReadOnly_Table";
-				__gc = function()end;
 			}
 		end;
 		Wait = function(mode)
