@@ -8,7 +8,7 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
-	return {			
+	return {
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
 			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
@@ -2707,9 +2707,17 @@ return function(Vargs, env)
 
 				if not tonumber(id) then error("Invalid ID") end
 
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Commands.DonorHat.Function(v, {id})
+				local market = service.MarketPlace
+				local info = market:GetProductInfo(id)
+
+				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
+					local hat = service.Insert(id)
+					assert(hat,"Invalid ID")
+					
+					for i,v in pairs(service.GetPlayers(plr, args[1])) do
+						if v.Character and hat then
+							hat:Clone().Parent = v.Character
+						end
 					end
 				end
 			end

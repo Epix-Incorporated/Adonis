@@ -1,6 +1,14 @@
 return {
-	"Version: 227.1";
+	"Version: 228";
 	"*Drag edges to expand*";
+	"";
+	"[v228 WIP]";
+	"*Fixed :hat";
+	"(Git/Sparkypen7) Update non-monotonic timers to be monotonic. #473";
+	"(Git/P3tray) Made :countdown better #474";
+	"(Git/fxeP1) Service/Moderators Updates. #477";
+	"(Git/GalacticInspired) Updated \"thru\", New commands for \"joinserver\": jserver & jplace + new message, Updated \"tools\" #480";
+	"(Git/alau740) Fix console auto complete for other themes, better \"you're an admin\" messages, some other stuff #481";
 	"";
 	"[v227.1 9.4.2021 14:21 EST]";
 	"*Switched spawn from task.spawn to task.defer to maintain expected non-yielding functionality";
