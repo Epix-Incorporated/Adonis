@@ -1,9 +1,13 @@
 return {
-	"Version: 227";
+	"Version: 227.1";
 	"*Drag edges to expand*";
 	"";
-	"[v227.1 WIP]";
+	"[v227.1 9.4.2021 14:21 EST]";
 	"*Switched spawn from task.spawn to task.defer to maintain expected non-yielding functionality";
+	"*Added settings.Console_AdminsOnly (makes it so only admins can see the console if its enabled)";
+	"(Git/Coasterteam) Fixed a vuln that potentially leaked the webpanel API key setting";
+	"(Git/alau740) Rename owner rank mentions in loader to headadmins + typo fixes #475";
+	"(Git/alau740) :admin will now actually give out admin rank instead of just temp mod #478";
 	"";
 	"[v227 8.26.2021 13:03 EST]";
 	"*Fixed Window.ScrollingFrame:GenerateList() bugging out on refresh";
