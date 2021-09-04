@@ -154,7 +154,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, "HeadAdmins")
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a head admin. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -182,7 +182,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, "HeadAdmins", true)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a temp head admin. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})

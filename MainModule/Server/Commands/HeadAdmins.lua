@@ -181,7 +181,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, "Admins", true)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "You are an administrator. Click to view commands.";
+							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
