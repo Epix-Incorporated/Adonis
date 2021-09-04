@@ -185,7 +185,6 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				local gerald = server.Deps.Assets.Gerald;
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
 						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD");
