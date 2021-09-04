@@ -8,7 +8,7 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
-	return {
+	return {			
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
 			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
@@ -100,7 +100,17 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				Admin.RunCommand(Settings.Prefix.."tp", plr.Name, plr.Name)
+				if plr.Character:FindFirstChild("HumanoidRootPart") then
+					if plr.Character.Humanoid.SeatPart~=nil then
+						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
+					end
+					if plr.Character.Humanoid.Sit then
+						plr.Character.Humanoid.Sit = false
+						plr.Character.Humanoid.Jump = true
+					end
+					wait()
+					plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+.2,0,0))*CFrame.Angles(0,math.rad(90),0)
+				end
 			end
 		};
 
@@ -2073,7 +2083,7 @@ return function(Vargs, env)
 
 		JoinServer = {
 			Prefix = Settings.Prefix;
-			Commands = {"toserver", "joinserver"};
+			Commands = {"toserver", "joinserver", "jserver", "jplace"};
 			Args = {"player", "jobid"};
 			Hidden = false;
 			Description = "Send player(s) to a server using the server's JobId";
@@ -2086,7 +2096,7 @@ return function(Vargs, env)
 					error("Command cannot be used in studio.",0)
 				else
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						Functions.Message("Adonis", "Teleporting please wait.", {v}, false, 10)
+						Functions.Message("Adonis", "Teleporting to server \""..jobId.."\"\nPlease wait", {v}, false, 10)
 						service.TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, v)
 					end
 				end
@@ -2371,12 +2381,14 @@ return function(Vargs, env)
 							TextXAlignment = "Left";
 							Text = "  "..v.Name;
 							ToolTip = v:GetFullName();
+							ZIndex = 1;
 							Children = {
 								{
 									Class = "TextButton";
 									Size = UDim2.new(0, 80, 1, -4);
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
+									ZIndex = 2;
 									OnClick = Core.Bytecode([[
 										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
 									]]);
