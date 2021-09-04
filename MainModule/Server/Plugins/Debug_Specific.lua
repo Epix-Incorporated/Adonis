@@ -88,7 +88,7 @@ return function(Vargs)
 		Hidden = true;
 		AdminLevel = "Creators";
 		Function = function(plr,args)
-			local tack = tick()
+			local tack = time()
 			print(tack)
 			print(Remote.Get(plr,"Test"))
 			local tab = {
@@ -115,7 +115,7 @@ return function(Vargs)
 					end
 				end
 			end
-			print(tick()-tack)
+			print(time()-tack)
 			print("TESTING EVENT")
 			Remote.MakeGui(plr,"Settings",{
 				IsOwner = true

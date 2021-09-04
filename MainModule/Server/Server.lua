@@ -42,7 +42,7 @@ local _G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
 xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -52,7 +52,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay =
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -376,7 +376,7 @@ for ind,loc in next,{
 	Rect = Rect;
 	Axes = Axes;
 	os = os;
-	tick = tick;
+	time = time;
 	Faces = Faces;
 	unpack = unpack;
 	string = string;

@@ -13,7 +13,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -23,7 +23,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -279,7 +279,7 @@ return function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
-			local lastUpdate = tick()
+			local lastUpdate = time()
 			local coreNums = {}
 			local coreClears = service.ReadOnly({
 				FriendStatus = true;
@@ -427,7 +427,7 @@ return function()
 			end)
 
 			service.RunService.Stepped:Connect(function()
-				lastUpdate = tick()
+				lastUpdate = time()
 			end)
 
 			if service.Player:WaitForChild("Backpack", 120) then
@@ -437,7 +437,7 @@ return function()
 			--// Detection Loop
 			service.StartLoop("Detection", 10, function()
 				--// Prevent event stopping
-				-- if tick() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
+				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
 					--Detected("crash", "Events stopped")
 					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
 				-- end
@@ -569,7 +569,7 @@ return function()
 		local track = meta(service.TrackTask)
 		local opcall = meta(pcall)
 		local oWait = meta(wait)
-		local tick = meta(tick)
+		local time = meta(time)
 
 		track("Thread: TableCheck", meta(function()
 			while oWait(1) do

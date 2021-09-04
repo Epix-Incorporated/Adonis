@@ -802,8 +802,8 @@ return function(Vargs, env)
 								end
 							end
 
-							local w = tick()
-							repeat wait(0.5) until tick()-w>30 or answered
+							local w = time()
+							repeat wait(0.5) until time()-w>30 or answered
 
 							pending.Pending = false;
 

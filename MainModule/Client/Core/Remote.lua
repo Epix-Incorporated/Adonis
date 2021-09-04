@@ -13,7 +13,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -23,7 +23,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -477,10 +477,10 @@ return function()
 		end;
 
 		Ping = function()
-			local t = tick()
+			local t = time()
 			local ping = Remote.Get("Ping")
 			if not ping then return false end
-			local t2 = tick()
+			local t2 = time()
 			local mult = 10^3
 			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
 			return ms
