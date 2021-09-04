@@ -4,6 +4,7 @@ return {
 	"";
 	"[v228 WIP]";
 	"*Fixed :hat";
+	"*Added :gerald";
 	"(Git/Sparkypen7) Update non-monotonic timers to be monotonic. #473";
 	"(Git/P3tray) Made :countdown better #474";
 	"(Git/fxeP1) Service/Moderators Updates. #477";
