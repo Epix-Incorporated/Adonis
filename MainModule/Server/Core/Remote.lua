@@ -122,6 +122,7 @@ return function(Vargs)
 
 					--G_Access = true;
 					G_Access_Key = true;
+					WebPanel_ApiKey = true;
 					--G_Access_Perms = true;
 					--Allowed_API_Calls = true;
 				}
@@ -129,12 +130,12 @@ return function(Vargs)
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Defaults[set] and not (blocked[set] and not level>=5) then
+						if Defaults[set] and not (blocked[set] and not level>=900) then
 							ret[set] = Defaults[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Defaults[setting] and not (blocked[setting] and not level>=5) then
+					if Defaults[setting] and not (blocked[setting] and not level>=900) then
 						ret = Defaults[setting]
 					end
 				end
@@ -202,6 +203,8 @@ return function(Vargs)
 					Trello_SecondaryBoards = true;
 					Trello_AppKey = true;
 					Trello_Token = true;
+					
+					WebPanel_ApiKey = true;
 
 					--G_Access = true;
 					G_Access_Key = true;
@@ -212,12 +215,12 @@ return function(Vargs)
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Settings[set] and not (blocked[set] and not level>=5) then
+						if Settings[set] and not (blocked[set] and not level>=900) then
 							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Settings[setting] and not (blocked[setting] and not level>=5) then
+					if Settings[setting] and not (blocked[setting] and not level>=900) then
 						ret = Settings[setting]
 					end
 				end
