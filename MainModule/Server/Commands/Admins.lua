@@ -622,11 +622,12 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local id = string.lower(args[1])
 				for i,v in pairs(Variables.InsertList) do
-					if id==string.lower(v.Name)then
+					if id == string.lower(v.Name)then
 						id = v.ID
 						break
 					end
 				end
+
 				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
@@ -728,7 +729,7 @@ return function(Vargs, env)
 				if soundrange > 100 then
 					soundrange = 100
 				end
-				
+
 				local Success, Return = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, soundid)
 
 				assert(Success, "Sound Id isn't a sound or doesn't exist.")
@@ -812,7 +813,7 @@ return function(Vargs, env)
 									sound:Pause()
 									return
 								end
-								
+
 								prevname = spart.Name
 								sound.SoundId = "rbxassetid://"..spart.Name
 								wait(2)
