@@ -23,6 +23,7 @@ return function(data)
 	local PageNumber = data.PageNumber or 1;
 	local PageCounter = PageNumber or 1;
 	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
+	local TextSelectable = data.TextSelectable
 	local getListTab, getPage
 	local doSearch, genList
 	local window, scroller, search
@@ -157,7 +158,7 @@ return function(data)
 			end
 
 			currentListTab = gotList;
-			scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText;});
+			scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText; TextSelectable = TextSelectable});
 
 			genDebounce = false;
 		end

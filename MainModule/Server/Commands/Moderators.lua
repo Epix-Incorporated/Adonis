@@ -5880,6 +5880,7 @@ return function(Vargs, env)
 					AutoUpdate = auto;
 					Stacking = true;
 					Sanitize = true;
+					TextSelectable = true;
 				})
 			end
 		};
@@ -5907,6 +5908,7 @@ return function(Vargs, env)
 						AutoUpdate = auto;
 						Stacking = true;
 						Sanitize = true;
+						TextSelectable = true;
 					})
 				end
 			end
@@ -5937,6 +5939,7 @@ return function(Vargs, env)
 					AutoUpdate = auto,
 					Sanitize = true;
 					Stacking = true;
+					TextSelectable = true;
 				})
 			end
 		};
