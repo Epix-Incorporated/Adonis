@@ -77,9 +77,10 @@ return function(Vargs)
 				end;
 			};
 
-			["@everyone"] = {
-				Match = "@everyone";
+			["everyone"] = {
+				Match = "everyone";
 				Absolute = true;
+				Pefix = true;
 				Function = function(...)
 					return Functions.PlayerFinders.all.Function(...)
 				end
@@ -168,8 +169,9 @@ return function(Vargs)
 
 			["@username"] = {
 				Match = "@";
+				Prefix = false;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					local matched = tonumber(msg:match("@(.*)"))
+					local matched = msg:match("@(.*)")
 					local foundNum = 0
 
 					if matched then
@@ -461,7 +463,7 @@ return function(Vargs)
 
 			local function checkMatch(msg)
 				local doReturn;
-				
+
 				for ind, data in next, Functions.PlayerFinders do
 					if not data.Level or (data.Level and Admin.GetLevel(plr) >= data.Level) then
 						local check = ((data.Prefix and Settings.SpecialPrefix) or "")..data.Match
