@@ -752,7 +752,7 @@ return function(Vargs)
 								Time = 10;
 								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window",{
-										Title = "How to change the DataStore";
+										Title = "How to change the DataStore key";
 										Size = {700,300};
 										Icon = "rbxassetid://357249130";
 									})
