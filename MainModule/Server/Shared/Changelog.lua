@@ -7,6 +7,7 @@ return {
 	"*Added :gerald";
 	"*Fixed the @username player finder";
 	"*The player finder @everyone is now just (SpecialPrefixHere)everyone (eg: everyone, !everyone, etc)";
+	"(Git/Coasterteam) MaxChatCharacterLimit now takes from Chat Settings";
 	"(Git/Sparkypen7) Update non-monotonic timers to be monotonic. #473";
 	"(Git/P3tray) Made :countdown better #474";
 	"(Git/fxeP1) Service/Moderators Updates. #477";
