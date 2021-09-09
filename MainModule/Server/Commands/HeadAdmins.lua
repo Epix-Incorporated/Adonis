@@ -307,8 +307,16 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				Functions.Hint('Updating Map Backup...', { plr })
-				assert(Variables.BackingupMap, "Backup Map is in progress. Please try again later!")
-				assert(Variables.RestoringMap, "Cannot backup map while map is being restored!")
+				
+				if Variables.BackingupMap then
+					error("Backup Map is in progress. Please try again later!")
+					return
+				end
+				if Variables.RestoringMap then
+					error("Cannot backup map while map is being restored!")
+					return
+				end
+
 				Variables.BackingupMap = true
 
 				local tempmodel = service.New('Model')

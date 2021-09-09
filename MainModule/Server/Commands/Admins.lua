@@ -683,9 +683,18 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(not server.Variables.MapBackup or not Variables.TerrainMapBackup, "Cannot restore when there are no backup maps!")
-				assert(Variables.RestoringMap, "Map has not been backed up!")
-				assert(Variables.BackingupMap, "Cannot restore map while backing up map is in process!")
+				if not Variables.MapBackup then
+					error("Cannot restore when there are no backup maps!",0)
+					return
+				end
+				if Variables.RestoringMap then
+					error("Map has not been backed up",0)
+					return
+				end
+				if Variables.BackingupMap then
+					error("Cannot restore map while backing up map is in process!",0)
+					return
+				end
 
 				Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
@@ -701,13 +710,13 @@ return function(Vargs, env)
 				for _, Obj in ipairs(new:GetChildren()) do
 					Obj.Parent = workspace
 					if Obj:IsA("Model") then
-						Obj:MakeJoints(Obj)
+						Obj:MakeJoints()
 					end
 				end
 				new:Destroy()
 
 				local Terrain = workspace:FindFirstChildOfClass("Terrain")
-				if Terrain then
+				if Terrain and Variables.TerrainMapBackup then
 					Terrain:Clear()
 					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
 				end
