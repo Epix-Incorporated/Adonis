@@ -30,7 +30,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task =
 	_G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
@@ -40,7 +40,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -331,6 +331,7 @@ Vector3int16 = service.Localize(Vector3int16)
 BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
+task = service.Localize(task)
 
 --// Wrap
 log("Wrap")
@@ -428,6 +429,7 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
+	task = task;
 	service = service;
 	} do locals[ind] = loc end
 

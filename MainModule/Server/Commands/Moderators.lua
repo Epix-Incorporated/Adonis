@@ -21,7 +21,7 @@ return function(Vargs, env)
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-				})) do
+					})) do
 					Remote.MakeGui(v, "Music")
 				end
 			end
@@ -41,7 +41,7 @@ return function(Vargs, env)
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-				})) do
+					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						local PlayerName = v.Name
@@ -471,21 +471,6 @@ return function(Vargs, env)
 			end
 		};
 
-		MakeTalk = {
-			Prefix = Settings.Prefix;
-			Commands = {"talk";"maketalk";};
-			Args = {"player";"message";};
-			Filter = true;
-			Description = "Makes a dialog bubble appear over the target player(s) head with the desired message";
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local message = args[2]
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					service.ChatService:Chat(v.Character.Head, message, Enum.ChatColor.Blue)
-				end
-			end
-		};
-
 		ChatNotify = {
 			Prefix = Settings.Prefix;
 			Commands = {"chatnotify";"chatmsg";};
@@ -553,40 +538,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					v.Character.Parent = service.Workspace
+					v.Character.Parent = workspace
 					v.Character:MakeJoints()
-				end
-			end
-		};
-
-		IceFreeze = {
-			Prefix = Settings.Prefix;
-			Commands = {"ice";"iceage","icefreeze","funfreeze"};
-			Args = {"player";};
-			Description = "Freezes the target player(s) in a block of ice";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Routine(function()
-						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							for _, obj in ipairs(v.Character:GetChildren()) do
-								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
-							end
-							local ice = service.New("Part", v.Character)
-							ice.BrickColor = BrickColor.new("Steel blue")
-							ice.Material = "Ice"
-							ice.Name = "Adonis_Ice"
-							ice.Anchored = true
-							--ice.CanCollide=false
-							ice.TopSurface = "Smooth"
-							ice.BottomSurface = "Smooth"
-							ice.FormFactor = "Custom"
-							ice.Size = Vector3.new(5, 6, 5)
-							ice.Transparency = 0.3
-							ice.CFrame = v.Character.HumanoidRootPart.CFrame
-						end
-					end)
 				end
 			end
 		};
@@ -652,191 +605,6 @@ return function(Vargs, env)
 							pcall(function() plate:Destroy() end)
 						end
 					end)
-				end
-			end
-		};
-
-		Fire = {
-			Prefix = Settings.Prefix;
-			Commands = {"fire";"makefire";"givefire";};
-			Args = {"player";"color";};
-			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-				local secondary = Color3.new(1, 0, 0)
-
-				if args[2] then
-					local str = BrickColor.new("Bright orange").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-					secondary = str
-				end
-
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.NewParticle(torso, "Fire", {
-							Name = "FIRE";
-							Color = color;
-							SecondaryColor = secondary;
-						})
-						Functions.NewParticle(torso, "PointLight", {
-							Name = "FIRE_LIGHT";
-							Color = color;
-							Range = 15;
-							Brightness = 5;
-						})
-					end
-				end
-			end
-		};
-
-		UnFire = {
-			Prefix = Settings.Prefix;
-			Commands = {"unfire";"removefire";"extinguish";};
-			Args = {"player";};
-			Description = "Puts out the flames on the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.RemoveParticle(torso, "FIRE")
-						Functions.RemoveParticle(torso, "FIRE_LIGHT")
-					end
-				end
-			end
-		};
-
-		Smoke = {
-			Prefix = Settings.Prefix;
-			Commands = {"smoke";"givesmoke";};
-			Args = {"player";"color";};
-			Description = "Makes smoke come from the target player(s) with the desired color";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-
-				if args[2] then
-					local str = BrickColor.new("White").Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-				end
-
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.NewParticle(torso, "Smoke", {
-							Name = "SMOKE";
-							Color = color;
-						})
-					end
-				end
-			end
-		};
-
-		UnSmoke = {
-			Prefix = Settings.Prefix;
-			Commands = {"unsmoke";};
-			Args = {"player";};
-			Description = "Removes smoke from the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.RemoveParticle(torso, "SMOKE")
-					end
-				end
-			end
-		};
-
-		Sparkles = {
-			Prefix = Settings.Prefix;
-			Commands = {"sparkles";};
-			Args = {"player";"color";};
-			Description = "Puts sparkles on the target player(s) with the desired color";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local color = Color3.new(1, 1, 1)
-
-				if args[2] then
-					local str = BrickColor.new('Cyan').Color
-					local teststr = args[2]
-
-					if BrickColor.new(teststr) ~= nil then
-						str = BrickColor.new(teststr).Color
-					end
-
-					color = str
-				end
-
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.NewParticle(torso, "Sparkles", {
-							Name = "SPARKLES";
-							SparkleColor = color;
-						})
-						Functions.NewParticle(torso, "PointLight", {
-							Name = "SPARKLES_LIGHT";
-							Color = color;
-							Range = 15;
-							Brightness = 5;
-						})
-					end
-				end
-			end
-		};
-
-		UnSparkles = {
-			Prefix = Settings.Prefix;
-			Commands = {"unsparkles";};
-			Args = {"player";};
-			Description = "Removes sparkles from the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local torso = v.Character:FindFirstChild("HumanoidRootPart")
-					if torso then
-						Functions.RemoveParticle(torso, "SPARKLES")
-						Functions.RemoveParticle(torso, "SPARKLES_LIGHT")
-					end
-				end
-			end
-		};
-
-		Animation = {
-			Prefix = Settings.Prefix;
-			Commands = {"animation";"loadanim";"animate";};
-			Args = {"player";"animationID";};
-			Description = "Load the animation onto the target";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-
-				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
-
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.PlayAnimation(v ,args[2])
 				end
 			end
 		};
@@ -1174,92 +942,6 @@ return function(Vargs, env)
 			end
 		};
 
-		BlurEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"blur";"screenblur";"blureffect"};
-			Args = {"player";"blur size";};
-			Description = "Blur the target player's screen";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local moder = tonumber(args[2]) or 0.5
-				if moder > 5 then moder = 5 end
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(v, "BlurEffect", {
-						Name = "WINDOW_BLUR",
-						Size = tonumber(args[2]) or 24,
-						Enabled = true,
-					}, "Camera")
-				end
-			end
-		};
-
-		BloomEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"bloom";"screenbloom";"bloomeffect"};
-			Args = {"player";"intensity";"size";"threshold"};
-			Description = "Give the player's screen the bloom lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(v, "BloomEffect", {
-						Name = "WINDOW_BLOOM",
-						Intensity = tonumber(args[2]) or 0.4,
-						Size = tonumber(args[3]) or 24,
-						Threshold = tonumber(args[4]) or 0.95,
-						Enabled = true,
-					}, "Camera")
-				end
-			end
-		};
-
-		SunRaysEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"sunrays";"screensunrays";"sunrayseffect"};
-			Args = {"player";"intensity";"spread"};
-			Description = "Give the player's screen the sunrays lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(v, "SunRaysEffect", {
-						Name = "WINDOW_SUNRAYS",
-						Intensity = tonumber(args[2]) or 0.25,
-						Spread = tonumber(args[3]) or 1,
-						Enabled = true,
-					}, "Camera")
-				end
-			end
-		};
-
-		ColorCorrectionEffect = {
-			Prefix = Settings.Prefix;
-			Commands = {"colorcorrect";"colorcorrection";"correctioneffect";"correction";"cce"};
-			Args = {"player";"brightness","contrast","saturation","tint"};
-			Description = "Give the player's screen the sunrays lighting effect";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local r,g,b = 1,1,1
-				if args[5] and args[5]:match("(.*),(.*),(.*)") then
-					r,g,b = args[5]:match("(.*),(.*),(.*)")
-				end
-				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
-				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(p,"ColorCorrectionEffect",{
-						Name = "WINDOW_COLORCORRECTION",
-						Brightness = tonumber(args[2]) or 0,
-						Contrast = tonumber(args[3]) or 0,
-						Saturation = tonumber(args[4]) or 0,
-						TintColor = Color3.new(r,g,b),
-						Enabled = true,
-					},"Camera")
-				end
-			end
-		};
-
 		UnColorCorrection = {
 			Prefix = Settings.Prefix;
 			Commands = {"uncolorcorrection";"uncorrection";"uncolorcorrectioneffect"};
@@ -1335,48 +1017,6 @@ return function(Vargs, env)
 					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
 					Remote.RemoveLocal(v, "WINDOW_SUNRAYS", "Camera")
 					Remote.RemoveLocal(v, "WINDOW_COLORCORRECTION", "Camera")
-				end
-			end
-		};
-
-		ThermalVision = {
-			Prefix = Settings.Prefix;
-			Commands = {"thermal","thermalvision","heatvision"};
-			Args = {"player"};
-			Hidden = false;
-			Description = "Looks like heat vision";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.NewLocal(v, "ColorCorrectionEffect", {
-						Name = "WINDOW_THERMAL",
-						Brightness = 1,
-						Contrast = 20,
-						Saturation = 20,
-						TintColor = Color3.new(0.5, 0.2, 1);
-						Enabled = true,
-					}, "Camera")
-					Remote.NewLocal(v, "BlurEffect", {
-						Name = "WINDOW_THERMAL",
-						Size = 24,
-						Enabled = true,
-					}, "Camera")
-				end
-			end
-		};
-
-		UnThermalVision = {
-			Prefix = Settings.Prefix;
-			Commands = {"unthermal";"unthermalvision";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Removes the thermal effect from the target player's screen";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
 				end
 			end
 		};
@@ -1600,10 +1240,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				if plr and plr.Character and plr.Character:FindFirstChild('Head') then
-					if service.Workspace:FindFirstChild('Camera: '..args[1]) then
+					if workspace:FindFirstChild('Camera: '..args[1]) then
 						Functions.Hint(args[1].." Already Exists!",{plr})
 					else
-						local cam = service.New('Part',service.Workspace)
+						local cam = service.New('Part',workspace)
 						cam.Position = plr.Character.Head.Position
 						cam.Anchored = true
 						cam.BrickColor = BrickColor.new('Really black')
@@ -1808,7 +1448,7 @@ return function(Vargs, env)
 			Commands = {"clean";};
 			Args = {};
 			Hidden = false;
-			Description = "Cleans some useless junk out of service.Workspace";
+			Description = "Cleans some useless junk out of workspace";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -2438,7 +2078,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in ipairs(workspace:GetChildren()) do
 					if v:IsA('Message') or v:IsA('Hint') then
 						v:Destroy()
 					end
@@ -2586,37 +2226,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Freaky = {
-			Prefix = Settings.Prefix;
-			Commands = {"freaky";};
-			Args = {"0-600,0-600,0-600";"optional player"};
-			Hidden = false;
-			Description = "Does freaky stuff to lighting. Like a messed up ambient.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local r,g,b = 100,100,100
-				if args[1] and args[1]:match("(.*),(.*),(.*)") then
-					r,g,b = args[1]:match("(.*),(.*),(.*)")
-				end
-				r,g,b = tonumber(r),tonumber(g),tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
-				local num1,num2,num3 = r,g,b
-				num1="-"..num1.."00000"
-				num2="-"..num2.."00000"
-				num3="-"..num3.."00000"
-				if args[2] then
-					for i,v in pairs(service.GetPlayers(plr,args[2])) do
-						Remote.SetLighting(v,"FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-						Remote.SetLighting(v,"FogEnd", 9e9)
-					end
-				else
-					Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
-					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
-				end
-			end
-		};
-
 		ResetStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats","rs"};
@@ -2638,35 +2247,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Gear = {
-			Prefix = Settings.Prefix;
-			Commands = {"gear";"givegear";};
-			Args = {"player";"id";};
-			Hidden = false;
-			Description = "Gives the target player(s) a gear from the catalog based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
-				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
-
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-
-					if gear:IsA("Tool") or gear:IsA("HopperBin") then
-						service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
-						for i, v in pairs(service.GetPlayers(plr,args[1])) do
-							if v:FindFirstChild("Backpack") then
-								gear:Clone().Parent = v.Backpack
-							end
-						end
-					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.",0)
-				end
-			end
-		};
-
 		Sell = {
 			Prefix = Settings.Prefix;
 			Commands = {"sell";};
@@ -2678,47 +2258,6 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.MarketPlace:PromptPurchase(v,tonumber(args[2]),false)
-				end
-			end
-		};
-
-		Hat = {
-			Prefix = Settings.Prefix;
-			Commands = {"hat";"givehat";};
-			Args = {"player";"id";};
-			Hidden = false;
-			Description = "Gives the target player(s) a hat based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				if not args[2] then error("Argument missing or nil") end
-
-				local id = args[2]
-
-				if not tonumber(id) then
-					local built = {
-						teapot = 1055299;
-					}
-
-					if built[string.lower(args[2])] then
-						id = built[string.lower(args[2])]
-					end
-				end
-
-				if not tonumber(id) then error("Invalid ID") end
-
-				local market = service.MarketPlace
-				local info = market:GetProductInfo(id)
-
-				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
-					local hat = service.Insert(id)
-					assert(hat,"Invalid ID")
-					
-					for i,v in pairs(service.GetPlayers(plr, args[1])) do
-						if v.Character and hat then
-							hat:Clone().Parent = v.Character
-						end
-					end
 				end
 			end
 		};
@@ -2781,56 +2320,6 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					Functions.UnCape(v)
-				end
-			end
-		};
-
-		Slippery = {
-			Prefix = Settings.Prefix;
-			Commands = {"slippery";"iceskate";"icewalk";"slide";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Makes the target player(s) slide when they walk";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local vel = service.New('BodyVelocity')
-				vel.Name = 'ADONIS_IceVelocity'
-				vel.maxForce = Vector3.new(5000,0,5000)
-				local scr = Deps.Assets.Slippery:Clone()
-
-				scr.Name = "ADONIS_IceSkates"
-
-				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local vel = vel:Clone()
-						vel.Parent = v.Character.HumanoidRootPart
-						local new = scr:Clone()
-						new.Parent = v.Character.HumanoidRootPart
-						new.Disabled = false
-					end
-				end
-
-				scr:Destroy()
-			end
-		};
-
-		UnSlippery = {
-			Prefix = Settings.Prefix;
-			Commands = {"unslippery","uniceskate","unslide"};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Get sum friction all up in yo step";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local scr = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceSkates")
-						local vel = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceVelocity")
-						if vel then vel:Destroy() end
-						if scr then scr.Disabled = true scr:Destroy() end
-					end
 				end
 			end
 		};
@@ -2910,7 +2399,7 @@ return function(Vargs, env)
 						local cf = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0,1,0))
 						local origpos = v.Character.HumanoidRootPart.Position
 
-						local mod = service.New("Model", service.Workspace)
+						local mod = service.New("Model", workspace)
 						mod.Name = v.Name .. "_ADONISJAIL"
 						local top = service.New("Part", mod)
 						top.Locked = true
@@ -2992,7 +2481,7 @@ return function(Vargs, env)
 						end
 
 						service.TrackTask("Thread: JailLoop"..tostring(ind), function()
-							while wait() and Variables.Jails[ind] == jail and mod.Parent == service.Workspace do
+							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
 									if v.Character then
 										local torso = v.Character:FindFirstChild('HumanoidRootPart')
@@ -3179,8 +2668,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.MoveLocal(v,v.Character.Name,false,service.Workspace)
-					v.Character.Parent = service.Workspace
+					Remote.MoveLocal(v,v.Character.Name,false,workspace)
+					v.Character.Parent = workspace
 				end
 			end
 		};
@@ -3372,60 +2861,6 @@ return function(Vargs, env)
 			end
 		};
 
-
-
-		BodySwap = {
-			Prefix = Settings.Prefix;
-			Commands = {"bodyswap";"bodysteal";"bswap";};
-			Args = {"player1";"player2";};
-			Hidden = false;
-			Description = "Swaps player1's and player2's bodies and tools";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					for i2,v2 in pairs(service.GetPlayers(plr,args[2])) do
-						local temptools=service.New('Model')
-						local tempcloths=service.New('Model')
-						local vpos=v.Character.HumanoidRootPart.CFrame
-						local v2pos=v2.Character.HumanoidRootPart.CFrame
-						local vface=v.Character.Head.face
-						local v2face=v2.Character.Head.face
-						vface.Parent=v2.Character.Head
-						v2face.Parent=v.Character.Head
-						for k,p in pairs(v.Character:GetChildren()) do
-							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
-								p.Parent=tempcloths
-							elseif p:IsA('Tool') then
-								p.Parent=temptools
-							end
-						end
-						for k,p in pairs(v.Backpack:GetChildren()) do
-							p.Parent=temptools
-						end
-						for k,p in pairs(v2.Character:GetChildren()) do
-							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
-								p.Parent=v.Character
-							elseif p:IsA('Tool') then
-								p.Parent=v.Backpack
-							end
-						end
-						for k,p in pairs(tempcloths:GetChildren()) do
-							p.Parent=v2.Character
-						end
-						for k,p in pairs(v2.Backpack:GetChildren()) do
-							p.Parent=v.Backpack
-						end
-						for k,p in pairs(temptools:GetChildren()) do
-							p.Parent=v2.Backpack
-						end
-						v2.Character.HumanoidRootPart.CFrame=vpos
-						v.Character.HumanoidRootPart.CFrame=v2pos
-					end
-				end
-			end
-		};
-
 		Control = {
 			Prefix = Settings.Prefix;
 			Commands = {"control";"takeover";};
@@ -3486,79 +2921,76 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,p in next,service.GetPlayers(plr, args[1]) do
-					local oChar = p.Character;
-					local oTools, pBackpack, oHumanoid, oPrimary, oPos;
+					task.defer(function()
+						local oChar = p.Character;
+						local oTools, pBackpack, oHumanoid, oPrimary, oPos;
 
-					if oChar then
-						oHumanoid = oChar:FindFirstChildOfClass("Humanoid");
-						oPrimary = oChar.PrimaryPart or (oHumanoid and oHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
+						if oChar then
+							oHumanoid = oChar:FindFirstChildOfClass("Humanoid");
+							oPrimary = oChar.PrimaryPart or (oHumanoid and oHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
 
-						if oPrimary then
-							oPos = oPrimary.CFrame;
-						end
-					end
-
-					--// Handle tool saving
-					pBackpack = p:FindFirstChildOfClass("Backpack")
-
-					if pBackpack then
-						oTools = {};
-
-						if oHumanoid then
-							oHumanoid:UnequipTools()
-						end
-
-						pBackpack.ChildAdded:Connect(function(c)
-							table.insert(oTools, c);
-							c.Parent = nil;
-						end)
-
-						for i,c in next,pBackpack:GetChildren() do
-							table.insert(oTools, c);
-							c.Parent = nil;
-						end
-					end
-
-					--// Handle respawn and repositioning
-					local newChar, newHumanoid, newPrimary;
-
-					delay(0.1, function() p:LoadCharacter() end);
-
-					--// Reposition if possible
-					if oPos then
-						if not p.Character or p.Character == oChar then
-							newChar = p.CharacterAdded:Wait();
-						else
-							newChar = p.Character;
-						end
-
-						if newChar then
-							wait(); -- Let it finish loading character contents
-
-							newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
-							newPrimary = newChar.PrimaryPart or (Humanoid and Humanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
-
-							local forcefield = newChar:FindFirstChildOfClass("ForceField");
-							if forcefield then
-								forcefield:Destroy()
-							end
-
-							if newPrimary then
-								newPrimary.CFrame = oPos;
-							else
-								newChar:MoveTo(oPos.Position)
+							if oPrimary then
+								oPos = oPrimary.CFrame;
 							end
 						end
-					end
 
-					--// Bring previous tools back
-					local newBackpack = p:FindFirstChildOfClass("Backpack")
-					if newBackpack and oTools then
-						newBackpack:ClearAllChildren();
-						for i,t in next,oTools do
-							t.Parent = newBackpack;
+						--// Handle tool saving
+						pBackpack = p:FindFirstChildOfClass("Backpack")
+
+						if pBackpack then
+							oTools = {};
+
+							if oHumanoid then
+								oHumanoid:UnequipTools()
+							end
+
+							pBackpack.ChildAdded:Connect(function(c)
+								table.insert(oTools, c);
+								c.Parent = nil;
+							end)
+
+							for _, Child in ipairs(pBackpack:GetChildren()) do
+								table.insert(oTools, Child);
+								Child.Parent = nil;
+							end
 						end
-					end
+
+						--// Handle respawn and repositioning
+						local newChar, newHumanoid, newPrimary;
+						task.delay(0.1, pcall, p.LoadCharacter, p)
+
+						--// Reposition if possible
+						if oPos then
+							newChar = p.Character ~= oChar and p.Character or p.CharacterAdded:Wait()
+
+							if newChar then
+								wait(); -- Let it finish loading character contents
+
+								newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
+								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
+
+								local forcefield = newChar:FindFirstChildOfClass("ForceField");
+								if forcefield then
+									forcefield:Destroy()
+								end
+
+								if newPrimary then
+									newPrimary.CFrame = oPos;
+								else
+									newChar:MoveTo(oPos.Position)
+								end
+							end
+						end
+
+						--// Bring previous tools back
+						local newBackpack = p:FindFirstChildOfClass("Backpack")
+						if newBackpack and oTools then
+							newBackpack:ClearAllChildren();
+							for i,t in ipairs(oTools) do
+								t.Parent = newBackpack;
+							end
+						end
+					end)
 				end
 			end
 		};
@@ -3587,13 +3019,15 @@ return function(Vargs, env)
 			Commands = {"respawn";"re";"reset"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Respawns the target player(s)"; -- typo fixed
+			Description = "Respawns the target player(s)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					v:LoadCharacter()
-					Remote.Send(v,'Function','SetView','reset')
+					task.defer(function()
+						pcall(v.LoadCharacter, v)
+						Remote.Send(v,'Function','SetView','reset')
+					end)
 				end
 			end
 		};
@@ -3624,24 +3058,6 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Functions.ConvertPlayerCharacterToRig(v, "R15")
-				end
-			end
-		};
-
-		Trip = {
-			Prefix = Settings.Prefix;
-			Commands = {"trip";};
-			Args = {"player";"angle";};
-			Hidden = false;
-			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local angle = 130 or args[2]
-				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0,0,math.rad(angle))
-					end
 				end
 			end
 		};
@@ -3826,27 +3242,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Explode = {
-			Prefix = Settings.Prefix;
-			Commands = {"explode";"boom";"boomboom";};
-			Args = {"player";"radius"};
-			Hidden = false;
-			Description = "Explodes the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character.PrimaryPart then
-						local Explosion = service.New("Explosion")
-						Explosion.Position = v.Character.PrimaryPart.Position
-						Explosion.BlastRadius = args[2] or 20
-						Explosion.Archivable = false
-						Explosion.Parent = workspace.Terrain
-					end
-				end
-			end
-		};
-
 		Light = {
 			Prefix = Settings.Prefix;
 			Commands = {"light";};
@@ -3889,66 +3284,6 @@ return function(Vargs, env)
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Functions.RemoveParticle(v.Character.HumanoidRootPart,"ADONIS_LIGHT")
 					end
-				end
-			end
-		};
-
-		Paint = {
-			Prefix = Settings.Prefix;
-			Commands = {"paint";};
-			Args = {"player";"brickcolor"};
-			Hidden = false;
-			Description = "Paints the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-
-				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-				elseif not brickColor then
-					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
-					brickColor = BrickColor.new("Pearl")
-				end
-
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i,v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
-							bc[v] = brickColor
-						end
-					end
-				end
-			end
-		};
-
-		Oddliest = {
-			Prefix = Settings.Prefix;
-			Commands = {"oddliest";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Turns you into the one and only Oddliest";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"51310503")
-				end
-			end
-		};
-
-		Sceleratis = {
-			Prefix = Settings.Prefix;
-			Commands = {"sceleratis";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Turns you into me <3";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."char",v.Name,"userid-1237666")
 				end
 			end
 		};
@@ -5080,7 +4415,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in ipairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
@@ -5101,7 +4436,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in ipairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
@@ -5123,7 +4458,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local pitch = args[1]
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in ipairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Pitch=v.Pitch+tonumber(args[1]:sub(2))
@@ -5147,7 +4482,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i,v in pairs(service.Workspace:GetChildren()) do
+				for i,v in ipairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						if args[1]:sub(1,1) == "+" then
 							v.Volume=v.Volume+tonumber(args[1]:sub(2))
@@ -5197,7 +4532,7 @@ return function(Vargs, env)
 
 					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.Parent = service.Workspace
+					s.Parent = workspace
 					s.Looped = false
 					s.Archivable = false
 
@@ -5285,7 +4620,7 @@ return function(Vargs, env)
 						Functions.Hint(name, service.GetPlayers())
 					end
 
-					for i, v in pairs(service.Workspace:GetChildren()) do
+					for i, v in ipairs(workspace:GetChildren()) do
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
@@ -5308,11 +4643,11 @@ return function(Vargs, env)
 					s.Pitch = pitch
 					s.Looped = looped
 					s.Archivable = false
-					s.Parent = service.Workspace
+					s.Parent = workspace
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in pairs(service.Workspace:GetChildren()) do
+					for i, v in ipairs(workspace:GetChildren()) do
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
@@ -5330,7 +4665,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.Workspace:GetChildren()) do
+				for i, v in ipairs(workspace:GetChildren()) do
 					if v.Name=="ADONIS_SOUND" then
 						v:Destroy()
 					end
@@ -6324,7 +5659,7 @@ return function(Vargs, env)
 						local isR15 = (hum.RigType == "R15")
 						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
 
-						new.Parent = service.Workspace
+						new.Parent = workspace
 						new.Name = player.Name
 						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0,math.rad((360/num)*i),0)*CFrame.new((num*0.2)+5,0,0)
 
@@ -6394,42 +5729,31 @@ return function(Vargs, env)
 			Function = function(plr,args,data)
 				local rev = args[1]
 
-				local reverbs = {"NoReverb","GenericReverb","PaddedCell","Room","Bathroom","LivingRoom",
-					"StoneRoom","Auditorium","ConcertHall","Cave","Arena","Hangar","CarpettedHallway",
-					"Hallway","StoneCorridor","Alley","Forest","City","Mountains","Quarry","Plain",
-					"ParkingLot","SewerPipe","UnderWater"}
-
-				if not rev or not Enum.ReverbType[rev] then
+				local ReverbType = Enum.ReverbType
+				local reverbs = ReverbType:GetEnumItems()
+				if not rev or not ReverbType[rev] then
 
 					Functions.Hint("Argument 1 missing or nil. Opening Reverb List",{plr})
 
 					local tab = {}
-
 					table.insert(tab,{Text = "Note: Argument is CASE SENSITIVE"})
-
 					for _,v in pairs(reverbs) do
-						table.insert(tab,{Text = v})
+						table.insert(tab, {Text = v})
 					end
-
 					Remote.MakeGui(plr,"List",{Title = "Reverbs";Table = tab})
 
 					return
 				end
 
 				if args[2] then
-
 					for i,v in pairs(service.GetPlayers(plr,args[2])) do
 						Remote.LoadCode(v,"game:GetService(\"SoundService\").AmbientReverb = Enum.ReverbType["..rev.."]")
-
 					end
 
 					Functions.Hint("Changed Ambient Reverb of specified player(s)",{plr})
-
 				else
-
-					service.SoundService.AmbientReverb = Enum.ReverbType[rev]
+					service.SoundService.AmbientReverb = ReverbType[rev]
 					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
-
 				end
 			end
 		};
