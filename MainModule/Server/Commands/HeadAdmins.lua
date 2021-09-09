@@ -306,7 +306,9 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				Functions.Hint('Updating Map Backup...', { plr })
+				if plr then
+					Functions.Hint('Updating Map Backup...', { plr })
+				end
 				
 				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
