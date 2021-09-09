@@ -307,7 +307,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				Functions.Hint('Updating Map Backup...', { plr })
-				
+
 				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
@@ -321,7 +321,7 @@ return function(Vargs, env)
 
 				local tempmodel = service.New('Model')
 				for _, v in ipairs(workspace:GetChildren()) do
-					if v.ClassName ~= "Terrain" then
+					if v.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(v) then
 						local archive = v.Archivable
 						v.Archivable = true
 						v:Clone().Parent = tempmodel

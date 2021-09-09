@@ -701,7 +701,7 @@ return function(Vargs, env)
 
 				for _, Obj in ipairs(workspace:GetChildren()) do
 					if Obj.ClassName ~= "Terrain" then
-						pcall(Obj.Destroy,Obj)
+						Obj:Destroy()
 						service.RunService.Stepped:Wait()
 					end
 				end
