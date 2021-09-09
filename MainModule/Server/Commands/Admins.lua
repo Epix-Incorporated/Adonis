@@ -683,46 +683,37 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
-					error("Cannot restore when there are no backup maps!!")
-					return
-				end
-				if server.Variables.RestoringMap then
-					error("Map has not been backed up")
-					return
-				end
-				if server.Variables.BackingupMap then
-					error("Cannot restore map while backing up map is in process!")
-					return
-				end
+				assert(not server.Variables.MapBackup or not Variables.TerrainMapBackup, "Cannot restore when there are no backup maps!")
+				assert(Variables.RestoringMap, "Map has not been backed up!")
+				assert(Variables.BackingupMap, "Cannot restore map while backing up map is in process!"))
 
-				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:GetPlayers())
+				Variables.RestoringMap = true
+				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
 
-				for _, Obj in pairs(service.Workspace:GetChildren()) do
-					if Obj.Archivable and not(Obj == script)and not(Obj:IsA('Terrain'))then
-						pcall(Obj.Destroy, Obj)
-						service.RunService.Heartbeat:Wait()
+				for _, Obj in ipairs(workspace:GetChildren()) do
+					if Obj.ClassName ~= "Terrain" then
+						pcall(Obj.Destroy,Obj)
+						service.RunService.Stepped:Wait()
 					end
 				end
 
 				local new = Variables.MapBackup:Clone()
-				new:MakeJoints()
-				new.Parent = service.Workspace
-				new:MakeJoints()
-
-				for _, Obj in pairs(new:GetChildren()) do
-					Obj.Parent = service.Workspace
-					pcall(Obj.MakeJoints, Obj)
+				for _, Obj in ipairs(new:GetChildren()) do
+					Obj.Parent = workspace
+					if Obj:IsA("Model") then
+						Obj:MakeJoints(Obj)
+					end
 				end
-
 				new:Destroy()
 
-				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				local Terrain = workspace:FindFirstChildOfClass("Terrain")
+				if Terrain then
+					Terrain:Clear()
+					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
+				end
 
-				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
-				server.Variables.RestoringMap = false
+				Admin.RunCommand(Settings.Prefix .. "respawn", "@everyone")
+				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
 			end
 		};
