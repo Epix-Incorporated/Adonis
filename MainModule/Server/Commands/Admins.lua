@@ -685,7 +685,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(not server.Variables.MapBackup or not Variables.TerrainMapBackup, "Cannot restore when there are no backup maps!")
 				assert(Variables.RestoringMap, "Map has not been backed up!")
-				assert(Variables.BackingupMap, "Cannot restore map while backing up map is in process!"))
+				assert(Variables.BackingupMap, "Cannot restore map while backing up map is in process!")
 
 				Variables.RestoringMap = true
 				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
