@@ -323,7 +323,7 @@ return function(Vargs, env)
 
 				local tempmodel = service.New('Model')
 				for _, v in ipairs(workspace:GetChildren()) do
-					if v.ClassName ~= "Terrain" then
+					if v.ClassName ~= "Terrain" and v.ClassName == "Model" and not service.Players:GetPlayerFromCharacter(v) then
 						local archive = v.Archivable
 						v.Archivable = true
 						v:Clone().Parent = tempmodel
