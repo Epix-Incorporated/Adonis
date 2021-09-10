@@ -74,6 +74,7 @@ return function(data)
 	local topTitle = Top:WaitForChild('Title')
 	local bodyText = Body:WaitForChild('To Name Later')
 	local Left = Top:WaitForChild('Left')
+	local tim = data.Time
 	topTitle.Text = Title
 	bodyText.Text = Message
 	local bodyBounds_Y = bodyText.TextBounds.Y
@@ -155,7 +156,7 @@ return function(data)
 		end)
 	end)
 	
-	local waitTime = (#bodyText.Text*0.1)+1
+	local waitTime = tim or (#bodyText.Text*0.1)+1
 	local Position_1,Position_2 = string.find(waitTime,"%p")
 	if Position_1 and Position_2 then
 		local followingNumbers = tonumber(string.sub(waitTime,Position_1))
@@ -165,11 +166,11 @@ return function(data)
 			waitTime = tonumber(string.sub(waitTime,1,Position_1))
 		end
 	end
-	if waitTime > 15 then
+	--[[if waitTime > 15 then
 		waitTime = 15
 	elseif waitTime <= 1 then
 		waitTime = 2
-	end
+	end]]--
 	Left.Text = waitTime..'.00'
 	for i=waitTime,1,-1 do
 		if not Left then break end
