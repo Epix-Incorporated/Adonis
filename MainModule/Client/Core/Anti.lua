@@ -199,7 +199,7 @@ return function()
 				end
 
 				if service.Player.userId ~= realId then
-					Detected("log", "Local userID does not match server userID")
+					Detected("log", "Local UserID does not match server UserID")
 				end
 			end)
 		end;
@@ -208,7 +208,7 @@ return function()
 			service.Player.DescendantAdded:Connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
 					c:Destroy()
-					Detected("log", "Unknown GUI detected and destroyed")
+					Detected("log", "Unknown GUI detected and destroyed: "..c.Name)
 				end
 			end)
 		end;
@@ -223,7 +223,7 @@ return function()
 						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 							t.Active = false
 							t:Destroy()
-							Detected('log','HopperBin detected (Building Tools)')
+							Detected('log','HopperBin Detected (BTools)')
 						end
 					end
 				end
@@ -248,7 +248,7 @@ return function()
 					end
 					if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill", "Noclipping")
+						Detected("kill", "NoClipping")
 						event:Disconnect()
 					end
 				end)
@@ -256,7 +256,7 @@ return function()
 				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill", "Noclipping")
+						Detected("kill", "NoClipping")
 					end
 				end
 			end
@@ -401,7 +401,7 @@ return function()
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
 				if Script and Script=='tpircsnaisyle'then
-					Detected("kick", "Elysian")
+					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
 					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
 				elseif not Script or ((not Trace or Trace == "")) then
@@ -482,7 +482,7 @@ return function()
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
-					local func,err = loadstring("print('LOADSTRING TEST')")
+					local func,err = loadstring("print('LolloDev5123 was here')")
 				end)
 				if ran then
 					Detected("crash", "Exploit detected; Loadstring usable")
