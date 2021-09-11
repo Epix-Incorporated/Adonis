@@ -126,12 +126,12 @@ return function(data)
 		if not genDebounce then
 			genDebounce = true;
 
-			if search.Text ~= "Search" and search.Text ~= "" then
+			if search.Text ~= "" then
 				PageCounter = 1;
 				gotList = getListTab(doSearch(Tab, search.Text));
 			else
 				PageCounter = PageNumber;
-				search.Text = "Search"
+				search.Text = ""
 				gotList = getListTab(Tab);
 			end
 
@@ -315,12 +315,12 @@ return function(data)
 		BackgroundTransparency = 0.5;
 		BorderSizePixel = 0;
 		TextColor3 = Color3.new(1, 1, 1);
-		Text = "Search";
+		Text = "";
 		PlaceholderText = "Search";
 		TextStrokeTransparency = 0.8;
 	})
 
-	search.FocusLost:Connect(function(enter)
+	search:GetPropertyChangedSignal("Text"):Connect(function()
 		genList(Tab)
 	end)
 
