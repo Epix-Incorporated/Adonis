@@ -1342,42 +1342,6 @@ return function(Vargs, env)
 			end
 		};
 
-		SoftShutdown = {
-			Prefix = Settings.Prefix;
-			Commands = {"softshutdown","restart"};
-			Args = {};
-			Description = "Restarts the server";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Admins";
-			Function = function(plr,args)
-				if (#game.Players:GetPlayers() == 0) then
-					return
-				end
-				
-				if (game:GetService("RunService"):IsStudio()) then
-					return
-				end
-			
-				server.Functions.Message("Softshutdown", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
-				local newserver = TeleportService:ReserveServer(game.PlaceId)
-				wait(3)
-				
-				for _,player in pairs(game.Players:GetPlayers()) do
-				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
-				end
-				
-				game.Players.PlayerAdded:connect(function(player)
-				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
-				end)
-				
-				while (#game.Players:GetPlayers() > 0) do
-					wait(1)
-				end	
-
-		 end
-				
-	        };
 		Shutdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"shutdown"};
