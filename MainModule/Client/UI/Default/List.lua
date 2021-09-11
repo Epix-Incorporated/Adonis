@@ -23,12 +23,14 @@ return function(data)
 	local PageNumber = data.PageNumber or 1;
 	local PageCounter = PageNumber or 1;
 	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
+	local TextSelectable = data.TextSelectable
 	local getListTab, getPage
 	local doSearch, genList
 	local window, scroller, search
 	local lastPageButton, nextPageButton, pageCounterLabel;
 	local currentListTab
 	local pageDebounce
+	local genDebounce = false;
 
 	function getPage(tab, pageNum)
 		if not PagesEnabled then
@@ -121,39 +123,45 @@ return function(data)
 	function genList(Tab)
 		local gotList = Tab;
 
-		if search.Text ~= "Search" and search.Text ~= "" then
-			PageCounter = 1;
-			gotList = getListTab(doSearch(Tab, search.Text));
-		else
-			PageCounter = PageNumber;
-			search.Text = "Search"
-			gotList = getListTab(Tab);
-		end
+		if not genDebounce then
+			genDebounce = true;
 
-		if PagesEnabled and #gotList > PageSize then
-			scroller.Size = UDim2.new(1,-10,1,-60);
-			nextPageButton.Visible = true;
-			pageCounterLabel.Visible = true;
-			pageCounterLabel.Text = "Page: ".. PageCounter;
-
-			if PageCounter > 1 then
-				lastPageButton.Visible = true;
+			if search.Text ~= "" then
+				PageCounter = 1;
+				gotList = getListTab(doSearch(Tab, search.Text));
 			else
-				lastPageButton.Visible = false;
+				PageCounter = PageNumber;
+				search.Text = ""
+				gotList = getListTab(Tab);
 			end
-		else
-			scroller.Size = UDim2.new(1,-10,1,-30);
-			nextPageButton.Visible = false;
-			lastPageButton.Visible = false;
-			pageCounterLabel.Visible = false;
-		end
 
-		for i,v in next,scroller:GetChildren() do
-			v:Destroy()
-		end
+			if PagesEnabled and #gotList > PageSize then
+				scroller.Size = UDim2.new(1,-10,1,-60);
+				nextPageButton.Visible = true;
+				pageCounterLabel.Visible = true;
+				pageCounterLabel.Text = "Page: ".. PageCounter;
 
-		currentListTab = gotList;
-		scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText;});
+				if PageCounter > 1 then
+					lastPageButton.Visible = true;
+				else
+					lastPageButton.Visible = false;
+				end
+			else
+				scroller.Size = UDim2.new(1,-10,1,-30);
+				nextPageButton.Visible = false;
+				lastPageButton.Visible = false;
+				pageCounterLabel.Visible = false;
+			end
+
+			for i,v in next,scroller:GetChildren() do
+				v:Destroy()
+			end
+
+			currentListTab = gotList;
+			scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText; TextSelectable = TextSelectable});
+
+			genDebounce = false;
+		end
 	end
 
 	window = client.UI.Make("Window",{
@@ -307,12 +315,12 @@ return function(data)
 		BackgroundTransparency = 0.5;
 		BorderSizePixel = 0;
 		TextColor3 = Color3.new(1, 1, 1);
-		Text = "Search";
+		Text = "";
 		PlaceholderText = "Search";
 		TextStrokeTransparency = 0.8;
 	})
 
-	search.FocusLost:Connect(function(enter)
+	search:GetPropertyChangedSignal("Text"):Connect(function()
 		genList(Tab)
 	end)
 

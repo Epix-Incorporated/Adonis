@@ -13,7 +13,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -23,7 +23,7 @@ return function()
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -79,7 +79,7 @@ return function()
 				RunAfterLoaded = true;
 				RunAfterPlugins = true;
 			}, true)--]]
-
+			UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
 			UI.RunLast = nil;
 	end
 
@@ -162,23 +162,23 @@ return function()
 		end;
 
 		GetNew = function(theme, name)
-			local found = {}
+			local foundConfigs = {}
 			local endConfig = {}
 			local endConfValues = {}
 			local confFolder = Instance.new("Folder")
 			local func
-
+			local debounce = false
 			function func(theme, name, depth)
 				local depth = (depth or 11) - 1
 				local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
+					local foundGUI = folder:FindFirstChild(name) --local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
 
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
-						table.insert(found, {
+						table.insert(foundConfigs, {
 							Theme = theme;
 							Folder = folder;
 							Name = name;
@@ -191,10 +191,14 @@ return function()
 							baseValue = config:FindFirstChild("BaseTheme") or baseValue
 							baseTheme = baseValue and baseValue.Value
 						end
-					end
-
+					end 
 					if baseTheme and depth > 0 then
-						func(baseTheme, name, depth)
+						if UI.DefaultTheme and baseTheme == "Default" and theme ~= UI.DefaultTheme and not debounce then
+							func(UI.DefaultTheme, name, depth)
+						else
+							debounce = true
+							func(baseTheme, name, depth)
+						end
 					end
 				end
 			end
@@ -202,11 +206,12 @@ return function()
 			--// Find GUI and all default versions under it
 			func(theme, name)
 			confFolder.Name = "Config"
+			
+			--// Create the final config for the found GUI.
 
-			if #found > 0 then
-
+			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for i,v in next,found do
+				for i,v in next,foundConfigs do
 					if v.Config then
 						for k,m in next,v.Config:GetChildren() do
 							if not endConfig[m.Name] then
@@ -222,25 +227,20 @@ return function()
 				end
 
 				--// Find next module based theme GUI if code not found or first in sequence is module (in theme)
-				if found[1].isModule then
-					return found[1].Found, found[1].Folder, confFolder
+				if foundConfigs[1].isModule then
+					return foundConfigs[1].Found, foundConfigs[1].Folder, confFolder
 				elseif not endConfig.Code then
-					for i,v in next,found do
-						if v.isModule then
-							return v.Found, v.Folder, confFolder
-						end
-					end
+					warn("Window config missing code.lua. Are your Base_Themes correct? client.UI.GetNew line 236")
 				end
 
 				--// Get rid of an old Config folder and throw the new combination Config folder in
-				local new = found[1].Found:Clone()
+				local new = foundConfigs[1].Found:Clone()
 				local oldFolder = new:FindFirstChild'Config'
 
 				if oldFolder then oldFolder:Destroy() end
 
 				confFolder.Parent = new
-
-				return new, found[1].Folder, confFolder
+				return new, foundConfigs[1].Folder, confFolder
 			end
 		end;
 

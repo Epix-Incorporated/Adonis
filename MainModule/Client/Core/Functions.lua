@@ -13,7 +13,7 @@ return function()
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -23,7 +23,7 @@ return function()
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -285,11 +285,11 @@ return function()
 			service.StopLoop("DizzyLoop")
 			if speed then
 				local cam = workspace.CurrentCamera
-				local last = tick()
+				local last = time()
 				local rot = 0
 				local flip = false
 				service.StartLoop("DizzyLoop","RenderStepped",function()
-					local dt = tick() - last
+					local dt = time() - last
 					if flip then
 						rot = rot+math.rad(speed*dt)
 					else
@@ -300,7 +300,7 @@ return function()
 						--flip = not flip
 					end
 					cam.CoordinateFrame = cam.CoordinateFrame * CFrame.Angles(0, 0.00, rot)
-					last = tick()
+					last = time()
 				end)
 			end
 		end;
@@ -311,7 +311,7 @@ return function()
 			local gsub = string.gsub
 			local char = string.char
 
-			return (gsub(gsub(data, '.', function(x) 
+			return (gsub(gsub(data, '.', function(x)
 				local r, b = "", byte(x)
 				for i = 8, 1, -1 do
 					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
@@ -898,8 +898,8 @@ return function()
 			local fps = tonumber(fps)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local ender = tick()+1/fps
-					repeat until tick()>=ender
+					local ender = time()+1/fps
+					repeat until time()>=ender
 				end)
 			end
 		end;
@@ -1029,11 +1029,12 @@ return function()
 			return "UNKNOWN";
 		end;
 
-		KeyBindListener = function()
+		KeyBindListener = function(keybinds)
 			if not Variables then wait() end;
 			local timer = 0
+			local data = (not keybinds) and Remote.Get("PlayerData");
 
-			Variables.KeyBinds = Remote.Get("PlayerData").Keybinds or {}
+			Variables.KeyBinds = keybinds or (data and data.Keybinds) or {}
 
 			service.UserInputService.InputBegan:Connect(function(input)
 				local key = tostring(input.KeyCode.Value)
@@ -1041,13 +1042,13 @@ return function()
 
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
-					if (tick() - timer > 5 or isAdmin) then
+					if (time() - timer > 5 or isAdmin) then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
 							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])
 						})
 					end
-					timer = tick()
+					timer = time()
 				end
 			end)
 		end;

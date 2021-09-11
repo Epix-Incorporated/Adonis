@@ -44,12 +44,14 @@ return function(Vargs, env)
 				})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
+						local PlayerName = v.Name
 						if not service.Players:FindFirstChild(v.Name) then
 							Remote.Send(v, "Function", "Kill")
 						else
 							v:Kick(args[2])
 						end
-						Functions.Hint("Kicked "..tostring(v), {plr})
+
+						Functions.Hint("Kicked ".. PlayerName, {plr})
 					end
 				end
 			end
@@ -100,51 +102,17 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				Admin.RunCommand(Settings.Prefix.."tp", plr.Name, plr.Name)
-			end
-		};
-
-		TimeDate = {
-			Prefix = Settings.Prefix;
-			Commands = {"timedate";"date";"datetime";};
-			Args = {};
-			Hidden = false;
-			Description = "Shows you the current time and date.";
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr, args)
-				local ostime = os.time()
-				local tab = {}
-				table.insert(tab, {Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab, {Text = "Date: "..os.date("%x", ostime)})
-				table.insert(tab, {Text = "Time: "..os.date("%H:%M | %I:%M %p", ostime)})
-				table.insert(tab, {Text = "Timezone: "..os.date("%Z", ostime)})
-
-				table.insert(tab, {Text = "―――――――――――――――――――――――"})
-
-
-				table.insert(tab, {Text = "Minute: "..os.date("%M", ostime)})
-				table.insert(tab, {Text = "Hour: "..os.date("%H | %I %p" ,ostime)})
-				table.insert(tab, {Text = "Day: "..os.date("%d %A", ostime)})
-				table.insert(tab, {Text = "Week (First sunday): "..os.date("%U", ostime)})
-				table.insert(tab, {Text = "Week (First monday): "..os.date("%W", ostime)})
-				table.insert(tab, {Text = "Month: "..os.date("%m %B", ostime)})
-				table.insert(tab, {Text = "Year: "..os.date("%Y", ostime)})
-
-				table.insert(tab, {Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab, {Text = "Day of the year: "..os.date("%j", ostime)})
-				table.insert(tab, {Text = "Day of the month: "..os.date("%d", ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-				Remote.MakeGui(plr, "List", {
-					Title = "Date",
-					Table = tab,
-					Update = 'DateTime',
-					AutoUpdate = 59,
-					Size = {270, 390};
-				})
+				if plr.Character:FindFirstChild("HumanoidRootPart") then
+					if plr.Character.Humanoid.SeatPart~=nil then
+						Functions.RemoveSeatWelds(plr.Character.Humanoid.SeatPart)
+					end
+					if plr.Character.Humanoid.Sit then
+						plr.Character.Humanoid.Sit = false
+						plr.Character.Humanoid.Jump = true
+					end
+					wait()
+					plr.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+.2,0,0))*CFrame.Angles(0,math.rad(90),0)
+				end
 			end
 		};
 
@@ -185,7 +153,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing or nil")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.MakeGui(v ,"Notification", {
+					Remote.MakeGui(v, "Notification", {
 						Title = "Notification";
 						Message = service.Filter(args[2], plr, v);
 					})
@@ -295,10 +263,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2] and tonumber(args[1]), "Argument missing or invalid")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = "Message from " .. plr.Name;
+						Title = messageRecipient;
 						Message = args[2];
 						Time = tonumber(args[1]);
 					})
@@ -315,13 +284,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = "Message from " .. plr.Name;
-						Message = args[1];--service.Filter(args[1],plr,v);
-						Scroll = true;
+						Title = messageRecipient;
+						Message = args[1]; --service.Filter(args[1], plr, v);
 						Time = (#tostring(args[1]) / 19) + 2.5;
+						Scroll = true;
 					})
 				end
 			end
@@ -336,8 +306,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message("Message from "..plr.Name, service.Filter(args[2], plr, v), {v})
+					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
 				end
 			end
 		};
@@ -351,30 +322,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = "Message from " .. plr.Name;
-						Message = service.Filter(args[1], plr, v);
-					})
-				end
-			end
-		};
-
-
-		SystemNotify = {
-			Prefix = Settings.Prefix;
-			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
-			Args = {"message";};
-			Filter = true;
-			Description = "Makes a system small message,";
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.RemoveGui(v, "Notify")
-					Remote.MakeGui(v, "Notify", {
-						Title = Settings.SystemTitle;
+						Title = messageRecipient;
 						Message = service.Filter(args[1], plr, v);
 					})
 				end
@@ -390,10 +342,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing or nil")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = "Message from " .. plr.Name;
+						Title = messageRecipient;
 						Message = service.Filter(args[2], plr, v);
 					})
 				end
@@ -409,9 +362,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
+				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[1])
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
-						Message = tostring(plr or "")..": "..service.Filter(args[1], plr, v);
+						Message = HintFormat; --service.Filter(args[1], plr, v)
 					})
 				end
 			end
@@ -438,11 +392,9 @@ return function(Vargs, env)
 							Message = args[2];
 						})
 
-						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr, "Hint", {
-								Message = "Warned "..tostring(v);
-							})
-						end
+						Remote.MakeGui(plr, "Hint", {
+							Message = "Warned ".. v.Name;
+						})
 					end
 				end
 			end
@@ -464,13 +416,12 @@ return function(Vargs, env)
 						local data = Core.GetPlayer(v)
 
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
+						local PlayerName = v.Name
 						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
 
-						if plr and type(plr) == "userdata" then
-							Remote.MakeGui(plr, "Hint", {
-								Message = "Warned "..tostring(v);
-							})
-						end
+						Remote.MakeGui(plr, "Hint", {
+							Message = "Warned ".. PlayerName;
+						})
 					end
 				end
 			end
@@ -513,36 +464,9 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					data.Warnings = {}
-					if plr and type(plr) == "userdata" then
-						Remote.MakeGui(plr, "Hint", {
-							Message = "Cleared warnings for "..tostring(v);
-						})
-					end
-				end
-			end
-		};
-
-		NumPlayers = {
-			Prefix = Settings.Prefix;
-			Commands = {"pnum","numplayers","howmanyplayers"};
-			Args = {};
-			Description = "Tells you how many players are in the server";
-			AdminLevel = "Moderators";
-			Function = function(plr, args)
-				local num = 0
-				local nilNum = 0
-				for _, v in ipairs(service.GetPlayers()) do
-					if v.Parent ~= service.Players then
-						nilNum += 1
-					end
-
-					num += 1
-				end
-
-				if nilNum > 0 then
-					Functions.Hint("There are currently "..tostring(num).." players; "..tostring(nilNum).." are nil or loading", {plr})
-				else
-					Functions.Hint("There are "..tostring(num).." players", {plr})
+					Remote.MakeGui(plr, "Hint", {
+						Message = "Cleared warnings for ".. v.Name;
+					})
 				end
 			end
 		};
@@ -1209,11 +1133,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1] and args[2], "Argument missing")
+				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
+
 				if Admin.CheckAdmin(plr) then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
-							Title = "Message from "..plr.Name;
+							Title = messageRecipient;
 							Player = plr;
 							Message = service.Filter(args[2], plr, v);
 						})
@@ -2098,7 +2024,7 @@ return function(Vargs, env)
 
 		JoinServer = {
 			Prefix = Settings.Prefix;
-			Commands = {"toserver", "joinserver"};
+			Commands = {"toserver", "joinserver", "jserver", "jplace"};
 			Args = {"player", "jobid"};
 			Hidden = false;
 			Description = "Send player(s) to a server using the server's JobId";
@@ -2111,7 +2037,7 @@ return function(Vargs, env)
 					error("Command cannot be used in studio.",0)
 				else
 					for i, v in pairs(service.GetPlayers(plr,args[1])) do
-						Functions.Message("Adonis", "Teleporting please wait.", {v}, false, 10)
+						Functions.Message("Adonis", "Teleporting to server \""..jobId.."\"\nPlease wait", {v}, false, 10)
 						service.TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, v)
 					end
 				end
@@ -2120,7 +2046,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";};
+			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";"ranks"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -2205,7 +2131,7 @@ return function(Vargs, env)
 
 		BanList = {
 			Prefix = Settings.Prefix;
-			Commands = {"banlist";"banned";"bans";};
+			Commands = {"banlist";"banned";"bans";"banland"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the normal ban list";
@@ -2241,7 +2167,7 @@ return function(Vargs, env)
 		Vote = {
 			Prefix = Settings.Prefix;
 			Commands = {"vote";"makevote";"startvote";"question";"survey";};
-			Args = {"player";"anwser1,answer2,etc (NO SPACES)";"question";};
+			Args = {"player";"answer1,answer2,etc (NO SPACES)";"question";};
 			Filter = true;
 			Description = "Lets you ask players a question with a list of answers and get the results";
 			AdminLevel = "Moderators";
@@ -2396,12 +2322,14 @@ return function(Vargs, env)
 							TextXAlignment = "Left";
 							Text = "  "..v.Name;
 							ToolTip = v:GetFullName();
+							ZIndex = 1;
 							Children = {
 								{
 									Class = "TextButton";
 									Size = UDim2.new(0, 80, 1, -4);
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
+									ZIndex = 2;
 									OnClick = Core.Bytecode([[
 										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
 									]]);
@@ -2584,15 +2512,17 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1] or "all")) do
 					if tostring(args[2]):lower() == "yes" or tostring(args[2]):lower() == "true" then
-						Remote.RemoveGui(v,true)
+						Routine(Remote.RemoveGui, v, true)
 					else
-						Remote.RemoveGui(v,"Message")
-						Remote.RemoveGui(v,"Hint")
-						Remote.RemoveGui(v,"Notification")
-						Remote.RemoveGui(v,"PM")
-						Remote.RemoveGui(v,"Output")
-						Remote.RemoveGui(v,"Effect")
-						Remote.RemoveGui(v,"Alert")
+						Routine(function()
+							Remote.RemoveGui(v,"Message")
+							Remote.RemoveGui(v,"Hint")
+							Remote.RemoveGui(v,"Notification")
+							Remote.RemoveGui(v,"PM")
+							Remote.RemoveGui(v,"Output")
+							Remote.RemoveGui(v,"Effect")
+							Remote.RemoveGui(v,"Alert")
+						end)
 					end
 				end
 			end
@@ -2687,29 +2617,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Info = {
-			Prefix = Settings.Prefix;
-			Commands = {"info";"age";};
-			Args = {"player";"groupid";};
-			Hidden = false;
-			Description = "Shows you information about the target player";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				local plz = service.GetPlayers(plr, (args[1] and args[1]:lower()) or plr.Name:lower())
-				for i,v in pairs(plz) do
-					if args[2] and tonumber(args[2]) then
-						local role = v:GetRoleInGroup(tonumber(args[2]))
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat).." Rank: "..tostring(role),{plr})
-					else
-						local hasSafeChat = (not service.Chat:CanUserChatAsync(v.userId) and true) or (service.Chat:FilterStringAsync("C7RN", v, v) == "####") or false
-						Functions.Hint("Lower: "..v.Name:lower().." - ID: "..v.userId.." - Age: "..v.AccountAge.." - Safechat: "..tostring(hasSafeChat),{plr})
-					end
-				end
-			end
-		};
-
 		ResetStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetstats","rs"};
@@ -2800,9 +2707,17 @@ return function(Vargs, env)
 
 				if not tonumber(id) then error("Invalid ID") end
 
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Commands.DonorHat.Function(v, {id})
+				local market = service.MarketPlace
+				local info = market:GetProductInfo(id)
+
+				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
+					local hat = service.Insert(id)
+					assert(hat,"Invalid ID")
+					
+					for i,v in pairs(service.GetPlayers(plr, args[1])) do
+						if v.Character and hat then
+							hat:Clone().Parent = v.Character
+						end
 					end
 				end
 			end
@@ -3198,7 +3113,7 @@ return function(Vargs, env)
 							f.BackgroundTransparency = 1
 							f.Size = UDim2.new(1,0,1,0)
 							local name = service.New('TextLabel',f)
-							name.Text = v.Name
+							name.Text = v.DisplayName.."\n(@"..v.Name..")"
 							name.BackgroundTransparency = 1
 							name.Font = "Arial"
 							name.TextColor3 = Color3.new(1,1,1)
@@ -4796,7 +4711,7 @@ return function(Vargs, env)
 								v.Character.Humanoid.Jump = true
 							end
 							wait()
-							v.Character:MoveTo(point)
+							v.Character.HumanoidRootPart.CFrame = CFrame.new(point)
 						end
 					end
 
@@ -4812,7 +4727,7 @@ return function(Vargs, env)
 							v.Character.Humanoid.Jump = true
 						end
 						wait()
-						v.Character:MoveTo(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
+						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
 					end
 				else
 					local target = service.GetPlayers(plr,args[2])[1]
@@ -5965,6 +5880,7 @@ return function(Vargs, env)
 					AutoUpdate = auto;
 					Stacking = true;
 					Sanitize = true;
+					TextSelectable = true;
 				})
 			end
 		};
@@ -5992,6 +5908,7 @@ return function(Vargs, env)
 						AutoUpdate = auto;
 						Stacking = true;
 						Sanitize = true;
+						TextSelectable = true;
 					})
 				end
 			end
@@ -6022,6 +5939,7 @@ return function(Vargs, env)
 					AutoUpdate = auto,
 					Sanitize = true;
 					Stacking = true;
+					TextSelectable = true;
 				})
 			end
 		};

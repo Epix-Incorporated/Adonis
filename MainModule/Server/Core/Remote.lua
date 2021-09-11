@@ -122,6 +122,7 @@ return function(Vargs)
 
 					--G_Access = true;
 					G_Access_Key = true;
+					WebPanel_ApiKey = true;
 					--G_Access_Perms = true;
 					--Allowed_API_Calls = true;
 				}
@@ -129,12 +130,12 @@ return function(Vargs)
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Defaults[set] and not (blocked[set] and not level>=5) then
+						if Defaults[set] and not (blocked[set] and not level>=900) then
 							ret[set] = Defaults[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Defaults[setting] and not (blocked[setting] and not level>=5) then
+					if Defaults[setting] and not (blocked[setting] and not level>=900) then
 						ret = Defaults[setting]
 					end
 				end
@@ -202,6 +203,8 @@ return function(Vargs)
 					Trello_SecondaryBoards = true;
 					Trello_AppKey = true;
 					Trello_Token = true;
+					
+					WebPanel_ApiKey = true;
 
 					--G_Access = true;
 					G_Access_Key = true;
@@ -212,12 +215,12 @@ return function(Vargs)
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Settings[set] and not (blocked[set] and not level>=5) then
+						if Settings[set] and not (blocked[set] and not level>=900) then
 							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Settings[setting] and not (blocked[setting] and not level>=5) then
+					if Settings[setting] and not (blocked[setting] and not level>=900) then
 						ret = Settings[setting]
 					end
 				end
@@ -568,8 +571,12 @@ return function(Vargs)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
 							for i,v in pairs(plrs) do
-								v.Character:BreakJoints()
-								return {"Killed "..tostring(v.Name)}
+								if v.Character and v.Character ~= nil then
+									v.Character:BreakJoints()
+									return {"Killed "..tostring(v.Name)}
+								else
+									return {tostring(v.Name).." has no character"}
+								end
 							end
 						else
 							return {"No players matching '"..args[1].."' found"}
@@ -692,14 +699,31 @@ return function(Vargs)
 			end;
 
 			HandleExplore = function(p, args)
-				if Admin.CheckAdmin(p) then
+				--// TODO
+				--// Make this a separate Admin method										
+				local Command = Commands.Explore
+				if not Command then return end
+				local Level = Command.AdminLevel
+				if not Level then return end
+				local Rank = Settings.Ranks[Level]
+				if not Rank then return end
+				if not Rank.Level then return end										
+				if Admin.GetLevel(p) >= Rank.Level then										
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
 
 					if obj then
 						if com == "Delete" then
-							obj:Destroy()
+							if not pcall(function()
+									obj:Destroy()
+								end) then
+								Remote.MakeGui(p ,"Notification", {
+									Title = "Error";
+									Message = "Cannot delete object.";
+									Time = 2;
+								})
+							end
 						end
 					end
 				end

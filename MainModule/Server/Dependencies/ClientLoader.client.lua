@@ -26,7 +26,7 @@ local debug = debug
 local pairs = pairs
 local wait = wait
 local next = next
-local tick = tick
+local time = time
 local finderEvent
 local realWarn = warn
 local realPrint = print
@@ -36,7 +36,7 @@ local replicated = game:GetService("ReplicatedFirst")
 local runService = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 local Kick = player.Kick
-local start = tick()
+local start = time()
 local checkThese = {}
 local services = {
 	"Chat";
@@ -118,7 +118,7 @@ end
 local function loadingTime()
 	warn("LoadingTime Called")
 	setfenv(1,{})
-	warn(tostring(tick() - start))
+	warn(tostring(time() - start))
 end
 
 local function checkChild(child)
@@ -261,10 +261,10 @@ else
 	repeat
 		scan(playerGui);
 		wait(5);
-	until (tick() - start > 600) or foundClient
+	until (time() - start > 600) or foundClient
 
-	warn("Elapsed: ".. tostring(tick() - start));
-	warn("Timeout: ".. tostring(tick() - start > 600));
+	warn("Elapsed: ".. tostring(time() - start));
+	warn("Timeout: ".. tostring(time() - start > 600));
 	warn("Found Client: ".. tostring(foundClient));
 
 	warn("Disconnecting finder event...");

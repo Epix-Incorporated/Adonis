@@ -145,6 +145,57 @@ return function(Vargs, env)
 			end
 		};
 
+		Gerald = {
+			Prefix = Settings.Prefix;
+			Commands = {"gerald";};
+			Args = {"player"};
+			Hidden = false;
+			Description = "A massive Gerald AloeVera hat.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				--// Apparently Rojo doesn't handle mesh parts very well, so I'm loading this remotely (using require to bypass insertservice restrictions)
+				--// The model is free to take so feel free to that 👍
+				--// Here's the URL https://www.roblox.com/library/7405942066/AssetModule
+
+				local rAssets = require(7405942066);
+				local gerald = rAssets.Gerald;
+
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then
+						local human = v.Character:FindFirstChildOfClass("Humanoid");
+						if human then
+							local clone = gerald:Clone();
+							clone.Name = "__ADONIS_GERALD";
+							human:AddAccessory(clone);
+						end
+					end
+				end
+
+				rAssets:Destroy(); --// Dunno if this is actually going to help anything but why not
+			end
+		};
+
+		UnGerald = {
+			Prefix = Settings.Prefix;
+			Commands = {"ungerald";};
+			Args = {"player"};
+			Hidden = false;
+			Description = "De-Geraldification";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character then
+						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD");
+						if gerald then
+							gerald:Destroy();
+						end
+					end
+				end
+			end
+		};
+
 		wat = { --// wat??
 			Prefix = "!";
 			Commands = {"wat";};
@@ -1961,7 +2012,7 @@ return function(Vargs, env)
 						k.Name='Epix Puke'
 						Routine(function()
 							repeat
-								wait(0.15)
+								wait(0.07)
 								local p = service.New("Part",v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2008,7 +2059,7 @@ return function(Vargs, env)
 								end)
 							until run==false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head'))
 						end)
-						wait(10)
+						wait(12)
 						run = false
 						k:Destroy()
 					end)

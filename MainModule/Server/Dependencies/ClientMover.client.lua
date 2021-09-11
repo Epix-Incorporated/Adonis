@@ -3,7 +3,7 @@
 local DebugMode = false;
 
 local wait = wait;
-local tick = tick;
+local time = time;
 local pcall = pcall;
 local xpcall = xpcall;
 local setfenv = setfenv;
@@ -18,7 +18,7 @@ local module = folder:WaitForChild("Client");
 local target = player;
 local realPrint = print;
 local realWarn = warn;
-local start = tick();
+local start = time();
 
 local function print(...)
 	if true then
@@ -46,7 +46,7 @@ end
 local function loadingTime()
 	warn("LoadingTime Called")
 	setfenv(1,{})
-	warn(tostring(tick() - start))
+	warn(tostring(time() - start))
 end
 
 local function callCheck(child)

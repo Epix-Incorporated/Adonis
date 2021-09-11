@@ -42,22 +42,22 @@ local _G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
 xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay =
 	_G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, elapsedTime, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn
+	Vector3int16, elapsedTime, require, table, type, task.wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -115,7 +115,7 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn("Error: "..tostring(plr)..": "..tostring(err))
+		warn("::Adonis:: Error: "..tostring(plr)..": "..tostring(err))
 	end
 
 	if server and server.Logs then
@@ -218,6 +218,33 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
+end;
+
+--// WIP
+local LoadPackage = function(package, folder, runNow)
+	--// runNow - Run immediately after unpacking (default behavior is to just unpack (((only needed if loading after startup))))
+	--// runNow currently not used (limitations) so all packages must be present at server startup
+	local unpack; unpack = function(curFolder, unpackInto)
+		if unpackInto then
+			for i,obj in ipairs(curFolder:GetChildren()) do
+				local clone = obj:Clone();
+				if obj:IsA("Folder") then
+					local realFolder = unpackInto:FindFirstChild(obj.Name);
+					if not realFolder then
+						clone.Parent = unpackInto;
+					else
+						unpack(obj, realFolder);
+					end
+				else
+					clone.Parent = unpackInto;
+				end
+			end
+		else
+			warn("Missing parent to unpack into for ".. tostring(curFolder));
+		end
+	end;
+
+	unpack(package, folder);
 end;
 
 local CleanUp = function()
@@ -376,7 +403,7 @@ for ind,loc in next,{
 	Rect = Rect;
 	Axes = Axes;
 	os = os;
-	tick = tick;
+	time = time;
 	Faces = Faces;
 	unpack = unpack;
 	string = string;
@@ -449,6 +476,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Loader = data.Loader or service.New("Script")
 	server.Runner = data.Runner or service.New("Script")
 	server.LoadModule = LoadModule
+	server.LoadPackage = LoadPackage
 	server.ServiceSpecific = ServiceSpecific
 
 	server.Shared = Folder.Shared
@@ -466,6 +494,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	end
 
 	--// Copy client themes, plugins, and shared modules to the client folder
+	local packagesToRunWithPlugins = {};
 	local shared = service.New("Folder", {
 		Name = "Shared";
 		Parent = server.Client;
@@ -481,6 +510,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	for index,theme in next,(data.Themes or {}) do
 		theme:Clone().Parent = server.Client.UI;
+	end
+
+	for index,pkg in next,(data.Packages or {}) do
+		LoadPackage(pkg, Folder.Parent, false);
 	end
 
 	for setting,value in next, server.Defaults.Settings do

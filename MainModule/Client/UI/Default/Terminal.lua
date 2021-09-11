@@ -53,7 +53,7 @@ return function(data)
 				textbox.Text = ""
 				out(">"..com,termLines)
 				ret = client.Remote.Get("Terminal",com,{
-					Time = tick();
+					Time = time();
 				})
 				
 				if ret and type(ret) == "table" then

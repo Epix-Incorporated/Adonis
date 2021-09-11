@@ -77,9 +77,10 @@ return function(Vargs)
 				end;
 			};
 
-			["@everyone"] = {
-				Match = "@everyone";
+			["everyone"] = {
+				Match = "everyone";
 				Absolute = true;
+				Pefix = true;
 				Function = function(...)
 					return Functions.PlayerFinders.all.Function(...)
 				end
@@ -168,8 +169,9 @@ return function(Vargs)
 
 			["@username"] = {
 				Match = "@";
+				Prefix = false;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					local matched = tonumber(msg:match("@(.*)"))
+					local matched = msg:match("@(.*)")
 					local foundNum = 0
 
 					if matched then
@@ -371,6 +373,16 @@ return function(Vargs)
 			};
 		};
 
+		CatchError = function(func, ...)
+			local ret = {pcall(func, ...)};
+
+			if not ret[1] then
+				logError(ret[2] or "Unknown error occurred");
+			else
+				return unpack(ret, 2);
+			end
+		end;
+
 		GetFakePlayer = function(data2)
 			local fakePlayer = service.Wrap(service.New("Folder"))
 			local data = {
@@ -450,14 +462,22 @@ return function(Vargs)
 			end
 
 			local function checkMatch(msg)
+				local doReturn;
+
 				for ind, data in next, Functions.PlayerFinders do
 					if not data.Level or (data.Level and Admin.GetLevel(plr) >= data.Level) then
 						local check = ((data.Prefix and Settings.SpecialPrefix) or "")..data.Match
 						if (data.Absolute and msg:lower() == check) or (not data.Absolute and msg:lower():sub(1,#check) == check:lower()) then
-							return data
+							if data.Absolute then
+								return data
+							else --// Prioritize absolute matches over non-absolute matches
+								doReturn = data;
+							end
 						end
 					end
 				end
+
+				return doReturn;
 			end
 
 			if plr == nil then

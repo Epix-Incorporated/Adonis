@@ -148,6 +148,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
+	settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme.
 
 																																																																																				--[[
 	**HOW TO ADD ADMINISTRATORS:**
@@ -217,7 +218,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
 	settings.OnSpawn = {};		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
-	settings.SaveAdmins = true		  -- If true anyone you :admin or :owner in-game will save
+	settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
 	settings.Prefix = ":"				-- The : in :kill me
@@ -280,7 +281,7 @@ local descs = {};			--// Contains settings descriptions
 	}
 
 	settings.FunCommands = true			-- Are fun commands enabled?
-	settings.PlayerCommands = true 		-- Are players commands enabled?
+	settings.PlayerCommands = true 	-- Are players commands enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 	settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
@@ -297,14 +298,16 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
-	settings.AutoBackup = false -- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
+	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
 	settings.CustomChat = false 	-- Custom chat
 	settings.PlayerList = false		-- Custom playerlist
-	settings.Console = true			-- Command console
+
+	settings.Console = true							-- Command console
+	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
 	settings.HelpSystem = true		-- Allows players to call admins for help using !help
-	settings.HelpButton = true    	-- Shows a little help button in the bottom right corner.
+	settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
 	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
 
 	settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
@@ -335,6 +338,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
+	descs.DefaultTheme = [[ Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme which references "Default" as its redirects to this theme. ]]
 
 	descs.Ranks = [[ All admin permission level ranks; ]];
 	descs.Moderators = [[ Mods; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -357,7 +361,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"} ]]
 	descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
-	descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :owner in-game will save; This does not apply to helpers as they are considered temporary ]]
+	descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
 	descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
 	descs.Prefix = [[ The : in :kill me ]]
@@ -401,7 +405,9 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.CustomChat = [[ Custom chat ]]
 	descs.PlayerList = [[ Custom playerlist ]]
+
 	descs.Console = [[ Command console ]]
+	descs.Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]]
 
 	descs.DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]]
 	descs.DonorCapes = [[ Determines if donors have capes ]]
@@ -494,7 +500,9 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"CustomChat";
 		"PlayerList";
+		" ";
 		"Console";
+		"Console_AdminsOnly";
 		" ";
 		"HelpSystem";
 		"HelpButton";

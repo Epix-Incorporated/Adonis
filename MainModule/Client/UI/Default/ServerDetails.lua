@@ -152,7 +152,7 @@ return function(data)
 		addWorkspaceEntry("Cameras:", "TextLabel", {Text = " "..data.CameraCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
 		addWorkspaceEntry("Nil Players:", "TextLabel", {Text = " "..data.NilPlayerCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
 
-		if client.Remote.Get("AdminLevel") > 2 then
+		if client.Remote.Get("AdminLevel") >= 300 then
 			workspacetab:Add("TextButton", {
 				Text = "Open Game Explorer";
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;

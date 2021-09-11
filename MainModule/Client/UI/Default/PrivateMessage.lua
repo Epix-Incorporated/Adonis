@@ -60,7 +60,7 @@ return function(data)
 	gTable = window.gTable
 	client.UI.Make("Notification",{
 		Title = "New Message";
-		Message = "Message from "..player.Name;
+		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name);
 		Time = false;
 		OnClick = function() window:Ready() end;
 		OnClose = function() window:Destroy() end;

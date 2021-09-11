@@ -25,7 +25,7 @@ local _G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
 xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -35,12 +35,12 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn =
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
 xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, tick, Faces, unpack, string, Color3,
+next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn;
+Vector3int16, elapsedTime, require, table, type, task.wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -75,7 +75,7 @@ local unique = {}
 local origEnv = getfenv();
 setfenv(1,setmetatable({}, {__metatable = unique}))
 --local origWarn = warn
-local startTime = tick()
+local startTime = time()
 local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
@@ -395,7 +395,7 @@ for ind,loc in next,{
 	Rect = Rect;
 	Axes = Axes;
 	os = os;
-	tick = tick;
+	time = time;
 	Faces = Faces;
 	delay = delay;
 	unpack = unpack;
@@ -531,7 +531,7 @@ return service.NewProxy({
 				log("Finish loading")
 				clientLocked = true
 				client.Finish_Loading = function() end
-				client.LoadingTime() --origWarn(tostring(tick()-(client.TrueStart or startTime)))
+				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
 				service.Events.FinishedLoading:Fire(os.time())
 
 				log("~! FINISHED LOADING!")
