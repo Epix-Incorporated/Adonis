@@ -233,7 +233,7 @@ return function(Vargs, env)
 			Prefix = ":";
 			Commands = {"terminal";"console";};
 			Args = {};
-			Hidden = true;
+			Hidden = false;
 			Description = "Opens the the terminal";
 			AdminLevel = "Creators";
 			Function = function(plr,args)

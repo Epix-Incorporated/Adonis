@@ -1406,7 +1406,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unban";};
 			Args = {"player";};
-			Description = "UnBan";
+			Description = "Unbans player";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])

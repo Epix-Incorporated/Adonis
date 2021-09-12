@@ -1947,9 +1947,22 @@ return function(Vargs, env)
 				})
 			end;
 		};
-
+		GetPing = {
+			Prefix = Settings.Prefix;
+			Commands = {"getping";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Shows the target player's ping";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
+				end
+			end
+		};
 		Tasks = {
-			Hidden = true;
+			Hidden = false;
 			Prefix = ":";
 			Commands = {"tasks"};
 			Args = {"player"};

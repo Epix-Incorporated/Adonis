@@ -212,7 +212,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";};--//add more :)
+			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";"enabledonor"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
