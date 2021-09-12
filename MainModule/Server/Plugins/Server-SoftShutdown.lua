@@ -29,6 +29,37 @@ return function()
 		end
 	
 	end
+	server.Remote.Terminal.Commands.SoftShutdown = {
+		Usage = "restart";
+		Command = "restart";
+		Arguments = 0;
+		Description = "Restart the server, placing all of the players in a reserved server and teleporting each of them to the new server";
+		Function = function(p,args,data)
+			if (game:GetService("RunService"):IsStudio()) then
+				return
+			end
+
+			if (#game.Players:GetPlayers() == 0) then
+				return
+			end
+			
+			local newserver = TeleportService:ReserveServer(game.PlaceId)
+			server.Functions.Message("Server Restart", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
+			
+			wait(2)
+			
+			for _,player in pairs(game.Players:GetPlayers()) do
+				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
+			end
+			game.Players.PlayerAdded:connect(function(player)
+				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
+			end)
+			while (#game.Players:GetPlayers() > 0) do
+				wait(1)
+			end	
+			
+		end
+	}
 	server.Commands.SoftShutdown = {
 		Prefix = server.Settings.Prefix;	-- Prefix to use for command
 		Commands = {"softshutdown","restart","sshutdown"};	-- Commands
@@ -38,15 +69,15 @@ return function()
 		Fun = false;	-- Is it fun?
 		AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 		Function = function(plr,args)    -- Function to run for command
-			local newserver = TeleportService:ReserveServer(game.PlaceId)
-			if (#game.Players:GetPlayers() == 0) then
-				return
-			end
-			
 			if (game:GetService("RunService"):IsStudio()) then
 				return
 			end
 			
+			if (#game.Players:GetPlayers() == 0) then
+				return
+			end
+			
+			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			server.Functions.Message("Server Restart", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
 			wait(2)
 			

@@ -470,7 +470,6 @@ return function(Vargs)
 						for i,v in next,Remote.Terminal.Commands do
 							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
 							table.insert(output, "- ".. tostring(v.Description))
-							table.insert(output, " ")
 						end
 						return output
 					end;
