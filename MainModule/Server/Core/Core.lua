@@ -709,7 +709,7 @@ return function(Vargs)
 
 		DS_WriteLimiter = function(type, func, ...)
 			local vararg = table.pack(...)
-			return service.Queue("DataStoreWriteData_" .. (tostring(type) .."_".. os.time()), function()
+			return service.Queue("DataStoreWriteData_" .. tostring(type), function()
 				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg, 1, vararg.n))
 				task.wait(gotDelay)
