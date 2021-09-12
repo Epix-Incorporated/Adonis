@@ -78,7 +78,7 @@ return function(data)
 
 			if CanManageUsers then
 				local ogColor = pBut.BackgroundColor3;
-				local lerpColor = ogColor:Lerp(Color3.new(0, 0, 150), 0.1);
+				local lerpColor = ogColor:Lerp(Color3.fromRGB(9, 67, 255), 0.1);
 
 				if peer.UserId and peer.UserId ~= service.Players.LocalPlayer.UserId then
 					pBut.MouseButton1Down:Connect(function()
@@ -107,7 +107,7 @@ return function(data)
 
 		local newMsg
 
-		if pName == "*SYSTEM*" then
+		if pName == "* SYSTEM *" then
 			newMsg = chatlog:Add("Frame", {
 				Size = UDim2.new(1, 0, 0, 25);
 				BackgroundTransparency = 1;
@@ -207,7 +207,7 @@ return function(data)
 
 	local function systemMessage(msg)
 		newMessage({
-			PlayerName = "*SYSTEM*";
+			PlayerName = "* SYSTEM *";
 			Message = msg;
 			Icon = 0;
 		})
