@@ -58,7 +58,7 @@ return function(Vargs, env)
 							Desc = "["..cStr.."] "..v.Description,
 							Filter = cStr
 						})
-						cmdCount = cmdCount + 1
+						cmdCount += 1
 					end
 				end
 
@@ -128,7 +128,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"Notepad",{})
 			end
 		};
-					
+
 		Paint = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"paint","canvas","draw"};
@@ -150,7 +150,7 @@ return function(Vargs, env)
 				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
 			end
 		};
-						
+
 		NotifyMe = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifyme"};
@@ -165,6 +165,127 @@ return function(Vargs, env)
 					Message = args[2];
 					Time = tonumber(args[1]);
 				})
+			end
+		};
+
+		RandomNum = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"rand","random","randnum","dice"};
+			Args = {"num m";"num n"};
+			Description = "Generates a number using Lua's math.random";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
+				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
+				
+				if args[2] then
+					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
+					Functions.Hint(math.random(args[1], args[2]), {plr})
+				elseif args[1] then
+					Functions.Hint(math.random(args[1]), {plr})
+				else
+					Functions.Hint(math.random(), {plr})
+				end
+			end
+		};
+
+		BrickColorList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"brickcolors";"colors";"colorlist"};
+			Args = {};
+			Description = "Shows you a list of Roblox BrickColors for reference";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local brickColorNames = {
+					"White", "Grey", "Light yellow", "Brick yellow", "Light green (Mint)", "Light reddish violet", "Pastel Blue",
+					"Light orange brown", "Nougat", "Bright red", "Med. reddish violet", "Bright blue", "Bright yellow", "Earth orange",
+					"Black", "Dark grey", "Dark green", "Medium green", "Lig. Yellowich orange", "Bright green", "Dark orange",
+					"Light bluish violet", "Transparent", "Tr. Red", "Tr. Lg blue", "Tr. Blue", "Tr. Yellow", "Light blue",
+					"Tr. Flu. Reddish orange", "Tr. Green", "Tr. Flu. Green", "Phosph. White", "Light red", "Medium red", "Medium blue",
+					"Light grey", "Bright violet", "Br. yellowish orange", "Bright orange", "Bright bluish green", "Earth yellow",
+					"Bright bluish violet", "Tr. Brown", "Medium bluish violet", "Tr. Medi. reddish violet", "Med. yellowish green",
+					"Med. bluish green", "Light bluish green", "Br. yellowish green", "Lig. yellowish green", "Med. yellowish orange",
+					"Br. reddish orange", "Bright reddish violet", "Light orange", "Tr. Bright bluish violet", "Gold", "Dark nougat",
+					"Silver", "Neon orange", "Neon green", "Sand blue", "Sand violet", "Medium orange", "Sand yellow", "Earth blue",
+					"Earth green", "Tr. Flu. Blue", "Sand blue metallic", "Sand violet metallic", "Sand yellow metallic",
+					"Dark grey metallic", "Black metallic", "Light grey metallic", "Sand green", "Sand red", "Dark red",
+					"Tr. Flu. Yellow", "Tr. Flu. Red", "Gun metallic", "Red flip/flop", "Yellow flip/flop", "Silver flip/flop", "Curry",
+					"Fire Yellow", "Flame yellowish orange", "Reddish brown", "Flame reddish orange", "Medium stone grey", "Royal blue",
+					"Dark Royal blue", "Bright reddish lilac", "Dark stone grey", "Lemon metalic", "Light stone grey", "Dark Curry",
+					"Faded green", "Turquoise", "Light Royal blue", "Medium Royal blue", "Rust", "Brown", "Reddish lilac", "Lilac",
+					"Light lilac", "Bright purple", "Light purple", "Light pink", "Light brick yellow", "Warm yellowish orange",
+					"Cool yellow", "Dove blue", "Medium lilac", "Slime green", "Smoky grey", "Dark blue", "Parsley green", "Steel blue",
+					"Storm blue", "Lapis", "Dark indigo", "Sea green", "Shamrock", "Fossil", "Mulberry", "Forest green", "Cadet blue",
+					"Electric blue", "Eggplant", "Moss", "Artichoke", "Sage green", "Ghost grey", "Lilac", "Plum", "Olivine",
+					"Laurel green", "Quill grey", "Crimson", "Mint", "Baby blue", "Carnation pink", "Persimmon", "Maroon", "Gold",
+					"Daisy orange", "Pearl", "Fog", "Salmon", "Terra Cotta", "Cocoa", "Wheat", "Buttermilk", "Mauve", "Sunrise",
+					"Tawny", "Rust", "Cashmere", "Khaki", "Lily white", "Seashell", "Burgundy", "Cork", "Burlap", "Beige", "Oyster",
+					"Pine Cone", "Fawn brown", "Hurricane grey", "Cloudy grey", "Linen", "Copper", "Dirt brown", "Bronze", "Flint",
+					"Dark taupe", "Burnt Sienna", "Institutional white", "Mid gray", "Really black", "Really red", "Deep orange",
+					"Alder", "Dusty Rose", "Olive", "New Yeller", "Really blue", "Navy blue", "Deep blue", "Cyan", "CGA brown",
+					"Magenta", "Pink", "Deep orange", "Teal", "Toothpaste", "Lime green", "Camo", "Grime", "Lavender",
+					"Pastel light blue", "Pastel orange", "Pastel violet", "Pastel blue-green", "Pastel green", "Pastel yellow",
+					"Pastel brown", "Royal purple", "Hot pink"
+				}
+				local num = 0
+				local children = {
+					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+				}
+
+				local part = Instance.new("Part") -- for obtaining Color3 values per BrickColor (See below)
+				table.sort(brickColorNames)
+				for i, v in ipairs(brickColorNames) do
+					part.BrickColor = BrickColor.new(v)
+					table.insert(children, {
+						Class = "TextLabel";
+						Size = UDim2.new(1, -10, 0, 30);
+						Position = UDim2.new(0, 5, 0, 30*num);
+						BackgroundTransparency = 1;
+						TextXAlignment = "Left";
+						Text = "  "..v;
+						ToolTip = "RGB: "..math.floor(part.Color.r*255)..", "..math.floor(part.Color.g*255)..", "..math.floor(part.Color.b*255);
+						ZIndex = 1;
+						Children = {
+							{
+								Class = "Frame";
+								BackgroundColor3 = part.Color;
+								Size = UDim2.new(0, 80, 1, -4);
+								Position = UDim2.new(1, -82, 0, 2);
+								ZIndex = 2;
+							}
+						};
+					})
+
+					num += 1
+				end
+				part:Destroy()
+
+				Remote.MakeGui(plr, "Window", {
+					Name = "BrickColorList";
+					Title = "BrickColors";
+					Size  = {280, 300};
+					MinSize = {150, 100};
+					Content = children;
+					Ready = true;
+				})
+			end
+		};
+		
+		MaterialList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"materials";"materiallist","mats"};
+			Args = {};
+			Description = "Shows you a list of Roblox materials for reference";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local mats = {
+					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
+					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
+				}
+				for i, mat in ipairs(mats) do
+					mats[i] = {Text = mat; Desc = "Enum value: "..Enum.Material[mat].Value}
+				end
+				Remote.MakeGui(plr,"List",{Title = "Materials"; Tab = mats})
 			end
 		};
 
@@ -294,7 +415,7 @@ return function(Vargs, env)
 										OnIgnore = Core.Bytecode("return false");
 									})
 
-									num = num+1
+									num += 1
 									if ret then
 										if not answered then
 											answered = true
@@ -406,39 +527,45 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local usage={
-					'NOTE: This info is temporary.';
-					'A revamped user manual is being made.';
 					'';
 					'Mouse over things in lists to expand them';
 					'You can also resize windows by dragging the edges';
 					'';
-					'<b>Commands:</b>';
-					'Timeban, Works with non-ingame players, <i>'.. Settings.Prefix ..'tban Player time(d/h/m/s)</i> | Example: <i>'.. Settings.Prefix ..'timeban Sceleratis 10h</i> (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
-					'<b>Special Functions:</b>';
-					'Ex: <i>'..Settings.Prefix..'kill FUNCTION</i>, so like <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i>';
-					'Put <i>/e</i> in front to silence it (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
-					'<i>'..Settings.SpecialPrefix..'me</i> - Runs a command on you';
-					'<i>'..Settings.SpecialPrefix..'all</i> - Runs a command on everyone';
-					'<i>'..Settings.SpecialPrefix..'admins</i> - Runs a command on all admins in the game';
-					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Same as !admins but for people who are not an admin';
-					'<i>'..Settings.SpecialPrefix..'others</i> - Runs command on everyone BUT you';
-					'<i>'..Settings.SpecialPrefix..'random</i> - Runs command on a random person';
-					'<i>'..Settings.SpecialPrefix..'friends</i> - Runs command on anyone on your friends list';
-					'<i>%TEAMNAME</i> - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
-					'<i>$GROUPID</i> - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
-					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
-					'<i>#NUMBER</i> - Will run command on NUMBER of random players. <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
-					'<i>radius-NUMBER</i> -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
+					'Put <i>/e</i> in front to silence commands in chat (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
+					'Player commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'info</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
 					'';
-					'Certain commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'clean</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
-					'<i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel</i>';
+					'<b>――――― Player Selectors ―――――</b>';
+					'Usage example: <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i> (where <i>'..Settings.SpecialPrefix..'all</i> is the selector)';
+					'<i>'..Settings.SpecialPrefix..'me</i> - Yourself';
+					'<i>'..Settings.SpecialPrefix..'all</i> - Everyone in the server';
+					'<i>'..Settings.SpecialPrefix..'admins</i> - Admin in the server';
+					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Non-admins (normal players) in the server';
+					'<i>'..Settings.SpecialPrefix..'others</i> - Everyone except yourself';
+					'<i>'..Settings.SpecialPrefix..'random</i> - A random person in the server';
+					'<i>#NUM</i> - NUM random players in the server <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
+					'<i>'..Settings.SpecialPrefix..'friends</i> - Your friends who are in the server';
+					'<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
+					'<i>$GROUPID</i> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)';
+					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
+					'<i>radius-NUM</i> -- Anyone within a NUM-stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5-stud radius of you.';
+					'';
+					'<b>――――― Repetition ―――――</b>';
+					'Multiple player selections - <i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,'..Settings.SpecialPrefix..'nonadmins,-scel</i>';
 					'Multiple Commands at a time - <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim</i>';
-					'You can add a wait if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
+					'You can add a delay if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
 					'<i>'..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim</i>';
-					'Place HeadAdmins can edit some settings in-game via the '..Settings.Prefix..'settings command';
-					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
+					'';
+					'<b>――――― Reference Info ―――――</b>';
+					'<i>'..Settings.Prefix..'cmds</i> for a list of available commands';
+					'<i>'..Settings.Prefix..'cmdinfo &lt;command w/o prefix&gt;</i> for detailed info about a command';
+					'<i>'..Settings.PlayerPrefix..'brickcolors</i> for a list of BrickColors';
+					'<i>'..Settings.PlayerPrefix..'materials</i> for a list of materials';
+					'';
+					'<i>'..Settings.Prefix..'capes</i> for a list of preset admin capes';
+					'<i>'..Settings.Prefix..'musiclist</i> for a list of preset audios';
+					'<i>'..Settings.Prefix..'insertlist</i> for a list of insertable assets using '..Settings.Prefix..'insert';
 				}
-				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {280, 240}, RichText = true})
+				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {300, 250}, RichText = true})
 			end
 		};
 
@@ -580,7 +707,7 @@ return function(Vargs, env)
 				end
 			end
 		};]]
-		
+
 		InspectAvatar = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"inspectavatar";"avatarinspect";"viewavatar";"examineavatar";};
@@ -608,7 +735,7 @@ return function(Vargs, env)
 				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
-		
+
 		NumPlayers = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"pnum","numplayers","playercount"};
@@ -633,7 +760,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		TimeDate = {
 			Prefix = Settings.Prefix;
 			Commands = {"timedate";"date";"datetime";};
@@ -681,3 +808,4 @@ return function(Vargs, env)
 
 	}
 end
+
