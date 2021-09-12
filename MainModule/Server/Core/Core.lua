@@ -685,7 +685,7 @@ return function(Vargs)
 		end;
 
 		DS_GetRequestDelay = function(type)
-			local requestType;
+			local requestType, budget;
 
 			local reqPerMin = 60 + #service.Players:GetPlayers() * 10;
 			local reqDelay = 60 / reqPerMin;
@@ -697,8 +697,6 @@ return function(Vargs)
 			elseif type == "Update" then
 				requestType = Enum.DataStoreRequestType.UpdateAsync;
 			end
-
-			local budget = nil
 
 			repeat
 				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
