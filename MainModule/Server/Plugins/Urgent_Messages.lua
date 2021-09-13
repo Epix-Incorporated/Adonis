@@ -60,7 +60,8 @@ return function(Vargs)
 		AdminLevel = "Players";
 		Function = function(plr,args)
 			Remote.MakeGui(plr,"List",{
-				Title = "~URGENT MESSAGES~ [Recent: ".. LastDateTime .."]",
+				Title = "URGENT MESSAGES [Recent: ".. LastDateTime .."]",
+				Icon = "rbxassetid://7467273592",
 				Table = Messages,
 				Font = "Code",
 				PageSize = 100;

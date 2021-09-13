@@ -45,6 +45,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
+		Icon = "rbxassetid://4335479121";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
