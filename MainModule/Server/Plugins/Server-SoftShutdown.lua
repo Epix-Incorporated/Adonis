@@ -63,7 +63,7 @@ return function()
 	server.Commands.SoftShutdown = {
 		Prefix = server.Settings.Prefix;	-- Prefix to use for command
 		Commands = {"softshutdown","restart","sshutdown"};	-- Commands
-		Args = {"restart"};	-- Command arguments
+		Args = {"reason"};	-- Command arguments
 		Description = "Restarts the server";	-- Command Description
 		Hidden = false; -- Is it hidden from the command list?
 		Fun = false;	-- Is it fun?
