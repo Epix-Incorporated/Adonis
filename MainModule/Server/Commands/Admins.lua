@@ -1385,6 +1385,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";

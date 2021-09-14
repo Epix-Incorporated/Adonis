@@ -14,6 +14,7 @@ return function(Vargs, env)
 			Commands = {"tban";"timedban";"timeban";};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
+			Filter = true;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
@@ -105,6 +106,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "HeadAdmins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";

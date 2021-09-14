@@ -15,6 +15,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "DirectBans the player (Saves)";
 			AdminLevel = "Creators";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local reason = args[2] or "No reason provided";
 
