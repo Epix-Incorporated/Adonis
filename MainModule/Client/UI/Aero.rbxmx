@@ -9017,19 +9017,38 @@ return function(data)
 						end
 					end
 
-					local label = create("TextLabel",{
-						Text = " "..tostring(text);
-						ToolTip = desc;
-						Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
-						Visible = true;
-						BackgroundTransparency = 1;
-						Font = "SourceSans";
-						TextSize = 18;
-						TextStrokeTransparency = 0.8;
-						TextXAlignment = "Left";
-						Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
-						RichText = richText or false;
-					})
+					local label
+					if v.TextSelectable or entProps.TextSelectable then
+						label = create("TextBox",{
+							Text = " "..tostring(text);
+							ToolTip = desc;
+							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
+							Visible = true;
+							BackgroundTransparency = 1;
+							Font = "Arial";
+							TextSize = 14;
+							TextStrokeTransparency = 0.8;
+							TextXAlignment = "Left";
+							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
+							RichText = richText or false;
+							TextEditable = false;
+							ClearTextOnFocus = false;
+						})
+					else
+						label = create("TextLabel",{
+							Text = " "..tostring(text);
+							ToolTip = desc;
+							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
+							Visible = true;
+							BackgroundTransparency = 1;
+							Font = "Arial";
+							TextSize = 14;
+							TextStrokeTransparency = 0.8;
+							TextXAlignment = "Left";
+							Position = UDim2.new(0,0,0,num*(entProps.ySize or 20));
+							RichText = richText or false;
+						})
+					end
 
 					if color then
 						label.TextColor3 = color
