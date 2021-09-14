@@ -226,6 +226,41 @@ return function(Vargs, env)
 			end;
 		};
 
+		GlobalTimeMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"gtm","globaltimedmessage","globaltimemessage","globaltimem"};
+			Args = {"time","message"};
+			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			AdminLevel = "HeadAdmins";
+			Filter = true;
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				assert(args[2], "Argument #2 must be supplied")
+
+
+				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
+					for i,v in pairs(service.Players:GetPlayers()) do
+						Remote.RemoveGui(v, "Message")
+						Remote.MakeGui(v, "Message", {
+							Title = "Global Message from %s";
+							Message = "%s";
+							Scroll = true;
+							Time = %s;
+						})
+					end
+				]], plr.Name, args[2], args[1])
+
+				if not Core.CrossServer("Loadstring", globalMessage) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;
+		};
+
 		MakeList = {
 			Prefix = Settings.Prefix;
 			Commands = {"makelist";"newlist";"newtrellolist";"maketrellolist";};

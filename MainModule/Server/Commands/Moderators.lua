@@ -5290,7 +5290,7 @@ return function(Vargs, env)
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
-									Title = "Override paused track?"
+									Title = "Override paused track?";
 									Question = "There is currently a track paused, do you wish to override it?";
 								})
 
