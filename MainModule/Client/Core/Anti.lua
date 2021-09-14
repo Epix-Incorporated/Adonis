@@ -61,7 +61,7 @@ return function()
 				wait(5)
 				--Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
-				Anti.Detected("kick","Roblox Locked")
+				Anti.Detected("kick","Player is Roblox Locked")
 			end
 		end)
 
@@ -301,15 +301,14 @@ return function()
 			})
 
 			local lookFor = {
-				--'stigma';
-				--'sevenscript';
-				--"a".."ssh".."ax";
-				--"a".."ssh".."urt";
-				--'elysian';
 				'current identity is 0';
 				'gui made by kujo';
 				"tetanus reloaded hooked";
-				--"brackhub";
+				"hookmetamethod";
+				"hookfunction";
+				"HttpGet";
+				"^Chunk %w+, at Line %d+";
+				"syn.";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
@@ -319,7 +318,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message),string.lower(v)) and not string.find(string.lower(Message),"failed to load") then
+					if string.find(string.lower(Message),string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message),"failed to load") then
 						return true
 					end
 				end
@@ -331,7 +330,7 @@ return function()
 						Detected("crash","Disallowed Services Detected")
 					end
 				end) then
-					Detected("kick","Finding Error")
+					Detected("kick","Disallowed Services Finding Error")
 				end
 			end
 
@@ -347,7 +346,7 @@ return function()
 			local function checkTool(t)
 				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("log","Building tools detected; "..tostring(t.BinType))
+						Detected("log","Building Tools detected; "..tostring(t.BinType))
 					end
 				end
 			end
@@ -533,12 +532,6 @@ return function()
 		end;
 
 		RLocked = function(obj)
-			return not pcall(function()
-				return obj.GetFullName(obj)
-			end)
-		end;
-
-		ObjRLocked = function(obj)
 			return not pcall(function()
 				return obj.GetFullName(obj)
 			end)

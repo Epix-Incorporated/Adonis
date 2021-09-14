@@ -63,7 +63,7 @@ return function()
 	server.Commands.SoftShutdown = {
 		Prefix = server.Settings.Prefix;	-- Prefix to use for command
 		Commands = {"softshutdown","restart","sshutdown"};	-- Commands
-		Args = {};	-- Command arguments
+		Args = {"restart"};	-- Command arguments
 		Description = "Restarts the server";	-- Command Description
 		Hidden = false; -- Is it hidden from the command list?
 		Fun = false;	-- Is it fun?
@@ -76,10 +76,35 @@ return function()
 			if (#game.Players:GetPlayers() == 0) then
 				return
 			end
-			
+
+			if server.Core.DataStore and not server.Core.PanicMode then
+				server.Core.UpdateData("ShutdownLogs", function(logs)
+					if plr then
+						table.insert(logs, 1, {
+							User = plr.Name,
+							Time = service.GetTime(),
+							Reason = ("SoftShutdown/Restart: " + args[1]) or "N/A"
+						})
+					else
+						table.insert(logs,1,{
+							User = "[Server]",
+							Time = service.GetTime(),
+							Reason = ("SoftShutdown/Restart: " + args[1]) or "N/A"
+						})
+					end
+
+					if #logs > 1000 then
+						table.remove(logs,#logs)
+					end
+
+					return logs
+				end)
+			end
+
+		
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			server.Functions.Message("Server Restart", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
-			wait(2)
+			wait(1)
 			
 			for _,player in pairs(game.Players:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
@@ -90,7 +115,9 @@ return function()
 			while (#game.Players:GetPlayers() > 0) do
 				wait(1)
 			end	
-			
+			wait(2)
+			server.Functions.Shutdown(args[1])
+
 			-- done
 		end
 	}
