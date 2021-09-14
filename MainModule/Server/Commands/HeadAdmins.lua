@@ -204,6 +204,7 @@ return function(Vargs, env)
 			Description = "Sends a global message to all servers";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
@@ -237,6 +238,7 @@ return function(Vargs, env)
 			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
@@ -427,6 +429,7 @@ return function(Vargs, env)
 			PanicMode = true;
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{

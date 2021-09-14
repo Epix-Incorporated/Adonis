@@ -68,6 +68,7 @@ return function(Vargs, env)
 			Description = "Force all game-players to teleport to a desired place";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 				assert(tonumber(args[1]), "Argument #1 must be a number")
