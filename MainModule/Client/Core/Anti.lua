@@ -207,8 +207,9 @@ return function()
 		AntiGui = function() --// Future
 			service.Player.DescendantAdded:Connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
+					local d = c.Name
 					c:Destroy()
-					Detected("log", "Unknown GUI detected and destroyed: "..c.Name)
+					Detected("log", "Unknown GUI detected and destroyed: "..d)
 				end
 			end)
 		end;
