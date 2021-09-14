@@ -210,14 +210,19 @@ return function(Vargs, env)
 
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
-			Commands = {"clearplayerdata"};
+			Commands = {"clearplayerdata","clrplrdata","clearplrdata"};
 			Arguments = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				local id = tonumber(args[1]);
 				assert(id, "Must supply valid UserId");
-
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Clearing the PlayerData for user "..tostring(args[1]).." will cause all user settings such as theme preference and the console key to reset to defaults.\n\nAre you sure you want to clear the PlayerData for user "..tostring(args[1]).."?";
+					Title = "Clear PlayerData";
+				})
+				if ans == "Yes" then
+				end
 				Core.RemoveData(tostring(id));
 				Core.PlayerData[tostring(id)] = nil;
 

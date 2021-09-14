@@ -8,7 +8,7 @@ return function(data)
 	
 	local window = client.UI.Make("Window",{
 		Name  = "Prompt";
-		Title = "Prompt";
+		Title = data.Title or "Prompt";
 		Size  = {225,150};
 		SizeLocked = true;
 		--Icon = "rbxassetid://136615916";
