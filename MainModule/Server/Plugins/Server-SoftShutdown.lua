@@ -117,9 +117,6 @@ return function()
 			while (#game.Players:GetPlayers() > 0) do
 				wait(1)
 			end	
-			wait(2)
-			server.Functions.Shutdown(args[1])
-
 			-- done
 		end
 	}
