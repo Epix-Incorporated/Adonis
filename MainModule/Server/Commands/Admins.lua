@@ -659,7 +659,7 @@ return function(Vargs, env)
 
 		RemoveTeam = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeteam";};
+			Commands = {"removeteam";"deleteteam"};
 			Args = {"name";};
 			Hidden = false;
 			Description = "Remove the specified team";
