@@ -82,14 +82,16 @@ return function()
 					if plr then
 						table.insert(logs, 1, {
 							User = plr.Name,
+							Restart = true,
 							Time = service.GetTime(),
-							Reason = ("SoftShutdown/Restart: " + args[1]) or "N/A"
+							Reason = args[1] or "N/A"
 						})
 					else
 						table.insert(logs,1,{
 							User = "[Server]",
+							Restart = true,
 							Time = service.GetTime(),
-							Reason = ("SoftShutdown/Restart: " + args[1]) or "N/A"
+							Reason = args[1] or "N/A"
 						})
 					end
 

@@ -330,13 +330,14 @@ return function(Vargs, env)
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows who shutdown a server and when";
+			Description = "Shows who shutdown or restarted a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i,v in pairs(logs) do
+					if v.Restart then v.Time = v.Time.." [SOFT]" end
 					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
