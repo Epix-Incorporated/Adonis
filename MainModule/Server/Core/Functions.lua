@@ -588,7 +588,7 @@ return function(Vargs)
 			--return "adonis:enc;;"..ver..";;"..Base64Encode(string.char(unpack(t)))  
 			return {
 				encrypt = function(data)
-				-- Add as many layers of encryption that are useful, even cipher that throw exploiters off are accepted.
+				-- Add as many layers of encryption that are useful, even a basic cipher that throws exploiters off the actual encrypted data is accepted.
 				-- What could count: XOR, Base64, Simple Encryption, A Cipher to cover the encryption, etc.
 				-- What would be too complex: AES-256 CTR-Mode, Base91, PGP/Pretty Good Privacy
 
