@@ -220,6 +220,7 @@ return function(Vargs)
 										Title = "Notification",
 										Message = string.format("%s has been kicked, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
 										Time = 30;
+										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
 									})
 								end
 							end
@@ -245,6 +246,7 @@ return function(Vargs)
 										Title = "Notification",
 										Message = string.format("%s was crashed, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
 										Time = 30;
+										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
 									})
 								end
 							end

@@ -989,7 +989,7 @@ return function(Vargs, env)
 				local function systemMessage(msg)
 					local data
 					data = {
-						Name = "*SYSTEM*";
+						Name = "* SYSTEM *";
 						UserId = 0;
 						Icon = 0;
 					};

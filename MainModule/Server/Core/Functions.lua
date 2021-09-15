@@ -577,6 +577,33 @@ return function(Vargs)
 			return table.concat(Res)
 		end;
 
+
+		AdonisEncrypt = function(key,data)
+			local ver = "v1";
+			local t;
+			local function XEncrypt(Key, Message)
+				local t = {}
+				for i = 1, #Message, 1 do
+					table.insert(t, i, bit32.bxor(string.byte(Message, i, i), Key))
+				end
+				return t
+			end
+			
+			local function XDecrypt(Key, t)
+				local u = {}
+				for i = 1, #t, 1 do
+					table.insert(u, i, bit32.bxor(t[i], Key))
+				end
+				return string.char(unpack(u))
+			end
+			
+			key = (248243 * key) % 20000
+
+			t = XEncrypt(key, data)
+			return "adonis:enc;;"..ver..";;"..Base64Encode(string.char(unpack(t)))  
+		end;
+
+
 		Base64Encode = function(data)
 			local sub = string.sub
 			local byte = string.byte
