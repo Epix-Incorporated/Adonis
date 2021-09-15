@@ -578,29 +578,37 @@ return function(Vargs)
 		end;
 
 
-		AdonisEncrypt = function(key,data)
-			local ver = "v1";
-			local t;
-			local function XEncrypt(Key, Message)
-				local t = {}
-				for i = 1, #Message, 1 do
-					table.insert(t, i, bit32.bxor(string.byte(Message, i, i), Key))
-				end
-				return t
-			end
-			
-			local function XDecrypt(Key, t)
-				local u = {}
-				for i = 1, #t, 1 do
-					table.insert(u, i, bit32.bxor(t[i], Key))
-				end
-				return string.char(unpack(u))
-			end
-			
-			key = (248243 * key) % 20000
+		AdonisEncrypt = function(key)
+			local ae_info = {
+				version = "1";
+				ver_codename = "aencrypt_xorB64";
+				ver_full = "v1_AdonisEncrypt";
+			}
+		
+			--return "adonis:enc;;"..ver..";;"..Base64Encode(string.char(unpack(t)))  
+			return {
+				encrypt = function(data)
+				-- Add as many layers of encryption that are useful, even cipher that throw exploiters off are accepted.
+				-- What could count: XOR, Base64, Simple Encryption, A Cipher to cover the encryption, etc.
+				-- What would be too complex: AES-256 CTR-Mode, Base91, PGP/Pretty Good Privacy
 
-			t = XEncrypt(key, data)
-			return "adonis:enc;;"..ver..";;"..Base64Encode(string.char(unpack(t)))  
+				-- TO:DO; - Script XOR + Custom Encryption Backend, multiple security measures, if multiple encryption layers are used, 
+				--          manipulate the key as much as possible; 
+				--
+				--        - Create Custom Lightweight Encoding + Cipher format, custom B64 Alphabet, etc.
+				--          'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
+				--
+				--        - A basic form of string compression before encrypting should be used
+				--          If this becomes really nice, find a way to convert old datastore saved data to this new format. 
+				--
+				--        ? This new format has an URI-Like structure to provide correct versioning and easy migrating between formats
+
+				end;
+
+				decrypt = function(data)
+				
+				end;
+			}
 		end;
 
 
