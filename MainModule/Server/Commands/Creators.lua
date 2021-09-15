@@ -224,8 +224,8 @@ return function(Vargs, env)
 				local username = (game:GetService("Players"):GetNameFromUserIdAsync(args[1]))
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
-					Title = "Clear PlayerData";
-					Size = {337.5,225};
+					Title = "Clear PlayerData for "..username.."?";
+					Size = {281.25,187.5};
 				})
 				if ans == "Yes" then
 					Core.RemoveData(tostring(id));
