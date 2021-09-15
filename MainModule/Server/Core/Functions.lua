@@ -603,6 +603,12 @@ return function(Vargs)
 				--
 				--        ? This new format has an URI-Like structure to provide correct versioning and easy migrating between formats
 
+					--[[ INSERT ALREADY USED ADONIS "ENCRYPTION" HERE ]]
+					--[[ INSERT BIT32 BITWISE XOR OPERAND HERE]]
+					--[[ INSERT ROT47 CIPHER HERE ]]
+					--[[ INSERT CUSTOM ADONIS BASE64 ENCODING HERE ]]
+					--[[ CONVERT EVERYTHING TO AN URI WITH VERSIONING AND INFORMATION ]]
+
 				end;
 
 				decrypt = function(data)
@@ -611,6 +617,88 @@ return function(Vargs)
 			}
 		end;
 
+		-- ROT 47: ROT13 BUT BETTER
+		Rot47Cipher = function(data,mode)
+			if not (mode == "enc" or mode == "dec") then error("Invalid ROT47 Cipher Mode") end
+			
+			local base = 33
+			local range = 126 - 33 + 1
+			
+			-- Checks if the given char is convertible
+			-- ASCII Code should be within the range [33 .. 126]
+			local function rot47_convertible(char) 
+				local v = char:byte()
+				return v >= 33 and v <= 126 
+			end
+			
+			local function cipher(str, key)
+				return (str:gsub('.', function(s)
+				if not rot47_convertible(s) then return s end
+					return string.char(((s:byte() - base + key) % range) + base)
+				end))
+			end
+			if mode == "enc" then return cipher(data,47) end
+			if mode == "dec" then return cipher(data,-47) end
+		end;
+
+		-- CUSTOM BASE64 ALPHABET ENCODING
+		Base64_A_Decode = function(data)
+			local sub = string.sub
+			local gsub = string.gsub
+			local find = string.find
+			local char = string.char
+			local b = 'ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#'
+
+
+			data = gsub(data, '[^'..b..'=]', '')
+			return (gsub(gsub(data, '.', function(x)
+				if (x == '=') then
+					return ''
+				end
+				local r, f = '', (find(b, x) - 1)
+				for i = 6, 1, -1 do
+					r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
+				return r;
+			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
+				if (#x ~= 8) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 8 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (8 - i) or 0)
+				end
+				return char(c)
+			end))
+		end;
+
+		Base64_A_Encode = function(data)
+			local sub = string.sub
+			local byte = string.byte
+			local gsub = string.gsub
+
+			return (gsub(gsub(data, '.', function(x)
+				local r, b = "", byte(x)
+				for i = 8, 1, -1 do
+					r = r..(b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
+				end
+				return r;
+			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
+				if (#(x) < 6) then
+					return ''
+				end
+				local c = 0
+				for i = 1, 6 do
+					c = c + (sub(x, i, i) == '1' and 2 ^ (6 - i) or 0)
+				end
+				return sub('ADONIS+HUJKLMSBP13579VWXYZadonis/hujklmsbp24680vwxyz><_*+-?!&@%#', c + 1, c + 1)
+			end)..({
+				'',
+				'==',
+				'='
+			})[#(data) % 3 + 1])
+		end;
+		--
 
 		Base64Encode = function(data)
 			local sub = string.sub
