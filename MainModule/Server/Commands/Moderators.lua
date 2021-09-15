@@ -176,7 +176,7 @@ return function(Vargs, env)
 				else
 					Admin.SlowMode = nil;
 					Admin.SlowCache = {};
-					Functions.Hint("Chat slow mode disabled", service.GetPlayers())
+					Functions.Hint("Chat slow mode disabled", {plr})
 				end
 			end
 		};
