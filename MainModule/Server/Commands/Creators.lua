@@ -221,9 +221,11 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				local id = tonumber(args[1]);
 				assert(id, "Must supply valid UserId");
+				local username = (game:GetService("Players"):GetNameFromUserIdAsync(args[1]))
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
-					Question = "Clearing the PlayerData for user "..tostring(args[1]).." will cause all user settings such as theme preference and the console key to reset to defaults.\n\nAre you sure you want to clear the PlayerData for user "..tostring(args[1]).."?";
+					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
 					Title = "Clear PlayerData";
+					Size = {337.5,225};
 				})
 				if ans == "Yes" then
 					Core.RemoveData(tostring(id));
