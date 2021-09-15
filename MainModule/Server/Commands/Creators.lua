@@ -226,15 +226,15 @@ return function(Vargs, env)
 					Title = "Clear PlayerData";
 				})
 				if ans == "Yes" then
+					Core.RemoveData(tostring(id));
+					Core.PlayerData[tostring(id)] = nil;
+	
+					Remote.MakeGui(plr,"Notification",{
+						Title = "Notification";
+						Message = "Cleared data for ".. id;
+						Time = 10;
+					})
 				end
-				Core.RemoveData(tostring(id));
-				Core.PlayerData[tostring(id)] = nil;
-
-				Remote.MakeGui(plr,"Notification",{
-					Title = "Notification";
-					Message = "Cleared data for ".. id;
-					Time = 10;
-				})
 			end;
 		};
 
