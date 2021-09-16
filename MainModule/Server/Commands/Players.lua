@@ -256,7 +256,7 @@ return function(Vargs, env)
 
 		RequestHelp = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"help";"requesthelp";"gethelp";"lifealert";};
+			Commands = {"help";"requesthelp";"gethelp";"lifealert";"sos";};
 			Args = {};
 			Hidden = false;
 			Description = "Calls admins for help";
@@ -315,7 +315,7 @@ return function(Vargs, env)
 						end)
 					end
 				else
-					Functions.Message("Help System","Help System Disabled by Place Owner",{plr})
+					Functions.Message("Help System","The help system has been disabled by the place owner.",{plr})
 				end
 			end
 		};
@@ -635,7 +635,7 @@ return function(Vargs, env)
 		};
 		
 		TimeDate = {
-			Prefix = Settings.Prefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"timedate";"date";"datetime";};
 			Args = {};
 			Hidden = false;

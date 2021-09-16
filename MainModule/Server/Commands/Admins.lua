@@ -437,7 +437,7 @@ return function(Vargs, env)
 			Commands = {"setmessage";"notif";"setmsg";};
 			Args = {"message OR off";};
 			Filter = true;
-			Description = "Set message";
+			Description = "Sets a small hint message at the top of the screen";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
@@ -1409,7 +1409,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unban";};
 			Args = {"player";};
-			Description = "UnBan";
+			Description = "Unbans the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])

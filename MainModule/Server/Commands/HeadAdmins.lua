@@ -434,6 +434,7 @@ return function(Vargs, env)
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
+					Title = "Shutdown all running servers?";
 				})
 				if ans == "Yes" then
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
