@@ -144,6 +144,7 @@ return function(Vargs)
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
+		IsCrossServer = true;
 		Function = function(plr,args)
 			local disced = false;
 			local updateKey = "SERVERPING".. math.random();
