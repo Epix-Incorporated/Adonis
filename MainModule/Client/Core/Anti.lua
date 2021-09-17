@@ -475,7 +475,7 @@ return function()
 
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
-							Detected("crash", "Exploit detected")
+							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
 				end

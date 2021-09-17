@@ -47,7 +47,7 @@ return function(Vargs)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
+			pcall(function()service.UnWrap(p):Kick(":: Adonis ::\n".. tostring(info)) end)
 
 			wait(1)
 

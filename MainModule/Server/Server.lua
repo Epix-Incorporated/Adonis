@@ -460,7 +460,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Warn if possibly malicious
 	if data.PremiumID or data.PremiumId then
-		warn("You might be using a malicious version of the Adonis loader!")
+		warn("\n ⚠ You might be using a malicious version of the Adonis loader ⚠\n -- If you are teleported to a 'Loading...' game, your game could be identified by the backdoor creators! 👁️‍🗨️--\n -- 🔰 Remember, there's no such thing as Adonis Premium or Gold! -- \n -- 💠 Grab the genuine Adonis Loader from the toolbox! ✔️-- \n ")
 	end
 
 	--// Server Variables
