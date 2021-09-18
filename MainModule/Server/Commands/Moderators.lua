@@ -1135,7 +1135,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
-				if Admin.CheckAdmin(plr) then
+				if Admin.CheckAdmin(plr) and not args[2]:match("^%s*$") then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {

@@ -901,6 +901,7 @@ return function(Vargs)
 					local target = args[2]
 					local from = args[3]
 					local message = args[4]
+					if args[2]:match("^%s*$") then return end
 					Remote.MakeGui(target,"PrivateMessage",{
 						Title = "Reply from ".. p.Name;--title;
 						Player = p;
