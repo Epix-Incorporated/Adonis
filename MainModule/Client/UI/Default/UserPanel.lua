@@ -1330,7 +1330,7 @@ return function(data)
 										TextXAlignment = "Left";
 										Children = {
 											TextLabel = {
-												Text = "Cannot Edit";
+												Text = "Studio Only";
 												Size = UDim2.new(0, 100, 1, 0);
 												Position = UDim2.new(1, -100, 0, 0);
 												TextTransparency = 0.5;
@@ -1360,6 +1360,24 @@ return function(data)
 									})
 								end
 							end
+						elseif  not canEditTables[setting] then 
+							gameTab:Add("TextLabel", {
+								Text = "  "..setting..": ";
+								ToolTip = desc;
+								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+								Size = UDim2.new(1, -10, 0, 30);
+								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								TextXAlignment = "Left";
+								Children = {
+									TextLabel = {
+										Text = "Studio Only";
+										Size = UDim2.new(0, 100, 1, 0);
+										Position = UDim2.new(1, -100, 0, 0);
+										TextTransparency = 0.5;
+										BackgroundTransparency = 1;
+									}
+								}
+							})
 						else
 							gameTab:Add("TextLabel", {
 								Text = "  "..setting..": ";
