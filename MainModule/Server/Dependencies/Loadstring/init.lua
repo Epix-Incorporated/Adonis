@@ -10,16 +10,18 @@
 --]]
 
 local waitDeps = {
-	'FiOne';
-	'LuaK';
-	'LuaP';
-	'LuaU';
-	'LuaX';
-	'LuaY';
-	'LuaZ';
+	"FiOne";
+	"LuaK";
+	"LuaP";
+	"LuaU";
+	"LuaX";
+	"LuaY";
+	"LuaZ";
 }
 
-for i,v in pairs(waitDeps) do script:WaitForChild(v) end
+for _, v in ipairs(waitDeps) do
+	script:WaitForChild(v)
+end
 
 local luaX = require(script.LuaX)
 local luaY = require(script.LuaY)
@@ -32,22 +34,34 @@ local LuaState = {}
 
 getfenv().script = nil
 
-return function(str,env)
-	local f,writer,buff,name
-	local env = env or getfenv(2)
-	local name = (env.script and env.script:GetFullName())
-	local ran,error = pcall(function()
-		local zio = luaZ:init(luaZ:make_getS(str), nil)
-		if not zio then return error() end
-		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
-		writer, buff = luaU:make_setS()
-		luaU:dump(LuaState, func, writer, buff)
-		f = fiOne(buff.data, env)
-	end)
-	
-	if ran then
-		return f,buff.data
+local isLoadstringEnabled = pcall(loadstring, "local a = 5 local c = a + 1")
+
+return function(str, env)
+	local f, writer, buff, name, error, success
+
+	if isLoadstringEnabled then
+		success, error = pcall(function()
+			f = loadstring(str)
+			setfenv(f, env)
+		end)
 	else
-		return nil,error
+		local env = env or getfenv(2)
+		local name = (env.script and env.script:GetFullName())
+		success, error = pcall(function()
+			local zio = luaZ:init(luaZ:make_getS(str), nil)
+			if not zio then
+				return error()
+			end
+			local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
+			writer, buff = luaU:make_setS()
+			luaU:dump(LuaState, func, writer, buff)
+			f = fiOne(buff.data, env)
+		end)
+	end
+
+	if success then
+		return f, (buff and buff.data)
+	else
+		return nil, error
 	end
 end
