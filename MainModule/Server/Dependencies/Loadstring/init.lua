@@ -3,10 +3,15 @@
 	Credit to Stravant for LBI.
 	
 	Credit to the creators of all the other modules used in this.
+	(Yueliang is made by Kein-Hong Man,
+	FiOne by Rerumu
+	)
 	
 	Sceleratis was here and decided modify some things.
 	
 	einsteinK was here again to fix a bug in LBI for if-statements
+
+	Github@ccuser44(ALE111_boiPNG) was here to to make some small changes (made it use vanilla loadstring when possible)
 --]]
 
 local waitDeps = {
