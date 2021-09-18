@@ -3,9 +3,7 @@
 	Credit to Stravant for LBI.
 	
 	Credit to the creators of all the other modules used in this.
-	(Yueliang is made by Kein-Hong Man,
-	FiOne by Rerumu
-	)
+	(Yueliang is made by Kein-Hong Man, FiOne by Rerumu)
 	
 	Sceleratis was here and decided modify some things.
 	
