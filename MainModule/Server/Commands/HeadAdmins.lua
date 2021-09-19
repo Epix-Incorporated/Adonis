@@ -104,7 +104,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"permenantban", "permban", "pban"};
 			Args = {"player", "reason"};
-			Description = "Bans the player from the game (Saves)";
+			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			Hidden = false;
