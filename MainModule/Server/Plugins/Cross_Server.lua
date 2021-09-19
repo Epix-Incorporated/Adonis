@@ -12,14 +12,9 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Process = server.Process;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
-	local Logs = server.Logs;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	local ServerId = game.JobId;
 	local MsgService = service.MessagingService;
@@ -77,7 +72,7 @@ return function(Vargs)
 		end;
 
 		Loadstring = function(jobId, source)
-			server.Core.Loadstring(source, GetEnv{})()
+			Core.Loadstring(source, GetEnv{})()
 		end;
 
 		DataStoreUpdate = function(jobId, type, data)

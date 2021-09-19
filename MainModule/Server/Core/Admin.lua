@@ -206,7 +206,8 @@ return function(Vargs)
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix then
+				if Variables.BlankPrefix and 
+					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
 						return true

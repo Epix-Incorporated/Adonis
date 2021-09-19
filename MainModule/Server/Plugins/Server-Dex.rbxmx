@@ -12,16 +12,14 @@
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local dexGui = script.Dex_Explorer;
-	local Deps = server.Deps;
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Process = server.Process;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
-	local Logs = server.Logs;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	
+	local dexGui = script:WaitForChild("Dex_Explorer", 120)
+	if not dexGui then
+		Logs:AddLog("Script", "DexGui unable to be located?")
+	end
 
 	local Event = nil;
 
@@ -700,6 +698,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<YS>0</YS>
 							<YO>60</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">180</float>
 						<token name="ScaleType">0</token>
@@ -1030,6 +1029,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -1198,6 +1198,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -1366,6 +1367,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -3611,6 +3613,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<YO>0</YO>
 					</UDim2>
 					<Content name="PressedImage"><null></null></Content>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">180</float>
 					<token name="ScaleType">0</token>
@@ -95462,6 +95465,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<YS>0</YS>
 							<YO>60</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">180</float>
 						<token name="ScaleType">0</token>

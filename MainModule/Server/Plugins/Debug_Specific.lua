@@ -12,11 +12,9 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Core = server.Core;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	Commands.TestError = {
 		Hidden = true;
