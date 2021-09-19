@@ -1214,7 +1214,7 @@ return function(Vargs, env)
 			end
 		};
 
-		Ban = {
+		ServerBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"ban", "serverban"};
 			Args = {"player", "reason"};
