@@ -242,11 +242,11 @@ return function()
 		AddAlias = function(alias, command)
 			Variables.Aliases[alias:lower()] = command;
 			Remote.Get("UpdateAliases", Variables.Aliases)
-			spawn(function()
+			task.defer(function()
 				UI.MakeGui("Notification",{
-					Time = 5;
+					Time = 4;
 					Title = "Notification";
-					Message = "Alias added";
+					Message = ('Alias "%s" added'):format(alias:lower());
 				})
 			end)
 		end;
@@ -255,19 +255,19 @@ return function()
 			if client.Variables.Aliases[alias:lower()] then
 				Variables.Aliases[alias:lower()] = nil;
 				Remote.Get("UpdateAliases", Variables.Aliases)
-				spawn(function()
+				task.defer(function()
 					UI.MakeGui("Notification",{
-						Time = 5;
+						Time = 4;
 						Title = "Notification";
-						Message = "Alias removed";
+						Message = ('Alias "%s" removed'):format(alias:lower());
 					})
 				end)
 			else
-				spawn(function()
+				task.defer(function()
 					UI.MakeGui("Notification",{
-						Time = 5;
-						Title = "Notification";
-						Message = "Alias not found";
+						Time = 3;
+						Title = "Error";
+						Message = ('Alias "%s" not found'):format(alias:lower());
 					})
 				end)
 			end
@@ -1058,7 +1058,7 @@ return function()
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			UI.Make("Hint",{
-				Message = 'Bound "'..Functions.KeyCodeToName(key)..'" to '..command
+				Message = 'Bound key "'..Functions.KeyCodeToName(key)..'" to command: '..command
 			})
 		end;
 
@@ -1070,7 +1070,7 @@ return function()
 				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
 					UI.Make("Hint",{
-						Message = 'Removed "'..Functions.KeyCodeToName(key)..'" from key binds'
+						Message = 'Removed key "'..Functions.KeyCodeToName(key)..'" from keybinds'
 					})
 				end)
 			end
