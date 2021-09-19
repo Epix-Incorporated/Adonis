@@ -1,7 +1,12 @@
 --[[
 
+	DEVELOPMENT HAS BEEN MOVED FROM DAVEY_BONES/SCELERATIS TO THE EPIX INCORPORATED GROUP
+
 	CURRENT LOADER:
-	https://www.roblox.com/library/2373505175/Adonis-Loader-BETA
+	https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
+
+	CURRENT MODULE:
+	https://www.roblox.com/library/7510592873/Adonis-MainModule
 
 --]]
 
@@ -61,8 +66,8 @@ else
 		Dopper = dropper;
 		Runner = runner;
 
-		ModuleID = tonumber('23735'..'01710'); --// Trying to break existing (unupdatable) malicious plugins that replace the ModuleID from studio on insertion
-		LoaderID = tonumber('23735'..'05175');
+		ModuleID = 7510592873;  --// https://www.roblox.com/library/7510592873/Adonis-MainModule
+		LoaderID = 7510622625;	--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 
 		DebugMode = true;
 	}
@@ -105,7 +110,7 @@ else
 
 	local module = require(moduleId)
 	local response = module(data)
-	
+
 	if response == "SUCCESS" then
 		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not game:GetService("RunService"):IsStudio() then
 			model.Parent = nil
