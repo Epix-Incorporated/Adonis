@@ -1313,6 +1313,7 @@ return function(Vargs, env)
 					Remote.MakeGui(v,"Message",{
 						Title = args[1];
 						Message = args[2];
+						Time = (#tostring(args[1]) / 19) + 2.5;
 						--service.Filter(args[1],plr,v);
 					})
 				end
