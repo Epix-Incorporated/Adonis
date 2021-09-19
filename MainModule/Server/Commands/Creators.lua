@@ -15,6 +15,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "DirectBans the player (Saves)";
 			AdminLevel = "Creators";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local reason = args[2] or "No reason provided";
 
@@ -65,6 +68,7 @@ return function(Vargs, env)
 			Description = "Force all game-players to teleport to a desired place";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 				assert(tonumber(args[1]), "Argument #1 must be a number")
@@ -210,22 +214,29 @@ return function(Vargs, env)
 
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
-			Commands = {"clearplayerdata"};
+			Commands = {"clearplayerdata","clrplrdata","clearplrdata"};
 			Arguments = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				local id = tonumber(args[1]);
 				assert(id, "Must supply valid UserId");
-
-				Core.RemoveData(tostring(id));
-				Core.PlayerData[tostring(id)] = nil;
-
-				Remote.MakeGui(plr,"Notification",{
-					Title = "Notification";
-					Message = "Cleared data for ".. id;
-					Time = 10;
+				local username = (game:GetService("Players"):GetNameFromUserIdAsync(args[1]))
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
+					Title = "Clear PlayerData for "..username.."?";
+					Size = {281.25,187.5};
 				})
+				if ans == "Yes" then
+					Core.RemoveData(tostring(id));
+					Core.PlayerData[tostring(id)] = nil;
+	
+					Remote.MakeGui(plr,"Notification",{
+						Title = "Notification";
+						Message = "Cleared data for ".. id;
+						Time = 10;
+					})
+				end
 			end;
 		};
 

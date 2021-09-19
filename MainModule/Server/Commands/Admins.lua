@@ -437,7 +437,7 @@ return function(Vargs, env)
 			Commands = {"setmessage";"notif";"setmsg";};
 			Args = {"message OR off";};
 			Filter = true;
-			Description = "Set message";
+			Description = "Sets a small hint message at the top of the screen";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
@@ -659,7 +659,7 @@ return function(Vargs, env)
 
 		RemoveTeam = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeteam";};
+			Commands = {"removeteam";"deleteteam"};
 			Args = {"name";};
 			Hidden = false;
 			Description = "Remove the specified team";
@@ -1385,6 +1385,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -1406,7 +1409,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unban";};
 			Args = {"player";};
-			Description = "UnBan";
+			Description = "Unbans the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])

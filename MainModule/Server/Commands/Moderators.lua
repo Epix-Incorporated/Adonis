@@ -176,6 +176,7 @@ return function(Vargs, env)
 				else
 					Admin.SlowMode = nil;
 					Admin.SlowCache = {};
+					Functions.Hint("Chat slow mode disabled", {plr})
 				end
 			end
 		};
@@ -256,7 +257,7 @@ return function(Vargs, env)
 
 		TimeMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"tm";"timem";"timedmessage";};
+			Commands = {"tm";"timem";"timedmessage","timemessage";};
 			Args = {"time";"message";};
 			Filter = true;
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
@@ -2669,7 +2670,7 @@ return function(Vargs, env)
 
 		Sell = {
 			Prefix = Settings.Prefix;
-			Commands = {"sell";};
+			Commands = {"sell";"promptpurchase"};
 			Args = {"player";"id";};
 			Hidden = false;
 			Description = "Prompts the player(s) to buy the product belonging to the ID you supply";
@@ -2840,7 +2841,7 @@ return function(Vargs, env)
 			Commands = {"noclip";};
 			Args = {"player";};
 			Hidden = false;
-			Description = "NoClips the target player(s)";
+			Description = "NoClips the target player(s); allowing them to walk through walls";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3716,7 +3717,7 @@ return function(Vargs, env)
 
 		Invisible = {
 			Prefix = Settings.Prefix;
-			Commands = {"invisible";};
+			Commands = {"invisible";"invis"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) invisible";
@@ -3749,7 +3750,7 @@ return function(Vargs, env)
 
 		Visible = {
 			Prefix = Settings.Prefix;
-			Commands = {"visible";};
+			Commands = {"visible";"vis"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) visible";
@@ -3782,10 +3783,10 @@ return function(Vargs, env)
 
 		Lock = {
 			Prefix = Settings.Prefix;
-			Commands = {"lock";};
+			Commands = {"lock";"lockplr";"lockplayer"};
 			Args = {"player";};
 			Hidden = false;
-			Description = "Locks the target player(s)";
+			Description = "Locks the target player(s), preventing the use of btools on the character";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3805,7 +3806,7 @@ return function(Vargs, env)
 
 		UnLock = {
 			Prefix = Settings.Prefix;
-			Commands = {"unlock";};
+			Commands = {"unlock";"unlockplr";"unlockplayer"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "UnLocks the the target player(s), makes it so you can use btools on them";
@@ -5289,6 +5290,7 @@ return function(Vargs, env)
 						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
+									Title = "Override paused track?";
 									Question = "There is currently a track paused, do you wish to override it?";
 								})
 

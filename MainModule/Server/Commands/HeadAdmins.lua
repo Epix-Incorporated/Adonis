@@ -14,6 +14,7 @@ return function(Vargs, env)
 			Commands = {"tban";"timedban";"timeban";};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
+			Filter = true;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
@@ -105,6 +106,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "Bans the player from the game (Saves)";
 			AdminLevel = "HeadAdmins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -200,6 +204,7 @@ return function(Vargs, env)
 			Description = "Sends a global message to all servers";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
@@ -219,6 +224,42 @@ return function(Vargs, env)
 						})
 					end
 				]], plr.Name, args[1], args[1])
+
+				if not Core.CrossServer("Loadstring", globalMessage) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;
+		};
+
+		GlobalTimeMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"gtm","globaltimedmessage","globaltimemessage","globaltimem"};
+			Args = {"time","message"};
+			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			AdminLevel = "HeadAdmins";
+			Filter = true;
+			IsCrossServer = true;
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				assert(args[2], "Argument #2 must be supplied")
+
+
+				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
+					for i,v in pairs(service.Players:GetPlayers()) do
+						Remote.RemoveGui(v, "Message")
+						Remote.MakeGui(v, "Message", {
+							Title = "Global Message from %s";
+							Message = "%s";
+							Scroll = true;
+							Time = %s;
+						})
+					end
+				]], plr.Name, args[2], args[1])
 
 				if not Core.CrossServer("Loadstring", globalMessage) then
 					error("CrossServer Handler Not Ready");
@@ -388,10 +429,12 @@ return function(Vargs, env)
 			PanicMode = true;
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
+					Title = "Shutdown all running servers?";
 				})
 				if ans == "Yes" then
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
