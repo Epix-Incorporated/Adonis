@@ -11,7 +11,7 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tban";"timedban";"timeban";};
+			Commands = {"tban";"timedban";"timeban";"tempban";"temporaryban"};
 			Args = {"player";"number<s/m/h/d>";};
 			Hidden = false;
 			Filter = true;
@@ -75,7 +75,7 @@ return function(Vargs, env)
 
 		UnTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"untimeban";"untimedban";"untban";};
+			Commands = {"untimeban";"untimedban";"untban";"untempban";"untemporaryban"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Removes specified player from Timebans list";
