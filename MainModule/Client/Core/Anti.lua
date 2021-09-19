@@ -537,6 +537,12 @@ return function()
 			end)
 		end;
 
+		ObjRLocked = function(obj)
+			return not pcall(function()
+				return obj.GetFullName(obj)
+			end)
+		end;
+		
 		CoreRLocked = function(obj)
 			local testName = tostring(math.random()..math.random())
 			local _,err = pcall(function()
