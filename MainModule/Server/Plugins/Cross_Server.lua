@@ -129,6 +129,7 @@ return function(Vargs)
 		Description = "Runs the specified command string on all servers";
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
+		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
 		Function = function(plr,args)
 			if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, args[1]) then
 				error("CrossServer Handler Not Ready");
@@ -143,6 +144,7 @@ return function(Vargs)
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
+		IsCrossServer = true;
 		Function = function(plr,args)
 			local disced = false;
 			local updateKey = "SERVERPING".. math.random();
@@ -209,12 +211,13 @@ return function(Vargs)
 
 	Commands.CrossServerVote = {
 		Prefix = Settings.Prefix;
-		Commands = {"crossservervote", "crossvote", "globalvote", "crsvote"};
+		Commands = {"crossservervote", "crsvote","globalvote","gvote"};
 		Args = {"answer1,answer2,etc (NO SPACES)";"question";};
 		Filter = true;
 		Description = "Lets you ask players in all servers a question with a list of answers and get the results";
 		AdminLevel = "Moderators";
 		CrossServerDenied = true;
+		IsCrossServer = true;
 		Function = function(plr,args)
 			local question = args[2]
 			if not question then error("You forgot to supply a question!") end

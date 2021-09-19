@@ -989,10 +989,13 @@ return function(Vargs)
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
+			local crossServerAllowed = Settings.CrossServerCommands
 
 			if adminLevel >= 900 then
 				return true
 			elseif cmd.Fun and not funAllowed then
+				return false
+			elseif cmd.IsCrossServer and not crossServerAllowed then
 				return false
 			elseif cmd.Donors and isDonor then
 				return true
