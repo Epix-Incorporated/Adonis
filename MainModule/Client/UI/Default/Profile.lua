@@ -66,7 +66,7 @@ return function(data)
 		end
 	}):Add("ImageLabel", {
 		Size = UDim2.new(0, 18, 0, 18);
-		Position = UDim2.new(0, 5, 0, 1);
+		Position = UDim2.new(0, 6, 0, 1);
 		Image = "rbxassetid://7495451175";
 		BackgroundTransparency = 1;
 	})
