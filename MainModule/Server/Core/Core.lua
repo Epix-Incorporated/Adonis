@@ -685,9 +685,10 @@ return function(Vargs)
 		end;
 
 		DS_GetRequestDelay = function(type)
+			local requestType, budget;
+
 			local reqPerMin = 60 + #service.Players:GetPlayers() * 10;
-			local reqDelay = 60/reqPerMin;
-			local requestType = nil;
+			local reqDelay = 60 / reqPerMin;
 
 			if type == "Write" then
 				requestType = Enum.DataStoreRequestType.SetIncrementAsync;
@@ -697,21 +698,19 @@ return function(Vargs)
 				requestType = Enum.DataStoreRequestType.UpdateAsync;
 			end
 
-			local budget = nil
-
 			repeat
 				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
-			until budget > 0 and wait(1)
+			until budget > 0 and task.wait(1)
 
 			return reqDelay + 0.5;
 		end;
 
 		DS_WriteLimiter = function(type, func, ...)
-			local vararg = {...}
-			return service.Queue("DataStoreWriteData", function()
+			local vararg = table.pack(...)
+			return service.Queue("DataStoreWriteData_" .. tostring(type), function()
 				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
-				func(unpack(vararg))
-				wait(gotDelay)
+				func(unpack(vararg, 1, vararg.n))
+				task.wait(gotDelay)
 			end, 120, true)
 		end;
 
@@ -724,7 +723,7 @@ return function(Vargs)
 					logError("DataStore RemoveAsync Failed: ".. tostring(ret))
 				end
 
-				wait(6)
+				task.wait(6)
 			end, 120, true)
 
 			if not ran2 then
@@ -750,14 +749,14 @@ return function(Vargs)
 							error(ret);
 						end
 
-						wait(6)
+						task.wait(6)
 					end, 120, true)
 
 					if not ran2 then
 						logError("DataStore SetData Failed: ".. tostring(err2))
 
 						--// Attempt 3 times, with slight delay between if failed
-						wait(1);
+						task.wait(1);
 						if not repeatCount then
 							return Core.SetData(key, value, 3);
 						elseif repeatCount > 0 then

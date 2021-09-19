@@ -1,7 +1,7 @@
 <div align="center">
     <img src="https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260"/>
     <div>&nbsp;</div>
-    <a href="https://www.roblox.com/library/2373505175/">
+    <a href="https://www.roblox.com/library/7510622625/">
         <img src="https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white"/>
     </a>
     <a href="https://github.com/Sceleratis/Adonis/blob/master/LICENSE">
@@ -25,7 +25,8 @@ Adonis is a server moderation and management system created for use on the Roblo
 
 ### Method 1: Official Roblox Model
 
-* [Take a copy](https://www.roblox.com/library/2373505175/) of the Adonis loader model from the Roblox library
+* [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox library
+
 * Insert the model into Studio using the Toolbox into `ServerScriptService`
 
 ### Method 2: GitHub Releases
