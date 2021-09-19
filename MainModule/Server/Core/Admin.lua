@@ -205,15 +205,22 @@ return function(Vargs)
 
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
-			if pData.Client.HideChatCommands
-					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
-					and message:sub(2,2) ~= message:sub(1,1) then
-				return true;
+			if pData.Client.HideChatCommands then
+				if Variables.BlankPrefix then
+					local isCMD = Admin.GetCommand(message)
+					if isCMD then
+						return true
+					else
+						return false
+					end
+				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix)
+					and string.sub(message,2,2) ~= string.sub(message,1,1) then
+					return true;
+				end
 			end
 		end;
 
 		GetPlayerGroup = function(p, group)
-			local data = Core.GetPlayer(p)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
@@ -730,10 +737,10 @@ return function(Vargs)
 						return true;
 					end
 			elseif type(check) == "string" then
-				local cName,cId = check:match("(.*):(.*)") or check;
+				local cName, cId = string.match(check, "(.*):(.*)") or check;
 
 				if cName then
-					if cName:lower() == name:lower() then
+					if string.lower(cName) == string.lower(name) then
 						return true;
 					elseif id and cId and id == cId then
 						return true;
@@ -789,8 +796,12 @@ return function(Vargs)
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then
 					--logError(plr,"Command",error)
-					error = error:match(":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
+					error = string.match(error, ":(.+)$") or "Unknown error"
+					Remote.MakeGui(plr, 'Output', {
+						Title = '';
+						Message = error;
+						Color = Color3.new(1,0,0)
+					})
 				end
 			end
 		end;
@@ -815,12 +826,12 @@ return function(Vargs)
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
-			for ind,data in next,Commands do
+			for ind,data in pairs(Commands) do
 				if type(data) == "table" then
-					for i,cmd in next,data.Commands do
+					for i,cmd in pairs(data.Commands) do
 						if data.Prefix == "" then Variables.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
-						tempTable[(data.Prefix..cmd):lower()] = ind
+						tempTable[string.lower(data.Prefix..cmd)] = ind
 					end
 				end
 			end
@@ -830,16 +841,16 @@ return function(Vargs)
 		end;
 
 		GetCommand = function(Command)
-			if Admin.PrefixCache[Command:sub(1,1)] or Variables.BlankPrefix then
+			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
 				local matched
-				if Command:find(Settings.SplitKey) then
-					matched = Command:match("^(%S+)"..Settings.SplitKey)
+				if string.find(Command, Settings.SplitKey) then
+					matched = string.match(Command, "^(%S+)"..Settings.SplitKey)
 				else
-					matched = Command:match("^(%S+)")
+					matched = string.match(Command, "^(%S+)")
 				end
 
 				if matched then
-					local found = Admin.CommandCache[matched:lower()]
+					local found = Admin.CommandCache[string.lower(matched)]
 					if found then
 						local real = Commands[found]
 						if real then
@@ -859,10 +870,10 @@ return function(Vargs)
 				Command = string.sub(Command, 2);
 			end
 
-			if Command:find(Settings.SplitKey) then
-				matched = Command:match("^(%S+)"..Settings.SplitKey)
+			if string.find(Command, Settings.SplitKey) then
+				matched = string.match(Command, "^(%S+)"..Settings.SplitKey)
 			else
-				matched = Command:match("^(%S+)")
+				matched = string.match(Command, "^(%S+)")
 			end
 
 			if matched then
