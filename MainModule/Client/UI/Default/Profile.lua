@@ -123,12 +123,13 @@ return function(data)
 		end
 
 		local credentials = {
-			{player:GetRankInGroup(886423) == (10 or 12), "Adonis admin system GitHub contributor / dev", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
+			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
+			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
+			{player:GetRankInGroup(886423) == 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
-			{player.UserId == (1237666 or 698712377), "Adonis admin system creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You are looking at the creator of the Adonis admin system!"},
+			{player.UserId == (1237666 or 698712377), "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You are looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
 			{player:IsInGroup(3514227), "DevForum Member", "rbxassetid://6383940476", "User is a member of the Roblox Developer Forum"},
-			{data.IsDonor, "Adonis donor", "rbxassetid://6877822142", "Player has purchased the Adonis donor pass/shirt"},
 		}
 		for i, v in ipairs(credentials) do
 			if v[1] then
