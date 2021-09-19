@@ -5760,42 +5760,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Inspect = {
-			Prefix = Settings.Prefix;
-			Commands = {"inspect";"playerinfo"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local hasSafeChat
-					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
-					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
-					local level, rank = Admin.GetLevel(v);
-
-					do
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
-					end
-
-					Remote.MakeGui(plr, "Inspect", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
-						IsMuted = isMuted;
-						IsBanned = isBanned;
-						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
-						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
-					})
-				end
-			end
-		};
-
 		ResetButtonEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"resetbuttonenabled";"canreset"};
