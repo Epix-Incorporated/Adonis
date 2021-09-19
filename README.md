@@ -23,7 +23,7 @@ Adonis is a server moderation and management system created for use on the Roblo
 <br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/rdkgGc4).
 
 ### Method 1: Official Roblox Model
-* [Take a copy](https://www.roblox.com/library/2373505175/) of the Adonis loader model from the Roblox library
+* [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox library
 * Insert the model into Studio using the Toolbox into `ServerScriptService`
 
 ### Method 2: GitHub Releases
