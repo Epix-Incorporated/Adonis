@@ -164,9 +164,11 @@ return function()
 			end
 		end;
 
-		CharacterAdded = function()
+		CharacterAdded = function(...)
+			service.Events.CharacterAdded:fire(...)
+
+			wait();
 			UI.GetHolder()
-			service.Events.CharacterAdded:fire()
 		end;
 
 		CharacterRemoving = function()

@@ -95,9 +95,10 @@ return function()
 				return UI.Holder
 			else
 				pcall(function()if UI.Holder then UI.Holder:Destroy()end end)
-				local new = service.New("ScreenGui");
-				new.Name = Functions.GetRandom()
-				new.Parent = service.PlayerGui
+				local new = service.New("ScreenGui", {
+					Name = Functions.GetRandom(),
+					Parent = service.PlayerGui,
+				});
 				UI.Holder = new
 				return UI.Holder
 			end
