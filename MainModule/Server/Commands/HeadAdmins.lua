@@ -348,47 +348,46 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				if plr then
-					Functions.Hint('Updating Map Backup...',{plr})
+					Functions.Hint('Updating Map Backup...', { plr })
 				end
-
-				if server.Variables.BackingupMap then
+				
+				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
 				end
-				if server.Variables.RestoringMap then
+				if Variables.RestoringMap then
 					error("Cannot backup map while map is being restored!")
 					return
 				end
 
-				server.Variables.BackingupMap = true
+				Variables.BackingupMap = true
 
 				local tempmodel = service.New('Model')
-
-				for i,v in pairs(service.Workspace:GetChildren()) do
-					if v and not v:IsA('Terrain') then
-						wait()
-						pcall(function()
-							local archive = v.Archivable
-							v.Archivable = true
-							v:Clone(true).Parent = tempmodel
-							v.Archivable = archive
-						end)
+				for _, v in ipairs(workspace:GetChildren()) do
+					if v.ClassName ~= "Terrain" and v.ClassName == "Model" and not service.Players:GetPlayerFromCharacter(v) then
+						local archive = v.Archivable
+						v.Archivable = true
+						v:Clone().Parent = tempmodel
+						v.Archivable = archive
 					end
 				end
-
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
-				Variables.TerrainMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
 
-				if plr then
-					Functions.Hint('Backup Complete',{plr})
+				local Terrain = workspace:FindFirstChildOfClass("Terrain")
+				if Terrain then
+					Variables.TerrainMapBackup = Terrain:CopyRegion(Terrain.MaxExtents)
 				end
 
-				server.Variables.BackingupMap = false
+				if plr then
+					Functions.Hint('Backup Complete', { plr })
+				end
+
+				Variables.BackingupMap = false
 
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
-					Desc = "Map was successfully backed up";
+					Desc = (plr and plr.Name or "<LEFT-OR-UNKNOWN>") .. "has successfully backed up the map.";
 				})
 			end
 		};
