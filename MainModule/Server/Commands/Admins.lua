@@ -678,11 +678,11 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"restoremap";"maprestore";"rmap";};
 			Args = {};
-			Hidden = false;
 			Description = "Restore the map to the the way it was the last time it was backed up";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
+				local plr_name = plr and plr.Name
+
 				if not Variables.MapBackup then
 					error("Cannot restore when there are no backup maps!",0)
 					return
@@ -700,7 +700,7 @@ return function(Vargs, env)
 				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
 
 				for _, Obj in ipairs(workspace:GetChildren()) do
-					if Obj.ClassName ~= "Terrain" then
+					if Obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(Obj) then
 						Obj:Destroy()
 						service.RunService.Stepped:Wait()
 					end
@@ -715,15 +715,22 @@ return function(Vargs, env)
 				end
 				new:Destroy()
 
-				local Terrain = workspace:FindFirstChildOfClass("Terrain")
+				local Terrain = workspace.Terrain or workspace:FindFirstChildOfClass("Terrain")
 				if Terrain and Variables.TerrainMapBackup then
 					Terrain:Clear()
 					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
 				end
 
-				Admin.RunCommand(Settings.Prefix .. "respawn", "@everyone")
+				wait();
+
+				Admin.RunCommand(Settings.Prefix .. "respawn", "all")
 				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
+
+				Logs:AddLog("Script", {
+					Text = "Map Restoration Complete",
+					Desc = (plr_name or "<SERVER>") .. " has restored the map.",
+				})
 			end
 		};
 

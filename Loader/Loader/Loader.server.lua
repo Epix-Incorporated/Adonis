@@ -77,15 +77,14 @@ else
 	model.Name = math.random()
 
 	local moduleId = data.ModuleID
-	local a,setTab = pcall(require, settings)
-
-	if not a then
-		warn'::Adonis:: Settings module errored while loading; Using defaults;'
-		setTab = {}
-	end
-
 	if data.DebugMode then
 		moduleId = model.Parent.MainModule
+	end
+
+	local a,setTab = pcall(require, settings)
+	if not a then
+		warn('::Adonis:: Settings module errored while loading; Using defaults;')
+		setTab = {}
 	end
 
 	data.Settings = setTab.Settings;
@@ -95,9 +94,9 @@ else
 	for _,Plugin in next,plugins:GetChildren() do
 		if Plugin:IsA("Folder") then
 			table.insert(data.Packages, Plugin)
-		elseif Plugin.Name:lower():sub(1,7)=="client:" or Plugin.Name:lower():sub(1,7) == "client-" then
+		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "client:" or string.sub(string.lower(Plugin.Name), 1, 7) == "client-" then
 			table.insert(data.ClientPlugins, Plugin)
-		elseif Plugin.Name:lower():sub(1,7)=="server:" or Plugin.Name:lower():sub(1,7)=="server-" then
+		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "server:" or string.sub(string.lower(Plugin.Name), 1, 7) == "server-" then
 			table.insert(data.ServerPlugins, Plugin)
 		else
 			warn("Unknown Plugin Type for "..tostring(Plugin))

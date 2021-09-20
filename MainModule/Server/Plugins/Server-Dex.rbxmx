@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXEB893DE3AC7C48809D4C439567243FEC">
+	<Item class="ModuleScript" referent="RBX633B3626CCCE47F78BB7D3D1C05C980B">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
@@ -12,16 +12,14 @@
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local dexGui = script.Dex_Explorer;
-	local Deps = server.Deps;
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Process = server.Process;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
-	local Logs = server.Logs;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	
+	local dexGui = script:WaitForChild("Dex_Explorer", 120)
+	if not dexGui then
+		Logs:AddLog("Script", "DexGui unable to be located?")
+	end
 
 	local Event = nil;
 
@@ -37,7 +35,7 @@
 			Event.OnServerInvoke = (function(Plr, Action, ...)
 				local pData = Authorized[Plr];
 				if not pData then
-					server.Anti.Detected(Plr, "kick", "Unauthorized Dex Event");
+					Anti.Detected(Plr, "kick", "Unauthorized Dex Event");
 				else
 					local args = {...};
 					local Suppliments = args[1];
@@ -87,7 +85,7 @@
 		end
 	end
 
-	server.Commands.DexExplore = {
+	Commands.DexExplore = {
 		Prefix = Settings.Prefix;
 		Commands = {"dex";"dexexplorer";"dexexplorer"};
 		Args = {};
@@ -108,7 +106,7 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ScreenGui" referent="RBXAF7E5B6E1B0B4FF1A6F0F15503C7D893">
+		<Item class="ScreenGui" referent="RBX905495C99AFF49F0961E33641E061908">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
@@ -122,7 +120,7 @@ end]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="LocalScript" referent="RBX96B753CBB83849A58C623EACD720683D">
+			<Item class="LocalScript" referent="RBX36C2BAB07E624FF4815AC626A327B9E8">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<bool name="Disabled">false</bool>
@@ -359,7 +357,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX8203C3A112094767BF3D3E377C1FAC11">
+			<Item class="Frame" referent="RBXBC1944438CC44DF085BE6AFA39AFB8D7">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -413,7 +411,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextButton" referent="RBX9E15AFD8FEDC4247B2EE2E893D23801B">
+				<Item class="TextButton" referent="RBXBAE5D503F2544D14A1B522DC6C2BE7B2">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -494,7 +492,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXCE41947307C94A488C9E903AC08F4BF0">
+				<Item class="TextLabel" referent="RBX4C0772FEE76C499E923AD44712A26DB5">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -571,7 +569,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX199E26CB40FC437DB69A1838DDD7D7C2">
+				<Item class="TextLabel" referent="RBX4A3BF2A288A045E690076BCB62372B2B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -648,7 +646,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBXC7A2084EF4CB4B37BE8E2A01053F5B72">
+				<Item class="ImageLabel" referent="RBXA732589A12414FB78DAC32F6E2938C85">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -700,6 +698,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<YS>0</YS>
 							<YO>60</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">180</float>
 						<token name="ScaleType">0</token>
@@ -735,7 +734,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX3491DC51296245A4A44FB6495D2FFCBB">
+				<Item class="Frame" referent="RBXB902E37930BC40FBBE87BD1029601AA4">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -790,7 +789,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX36DC33EB9FA747BA8BE95EB5B34C3814">
+				<Item class="Frame" referent="RBX6151E045758445D791706A3B9169104A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -844,7 +843,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX3497695E9CE7401AB01F9DDB0BE7FD96">
+					<Item class="Frame" referent="RBX0C3CB0761787496B917BC5C81403F7CD">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -898,7 +897,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextButton" referent="RBX6028BF7B05B24381AE87582C9A296551">
+						<Item class="TextButton" referent="RBX0A1F9F94A7B64430BD16B826B45B92B8">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -978,7 +977,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="ImageLabel" referent="RBXBA6E5D5820124DE79FDC56256EEBDE59">
+							<Item class="ImageLabel" referent="RBXD884CAD02F84492581DF8AE4BBD52AE6">
 								<Properties>
 									<bool name="Active">false</bool>
 									<Vector2 name="AnchorPoint">
@@ -1030,6 +1029,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -1066,7 +1066,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextButton" referent="RBX31C69D6D70A84D81806EC682254CE0F1">
+						<Item class="TextButton" referent="RBX639D5962A07F4BF6BBD2811D89C72DDF">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -1146,7 +1146,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="ImageLabel" referent="RBX86AE4D6FCE6341BF96F908A580C02FB8">
+							<Item class="ImageLabel" referent="RBXE8B7F1ECAAA94CFCB60D63A96859E92D">
 								<Properties>
 									<bool name="Active">false</bool>
 									<Vector2 name="AnchorPoint">
@@ -1198,6 +1198,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -1234,7 +1235,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextButton" referent="RBX4A5456613509462280F394BB782A6DAD">
+						<Item class="TextButton" referent="RBX4546C09FC0324AC6981B45C4FAA7EF1F">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -1314,7 +1315,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="ImageLabel" referent="RBXE8703F71DD6141F6B64C356CA58B5777">
+							<Item class="ImageLabel" referent="RBXE17161714C9D436B9031879ACA2A7135">
 								<Properties>
 									<bool name="Active">false</bool>
 									<Vector2 name="AnchorPoint">
@@ -1366,6 +1367,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 										<YS>0</YS>
 										<YO>5</YO>
 									</UDim2>
+									<token name="ResampleMode">0</token>
 									<Ref name="RootLocalizationTable">null</Ref>
 									<float name="Rotation">0</float>
 									<token name="ScaleType">0</token>
@@ -1405,7 +1407,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					</Item>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX56E4EFCF64134E8BB6497F692F7360AF">
+			<Item class="Frame" referent="RBX6CD3A81D9D794CC281E80EFBEEBA11D0">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -1459,7 +1461,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">5</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX50DF071E26674E2A9CADAE698DEB30B0">
+				<Item class="TextLabel" referent="RBXA9405536DD7E4DA89116A97023304A5B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1536,7 +1538,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">5</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXFE18B92195794A4B902C14DCFD5C1F4A">
+				<Item class="Frame" referent="RBXC9C1462114A24FFAB2078FF4866DA688">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1590,7 +1592,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">4</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX2BBDB97EC7144A0AA41F664899E4CDB4">
+					<Item class="TextLabel" referent="RBXBF4A41A7FDB445E8BD1CBFC6726A7212">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1667,7 +1669,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<int name="ZIndex">4</int>
 						</Properties>
 					</Item>
-					<Item class="TextButton" referent="RBXBAF19449D748406495E6D2E3D19EAF35">
+					<Item class="TextButton" referent="RBXCFBAC762A5C347A6A45A22C240FB7C71">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -1747,7 +1749,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">4</int>
 						</Properties>
-						<Item class="UICorner" referent="RBXD9342A1ABA45421898D8AAE810B81DEA">
+						<Item class="UICorner" referent="RBXE78BEBB0D57845D49782A6B92204952E">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -1760,7 +1762,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="UICorner" referent="RBX1D3161475D5E42388C30C7839AFB4D5E">
+					<Item class="UICorner" referent="RBXA57398E7A7AF4D678DFE83431349057D">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -1774,7 +1776,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					</Item>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX6E09459AF0F642C0B124D82AA5D975AE">
+			<Item class="Frame" referent="RBX05A6AC54CB0F46EDB255E61CBE8176BF">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -1828,7 +1830,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX53117297A18746359F9DBE8D8B6E1B6C">
+				<Item class="TextLabel" referent="RBX6DC89FEE74B04FEF93B473B348A9EE8D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1905,7 +1907,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBXF1F22F1F2B264739A88A7CDCBE97AF9E">
+				<Item class="Frame" referent="RBXDB343BD9834649E5A1F205AD8F1B32D0">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1959,7 +1961,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX39E854DB13444BA294011AF84AA66973">
+					<Item class="TextLabel" referent="RBXC6B7809BA5CC4B6DAEAA63A544A07E18">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -2036,7 +2038,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBX95DCF7C5BA3F4962BD05E93262687FF3">
+					<Item class="ScrollingFrame" referent="RBXF1A4115755E44C34B16C8894995D66E9">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -2117,7 +2119,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="TextButton" referent="RBX3BA80907497C43B089F262DFFA0FD41A">
+					<Item class="TextButton" referent="RBXE0E5A047D1374CE186CB12422938B558">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2197,7 +2199,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXD95329F56B8B4445987CAA9E02727DD6">
+						<Item class="TextLabel" referent="RBXE9824226C517424E87238DB404CCECDA">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2274,7 +2276,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXE6BEB8CFF198477997661A341F66F824">
+						<Item class="UICorner" referent="RBXD5B2175C48A64447B4B271CC5DB04678">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2287,7 +2289,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX8F459A89FF2C45EAB083037575EBFDC1">
+					<Item class="TextLabel" referent="RBX636BCD313FE542568AD4772C7EBEAB1D">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -2364,7 +2366,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="TextButton" referent="RBXE4135ADE105E4BB99C25FDD6FFAC0AFA">
+					<Item class="TextButton" referent="RBX92CEEFBE3DC148188B15912699758473">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2444,7 +2446,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX7F11B3B60B874C5288AE2FDD281B4C2F">
+						<Item class="UICorner" referent="RBX23EF08E8A475409FB1CE8431E5D0C32F">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2457,7 +2459,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX73502A2C5B594BD4BCB1076128891E35">
+					<Item class="TextButton" referent="RBX700CDF4FD6A54C598BEBBB7BD44CB774">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2537,7 +2539,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX48083939043742C4A33F48CAAFCE20F5">
+						<Item class="UICorner" referent="RBX19380C9C48A9412EAC85A3628F800FCE">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2550,7 +2552,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="Frame" referent="RBX1613FFC4C7E8437F9F72D8E434A6E2AF">
+					<Item class="Frame" referent="RBXA500219F85C1462EA1F5BD1F6C8B8494">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -2604,7 +2606,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">false</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextButton" referent="RBX4BCF237925914D2FAC0D0BC404BB1EC6">
+						<Item class="TextButton" referent="RBX868894C0E0C4472084F9567DE45E61D7">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -2685,7 +2687,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="TextBox" referent="RBXBD757B824CC04F49BA1D52577E0769CD">
+						<Item class="TextBox" referent="RBX537E998956F24671913CA66E14A69E0A">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -2773,7 +2775,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX2E507DB03CE049FA924A8235A9D72B11">
+					<Item class="TextButton" referent="RBX7017B74767E148DCA1C67FA1B8B3D28A">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2853,7 +2855,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBXBD2AE75350724E0594C5D56AE410AAFA">
+						<Item class="UICorner" referent="RBXB913D4E8A2C24DF78EC3FFD121F1A23D">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2866,7 +2868,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX803774E8C3C34E68BDE6FD34DFE148CF">
+					<Item class="TextButton" referent="RBX2951580C7DAD44BC9D1DCA08B0BA3B36">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2946,7 +2948,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX940EB938AEF2418B8283A3E433D01D2D">
+						<Item class="UICorner" referent="RBXBC9DBFCEEC444445970B3A48F835EDD7">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2959,7 +2961,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="UICorner" referent="RBX0C96FE2A7EC24CEFA23BE77DB33E30AE">
+					<Item class="UICorner" referent="RBX279A130B980F41D9A7E4C31988CF268C">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -2973,7 +2975,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					</Item>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX76AE601DCD2B45AA85AF061A712CEF16">
+			<Item class="Frame" referent="RBX6008B2360AF54A9195C3B98970835322">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3027,7 +3029,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">false</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="Frame" referent="RBX32729DB7EECF4439BDA9DBCCA26CC247">
+				<Item class="Frame" referent="RBX202846BC79A1444FBD19CC8AB58273F2">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3081,7 +3083,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextButton" referent="RBXED043530A0CE419BB57898F548EA7214">
+					<Item class="TextButton" referent="RBXCC053B4A56434E409B55FBCE8C2511D3">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3161,7 +3163,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UICorner" referent="RBX2557E64360754B9189695FA986B03E92">
+						<Item class="UICorner" referent="RBXFBDB1434BFE545E499B591599CE973E3">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3174,7 +3176,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBX59436B1FB0674AE9A95C947492331016">
+					<Item class="ScrollingFrame" referent="RBXDB8816F97D704733A645D65A5E8008D5">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -3255,7 +3257,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="Frame" referent="RBX6C324ADCCB8A42609C70E07524A4C535">
+					<Item class="Frame" referent="RBX762F64B66C1C4468AC4F52AF9A85E754">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -3309,7 +3311,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							<bool name="Visible">false</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX4FF80327CF7748C4B393323E7E89B4DC">
+						<Item class="TextLabel" referent="RBX22B0FEAFC8944C7495E6E6B95B269A7C">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3386,7 +3388,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="TextLabel" referent="RBX32E14DEC99574C36898CFB4CAD8A04E2">
+						<Item class="TextLabel" referent="RBX618B332EA3D14CA29B644A466B4FE3BF">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3464,7 +3466,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="UICorner" referent="RBXF29238A484CD4405A5DB23CC2E6BC86E">
+					<Item class="UICorner" referent="RBXE727A528C7304A829177EA69CA3C6911">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<UDim name="CornerRadius">
@@ -3477,7 +3479,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextLabel" referent="RBXF669E7654A2E40E0B81C8330FD1530B7">
+				<Item class="TextLabel" referent="RBXC31FF52236E149ECB7E9B9C2DA34FD62">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3555,7 +3557,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ImageButton" referent="RBX29D830FBC4A84BC596F17765DFAF2E38">
+			<Item class="ImageButton" referent="RBX3A0175ADB3264F56AD8D597C2DB70F79">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3611,6 +3613,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 						<YO>0</YO>
 					</UDim2>
 					<Content name="PressedImage"><null></null></Content>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">180</float>
 					<token name="ScaleType">0</token>
@@ -3647,7 +3650,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX9C05E09A10AD406185C46CFB746B0F37">
+				<Item class="TextLabel" referent="RBX99271E48B09E4917A6426800172960C4">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -3725,7 +3728,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX798DDD433F8C443EA73D20ECA83D0101">
+			<Item class="Frame" referent="RBX2FF85CA4E2674B9C8A57772ECB9B44F7">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -3779,7 +3782,7 @@ CloseToggleButton.AutoButtonColor = true]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="LocalScript" referent="RBXD4803FA4EA3642D5A2A56AC65E04251B">
+				<Item class="LocalScript" referent="RBX21F5682197224DAA914F75285E5F5BCD">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<bool name="Disabled">false</bool>
@@ -5668,7 +5671,7 @@ end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
-					<Item class="ModuleScript" referent="RBX9109853A31F84275BEB9FFF9F762581D">
+					<Item class="ModuleScript" referent="RBX75528EAEE73A4915BAA8B6EE4170608C">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<Content name="LinkedSource"><null></null></Content>
@@ -90208,7 +90211,7 @@ end]]></ProtectedString>
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX4D4B3D6FD79747EBA6CE8ED175940098">
+				<Item class="Frame" referent="RBX958DCA6ABFC34774AC23158CF9991670">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -90262,7 +90265,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBXDC3011C819684B408501CF236311F855">
+					<Item class="TextLabel" referent="RBX0CEFE9A5AE6D46B8B36D3983BD6431BB">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -90339,7 +90342,7 @@ end]]></ProtectedString>
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="TextBox" referent="RBX98B64E9CB5B94D6E9A474CBB273CCD07">
+					<Item class="TextBox" referent="RBXF96F3F1E3C0644F5832E13817281973A">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -90425,7 +90428,7 @@ end]]></ProtectedString>
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UIPadding" referent="RBX8D3558A7016F408FB8800899A1301D84">
+						<Item class="UIPadding" referent="RBXA57713EB5BD54AE9B0ED6E1154268657">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<string name="Name">UIPadding</string>
@@ -90451,7 +90454,7 @@ end]]></ProtectedString>
 						</Item>
 					</Item>
 				</Item>
-				<Item class="BindableFunction" referent="RBX96C4B0BCA38D4A39BAB2115FD16115E0">
+				<Item class="BindableFunction" referent="RBX864C2C9CB5B740DD84EEBE470F180E79">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetApi</string>
@@ -90459,7 +90462,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX6091BD7BC2C04A068A6B90EFA080EFF3">
+				<Item class="BindableFunction" referent="RBX0934BECB3ED74639AC0AA38735EEE6E1">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetAwaiting</string>
@@ -90467,7 +90470,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableEvent" referent="RBXC486B9D55BFB4FEAA988565E976F0C3D">
+				<Item class="BindableEvent" referent="RBX2DA0BEB4168241AB8A96F9ED2944BB10">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetAwaiting</string>
@@ -90476,7 +90479,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX614723C2712B413284A813C4FF7828E6">
+			<Item class="Frame" referent="RBXEF1F7752997A492D90E710CF85DA851A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -90530,7 +90533,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="BindableEvent" referent="RBX53BB6F2E344F49C094CD88F749DC7DA0">
+				<Item class="BindableEvent" referent="RBX6C72CA43319F4BDCB0E42AC7AA6B3444">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SelectionChanged</string>
@@ -90538,7 +90541,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX220F595659354E65A93FD7811ADC6DD6">
+				<Item class="BindableFunction" referent="RBXDA7AD0D2753E4CAEB2DD06C31BE99564">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetOption</string>
@@ -90546,7 +90549,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX1889B453B1684EB8B406ADA728FC0459">
+				<Item class="BindableFunction" referent="RBXBD3D35077E364E7C910E15DBEE58D844">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetSelection</string>
@@ -90554,7 +90557,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX679E323D4B7C4670B15B0C7C336C01A9">
+				<Item class="BindableFunction" referent="RBXF848F15B2C04443C9DCFC98D61861869">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetOption</string>
@@ -90562,7 +90565,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX98687CE714194BC2B79018AFE5C79184">
+				<Item class="BindableFunction" referent="RBX419487BE06F8427B999746FF68163CD7">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetSelection</string>
@@ -90570,7 +90573,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX6B3F47E459A54816B9004B19F1958AAB">
+				<Item class="BindableFunction" referent="RBXC037FEF467E84FB78C363E66F42E979E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetPrint</string>
@@ -90578,7 +90581,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="LocalScript" referent="RBXED5975B91BC24221B783CCA5C9FE2886">
+				<Item class="LocalScript" referent="RBX3AC6E71A396D4217B280EB71E13E6A2E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<bool name="Disabled">false</bool>
@@ -94299,7 +94302,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBXF1117372C82C434A844CC2EBAF3873D0">
+			<Item class="Frame" referent="RBXA21C5BA2C9664B39BE53C8F94FB670F8">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -94353,7 +94356,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX8FAA5354FD9240DB95864855C644D837">
+				<Item class="Frame" referent="RBX22AB7F9A038E4E6A89741EF2AF159D61">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -94407,7 +94410,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBXEE3C3E85CD2344F19567CE2A69874A4A">
+					<Item class="TextLabel" referent="RBX4EA45D67CD404438B57D69E8CABA26E2">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -94485,7 +94488,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="BindableFunction" referent="RBXBDF0697E3F9442478A2CF5B69A4D628D">
+				<Item class="BindableFunction" referent="RBXE646D8C797DA437A96C3C7F220242D55">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetSetting</string>
@@ -94493,7 +94496,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX9ECEB7A7B1424FD18C381CDF1E241645">
+				<Item class="Frame" referent="RBXFEBE7FD02FA5482D9C0E8DAEE44E28DC">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -94547,7 +94550,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<bool name="Visible">false</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX2E8308BFE27B44C4BBC8B5AFA48E5006">
+					<Item class="TextLabel" referent="RBXA86B9A42A0794492893E829258773F60">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -94624,7 +94627,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="TextLabel" referent="RBXA46B6240D0A0463D87B4E48AA9F086F4">
+					<Item class="TextLabel" referent="RBX9E470E280D74477FAA01DF099F92C7B0">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -94701,7 +94704,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<int name="ZIndex">1</int>
 						</Properties>
 					</Item>
-					<Item class="TextButton" referent="RBX56CB203D0F5D42EB9128DE253F92546E">
+					<Item class="TextButton" referent="RBX892DC95AC14D42A1AD417C4445D947E4">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -94781,7 +94784,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXECA8B83859BE459BAB23890E7169BD46">
+						<Item class="TextLabel" referent="RBX414C45BF86D9419B884018162307E62F">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -94857,7 +94860,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBX06CC4046147C435DAE85379DE8BB0A4B">
+							<Item class="UICorner" referent="RBX2248DEE9CF294006A980EEBA4C24BEBB">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<UDim name="CornerRadius">
@@ -94870,7 +94873,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBXD26E8B79284F448592103FCF1ACA24D5">
+						<Item class="TextLabel" referent="RBX01EA885878CF459AAD7AA67F7693D9DD">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -94946,7 +94949,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBXC16239869005414384ACDCF6C1963673">
+							<Item class="UICorner" referent="RBX9AB5DF4B629246BEB230571DA8FE5E38">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<UDim name="CornerRadius">
@@ -94959,7 +94962,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="UICorner" referent="RBX7FC9BEDF903C45818489CB7503EBC8CB">
+						<Item class="UICorner" referent="RBXB1C1673BDCB144BD9C80EB67DF29A5E4">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -94973,7 +94976,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBXB21FB3CF89FA42E2A13EDD858C9AFD6A">
+				<Item class="Frame" referent="RBX2DF3E886DD2442BBB3B50F47365F3AB9">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95029,7 +95032,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX7E293244DDB6435AAF950487A15098BA">
+			<Item class="Frame" referent="RBX0E3632DB1E8E4D3D8ACBA5D7FAB99838">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -95083,7 +95086,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX19A89558578145DBB12204F22BC967FD">
+				<Item class="Frame" referent="RBXDFDB749758D34365BB7A1F2AF3FA28D4">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95137,7 +95140,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX3EF531D7CFF745EF8E8B3BFF1D2C7782">
+					<Item class="TextLabel" referent="RBX0CB57C1A2A204036959276F5B99CD1D1">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -95215,7 +95218,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="BindableFunction" referent="RBX848693F1F20247F9A0FC92669B4873AD">
+				<Item class="BindableFunction" referent="RBX55E177B22DE9499DA8DCE840447D265B">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetSetting</string>
@@ -95223,7 +95226,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXE22DB8BD6D1E432B8FB08A58398C046F">
+				<Item class="TextLabel" referent="RBXC556522D844342819F6289D68F341B3A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95301,7 +95304,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX1CA55366193E47EB9C54B0CE3ADA8074">
+			<Item class="Frame" referent="RBXC3DDD9E495BD4E0AAD7C6F24DA839E21">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -95355,7 +95358,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="Frame" referent="RBX8268C24C0E724540991D6B03C8730AC8">
+				<Item class="Frame" referent="RBX092E1431C61D4B30B2E6DB7BA38BBCC9">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95410,7 +95413,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX0D053C57097A4C24ABD9C46B11863E80">
+				<Item class="ImageLabel" referent="RBX3539F095B7DB428195BBBEFBD2A46341">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95462,6 +95465,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<YS>0</YS>
 							<YO>60</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">180</float>
 						<token name="ScaleType">0</token>
@@ -95497,7 +95501,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXFEF0D5A3C662414EB435F56000015C32">
+				<Item class="TextLabel" referent="RBX448BCE491F224982B7C3206BA7D770DC">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95575,7 +95579,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXC4E887C597484DD688AE1E473E34FCEA">
+				<Item class="TextLabel" referent="RBXCD00406A83AB41839503A0CBFDED2732">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95652,7 +95656,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX60429EE68E46450E860CAE58F04B9B92">
+				<Item class="TextLabel" referent="RBXE216E477F48C49E2AE2D7E17EE374AC0">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95730,7 +95734,7 @@ Edited by: wally, ic3, Yarios]]></string>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX3CD6862B6579463EA86F44C79A4554F4">
+			<Item class="Frame" referent="RBX50AB40E3BB4C4C25B4963E502B485336">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -95784,7 +95788,7 @@ Edited by: wally, ic3, Yarios]]></string>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBXF02A244D7B7A41BE9F240D3AF45082B4">
+				<Item class="TextLabel" referent="RBX707BCF1455A24087AC1495174B6EE2B0">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95862,7 +95866,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX289730FBA4324D16A5CD34F16AA2C050">
+				<Item class="TextLabel" referent="RBX98D174C871A342768ABD8C6BCA9ECA49">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -95939,7 +95943,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBXEA9D20D68F4349CA80436CB7E8446EED">
+				<Item class="TextLabel" referent="RBXFC788AB02988463B9E9F8133A7DE7A64">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -96017,14 +96021,14 @@ Edited by: wally, ic3, Yarios]]></string>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Folder" referent="RBX3E32003871C34C119F816881D26BC2A0">
+			<Item class="Folder" referent="RBX7EE846E3F7C84288B5C47D0CB4F9E781">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Bindables</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BindableFunction" referent="RBX6D83C3D5D3B9420983FF74F3BB1CBEE9">
+				<Item class="BindableFunction" referent="RBXEE669D98BB124FBCA016792BA082826E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetOption</string>
@@ -96032,7 +96036,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX6892B8A326FD47C8A0322EE8611ECEEA">
+				<Item class="BindableFunction" referent="RBXA15E6B9BF52A49B0BA701CE3FA345476">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetPrint</string>
@@ -96040,7 +96044,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBXC1A38ECD15FE4B9A836C0D77A469C969">
+				<Item class="BindableFunction" referent="RBX28C56FC6398A474088FDE75188D5B38A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetSelection</string>
@@ -96048,7 +96052,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBXF000170AB0A240AA82EB896B3049CF98">
+				<Item class="BindableFunction" referent="RBX9813BA61E31D49CE9C7BBE291F756E57">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetOption</string>
@@ -96056,7 +96060,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX1741FDBF77524306A9133B9C63F84191">
+				<Item class="BindableFunction" referent="RBX4BD9C0B28CD042B7BAD1BC2BEAE0655E">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetSelection</string>
@@ -96064,7 +96068,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableEvent" referent="RBXF5DF91DF87B54A37909B07F25240FEB4">
+				<Item class="BindableEvent" referent="RBX25AE28EFE99D460CB4CAFFD39E137E6A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SelectionChanged</string>
@@ -96072,7 +96076,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBXA50C68EEDEAF419CBE8119EDC1922C21">
+				<Item class="BindableFunction" referent="RBX8DB8861AD5AF4E9BB9C5CF696DCDB906">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetApi</string>
@@ -96080,7 +96084,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBX2B743F83A8254C4DA827D5A9344E2003">
+				<Item class="BindableFunction" referent="RBXC1D20698020148F88D415B1BE880ED56">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetAwaiting</string>
@@ -96088,7 +96092,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableEvent" referent="RBX698552D5B1004187B7B4FD8DADD9907F">
+				<Item class="BindableEvent" referent="RBX8F71607D824646E3B56A1ED4681457BE">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">SetAwaiting</string>
@@ -96096,7 +96100,7 @@ Edited by: wally, ic3, Yarios]]></string>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BindableFunction" referent="RBXEF5D734C5F6C4C85AF5C25EF378B713F">
+				<Item class="BindableFunction" referent="RBX37FC22AC0D044F77919543C2B2D63798">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">GetSpecials</string>

@@ -342,15 +342,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"backupmap";"mapbackup";"bmap";};
 			Args = {};
-			Hidden = false;
 			Description = "Changes the backup for the restore map command to the map's current state";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
+				local plr_name = plr and plr.Name
+
 				if plr then
 					Functions.Hint('Updating Map Backup...', { plr })
 				end
-				
+
 				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
@@ -362,9 +362,11 @@ return function(Vargs, env)
 
 				Variables.BackingupMap = true
 
-				local tempmodel = service.New('Model')
+				local tempmodel = service.New('Model', {
+					Name = "BACKUP_MAP_MODEL"
+				})
 				for _, v in ipairs(workspace:GetChildren()) do
-					if v.ClassName ~= "Terrain" and v.ClassName == "Model" and not service.Players:GetPlayerFromCharacter(v) then
+					if v.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(v) then
 						local archive = v.Archivable
 						v.Archivable = true
 						v:Clone().Parent = tempmodel
@@ -374,7 +376,7 @@ return function(Vargs, env)
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
 
-				local Terrain = workspace:FindFirstChildOfClass("Terrain")
+				local Terrain = workspace.Terrain or workspace:FindFirstChildOfClass("Terrain")
 				if Terrain then
 					Variables.TerrainMapBackup = Terrain:CopyRegion(Terrain.MaxExtents)
 				end
@@ -387,7 +389,7 @@ return function(Vargs, env)
 
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
-					Desc = (plr and plr.Name or "<LEFT-OR-UNKNOWN>") .. "has successfully backed up the map.";
+					Desc = (plr_name or "<SERVER>") .. " has successfully backed up the map.";
 				})
 			end
 		};

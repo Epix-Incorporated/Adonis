@@ -635,8 +635,8 @@ return function(Vargs)
 				end)
 
 				--// Character added
-				p.CharacterAdded:Connect(function()
-					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p);
+				p.CharacterAdded:Connect(function(...)
+					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p, ...);
 					if not ran then
 						logError(err);
 					end
@@ -733,7 +733,7 @@ return function(Vargs)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == service.Workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p);
+					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character);
 					if not ran then
 						logError(err)
 					end
@@ -812,7 +812,7 @@ return function(Vargs)
 			end
 		end;
 
-		CharacterAdded = function(p)
+		CharacterAdded = function(p, Character, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key];
 
@@ -820,7 +820,8 @@ return function(Vargs)
 				keyData.PlayerLoaded = true;
 			end
 
-			if p.Character and keyData and keyData.FinishedLoading then
+			wait();
+			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Anti Exploit stuff
@@ -845,7 +846,9 @@ return function(Vargs)
 
 				--// Wait for UI stuff to finish
 				wait(1);
-				p:WaitForChild("PlayerGui", 9e9);
+				if not p:FindFirstChildWhichIsA("PlayerGui") then
+					p:WaitForChild("PlayerGui", 9e9);
+				end
 				Remote.Get(p,"UIKeepAlive");
 
 				--//GUI loading
@@ -895,7 +898,7 @@ return function(Vargs)
 				Functions.Donor(p)
 
 				--// Fire added event
-				service.Events.CharacterAdded:Fire(p)
+				service.Events.CharacterAdded:Fire(p, Character, ...)
 
 				--// Run OnSpawn commands
 				for i,v in next,Settings.OnSpawn do
