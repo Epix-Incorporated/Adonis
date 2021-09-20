@@ -3133,7 +3133,7 @@ return function(Vargs, env)
 
 		Invisible = {
 			Prefix = Settings.Prefix;
-			Commands = {"invisible";};
+			Commands = {"invisible";"invis"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) invisible";
@@ -3158,7 +3158,7 @@ return function(Vargs, env)
 
 		Visible = {
 			Prefix = Settings.Prefix;
-			Commands = {"visible";};
+			Commands = {"visible";"vis"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes the target player(s) visible";
