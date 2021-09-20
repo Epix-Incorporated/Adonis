@@ -129,7 +129,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"unpermenantban", "unpermban", "unpban"};
+			Commands = {"unpermban", "unpermenantban", "unpban", "ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
