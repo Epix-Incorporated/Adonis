@@ -11,7 +11,7 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tempban";"tban";"timedban";"timeban";};
+			Commands = {"tempban";"timedban";"timeban";"tban";"temporaryban"};
 			Args = {"player";"number<s/m/h/d>";"reason"};
 			Hidden = false;
 			Filter = true;
@@ -77,7 +77,7 @@ return function(Vargs, env)
 
 		UnTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"untimeban";"untimedban";"untban";};
+			Commands = {"untimeban";"untimedban";"untban";"untempban";"untemporaryban"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Removes specified player from Timebans list";
@@ -102,11 +102,11 @@ return function(Vargs, env)
 			end
 		};
 
-		GameBan = {
+		PermenantBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"gameban", "saveban", "databan", "pban"};
+			Commands = {"permban", "permenantban", "pban", "gameban", "saveban", "databan"};
 			Args = {"player", "reason"};
-			Description = "Bans the player from the game (Saves)";
+			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			Hidden = false;
@@ -131,7 +131,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"ungameban", "saveunban", "undataban", "unpban"};
+			Commands = {"unpermban", "unpermenantban", "unpban", "ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
@@ -344,15 +344,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"backupmap";"mapbackup";"bmap";};
 			Args = {};
-			Hidden = false;
 			Description = "Changes the backup for the restore map command to the map's current state";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
+				local plr_name = plr and plr.Name
+
 				if plr then
 					Functions.Hint('Updating Map Backup...', { plr })
 				end
-				
+
 				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
@@ -364,9 +364,11 @@ return function(Vargs, env)
 
 				Variables.BackingupMap = true
 
-				local tempmodel = service.New('Model')
+				local tempmodel = service.New('Model', {
+					Name = "BACKUP_MAP_MODEL"
+				})
 				for _, v in ipairs(workspace:GetChildren()) do
-					if v.ClassName ~= "Terrain" and v.ClassName == "Model" and not service.Players:GetPlayerFromCharacter(v) then
+					if v.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(v) then
 						local archive = v.Archivable
 						v.Archivable = true
 						v:Clone().Parent = tempmodel
@@ -376,7 +378,7 @@ return function(Vargs, env)
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
 
-				local Terrain = workspace:FindFirstChildOfClass("Terrain")
+				local Terrain = workspace.Terrain or workspace:FindFirstChildOfClass("Terrain")
 				if Terrain then
 					Variables.TerrainMapBackup = Terrain:CopyRegion(Terrain.MaxExtents)
 				end
@@ -389,7 +391,7 @@ return function(Vargs, env)
 
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
-					Desc = (plr and plr.Name or "<LEFT-OR-UNKNOWN>") .. "has successfully backed up the map.";
+					Desc = (plr_name or "<SERVER>") .. " has successfully backed up the map.";
 				})
 			end
 		};

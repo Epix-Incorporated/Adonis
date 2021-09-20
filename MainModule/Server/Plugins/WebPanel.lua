@@ -5,7 +5,10 @@
 return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
-	local settings = server.Settings;
+
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	--[[
 		settings.WebPanel_Enabled = true;
@@ -14,7 +17,7 @@ return function(Vargs)
 	--]]
 
 	--// Note: This will only run/be required if the WebPanel_Enabled setting is true at server startup
-	if server.Settings.WebPanel_Enabled then
+	if Settings.WebPanel_Enabled then
 		local ran,WebModFunc = pcall(require, 6289861017)
 		if ran and WebModFunc then
 			coroutine.wrap(WebModFunc)(Vargs)
@@ -23,5 +26,5 @@ return function(Vargs)
 		end
 	end
 
-	server.Logs:AddLog("Script", "WebPanel Module Loaded");
+	Logs:AddLog("Script", "WebPanel Module Loaded");
 end
