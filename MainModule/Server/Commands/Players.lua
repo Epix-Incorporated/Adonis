@@ -800,7 +800,7 @@ return function(Vargs, env)
 					end
 
 					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					do
+					if privacyMode then hasSafeChat = "[Redacted]" else
 						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
 						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
 					end
