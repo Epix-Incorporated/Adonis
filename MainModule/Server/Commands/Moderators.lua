@@ -2914,7 +2914,7 @@ return function(Vargs, env)
 
 		Refresh = {
 			Prefix = Settings.Prefix;
-			Commands = {"refresh"};
+			Commands = {"refresh";"ref"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Refreshes the target player(s)'s character";
