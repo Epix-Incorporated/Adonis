@@ -3167,17 +3167,13 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in next,service.GetPlayers(plr,args[1]) do
 					if v.Character then
-						for i, v in next,service.GetPlayers(plr,args[1]) do
-							if v.Character then
-								for a, obj in next,v.Character:GetDescendants() do
-									if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
-										obj.Transparency = 0
-									elseif obj:IsA("Decal") then
-										obj.Transparency = 0
-									elseif obj:IsA("ForceField") then
-										obj.Visible = true
-									end
-								end
+						for a, obj in next,v.Character:GetDescendants() do
+							if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
+								obj.Transparency = 0
+							elseif obj:IsA("Decal") then
+								obj.Transparency = 0
+							elseif obj:IsA("ForceField") then
+								obj.Visible = true
 							end
 						end
 					end
