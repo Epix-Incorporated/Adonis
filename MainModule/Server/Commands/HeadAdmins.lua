@@ -100,11 +100,11 @@ return function(Vargs, env)
 			end
 		};
 
-		GameBan = {
+		PermenantBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"gameban", "saveban", "databan", "pban"};
+			Commands = {"permban", "permenantban", "pban", "gameban", "saveban", "databan"};
 			Args = {"player", "reason"};
-			Description = "Bans the player from the game (Saves)";
+			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			Hidden = false;
@@ -129,7 +129,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"ungameban", "saveunban", "undataban", "unpban"};
+			Commands = {"unpermban", "unpermenantban", "unpban", "ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
