@@ -12,21 +12,16 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Process = server.Process;
-	local Settings = server.Settings;
-	local Functions = server.Functions;
-	local Commands = server.Commands;
-	local Remote = server.Remote;
-	local Logs = server.Logs;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	--// *Try?* to enable AllowThirdPartySales (honestly, this obviously wouldn't work but roblox be kinda weird sometimes so yolo)
 	pcall(function() service.Workspace.AllowThirdPartySales = true end)
 
 	--// Worksafe
 	if Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
-		local ancsafe = server.Deps.Assets.WorkSafe:Clone()
+		local ancsafe = Deps.Assets.WorkSafe:Clone()
 		ancsafe.Mode.Value = "AntiLeak"
 		ancsafe.Name = "ADONIS_AntiLeak"
 		ancsafe.Archivable = false

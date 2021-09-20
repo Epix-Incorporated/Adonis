@@ -5,18 +5,17 @@ return function(Vargs)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Core = server.Core;
-	local Admin = server.Admin;
-	local Remote = server.Remote;
-	local Commands = server.Commands;
-	local Variables = server.Variables;
-	local Settings = server.Settings;
+	local Settings = server.Settings
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
-	local r,AlertTab = true,require(5479981424) --xpcall(function() return require(5479981424); end, function(err)
+	local r, AlertTab = xpcall(require, function()
+		warn("Something went wrong while requiring the urgent messages module");
+	end, 5479981424) --xpcall(function() return require(5479981424); end, function(err)
 		--warn("Something went wrong while requiring the urgent messages module");
 	--end); -- Causes an error?
 
-	local Alerts = (r and AlertTab) or require(server.Deps.__URGENT_MESSAGES)
+	local Alerts = (r and AlertTab) or require(Deps.__URGENT_MESSAGES)
 
 	local MessageVersion = Alerts.MessageVersion;			--// Message version/number
 	local MessageAdminType = Alerts.MessageAdminType;  		--// Minimum admin level to be notified (Or Donors or Players or nil to not notify)
@@ -74,7 +73,7 @@ return function(Vargs)
 			local data = Core.GetPlayer(p);
 			if checkDoNotify(p, data) then
 				data.LastUrgentMessage = MessageVersion;
-				doNotify(p);
+				task.delay(0.5, doNotify, p)
 			end
 		end
 	end)
