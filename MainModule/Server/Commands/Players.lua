@@ -107,7 +107,7 @@ return function(Vargs, env)
 							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
 							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
 							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
-							{Text = "Admin Level: "..cmd.AdminLevel, Desc = "Rank required to run the command"},
+							{Text = "Admin Level: "..cmd.AdminLevel.." ("..Admin.LevelToListName(cmd.AdminLevel)..")", Desc = "Rank required to run the command"},
 							{Text = "Fun: "..tostring(cmd.Fun), Desc = "Is the command fun?"},
 							{Text = "Hidden: "..tostring(cmd.Hidden), Desc = "Is the command hidden from the command list?"},
 							{Text = "Description: "..cmd.Description, Desc = "Command description"}
