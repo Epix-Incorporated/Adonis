@@ -1,4 +1,4 @@
-name: rojo
+name: build
 
 on:
   push:

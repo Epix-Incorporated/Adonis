@@ -1,0 +1,19 @@
+name: deploy
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: Roblox/setup-foreman@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy
+        run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id 2373501710 deploy.project.json
