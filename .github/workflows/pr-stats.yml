@@ -8,7 +8,8 @@ jobs:
     steps:
       - name: Run pull request stats
         uses: flowwer-dev/pull-request-stats@master
-        with:          
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           period: 30
           charts: true
           disable-links: true
