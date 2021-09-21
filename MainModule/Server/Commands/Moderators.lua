@@ -1687,7 +1687,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";"ranks"};
+			Commands = {"admins";"adminlist";"headadmins";"owners";"moderators";"ranks"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -2578,7 +2578,7 @@ return function(Vargs, env)
 
 		Track = {
 			Prefix = Settings.Prefix;
-			Commands = {"track";"trace";"find";};
+			Commands = {"track";"trace";"find";"locate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
@@ -2627,7 +2627,7 @@ return function(Vargs, env)
 
 		UnTrack = {
 			Prefix = Settings.Prefix;
-			Commands = {"untrack";"untrace";"unfind";};
+			Commands = {"untrack";"untrace";"unfind";"unlocate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
@@ -3341,7 +3341,7 @@ return function(Vargs, env)
 
 		RemoveFog = {
 			Prefix = Settings.Prefix;
-			Commands = {"nofog";"fogoff";};
+			Commands = {"nofog";"fogoff";"unfog"};
 			Args = {"optional player"};
 			Hidden = false;
 			Description = "Fog Off";
@@ -4476,7 +4476,7 @@ return function(Vargs, env)
 
 		Volume = {
 			Prefix = Settings.Prefix;
-			Commands = {"volume"};
+			Commands = {"volume","vol"};
 			Args = {"number"};
 			Description = "Change the volume of the currently playing song";
 			AdminLevel = "Moderators";
@@ -4660,7 +4660,7 @@ return function(Vargs, env)
 
 		StopMusic = {
 			Prefix = Settings.Prefix;
-			Commands = {"stopmusic";"musicoff";};
+			Commands = {"stopmusic";"musicoff";"unmusic"};
 			Args = {};
 			Hidden = false;
 			Description = "Stop the currently playing song";
