@@ -1,0 +1,21 @@
+name: loader
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: Roblox/setup-foreman@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set DebugMode off
+        run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
+
+      - name: Deploy
+        run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id 7510622625 .github/loader.deploy.project.json

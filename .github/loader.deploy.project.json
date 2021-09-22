@@ -1,0 +1,6 @@
+{
+	"name": "Adonis_Loader",
+	"tree": {
+        "$path": "../Loader"
+	}
+} 
