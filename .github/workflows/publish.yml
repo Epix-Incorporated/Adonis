@@ -1,11 +1,11 @@
-name: loader
+name: publish
 
 on:
   release:
     types: [published]
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -17,5 +17,8 @@ jobs:
       - name: Set DebugMode off
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
 
-      - name: Deploy
+      - name: Deploy Loader
         run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id 7510622625 .github/loader.deploy.project.json
+
+      - name: Deploy MainModule
+        run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id 7510592873 .github/module.deploy.project.json
