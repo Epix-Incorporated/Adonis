@@ -511,6 +511,7 @@ return function(Vargs, env)
 					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Non-admins (normal players) in the server';
 					'<i>'..Settings.SpecialPrefix..'others</i> - Everyone except yourself';
 					'<i>'..Settings.SpecialPrefix..'random</i> - A random person in the server';
+					'<i>@USERNAME</i> - Targets a specific player with that exact username';
 					'<i>#NUM</i> - NUM random players in the server <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
 					'<i>'..Settings.SpecialPrefix..'friends</i> - Your friends who are in the server';
 					'<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
