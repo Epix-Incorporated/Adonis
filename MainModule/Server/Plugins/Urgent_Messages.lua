@@ -28,6 +28,7 @@ return function(Vargs)
 		Remote.MakeGui(p,"Notification",{
 			Title = "Urgent Message!";
 			Message = "Click to view messages";
+			Icon = "rbxassetid://7495456913";
 			Time = 20;
 			OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')");
 		})
