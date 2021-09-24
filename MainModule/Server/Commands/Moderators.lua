@@ -1700,7 +1700,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";"ranks"};
+			Commands = {"admins";"adminlist";"headadmins";"owners";"moderators";"ranks"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -2591,7 +2591,7 @@ return function(Vargs, env)
 
 		Track = {
 			Prefix = Settings.Prefix;
-			Commands = {"track";"trace";"find";};
+			Commands = {"track";"trace";"find";"locate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
@@ -2640,7 +2640,7 @@ return function(Vargs, env)
 
 		UnTrack = {
 			Prefix = Settings.Prefix;
-			Commands = {"untrack";"untrace";"unfind";};
+			Commands = {"untrack";"untrace";"unfind";"unlocate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
@@ -3354,7 +3354,7 @@ return function(Vargs, env)
 
 		RemoveFog = {
 			Prefix = Settings.Prefix;
-			Commands = {"nofog";"fogoff";};
+			Commands = {"nofog";"fogoff";"unfog"};
 			Args = {"optional player"};
 			Hidden = false;
 			Description = "Fog Off";
@@ -4489,7 +4489,7 @@ return function(Vargs, env)
 
 		Volume = {
 			Prefix = Settings.Prefix;
-			Commands = {"volume"};
+			Commands = {"volume","vol"};
 			Args = {"number"};
 			Description = "Change the volume of the currently playing song";
 			AdminLevel = "Moderators";
@@ -4673,7 +4673,7 @@ return function(Vargs, env)
 
 		StopMusic = {
 			Prefix = Settings.Prefix;
-			Commands = {"stopmusic";"musicoff";};
+			Commands = {"stopmusic";"musicoff";"unmusic"};
 			Args = {};
 			Hidden = false;
 			Description = "Stop the currently playing song";
@@ -5793,42 +5793,6 @@ return function(Vargs, env)
 				else
 					service.SoundService.AmbientReverb = ReverbType[rev]
 					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
-				end
-			end
-		};
-
-		Inspect = {
-			Prefix = Settings.Prefix;
-			Commands = {"inspect";"playerinfo"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local hasSafeChat
-					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
-					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
-					local level, rank = Admin.GetLevel(v);
-
-					do
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
-					end
-
-					Remote.MakeGui(plr, "Inspect", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
-						IsMuted = isMuted;
-						IsBanned = isBanned;
-						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
-						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
-					})
 				end
 			end
 		};

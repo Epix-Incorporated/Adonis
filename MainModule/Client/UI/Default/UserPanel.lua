@@ -1245,6 +1245,21 @@ return function(data)
 						toggle.Text = text
 					end
 				};
+									{
+					Text = "Privacy Mode: ";
+					Desc = "- Hide certain info from your profile";
+					Entry = "Boolean";
+					Setting = "PrivacyMode";
+					Value = client.Variables.PrivacyMode or false;
+					Function = function(enabled, toggle)
+						client.Variables.PrivacyMode = enabled
+
+						local text = toggle.Text
+						toggle.Text = "Saving.."
+						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
+						toggle.Text = text
+					end
+				};
 				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
