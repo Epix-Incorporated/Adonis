@@ -906,7 +906,7 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s";"ss";"serverscript";"sscript";"makescript"};
+			Commands = {"s";"ss";"serverscript";"sscript";"makescript";"script"};
 			Args = {"code";};
 			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
