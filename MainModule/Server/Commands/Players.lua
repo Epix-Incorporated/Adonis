@@ -432,6 +432,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you follow the player you gave the username of to the server they are in";
 			Fun = false;
+			NoStudio = true; --TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
@@ -542,15 +543,16 @@ return function(Vargs, env)
 
 		GlobalJoin = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend";};
+			Commands = {"joinfriend";"globaljoin"};
 			Args = {"username";};
 			Hidden = false;
 			Description = "Joins your friend outside/inside of the game (must be online)";
 			Fun = false;
+			NoStudio = true;
 			AdminLevel = "Players";
 			Function = function(plr,args) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-
+				assert(args[1],"Must enter valid Roblox username")
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 
 				if player then
