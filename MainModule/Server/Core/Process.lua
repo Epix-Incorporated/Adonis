@@ -268,7 +268,7 @@ return function(Vargs)
 						if allowed and Variables.IsStudio and command.NoStudio then
 							Remote.MakeGui(p, 'Output', {
 								Title = '';
-								Message = 'This command cannot be used inside the Roblox Studio enviroment.';
+								Message = 'This command cannot be used in Roblox Studio.';
 								Color = Color3.new(1,0,0)
 							})
 							return
