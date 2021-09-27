@@ -296,7 +296,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Enter a valid TextureId (Argument missing or nil)")
 
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then

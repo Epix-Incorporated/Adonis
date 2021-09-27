@@ -3667,9 +3667,9 @@ return function(Vargs, env)
 
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
-					Functions.Hint("Size changed to 1 [Argument #2 wasn't supplied correctly.]", {plr})
+					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
-					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 went over the size limit]", {plr})
+					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
 				end
 
 				for i,v in next,service.GetPlayers(plr,args[1]) do

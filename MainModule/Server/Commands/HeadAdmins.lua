@@ -19,7 +19,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				assert(args[1] and args[2], "Argument missing or nil")
+				assert(args[1], "You need to enter a player name (Argument missing or nil)")
+				assert(args[2], "Enter an amount of time - see "..Settings.PlayerPrefix.."usage for info (Argument missing or nil)")
 				local time = args[2]
 
 				if time:lower():sub(#time)=='s' then
@@ -292,7 +293,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				if not args[1] then error("Missing argument") end
+				if not args[1] then error("Enter a valid list name (Missing argument)") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
 				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
 				if not list then error("List not found.") end
