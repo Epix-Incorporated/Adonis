@@ -159,7 +159,8 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr, args)
-				assert(args[1] and args[2], "Argument(s) missing or nil")
+				assert(args[1], "Must provide the amount of time (Argument(s) missing or nil)")
+				assert(args[2], "You forgot to supply a message (Argument(s) missing or nil)")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
 					Message = args[2];
@@ -417,6 +418,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you rejoin the server";
 			Fun = false;
+			NoStudio = true; --Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)

@@ -265,6 +265,15 @@ return function(Vargs)
 							allowed = false;
 						end
 
+						if allowed and Variables.IsStudio and command.NoStudio then
+							Remote.MakeGui(p, 'Output', {
+								Title = '';
+								Message = 'This command cannot be used inside the Roblox Studio enviroment.';
+								Color = Color3.new(1,0,0)
+							})
+							return
+						end
+
 						if allowed and opts.Chat and command.Chattable == false then
 							Remote.MakeGui(p, 'Output', {
 								Title = '',

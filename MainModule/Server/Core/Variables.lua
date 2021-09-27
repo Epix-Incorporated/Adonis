@@ -48,6 +48,7 @@ return function(Vargs)
 		RunAfterInit = AfterInit;
 		ZaWarudo = false;
 		CodeName = math.random();
+		IsStudio = service.RunService:IsStudio(); --Used to check if Adonis is running inside Roblox Studio as things like TeleportService do not work in Studio
 		AuthorizedToReply = {};
 		FrozenObjects = {};
 		ScriptBuilder = {};
