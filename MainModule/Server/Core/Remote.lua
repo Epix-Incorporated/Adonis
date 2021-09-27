@@ -470,7 +470,6 @@ return function(Vargs)
 						for i,v in next,Remote.Terminal.Commands do
 							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
 							table.insert(output, "- ".. tostring(v.Description))
-							table.insert(output, " ")
 						end
 						return output
 					end;
@@ -902,6 +901,7 @@ return function(Vargs)
 					local target = args[2]
 					local from = args[3]
 					local message = args[4]
+					if args[2]:match("^%s*$") then return end
 					Remote.MakeGui(target,"PrivateMessage",{
 						Title = "Reply from ".. p.Name;--title;
 						Player = p;

@@ -13,7 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cmds","commands","cmdlist"};
 			Args = {};
-			Description = "Shows you a list of commands";
+			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
@@ -310,20 +310,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GetPing = {
-			Prefix = Settings.Prefix;
-			Commands = {"getping";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Shows the target player's ping";
-			Fun = false;
-			AdminLevel = "Helpers";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
-				end
-			end
-		};
 
 		Donors = {
 			Prefix = Settings.PlayerPrefix;

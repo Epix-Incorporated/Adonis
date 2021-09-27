@@ -758,7 +758,7 @@ return function(Vargs, env)
 				local function systemMessage(msg)
 					local data
 					data = {
-						Name = "*SYSTEM*";
+						Name = "* SYSTEM *";
 						UserId = 0;
 						Icon = 0;
 					};
@@ -904,7 +904,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
-				if Admin.CheckAdmin(plr) then
+				if Admin.CheckAdmin(plr) and not args[2]:match("^%s*$") then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
@@ -1588,9 +1588,22 @@ return function(Vargs, env)
 				})
 			end;
 		};
-
+		GetPing = {
+			Prefix = Settings.Prefix;
+			Commands = {"getping";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Shows the target player's ping";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
+				end
+			end
+		};
 		Tasks = {
-			Hidden = true;
+			Hidden = false;
 			Prefix = ":";
 			Commands = {"tasks"};
 			Args = {"player"};
@@ -4849,6 +4862,30 @@ return function(Vargs, env)
 					new.Parent = v.Character.HumanoidRootPart
 					new.Disabled = false
 				end
+			end
+		};
+
+		TestFilter = {
+			Prefix = Settings.Prefix;
+			Commands = {"testfilter";"filtertest";"tfilter"};
+			Args = {"player";"text";};
+			Filter = false;
+			NoFilter = true;
+			Description = "Test out Roblox's text filtering on a player";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local temp = {{Text="Original: "..args[2], Desc = args[2]}}
+				if service.RunService:IsStudio() then 
+					table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
+				end
+				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+					table.insert(temp, {Text = "-- "..v.DisplayName.." --",Desc = v.UserId.." ("..v.Name..")"})
+					table.insert(temp, {Text = "ChatForUser: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetChatForUserAsync(v.UserId)})
+					table.insert(temp, {Text = "NonChatForBroadcast: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForBroadcastAsync()})
+					table.insert(temp, {Text = "NonChatForUser: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForUserAsync(v.UserId)})
+
+				end
+				Remote.MakeGui(plr,"List",{Title = 'Filtering Results', Tab = temp})
 			end
 		};
 
