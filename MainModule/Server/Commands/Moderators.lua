@@ -906,7 +906,7 @@ return function(Vargs, env)
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name name (Argument missing)")
+				assert(args[1], "You need to specify a player name (Argument missing)")
 				assert(args[2], "You forgot to provide a message to the player! (Argument missing)")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
