@@ -3958,6 +3958,7 @@ return function(Vargs, env)
 			Commands = {"makeserver";"reserveserver";"privateserver";};
 			Args = {"serverName";"(optional) placeId";};
 			Filter = true;
+			NoStudio = true; -- TeleportService does not work in Studio
 			Description = "Makes a private server that you can teleport yourself and friends to using :place player(s) serverName; Will overwrite servers with the same name; Caps specific";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3972,7 +3973,7 @@ return function(Vargs, env)
 
 		DeleteServer = {
 			Prefix = Settings.Prefix;
-			Commands = {"delserver";"deleteserver"};
+			Commands = {"delserver";"deleteserver";"removeserver";"rmserver"};
 			Args = {"serverName";};
 			Hidden = false;
 			Description = "Deletes a private server from the list.";
