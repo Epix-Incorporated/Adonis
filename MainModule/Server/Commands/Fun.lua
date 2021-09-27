@@ -122,7 +122,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1] and args[2],"You need to specify a player name (Argument missing or nil)")
+				assert(args[1],"You need to specify a player name (Argument missing or nil)")
 				assert(args[2], "You need to specify a FPS value (Argument missing or nil)")
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid number")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
