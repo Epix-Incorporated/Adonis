@@ -19,8 +19,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				assert(args[1], "You need to enter a player name (Argument missing or nil)")
-				assert(args[2], "Enter an amount of time - see "..Settings.PlayerPrefix.."usage for info (Argument missing or nil)")
+				assert(args[1], "You need to enter a player name")
+				assert(args[2], "Enter an amount of time - see "..Settings.PlayerPrefix.."usage for info")
 				local time = args[2]
 
 				if time:lower():sub(#time)=='s' then
@@ -85,7 +85,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				assert(args[1], "Must supply valid player name (Argument missing or nil)")
+				assert(args[1], "Must supply valid player name")
 				local timebans = Core.Variables.TimeBans or {}
 
 				for i, data in next, timebans do
@@ -210,7 +210,7 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "A message must be provided (Argument #1 must be supplied)")
+				assert(args[1], "A message must be provided")
 
 				local globalMessage = string.format([[
 					local server = server
@@ -244,8 +244,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "You need to specify the amount of time (Argument #1 must be supplied)")
-				assert(args[2], "You forgot to supply a message! (Argument #2 must be supplied)")
+				assert(args[1], "You need to specify the amount of time")
+				assert(args[2], "You forgot to supply a message!")
 
 
 				local globalMessage = string.format([[
@@ -279,7 +279,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				if not args[1] then error("You need to supply a list name. (Missing argument)") end
+				if not args[1] then error("You need to supply a list name.") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 				local list = trello.Boards.MakeList(Settings.Trello_Primary,args[1])
 				Functions.Hint("Made list "..list.name,{plr})
@@ -295,7 +295,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				if not args[1] then error("Enter a valid list name (Missing argument)") end
+				if not args[1] then error("Enter a valid list name") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
 				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
 				if not list then error("List not found.") end

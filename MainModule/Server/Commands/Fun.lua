@@ -122,8 +122,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You need to provide a FPS value (Argument missing or nil)")
+				assert(args[1],"You need to specify a player name")
+				assert(args[2], "You need to provide a FPS value")
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid number")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","SetFPS",tonumber(args[2]))
@@ -4015,7 +4015,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2],"You need to specify two player names (Argument missing or nil)")
+				assert(args[1] and args[2],"You need to specify two player names")
 				for i,player1 in pairs(service.GetPlayers(plr,args[1])) do
 					for i2,player2 in pairs(service.GetPlayers(plr,args[2])) do
 						local torso1 = player1.Character:FindFirstChild("HumanoidRootPart")
@@ -4643,7 +4643,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if not args[2] then error("Need to supply hat ID (Argument missing or nil)") end
+				if not args[2] then error("Need to supply hat ID") end
 
 				local id = args[2]
 
@@ -4927,7 +4927,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local num = assert(tonumber(args[1]), "You need to specify a gravity value (Argument missing or not number.)")
+				local num = assert(tonumber(args[1]), "You need to specify a gravity value (Gravity value must be a number)")
 				workspace.Gravity = num or 196.2
 			end
 		};

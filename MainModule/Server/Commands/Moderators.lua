@@ -150,8 +150,8 @@ return function(Vargs, env)
 			Filter = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify the player name (Argument missing or nil)")
-				assert(args[2], "You need to provide a message to the server (Argument missing or nil)")
+				assert(args[1], "You need to specify the player name")
+				assert(args[2], "You need to provide a message to the player")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Notification", {
@@ -189,7 +189,7 @@ return function(Vargs, env)
 			Description = "Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = assert(tonumber(args[1]), "Enter a time for countdown (Argument 1 missing or not number)")
+				local num = assert(tonumber(args[1]), "Enter a time for countdown")
 
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
@@ -211,9 +211,9 @@ return function(Vargs, env)
 			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify the player name (Argument missing or nil)")
-				assert(args[2], "You need to provide the amount of time for countdown (Argument missing or nil)")
-				local num = assert(tonumber(args[2]), "Time value must be a number (Argument 1 missing or not number)")
+				assert(args[1], "You need to specify the player name")
+				assert(args[2], "You need to provide the amount of time for countdown")
+				local num = assert(tonumber(args[2]), "Time value must be a number")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Countdown", {
@@ -230,7 +230,7 @@ return function(Vargs, env)
 			Description = "Hint Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				local num = math.min(assert(tonumber(args[1]), "Time must be a number (Argument 1 missing or not number)"), 120)
+				local num = math.min(assert(tonumber(args[1]), "Time must be a number"), 120)
 				local loop
 				loop = service.StartLoop("HintCountdown", 1, function()
 					if num < 1 then
@@ -265,8 +265,8 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify the amount of time (Argument missing or nil)")
-				assert(args[2], "You forgot to supply a message! (Argument missing or nil)")
+				assert(args[1], "You need to specify the amount of time")
+				assert(args[2], "You forgot to supply a message!")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
@@ -287,7 +287,7 @@ return function(Vargs, env)
 			Description = "Makes a message";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You must supply a message (Argument missing or nil)")
+				assert(args[1], "You must supply a message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
@@ -309,8 +309,8 @@ return function(Vargs, env)
 			Description = "Makes a message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You forgot to supply a message (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You forgot to supply a message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
@@ -326,7 +326,7 @@ return function(Vargs, env)
 			Description = "Makes a small message";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You must supply a message (Argument missing or nil)")
+				assert(args[1], "You must supply a message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
@@ -346,8 +346,8 @@ return function(Vargs, env)
 			Description = "Makes a small message on the target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You forgot to supply a message (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You forgot to supply a message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Notify")
@@ -367,7 +367,7 @@ return function(Vargs, env)
 			Description = "Makes a hint";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You must supply a message (Argument missing or nil)")
+				assert(args[1], "You must supply a message")
 				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[1])
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
@@ -385,8 +385,8 @@ return function(Vargs, env)
 			Description = "Warns players";
 			AdminLevel = "Moderators";
 			Function = function(plr, args, data)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You forgot to supply a reason (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You forgot to supply a reason")
 				local plrLevel = data.PlayerData.Level
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -415,8 +415,8 @@ return function(Vargs, env)
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args, data)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You forgot to supply a reason (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You forgot to supply a reason")
 				local plrLevel = data.PlayerData.Level
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -442,7 +442,7 @@ return function(Vargs, env)
 			Description = "Shows warnings a player has";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					local tab = {}
@@ -468,7 +468,7 @@ return function(Vargs, env)
 			Description = "Clears any warnings on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					data.Warnings = {}
@@ -739,7 +739,7 @@ return function(Vargs, env)
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to provide a player name to start a private chat session. (Argument missing)")
+				assert(args[1], "You need to provide a player name to start a private chat session.")
 
 				local sessionName = Functions.GetRandom(); --// Used by the private chat windows
 				local newSession = Remote.NewSession("PrivateChat");
@@ -908,8 +908,8 @@ return function(Vargs, env)
 			Description = "Send a private message to a player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1], "You need to specify a player name (Argument missing)")
-				assert(args[2], "You forgot to provide a message to the player! (Argument missing)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You forgot to provide a message to the player!")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
 				if Admin.CheckAdmin(plr) and not args[2]:match("^%s*$") then
@@ -1478,7 +1478,7 @@ return function(Vargs, env)
 				if amount>50 then amount=50 end
 				local command = args[3]
 				local name = plr.Name:lower()
-				assert(command, "Must supply command to repeat (Argument #3 needs to be supplied)")
+				assert(command, "Must supply command to repeat")
 				if command:sub(1,#Settings.Prefix+string.len("repeat")):lower() == string.lower(Settings.Prefix.."repeat") or command:sub(1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."repeat") then
 					error("Cannot repeat the loop command in a loop command")
 					return
@@ -1695,8 +1695,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local jobId = args[2];
-				assert(args[1], "You need to supply a player name (Argument missing or nil)")
-				assert(jobId, "You need to supply the server's JobId (Argument missing or nil)")
+				assert(args[1], "You need to supply a player name")
+				assert(jobId, "You need to supply the server's JobId")
 				if service.RunService:IsStudio() then
 					error("Command cannot be used in studio.",0)
 				else
@@ -3762,7 +3762,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1],"Must supply player name (Argument missing or nil)")
+				assert(args[1],"Must supply player name")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						local humanoid = v.Character.Humanoid
@@ -3782,7 +3782,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1],"Must supply player name (Argument missing or nil)")
+				assert(args[1],"Must supply player name")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						local humanoid = v.Character.Humanoid
@@ -3802,7 +3802,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1],"Must supply player name (Argument missing or nil)")
+				assert(args[1],"Must supply player name")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.WalkSpeed = args[2] or 16
@@ -3820,8 +3820,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1], "You need to specify a player name (Argument missing or nil)")
-				assert(args[2], "You need to specify a team name (Argument missing or nil)")
+				assert(args[1], "You need to specify a player name")
+				assert(args[2], "You need to specify a team name")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					for a, tm in pairs(service.Teams:GetChildren()) do
 						if tm.Name:lower():sub(1,#args[2]) == args[2]:lower() then
@@ -3918,8 +3918,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1], "You need to specify the player name (Argument missing or invalid)")
-				assert(args[2] and tonumber(args[2]), "You need to provide a FOV number (Argument missing or invalid)")
+				assert(args[1], "You need to specify the player name")
+				assert(args[2] and tonumber(args[2]), "You need to provide a FOV number")
 				for i,v in next,service.GetPlayers(plr, args[1]) do
 					Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
 				end
@@ -4332,8 +4332,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args,data)
 
-				assert(args[1],"You need to specify the player name (Argument missing or invalid)")
-				assert(args[2] and tonumber(args[2]),"Must provide valid AudioId (Argument missing or invalid)")
+				assert(args[1],"You need to specify the player name")
+				assert(args[2] and tonumber(args[2]),"Must provide valid AudioId")
 
 				local id = args[2]
 				local volume = 1 --tonumber(args[5]) or 1
@@ -4398,8 +4398,8 @@ return function(Vargs, env)
 			Description = "Lets you place an audio in the target's character";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				assert(args[1],"You need to specify the player name (Argument missing or invalid)")
-				assert(args[2] and tonumber(args[2]),"Must provide valid AudioId (Argument missing or invalid)")
+				assert(args[1],"You need to specify the player name")
+				assert(args[2] and tonumber(args[2]),"Must provide valid AudioId")
 				local audio = service.New("Sound", {
 					Looped = true;
 					Name = "ADONIS_AUDIO";
@@ -4538,7 +4538,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				service.StopLoop("MusicShuffle")
 				Admin.RunCommand(Settings.Prefix.."stopmusic")
-				if not args[1] then error("Invalid shuffle list (Missing argument)") end
+				if not args[1] then error("Invalid shuffle list") end
 				if args[1]:lower()~="off" then
 					local idList = {}
 
@@ -4888,9 +4888,12 @@ return function(Vargs, env)
 			Args = {"player";"text";};
 			Filter = false;
 			NoFilter = true;
+			NoStudio = true; --Text filtering does not work in studio
 			Description = "Test out Roblox's text filtering on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				assert(args[1],"Enter player name to test filter")
+				assert(args[2],"Must enter text to filter")
 				local temp = {{Text="Original: "..args[2], Desc = args[2]}}
 				if service.RunService:IsStudio() then 
 					table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
@@ -5081,8 +5084,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2] and tonumber(args[2]), "You need to specify the player name (Argument 1 is not supplied properly)")
-				assert(args[1] and args[2] and tonumber(args[2]), "Provide a package Id (Argument 2 is not supplied properly)")
+				assert(args[1] and args[2] and tonumber(args[2]), "You need to specify the player name")
+				assert(args[1] and args[2] and tonumber(args[2]), "Provide a package Id (ID MUST BE A NUMBER)")
 
 				local items = {}
 				local id = tonumber(args[2])
@@ -5148,8 +5151,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1], "You need to specify the player name (Argument #1 must be filled)")
-				assert(args[2], "Enter the username of the player you want to change the character appearence to. (Argument #2 must be filled)")
+				assert(args[1], "You need to specify the player name")
+				assert(args[2], "Enter the username of the player you want to change the character appearence to.")
 
 				local target = tonumber(args[2]:match("^userid%-(%d*)"))
 				if not target then
@@ -5824,9 +5827,9 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1], "You need to specify the player name (Argument missing or nil)")
-				assert(args[2], "Enter true or false for the reset button (Argument missing or nil)")
-				assert(args[2]:lower() == "true" or args[2]:lower() == "false", "Enter 'true' or 'false' to enable/disable the reset button (Invalid argument #2 (boolean expected))")
+				assert(args[1], "You need to specify the player name")
+				assert(args[2], "Enter true or false for the reset button")
+				assert(args[2]:lower() == "true" or args[2]:lower() == "false", "Enter 'true' or 'false' to enable/disable the reset button (boolean expected)")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.LoadCode(v,"service.StarterGui:SetCore('ResetButtonCallback',"..args[2]:lower()..")")
 				end

@@ -159,8 +159,8 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr, args)
-				assert(args[1], "Must provide the amount of time (Argument(s) missing or nil)")
-				assert(args[2], "You forgot to supply a message (Argument(s) missing or nil)")
+				assert(args[1], "Must provide the amount of time")
+				assert(args[2], "You forgot to supply a message")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
 					Message = args[2];
