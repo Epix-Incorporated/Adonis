@@ -617,7 +617,7 @@ return function(Vargs)
 
 			if not ran then
 				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
-				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
 

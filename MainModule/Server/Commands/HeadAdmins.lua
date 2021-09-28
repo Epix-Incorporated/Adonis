@@ -11,8 +11,8 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tban";"timedban";"timeban";"tempban";"temporaryban"};
-			Args = {"player";"number<s/m/h/d>";};
+			Commands = {"tempban";"timedban";"timeban";"tban";"temporaryban"};
+			Args = {"player";"number<s/m/h/d>";"reason"};
 			Hidden = false;
 			Filter = true;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
@@ -50,16 +50,18 @@ return function(Vargs, env)
 				}) do
 					if level > Admin.GetLevel(v) then
 						local endTime = os.time() + tonumber(time)
-
+						local reason = args[3] or "No reason provided";
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
 							EndTime = endTime;
+							Reason = reason;
 						}
 
 						table.insert(timebans, data)
 
-						v:Kick("\nBanned until ".. service.FormatTime(endTime, true))
+						-- Please make a Admin.AddTimeBan function like Admin.AddBan
+						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, true))
 						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...",{plr})
 
 						Core.DoSave({
