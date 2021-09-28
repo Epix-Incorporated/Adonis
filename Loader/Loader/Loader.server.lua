@@ -86,6 +86,9 @@ else
 		setTab = {}
 	end
 
+	if service.RunService:IsStudio() then
+		warn("Adonis is running in a Roblox Studio enviroment. Some commands (such as those which utilise TeleportService) and features may not work correctly.")
+
 	data.Settings = setTab.Settings;
 	data.Descriptions = setTab.Description;
 	data.Order = setTab.Order;
