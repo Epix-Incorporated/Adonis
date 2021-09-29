@@ -126,7 +126,7 @@ return function(Vargs)
 			{Name="pokemon",ID=1372261};
 			{Name="cursed",ID=1372257};
 			{Name="extreme",ID=11420933};
-			{Name="tacos",ID=142295308};
+			{Name="tacos",ID=142295308}; -- Raining Tacos
 			{Name="wakemeup",ID=2599359802};
 			{Name="awaken",ID=27697277};
 			{Name="alone",ID=27697392};
@@ -161,7 +161,6 @@ return function(Vargs)
 			{Name="crabraveoof",ID=2590490779}; -- Crab rave oof
 			{Name="deathbed",ID=4966153470};
 			{Name="crabrave",ID=5410086218}; -- Noisestorm - Crab Rave
-			{Name="closer",ID=7023459476};
 		};
 
 		InsertList = {};
