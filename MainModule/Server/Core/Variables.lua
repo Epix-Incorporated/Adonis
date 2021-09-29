@@ -112,10 +112,10 @@ return function(Vargs)
 		BundleCache = {};
 
 		MusicList = {
-			{Name='jericho',ID=292340735};
-			{Name='beam',ID=165065112};
+			{Name='jericho',ID=292340735}; -- Jericho - Gordon Bok
+			{Name='beam',ID=165065112}; -- Mako - Beam (Proximity)
 			{Name='myswamp',ID=166325648};
-			{Name='skeletons',ID=168983825};
+			{Name='skeletons',ID=168983825}; -- Spooky Scary Skeletons
 			{Name='russianmen',ID=173038059};
 			{Name='freedom',ID=130760592};
 			{Name='seatbelt',ID=135625718};
@@ -154,13 +154,14 @@ return function(Vargs)
 			{Name="guitar",ID=5986151};
 			{Name="pianoremix",ID=142407859};
 			{Name="antidote",ID=145579822};
-			{Name="overtime",ID=135037991};
 			{Name="tsunami",ID=569900517};
 			{Name="minecraftorchestral",ID=148900687};
 			{Name="superbacon",ID=300872612};
 			{Name="alonemarsh",ID=639750143}; -- Alone - Marshmello
 			{Name="crabraveoof",ID=2590490779}; -- Crab rave oof
 			{Name="deathbed",ID=4966153470};
+			{Name="crabrave",ID=5410086218}; -- Noisestorm - Crab Rave
+			{Name="closer",ID=7023459476};
 		};
 
 		InsertList = {};
