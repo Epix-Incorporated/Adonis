@@ -72,34 +72,31 @@ return function(Vargs)
 			PerformedCommands = {};
 
 			Update = function()
+				if not Settings.Trello_Enabled then
+					return;
+				end
+
 				if not HTTP.CheckHttp() then
 					--HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
 					warn('Http is not enabled! Cannot connect to Trello!')
-				elseif not Settings.Trello_Enabled then
-					-- Do something else?
 				else
-					local boards = {}
+					local admins, mods, HeadAdmins, creators = {}, {}, {}, {}
 					local bans = {}
-					local admins = {}
-					local mods = {}
-					local HeadAdmins = {}
-					local helpers = {}
-					local creators = {}
-					local music = {}
-					local insertlist = {}
 					local mutes = {}
-					local perms = {}
-					local blacklist = {}
+					local music = {}
 					local whitelist = {}
+					local blacklist = {}
+					local insertlist = {}
+					local boards = {}
 
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 						local oldListObj = trello.getListObj;
 						trello.getListObj = function(...)
-							local vargs = {...}
+							local vargs = table.pack(...)
 							return select(2, service.Queue("TrelloCall", function()
 								wait(10/60)
-								return oldListObj(table.unpack(vargs))
+								return oldListObj(table.unpack(vargs, 1, vargs.n))
 							end, 30, true))
 						end
 
@@ -138,8 +135,8 @@ return function(Vargs)
 						if musicList then
 							local cards = trello.getCards(musicList.id)
 							for l,k in pairs(cards) do
-								if k.name:match('^(.*):(.*)') then
-									local a,b=k.name:match('^(.*):(.*)')
+								if string.match(k.name, '^(.*):(.*)') then
+									local a,b=string.match(k.name, '^(.*):(.*)')
 									table.insert(music,{Name = a,ID = tonumber(b)})
 								end
 							end
@@ -147,9 +144,10 @@ return function(Vargs)
 
 						if insertList then
 							local cards = trello.getCards(insertList.id)
-							for l,k in pairs(cards) do
-								if k.name:match('^(.*):(.*)') then
-									local a,b=k.name:match('^(.*):(.*)')
+
+							for _, k in pairs(cards) do
+								if string.match(k.name, '^(.*):(.*)') then
+									local a,b=string.match(k.name, '^(.*):(.*)')
 									table.insert(insertlist,{Name = a,ID = tonumber(b)})
 								end
 							end
@@ -157,8 +155,8 @@ return function(Vargs)
 
 						if permList then
 							local cards = trello.getCards(permList.id)
-							for l,k in pairs(cards) do
-								local com,level = k.name:match("^(.*):(.*)")
+							for _, k in pairs(cards) do
+								local com,level = string.match(k.name, "^(.*):(.*)")
 								if com and level then
 									Admin.SetPermission(com,level)
 								end
@@ -167,22 +165,26 @@ return function(Vargs)
 
 						if commandList then
 							local cards = trello.getCards(commandList.id)
-							for l,k in pairs(cards) do
+							for _, k in pairs(cards) do
 								if not HTTP.Trello.PerformedCommands[tostring(k.id)] then
 									local cmd = k.name
 									local placeid
-									if cmd:sub(1,1)=="$" then
-										placeid = cmd:sub(2):match(".%d+")
-										cmd = cmd:sub(#placeid+2)
+
+									if string.sub(cmd, 1, 1) == "$" then
+										placeid = string.match(string.sub(cmd, 2), ".%d+")
+										cmd = string.sub(cmd, #placeid+2)
 										placeid = tonumber(placeid)
 									end
-									if placeid and game.PlaceId~=placeid then return end
+									if placeid and game.PlaceId ~= placeid then return end
+
 									Admin.RunCommand(cmd)
 									HTTP.Trello.PerformedCommands[tostring(k.id)] = true
+
 									Logs.AddLog(Logs.Script,{
 										Text = "Trello command executed";
 										Desc = cmd;
 									})
+
 									if Settings.Trello_Token ~= "" then
 										pcall(trello.makeComment,k.id,"Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
 									end
