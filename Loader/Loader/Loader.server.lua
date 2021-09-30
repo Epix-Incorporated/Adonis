@@ -23,15 +23,14 @@
 --	                  This is not designed to work in solo mode                       --
 ----------------------------------------------------------------------------------------
 
-warn(":: Adonis :: Loading...");
+local warn = function(...)
+	warn(":: Adonis ::", ...)
+end
+
+warn("Loading...");
 
 if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
-	warn("\n-----------------------------------------------"
-		.."\nAdonis is already running! Aborting..."
-		.."\nRunning Location: ".._G["__Adonis_MUTEX"]
-		.."\nThis Location: "..script:GetFullName()
-		.."\n-----------------------------------------------")
-	--script:Destroy()
+	warn("Adonis is already running! Aborting...; Running Location:",_G["__Adonis_MUTEX"],"This Location:",script:GetFullName())
 else
 	_G["__Adonis_MUTEX"] = script:GetFullName()
 
@@ -83,7 +82,7 @@ else
 
 	local a,setTab = pcall(require, settings)
 	if not a then
-		warn('::Adonis:: Settings module errored while loading; Using defaults;')
+		warn('Settings module errored while loading; Using defaults; Error Message: ',setTab)
 		setTab = {}
 	end
 
@@ -99,7 +98,7 @@ else
 		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "server:" or string.sub(string.lower(Plugin.Name), 1, 7) == "server-" then
 			table.insert(data.ServerPlugins, Plugin)
 		else
-			warn("Unknown Plugin Type for "..tostring(Plugin))
+			warn("Unknown Plugin Type for "..tostring(Plugin).."; Plugin name should either start with server:, server-, client:, or client-")
 		end
 	end
 
@@ -118,7 +117,7 @@ else
 
 		model.Name = "Adonis_Loader"
 	else
-		error("MainModule failed to load")
+		error(" !! MainModule failed to load !! ")
 	end
 end
 

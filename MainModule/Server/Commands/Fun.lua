@@ -212,7 +212,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";};--//add more :)
+			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";"enabledonor"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -2012,7 +2012,7 @@ return function(Vargs, env)
 						k.Name='Epix Puke'
 						Routine(function()
 							repeat
-								wait(0.15)
+								wait(0.07)
 								local p = service.New("Part",v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2059,7 +2059,7 @@ return function(Vargs, env)
 								end)
 							until run==false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head'))
 						end)
-						wait(10)
+						wait(12)
 						run = false
 						k:Destroy()
 					end)

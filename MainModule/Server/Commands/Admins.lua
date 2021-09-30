@@ -61,6 +61,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are a(n) "..rankName..". Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -95,6 +96,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are a temp "..rankName..". Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -127,6 +129,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "Your admin permission level was set to "..newLevel.." for this server only. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -140,7 +143,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank","unpa";"unoa";"unta";};
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank"};
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
@@ -165,6 +168,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been removed";
+									Icon = "rbxassetid://7536810074";
 									Time = 10;
 								})
 							else
@@ -242,6 +246,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
+									Icon = "rbxassetid://7536810074";
 									Time = 10;
 								})
 							else
@@ -272,6 +277,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are a temp moderator. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -300,6 +306,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are a moderator. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -330,13 +337,14 @@ return function(Vargs, env)
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows who shutdown a server and when";
+			Description = "Shows who shutdown or restarted a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i,v in pairs(logs) do
+					if v.Restart then v.Time = v.Time.." [SOFT]" end
 					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
@@ -345,7 +353,7 @@ return function(Vargs, env)
 
 		ServerLock = {
 			Prefix = Settings.Prefix;
-			Commands = {"slock","serverlock"};
+			Commands = {"slock","serverlock","lockserver"};
 			Args = {"on/off"};
 			Hidden = false;
 			Description = "Enables/disables server lock";
@@ -415,7 +423,7 @@ return function(Vargs, env)
 
 		SystemNotify = {
 			Prefix = Settings.Prefix;
-			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
+			Commands = {"sn","systemnotify","sysnotif","sysnotify"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Makes a system small message,";
@@ -473,7 +481,7 @@ return function(Vargs, env)
 
 		SetLockMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"setlockmessage";"setlmsg"};
+			Commands = {"setlockmessage"; "slockmsg"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
@@ -486,7 +494,7 @@ return function(Vargs, env)
 
 		SystemMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"sm";"systemmessage";};
+			Commands = {"sm";"systemmessage";"sysmsg"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
@@ -505,7 +513,7 @@ return function(Vargs, env)
 
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
-			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcge";"setcore"};
+			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcgui";"setcore"};
 			Args = {"player";"element";"true/false";};
 			Hidden = false;
 			Description = "SetCoreGuiEnabled. Enables/Disables CoreGui elements. ";
@@ -531,7 +539,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,string.lower(args[1])))do
-					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up"})
+					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up; Your attention is required"})
 				end
 			end
 		};
@@ -736,7 +744,7 @@ return function(Vargs, env)
 
 		ScriptBuilder = {
 			Prefix = Settings.Prefix;
-			Commands = {"sb"};
+			Commands = {"scriptbuilder";"scriptb";"sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list","localscript/script","scriptName","data"};
 			Description = "Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
 			AdminLevel = "Admins";
@@ -898,7 +906,7 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s";"scr";"script";"makescript"};
+			Commands = {"s";"ss";"serverscript";"sscript";"makescript";"script"};
 			Args = {"code";};
 			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
@@ -921,7 +929,7 @@ return function(Vargs, env)
 
 		MakeLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"ls";"lscr";"localscript";};
+			Commands = {"ls";"localscript";"lscript";"makelscript"};
 			Args = {"code";};
 			Description = "Executes the given code on the client";
 			AdminLevel = "Admins";
@@ -1075,7 +1083,7 @@ return function(Vargs, env)
 			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if data.PlayerData.Level>Admin.GetLevel(v) then
-						Remote.Send(v,"Function","SetFPS",5)
+						Remote.Send(v,"Function","SetFPS",5.6)
 					end
 				end
 			end
@@ -1269,7 +1277,7 @@ return function(Vargs, env)
 
 		TrelloBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"trelloban";};
+			Commands = {"trelloban";"tban"};
 			Args = {"player","reason"};
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
@@ -1360,7 +1368,7 @@ return function(Vargs, env)
 
 		RobloxNotify = {
 			Prefix = Settings.Prefix;
-			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify"};
+			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify";"rnotif";"rn"};
 			Args = {"player","duration (seconds)","text"};
 			Filter = true;
 			Description = "Sends a Roblox default notification for the target player(s)";

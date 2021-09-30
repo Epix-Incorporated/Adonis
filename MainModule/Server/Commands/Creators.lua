@@ -73,8 +73,14 @@ return function(Vargs, env)
 				assert(args[1], "Argument #1 must be supplied")
 				assert(tonumber(args[1]), "Argument #1 must be a number")
 
-				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
-					error("CrossServer Handler Not Ready");
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Force all game-players to teleport to place '".. args[1].."'?";
+					Title = "Force teleport all users?";
+				})
+				if ans == "Yes" then
+					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
+						error("CrossServer Handler Not Ready");
+					end
 				end
 			end;
 		};
@@ -244,7 +250,7 @@ return function(Vargs, env)
 			Prefix = ":";
 			Commands = {"terminal";"console";};
 			Args = {};
-			Hidden = true;
+			Hidden = false;
 			Description = "Opens the the terminal";
 			AdminLevel = "Creators";
 			Function = function(plr,args)

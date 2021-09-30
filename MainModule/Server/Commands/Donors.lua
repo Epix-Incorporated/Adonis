@@ -143,7 +143,7 @@ return function(Vargs, env)
 
 		DonorNeon = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"neon";};
+			Commands = {"neon";"donorneon"};
 			Args = {"color";};
 			Hidden = false;
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
@@ -288,7 +288,7 @@ return function(Vargs, env)
 
 		DonorParticle = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"particle";};
+			Commands = {"particle";"donorparticle"};
 			Args = {"textureid";"startColor3";"endColor3";};
 			Hidden = false;
 			Description = "Put a custom particle emitter on your character";
@@ -352,7 +352,7 @@ return function(Vargs, env)
 
 		DonorUnparticle = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"unparticle";"removeparticles";};
+			Commands = {"unparticle";"removeparticles";"undonorparticle"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes donor particles on you";
@@ -414,7 +414,7 @@ return function(Vargs, env)
 
 		DonorHat = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"hat";"gethat";};
+			Commands = {"hat";"gethat";"donorhat"};
 			Args = {"ID";};
 			Hidden = false;
 			Description = "Gives you the hat specified by <ID>";
@@ -470,7 +470,7 @@ return function(Vargs, env)
 		
  		DonorRemoveHat = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"removehat";};
+			Commands = {"removehat";"removedonorhat"};
 			Args = {"Accessory"};
 			Hidden = false;
 			Description = "Remove any accessories you are currently wearing";

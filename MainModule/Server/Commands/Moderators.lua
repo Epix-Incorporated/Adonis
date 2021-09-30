@@ -758,7 +758,7 @@ return function(Vargs, env)
 				local function systemMessage(msg)
 					local data
 					data = {
-						Name = "*SYSTEM*";
+						Name = "* SYSTEM *";
 						UserId = 0;
 						Icon = 0;
 					};
@@ -904,7 +904,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
-				if Admin.CheckAdmin(plr) then
+				if Admin.CheckAdmin(plr) and not args[2]:match("^%s*$") then
 					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 						Variables.AuthorizedToReply[v] = true;
 						Remote.MakeGui(v, "PrivateMessage", {
@@ -1585,9 +1585,22 @@ return function(Vargs, env)
 				})
 			end;
 		};
-
+		GetPing = {
+			Prefix = Settings.Prefix;
+			Commands = {"getping";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Shows the target player's ping";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
+				end
+			end
+		};
 		Tasks = {
-			Hidden = true;
+			Hidden = false;
 			Prefix = ":";
 			Commands = {"tasks"};
 			Args = {"player"};
@@ -1684,7 +1697,7 @@ return function(Vargs, env)
 
 		AdminList = {
 			Prefix = Settings.Prefix;
-			Commands = {"admins";"adminlist";"HeadAdmins";"owners";"moderators";"ranks"};
+			Commands = {"admins";"adminlist";"headadmins";"owners";"moderators";"ranks"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
@@ -2575,7 +2588,7 @@ return function(Vargs, env)
 
 		Track = {
 			Prefix = Settings.Prefix;
-			Commands = {"track";"trace";"find";};
+			Commands = {"track";"trace";"find";"locate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
@@ -2624,7 +2637,7 @@ return function(Vargs, env)
 
 		UnTrack = {
 			Prefix = Settings.Prefix;
-			Commands = {"untrack";"untrace";"unfind";};
+			Commands = {"untrack";"untrace";"unfind";"unlocate"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
@@ -3338,7 +3351,7 @@ return function(Vargs, env)
 
 		RemoveFog = {
 			Prefix = Settings.Prefix;
-			Commands = {"nofog";"fogoff";};
+			Commands = {"nofog";"fogoff";"unfog"};
 			Args = {"optional player"};
 			Hidden = false;
 			Description = "Fog Off";
@@ -4473,7 +4486,7 @@ return function(Vargs, env)
 
 		Volume = {
 			Prefix = Settings.Prefix;
-			Commands = {"volume"};
+			Commands = {"volume","vol"};
 			Args = {"number"};
 			Description = "Change the volume of the currently playing song";
 			AdminLevel = "Moderators";
@@ -4657,7 +4670,7 @@ return function(Vargs, env)
 
 		StopMusic = {
 			Prefix = Settings.Prefix;
-			Commands = {"stopmusic";"musicoff";};
+			Commands = {"stopmusic";"musicoff";"unmusic"};
 			Args = {};
 			Hidden = false;
 			Description = "Stop the currently playing song";
@@ -4846,6 +4859,30 @@ return function(Vargs, env)
 					new.Parent = v.Character.HumanoidRootPart
 					new.Disabled = false
 				end
+			end
+		};
+
+		TestFilter = {
+			Prefix = Settings.Prefix;
+			Commands = {"testfilter";"filtertest";"tfilter"};
+			Args = {"player";"text";};
+			Filter = false;
+			NoFilter = true;
+			Description = "Test out Roblox's text filtering on a player";
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local temp = {{Text="Original: "..args[2], Desc = args[2]}}
+				if service.RunService:IsStudio() then 
+					table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
+				end
+				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+					table.insert(temp, {Text = "-- "..v.DisplayName.." --",Desc = v.UserId.." ("..v.Name..")"})
+					table.insert(temp, {Text = "ChatForUser: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetChatForUserAsync(v.UserId)})
+					table.insert(temp, {Text = "NonChatForBroadcast: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForBroadcastAsync()})
+					table.insert(temp, {Text = "NonChatForUser: "..service.TextService:FilterStringAsync(args[2], v.UserId):GetNonChatStringForUserAsync(v.UserId)})
+
+				end
+				Remote.MakeGui(plr,"List",{Title = 'Filtering Results', Tab = temp})
 			end
 		};
 
@@ -5753,42 +5790,6 @@ return function(Vargs, env)
 				else
 					service.SoundService.AmbientReverb = ReverbType[rev]
 					Functions.Hint("Successfully changed the Ambient Reverb to "..rev,{plr})
-				end
-			end
-		};
-
-		Inspect = {
-			Prefix = Settings.Prefix;
-			Commands = {"inspect";"playerinfo"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local hasSafeChat
-					local isMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false
-					local isBanned = table.find(Settings.Banned, v.Name..":"..v.UserId) and true or false
-					local level, rank = Admin.GetLevel(v);
-
-					do
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "Unable to be fetched"
-					end
-
-					Remote.MakeGui(plr, "Inspect", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
-						IsMuted = isMuted;
-						IsBanned = isBanned;
-						Code = service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
-						SourcePlace = v:GetJoinData().SourcePlaceId or "N/A";
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
-					})
 				end
 			end
 		};
