@@ -62,7 +62,7 @@ local ServicesWeUse = {
 
 --// Logging
 local clientLog = {};
-local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis::", v) end end;
+local dumplog = function() warn(":: Adonis :: Dumping client log...") for i,v in ipairs(clientLog) do warn(":: Adonis ::", v) end end;
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect

@@ -608,7 +608,7 @@ return function(Vargs)
 
 			if not ran then
 				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
-				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
 
@@ -749,6 +749,7 @@ return function(Vargs)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Welcome.";
 							Message = "Click here for commands.";
+							Icon = "rbxassetid://7536783953";
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -759,6 +760,7 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
+								Icon = "rbxassetid://7495471249";
 								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
@@ -770,6 +772,7 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
+								Icon = "rbxassetid://7495468117";
 								Time = 10;
 								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window",{

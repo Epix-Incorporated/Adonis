@@ -45,6 +45,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
+		Icon = "rbxassetid://4335479121";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
@@ -1244,6 +1245,21 @@ return function(data)
 						toggle.Text = text
 					end
 				};
+									{
+					Text = "Privacy Mode: ";
+					Desc = "- Hide certain info from your profile";
+					Entry = "Boolean";
+					Setting = "PrivacyMode";
+					Value = client.Variables.PrivacyMode or false;
+					Function = function(enabled, toggle)
+						client.Variables.PrivacyMode = enabled
+
+						local text = toggle.Text
+						toggle.Text = "Saving.."
+						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
+						toggle.Text = text
+					end
+				};
 				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
@@ -1421,7 +1437,7 @@ return function(data)
 										TextXAlignment = "Left";
 										Children = {
 											TextLabel = {
-												Text = "Cannot Edit";
+												Text = "Studio Only";
 												Size = UDim2.new(0, 100, 1, 0);
 												Position = UDim2.new(1, -100, 0, 0);
 												TextTransparency = 0.5;
@@ -1451,6 +1467,24 @@ return function(data)
 									})
 								end
 							end
+						elseif  not canEditTables[setting] then 
+							gameTab:Add("TextLabel", {
+								Text = "  "..setting..": ";
+								ToolTip = desc;
+								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+								Size = UDim2.new(1, -10, 0, 30);
+								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								TextXAlignment = "Left";
+								Children = {
+									TextLabel = {
+										Text = "Studio Only";
+										Size = UDim2.new(0, 100, 1, 0);
+										Position = UDim2.new(1, -100, 0, 0);
+										TextTransparency = 0.5;
+										BackgroundTransparency = 1;
+									}
+								}
+							})
 						else
 							gameTab:Add("TextLabel", {
 								Text = "  "..setting..": ";
