@@ -555,10 +555,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						Wrappers[object] = nil
 					end;
 
-					IsRobloxLocked = main and main.Anti and function()
-						return main.Anti.RLocked(object)
-					end or function() end;
-
 					GetObject = function()
 						return object
 					end;
