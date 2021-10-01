@@ -2598,42 +2598,57 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in next,service.GetPlayers(plr,args[1]) do
-					coroutine.wrap(function()
-						local bb = service.New('BillboardGui')
-						local la = service.New('SelectionPartLasso',bb)
-						local Humanoid = plr.Character:FindFirstChild("Humanoid")
-						local Part = v.Character:FindFirstChild("HumanoidRootPart")
-						if Part and Humanoid then
-							la.Part = Part
-							la.Humanoid = Humanoid
-							bb.Name = v.Name..'Tracker'
-							bb.Adornee = v.Character.Head
-							bb.AlwaysOnTop = true
-							bb.StudsOffset = Vector3.new(0,2,0)
-							bb.Size = UDim2.new(0,100,0,40)
-							local f = service.New('Frame',bb)
-							f.BackgroundTransparency = 1
-							f.Size = UDim2.new(1,0,1,0)
-							local name = service.New('TextLabel',f)
-							name.Text = v.DisplayName.."\n(@"..v.Name..")"
-							name.BackgroundTransparency = 1
-							name.Font = "Arial"
-							name.TextColor3 = Color3.new(1,1,1)
-							name.TextStrokeColor3 = Color3.new(0,0,0)
-							name.TextStrokeTransparency = 0
-							name.Size = UDim2.new(1,0,0,20)
-							name.TextScaled = true
-							name.TextWrapped = true
-							local arrow = name:clone()
-							arrow.Parent = f
-							arrow.Position = UDim2.new(0,0,0,20)
-							arrow.Text = 'v'
-							Remote.MakeLocal(plr,bb,false,true)
-							local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
-							local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
-						end
-					end)()
+				local New = service.New
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and plr.Character then
+						task.defer(function()
+							local Humanoid = plr.Character:FindFirstChild("Humanoid")
+							local Part = v.Character:FindFirstChild("HumanoidRootPart")
+							local Head = v.Character:FindFirstChild("Head")
+
+							if Part and Head and Humanoid then
+								local bb = New('BillboardGui', {
+									Name = v.Name .. "Tracker",
+									Adornee = Head,
+									AlwaysOnTop = true,
+									StudsOffset = Vector3.new(0, 2, 0),
+									Size = UDim2.new(0, 100, 0, 40)
+								})
+								New('SelectionPartLasso', {
+									Part = Part,
+									Humanoid = Humanoid,
+									Parent = bb,
+								})
+								local f = New('Frame', {
+									BackgroundTransparency = 1;
+									Size = UDim2.new(1,0,1,0);
+									Parent = bb;
+								})
+
+								local name = New('TextLabel', {
+									Text = v.DisplayName.."\n(@"..v.Name..")",
+									BackgroundTransparency = 1,
+									Font = Enum.Font.Arial,
+									TextColor3 = Color3.new(1,1,1),
+									TextStrokeColor3 = Color3.new(0, 0, 0),
+									TextStrokeTransparency = 0,
+									Size = UDim2.new(1,0,0,20),
+									TextScaled = true,
+									TextWrapped = true,
+
+									Parent = f,
+								})
+								local arrow = name:Clone()
+								arrow.Position = UDim2.new(0,0,0,20)
+								arrow.Text = 'v'
+								arrow.Parent = f
+
+								Remote.MakeLocal(plr,bb,false)
+								local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event:Disconnect() end)
+								local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr,v.Name..'Tracker') event2:Disconnect() end)
+							end
+						end)
+					end
 				end
 			end
 		};
@@ -3056,7 +3071,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.ConvertPlayerCharacterToRig(v, "R6")
+					task.defer(Functions.ConvertPlayerCharacterToRig, v, "R6")
 				end
 			end
 		};

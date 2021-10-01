@@ -612,19 +612,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 					object[ind] = UnWrap(val)
 				end
 
-				local ToString = custom.ToString
 				newMeta.__eq = service.RawEqual
-				newMeta.__tostring = ToString and function()
-					return ToString
-				end or function()
-					return tostring(object)
-				end
+				newMeta.__tostring = function() return custom.ToString or tostring(object) end
 				-- Roblox doesn't respect this afaik.
 				--newMeta.__gc = function(tab)
 				--	custom:RemoveFromCache()
 				--end
 				newMeta.__metatable = "Adonis_Proxy"
-
 
 				custom:AddToCache()
 				return newObj
