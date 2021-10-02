@@ -212,7 +212,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		ForEach = function(tab, func)
-			for i,v in next,tab do
+			for i,v in pairs(tab) do
 				func(tab, i, v)
 			end
 		end;
@@ -289,8 +289,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end)
 
 				event:SetSpecial("Fire", function(i, ...)
-					local packedResult = table.pack(...)
-					UnWrap(event):Fire(2, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
+					UnWrap(event):Fire(2, unpack(UnWrapArgs(...)))
 				end)
 
 				event:SetSpecial("ConnectOnce", function(i, func)
@@ -305,15 +304,13 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				event:SetSpecial("Connect", function(i, func)
 					local special = math.random()
 					local event2 = Wrap(UnWrap(event.Event):Connect(function(con, ...)
-						local packedResult = table.pack(...)
 						if con == 2 or con == special then
-							func(unpack(WrapArgs(packedResult), 1, packedResult.n))
+							func(unpack(WrapArgs(...)))
 						end
 					end), client)
 
 					event2:SetSpecial("Fire", function(i, ...)
-						local packedResult = table.pack(...)
-						UnWrap(event):Fire(special, unpack(UnWrapArgs(packedResult), 1, packedResult.n))
+						UnWrap(event):Fire(special, unpack(...))
 					end)
 
 					event2:SetSpecial("Wait", function(i, timeout)
@@ -391,7 +388,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				Changed = {};
 				Timeout = timeout or 0;
 				Running = false;
-				Function = func;
 				R_Status = "Idle";
 				Finished = {};
 				Function = function(...) newTask.R_Status = "Running" newTask.Running = true local ret = {func(...)} newTask.R_Status = "Finished" newTask.Running = false newTask.Remove() return unpack(ret) end;
@@ -470,7 +466,6 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		Running = coroutine.running;
 		Create = coroutine.create;
 		Start = coroutine.resume;
-		Wrap = coroutine.wrap;
 		Get = coroutine.running;
 		New = function(func) local new = coroutine.create(func) table.insert(service.Threads.Threads,new) return new end;
 		End = function(thread) repeat if thread and service.Threads.Status(thread) ~= "dead" then service.Threads.Stop(thread) service.Threads.Resume(thread) else thread = false break end until not thread or service.Threads.Status(thread) == "dead" end;
@@ -578,8 +573,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 					connect = function(ignore, func)
 						return Wrap(object:Connect(function(...)
-							local packedResult = table.pack(...)
-							return func(unpack(sWrap(packedResult), 1, packedResult.n))
+							return func(unpack(sWrap(...)))
 						end))
 					end;
 
@@ -598,9 +592,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 						return custom[ind]
 					elseif type(target) == "function" then
 						return function(ignore, ...)
-							local packedResult = table.pack(...)
 							return unpack(Wrap({
-								methods[ind](object, unpack(UnWrap(packedResult), 1, packedResult.n))
+								methods[ind](object, unpack(UnWrap(...)))
 							}))
 						end
 					else
@@ -1167,9 +1160,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				wait(tonumber(mode))
 			end
 		end;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
 		OrigRawEqual = rawequal;
-		ForEach = function(tab, func) for i,v in next,tab do func(tab,i,v) end return tab end;
+		ForEach = function(tab, func) for i,v in pairs(tab) do func(tab,i,v) end return tab end;
 		HasItem = function(obj, prop) return pcall(function() return obj[prop] end) end;
 		IsDestroyed = function(object)
 			if type(object) == "userdata" and service.HasItem(object, "Parent") then
