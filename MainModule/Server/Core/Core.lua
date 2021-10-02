@@ -104,13 +104,14 @@ return function(Vargs)
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
-		CrossServer = function() return false end;
+		CrossServer = function(...) return false end;
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
 		FixingEvent = false;
 		ScriptCache = {};
 		Connections = {};
+		BytecodeCache = {};
 		LastEventValue = 1;
 
 		Variables = {
@@ -130,8 +131,10 @@ return function(Vargs)
 		};
 
 		Panic = function(reason)
-			local hint = Instance.new("Hint", service.Workspace)
-			hint.Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~"
+			service.new("Hint", {
+				Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~",
+				Parent = workspace,
+			})
 			Core.PanicMode = true;
 
 			warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;")
@@ -524,7 +527,9 @@ return function(Vargs)
 		end;
 
 		Bytecode = function(str)
-			local f,buff = Core.Loadstring(str)
+			if Core.BytecodeCache[str] then return Core.BytecodeCache[str] end
+			local f, buff = Core.Loadstring(str)
+			Core.BytecodeCache[str] = buff
 			return buff
 		end;
 
@@ -542,9 +547,11 @@ return function(Vargs)
 				ScriptType.Name = "[Adonis] ".. type
 
 				if allowCodes then
-					local exec = Instance.new("StringValue",ScriptType)
-					exec.Name = "Execute"
-					exec.Value = execCode
+					service.New("StringValue", {
+						Name = "Execute",
+						Value = execCode,
+						Parent = ScriptType,
+					})
 				end
 
 				local wrapped = Core.RegisterScript {
@@ -666,7 +673,7 @@ return function(Vargs)
 
 		GetDataStore = function()
 			local ran,store = pcall(function()
-				return service.DataStoreService:GetDataStore(Settings.DataStore:sub(1,50),"Adonis")
+				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
 			return ran and store

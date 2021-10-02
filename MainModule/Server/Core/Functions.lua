@@ -34,7 +34,6 @@ return function(Vargs)
 			Logs:AddLog("Script", "Functions Module RunAfterPlugins Finished");
 	end
 
-	local insert = table.insert
 	server.Functions = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
@@ -44,7 +43,7 @@ return function(Vargs)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					insert(players,plr)
+					table.insert(players,plr)
 					plus()
 				end;
 			};
@@ -63,7 +62,7 @@ return function(Vargs)
 							local p = getplr(v)
 							if sub(lower(p.Name), 1, #msg)==lower(msg) then
 								everyone = false
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 							end
 						end
@@ -73,7 +72,7 @@ return function(Vargs)
 						for i,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 							end
 						end
@@ -98,7 +97,7 @@ return function(Vargs)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
 						if p ~= plr then
-							insert(players,p)
+							table.insert(players,p)
 							plus()
 						end
 					end
@@ -121,7 +120,7 @@ return function(Vargs)
 						end
 					end
 
-					insert(players,p)
+					table.insert(players,p)
 					plus();
 				end;
 			};
@@ -134,7 +133,7 @@ return function(Vargs)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
 						if Admin.CheckAdmin(p,false) then
-							insert(players, p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -149,7 +148,7 @@ return function(Vargs)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
 						if not Admin.CheckAdmin(p,false) then
-							insert(players,p)
+							table.insert(players,p)
 							plus()
 						end
 					end
@@ -164,7 +163,7 @@ return function(Vargs)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
 						if p:IsFriendsWith(plr.userId) then
-							insert(players,p)
+							table.insert(players,p)
 							plus()
 						end
 					end
@@ -182,7 +181,7 @@ return function(Vargs)
 						for i,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p and p.Name == matched then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 								foundNum = foundNum+1
 							end
@@ -205,7 +204,7 @@ return function(Vargs)
 								for k, m in ipairs(parent:GetChildren()) do
 									local p = getplr(m)
 									if p.TeamColor == v.TeamColor then
-										insert(players,p)
+										table.insert(players,p)
 										plus()
 									end
 								end
@@ -223,7 +222,7 @@ return function(Vargs)
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p:IsInGroup(tonumber(matched)) then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 							end
 						end
@@ -237,10 +236,10 @@ return function(Vargs)
 					local matched = tonumber(string.match(msg, "id%-(.*)"))
 					local foundNum = 0
 					if matched then
-						for _,v in next,parent:GetChildren() do
+						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p and p.userId == matched then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 								foundNum += 1
 							end
@@ -272,10 +271,10 @@ return function(Vargs)
 					local foundNum = 0
 
 					if matched then
-						for _,v in next,parent:GetChildren() do
+						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p and p.DisplayName == matched then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 								foundNum = foundNum+1
 							end
@@ -297,7 +296,7 @@ return function(Vargs)
 								for k,m in ipairs(parent:GetChildren()) do
 									local p = getplr(m)
 									if p.TeamColor == v.TeamColor then
-										insert(players, p)
+										table.insert(players, p)
 										plus()
 									end
 								end
@@ -317,7 +316,7 @@ return function(Vargs)
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p:IsInGroup(matched) then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 							end
 						end
@@ -375,10 +374,10 @@ return function(Vargs)
 							return;
 						end
 
-						for i,v in next,parent:GetChildren() do
+						for i,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
 							if p ~= plr and plr:DistanceFromCharacter(p.Character.Head.Position) <= num then
-								insert(players,p)
+								table.insert(players,p)
 								plus()
 							end
 						end
@@ -421,7 +420,7 @@ return function(Vargs)
 				data[i] = v;
 			end;
 
-			for i,v in next,data do fakePlayer:SetSpecial(i, v) end
+			for i,v in pairs(data) do fakePlayer:SetSpecial(i, v) end
 
 			return fakePlayer;
 		end;
@@ -436,7 +435,7 @@ return function(Vargs)
 		end;
 
 		IsClass = function(obj, classList)
-			for _,class in next,classList do
+			for _,class in pairs(classList) do
 				if obj:IsA(class) then
 					return true
 				end
@@ -445,7 +444,7 @@ return function(Vargs)
 
 		ArgsToString = function(args)
 			local str = ""
-			for i,arg in next,args do
+			for i,arg in pairs(args) do
 				str = str.."Arg"..tostring(i)..": "..tostring(arg).."; "
 			end
 			return str
@@ -506,7 +505,7 @@ return function(Vargs)
 				for _, v in ipairs(parent:GetChildren()) do
 					local p = getplr(v)
 					if p then
-						insert(players,p)
+						table.insert(players,p)
 					end
 				end
 			elseif plr and not names then
@@ -523,19 +522,19 @@ return function(Vargs)
 						if matchFunc then
 							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
 						else
-							for i,v in next,parent:GetChildren() do
+							for i,v in ipairs(parent:GetChildren()) do
 								local p = getplr(v)
 								if p and p.ClassName == "Player" and sub(lower(p.DisplayName), 1, #s) == lower(s) then
-									insert(players,p)
+									table.insert(players,p)
 									plus()
 								end
 							end
 
 							if plrs == 0 then
-								for i,v in next,parent:GetChildren() do
+								for i,v in ipairs(parent:GetChildren()) do
 									local p = getplr(v)
 									if p and p.ClassName == "Player" and sub(lower(p.Name), 1, #s) == lower(s) then
-										insert(players,p)
+										table.insert(players,p)
 										plus()
 									end
 								end
@@ -553,7 +552,7 @@ return function(Vargs)
 										userId = tonumber(userid);
 									})
 
-									insert(players, fakePlayer)
+									table.insert(players, fakePlayer)
 									plus()
 								end
 							end
@@ -571,7 +570,7 @@ return function(Vargs)
 			local filteredList = {};
 			local checkList = {};
 
-			for i,v in next, players do
+			for i,v in pairs(players) do
 				if not checkList[v] then
 					table.insert(filteredList, v);
 					checkList[v] = true;
@@ -849,18 +848,18 @@ return function(Vargs)
 				Props = props;
 				Type = "Particle";
 			}
-			for i,v in next,service.Players:GetPlayers() do
+			for i,v in ipairs(service.Players:GetPlayers()) do
 				Remote.NewParticle(v,target,type,props)
 			end
 		end;
 
 		RemoveParticle = function(target,name)
-			for i,v in next,Variables.LocalEffects do
+			for i,v in pairs(Variables.LocalEffects) do
 				if v.Type == "Particle" and v.Part == target and (v.Props.Name == name or v.Class == name) then
 					Variables.LocalEffects[i] = nil
 				end
 			end
-			for i,v in next,service.Players:GetPlayers() do
+			for i,v in ipairs(service.Players:GetPlayers()) do
 				Remote.RemoveParticle(v,target,name)
 			end
 		end;
@@ -1109,7 +1108,7 @@ return function(Vargs)
 				p:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
-			for i,p in next,service.Players:GetPlayers() do
+			for i,p in ipairs(service.Players:GetPlayers()) do
 				p:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
