@@ -267,7 +267,7 @@ return function(Vargs)
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over full info)";
 				Desc = tostring(info);
 				Player = player;
 			})
