@@ -477,7 +477,7 @@ return function(Vargs, env)
 
 		Usage = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"usage";"userinfo","usermanual"};
+			Commands = {"usage";"usermanual"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you how to use some syntax related things";
