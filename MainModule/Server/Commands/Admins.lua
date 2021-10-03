@@ -1282,6 +1282,7 @@ return function(Vargs, env)
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
 			Fun = false;
+			Filter = true;
 			CrossServerDenied = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args,data)

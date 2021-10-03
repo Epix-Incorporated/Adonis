@@ -372,6 +372,26 @@ return function(Vargs, env)
 			end
 		};
 
+		TimeHint = {
+			Prefix = Settings.Prefix;
+			Commands = {"th";"timehint";"thint"};
+			Args = {"time";"message"};
+			Filter = true;
+			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				assert(args[2], "A message is required")
+				assert(args[1], "Time amount (in seconds) is required")
+				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[2])
+				for _, v in ipairs(service.GetPlayers()) do
+					Remote.MakeGui(v, "Hint", {
+						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = tonumber(args[1]);
+					})
+				end
+			end
+		};
+
 		Warn = {
 			Prefix = Settings.Prefix;
 			Commands = {"warn","warning"};

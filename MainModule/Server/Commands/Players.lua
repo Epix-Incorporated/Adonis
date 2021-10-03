@@ -333,16 +333,18 @@ return function(Vargs, env)
 		RequestHelp = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"help";"requesthelp";"gethelp";"lifealert";"sos";};
-			Args = {};
+			Args = {"reason"};
 			Hidden = false;
 			Description = "Calls admins for help";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
 					local pending = Variables.HelpRequests[plr.Name];
+					local reason = args[1] or "No reason provided";
 
 					if pending and os.time() - pending.Time < 30 then
 						error("You can only send a help request once every 30 seconds.");
@@ -355,6 +357,7 @@ return function(Vargs, env)
 							pending = {
 								Time = os.time();
 								Pending = true;
+								Reason = reason;
 							}
 
 							Variables.HelpRequests[plr.Name] = pending;
@@ -363,7 +366,7 @@ return function(Vargs, env)
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p,"Notification",{
 										Title = "Help Request";
-										Message = plr.Name.." needs help!";
+										Message = plr.Name.." needs help! Reason: "..pending.Reason;
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
 										OnClose = Core.Bytecode("return false");
@@ -474,7 +477,7 @@ return function(Vargs, env)
 
 		Usage = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"usage";};
+			Commands = {"usage";"userinfo","usermanual"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you how to use some syntax related things";
@@ -618,7 +621,7 @@ return function(Vargs, env)
 
 		GetPremium = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
+			Commands = {"getpremium";"purchasepremium";"robloxpremium"};
 			Args = {};
 			Description = "Prompts you to purchase Roblox Premium";
 			Hidden = false;
