@@ -677,6 +677,8 @@ return function(Vargs)
 				else
 					Anti.Detected(p, "Log", "Client sent incorrect check data")
 				end
+
+				return;
 			end;
 
 		--[[Session = function(p,args)
@@ -1102,18 +1104,16 @@ return function(Vargs)
 
 		CheckKeys = function()
 			--// Check all keys for ones no longer in use for >10 minutes (so players who actually left aren't tracked forever)
-			for key, data in next,Remote.Clients do
+			for key, data in pairs(Remote.Clients) do
 				local continue = true;
 
 				if data.Player and data.Player.Parent == service.Players then
 					continue = false;
 				else
-					for i,player in ipairs(service.Players:GetPlayers()) do
-						if tonumber(key) == player.UserId then
-							data.Player = player;
-							continue = false;
-							break;
-						end
+					local Player = service.Players:GetPlayerByUserId(key)
+					if Player then
+						data.Player = Player
+						continue = false
 					end
 				end
 
@@ -1123,6 +1123,8 @@ return function(Vargs)
 					Logs:AddLog("Script", "Client key removed for UserId ".. tostring(key))
 				end
 			end
+
+			return;
 		end;
 
 		Ping = function(p)

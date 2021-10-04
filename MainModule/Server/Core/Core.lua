@@ -641,7 +641,7 @@ return function(Vargs)
 
 					Core.SetData(key, data)
 					Logs.AddLog(Logs.Script,{
-						Text = "Saved data for "..tostring(p);
+						Text = "Saved data for ".. p.Name;
 						Desc = "Player data was saved to the datastore";
 					})
 
@@ -651,11 +651,12 @@ return function(Vargs)
 		end;
 
 		SaveAllPlayerData = function(queueWaitTime)
+			local TrackTask = service.TrackTask
 			for key,pdata in pairs(Core.PlayerData) do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
-					service.TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
+					TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
 				end
 			end
 			--[[ --// OLD METHOD (Kept in case this messes anything up)
@@ -751,9 +752,10 @@ return function(Vargs)
 						local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
+							return;
 						else
 							logError("DataStore SetAsync Failed: ".. tostring(ret));
-							error(ret);
+							return error(ret);
 						end
 
 						task.wait(6)
@@ -787,7 +789,7 @@ return function(Vargs)
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
-						error(ret);
+						return error(ret);
 					end
 
 					wait(6)

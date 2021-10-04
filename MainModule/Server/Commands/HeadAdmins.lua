@@ -14,25 +14,24 @@ return function(Vargs, env)
 			Commands = {"tempban";"timedban";"timeban";"tban";"temporaryban"};
 			Args = {"player";"number<s/m/h/d>";"reason"};
 			Hidden = false;
-			Filter = true;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local time = args[2]
-
-				if time:lower():sub(#time)=='s' then
-					time = time:sub(1,#time-1)
+				local lower, sub = string.lower, string.sub
+				if sub(lower(time), #time)=='s' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)
-				elseif time:lower():sub(#time)=='m' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='m' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)*60
-				elseif time:lower():sub(#time)=='h' then
-					time = time:sub(1,#time-1)
-					time = (tonumber(time)*60)*60
-				elseif time:lower():sub(#time)=='d' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='h' then
+					time = sub(time, 1, #time-1)
+					time = ((time)*60)*60
+				elseif sub(lower(time), #time)=='d' then
+					time = sub(time, 1, #time-1)
 					time = ((tonumber(time)*60)*60)*24
 				end
 
@@ -49,7 +48,7 @@ return function(Vargs, env)
 				}) do
 					if level > Admin.GetLevel(v) then
 						local endTime = os.time() + tonumber(time)
-						local reason = args[3] or "No reason provided";
+						local reason = service.Filter(args[3], plr, v) or "No reason provided";
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
@@ -69,7 +68,7 @@ return function(Vargs, env)
 							Value = data;
 						})
 
-						Functions.Hint("Banned "..tostring(v.Name).." for "..tostring(time),{plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for ".. tostring(time),{plr})
 					end
 				end
 			end

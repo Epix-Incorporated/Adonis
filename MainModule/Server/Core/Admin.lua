@@ -164,7 +164,7 @@ return function(Vargs)
 		local numArgs = 0;
 
 		--local cmdArgs =
-		for arg in aliasCmd:gmatch("<(%S+)>") do
+		for arg in string.gmatch(aliasCmd, "<(%S+)>") do
 			if arg ~= "" and arg ~= " " then
 				local arg = "<".. arg ..">"
 				if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
@@ -181,7 +181,7 @@ return function(Vargs)
 		for i,argType in next,argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = out:gsub(argType, replaceWith)
+				out = string.gsub(out, argType, replaceWith)
 			end
 		end
 
@@ -206,7 +206,7 @@ return function(Vargs)
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and 
+				if Variables.BlankPrefix and
 					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
