@@ -4182,7 +4182,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."tp",plr.Name,v.Name)
+					task.defer(Commands.Teleport.Function, plr, {plr.Name,v.Name})
 				end
 			end
 		};
@@ -4564,7 +4564,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				service.StopLoop("MusicShuffle")
-				Admin.RunCommand(Settings.Prefix.."stopmusic")
+				task.spawn(Commands.StopMusic.Function)
+
 				if not args[1] then error("Missing argument") end
 				if string.lower(args[1])~="off" then
 					local idList = {}
@@ -5243,19 +5244,20 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local UserId = v.UserId
-					service.StartLoop(UserId .. "LOOPHEAL", 0.1, function()
-						if not v or v.Parent ~= service.Players then
-							service.StopLoop(UserId .. "LOOPHEAL")
-						end
-
-						local Character = v.Character
-						if Character then
-							local Humanoid = Character:FindFirstChildOfClass("Humanoid")
-							if Humanoid then
-								Humanoid.Health = Humanoid.MaxHealth
+					task.defer(function()
+						service.StartLoop(UserId .. "LOOPHEAL", 0.1, function()
+							if not v or v.Parent ~= service.Players then
+								service.StopLoop(UserId .. "LOOPHEAL")
 							end
-						end
+	
+							local Character = v.Character
+							if Character then
+								local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+								if Humanoid then
+									Humanoid.Health = Humanoid.MaxHealth
+								end
+							end
+						end)
 					end)
 				end
 			end
