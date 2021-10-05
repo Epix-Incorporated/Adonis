@@ -4080,7 +4080,7 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
-		
+
 							wait()
 							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
 							if root then
@@ -4167,7 +4167,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Admin.RunCommand(Settings.Prefix.."tp",v.Name,plr.Name)
+					task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
 				end
 			end
 		};
@@ -4919,7 +4919,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local temp = {{Text="Original: "..args[2], Desc = args[2]}}
-				if service.RunService:IsStudio() then 
+				if service.RunService:IsStudio() then
 					table.insert(temp, {Text="!! The string has not been filtered !!", Desc="Text filtering does not work in studio"})
 				end
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
