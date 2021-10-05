@@ -4128,7 +4128,7 @@ return function(Vargs, env)
 							n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*1),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 						end
 					else
-						local targ_root = target.Character and targ.Character:FindFirstChild("HumanoidRootPart")
+						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
 							for k,n in pairs(players) do
 								if n~=target then
@@ -4146,8 +4146,8 @@ return function(Vargs, env)
 										end
 									end
 									wait()
-									if n.Character:FindFirstChild("HumanoidRootPart") and targ_root then
-										n.Character.HumanoidRootPart.CFrame = (targ_root.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
+									if Character:FindFirstChild("HumanoidRootPart") and targ_root then
+										Character.HumanoidRootPart.CFrame = (targ_root.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 									end
 								end
 							end
