@@ -327,11 +327,10 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local objects = service.GetAdonisObjects()
-
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					v:Destroy()
-					table.remove(objects, i)
 				end
+				table.clear(objects)
 
 				--for i,v in next,Functions.GetPlayers() do
 				--	Remote.Send(v, "Function", "ClearAllInstances")

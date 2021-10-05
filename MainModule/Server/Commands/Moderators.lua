@@ -5216,8 +5216,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					service.StartLoop(v.userId.."LOOPHEAL",1,function()
-						Admin.RunCommand(Settings.Prefix.."heal",v.Name)
+					local UserId = v.UserId
+					service.StartLoop(UserId .. "LOOPHEAL", 0.1, function()
+						if not v or v.Parent ~= service.Players then
+							service.StopLoop(UserId .. "LOOPHEAL")
+						end
+
+						local Character = v.Character
+						if Character then
+							local Humanoid = Character:FindFirstChildOfClass("Humanoid")
+							if Humanoid then
+								Humanoid.Health = Humanoid.MaxHealth
+							end
+						end
 					end)
 				end
 			end

@@ -1060,8 +1060,8 @@ return function(Vargs)
 		end;
 
 		CleanWorkspace = function()
-			for i,v in pairs(service.Workspace:GetChildren()) do
-				if v:IsA("Tool") or v:IsA("Accessory") or v:IsA("Hat") then
+			for _, v in ipairs(workspace:GetChildren()) do
+				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Hat") then
 					v:Destroy()
 				end
 			end

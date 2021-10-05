@@ -230,36 +230,38 @@ return function()
 		end;
 
 		SetView = function(ob)
+			local CurrentCamera = workspace.CurrentCamera
+
 			if ob=='reset' then
-				workspace.CurrentCamera.CameraType = 'Custom'
-				workspace.CurrentCamera.CameraSubject = service.Player.Character.Humanoid
-				workspace.CurrentCamera.FieldOfView = 70
+				CurrentCamera.CameraType = 'Custom'
+				CurrentCamera.CameraSubject = service.Player.Character.Humanoid
+				CurrentCamera.FieldOfView = 70
 			else
-				workspace.CurrentCamera.CameraSubject = ob
+				CurrentCamera.CameraSubject = ob
 			end
 		end;
 
 		AddAlias = function(alias, command)
-			Variables.Aliases[alias:lower()] = command;
+			Variables.Aliases[string.lower(alias)] = command;
 			Remote.Get("UpdateAliases", Variables.Aliases)
 			task.defer(function()
 				UI.MakeGui("Notification",{
 					Time = 4;
 					Title = "Notification";
-					Message = ('Alias "%s" added'):format(alias:lower());
+					Message = string.format('Alias "%s" added', string.lower(alias));
 				})
 			end)
 		end;
 
 		RemoveAlias = function(alias)
-			if client.Variables.Aliases[alias:lower()] then
-				Variables.Aliases[alias:lower()] = nil;
+			if Variables.Aliases[string.lower(alias)] then
+				Variables.Aliases[string.lower(alias)] = nil;
 				Remote.Get("UpdateAliases", Variables.Aliases)
 				task.defer(function()
 					UI.MakeGui("Notification",{
 						Time = 4;
 						Title = "Notification";
-						Message = ('Alias "%s" removed'):format(alias:lower());
+						Message = string.format('Alias "%s" removed', string.lower(alias));
 					})
 				end)
 			else
@@ -267,18 +269,18 @@ return function()
 					UI.MakeGui("Notification",{
 						Time = 3;
 						Title = "Error";
-						Message = ('Alias "%s" not found'):format(alias:lower());
+						Message = string.format('Alias "%s" not found', string.lower(alias));
 					})
 				end)
 			end
 		end;
 
 		Playlist = function()
-			return client.Remote.Get("Playlist")
+			return Remote.Get("Playlist")
 		end;
 
 		UpdatePlaylist = function(playlist)
-			client.Remote.Get("UpdatePlaylist", playlist)
+			Remote.Get("UpdatePlaylist", playlist)
 		end;
 
 		Dizzy = function(speed)
@@ -299,7 +301,7 @@ return function()
 					if rot >= 2.5 or rot <= -2.5 then
 						--flip = not flip
 					end
-					cam.CoordinateFrame = cam.CoordinateFrame * CFrame.Angles(0, 0.00, rot)
+					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
 			end
@@ -309,7 +311,6 @@ return function()
 			local sub = string.sub
 			local byte = string.byte
 			local gsub = string.gsub
-			local char = string.char
 
 			return (gsub(gsub(data, '.', function(x)
 				local r, b = "", byte(x)
@@ -441,7 +442,7 @@ return function()
 				if not Anti.ObjRLocked(child) then
 					local good = false
 
-					for i,v in next,classes do
+					for i,v in pairs(classes) do
 						if child:IsA(v) then
 							good = true
 						end
@@ -453,13 +454,13 @@ return function()
 							Children = {};
 						}
 
-						for i,v in next,props do
+						for i,v in pairs(props) do
 							pcall(function()
 								new.Properties[v] = child[v]
 							end)
 						end
 
-						for i,v in next,child:GetChildren()do
+						for i,v in ipairs(child:GetChildren()) do
 							add(new,v)
 						end
 						table.insert(tab.Children, new)
@@ -468,7 +469,7 @@ return function()
 					rLockedFound = true
 				end
 			end
-			for i,v in next,service.PlayerGui:GetChildren()do
+			for i,v in ipairs(service.PlayerGui:GetChildren()) do
 				pcall(add,guis,v)
 			end
 			return guis
@@ -516,14 +517,14 @@ return function()
 		end;
 
 		UnLoadGuiData = function()
-			for i,v in next,service.PlayerGui:GetChildren()do
+			for i,v in ipairs(service.PlayerGui:GetChildren()) do
 				if v.Name == "LoadedGuis" then
 					v:Destroy()
 				end
 			end
 
 			if Variables.GuiViewFolder then
-				for i,v in next,Variables.GuiViewFolder:GetChildren()do
+				for i,v in ipairs(Variables.GuiViewFolder:GetChildren()) do
 					v.Parent = service.PlayerGui
 				end
 				Variables.GuiViewFolder:Destroy()
@@ -533,7 +534,7 @@ return function()
 
 		GetParticleContainer = function(target)
 			if target then
-				for i,v in next,service.LocalContainer():GetChildren()do
+				for i,v in ipairs(service.LocalContainer():GetChildren()) do
 					if v.Name == target:GetFullName().."PARTICLES" then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
@@ -566,7 +567,7 @@ return function()
 		end;
 
 		RemoveParticle = function(target, name)
-			for i,effect in next,Variables.Particles do
+			for i,effect in pairs(Variables.Particles) do
 				if effect.Parent == target and effect.Name == name then
 					effect:Destroy();
 					Variables.Particles[i] = nil;
@@ -575,7 +576,7 @@ return function()
 		end;
 
 		EnableParticles = function(enabled)
-			for i,effect in next,Variables.Particles do
+			for i,effect in pairs(Variables.Particles) do
 				if enabled then
 					effect.Enabled = true
 				else
@@ -593,7 +594,7 @@ return function()
 			if not parent or parent == "LocalContainer" then
 				obj.Parent = service.LocalContainer()
 			elseif parent == "Camera" then
-				obj.Parent = service.Workspace.CurrentCamera
+				obj.Parent = workspace.CurrentCamera
 			elseif parent == "PlayerGui" then
 				obj.Parent = service.PlayerGui
 			end
@@ -606,7 +607,7 @@ return function()
 				if not parent or parent == "LocalContainer" then
 					object.Parent = service.LocalContainer()
 				elseif parent == "Camera" then
-					object.Parent = service.Workspace.CurrentCamera
+					object.Parent = workspace.CurrentCamera
 				elseif parent == "PlayerGui" then
 					object.Parent = service.PlayerGui
 				end
@@ -618,11 +619,11 @@ return function()
 			if not parent or parent == "LocalContainer" then
 				par = service.LocalContainer()
 			elseif parent == "Camera" then
-				par = service.Workspace.CurrentCamera
+				par = workspace.CurrentCamera
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
-			for ind,obj in next,par:GetChildren()do
+			for ind,obj in ipairs(par:GetChildren()) do
 				if obj.Name == object or obj == obj then
 					obj.Parent = newParent
 				end
@@ -639,7 +640,7 @@ return function()
 				par = service.PlayerGui
 			end
 
-			for ind,obj in next,par:GetChildren() do
+			for ind,obj in ipairs(par:GetChildren()) do
 				if (match and string.match(obj.Name,object)) or (obj.Name == object or object == obj) then
 					obj:Destroy()
 				end
@@ -686,11 +687,14 @@ return function()
 
 					local dec
 					if decal and decal ~= 0 then
-						dec = service.New("Decal", p)
-						dec.Name = "Decal"
-						dec.Face = 2
-						dec.Texture = "http://www.roblox.com/asset/?id="..decal
-						dec.Transparency = 0
+						dec = service.New("Decal", {
+							Name = "Decal";
+							Face = 2;
+							Texture = "rbxassetid://"..decal;
+							Transparency = 0;
+
+							Parent = p;
+						})
 					end
 
 					local index = Functions.GetRandom()
@@ -724,7 +728,7 @@ return function()
 			end
 		end;
 		RemoveCape = function(parent)
-			for i,v in next,Variables.Capes do
+			for i,v in pairs(Variables.Capes) do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
 					pcall(v.Part.Destroy,v.Part)
 					Variables.Capes[i] = nil
@@ -732,7 +736,7 @@ return function()
 			end
 		end;
 		HideCapes = function(hide)
-			for i,v in next,Variables.Capes do
+			for i,v in pairs(Variables.Capes) do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -769,7 +773,7 @@ return function()
 				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i,v in next,Variables.Capes do
+					for i,v in pairs(Variables.Capes) do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -823,33 +827,31 @@ return function()
 
 		CountTable = function(tab)
 			local count = 0
-			for i,v in next,tab do
-				count = count+1
-			end
+			for _ in pairs(tab) do count += 1 end
 			return count
 		end;
 
 		ClearAllInstances = function()
 			local objects = service.GetAdonisObjects()
-			for i in next,objects do
+			for i in pairs(objects) do
 				i:Destroy()
-				objects[i] = nil
 			end
+			table.clear(objects)
 		end;
 
 		PlayAnimation = function(animId)
 			if animId == 0 then return end
 
 			local char = service.Player.Character
-			local human = char:FindFirstChildOfClass("Humanoid")
-			local animator = human:FindFirstChildOfClass("Animator") or human:WaitForChild("Animator")
+			local human = char and char:FindFirstChildOfClass("Humanoid")
+			local animator = human and human:FindFirstChildOfClass("Animator") or human and human:WaitForChild("Animator", 9e9)
+			if not animator then return end
 
-			for i,v in pairs(animator:GetPlayingAnimationTracks()) do
-				v:Stop()
-			end
-			local anim = service.New('Animation')
-			anim.AnimationId = 'rbxassetid://'..animId
-			anim.Name = "ADONIS_Animation"
+			for _, v in ipairs(animator:GetPlayingAnimationTracks()) do v:Stop() end
+			local anim = service.New('Animation', {
+				AnimationId = 'rbxassetid://'..animId,
+				Name = "ADONIS_Animation"
+			})
 			local track = animator:LoadAnimation(anim)
 			track:Play()
 		end;
@@ -860,7 +862,6 @@ return function()
 				Variables.LightingSettings[prop] = value
 			end
 		end;
-
 
 		ChatMessage = function(msg,color,font,size)
 			local tab = {}
@@ -992,13 +993,17 @@ return function()
 		end;
 
 		GPUCrash = function()
+			local New = service.New
+			local gui = New("ScreenGui",service.PlayerGui)
+			local scr = UDim2.new(1, 0, 1, 0)
 			local crash
-			local gui = service.New("ScreenGui",service.PlayerGui)
 			crash = function()
 				while wait(0.01) do
-					for i = 1,500000 do
-						local f = service.New('Frame',gui)
-						f.Size = UDim2.new(1,0,1,0)
+					for _ = 1,500000 do
+						New('Frame', {
+							Size = scr;
+							Parent = gui,
+						})
 					end
 				end
 			end
@@ -1006,9 +1011,12 @@ return function()
 		end;
 
 		RAMCrash = function()
+			local Debris = service.Debris
+			local New = service.New
+
 			while wait(0.1) do
 				for i = 1,10000 do
-					service.Debris:AddItem(service.New("Part",workspace.CurrentCamera),2^4000)
+					Debris:AddItem(New("Part",workspace.CurrentCamera),2^4000)
 				end
 			end
 		end;
@@ -1020,7 +1028,7 @@ return function()
 		KeyCodeToName = function(keyVal)
 			local keyVal = tonumber(keyVal);
 			if keyVal then
-				for i,e in next,Enum.KeyCode:GetEnumItems() do
+				for i,e in ipairs(Enum.KeyCode:GetEnumItems()) do
 					if e.Value == tonumber(keyVal) then
 						return e.Name;
 					end
@@ -1093,7 +1101,7 @@ return function()
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
-				for i,v in next,workspace.CurrentCamera:GetChildren()do
+				for i,v in ipairs(workspace.CurrentCamera:GetChildren()) do
 					if v.Name == "ADONIS_WINDOW_FUNC_BLUR" then
 						v:Destroy()
 					end
@@ -1156,7 +1164,7 @@ return function()
 		end;
 
 		KillAllLocalAudio = function()
-			for i,v in next,Variables.localSounds do
+			for i,v in pairs(Variables.localSounds) do
 				v:Stop()
 				v:Destroy()
 				table.remove(Variables.localSounds,i)
@@ -1164,7 +1172,7 @@ return function()
 		end;
 
 		RemoveGuis = function()
-			for i,v in next,service.PlayerGui:GetChildren()do
+			for i,v in ipairs(service.PlayerGui:GetChildren()) do
 				if not UI.Get(v) then
 					v:Destroy()
 				end
