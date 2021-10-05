@@ -1471,7 +1471,7 @@ return function(Vargs, env)
 				local command = args[3]
 				local name = string.lower(plr.Name)
 				assert(command, "Argument #1 needs to be supplied")
-				if strng.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."loop") or command:find("^"..Settings.Prefix.."repeat") then
+				if strng.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or string.find(command, "^"..Settings.Prefix.."loop") or string.find(command,"^"..Settings.Prefix.."repeat") then
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
@@ -4067,28 +4067,43 @@ return function(Vargs, env)
 
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
 						if point then
-							if v.Character.Humanoid.SeatPart~=nil then
-								Functions.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
+							if not v.Character then
+								continue
 							end
-							if v.Character.Humanoid.Sit then
-								v.Character.Humanoid.Sit = false
-								v.Character.Humanoid.Jump = true
+							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+							if Humanoid then
+								if Humanoid.SeatPart~=nil then
+									Functions.RemoveSeatWelds(Humanoid.SeatPart)
+								end
+								if Humanoid.Sit then
+									Humanoid.Sit = false
+									Humanoid.Jump = true
+								end
 							end
+		
 							wait()
-							v.Character.HumanoidRootPart.CFrame = CFrame.new(point)
+							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
+							if root then
+								root.CFrame = CFrame.new(point)
+							end
 						end
 					end
 
 					if not point then Functions.Hint('Waypoint '..m..' was not found.',{plr}) end
-				elseif args[2]:find(',') then
+				elseif string.find(args[2], ',') then
 					local x,y,z = string.match(args[2],'(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						if v.Character.Humanoid.SeatPart~=nil then
-							Functions.RemoveSeatWelds(v.Character.Humanoid.SeatPart)
-						end
-						if v.Character.Humanoid.Sit then
-							v.Character.Humanoid.Sit = false
-							v.Character.Humanoid.Jump = true
+						if not v.Character or not v:FindFirstChild("HumanoidRootPart") then continue end
+
+						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if Humanoid then
+							if Humanoid.SeatPart~=nil then
+								Functions.RemoveSeatWelds(Humanoid.SeatPart)
+							end
+							if Humanoid.Sit then
+								Humanoid.Sit = false
+								Humanoid.Jump = true
+							end
 						end
 						wait()
 						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x),tonumber(y),tonumber(z)))
@@ -4099,29 +4114,41 @@ return function(Vargs, env)
 					if #players == 1 and players[1] == target then
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-							if n.Character.Humanoid.SeatPart~=nil then
-								Functions.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
-							end
-							if n.Character.Humanoid.Sit then
-								n.Character.Humanoid.Sit = false
-								n.Character.Humanoid.Jump = true
+							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
+							if Humanoid then
+								if Humanoid.SeatPart~=nil then
+									Functions.RemoveSeatWelds(Humanoid.SeatPart)
+								end
+								if Humanoid.Sit then
+									Humanoid.Sit = false
+									Humanoid.Jump = true
+								end
 							end
 							wait()
 							n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*1),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
 						end
 					else
-						for k,n in pairs(players) do
-							if n~=target then
-								if n.Character.Humanoid.SeatPart~=nil then
-									Functions.RemoveSeatWelds(n.Character.Humanoid.SeatPart)
-								end
-								if n.Character.Humanoid.Sit then
-									n.Character.Humanoid.Sit = false
-									n.Character.Humanoid.Jump = true
-								end
-								wait()
-								if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-									n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
+						local targ_root = target.Character and targ.Character:FindFirstChild("HumanoidRootPart")
+						if targ_root then
+							for k,n in pairs(players) do
+								if n~=target then
+									local Character = n.Character
+									if not Character then continue end
+
+									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+									if Humanoid then
+										if Humanoid.SeatPart~=nil then
+											Functions.RemoveSeatWelds(Humanoid.SeatPart)
+										end
+										if Humanoid.Sit then
+											Humanoid.Sit = false
+											Humanoid.Jump = true
+										end
+									end
+									wait()
+									if n.Character:FindFirstChild("HumanoidRootPart") and targ_root then
+										n.Character.HumanoidRootPart.CFrame = (targ_root.CFrame*CFrame.Angles(0,math.rad(90/#players*k),0)*CFrame.new(5+.2*#players,0,0))*CFrame.Angles(0,math.rad(90),0)
+									end
 								end
 							end
 						end
