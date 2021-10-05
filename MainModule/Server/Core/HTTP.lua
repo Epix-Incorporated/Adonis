@@ -91,6 +91,8 @@ return function(Vargs)
 
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+						if not trello then warn("Unable to fetch Trello table for data. (Make sure to lessen down HTTP Requests or to increase the trello HttpWait)") return end;
+
 						local oldListObj = trello.getListObj;
 						trello.getListObj = function(...)
 							local vargs = table.pack(...)
