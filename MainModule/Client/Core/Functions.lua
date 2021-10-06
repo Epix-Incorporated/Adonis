@@ -92,68 +92,75 @@ return function()
 
 		ESPFaces = {"Front", "Back", "Top", "Bottom", "Left", "Right"};
 		ESPify = function(obj, color)
+			local Debris = service.Debris
+			local New = service.New
+
+			local LocalPlayer = service.UnWrap(service.Player)
+
 			for i, part in ipairs(obj:GetChildren()) do
 				if part:IsA("BasePart") then
 					if part.Name == "Head" and not part:FindFirstChild("__ADONIS_NAMETAG") then
 						local player = service.Players:GetPlayerFromCharacter(part.Parent)
 
 						if player then
-							local bb = Instance.new("BillboardGui")
-							bb.Name = "__ADONIS_NAMETAG"
-							bb.Adornee = part
-							bb.AlwaysOnTop = true
-							bb.StudsOffset = Vector3.new(0,2,0)
-							bb.Size = UDim2.new(0,100,0,40)
-							local taglabel = Instance.new("TextLabel")
-							local pos = service.Player:DistanceFromCharacter(part.Position)
-							taglabel.BackgroundTransparency = 1
-							taglabel.TextColor3 = Color3.new(1,1,1)
-							taglabel.TextStrokeTransparency = 0
-							taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, pos and math.floor(pos) or 'N/A')
-							taglabel.Size = UDim2.new(1, 0, 1, 0)
-							taglabel.TextScaled = true
-							taglabel.TextWrapped = true
-							taglabel.Parent = bb
+							local bb = New("BillboardGui", {
+								Name = "__ADONIS_NAMETAG",
+								AlwaysOnTop = true,
+								StudsOffset = Vector3.new(0,2,0),
+								Size = UDim2.new(0,100,0,40),
+								Adornee = part,
+							}, true)
+							local taglabel = New("TextLabel", {
+								BackgroundTransparency = 1,
+								TextColor3 = Color3.new(1,1,1),
+								TextStrokeTransparency = 0,
+								Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, "0"),
+								Size = UDim2.new(1, 0, 1, 0),
+								TextScaled = true,
+								TextWrapped = true,
+								Parent = bb
+							}, true)
+
 							bb.Parent = part
 
-							if player ~= service.Player then
-								coroutine.wrap(function()
+							if player ~= LocalPlayer then
+								spawn(function()
 									repeat
 										if not part then
 											break
 										end
 
-										local DIST = service.Player:DistanceFromCharacter(part.CFrame.Position)
+										local DIST = LocalPlayer:DistanceFromCharacter(part.CFrame.Position)
 										taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, DIST and math.floor(DIST) or 'N/A')
 
-										service.RunService.Heartbeat:Wait()
+										wait()
 									until not part or not bb or not taglabel
-								end)()
+								end)
 							end
 						end
 					end
 
-					for i,surface in ipairs(Functions.ESPFaces) do
-						local gui = Instance.new("SurfaceGui")
-						gui.Name = "__ADONISESP"
-						gui.AlwaysOnTop = true
-						gui.ResetOnSpawn = false
-						gui.Adornee = part
-						gui.Face = surface
+					for _, surface in ipairs(Functions.ESPFaces) do
+						local gui = New("SurfaceGui", {
+							AlwaysOnTop = true,
+							ResetOnSpawn = false,
+							Face = surface,
+							Adornee = part,
+						}, true)
 
-						do
-							local temp = Instance.new("Frame")
-							temp.Size = UDim2.new(1, 0, 1, 0)
-							temp.BackgroundColor3 = color or Color3.fromRGB(255, 0, 234)
-							temp.Parent = gui
-						end
+						New("Frame", {
+							Size = UDim2.new(1, 0, 1, 0),
+							BackgroundColor3 = color,
+							Parent = gui,
+						}, true)
 
 						gui.Parent = part;
-						gui.AncestryChanged:Connect(function()
-							if not game.IsDescendantOf(gui,workspace) then
-								service.Debris:AddItem(gui,0)
-
-								for i,v in pairs(Variables.ESPObjects) do
+						local tempConnection;
+						tempConnection = gui.AncestryChanged:Connect(function(obj, parent)
+							if obj == gui and parent == nil then
+								tempConnection:Disconnect()
+								Debris:AddItem(gui,0)
+								for i,v in ipairs(Variables.ESPObjects) do
 									if v == gui then
 										table.remove(Variables.ESPObjects, i)
 										break;
@@ -169,6 +176,11 @@ return function()
 		end;
 
 		CharacterESP = function(mode, target, color)
+			color = color or Color3.new(1, 0, 0.917647)
+
+			local Debris = service.Debris
+			local UnWrap = service.UnWrap
+
 			if Variables.ESPEvent then
 				Variables.ESPEvent:Disconnect();
 				Variables.ESPEvent = nil;
@@ -181,7 +193,7 @@ return function()
 						__ADONIS_NAMETAG:Destroy()
 					end
 
-					service.Debris:AddItem(obj,0)
+					Debris:AddItem(obj,0)
 					Variables.ESPObjects[obj] = nil;
 				end
 			end
@@ -189,22 +201,22 @@ return function()
 			if mode == true then
 				if not target then
 					Variables.ESPEvent = workspace.ChildAdded:Connect(function(obj)
-						service.RunService.Heartbeat:Wait()
-						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
+						wait()
+
+						local human = obj.ClassName == "Model" and service.Players:GetPlayerFromCharacter(obj)
 
 						if human then
-							coroutine.wrap(Functions.ESPify)(obj, color);
+							spawn(Functions.ESPify, UnWrap(obj), color);
 						end
 					end)
 
-					for i,obj in ipairs(workspace:GetChildren()) do
-						local human = obj:IsA("Model") and service.Players:GetPlayerFromCharacter(obj)
-						if human then
-							coroutine.wrap(Functions.ESPify)(obj, color);
+					for i, Player in ipairs(service.Players:GetPlayers()) do
+						if Player.Character then
+							spawn(Functions.ESPify, UnWrap(Player.Character), color);
 						end
 					end
 				else
-					Functions.ESPify(target, color);
+					Functions.ESPify(UnWrap(target), color);
 				end
 			end
 		end;
@@ -1670,7 +1682,7 @@ return function()
 				return 6825455804;
 			end
 		end;
-				
+
 		GetUserInputServiceData = function(args)
 			local data = {}
 			local props = {

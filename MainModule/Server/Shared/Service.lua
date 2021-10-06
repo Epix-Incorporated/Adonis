@@ -86,7 +86,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
 
-	local Instance = {new = function(obj, parent) return service and client and service.Wrap(oldInstNew(obj, service.UnWrap(parent)), true) or oldInstNew(obj, parent) end}
+	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
 			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
@@ -919,8 +919,8 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			LoopQueue[name] = nil
 		end;
 
-		New = function(class,data)
-			local new = Instance.new(class)
+		New = function(class, data, noWrap)
+			local new = noWrap and oldInstNew(class) or Instance.new(class)
 			if data then
 				if type(data) == "table" then
 					local parent = data.Parent
