@@ -997,11 +997,11 @@ return function(Vargs)
 			local tab = {}
 			local str = ''
 
-			for arg in msg:gmatch('([^'..key..']+)') do
+			for arg in string.gmatch(msg,'([^'..key..']+)') do
 				if #tab>=num then
 					break
 				elseif #tab>=num-1 then
-					table.insert(tab,msg:sub(#str+1,#msg))
+					table.insert(tab,string.sub(msg,#str+1,#msg))
 				else
 					str = str..arg..key
 					table.insert(tab,arg)
@@ -1013,7 +1013,7 @@ return function(Vargs)
 
 		BasicSplit = function(msg,key)
 			local ret = {}
-			for arg in msg:gmatch("([^"..key.."]+)") do
+			for arg in string.gmatch(msg,"([^"..key.."]+)") do
 				table.insert(ret,arg)
 			end
 			return ret
@@ -1022,7 +1022,7 @@ return function(Vargs)
 		CountTable = function(tab)
 			local num = 0
 			for i in pairs(tab) do
-				num = num+1
+				num += 1
 			end
 			return num
 		end;
@@ -1048,7 +1048,7 @@ return function(Vargs)
 		end;
 
 		Trim = function(str)
-			return str:match("^%s*(.-)%s*$")
+			return string.match(str, "^%s*(.-)%s*$")
 		end;
 
 		Round = function(num)
@@ -1084,7 +1084,7 @@ return function(Vargs)
 			for i,v in pairs(service.NetworkServer:GetChildren()) do
 				pcall(function()
 					if v:IsA("ServerReplicator") then
-						if v:GetPlayer().Name:lower():sub(1,#name)==name:lower() or name=='all' then
+						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))
 						end
 					end
@@ -1209,6 +1209,7 @@ return function(Vargs)
 
 			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId)
 			local newCharacterModel = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
+			local Animate = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
 			newCharacterModel.Name = plr.Name
@@ -1225,6 +1226,13 @@ return function(Vargs)
 				newCharacterModel:SetPrimaryPartCFrame(oldcframe)
 			end
 			newCharacterModel.Parent = workspace
+
+			-- hacky way to fix other people being unable to see animations.
+			for _=1,2 do
+				if Animate then
+					Animate.Disabled = not Animate.Disabled
+				end
+			end
 
 			return newCharacterModel
 		end;
