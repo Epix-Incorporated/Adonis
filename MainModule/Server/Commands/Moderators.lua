@@ -1353,17 +1353,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local p
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					p = v
 				end
 				if p then
-					Functions.Hint("Loading GUIs",{plr})
-					local guis,rlocked = Remote.Get(p,"Function","GetGuiData")
-					if rlocked then
-						Functions.Hint("ROBLOXLOCKED GUI FOUND! CANNOT DISPLAY!",{plr})
-					end
+					Functions.Hint("Loading GUIs", {plr})
+					local guis = Remote.Get(p, "Function", "GetGuiData")
 					if guis then
-						Remote.Send(plr,"Function","LoadGuiData",guis)
+						Remote.Send(plr, "Function", "LoadGuiData", guis)
 					end
 				end
 			end;
