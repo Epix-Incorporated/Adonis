@@ -25,7 +25,7 @@ return function(Vargs)
 		Settings = server.Settings;
 
 		--// Client check
-		service.StartLoop("ClientCheck",30, Anti.CheckAllClients, true)
+		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
 
 		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
@@ -113,23 +113,9 @@ return function(Vargs)
 			end
 		end;
 
-		Sanitize = function(obj, classList)
-			if Anti.RLocked(obj) then
-				pcall(service.Delete, obj)
-			else
-				for i,child in next,obj:GetChildren() do
-					if Anti.RLocked(child) or Functions.IsClass(child, classList) then
-						pcall(service.Delete, child)
-					else
-						pcall(Anti.Sanitize, child, classList)
-					end
-				end
-			end
-		end;
-
 		isFake = function(p)
-			if Anti.ObjRLocked(p) or not p:IsA("Player") then
-				return true,1
+			if not p:IsA("Player") then
+				return true, 1
 			else
 				local players = service.Players:GetPlayers()
 				local found = 0
@@ -174,27 +160,6 @@ return function(Vargs)
 					Anti.RemovePlayer(v, "Fake")
 				end
 			end
-		end;
-
-		GetClassName = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local ran,err = pcall(function()
-				local test = obj[testName]
-			end)
-			if err then
-				local class = string.match(err, testName.." is not a valid member of (.*)")
-				if class then
-					return class
-				end
-			end
-		end;
-
-		RLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
-		end;
-
-		ObjRLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
 		end;
 
 		AssignName = function()

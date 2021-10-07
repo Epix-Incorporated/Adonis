@@ -448,41 +448,35 @@ return function()
 				Children = {};
 			}
 
-			local rLockedFound = false
-
 			local add; add = function(tab,child)
-				if not Anti.ObjRLocked(child) then
-					local good = false
+				local good = false
 
-					for i,v in pairs(classes) do
-						if child:IsA(v) then
-							good = true
-						end
+				for i,v in pairs(classes) do
+					if child:IsA(v) then
+						good = true
+					end
+				end
+
+				if good then
+					local new = {
+						Properties = {};
+						Children = {};
+					}
+
+					for i,v in pairs(props) do
+						pcall(function()
+							new.Properties[v] = child[v]
+						end)
 					end
 
-					if good then
-						local new = {
-							Properties = {};
-							Children = {};
-						}
-
-						for i,v in pairs(props) do
-							pcall(function()
-								new.Properties[v] = child[v]
-							end)
-						end
-
-						for i,v in ipairs(child:GetChildren()) do
-							add(new,v)
-						end
-						table.insert(tab.Children, new)
+					for _, v in ipairs(child:GetChildren()) do
+						add(new,v)
 					end
-				else
-					rLockedFound = true
+					table.insert(tab.Children, new)
 				end
 			end
-			for i,v in ipairs(service.PlayerGui:GetChildren()) do
-				pcall(add,guis,v)
+			for _, v in ipairs(service.PlayerGui:GetChildren()) do
+				pcall(add, guis, v)
 			end
 			return guis
 		end;

@@ -62,7 +62,6 @@ return function(Vargs)
 		--Core.MakeClient()
 
 		local remoteParent = service.ReplicatedStorage;
-		remoteParent.Changed:Connect(function(p) if server.Anti.RLocked(remoteParent) then server.Core.PanicMode("Remote Parent RobloxLocked") end end)
 		remoteParent.ChildRemoved:Connect(function(c)
 			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in next,server.Core.RemoteEvent do if c == v then return true end end end)() then
 				wait();
@@ -131,7 +130,7 @@ return function(Vargs)
 		};
 
 		Panic = function(reason)
-			service.new("Hint", {
+			service.New("Hint", {
 				Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~",
 				Parent = workspace,
 			})
@@ -176,10 +175,8 @@ return function(Vargs)
 
 		MakeEvent = function()
 			local remoteParent = service.ReplicatedStorage;
-			local ran,error = pcall(function()
-				if Anti.RLocked(remoteParent) then
-					Core.Panic("Remote Parent RobloxLocked/Unusable")
-				elseif server.Running then
+			local ran, error = pcall(function()
+				if server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false})
 					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event})
