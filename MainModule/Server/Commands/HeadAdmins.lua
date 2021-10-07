@@ -162,6 +162,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now an admin',{plr})
@@ -190,6 +191,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a temp admin',{plr})
@@ -427,7 +429,7 @@ return function(Vargs, env)
 
 		FullShutdown = {
 			Prefix = Settings.Prefix;
-			Commands = {"fullshutdown"};
+			Commands = {"fullshutdown","globalshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
