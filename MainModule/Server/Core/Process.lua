@@ -830,23 +830,6 @@ return function(Vargs)
 				--// Anti Exploit stuff
 				pcall(Anti.CheckNameID, p)
 
-				--// Character Child Santization
-				--local function SanitizeCharacter()
-				--	if Anti.RLocked(p.Character) then
-				--		Anti.Detected(p, "Kick", "Character Locked")
-				--	else
-				--		Anti.Sanitize(p.Character,{
-				--			"Backpack";
-				--			"PlayerGui";
-				--		})
-				--	end
-				--end
-
-				--SanitizeCharacter()
-				--p.Character.DescendantAdded:Connect(function(child)
-				--	SanitizeCharacter()
-				--end)
-
 				--// Wait for UI stuff to finish
 				wait(1);
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
