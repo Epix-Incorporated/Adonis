@@ -3793,6 +3793,11 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.WalkSpeed = args[2] or 16
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "Character walk speed has been set to "..v.Character.Humanoid.WalkSpeed;
+							Time = 15;
+						})
 					end
 				end
 			end
@@ -4784,6 +4789,11 @@ return function(Vargs, env)
 							local sVal = scr:FindFirstChild("Speed")
 							if sVal then
 								sVal.Value = speed
+								Remote.MakeGui(v,"Notification",{
+									Title = "Notification";
+									Message = "Character fly speed has been set to "..speed;
+									Time = 15;
+								})
 							end
 						end
 					end
@@ -5589,6 +5599,11 @@ return function(Vargs, env)
 					freecam.ResetOnSpawn = false
 					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
+					Remote.MakeGui(v,"Notification",{
+						Title = "Notification";
+						Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
+						Time = 15;
+					})
 				end
 			end
 		};
@@ -5614,6 +5629,12 @@ return function(Vargs, env)
 
 						Remote.Send(v,'Function','SetView','reset')
 						service.Debris:AddItem(freecam, 2)
+
+						Remote.MakeGui(v,"Notification",{
+							Title = "Notification";
+							Message = "Freecam has been disabled.";
+							Time = 15;
+						})
 					end
 				end
 			end
