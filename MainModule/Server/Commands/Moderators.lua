@@ -382,11 +382,17 @@ return function(Vargs, env)
 			Function = function(plr, args, data)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local plrLevel = data.PlayerData.Level
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+						DontError = false;
+						IsServer = false;
+						IsKicking = false;
+						UseFakePlayer = true;
+					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						local data = Core.GetPlayer(v)
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
+
 						Remote.RemoveGui(v, "Notify")
 						Remote.MakeGui(v, "Notify", {
 							Title = "Warning from "..tostring(plr);
@@ -417,7 +423,12 @@ return function(Vargs, env)
 				local plrLevel = data.PlayerData.Level
 				local warning = args[2]
 
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+						DontError = false;
+						IsServer = false;
+						IsKicking = false;
+						UseFakePlayer = true;
+					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						local data = Core.GetPlayer(v)
@@ -449,7 +460,12 @@ return function(Vargs, env)
 			Function = function(plr, args, data)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local plrLevel = data.PlayerData.Level
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+						DontError = false;
+						IsServer = false;
+						IsKicking = true;
+						UseFakePlayer = false;
+					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel>targLevel then
 						local data = Core.GetPlayer(v)
@@ -474,7 +490,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				assert(args[1], "Argument missing or nil")
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+						DontError = false;
+						IsServer = false;
+						IsKicking = false;
+						UseFakePlayer = true;
+					})) do
 					local data = Core.GetPlayer(v)
 					local tab = {}
 
