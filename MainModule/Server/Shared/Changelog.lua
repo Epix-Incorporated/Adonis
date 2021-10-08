@@ -21,7 +21,7 @@ return {
 	"(Git/alau740) Add timeban alias :tempban #495";
 	"(Git/Expertcoderz) Replaced :inspect with !profile #494";
 	"(Git/ccuser44) Fixed ban naming #492";
-	"(Git/alau740) Update init.lua #491";
+	"(Git/ccuser44) Update init.lua #491";
 	"(Git/alau740) Confirm prompt to :clearplayerdata, add option to disable cross-server commands, global time messages, misc other stuff #490";
 	"(Git/Expertcoderz) Add !rank, !brickcolors, !materials, updated !usage #489";
 	"(Git/LolloDev5123) ...A lot of changes: #488";
