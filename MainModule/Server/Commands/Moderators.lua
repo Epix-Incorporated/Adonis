@@ -393,7 +393,7 @@ return function(Vargs, env)
 							Message = args[2];
 						})
 
-						Remote.MakeGui(p,"Notification",{
+						Remote.MakeGui(plr,"Notification",{
 							Title = "Notification";
 							Message = "Warned ".. v.Name;
 							Icon = "rbxassetid://7536784790";
@@ -407,21 +407,23 @@ return function(Vargs, env)
 		RemoveWarning = {
 			Prefix = Settings.Prefix;
 			Commands = {"removewarning"};
-			Args = {"player","message";};
+			Args = {"player","warning";};
 			Filter = false;
-			Description = "Removes the specified warning from the target player(s)";
+			Description = "Removes the specified warning from the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr, args, data)
-				assert(args[1] and args[2], "Argument missing or nil")
+				assert(args[1] and args[2], "Argument missing or incorrect")
 
 				local plrLevel = data.PlayerData.Level
+				local warning = args[2]
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
 						local data = Core.GetPlayer(v)
 
-						for i,v in ipairs(data.Warnings) do
-							if v.Message:lower() == args[2]:lower() then
+						for i,w in ipairs(data.Warnings) do
+							if w.Message:lower():sub(1, #warning) == warning:lower() then
 								table.remove(data.Warnings, i)
 							end
 						end
