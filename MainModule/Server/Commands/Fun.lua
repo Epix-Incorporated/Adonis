@@ -156,9 +156,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				--// Apparently Rojo doesn't handle mesh parts very well, so I'm loading this remotely (using require to bypass insertservice restrictions)
 				--// The model is free to take so feel free to that 👍
-				--// Here's the URL https://www.roblox.com/library/7405942066/AssetModule
+				--// Here's the URL https://www.roblox.com/library/7679952474/AssetModule
 
-				local rAssets = require(7405942066);
+				local rAssets = require(7679952474); --// This apparently caches, so don't delete anything else future usage breaks
 				local gerald = rAssets.Gerald;
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -171,8 +171,6 @@ return function(Vargs, env)
 						end
 					end
 				end
-
-				rAssets:Destroy(); --// Dunno if this is actually going to help anything but why not
 			end
 		};
 
@@ -212,7 +210,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";};--//add more :)
+			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";"enabledonor"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -422,7 +420,7 @@ return function(Vargs, env)
 						audio.Volume = 0.5
 						audio:Play()
 						wait(2)
-						for i,part in next,Variables.FrozenObjects do
+						for i,part in pairs(Variables.FrozenObjects) do
 							part.Anchored = false
 						end
 
@@ -491,7 +489,7 @@ return function(Vargs, env)
 				if not speed or not tonumber(speed) then
 					speed = 1000
 				end
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","Dizzy",tonumber(speed))
 				end
 			end
@@ -983,7 +981,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,p in next,players do
+				for i,p in pairs(players) do
 					service.TrackTask("Thread: Thanos", function()
 						for t = 0.1,1.1,0.05 do
 							if p.Character then
@@ -1110,7 +1108,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for i,p in next,service.GetPlayers(plr,args[1]) do
+				for i,p in ipairs(service.GetPlayers(plr,args[1])) do
 					service.TrackTask("Thread: UFO", function()
 						local char = p.Character
 						local torso = p.Character:FindFirstChild("HumanoidRootPart")
@@ -1184,7 +1182,7 @@ return function(Vargs, env)
 									torso.Anchored = true
 									tween:Play()
 
-									for i,v in next,p.Character:GetChildren() do
+									for i,v in ipairs(p.Character:GetChildren()) do
 										if v:IsA("BasePart") then
 											service.TweenService:Create(v, TweenInfo.new(1), {
 												Transparency = 1
@@ -1216,7 +1214,7 @@ return function(Vargs, env)
 										end
 									]])
 
-									for i,v in next,p.Character:GetChildren() do
+									for i,v in ipairs(p.Character:GetChildren()) do
 										if v:IsA("BasePart") then
 											v.Anchored = true
 											v.Transparency = 1
@@ -1402,7 +1400,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for i,p in next,service.GetPlayers(plr,args[1]) do
+				for i,p in ipairs(service.GetPlayers(plr,args[1])) do
 					spawn(function()
 						local char = p.Character
 						local torso = p.Character:FindFirstChild("HumanoidRootPart")
@@ -1674,7 +1672,7 @@ return function(Vargs, env)
 				local nukes = {}
 				local partsHit = {}
 
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in ipairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -1714,7 +1712,7 @@ return function(Vargs, env)
 				end
 
 				for i = 1, 333 do
-					for i,v in next,nukes do
+					for i,v in pairs(nukes) do
 						local curPos = v.CFrame
 						v.Size = v.Size + Vector3.new(3, 3, 3)
 						v.CFrame = curPos
@@ -1722,7 +1720,7 @@ return function(Vargs, env)
 					wait(1/44)
 				end
 
-				for i,v in next,nukes do
+				for i,v in pairs(nukes) do
 					v:Destroy()
 				end
 
@@ -1763,7 +1761,7 @@ return function(Vargs, env)
 						partsHit = nil
 						finished = true
 					elseif partsHit and objs and Variables.WildFire ~= partsHit then
-						for i,v in next,objs do
+						for i,v in pairs(objs) do
 							v:Destroy()
 						end
 
@@ -1813,7 +1811,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -2012,7 +2010,7 @@ return function(Vargs, env)
 						k.Name='Epix Puke'
 						Routine(function()
 							repeat
-								wait(0.15)
+								wait(0.07)
 								local p = service.New("Part",v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2059,7 +2057,7 @@ return function(Vargs, env)
 								end)
 							until run==false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head'))
 						end)
-						wait(10)
+						wait(12)
 						run = false
 						k:Destroy()
 					end)
@@ -2703,7 +2701,7 @@ return function(Vargs, env)
 
 							torso.Transparency = 1
 
-							for i,v in next,torso:GetChildren() do
+							for i,v in ipairs(torso:GetChildren()) do
 								if v:IsA'Motor6D' then
 									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
 								end
@@ -4247,6 +4245,848 @@ return function(Vargs, env)
 							end
 						end
 					end
+				end
+			end
+		};
+		MakeTalk = {
+			Prefix = Settings.Prefix;
+			Commands = {"talk";"maketalk";};
+			Args = {"player";"message";};
+			Filter = true;
+			Fun = true;
+			Description = "Makes a dialog bubble appear over the target player(s) head with the desired message";
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				local message = args[2]
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					service.ChatService:Chat(v.Character.Head, message, Enum.ChatColor.Blue)
+				end
+			end
+		};
+
+		IceFreeze = {
+			Prefix = Settings.Prefix;
+			Commands = {"ice";"iceage","icefreeze","funfreeze"};
+			Args = {"player";};
+			Description = "Freezes the target player(s) in a block of ice";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Routine(function()
+						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+							for _, obj in ipairs(v.Character:GetChildren()) do
+								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
+							end
+							local ice = service.New("Part", v.Character)
+							ice.BrickColor = BrickColor.new("Steel blue")
+							ice.Material = "Ice"
+							ice.Name = "Adonis_Ice"
+							ice.Anchored = true
+							--ice.CanCollide=false
+							ice.TopSurface = "Smooth"
+							ice.BottomSurface = "Smooth"
+							ice.FormFactor = "Custom"
+							ice.Size = Vector3.new(5, 6, 5)
+							ice.Transparency = 0.3
+							ice.CFrame = v.Character.HumanoidRootPart.CFrame
+						end
+					end)
+				end
+			end
+		};
+
+		Fire = {
+			Prefix = Settings.Prefix;
+			Commands = {"fire";"makefire";"givefire";};
+			Args = {"player";"color";};
+			Description = "Sets the target player(s) on fire, coloring the fire based on what you server";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
+				local secondary = Color3.new(1, 0, 0)
+
+				if args[2] then
+					local str = BrickColor.new("Bright orange").Color
+					local teststr = args[2]
+
+					if BrickColor.new(teststr) ~= nil then
+						str = BrickColor.new(teststr).Color
+					end
+
+					color = str
+					secondary = str
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.NewParticle(torso, "Fire", {
+							Name = "FIRE";
+							Color = color;
+							SecondaryColor = secondary;
+						})
+						Functions.NewParticle(torso, "PointLight", {
+							Name = "FIRE_LIGHT";
+							Color = color;
+							Range = 15;
+							Brightness = 5;
+						})
+					end
+				end
+			end
+		};
+
+		UnFire = {
+			Prefix = Settings.Prefix;
+			Commands = {"unfire";"removefire";"extinguish";};
+			Args = {"player";};
+			Description = "Puts out the flames on the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.RemoveParticle(torso, "FIRE")
+						Functions.RemoveParticle(torso, "FIRE_LIGHT")
+					end
+				end
+			end
+		};
+
+		Smoke = {
+			Prefix = Settings.Prefix;
+			Commands = {"smoke";"givesmoke";};
+			Args = {"player";"color";};
+			Description = "Makes smoke come from the target player(s) with the desired color";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
+
+				if args[2] then
+					local str = BrickColor.new("White").Color
+					local teststr = args[2]
+
+					if BrickColor.new(teststr) ~= nil then
+						str = BrickColor.new(teststr).Color
+					end
+
+					color = str
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.NewParticle(torso, "Smoke", {
+							Name = "SMOKE";
+							Color = color;
+						})
+					end
+				end
+			end
+		};
+
+		UnSmoke = {
+			Prefix = Settings.Prefix;
+			Commands = {"unsmoke";};
+			Args = {"player";};
+			Description = "Removes smoke from the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.RemoveParticle(torso, "SMOKE")
+					end
+				end
+			end
+		};
+
+		Sparkles = {
+			Prefix = Settings.Prefix;
+			Commands = {"sparkles";};
+			Args = {"player";"color";};
+			Description = "Puts sparkles on the target player(s) with the desired color";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				local color = Color3.new(1, 1, 1)
+
+				if args[2] then
+					local str = BrickColor.new('Cyan').Color
+					local teststr = args[2]
+
+					if BrickColor.new(teststr) ~= nil then
+						str = BrickColor.new(teststr).Color
+					end
+
+					color = str
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.NewParticle(torso, "Sparkles", {
+							Name = "SPARKLES";
+							SparkleColor = color;
+						})
+						Functions.NewParticle(torso, "PointLight", {
+							Name = "SPARKLES_LIGHT";
+							Color = color;
+							Range = 15;
+							Brightness = 5;
+						})
+					end
+				end
+			end
+		};
+
+		UnSparkles = {
+			Prefix = Settings.Prefix;
+			Commands = {"unsparkles";};
+			Args = {"player";};
+			Description = "Removes sparkles from the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local torso = v.Character:FindFirstChild("HumanoidRootPart")
+					if torso then
+						Functions.RemoveParticle(torso, "SPARKLES")
+						Functions.RemoveParticle(torso, "SPARKLES_LIGHT")
+					end
+				end
+			end
+		};
+
+		Animation = {
+			Prefix = Settings.Prefix;
+			Commands = {"animation";"loadanim";"animate";};
+			Args = {"player";"animationID";};
+			Description = "Load the animation onto the target";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Functions.PlayAnimation(v ,args[2])
+				end
+			end
+		};
+
+		BlurEffect = {
+			Prefix = Settings.Prefix;
+			Commands = {"blur";"screenblur";"blureffect"};
+			Args = {"player";"blur size";};
+			Description = "Blur the target player's screen";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local moder = tonumber(args[2]) or 0.5
+				if moder > 5 then moder = 5 end
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "BlurEffect", {
+						Name = "WINDOW_BLUR",
+						Size = tonumber(args[2]) or 24,
+						Enabled = true,
+					}, "Camera")
+				end
+			end
+		};
+
+		BloomEffect = {
+			Prefix = Settings.Prefix;
+			Commands = {"bloom";"screenbloom";"bloomeffect"};
+			Args = {"player";"intensity";"size";"threshold"};
+			Description = "Give the player's screen the bloom lighting effect";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "BloomEffect", {
+						Name = "WINDOW_BLOOM",
+						Intensity = tonumber(args[2]) or 0.4,
+						Size = tonumber(args[3]) or 24,
+						Threshold = tonumber(args[4]) or 0.95,
+						Enabled = true,
+					}, "Camera")
+				end
+			end
+		};
+
+		SunRaysEffect = {
+			Prefix = Settings.Prefix;
+			Commands = {"sunrays";"screensunrays";"sunrayseffect"};
+			Args = {"player";"intensity";"spread"};
+			Description = "Give the player's screen the sunrays lighting effect";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "SunRaysEffect", {
+						Name = "WINDOW_SUNRAYS",
+						Intensity = tonumber(args[2]) or 0.25,
+						Spread = tonumber(args[3]) or 1,
+						Enabled = true,
+					}, "Camera")
+				end
+			end
+		};
+
+		ColorCorrectionEffect = {
+			Prefix = Settings.Prefix;
+			Commands = {"colorcorrect";"colorcorrection";"correctioneffect";"correction";"cce"};
+			Args = {"player";"brightness","contrast","saturation","tint"};
+			Description = "Give the player's screen the sunrays lighting effect";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				local r,g,b = 1,1,1
+				if args[5] and args[5]:match("(.*),(.*),(.*)") then
+					r,g,b = args[5]:match("(.*),(.*),(.*)")
+				end
+				r,g,b = tonumber(r),tonumber(g),tonumber(b)
+				if not r or not g or not b then error("Invalid Input") end
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(p,"ColorCorrectionEffect",{
+						Name = "WINDOW_COLORCORRECTION",
+						Brightness = tonumber(args[2]) or 0,
+						Contrast = tonumber(args[3]) or 0,
+						Saturation = tonumber(args[4]) or 0,
+						TintColor = Color3.new(r,g,b),
+						Enabled = true,
+					},"Camera")
+				end
+			end
+		};
+
+		Freaky = {
+			Prefix = Settings.Prefix;
+			Commands = {"freaky";};
+			Args = {"0-600,0-600,0-600";"optional player"};
+			Hidden = false;
+			Description = "Does freaky stuff to lighting. Like a messed up ambient.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local r,g,b = 100,100,100
+				if args[1] and args[1]:match("(.*),(.*),(.*)") then
+					r,g,b = args[1]:match("(.*),(.*),(.*)")
+				end
+				r,g,b = tonumber(r),tonumber(g),tonumber(b)
+				if not r or not g or not b then error("Invalid Input") end
+				local num1,num2,num3 = r,g,b
+				num1="-"..num1.."00000"
+				num2="-"..num2.."00000"
+				num3="-"..num3.."00000"
+				if args[2] then
+					for i,v in pairs(service.GetPlayers(plr,args[2])) do
+						Remote.SetLighting(v,"FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
+						Remote.SetLighting(v,"FogEnd", 9e9)
+					end
+				else
+					Functions.SetLighting("FogColor", Color3.new(tonumber(num1),tonumber(num2),tonumber(num3)))
+					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
+				end
+			end
+		};
+
+		Gear = {
+			Prefix = Settings.Prefix;
+			Commands = {"gear";"givegear";};
+			Args = {"player";"id";};
+			Hidden = false;
+			Description = "Gives the target player(s) a gear from the catalog based on the ID you supply";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear:IsA("Tool") or gear:IsA("HopperBin") then
+						service.New("StringValue",gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr,args[1])) do
+							if v:FindFirstChild("Backpack") then
+								gear:Clone().Parent = v.Backpack
+							end
+						end
+					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.",0)
+				end
+			end
+		};
+
+		Hat = {
+			Prefix = Settings.Prefix;
+			Commands = {"hat";"givehat";};
+			Args = {"player";"id";};
+			Hidden = false;
+			Description = "Gives the target player(s) a hat based on the ID you supply";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				if not args[2] then error("Argument missing or nil") end
+
+				local id = args[2]
+
+				if not tonumber(id) then
+					local built = {
+						teapot = 1055299;
+					}
+
+					if built[string.lower(args[2])] then
+						id = built[string.lower(args[2])]
+					end
+				end
+
+				if not tonumber(id) then error("Invalid ID") end
+
+				local market = service.MarketPlace
+				local info = market:GetProductInfo(id)
+
+				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
+					local hat = service.Insert(id)
+					assert(hat,"Invalid ID")
+
+					for i,v in pairs(service.GetPlayers(plr, args[1])) do
+						if v.Character and hat then
+							hat:Clone().Parent = v.Character
+						end
+					end
+				end
+			end
+		};
+
+		Slippery = {
+			Prefix = Settings.Prefix;
+			Commands = {"slippery";"iceskate";"icewalk";"slide";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Makes the target player(s) slide when they walk";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local vel = service.New('BodyVelocity')
+				vel.Name = 'ADONIS_IceVelocity'
+				vel.maxForce = Vector3.new(5000,0,5000)
+				local scr = Deps.Assets.Slippery:Clone()
+
+				scr.Name = "ADONIS_IceSkates"
+
+				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						local vel = vel:Clone()
+						vel.Parent = v.Character.HumanoidRootPart
+						local new = scr:Clone()
+						new.Parent = v.Character.HumanoidRootPart
+						new.Disabled = false
+					end
+				end
+
+				scr:Destroy()
+			end
+		};
+
+		UnSlippery = {
+			Prefix = Settings.Prefix;
+			Commands = {"unslippery","uniceskate","unslide"};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Get sum friction all up in yo step";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						local scr = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceSkates")
+						local vel = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceVelocity")
+						if vel then vel:Destroy() end
+						if scr then scr.Disabled = true scr:Destroy() end
+					end
+				end
+			end
+		};
+
+		BodySwap = {
+			Prefix = Settings.Prefix;
+			Commands = {"bodyswap";"bodysteal";"bswap";};
+			Args = {"player1";"player2";};
+			Hidden = false;
+			Description = "Swaps player1's and player2's bodies and tools";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					for i2,v2 in pairs(service.GetPlayers(plr,args[2])) do
+						local temptools=service.New('Model')
+						local tempcloths=service.New('Model')
+						local vpos=v.Character.HumanoidRootPart.CFrame
+						local v2pos=v2.Character.HumanoidRootPart.CFrame
+						local vface=v.Character.Head.face
+						local v2face=v2.Character.Head.face
+						vface.Parent=v2.Character.Head
+						v2face.Parent=v.Character.Head
+						for k,p in pairs(v.Character:GetChildren()) do
+							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
+								p.Parent=tempcloths
+							elseif p:IsA('Tool') then
+								p.Parent=temptools
+							end
+						end
+						for k,p in pairs(v.Backpack:GetChildren()) do
+							p.Parent=temptools
+						end
+						for k,p in pairs(v2.Character:GetChildren()) do
+							if p:IsA('BodyColors') or p:IsA('CharacterMesh') or p:IsA('Pants') or p:IsA('Shirt') or p:IsA('Accessory') then
+								p.Parent=v.Character
+							elseif p:IsA('Tool') then
+								p.Parent=v.Backpack
+							end
+						end
+						for k,p in pairs(tempcloths:GetChildren()) do
+							p.Parent=v2.Character
+						end
+						for k,p in pairs(v2.Backpack:GetChildren()) do
+							p.Parent=v.Backpack
+						end
+						for k,p in pairs(temptools:GetChildren()) do
+							p.Parent=v2.Backpack
+						end
+						v2.Character.HumanoidRootPart.CFrame=vpos
+						v.Character.HumanoidRootPart.CFrame=v2pos
+					end
+				end
+			end
+		};
+
+		Paint = {
+			Prefix = Settings.Prefix;
+			Commands = {"paint";};
+			Args = {"player";"brickcolor"};
+			Hidden = false;
+			Description = "Paints the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+
+				if not args[2] then
+					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
+				elseif not brickColor then
+					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
+					brickColor = BrickColor.new("Pearl")
+				end
+
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
+						local bc = v.Character:FindFirstChildOfClass"BodyColors"
+
+						for i,v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
+							bc[v] = brickColor
+						end
+					end
+				end
+			end
+		};
+
+		Explode = {
+			Prefix = Settings.Prefix;
+			Commands = {"explode";"boom";"boomboom";};
+			Args = {"player";"radius"};
+			Hidden = false;
+			Description = "Explodes the target player(s)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character.PrimaryPart then
+						service.New("Explosion", {
+							Position = v.Character.PrimaryPart.Position,
+							BlastRadius = args[2] or 20,
+							Archivable = false,
+							Parent = workspace.Terrain
+						})
+					end
+				end
+			end
+		};
+
+		Trip = {
+			Prefix = Settings.Prefix;
+			Commands = {"trip";};
+			Args = {"player";"angle";};
+			Hidden = false;
+			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				local angle = 130 or args[2]
+				for i, v in pairs(service.GetPlayers(plr,args[1])) do
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0,0,math.rad(angle))
+					end
+				end
+			end
+		};
+
+		Oddliest = {
+			Prefix = Settings.Prefix;
+			Commands = {"oddliest";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Turns you into the one and only Oddliest";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"51310503")
+				end
+			end
+		};
+
+		Sceleratis = {
+			Prefix = Settings.Prefix;
+			Commands = {"sceleratis";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Turns you into me <3";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					Admin.RunCommand(Settings.Prefix.."char",v.Name,"userid-1237666")
+				end
+			end
+		};
+
+		ThermalVision = {
+			Prefix = Settings.Prefix;
+			Commands = {"thermal","thermalvision","heatvision"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Looks like heat vision";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.NewLocal(v, "ColorCorrectionEffect", {
+						Name = "WINDOW_THERMAL",
+						Brightness = 1,
+						Contrast = 20,
+						Saturation = 20,
+						TintColor = Color3.new(0.5, 0.2, 1);
+						Enabled = true,
+					}, "Camera")
+					Remote.NewLocal(v, "BlurEffect", {
+						Name = "WINDOW_THERMAL",
+						Size = 24,
+						Enabled = true,
+					}, "Camera")
+				end
+			end
+		};
+
+		UnThermalVision = {
+			Prefix = Settings.Prefix;
+			Commands = {"unthermal";"unthermalvision";};
+			Args = {"player";};
+			Hidden = false;
+			Description = "Removes the thermal effect from the target player's screen";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
+				end
+			end
+		};
+
+		GameGravity = {
+			Prefix = Settings.Prefix;
+			Commands = {"ggrav","gamegrav","workspacegrav"};
+			Args = {"number or fix"};
+			Hidden = false;
+			Description = "Sets Workspace.Gravity";
+			Fun = true;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				local num = assert(tonumber(args[1]), "Argument missing or not number.")
+				workspace.Gravity = num or 196.2
+			end
+		};
+
+		CreateSoundPart = {
+			Prefix = Settings.Prefix;
+			Commands = {"createsoundpart","createspart"};
+			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "noloop (default: false)", "volume (default: 1)", "clicktotoggle (default: false)", "share type (default: everyone)"};
+			Description = "Creates a sound part";
+			Hidden = false;
+			Fun = true;
+			AdminLevel = "Admins";
+			Function = function(plr,args)
+				assert(plr.Character ~= nil, "Character not found")
+				assert(typeof(plr.Character) == "Instance", "Character found fake")
+				assert(plr.Character:IsA("Model"), "Character isn't a model.")
+
+				local char = plr.Character
+				assert(char:FindFirstChild("Head"), "Head isn't found in your character. How is it going to spawn?")
+
+				local soundid = (args[1] and tonumber(args[1])) or select(1, function()
+					if args[1] then
+						local nam = args[1]
+
+						for i,v in pairs(server.Variables.MusicList)do
+							if string.lower(v.Name) == string.lower(nam)then
+								return v.ID
+							end
+						end
+					end
+				end)() or error("SoundId wasn't provided or wasn't a valid number")
+
+				local soundrange = (args[2] and tonumber(args[2])) or 10
+				local pitch = (args[3] and tonumber(args[3])) or 1
+				--local disco-- = (args[4] and string.lower(args[4]) == 'true') or false
+				--local showhint-- = (args[5] and string.lower(args[5]) == 'true') or false
+				local noloop = (args[4] and string.lower(args[4]) == 'true') or false
+				local volume = (args[5] and tonumber(args[7])) or 1
+				local changeable = true; -- = (args[8] and string.lower(args[8]) == 'true') or false
+				local toggable = (args[6] and string.lower(args[6]) == 'true') or false
+				local rangetotoggle = 0--(args[10] and tonumber(args[10])) or 10
+				local sharetype = (args[7] and string.lower(args[7]) == 'all' and 'all')
+					or (args[7] and string.lower(args[7]) == 'self' and 'self')
+					or (args[7] and string.lower(args[7]) == 'friends' and 'friends')
+					or (args[7] and string.lower(args[7]) == 'admins' and 'admins')
+					or 'all'
+
+				if rangetotoggle == 0 then
+					rangetotoggle = 32
+				elseif rangetotoggle < 0 then
+					rangetotoggle = math.abs(rangetotoggle)
+				end
+
+				pitch = math.abs(pitch)
+				soundrange = math.abs(soundrange)
+
+				if soundrange > 100 then
+					soundrange = 100
+				end
+
+				local Success, Return = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, soundid)
+
+				assert(Success, "Sound Id isn't a sound or doesn't exist.")
+				if Success and Return then
+					assert(Return.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
+
+					local sound = service.New("Sound")
+					sound.Name = "Part_Sound"
+					sound.Looped = not noloop
+					sound.SoundId = "rbxassetid://"..soundid
+					sound.Volume = volume
+					sound.EmitterSize = soundrange
+					sound.PlaybackSpeed = pitch
+					sound.Archivable = false
+
+					local spart = service.New("Part")
+					spart.Anchored = true
+					spart.Name = "SoundPart"
+					spart.Position = char:FindFirstChild("Head").Position
+					spart.Size = Vector3.new(2, 1, 2)
+					table.insert(Variables.InsertedObjects, spart)
+
+					sound.Changed:Connect(function(prot)
+						if prot == "SoundId" then
+							if sound.IsPlaying then
+								sound:Stop()
+							end
+
+							sound.TimePosition = 0
+						end
+					end)
+
+					if toggable then
+						local clickd = service.New("ClickDetector")
+						clickd.Name = "ClickToPlay"
+						clickd.Archivable = false
+						clickd.MaxActivationDistance = rangetotoggle
+						local clicks = 0
+
+						local ownerid = plr.UserId
+						clickd.MouseClick:Connect(function(clicker)
+							if sharetype == "self" and clicker.UserId ~= ownerid then return end
+							if sharetype == "friends" then
+								if clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
+									return
+								end
+							end
+
+							clicks += 1
+							delay(0.4, function()
+								clicks -= 1
+							end)
+
+							if clicks == 1 then
+								if sound.IsPlaying then
+									sound:Pause()
+								else
+									sound:Resume()
+								end
+							elseif clicks == 2 then
+								if sound.IsPlaying then
+									sound:Stop()
+								else
+									sound:Play()
+								end
+							end
+						end)
+
+						clickd.Parent = spart
+					end
+
+					local prevname = spart.Name
+					spart.Changed:Connect(function(prot)
+						if prot == "Name" and changeable then
+							if prevname == spart.Name then return end
+							local Success, ProductInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, tonumber(spart.Name)or 0)
+
+							if Success and ProductInfo then
+								if ProductInfo.AssetTypeId ~= 3 then
+									spart.Name = prevname
+									sound:Pause()
+									return
+								end
+
+								prevname = spart.Name
+								sound.SoundId = "rbxassetid://"..spart.Name
+								wait(2)
+							elseif not Success then
+								spart.Name = prevname
+							end
+
+							if not toggable then
+								sound:Play()
+							end
+						end
+					end)
+
+					if not toggable then
+						sound:Play()
+						wait(2)
+					end
+
+					sound.Parent = spart
+					spart.Parent = workspace
+					spart.Archivable = false
 				end
 			end
 		};

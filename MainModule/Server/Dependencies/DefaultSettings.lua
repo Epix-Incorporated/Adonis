@@ -9,7 +9,7 @@ local descs = {};			--// Contains settings descriptions
 
 			--------------
 			-- SETTINGS --
-		    --------------
+		  --------------
 																																																																				--[[
 
 		--// Basic Lua Info
@@ -144,7 +144,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-	settings.Storage = game:service("ServerStorage") -- Where things like tools are stored
+	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
@@ -205,6 +205,12 @@ local descs = {};			--// Contains settings descriptions
 		-- "kill:300"; --// Changes :kill to level 300 and higher (Level 300 = HeadAdmins by default)
 		-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
 	};	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
+
+	--// Use the below table to define "pre-set" command aliases
+	--// Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."}
+	settings.Aliases = {
+		[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
+	};
 
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {};			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -282,6 +288,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.FunCommands = true			-- Are fun commands enabled?
 	settings.PlayerCommands = true 	-- Are players commands enabled?
+	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 	settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
@@ -294,6 +301,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
+	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 
 	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
@@ -346,6 +354,8 @@ local descs = {};			--// Contains settings descriptions
 	descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 
 	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
+	descs.Aliases = [[ Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."} ]]
+
 	descs.Commands = [[ Custom commands ]]
 	descs.Banned = [[ List of people banned from the game; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Muted = [[ List of people muted; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -385,6 +395,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.FunCommands = [[ Are fun commands enabled? ]]
 	descs.PlayerCommands = [[ Are players commands enabled? ]]
+	descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 	descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 
 	descs.BanMessage = [[ Message shown to banned users ]]
@@ -442,6 +453,7 @@ local descs = {};			--// Contains settings descriptions
 		--"Creators";
 		" ";
 		"Permissions";
+		--"Aliases";
 		--"Commands";
 		" ";
 		"Banned";
@@ -481,6 +493,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"FunCommands";
 		"PlayerCommands";
+		"CrossServerCommands";
 		"ChatCommands";
 		"CreatorPowers";
 		"CodeExecution";

@@ -148,7 +148,7 @@ return function()
 
 		ErrorMessage = function(Message, Trace, Script)
 			--service.FireEvent("ErrorMessage", Message, Trace, Script)
-			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,"::Adonis::") or string.find(Message,script.Name) or Script == script) then
+			if Message and Message ~= "nil" and Message ~= "" and (string.find(Message,":: Adonis ::") or string.find(Message,script.Name) or Script == script) then
 				logError(tostring(Message).." - "..tostring(Trace))
 			end
 
@@ -164,9 +164,11 @@ return function()
 			end
 		end;
 
-		CharacterAdded = function()
+		CharacterAdded = function(...)
+			service.Events.CharacterAdded:fire(...)
+
+			wait();
 			UI.GetHolder()
-			service.Events.CharacterAdded:fire()
 		end;
 
 		CharacterRemoving = function()

@@ -61,6 +61,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are a(n) "..rankName..". Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -95,6 +96,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "You are a temp "..rankName..". Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -127,6 +129,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Notification";
 							Message = "Your admin permission level was set to "..newLevel.." for this server only. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -140,7 +143,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank","unpa";"unoa";"unta";};
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank"};
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
@@ -165,6 +168,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been removed";
+									Icon = "rbxassetid://7536810074";
 									Time = 10;
 								})
 							else
@@ -242,6 +246,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v,"Notification",{
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
+									Icon = "rbxassetid://7536810074";
 									Time = 10;
 								})
 							else
@@ -272,6 +277,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are a temp moderator. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -300,6 +306,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
 							Message = "You are a moderator. Click to view commands.";
+							Icon = "rbxassetid://7536784790";
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -330,13 +337,14 @@ return function(Vargs, env)
 			Commands = {"shutdownlogs";"shutdownlog";"slogs";"shutdowns";};
 			Args = {};
 			Hidden = false;
-			Description = "Shows who shutdown a server and when";
+			Description = "Shows who shutdown or restarted a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i,v in pairs(logs) do
+					if v.Restart then v.Time = v.Time.." [SOFT]" end
 					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
 				end
 				Remote.MakeGui(plr,"List",{Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
@@ -345,7 +353,7 @@ return function(Vargs, env)
 
 		ServerLock = {
 			Prefix = Settings.Prefix;
-			Commands = {"slock","serverlock"};
+			Commands = {"slock","serverlock","lockserver"};
 			Args = {"on/off"};
 			Hidden = false;
 			Description = "Enables/disables server lock";
@@ -415,7 +423,7 @@ return function(Vargs, env)
 
 		SystemNotify = {
 			Prefix = Settings.Prefix;
-			Commands = {"sn","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
+			Commands = {"sn","systemnotify","sysnotif","sysnotify"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Makes a system small message,";
@@ -437,7 +445,7 @@ return function(Vargs, env)
 			Commands = {"setmessage";"notif";"setmsg";};
 			Args = {"message OR off";};
 			Filter = true;
-			Description = "Set message";
+			Description = "Sets a small hint message at the top of the screen";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
@@ -473,7 +481,7 @@ return function(Vargs, env)
 
 		SetLockMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"setlockmessage";"setlmsg"};
+			Commands = {"setlockmessage"; "slockmsg"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
@@ -486,7 +494,7 @@ return function(Vargs, env)
 
 		SystemMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"sm";"systemmessage";};
+			Commands = {"sm";"systemmessage";"sysmsg"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
@@ -505,7 +513,7 @@ return function(Vargs, env)
 
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
-			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcge";"setcore"};
+			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcgui";"setcore"};
 			Args = {"player";"element";"true/false";};
 			Hidden = false;
 			Description = "SetCoreGuiEnabled. Enables/Disables CoreGui elements. ";
@@ -531,7 +539,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,string.lower(args[1])))do
-					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up"})
+					Remote.MakeGui(v,"Alert",{Message = args[2] and service.Filter(args[2],plr,v) or "Wake up; Your attention is required"})
 				end
 			end
 		};
@@ -659,7 +667,7 @@ return function(Vargs, env)
 
 		RemoveTeam = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeteam";};
+			Commands = {"removeteam";"deleteteam"};
 			Args = {"name";};
 			Hidden = false;
 			Description = "Remove the specified team";
@@ -674,227 +682,69 @@ return function(Vargs, env)
 			end
 		};
 
-		CreateSoundPart = {
-			Prefix = Settings.Prefix;	-- Prefix to use for command
-			Commands = {"createsoundpart","createspart"};	-- Commands
-			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "noloop (default: false)", "volume (default: 1)", "clicktotoggle (default: false)", "share type (default: everyone)"};	-- Command arguments
-			Description = "Creates a sound part";	-- Command Description
-			Hidden = false; -- Is it hidden from the command list?
-			Fun = true;	-- Is it fun?
-			AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
-			Function = function(plr,args)    -- Function to run for command
-				assert(plr.Character ~= nil, "Character not found")
-				assert(typeof(plr.Character) == "Instance", "Character found fake")
-				assert(plr.Character:IsA("Model"), "Character isn't a model.")
-
-				local char = plr.Character
-				assert(char:FindFirstChild("Head"), "Head isn't found in your character. How is it going to spawn?")
-
-				local soundid = (args[1] and tonumber(args[1])) or select(1, function()
-					if args[1] then
-						local nam = args[1]
-
-						for i,v in pairs(server.Variables.MusicList)do
-							if string.lower(v.Name) == string.lower(nam)then
-								return v.ID
-							end
-						end
-					end
-				end)() or error("SoundId wasn't provided or wasn't a valid number")
-
-				local soundrange = (args[2] and tonumber(args[2])) or 10
-				local pitch = (args[3] and tonumber(args[3])) or 1
-				--local disco-- = (args[4] and string.lower(args[4]) == 'true') or false
-				--local showhint-- = (args[5] and string.lower(args[5]) == 'true') or false
-				local noloop = (args[4] and string.lower(args[4]) == 'true') or false
-				local volume = (args[5] and tonumber(args[7])) or 1
-				local changeable = true; -- = (args[8] and string.lower(args[8]) == 'true') or false
-				local toggable = (args[6] and string.lower(args[6]) == 'true') or false
-				local rangetotoggle = 0--(args[10] and tonumber(args[10])) or 10
-				local sharetype = (args[7] and string.lower(args[7]) == 'all' and 'all')
-					or (args[7] and string.lower(args[7]) == 'self' and 'self')
-					or (args[7] and string.lower(args[7]) == 'friends' and 'friends')
-					or (args[7] and string.lower(args[7]) == 'admins' and 'admins')
-					or 'all'
-
-				if rangetotoggle == 0 then
-					rangetotoggle = 32
-				elseif rangetotoggle < 0 then
-					rangetotoggle = math.abs(rangetotoggle)
-				end
-
-				pitch = math.abs(pitch)
-				soundrange = math.abs(soundrange)
-
-				if soundrange > 100 then
-					soundrange = 100
-				end
-
-				local Success, Return = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, soundid)
-
-				assert(Success, "Sound Id isn't a sound or doesn't exist.")
-				if Success and Return then
-					assert(Return.AssetTypeId == 3, "Sound Id isn't a sound. Please check the right id.")
-
-					local sound = service.New("Sound")
-					sound.Name = "Part_Sound"
-					sound.Looped = not noloop
-					sound.SoundId = "rbxassetid://"..soundid
-					sound.Volume = volume
-					sound.EmitterSize = soundrange
-					sound.PlaybackSpeed = pitch
-					sound.Archivable = false
-
-					local spart = service.New("Part")
-					spart.Anchored = true
-					spart.Name = "SoundPart"
-					spart.Position = char:FindFirstChild("Head").Position
-					spart.Size = Vector3.new(2, 1, 2)
-					table.insert(Variables.InsertedObjects, spart)
-
-					sound.Changed:Connect(function(prot)
-						if prot == "SoundId" then
-							if sound.IsPlaying then
-								sound:Stop()
-							end
-
-							sound.TimePosition = 0
-						end
-					end)
-
-					if toggable then
-						local clickd = service.New("ClickDetector")
-						clickd.Name = "ClickToPlay"
-						clickd.Archivable = false
-						clickd.MaxActivationDistance = rangetotoggle
-						local clicks = 0
-
-						local ownerid = plr.UserId
-						clickd.MouseClick:Connect(function(clicker)
-							if sharetype == "self" and clicker.UserId ~= ownerid then return end
-							if sharetype == "friends" then
-								if clicker.UserId ~= ownerid and not clicker:IsFriendsWith(ownerid) then
-									return
-								end
-							end
-
-							clicks += 1
-							delay(0.4, function()
-								clicks -= 1
-							end)
-
-							if clicks == 1 then
-								if sound.IsPlaying then
-									sound:Pause()
-								else
-									sound:Resume()
-								end
-							elseif clicks == 2 then
-								if sound.IsPlaying then
-									sound:Stop()
-								else
-									sound:Play()
-								end
-							end
-						end)
-
-						clickd.Parent = spart
-					end
-
-					local prevname = spart.Name
-					spart.Changed:Connect(function(prot)
-						if prot == "Name" and changeable then
-							if prevname == spart.Name then return end
-							local Success, ProductInfo = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, tonumber(spart.Name)or 0)
-
-							if Success and ProductInfo then
-								if ProductInfo.AssetTypeId ~= 3 then
-									spart.Name = prevname
-									sound:Pause()
-									return
-								end
-
-								prevname = spart.Name
-								sound.SoundId = "rbxassetid://"..spart.Name
-								wait(2)
-							elseif not Success then
-								spart.Name = prevname
-							end
-
-							if not toggable then
-								sound:Play()
-							end
-						end
-					end)
-
-					if not toggable then
-						sound:Play()
-						wait(2)
-					end
-
-					sound.Parent = spart
-					spart.Parent = workspace
-					spart.Archivable = false
-				end
-			end
-		};
-
 		RestoreMap = {
 			Prefix = Settings.Prefix;
 			Commands = {"restoremap";"maprestore";"rmap";};
 			Args = {};
-			Hidden = false;
 			Description = "Restore the map to the the way it was the last time it was backed up";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if not server.Variables.MapBackup or not Variables.TerrainMapBackup then
-					error("Cannot restore when there are no backup maps!!")
+				local plr_name = plr and plr.Name
+
+				if not Variables.MapBackup then
+					error("Cannot restore when there are no backup maps!",0)
 					return
 				end
-				if server.Variables.RestoringMap then
-					error("Map has not been backed up")
+				if Variables.RestoringMap then
+					error("Map has not been backed up",0)
 					return
 				end
-				if server.Variables.BackingupMap then
-					error("Cannot restore map while backing up map is in process!")
+				if Variables.BackingupMap then
+					error("Cannot restore map while backing up map is in process!",0)
 					return
 				end
 
-				server.Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...',service.Players:GetPlayers())
+				Variables.RestoringMap = true
+				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
 
-				for _, Obj in pairs(service.Workspace:GetChildren()) do
-					if Obj.Archivable and not(Obj == script)and not(Obj:IsA('Terrain'))then
-						pcall(Obj.Destroy, Obj)
-						service.RunService.Heartbeat:Wait()
+				for _, Obj in ipairs(workspace:GetChildren()) do
+					if Obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(Obj) then
+						Obj:Destroy()
+						service.RunService.Stepped:Wait()
 					end
 				end
 
 				local new = Variables.MapBackup:Clone()
-				new:MakeJoints()
-				new.Parent = service.Workspace
-				new:MakeJoints()
-
-				for _, Obj in pairs(new:GetChildren()) do
-					Obj.Parent = service.Workspace
-					pcall(Obj.MakeJoints, Obj)
+				for _, Obj in ipairs(new:GetChildren()) do
+					Obj.Parent = workspace
+					if Obj:IsA("Model") then
+						Obj:MakeJoints()
+					end
 				end
-
 				new:Destroy()
 
-				service.Workspace.Terrain:Clear()
-				service.Workspace.Terrain:PasteRegion(Variables.TerrainMapBackup, service.Workspace.Terrain.MaxExtents.Min, true)
+				local Terrain = workspace.Terrain or workspace:FindFirstChildOfClass("Terrain")
+				if Terrain and Variables.TerrainMapBackup then
+					Terrain:Clear()
+					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
+				end
 
-				Admin.RunCommand(Settings.Prefix.."respawn","@everyone")
-				server.Variables.RestoringMap = false
+				wait();
+
+				Admin.RunCommand(Settings.Prefix .. "respawn", "all")
+				Variables.RestoringMap = false
 				Functions.Hint('Map Restore Complete.',service.Players:GetPlayers())
+
+				Logs:AddLog("Script", {
+					Text = "Map Restoration Complete",
+					Desc = (plr_name or "<SERVER>") .. " has restored the map.",
+				})
 			end
 		};
 
 		ScriptBuilder = {
 			Prefix = Settings.Prefix;
-			Commands = {"sb"};
+			Commands = {"scriptbuilder";"scriptb";"sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list","localscript/script","scriptName","data"};
 			Description = "Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
 			AdminLevel = "Admins";
@@ -1056,7 +906,7 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s";"scr";"script";"makescript"};
+			Commands = {"s";"ss";"serverscript";"sscript";"makescript";"script"};
 			Args = {"code";};
 			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
@@ -1079,7 +929,7 @@ return function(Vargs, env)
 
 		MakeLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"ls";"lscr";"localscript";};
+			Commands = {"ls";"localscript";"lscript";"makelscript"};
 			Args = {"code";};
 			Description = "Executes the given code on the client";
 			AdminLevel = "Admins";
@@ -1233,7 +1083,7 @@ return function(Vargs, env)
 			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if data.PlayerData.Level>Admin.GetLevel(v) then
-						Remote.Send(v,"Function","SetFPS",5)
+						Remote.Send(v,"Function","SetFPS",5.6)
 					end
 				end
 			end
@@ -1379,12 +1229,15 @@ return function(Vargs, env)
 			end
 		};
 
-		Ban = {
+		ServerBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"ban";};
+			Commands = {"ban", "serverban"};
 			Args = {"player", "reason"};
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -1406,7 +1259,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unban";};
 			Args = {"player";};
-			Description = "UnBan";
+			Description = "Unbans the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local ret = Admin.RemoveBan(args[1])
@@ -1424,7 +1277,7 @@ return function(Vargs, env)
 
 		TrelloBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"trelloban";};
+			Commands = {"trelloban";"tban"};
 			Args = {"player","reason"};
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
@@ -1436,27 +1289,41 @@ return function(Vargs, env)
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
 
-				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello has not been configured in settings', {plr}) return end
+				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then Functions.Hint('Trello has not been configured in settings', {plr}) return end
 
 				local trello = HTTP.Trello.API(appkey,token)
 				local lists = trello.getLists(board)
 				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
 				local level = data.PlayerData.Level
-				for i,v in pairs(service.GetPlayers(plr,args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = true;
-					UseFakePlayer = true;
-					}))do
+				local reason = string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+
+				for _, v in pairs(service.GetPlayers(plr,args[1], {
+						DontError = false;
+						IsServer = false;
+						IsKicking = true;
+						UseFakePlayer = true;
+					})) do
+
 					if level > Admin.GetLevel(v) then
-						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
-							"Administrator: " .. tostring(plr) ..
-								"\nReason: ".. (args[2] or "N/A"))
-						HTTP.Trello.Update()
-						Functions.Hint("Trello banned ".. tostring(v),{plr})
+						trello.makeCard(
+							list.id,
+							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), tostring(v.UserId)),
+							reason
+						)
+
+						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
+						pcall(function() plr:Kick(reason) end)
+						Remote.MakeGui(p,"Notification",{
+							Title = "Notification";
+							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
+						})
 					end
 				end
+
+				HTTP.Trello.Update()
 			end;
 		};
 
@@ -1475,6 +1342,7 @@ return function(Vargs, env)
 					Remote.MakeGui(v,"Message",{
 						Title = args[1];
 						Message = args[2];
+						Time = (#tostring(args[1]) / 19) + 2.5;
 						--service.Filter(args[1],plr,v);
 					})
 				end
@@ -1497,24 +1365,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GameGravity = {
-			Prefix = Settings.Prefix;
-			Commands = {"ggrav","gamegrav","workspacegrav"};
-			Args = {"number or fix"};
-			Hidden = false;
-			Description = "Sets Workspace.Gravity";
-			Fun = true;
-			AdminLevel = "Admins";
-			Function = function(plr,args)
-				local num = tonumber(args[1])
-				if num then
-					service.Workspace.Gravity = num
-				else
-					service.Workspace.Gravity = 196.2
-				end
-			end
-		};
-
 		PromptPremiumPurchase = {
 			Prefix = Settings.Prefix;
 			Commands = {"promptpremiumpurchase";"premiumpurchaseprompt";};
@@ -1532,7 +1382,7 @@ return function(Vargs, env)
 
 		RobloxNotify = {
 			Prefix = Settings.Prefix;
-			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify"};
+			Commands = {"rbxnotify";"robloxnotify";"robloxnotif";"rblxnotify";"rnotif";"rn"};
 			Args = {"player","duration (seconds)","text"};
 			Filter = true;
 			Description = "Sends a Roblox default notification for the target player(s)";

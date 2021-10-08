@@ -158,19 +158,37 @@ return function(Vargs)
 		end
 	end)
 
+	local function stripArgPlaceholders(alias)
+		return service.Trim(alias:gsub("<%S+>", ""))
+	end
+
 	local function FormatAliasArgs(alias, aliasCmd, msg)
 		local uniqueArgs = {}
 		local argTab = {}
 		local numArgs = 0;
 
-		--local cmdArgs =
-		for arg in aliasCmd:gmatch("<(%S+)>") do
+		--// First try to extract args info from the alias
+		for arg in string.gmatch(alias, "<(%S+)>") do
 			if arg ~= "" and arg ~= " " then
 				local arg = "<".. arg ..">"
-				if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
+				if not uniqueArgs[arg] then
 					numArgs = numArgs+1;
-					uniqueArgs[arg] = true; --// :cmd <arg1> <arg2>
+					uniqueArgs[arg] = true;
 					table.insert(argTab, arg)
+				end
+			end
+		end
+
+		--// If no args in alias string, check the command string instead and try to guess args based on order of appearance
+		if numArgs == 0 then
+			for arg in string.gmatch(aliasCmd, "<(%S+)>") do
+				if arg ~= "" and arg ~= " " then
+					local arg = "<".. arg ..">"
+					if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
+						numArgs = numArgs+1;
+						uniqueArgs[arg] = true; --// :cmd <arg1> <arg2>
+						table.insert(argTab, arg)
+					end
 				end
 			end
 		end
@@ -181,7 +199,7 @@ return function(Vargs)
 		for i,argType in next,argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = out:gsub(argType, replaceWith)
+				out = string.gsub(out, service.EscapeSpecialCharacters(argType), replaceWith)
 			end
 		end
 
@@ -205,19 +223,27 @@ return function(Vargs)
 
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
-			if pData.Client.HideChatCommands
-					and (message:sub(1,1) == Settings.Prefix or message:sub(1,1) == Settings.PlayerPrefix)
-					and message:sub(2,2) ~= message:sub(1,1) then
-				return true;
+			if pData.Client.HideChatCommands then
+				if Variables.BlankPrefix and
+					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
+					local isCMD = Admin.GetCommand(message)
+					if isCMD then
+						return true
+					else
+						return false
+					end
+				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix)
+					and string.sub(message,2,2) ~= string.sub(message,1,1) then
+					return true;
+				end
 			end
 		end;
 
 		GetPlayerGroup = function(p, group)
-			local data = Core.GetPlayer(p)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
-				for i,v in next,groups do
+				for i,v in ipairs(groups) do
 					if (isID and group == v.Id) or (not isID and group == v.Name) then
 						return v
 					end
@@ -250,8 +276,13 @@ return function(Vargs)
 		DoCheck = function(p, check, banCheck)
 			local pType = type(p)
 			local cType = type(check)
+
+			local lower = string.lower
+			local match = string.match
+			local sub = string.sub
+
 			if pType == "string" and cType == "string" then
-				if p == check or check:lower():sub(1,#tostring(p)) == p:lower() then
+				if p == check or sub(lower(check), 1, #tostring(p)) == lower(p) then
 					return true
 				end
 			elseif pType == "number" and (cType == "number" or tonumber(check)) then
@@ -264,9 +295,9 @@ return function(Vargs)
 				end
 			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
 				local isGood = p and p.Parent == service.Players
-				if isGood and check:match("^Group:(.*):(.*)") then
-					local sGroup,sRank = check:match("^Group:(.*):(.*)")
-					local group,rank = tonumber(sGroup),tonumber(sRank)
+				if isGood and match(check, "^Group:(.*):(.*)") then
+					local sGroup,sRank = match(check, "^Group:(.*):(.*)")
+					local group, rank = tonumber(sGroup), tonumber(sRank)
 					if group and rank then
 						local pGroup = Admin.GetPlayerGroup(p, group)
 						if pGroup then
@@ -276,30 +307,30 @@ return function(Vargs)
 							end
 						end
 					end
-				elseif isGood and check:sub(1, 6) == "Group:" then --check:match("^Group:(.*)") then
-					local group = tonumber(check:match("^Group:(.*)"))
+				elseif isGood and sub(check, 1, 6) == "Group:" then --check:match("^Group:(.*)") then
+					local group = tonumber(match(check, "^Group:(.*)"))
 					if group then
 						local pGroup = Admin.GetPlayerGroup(p, group)
 						if pGroup then
 							return true
 						end
 					end
-				elseif isGood and check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
-					local item = tonumber(check:match("^Item:(.*)"))
+				elseif isGood and sub(check, 1, 5) == "Item:" then --check:match("^Item:(.*)") then
+					local item = tonumber(match(check, "^Item:(.*)"))
 					if item then
 						if service.MarketPlace:PlayerOwnsAsset(p, item) then
 							return true
 						end
 					end
-				elseif p and check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
-					local item = tonumber(check:match("^GamePass:(.*)"))
+				elseif p and sub(check, 1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
+					local item = tonumber(match(check, "^GamePass:(.*)"))
 					if item then
 						if service.MarketPlace:UserOwnsGamePassAsync(p.UserId, item) then
 							return true
 						end
 					end
-				elseif check:match("^(.*):(.*)") then
-					local player, sUserid = check:match("^(.*):(.*)")
+				elseif match(check, "^(.*):(.*)") then
+					local player, sUserid = match(check, "^(.*):(.*)")
 					local userid = tonumber(sUserid)
 					if player and userid and p.Name == player or p.userId == userid then
 						return true
@@ -597,7 +628,7 @@ return function(Vargs)
 				local index,value
 
 				for ind,ent in ipairs(list) do
-					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or ent:lower()==p.Name:lower() or ent:lower()==(p.Name..":"..p.userId):lower()) then
+					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.userId)) then
 						index = ind
 						value = ent
 					end
@@ -662,7 +693,7 @@ return function(Vargs)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, "\n Banned until ".. service.FormatTime(ban.EndTime, true);
+						return true, "\n Reason: "..(ban.Reason or "No reason provided").."\n Banned until ".. service.FormatTime(ban.EndTime, true);
 					end
 				end
 			end
@@ -724,16 +755,16 @@ return function(Vargs)
 			end
 
 			if type(check) == "table" then
-					if type(name) == "string" and check.Name and check.Name:lower() == name:lower() then
+					if type(name) == "string" and check.Name and string.lower(check.Name) == string.lower(name) then
 						return true;
 					elseif id and check.UserId and check.UserId == id then
 						return true;
 					end
 			elseif type(check) == "string" then
-				local cName,cId = check:match("(.*):(.*)") or check;
+				local cName, cId = string.match(check, "(.*):(.*)") or check;
 
 				if cName then
-					if cName:lower() == name:lower() then
+					if string.lower(cName) == string.lower(name) then
 						return true;
 					elseif id and cId and id == cId then
 						return true;
@@ -746,7 +777,7 @@ return function(Vargs)
 
 		RemoveBan = function(name, doSave)
 			local ret
-			for i,v in next,Settings.Banned do
+			for i,v in pairs(Settings.Banned) do
 				if Admin.DoBanCheck(name, v) then
 					table.remove(Settings.Banned, i)
 					ret = v
@@ -789,8 +820,13 @@ return function(Vargs)
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then
 					--logError(plr,"Command",error)
-					error = error:match(":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
+					error = string.match(error, ":(.+)$") or "Unknown error"
+					Remote.MakeGui(plr, 'Output', {
+						Title = '';
+						Message = error;
+						Color = Color3.new(1,0,0)
+					})
+					return;
 				end
 			end
 		end;
@@ -806,7 +842,7 @@ return function(Vargs)
 					isDonor = false;
 				}})
 				if error then
-					error = error:match(":(.+)$") or "Unknown error"
+					error = string.match(error, ":(.+)$") or "Unknown error"
 					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
 				end
 			end
@@ -815,12 +851,12 @@ return function(Vargs)
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
-			for ind,data in next,Commands do
+			for ind,data in pairs(Commands) do
 				if type(data) == "table" then
-					for i,cmd in next,data.Commands do
+					for i,cmd in pairs(data.Commands) do
 						if data.Prefix == "" then Variables.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
-						tempTable[(data.Prefix..cmd):lower()] = ind
+						tempTable[string.lower(data.Prefix..cmd)] = ind
 					end
 				end
 			end
@@ -830,16 +866,16 @@ return function(Vargs)
 		end;
 
 		GetCommand = function(Command)
-			if Admin.PrefixCache[Command:sub(1,1)] or Variables.BlankPrefix then
+			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
 				local matched
-				if Command:find(Settings.SplitKey) then
-					matched = Command:match("^(%S+)"..Settings.SplitKey)
+				if string.find(Command, Settings.SplitKey) then
+					matched = string.match(Command, "^(%S+)"..Settings.SplitKey)
 				else
-					matched = Command:match("^(%S+)")
+					matched = string.match(Command, "^(%S+)")
 				end
 
 				if matched then
-					local found = Admin.CommandCache[matched:lower()]
+					local found = Admin.CommandCache[string.lower(matched)]
 					if found then
 						local real = Commands[found]
 						if real then
@@ -859,10 +895,10 @@ return function(Vargs)
 				Command = string.sub(Command, 2);
 			end
 
-			if Command:find(Settings.SplitKey) then
-				matched = Command:match("^(%S+)"..Settings.SplitKey)
+			if string.find(Command, Settings.SplitKey) then
+				matched = string.match(Command, "^(%S+)"..Settings.SplitKey)
 			else
-				matched = Command:match("^(%S+)")
+				matched = string.match(Command, "^(%S+)")
 			end
 
 			if matched then
@@ -932,21 +968,36 @@ return function(Vargs)
 		end;
 
 		GetArgs = function(msg,num,...)
-			local args = Functions.Split((msg:match("^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
-			for i,v in next,{...} do table.insert(args,v) end
+			local args = Functions.Split((string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
+			for i,v in pairs({...}) do table.insert(args,v) end
 			return args
 		end;
 
 		AliasFormat = function(aliases, msg)
+			local foundPlayerAlias = false; --// Check if there's a player-defined alias first then ifnot check settings aliases
 			if aliases then
-				for alias,cmd in next,aliases do
-					if not Admin.CheckAliasBlacklist(alias) then
-						if msg:match("^"..alias) or msg:match("%s".. alias) then
+				for alias,cmd in pairs(aliases) do
+					local tAlias = stripArgPlaceholders(alias)
+					if not Admin.CheckAliasBlacklist(tAlias) then
+						local escAlias = service.EscapeSpecialCharacters(tAlias)
+						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
 							msg = FormatAliasArgs(alias, cmd, msg);
 						end
 					end
 				end
 			end
+
+			--if not foundPlayerAlias then
+				for alias,cmd in pairs(Settings.Aliases) do
+					local tAlias = stripArgPlaceholders(alias)
+					if not Admin.CheckAliasBlacklist(tAlias) then
+						local escAlias = service.EscapeSpecialCharacters(tAlias)
+						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
+							msg = FormatAliasArgs(alias, cmd, msg);
+						end
+					end
+				end
+			--end
 
 			return msg
 		end;
@@ -989,10 +1040,13 @@ return function(Vargs)
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 			local comLevel = cmd.AdminLevel
 			local funAllowed = Settings.FunCommands
+			local crossServerAllowed = Settings.CrossServerCommands
 
 			if adminLevel >= 900 then
 				return true
 			elseif cmd.Fun and not funAllowed then
+				return false
+			elseif cmd.IsCrossServer and not crossServerAllowed then
 				return false
 			elseif cmd.Donors and isDonor then
 				return true

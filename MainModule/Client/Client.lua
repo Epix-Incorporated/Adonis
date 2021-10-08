@@ -30,7 +30,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick =
 	_G, game, script, getfenv, setfenv, workspace,
 getmetatable, setmetatable, loadstring, coroutine,
 rawequal, typeof, print, math, warn, error,  pcall,
@@ -40,7 +40,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -62,14 +62,14 @@ local ServicesWeUse = {
 
 --// Logging
 local clientLog = {};
-local dumplog = function() warn("::Adonis:: Dumping client log...") for i,v in ipairs(clientLog) do warn("::Adonis::", v) end end;
+local dumplog = function() warn(":: Adonis :: Dumping client log...") for i,v in ipairs(clientLog) do warn(":: Adonis ::", v) end end;
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
---[[game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
 	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
 	dumplog();
-end)--]]
+end)
 
 local unique = {}
 local origEnv = getfenv();
@@ -331,6 +331,7 @@ Vector3int16 = service.Localize(Vector3int16)
 BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
+task = service.Localize(task)
 
 --// Wrap
 log("Wrap")
@@ -428,6 +429,8 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
+	task = task;
+	tick = tick;
 	service = service;
 	} do locals[ind] = loc end
 
@@ -466,14 +469,35 @@ return service.NewProxy({
 
 		--// Client specific service variables/functions
 		log("Add service specific")
-		ServiceSpecific.Player = service.Players.LocalPlayer;
-		ServiceSpecific.PlayerGui = service.Player:FindFirstChild("PlayerGui");
-		ServiceSpecific.SafeTweenSize = function(obj,...) pcall(obj.TweenSize,obj,...) end;
-		ServiceSpecific.SafeTweenPos = function(obj,...) pcall(obj.TweenPosition,obj,...) end;
+		ServiceSpecific.Player = service.Players.LocalPlayer or (function()
+			service.Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+			return service.Players.LocalPlayer
+		end)();
+		ServiceSpecific.PlayerGui = ServiceSpecific.Player:FindFirstChildWhichIsA("PlayerGui");
+		if not ServiceSpecific.PlayerGui then
+			Routine(function()
+				local PlayerGui = ServiceSpecific.Player:WaitForChild("PlayerGui", 120)
+				if not PlayerGui then
+					logError("PlayerGui unable to be fetched? [Waited 120 Seconds]")
+					return;
+				end
+				ServiceSpecific.PlayerGui = PlayerGui
+			end)
+		end
+		--[[
+		-- // Doesn't seem to be used anymore
+
+		ServiceSpecific.SafeTweenSize = function(obj, ...)
+			pcall(obj.TweenSize, obj, ...)
+		end;
+		ServiceSpecific.SafeTweenPos = function(obj, ...)
+			pcall(obj.TweenPosition, obj, ...)
+		end;
+		]]
+
 		ServiceSpecific.Filter = function(str,from,to)
 			return client.Remote.Get("Filter",str,(to and from) or service.Player,to or from)
 		end;
-
 		ServiceSpecific.LaxFilter = function(str,from)
 			return service.Filter(str,from or service.Player,from or service.Player)
 		end;

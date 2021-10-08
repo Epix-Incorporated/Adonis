@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ScreenGui" referent="RBXBC3EA54C3A7B4E4A83C96C05EB78D7A8">
+	<Item class="ScreenGui" referent="RBX22EA2677DE9E41D7BA16D56B8D4751A7">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoLocalize">false</bool>
@@ -16,7 +16,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<token name="ZIndexBehavior">0</token>
 		</Properties>
-		<Item class="Frame" referent="RBXE5C311B8B10142CAB35464B91292CF5E">
+		<Item class="Frame" referent="RBXAAA1ACF3D8034CAA873A9C90887437A5">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -70,7 +70,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="ImageLabel" referent="RBX449285BECADD49C2A90475592AE5EBAD">
+			<Item class="ImageLabel" referent="RBX38C38981A76A44DA9BC435DAAD205883">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -122,6 +122,7 @@
 						<YS>0</YS>
 						<YO>5</YO>
 					</UDim2>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">1</token>
@@ -157,7 +158,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBXC4861EF91DAF4276B4A878FCC0398E8E">
+			<Item class="TextLabel" referent="RBX4C21DF8CC1CD4CB9A86797439CCE00C2">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -235,7 +236,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBX61A9F85EED444E4EB7D9A7948949ABA0">
+		<Item class="Frame" referent="RBX65DE3C66F8F043C2B6997E04D605DA3F">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -289,7 +290,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Frame" referent="RBX91995B492ED5467CB5EF30363AC59AE6">
+			<Item class="Frame" referent="RBX40ED1D45B2D9421FB8E18A7786882290">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -343,7 +344,7 @@
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX64A93716FB3440DA951D967C3B577CB0">
+				<Item class="Frame" referent="RBX418CA12AA7204FCDB1011CF8CB0E497C">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -397,7 +398,7 @@
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="ScrollingFrame" referent="RBXF32B3B12EE4B4959A221A9CCEF576AF9">
+					<Item class="ScrollingFrame" referent="RBXE04E26D43C4F4E43A4C9EE400D776A75">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -478,7 +479,7 @@
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBX4D673DE0004F4CBC81B0BB2BB2896153">
+					<Item class="ScrollingFrame" referent="RBX5393D74C3D494C09BD211F5D79B0A440">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -559,7 +560,7 @@
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBXBFC2BC9B6A764115AC2456F4498ED894">
+					<Item class="ScrollingFrame" referent="RBX55FF223D83D448288F70115D1A6C8E03">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -640,7 +641,7 @@
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBXB2E68F27B33D4619AD9F74FCE6A46658">
+					<Item class="ScrollingFrame" referent="RBX8075282E4AD0403C9633BE187E1D2188">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -721,7 +722,7 @@
 							<int name="ZIndex">2</int>
 						</Properties>
 					</Item>
-					<Item class="ScrollingFrame" referent="RBXE8D9B78631AF434F93987F40801CBEB5">
+					<Item class="ScrollingFrame" referent="RBX6C9D9FDFD9ED4D20A483AB0D1B0E7ACD">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -803,7 +804,7 @@
 						</Properties>
 					</Item>
 				</Item>
-				<Item class="TextBox" referent="RBX6927D892FD4149749EBDC2417B088C62">
+				<Item class="TextBox" referent="RBXE8C67D3436C04A878ACC8BAFD1207769">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -890,7 +891,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="ImageLabel" referent="RBX3010003CABFF403D904F2B7B61485365">
+				<Item class="ImageLabel" referent="RBX0435B6BF3EC74FD9B7FBCDFDCAD0C981">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -942,6 +943,7 @@
 							<YS>1</YS>
 							<YO>-20</YO>
 						</UDim2>
+						<token name="ResampleMode">0</token>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<token name="ScaleType">0</token>
@@ -977,7 +979,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX674BCF4E46424924B935560A699586D9">
+				<Item class="Frame" referent="RBX4BE1E406EB2E4E97AC405402866F2259">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1032,7 +1034,7 @@
 						<int name="ZIndex">2</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBXA39BFED855C5485C9CD6F1D6809408FF">
+				<Item class="TextButton" referent="RBX64912151DB1E4E2B848957FE04F46FA9">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1113,7 +1115,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBXC61F0A2406E045CC99E41CE7793F1E5A">
+				<Item class="TextButton" referent="RBX27E437E3251B488F80635F09B7EAEE57">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1194,7 +1196,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBX55E8A2552CA042F7A996C625D97C5163">
+				<Item class="TextButton" referent="RBX6FDF2A20CB3C4ABA89201DA3962AC366">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1275,7 +1277,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBXD62A9691831747098AFB50758B35FDB3">
+				<Item class="TextButton" referent="RBX05820DECCE21484081D06EB076C39313">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1356,7 +1358,7 @@
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextButton" referent="RBX4D24EA5703D646D4ABB23BA5891C7E29">
+				<Item class="TextButton" referent="RBXB482022F65294E09B2C0BAA89D787834">
 					<Properties>
 						<bool name="Active">true</bool>
 						<Vector2 name="AnchorPoint">
@@ -1439,7 +1441,7 @@
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBXFD612D92F475468291A44996926DC7C1">
+		<Item class="Frame" referent="RBX5C7287B5D73148EFA56308D9907864AA">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -1493,7 +1495,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBX3D747581A6F54CF3B3CCA83AF6436C2E">
+			<Item class="TextLabel" referent="RBXB4352EFEE51A4220A2CF1EF7DD6D2878">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1570,7 +1572,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX2B4CE2CF7FB24A8A944FE6FC7F2B6AEF">
+			<Item class="TextLabel" referent="RBXC77E8138D15D447CA0F74CD34BD5432E">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1647,7 +1649,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="StringValue" referent="RBXF68A81DFC9B649CC85FFFCD902482E10">
+			<Item class="StringValue" referent="RBX3FB168C765354E49B4899952E4403CAC">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Desc</string>
@@ -1657,7 +1659,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX680FF368B859465C9E76EFC1B2D97A7D">
+		<Item class="TextLabel" referent="RBX0BFD2E0B1CE84147987BC98A2CE382EB">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -1734,58 +1736,65 @@
 				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
-		<Item class="Folder" referent="RBX634545EE72F942E393323A10E1579E73">
+		<Item class="Folder" referent="RBX99B7DCF1456D4AB3BBFE92DCDA966B3A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX6C130539CEE34EC39E9CC55F16361209">
+			<Item class="ModuleScript" referent="RBXC13065E9EB5345729ECB7177FF8C7DE4">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{E57D974A-49B5-47C3-94FD-B9D804BB3631}</string>
-					<ProtectedString name="Source"><![CDATA[client = nil
-cPcall = nil
-Pcall = nil
-Routine = nil
-service = nil
-gTable = nil
+					<string name="ScriptGuid">{87A69F41-47FF-4A16-A34A-12124870C297}</string>
+					<ProtectedString name="Source"><![CDATA[
+client, cPcall, Pcall, Routine, service, gTable
+	= nil, nil, nil, nil, nil, nil
 
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 --// Be sure to update the console gui's code if you change stuff
 
 return function(data)
+	local client, cPcall, Pcall, Routine, service, gTable =
+		client, cPcall, Pcall, Routine, service, gTable
+
 	local gui = script.Parent.Parent
+
+	local localplayer = service.Player
+	local mouse = localplayer:GetMouse()
 	local playergui = service.PlayerGui
-	local localplayer = service.Players.LocalPlayer
+
 	local storedChats = client.Variables.StoredChats
 	local desc = gui.Desc
 	local nohide = data.KeepChat
-	
+
 	local function Expand(ent, point)
-		ent.MouseLeave:Connect(function(x,y)
+		ent.MouseLeave:Connect(function(x, y)
 			point.Visible = false
 		end)
-		
-		ent.MouseMoved:Connect(function(x,y)
+
+		ent.MouseMoved:Connect(function(x, y)
 			point.Text = ent.Desc.Value
 			point.Size = UDim2.new(0, 10000, 0, 10000)
 			local bounds = point.TextBounds.X
-			local rows = math.floor(bounds/500)
-			rows = rows+1
-			if rows<1 then rows = 1 end
+			local rows = math.floor(bounds / 500)
+			rows = rows + 1
+			if rows < 1 then
+				rows = 1
+			end
 			local newx = 500
-			if bounds<500 then newx = bounds end
+			if bounds < 500 then
+				newx = bounds
+			end
 			point.Visible = true
-			point.Size = UDim2.new(0, newx+10, 0, rows*20)
-			point.Position = UDim2.new(0, x, 0, y-40-(rows*20))
+			point.Size = UDim2.new(0, newx + 10, 0, rows * 20)
+			point.Position = UDim2.new(0, x, 0, y - 40 - (rows * 20))
 		end)
 	end
-	
+
 	local function UpdateChat()
 		if gui then
 			local globalTab = gui.Drag.Frame.Frame.Global
@@ -1793,26 +1802,26 @@ return function(data)
 			local localTab = gui.Drag.Frame.Frame.Local
 			local adminsTab = gui.Drag.Frame.Frame.Admins
 			local crossTab = gui.Drag.Frame.Frame.Cross
-			
+
 			local entry = gui.Entry
 			local tester = gui.BoundTest
-			
+
 			globalTab:ClearAllChildren()
 			teamTab:ClearAllChildren()
 			localTab:ClearAllChildren()
 			adminsTab:ClearAllChildren()
 			crossTab:ClearAllChildren()
-			
+
 			local globalNum = 0
 			local teamNum = 0
 			local localNum = 0
 			local adminsNum = 0
 			local crossNum = 0
-			for i,v in pairs(storedChats) do
+			for i, v in pairs(storedChats) do
 				local clone = entry:Clone()
-				clone.Message.Text = service.MaxLen(v.Message,100)
+				clone.Message.Text = service.MaxLen(v.Message, 100)
 				clone.Desc.Value = v.Message
-				Expand(clone,desc)
+				Expand(clone, desc)
 				if not string.match(v.Player, "%S") then
 					clone.Nameb.Text = v.Player
 				else
@@ -1820,177 +1829,185 @@ return function(data)
 				end
 				clone.Visible = true
 				clone.Nameb.Font = "SourceSansBold"
-				
+
 				local color = v.Color or BrickColor.White()
 				clone.Nameb.TextColor3 = color.Color
-				
-				
+
+
 				tester.Text = "["..v.Player.."]: "
 				local naml = tester.TextBounds.X + 5
-				if naml>100 then naml = 100 end
-				
+				if naml > 100 then
+					naml = 100
+				end
+
 				tester.Text = v.Message
 				local mesl = tester.TextBounds.X
-				
-				clone.Message.Position = UDim2.new(0,naml,0,0)
-				clone.Message.Size = UDim2.new(1,-(naml+10),1,0)
-				clone.Nameb.Size = UDim2.new(0,naml,0,20)
-				
+
+				clone.Message.Position = UDim2.new(0, naml, 0, 0)
+				clone.Message.Size = UDim2.new(1, -(naml + 10), 1, 0)
+				clone.Nameb.Size = UDim2.new(0, naml, 0, 20)
+
 				clone.Visible = false
 				clone.Parent = globalTab
-				
-				local rows = math.floor((mesl+naml)/clone.AbsoluteSize.X)
+
+				local rows = math.floor((mesl + naml) / clone.AbsoluteSize.X)
 				rows = rows + 1
-				if rows<1 then rows = 1 end
-				if rows>3 then rows = 3 end
+				if rows < 1 then
+					rows = 1
+				end
+				if rows > 3 then
+					rows = 3
+				end
 				--rows = rows+1
-				
+
 				clone.Parent = nil
 				clone.Visible = true
-				
-				clone.Size = UDim2.new(1,0,0,rows*20)
-				
+
+				clone.Size = UDim2.new(1, 0, 0, rows * 20)
+
 				if v.Private then
-					clone.Nameb.TextColor3 = Color3.new(150/255, 57/255, 176/255)
+					clone.Nameb.TextColor3 = Color3.new(0.58823529411765, 0.22352941176471, 0.69019607843137)
 				end
-				
-				if v.Mode=="Global" then
-					clone.Position = UDim2.new(0,0,0,globalNum*20)
+
+				if v.Mode == "Global" then
+					clone.Position = UDim2.new(0, 0, 0, globalNum * 20)
 					globalNum = globalNum + 1
-					if rows>1 then
-						globalNum = globalNum + rows-1
+					if rows > 1 then
+						globalNum = globalNum + rows - 1
 					end
 					clone.Parent = globalTab
-				elseif v.Mode=="Team" then
-					clone.Position = UDim2.new(0,0,0,teamNum*20)
+				elseif v.Mode == "Team" then
+					clone.Position = UDim2.new(0, 0, 0, teamNum * 20)
 					teamNum = teamNum + 1
-					if rows>1 then
-						teamNum = teamNum + rows-1
+					if rows > 1 then
+						teamNum = teamNum + rows - 1
 					end
 					clone.Parent = teamTab
-				elseif v.Mode=="Local" then
-					clone.Position = UDim2.new(0,0,0,localNum*20)
+				elseif v.Mode == "Local" then
+					clone.Position = UDim2.new(0, 0, 0, localNum * 20)
 					localNum = localNum + 1
-					if rows>1 then
-						localNum = localNum + rows-1
+					if rows > 1 then
+						localNum = localNum + rows - 1
 					end
 					clone.Parent = localTab
-				elseif v.Mode=="Admins" then
-					clone.Position = UDim2.new(0,0,0,adminsNum*20)
+				elseif v.Mode == "Admins" then
+					clone.Position = UDim2.new(0, 0, 0, adminsNum * 20)
 					adminsNum = adminsNum + 1
-					if rows>1 then
-						adminsNum = adminsNum + rows-1
+					if rows > 1 then
+						adminsNum = adminsNum + rows - 1
 					end
 					clone.Parent = adminsTab
-				elseif v.Mode=="Cross" then
-					clone.Position = UDim2.new(0,0,0,crossNum*20)
+				elseif v.Mode == "Cross" then
+					clone.Position = UDim2.new(0, 0, 0, crossNum * 20)
 					crossNum = crossNum + 1
-					if rows>1 then
-						crossNum = crossNum + rows-1
+					if rows > 1 then
+						crossNum = crossNum + rows - 1
 					end
 					clone.Parent = crossTab
 				end
 			end
-			
-			globalTab.CanvasSize = UDim2.new(0, 0, 0, ((globalNum)*20))
-			teamTab.CanvasSize = UDim2.new(0, 0, 0, ((teamNum)*20))
-			localTab.CanvasSize = UDim2.new(0, 0, 0, ((localNum)*20))
-			adminsTab.CanvasSize = UDim2.new(0, 0, 0, ((adminsNum)*20))
-			crossTab.CanvasSize = UDim2.new(0, 0, 0, ((crossNum)*20))
-			
-			local glob = (((globalNum)*20) - globalTab.AbsoluteWindowSize.Y)
-			local tea = (((teamNum)*20) - teamTab.AbsoluteWindowSize.Y)
-			local loc = (((localNum)*20) - localTab.AbsoluteWindowSize.Y)
-			local adm = (((adminsNum)*20) - adminsTab.AbsoluteWindowSize.Y)
-			local cro = (((crossNum)*20) - crossTab.AbsoluteWindowSize.Y)
-			
-			if glob<0 then glob=0 end
-			if tea<0 then tea=0 end
-			if loc<0 then loc=0 end
-			if adm<0 then adm=0 end
-			if cro<0 then cro=0 end
-			
-			globalTab.CanvasPosition =Vector2.new(0,glob)
-			teamTab.CanvasPosition =Vector2.new(0,tea)
-			localTab.CanvasPosition = Vector2.new(0,loc)
-			adminsTab.CanvasPosition = Vector2.new(0,adm)
-			crossTab.CanvasPosition = Vector2.new(0,cro)
-		end	
+
+			globalTab.CanvasSize = UDim2.new(0, 0, 0, ((globalNum) * 20))
+			teamTab.CanvasSize = UDim2.new(0, 0, 0, ((teamNum) * 20))
+			localTab.CanvasSize = UDim2.new(0, 0, 0, ((localNum) * 20))
+			adminsTab.CanvasSize = UDim2.new(0, 0, 0, ((adminsNum) * 20))
+			crossTab.CanvasSize = UDim2.new(0, 0, 0, ((crossNum) * 20))
+
+			local glob = (((globalNum) * 20) - globalTab.AbsoluteWindowSize.Y)
+			local tea = (((teamNum) * 20) - teamTab.AbsoluteWindowSize.Y)
+			local loc = (((localNum) * 20) - localTab.AbsoluteWindowSize.Y)
+			local adm = (((adminsNum) * 20) - adminsTab.AbsoluteWindowSize.Y)
+			local cro = (((crossNum) * 20) - crossTab.AbsoluteWindowSize.Y)
+
+			if glob < 0 then
+				glob = 0
+			end
+			if tea < 0 then
+				tea = 0
+			end
+			if loc < 0 then
+				loc = 0
+			end
+			if adm < 0 then
+				adm = 0
+			end
+			if cro < 0 then
+				cro = 0
+			end
+
+			globalTab.CanvasPosition = Vector2.new(0, glob)
+			teamTab.CanvasPosition = Vector2.new(0, tea)
+			localTab.CanvasPosition = Vector2.new(0, loc)
+			adminsTab.CanvasPosition = Vector2.new(0, adm)
+			crossTab.CanvasPosition = Vector2.new(0, cro)
+		end
 	end
-	
+
 	if not storedChats then
 		client.Variables.StoredChats = {}
 		storedChats = client.Variables.StoredChats
 	end
-	
+
 	gTable:Ready()
-	
+
 	local bubble = gui.Bubble
 	local toggle = gui.Toggle
 	local drag = gui.Drag
 	local frame = gui.Drag.Frame
 	local frame2 = gui.Drag.Frame.Frame
 	local box = gui.Drag.Frame.Chat
-	
+
 	local globalTab = gui.Drag.Frame.Frame.Global
 	local teamTab = gui.Drag.Frame.Frame.Team
 	local localTab = gui.Drag.Frame.Frame.Local
 	local adminsTab = gui.Drag.Frame.Frame.Admins
 	local crossTab = gui.Drag.Frame.Frame.Cross
-	
+
 	local global = gui.Drag.Frame.Global
 	local team = gui.Drag.Frame.Team
 	local localb = gui.Drag.Frame.Local
 	local admins = gui.Drag.Frame.Admins
 	local cross = gui.Drag.Frame.Cross
-	
-	local ChatScript,ChatMain,Chatted = service.Player.PlayerScripts:FindFirstChild("ChatScript")
-	if ChatScript then
-		ChatMain = ChatScript:FindFirstChild("ChatMain")
-		if ChatMain then
-			Chatted = require(ChatMain).MessagePosted
-		end
-	end
-	
+
 	if not nohide then
 		client.Variables.CustomChat = true
 		client.Variables.ChatEnabled = false
-		service.StarterGui:SetCoreGuiEnabled('Chat',false)
+		service.StarterGui:SetCoreGuiEnabled('Chat', false)
 	else
-		drag.Position = UDim2.new(0,10,1,-180)
+		drag.Position = UDim2.new(0, 10, 1, -180)
 	end
-	
+
 	local dragger = gui.Drag.Frame.Dragger
 	local fakeDrag = gui.Drag.Frame.FakeDragger
-	
+
 	local boxFocused = false
 	local mode = "Global"
-	
+
 	local lastChat = 0
 	local lastClick = 0
 	local isAdmin = client.Remote.Get("CheckAdmin")
-	
+
 	if not isAdmin then
 		admins.BackgroundTransparency = 0.8
 		admins.TextTransparency = 0.8
 		cross.BackgroundTransparency = 0.8
 		cross.TextTransparency = 0.8
 	end
-	
+
 	if client.UI.Get("HelpButton") then
-		toggle.Position = UDim2.new(1, -(45+45),1, -45)
+		toggle.Position = UDim2.new(1, -90, 1, -45)
 	end
-	
+
 	local function openGlobal()
 		globalTab.Visible = true
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		global.Text = "Global"
 		mode = "Global"
-		
+
 		global.BackgroundTransparency = 0
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -2006,17 +2023,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openTeam()
 		globalTab.Visible = false
 		teamTab.Visible = true
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		team.Text = "Team"
 		mode = "Team"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0
 		localb.BackgroundTransparency = 0.5
@@ -2033,17 +2050,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openLocal()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = true
 		adminsTab.Visible = false
 		crossTab.Visible = false
-		
+
 		localb.Text = "Local"
 		mode = "Local"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0
@@ -2060,17 +2077,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openAdmins()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = true
 		crossTab.Visible = false
-		
+
 		admins.Text = "Admins"
 		mode = "Admins"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -2086,17 +2103,17 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function openCross()
 		globalTab.Visible = false
 		teamTab.Visible = false
 		localTab.Visible = false
 		adminsTab.Visible = false
 		crossTab.Visible = true
-		
+
 		cross.Text = "Cross"
 		mode = "Cross"
-		
+
 		global.BackgroundTransparency = 0.5
 		team.BackgroundTransparency = 0.5
 		localb.BackgroundTransparency = 0.5
@@ -2112,53 +2129,53 @@ return function(data)
 			cross.TextTransparency = 0.8
 		end
 	end
-	
+
 	local function fadeIn()
-		--[[
-		frame.BackgroundTransparency = 0.5
-		frame2.BackgroundTransparency = 0.5
-		box.BackgroundTransparency = 0.5
-		for i=0.1,0.5,0.1 do
-			--wait(0.1)
-			frame.BackgroundTransparency = 0.5-i
-			frame2.BackgroundTransparency = 0.5-i
-			box.BackgroundTransparency = 0.5-i
-		end-- Disabled ]]
+    --[[
+    frame.BackgroundTransparency = 0.5
+    frame2.BackgroundTransparency = 0.5
+    box.BackgroundTransparency = 0.5
+    for i=0.1,0.5,0.1 do
+        --wait(0.1)
+        frame.BackgroundTransparency = 0.5-i
+        frame2.BackgroundTransparency = 0.5-i
+        box.BackgroundTransparency = 0.5-i
+    end-- Disabled ]]
 		frame.BackgroundTransparency = 0
 		frame2.BackgroundTransparency = 0
 		box.BackgroundTransparency = 0
 		fakeDrag.Visible = true
 	end
-	
+
 	local function fadeOut()
-		--[[
-		frame.BackgroundTransparency = 0
-		frame2.BackgroundTransparency = 0
-		box.BackgroundTransparency = 0
-		for i=0.1,0.5,0.1 do
-			--wait(0.1)
-			frame.BackgroundTransparency = i
-			frame2.BackgroundTransparency = i
-			box.BackgroundTransparency = i
-		end-- Disabled ]]
+    --[[
+    frame.BackgroundTransparency = 0
+    frame2.BackgroundTransparency = 0
+    box.BackgroundTransparency = 0
+    for i=0.1,0.5,0.1 do
+        --wait(0.1)
+        frame.BackgroundTransparency = i
+        frame2.BackgroundTransparency = i
+        box.BackgroundTransparency = i
+    end-- Disabled ]]
 		frame.BackgroundTransparency = 0.7
 		frame2.BackgroundTransparency = 1
 		box.BackgroundTransparency = 1
 		fakeDrag.Visible = false
 	end
-	
+
 	fadeOut()
-	
+
 	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
-	
+
 	frame.MouseLeave:Connect(function()
 		if not boxFocused then
 			fadeOut()
 		end
 	end)
-	
+
 	toggle.MouseButton1Click:Connect(function()
 		if drag.Visible then
 			drag.Visible = false
@@ -2168,21 +2185,21 @@ return function(data)
 			toggle.Image = "rbxassetid://417301773"--417285351"
 		end
 	end)
-	
+
 	global.MouseButton1Click:Connect(function()
 		openGlobal()
 	end)
-	
+
 	team.MouseButton1Click:Connect(function()
 		openTeam()
 	end)
-	
+
 	localb.MouseButton1Click:Connect(function()
 		openLocal()
 	end)
-	
+
 	admins.MouseButton1Click:Connect(function()
-		if isAdmin or tick() - lastClick>5 then
+		if isAdmin or tick() - lastClick > 5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
 				openAdmins()
@@ -2193,9 +2210,9 @@ return function(data)
 			lastClick = tick()
 		end
 	end)
-	
+
 	cross.MouseButton1Click:Connect(function()
-		if isAdmin or tick() - lastClick>5 then
+		if isAdmin or tick() - lastClick > 5 then
 			isAdmin = client.Remote.Get("CheckAdmin")
 			if isAdmin then
 				openCross()
@@ -2206,27 +2223,24 @@ return function(data)
 			lastClick = tick()
 		end
 	end)
-	
+
 	box.FocusLost:Connect(function(enterPressed)
 		boxFocused = false
 		if enterPressed and not client.Variables.Muted then
-			if box.Text~='' and ((mode~="Cross" and tick()-lastChat>=0.5) or (mode=="Cross" and tick()-lastChat>=10)) then
+			if box.Text ~= '' and ((mode ~= "Cross" and tick() - lastChat >= 0.5) or (mode == "Cross" and tick() - lastChat >= 10)) then
 				if not client.Variables.Muted then
-					client.Remote.Send('ProcessCustomChat',box.Text,mode)
+					client.Remote.Send('ProcessCustomChat', box.Text, mode)
 					lastChat = tick()
-					if Chatted then
-						--Chatted:fire(box.Text)
-					end
 				end
-			elseif not ((mode~="Cross" and tick()-lastChat>=0.5) or (mode=="Cross" and tick()-lastChat>=10)) then
+			elseif not ((mode ~= "Cross" and tick() - lastChat >= 0.5) or (mode == "Cross" and tick() - lastChat >= 10)) then
 				local tim
 				if mode == "Cross" then
-					tim = 10-(tick()-lastChat)
+					tim = 10 - (tick() - lastChat)
 				else
-					tim = 0.5-(tick()-lastChat)
+					tim = 0.5 - (tick() - lastChat)
 				end
-				tim = string.sub(tostring(tim),1,3)
-				client.Handlers.ChatHandler("SpamBot","Sending too fast! Please wait "..tostring(tim).." seconds.","System")
+				tim = string.sub(tostring(tim), 1, 3)
+				client.Handlers.ChatHandler("SpamBot", "Sending too fast! Please wait "..tostring(tim).." seconds.", "System")
 			end
 			box.Text = "Click here or press the '/' key to chat"
 			fadeOut()
@@ -2235,123 +2249,164 @@ return function(data)
 			end
 		end
 	end)
-	
-	box.Focused:Connect(function() 
+
+	box.Focused:Connect(function()
 		boxFocused = true
-		if box.Text=="Click here or press the '/' key to chat" then 
-			box.Text = '' 
-		end 
+		if box.Text == "Click here or press the '/' key to chat" then
+			box.Text = ''
+		end
 		fadeIn()
 	end)
-	
+
 	if not nohide then
 		service.UserInputService.InputBegan:Connect(function(InputObject)
 			local textbox = service.UserInputService:GetFocusedTextBox()
-			if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Slash then
-				if box.Text=="Click here or press the '/' key to chat" then box.Text='' end
+			if not (textbox) and InputObject.UserInputType == Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Slash then
+				if box.Text == "Click here or press the '/' key to chat" then
+					box.Text = ''
+				end
 				service.RunService.RenderStepped:Wait()
 				box:CaptureFocus()
 			end
 		end)
 	end
-	
-	local mouse=service.Players.LocalPlayer:GetMouse()
-	local nx,ny=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--450,200
-	local dragging=false
-	local defx,defy=nx,ny
-	mouse.Move:Connect(function(x,y) 
+
+	local dragging = false
+
+	local nx, ny = drag.AbsoluteSize.X, frame.AbsoluteSize.Y --450,200
+	local defx, defy = nx, ny
+	mouse.Move:Connect(function(x, y)
 		if dragging then
-			nx=defx+(dragger.Position.X.Offset+20)
-			ny=defy+(dragger.Position.Y.Offset+20)
-			if nx<260 then nx=260 end
-			if ny<100 then ny=100 end
-			frame.Size=UDim2.new(1, 0, 0, ny) 
-			drag.Size=UDim2.new(0, nx, 0, 30) 
+			nx = math.clamp(defx + (dragger.Position.X.Offset + 20), 1, 260)
+			ny = math.clamp(defy + (dragger.Position.Y.Offset + 20), 1, 100)
+
+			frame.Size = UDim2.new(1, 0, 0, ny)
+			drag.Size = UDim2.new(0, nx, 0, 30)
 		end
 	end)
 	dragger.DragBegin:Connect(function(init)
-		dragging=true
+		dragging = true
 	end)
-	dragger.DragStopped:Connect(function(x,y)
-		dragging=false
-		defx=nx
-		defy=ny
-		dragger.Position=UDim2.new(1,-20,1,-20)
+	dragger.DragStopped:Connect(function(x, y)
+		dragging = false
+		defx = nx
+		defy = ny
+		dragger.Position = UDim2.new(1, -20, 1, -20)
 		UpdateChat()
 	end)
-	
+
 	UpdateChat()
-	
-	--[[
-	if not service.UserInputService.KeyboardEnabled then 
-		warn("User is on mobile :: CustomChat Disabled") 
-		chatenabled = true
-		drag.Visible = false
-		service.StarterGui:SetCoreGuiEnabled('Chat',true)
-	end	
-	--]]
-	
+
+--[[
+if not service.UserInputService.KeyboardEnabled then
+    warn("User is on mobile :: CustomChat Disabled")
+    chatenabled = true
+    drag.Visible = false
+    service.StarterGui:SetCoreGuiEnabled('Chat',true)
+end
+--]]
+
 	client.Handlers.RemoveCustomChat = function()
-		local chat=gui
-		if chat then chat:Destroy() client.Variables.ChatEnabled = true service.StarterGui:SetCoreGuiEnabled('Chat',true) end
+		local chat = gui
+		if chat then
+			chat:Destroy()
+			client.Variables.ChatEnabled = true
+			service.StarterGui:SetCoreGuiEnabled('Chat', true)
+		end
 	end
-	
+
 	client.Handlers.ChatHandler = function(plr, message, mode)
-		if not message then return end
-		if string.sub(message,1,2)=='/e' then return end
+		if not message then
+			return
+		end
+		if string.sub(message, 1, 2) == '/e' then
+			return
+		end
 		if gui then
-			local globalTab = gui.Drag.Frame.Frame.Global
-			local teamTab = gui.Drag.Frame.Frame.Team
-			local localTab = gui.Drag.Frame.Frame.Local
-			local adminsTab = gui.Drag.Frame.Frame.Admins
-			local global = gui.Drag.Frame.Global
-			local team = gui.Drag.Frame.Team
-			local localb = gui.Drag.Frame.Local
-			local admins = gui.Drag.Frame.Admins
-			local entry = gui.Entry
-			local bubble = gui.Bubble
-			local tester = gui.BoundTest
-			
-			local num = 0
 			local player
-			
+
 			if plr and type(plr) == "userdata" then
 				player = plr
 			else
-				player = {Name = tostring(plr or "System"), TeamColor = BrickColor.White()}
+				player = {
+					Name = tostring(plr or "System"),
+					TeamColor = BrickColor.White()
+				}
 			end
-			
-			if #message>150 then message = string.sub(message,1,150).."..." end
-			
+
+			if #message > 150 then
+				message = string.sub(message, 1, 150).."..."
+			end
+
 			if mode then
-				if mode=="Private" or mode=="System" then
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Global",Private=true})
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Team",Private=true})
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Local",Private=true})
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Admins",Private=true})
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=player.Name,Message=message,Mode="Cross",Private=true})
+				if mode == "Private" or mode == "System" then
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = player.Name,
+						Message = message,
+						Mode = "Global",
+						Private = true
+					})
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = player.Name,
+						Message = message,
+						Mode = "Team",
+						Private = true
+					})
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = player.Name,
+						Message = message,
+						Mode = "Local",
+						Private = true
+					})
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = player.Name,
+						Message = message,
+						Mode = "Admins",
+						Private = true
+					})
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = player.Name,
+						Message = message,
+						Mode = "Cross",
+						Private = true
+					})
 				else
 					local plr = player.Name
-					table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=plr,Message=message,Mode=mode})
+					table.insert(storedChats, {
+						Color = player.TeamColor or BrickColor.White(),
+						Player = plr,
+						Message = message,
+						Mode = mode
+					})
 				end
 			else
 				local plr = player.Name
-				table.insert(storedChats,{Color=player.TeamColor or BrickColor.White(),Player=plr,Message=message,Mode="Global"})
+				table.insert(storedChats, {
+					Color = player.TeamColor or BrickColor.White(),
+					Player = plr,
+					Message = message,
+					Mode = "Global"
+				})
 			end
-			
-			if mode=="Local" then
+
+			if mode == "Local" then
 				if not localTab.Visible then
 					localb.Text = "Local*"
 				end
-			elseif mode=="Team" then
+			elseif mode == "Team" then
 				if not teamTab.Visible then
 					team.Text = "Team*"
 				end
-			elseif mode=="Admins" then
+			elseif mode == "Admins" then
 				if not adminsTab.Visible then
 					admins.Text = "Admins*"
 				end
-			elseif mode=="Cross" then
+			elseif mode == "Cross" then
 				if not crossTab.Visible then
 					cross.Text = "Cross*"
 				end
@@ -2360,86 +2415,93 @@ return function(data)
 					global.Text = "Global*"
 				end
 			end
-			
-			if #storedChats>=50 then
-				table.remove(storedChats,1)
+
+			if #storedChats >= 50 then
+				table.remove(storedChats, 1)
 			end
-			
+
 			UpdateChat()
-			
+
 			if not nohide then
-				if player and type(player)=="userdata" then
+				if player and type(player) == "userdata" then
 					local char = player.Character
 					local head = char:FindFirstChild("Head")
-					
+
 					if head then
 						local cont = service.LocalContainer():FindFirstChild(player.Name.."Bubbles")
 						if not cont then
-							cont = Instance.new("BillboardGui",service.LocalContainer())
+							cont = Instance.new("BillboardGui", service.LocalContainer())
 							cont.Name = player.Name.."Bubbles"
-							cont.StudsOffset = Vector3.new(0,2,0)
-							cont.SizeOffset = Vector2.new(0,0.5)
-							cont.Size = UDim2.new(0,200,0,150)
+							cont.StudsOffset = Vector3.new(0, 2, 0)
+							cont.SizeOffset = Vector2.new(0, 0.5)
+							cont.Size = UDim2.new(0, 200, 0, 150)
 						end
-						
+
 						cont.Adornee = head
-				
+
 						local clone = bubble:Clone()
 						clone.TextLabel.Text = message
 						clone.Parent = cont
-						
-						local xsize = clone.TextLabel.TextBounds.X+40
-						if xsize>400 then xsize=400 end
-						clone.Size = UDim2.new(0,xsize,0,50)
-						
-						
-						if #cont:GetChildren()>3 then
+
+						local xsize = clone.TextLabel.TextBounds.X + 40
+						if xsize > 400 then
+							xsize = 400
+						end
+						clone.Size = UDim2.new(0, xsize, 0, 50)
+
+
+						if #cont:GetChildren() > 3 then
 							cont:GetChildren()[1]:Destroy()
 						end
-						
-						for i,v in pairs(cont:GetChildren()) do
-							local xsize = v.TextLabel.TextBounds.X+40
-							if xsize>400 then xsize=400 end
-							v.Position = UDim2.new(0.5,-xsize/2,1,-(math.abs((i-1)-#cont:GetChildren())*50))
+
+						for i, v in pairs(cont:GetChildren()) do
+							local xsize = v.TextLabel.TextBounds.X + 40
+							if xsize > 400 then
+								xsize = 400
+							end
+							v.Position = UDim2.new(0.5, -xsize / 2, 1, -(math.abs((i - 1) - #cont:GetChildren()) * 50))
 						end
-						
+
 						local cam = service.Workspace.CurrentCamera
 						local char = player.Character
 						local head = char:FindFirstChild("Head")
-						local label = clone.TextLabel
-						
-						Routine(function() 
-							repeat 
-								if not head then break end
-								local dist = (head.Position - cam.CoordinateFrame.p).Magnitude
-								if dist <= 50 then 
+
+						Routine(function()
+							repeat
+								if not head then
+									break
+								end
+								local dist = (head.Position - cam.CFrame.p).Magnitude
+								if dist <= 50 then
 									clone.Visible = true
-								else 
+								else
 									clone.Visible = false
 								end
-								wait(0.1) 
+								wait(0.1)
 							until not clone.Parent or not clone or not head or not head.Parent or not char
 						end)
-						
+
 						wait(10)
-						
-						if clone then clone:Destroy() end
+
+						if clone then
+							clone:Destroy()
+						end
 					end
 				end
 			end
 		end
 	end
-	
+
 	local textbox = service.UserInputService:GetFocusedTextBox()
-	if textbox then 
-		textbox:ReleaseFocus() 
+	if textbox then
+		textbox:ReleaseFocus()
 	end
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXED1FB4E300FE470C8090332DC3E4E052">
+			<Item class="BoolValue" referent="RBXFF70D0EF860144F093D6143EAC72EEFB">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -2448,7 +2510,7 @@ end]]></ProtectedString>
 					<bool name="Value">false</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX7C65BE80B8A14B9FB1ACD05EAA244E95">
+			<Item class="BoolValue" referent="RBX3276BB8969A0456FB30453155374B47E">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
@@ -2458,7 +2520,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ImageButton" referent="RBX07C10D6448D149B39CFAA7F2C6606890">
+		<Item class="ImageButton" referent="RBX825E783FE8D44283BC7C564F24EFC0EA">
 			<Properties>
 				<bool name="Active">true</bool>
 				<Vector2 name="AnchorPoint">
@@ -2514,6 +2576,7 @@ end]]></ProtectedString>
 					<YO>-45</YO>
 				</UDim2>
 				<Content name="PressedImage"><null></null></Content>
+				<token name="ResampleMode">0</token>
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<token name="ScaleType">0</token>
@@ -2551,7 +2614,7 @@ end]]></ProtectedString>
 				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
-		<Item class="TextLabel" referent="RBXBC218D9F36724E5E8B049B05208832AD">
+		<Item class="TextLabel" referent="RBX1640AFFAE28F430784A66BDDD36F9987">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">

@@ -45,6 +45,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
+		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
@@ -272,7 +273,7 @@ return function(data)
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a system created by Sceleratis (Davey_Bones)\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
+				Text = "Adonis is a system created by Sceleratis (Davey_Bones) and updated regularly with contributions from the community.\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
 				TextWrapped = true;
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -327,6 +328,12 @@ return function(data)
 						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373505175)
 					end
 				}
+			}):Add("ImageLabel", {
+				BackgroundTransparency = 1;
+				Image = "rbxassetid://7346570801";
+				ImageTransparency = 0.2;
+				Size = UDim2.new(0, 18, 0, 18);
+				Position = UDim2.new(1, -22, 0, 4);
 			})
 
 			infoTab:Add("TextButton", {
@@ -339,7 +346,14 @@ return function(data)
 						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373501710)
 					end
 				}
+			}):Add("ImageLabel", {
+				BackgroundTransparency = 1;
+				Image = "rbxassetid://7346570801";
+				ImageTransparency = 0.2;
+				Size = UDim2.new(0, 18, 0, 18);
+				Position = UDim2.new(1, -22, 0, 4);
 			})
+
 		end
 
 
@@ -462,6 +476,7 @@ return function(data)
 							"DiamondPlate";
 							"Fabric";
 							"Foil";
+							"ForceField";
 							"Granite";
 							"Grass";
 							"Ice";
@@ -572,8 +587,8 @@ return function(data)
 				"Perks you get here: "
 			}
 
-		local capePerks,cmdPerks = {
-				"Customizable Cape";
+			local capePerks,cmdPerks = {
+				"Customizable Cape (see above)";
 				"Access to !cape";
 				"Access to !uncape";
 			},{
@@ -599,7 +614,7 @@ return function(data)
 					table.insert(donorPerks, v)
 				end
 			else
-				table.insert(donorPerks, "Donor capes are disabled here")
+				table.insert(donorPerks, "Donor capes are disabled here by the developer")
 			end
 
 			if chatMod.DonorCommands then
@@ -692,6 +707,8 @@ return function(data)
 		do
 			local doneKey
 			local selected
+			local orgTextTransparency, editButton, removeButton
+			local autoButtonColor = false
 			local currentKey
 			local editOldKeybind
 			local keyInputHandler
@@ -723,14 +740,33 @@ return function(data)
 						OnClicked = function(button)
 							if selected then
 								selected.Button.BackgroundTransparency = 0
+								if autoButtonColor then selected.Button.AutoButtonColor = true end
 							end
 
-							button.BackgroundTransparency = 0.5
-							selected = {
-								Key = i;
-								Command = v;
-								Button = button;
-							}
+							if not (selected and selected.Button == button) then
+								button.BackgroundTransparency = 0.5
+								if autoButtonColor then button.AutoButtonColor = false end
+								selected = {
+									Key = i;
+									Command = v;
+									Button = button;
+								}
+
+								editButton.TextTransparency = orgTextTransparency
+								removeButton.TextTransparency = orgTextTransparency
+								if autoButtonColor then
+									editButton.AutoButtonColor = true
+									removeButton.AutoButtonColor = true
+								end
+							else
+								selected = nil
+								editButton.TextTransparency = 0.5
+								removeButton.TextTransparency = 0.5
+								if autoButtonColor then
+									editButton.AutoButtonColor = false
+									removeButton.AutoButtonColor = false
+								end
+							end
 						end
 					})
 
@@ -742,7 +778,7 @@ return function(data)
 
 			local binderBox; binderBox = keyTab:Add("Frame", {
 				Visible = false;
-				Size = UDim2.new(0, 200, 0, 150);
+				Size = UDim2.new(0, 220, 0, 150);
 				Position = UDim2.new(0.5, -100, 0.5, -100);
 				Children = {
 					{
@@ -842,7 +878,7 @@ return function(data)
 			keyBox.BackgroundColor3 = commandBox.BackgroundColor3
 			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 
-			keyTab:Add("TextButton", {
+			removeButton = keyTab:Add("TextButton", {
 				Text = "Remove";
 				Position = UDim2.new(0, 5, 1, -25);
 				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
@@ -850,13 +886,20 @@ return function(data)
 					if selected and not inputBlock then
 						inputBlock = true
 						client.Functions.RemoveKeyBind(selected.Key)
+						selected = nil
+						editButton.TextTransparency = 0.5
+						removeButton.TextTransparency = 0.5
+						if autoButtonColor then
+							editButton.AutoButtonColor = false
+							removeButton.AutoButtonColor = false
+						end
 						getBinds()
 						inputBlock = false
 					end
 				end
 			})
 
-			keyTab:Add("TextButton", {
+			editButton = keyTab:Add("TextButton", {
 				Text = "Edit";
 				Position = UDim2.new((1/3), 0, 1, -25);
 				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
@@ -870,6 +913,15 @@ return function(data)
 					end
 				end
 			})
+
+			orgTextTransparency = removeButton.TextTransparency
+			if removeButton.AutoButtonColor then -- considers certain themes with AutoButtonColor = false
+				autoButtonColor = true
+				removeButton.AutoButtonColor = false
+				editButton.AutoButtonColor = false
+			end
+			removeButton.TextTransparency = 0.5
+			editButton.TextTransparency = 0.5
 
 			keyTab:Add("TextButton", {
 				Text = "Add",
@@ -893,6 +945,8 @@ return function(data)
 		do
 			local doneKey
 			local selected
+			local orgTextTransparency, editButton, removeButton
+			local autoButtonColor = false
 			local currentAlias
 			local editOldAlias
 			local curCommandText = ""
@@ -921,14 +975,33 @@ return function(data)
 						OnClicked = function(button)
 							if selected then
 								selected.Button.BackgroundTransparency = 0
+								if autoButtonColor then selected.Button.AutoButtonColor = true end
 							end
 
-							button.BackgroundTransparency = 0.5
-							selected = {
-								Alias = i;
-								Command = v;
-								Button = button;
-							}
+							if not (selected and selected.Button == button) then
+								button.BackgroundTransparency = 0.5
+								if autoButtonColor then button.AutoButtonColor = false end
+								selected = {
+									Alias = i;
+									Command = v;
+									Button = button;
+								}
+
+								editButton.TextTransparency = orgTextTransparency
+								removeButton.TextTransparency = orgTextTransparency
+								if autoButtonColor then
+									editButton.AutoButtonColor = true
+									removeButton.AutoButtonColor = true
+								end
+							else
+								selected = nil
+								editButton.TextTransparency = 0.5
+								removeButton.TextTransparency = 0.5
+								if autoButtonColor then
+									editButton.AutoButtonColor = false
+									removeButton.AutoButtonColor = false
+								end
+							end
 						end
 					})
 					num = num + 1
@@ -1019,7 +1092,7 @@ return function(data)
 			aliasBox.BackgroundColor3 = commandBox.BackgroundColor3
 			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 
-			aliasTab:Add("TextButton", {
+			removeButton = aliasTab:Add("TextButton", {
 				Text = "Remove";
 				Position = UDim2.new(0, 5, 1, -25);
 				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
@@ -1027,13 +1100,20 @@ return function(data)
 					if selected and not inputBlock then
 						inputBlock = true
 						client.Functions.RemoveAlias(selected.Alias)
+						selected = nil
+						editButton.TextTransparency = 0.5
+						removeButton.TextTransparency = 0.5
+						if autoButtonColor then
+							editButton.AutoButtonColor = false
+							removeButton.AutoButtonColor = false
+						end
 						getAliases()
 						inputBlock = false
 					end
 				end
 			})
 
-			aliasTab:Add("TextButton", {
+			editButton = aliasTab:Add("TextButton", {
 				Text = "Edit";
 				Position = UDim2.new((1/3), 0, 1, -25);
 				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
@@ -1047,6 +1127,15 @@ return function(data)
 					end
 				end
 			})
+
+			orgTextTransparency = removeButton.TextTransparency
+			if removeButton.AutoButtonColor then -- considers certain themes with AutoButtonColor = false
+				autoButtonColor = true
+				removeButton.AutoButtonColor = false
+				editButton.AutoButtonColor = false
+			end
+			removeButton.TextTransparency = 0.5
+			editButton.TextTransparency = 0.5
 
 			aliasTab:Add("TextButton", {
 				Text = "Add",
@@ -1156,9 +1245,24 @@ return function(data)
 						toggle.Text = text
 					end
 				};
+									{
+					Text = "Privacy Mode: ";
+					Desc = "- Hide certain info from your profile";
+					Entry = "Boolean";
+					Setting = "PrivacyMode";
+					Value = client.Variables.PrivacyMode or false;
+					Function = function(enabled, toggle)
+						client.Variables.PrivacyMode = enabled
+
+						local text = toggle.Text
+						toggle.Text = "Saving.."
+						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
+						toggle.Text = text
+					end
+				};
 				{
 					Text = "Console Key: ";
-					Desc = "Key used to open the console";
+					Desc = "- Key used to open the console";
 					Entry = "Keybind";
 					Value = client.Variables.CustomConsoleKey or client.Remote.Get("Setting","ConsoleKeyCode");
 					Function = function(toggle)
@@ -1197,22 +1301,26 @@ return function(data)
 							client.Variables.CustomTheme = selection
 							client.Remote.Get("UpdateClient","CustomTheme",selection)
 						end
+						spawn(function()
+							window:Close()
+							client.UI.Make("UserPanel", {Tab = "Client"})
+						end)
 					end
 				}
 			}
 
 			local num = 0;
-			local cliScroll = clientTab:Add("ScrollingFrame", {
+			--[[local cliScroll = clientTab:Add("ScrollingFrame", {
 				BackgroundTransparency = 1;
-			});
+			});]]
 
 			for i, setData in next,cliSettings do
-				local label = cliScroll:Add("TextLabel", {
+				local label = clientTab:Add("TextLabel", {
 					Text = "  ".. setData.Text;
 					ToolTip = setData.Desc;
 					TextXAlignment = "Left";
-					Size = UDim2.new(1, 0, 0, 30);
-					Position = UDim2.new(0, 0, 0, num*30);
+					Size = UDim2.new(1, -10, 0, 30);
+					Position = UDim2.new(0, 5, 0, num*30+5);
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 				})
 
@@ -1255,7 +1363,7 @@ return function(data)
 				num = num+1
 			end
 
-			cliScroll:ResizeCanvas(false, true)
+			clientTab:ResizeCanvas(false, true)
 		end
 
 
@@ -1329,7 +1437,7 @@ return function(data)
 										TextXAlignment = "Left";
 										Children = {
 											TextLabel = {
-												Text = "Cannot Edit";
+												Text = "Studio Only";
 												Size = UDim2.new(0, 100, 1, 0);
 												Position = UDim2.new(1, -100, 0, 0);
 												TextTransparency = 0.5;
@@ -1359,6 +1467,24 @@ return function(data)
 									})
 								end
 							end
+						elseif  not canEditTables[setting] then
+							gameTab:Add("TextLabel", {
+								Text = "  "..setting..": ";
+								ToolTip = desc;
+								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+								Size = UDim2.new(1, -10, 0, 30);
+								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								TextXAlignment = "Left";
+								Children = {
+									TextLabel = {
+										Text = "Studio Only";
+										Size = UDim2.new(0, 100, 1, 0);
+										Position = UDim2.new(1, -100, 0, 0);
+										TextTransparency = 0.5;
+										BackgroundTransparency = 1;
+									}
+								}
+							})
 						else
 							gameTab:Add("TextLabel", {
 								Text = "  "..setting..": ";

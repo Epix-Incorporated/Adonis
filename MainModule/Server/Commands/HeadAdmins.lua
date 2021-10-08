@@ -11,8 +11,8 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tban";"timedban";"timeban";};
-			Args = {"player";"number<s/m/h/d>";};
+			Commands = {"tempban";"timedban";"timeban";"tban";"temporaryban"};
+			Args = {"player";"number<s/m/h/d>";"reason"};
 			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
@@ -20,18 +20,18 @@ return function(Vargs, env)
 			Function = function(plr,args,data)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local time = args[2]
-
-				if time:lower():sub(#time)=='s' then
-					time = time:sub(1,#time-1)
+				local lower, sub = string.lower, string.sub
+				if sub(lower(time), #time)=='s' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)
-				elseif time:lower():sub(#time)=='m' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='m' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)*60
-				elseif time:lower():sub(#time)=='h' then
-					time = time:sub(1,#time-1)
-					time = (tonumber(time)*60)*60
-				elseif time:lower():sub(#time)=='d' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='h' then
+					time = sub(time, 1, #time-1)
+					time = ((time)*60)*60
+				elseif sub(lower(time), #time)=='d' then
+					time = sub(time, 1, #time-1)
 					time = ((tonumber(time)*60)*60)*24
 				end
 
@@ -48,16 +48,18 @@ return function(Vargs, env)
 				}) do
 					if level > Admin.GetLevel(v) then
 						local endTime = os.time() + tonumber(time)
-
+						local reason = service.Filter(args[3], plr, v) or "No reason provided";
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
 							EndTime = endTime;
+							Reason = reason;
 						}
 
 						table.insert(timebans, data)
 
-						v:Kick("\nBanned until ".. service.FormatTime(endTime, true))
+						-- Please make a Admin.AddTimeBan function like Admin.AddBan
+						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, true))
 						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...",{plr})
 
 						Core.DoSave({
@@ -66,7 +68,7 @@ return function(Vargs, env)
 							Value = data;
 						})
 
-						Functions.Hint("Banned "..tostring(v.Name).." for "..tostring(time),{plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for ".. tostring(time),{plr})
 					end
 				end
 			end
@@ -74,7 +76,7 @@ return function(Vargs, env)
 
 		UnTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"untimeban";"untimedban";"untban";};
+			Commands = {"untimeban";"untimedban";"untban";"untempban";"untemporaryban"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Removes specified player from Timebans list";
@@ -99,12 +101,15 @@ return function(Vargs, env)
 			end
 		};
 
-		GameBan = {
+		PermenantBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"gameban", "saveban", "databan", "pban"};
+			Commands = {"permban", "permanentban", "pban", "gameban", "saveban", "databan"};
 			Args = {"player", "reason"};
-			Description = "Bans the player from the game (Saves)";
+			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -125,7 +130,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"ungameban", "saveunban", "undataban", "unpban"};
+			Commands = {"unpermban", "unpermanentban", "unpban", "ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
@@ -155,6 +160,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now an admin',{plr})
@@ -183,6 +189,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a temp admin',{plr})
@@ -200,6 +207,7 @@ return function(Vargs, env)
 			Description = "Sends a global message to all servers";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
@@ -219,6 +227,42 @@ return function(Vargs, env)
 						})
 					end
 				]], plr.Name, args[1], args[1])
+
+				if not Core.CrossServer("Loadstring", globalMessage) then
+					error("CrossServer Handler Not Ready");
+				end
+			end;
+		};
+
+		GlobalTimeMessage = {
+			Prefix = Settings.Prefix;
+			Commands = {"gtm","globaltimedmessage","globaltimemessage","globaltimem"};
+			Args = {"time","message"};
+			Description = "Sends a global message to all servers and makes it stay on the screen for the amount of time (in seconds) you supply";
+			AdminLevel = "HeadAdmins";
+			Filter = true;
+			IsCrossServer = true;
+			CrossServerDenied = true;
+			Function = function(plr,args)
+				assert(args[1], "Argument #1 must be supplied")
+				assert(args[2], "Argument #2 must be supplied")
+
+
+				local globalMessage = string.format([[
+					local server = server
+					local service = server.Service
+					local Remote = server.Remote
+
+					for i,v in pairs(service.Players:GetPlayers()) do
+						Remote.RemoveGui(v, "Message")
+						Remote.MakeGui(v, "Message", {
+							Title = "Global Message from %s";
+							Message = "%s";
+							Scroll = true;
+							Time = %s;
+						})
+					end
+				]], plr.Name, args[2], args[1])
 
 				if not Core.CrossServer("Loadstring", globalMessage) then
 					error("CrossServer Handler Not Ready");
@@ -285,11 +329,10 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local objects = service.GetAdonisObjects()
-
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					v:Destroy()
-					table.remove(objects, i)
 				end
+				table.clear(objects)
 
 				--for i,v in next,Functions.GetPlayers() do
 				--	Remote.Send(v, "Function", "ClearAllInstances")
@@ -301,53 +344,54 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"backupmap";"mapbackup";"bmap";};
 			Args = {};
-			Hidden = false;
 			Description = "Changes the backup for the restore map command to the map's current state";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
+				local plr_name = plr and plr.Name
+
 				if plr then
-					Functions.Hint('Updating Map Backup...',{plr})
+					Functions.Hint('Updating Map Backup...', { plr })
 				end
 
-				if server.Variables.BackingupMap then
+				if Variables.BackingupMap then
 					error("Backup Map is in progress. Please try again later!")
 					return
 				end
-				if server.Variables.RestoringMap then
+				if Variables.RestoringMap then
 					error("Cannot backup map while map is being restored!")
 					return
 				end
 
-				server.Variables.BackingupMap = true
+				Variables.BackingupMap = true
 
-				local tempmodel = service.New('Model')
-
-				for i,v in pairs(service.Workspace:GetChildren()) do
-					if v and not v:IsA('Terrain') then
-						wait()
-						pcall(function()
-							local archive = v.Archivable
-							v.Archivable = true
-							v:Clone(true).Parent = tempmodel
-							v.Archivable = archive
-						end)
+				local tempmodel = service.New('Model', {
+					Name = "BACKUP_MAP_MODEL"
+				})
+				for _, v in ipairs(workspace:GetChildren()) do
+					if v.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(v) then
+						local archive = v.Archivable
+						v.Archivable = true
+						v:Clone().Parent = tempmodel
+						v.Archivable = archive
 					end
 				end
-
 				Variables.MapBackup = tempmodel:Clone()
 				tempmodel:Destroy()
-				Variables.TerrainMapBackup = service.Workspace.Terrain:CopyRegion(service.Workspace.Terrain.MaxExtents)
 
-				if plr then
-					Functions.Hint('Backup Complete',{plr})
+				local Terrain = workspace.Terrain or workspace:FindFirstChildOfClass("Terrain")
+				if Terrain then
+					Variables.TerrainMapBackup = Terrain:CopyRegion(Terrain.MaxExtents)
 				end
 
-				server.Variables.BackingupMap = false
+				if plr then
+					Functions.Hint('Backup Complete', { plr })
+				end
+
+				Variables.BackingupMap = false
 
 				Logs.AddLog(Logs.Script,{
 					Text = "Backup Complete";
-					Desc = "Map was successfully backed up";
+					Desc = (plr_name or "<SERVER>") .. " has successfully backed up the map.";
 				})
 			end
 		};
@@ -382,16 +426,18 @@ return function(Vargs, env)
 
 		FullShutdown = {
 			Prefix = Settings.Prefix;
-			Commands = {"fullshutdown"};
+			Commands = {"fullshutdown","globalshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;
 			AdminLevel = "HeadAdmins";
 			Filter = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
+					Title = "Shutdown all running servers?";
 				})
 				if ans == "Yes" then
 				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then

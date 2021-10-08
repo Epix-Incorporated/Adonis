@@ -15,6 +15,9 @@ return function(Vargs, env)
 			Args = {"player", "reason"};
 			Description = "DirectBans the player (Saves)";
 			AdminLevel = "Creators";
+			Filter = true;
+			Hidden = false;
+			Fun = false;
 			Function = function(plr,args,data)
 				local reason = args[2] or "No reason provided";
 
@@ -65,12 +68,19 @@ return function(Vargs, env)
 			Description = "Force all game-players to teleport to a desired place";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
+			IsCrossServer = true;
 			Function = function(plr,args)
 				assert(args[1], "Argument #1 must be supplied")
 				assert(tonumber(args[1]), "Argument #1 must be a number")
 
-				if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
-					error("CrossServer Handler Not Ready");
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Force all game-players to teleport to place '".. args[1].."'?";
+					Title = "Force teleport all users?";
+				})
+				if ans == "Yes" then
+					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
+						error("CrossServer Handler Not Ready");
+					end
 				end
 			end;
 		};
@@ -156,6 +166,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a head admin. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a head admin',{plr})
@@ -184,6 +195,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a temp head admin. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a temp head admin',{plr})
@@ -210,22 +222,29 @@ return function(Vargs, env)
 
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
-			Commands = {"clearplayerdata"};
+			Commands = {"clearplayerdata","clrplrdata","clearplrdata"};
 			Arguments = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
 				local id = tonumber(args[1]);
 				assert(id, "Must supply valid UserId");
-
-				Core.RemoveData(tostring(id));
-				Core.PlayerData[tostring(id)] = nil;
-
-				Remote.MakeGui(plr,"Notification",{
-					Title = "Notification";
-					Message = "Cleared data for ".. id;
-					Time = 10;
+				local username = (game:GetService("Players"):GetNameFromUserIdAsync(args[1]))
+				local ans = Remote.GetGui(plr,"YesNoPrompt",{
+					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
+					Title = "Clear PlayerData for "..username.."?";
+					Size = {281.25,187.5};
 				})
+				if ans == "Yes" then
+					Core.RemoveData(tostring(id));
+					Core.PlayerData[tostring(id)] = nil;
+	
+					Remote.MakeGui(plr,"Notification",{
+						Title = "Notification";
+						Message = "Cleared data for ".. id;
+						Time = 10;
+					})
+				end
 			end;
 		};
 
@@ -233,7 +252,7 @@ return function(Vargs, env)
 			Prefix = ":";
 			Commands = {"terminal";"console";};
 			Args = {};
-			Hidden = true;
+			Hidden = false;
 			Description = "Opens the the terminal";
 			AdminLevel = "Creators";
 			Function = function(plr,args)
@@ -251,63 +270,6 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"TaskManager",{})
-			end
-		};
-		--]]
-		--[[
-		DataBan = {
-			Prefix = Settings.Prefix;
-			Commands = {"databan";"permban";"gameban"};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Data persistent ban the target player(s); Undone using :undataban";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = true;
-					UseFakePlayer = true;
-				})) do
-					if not Admin.CheckAdmin(v) then
-						local ans = Remote.GetGui(plr,"YesNoPrompt",{
-							Question = "Are you sure you want to ban "..v.Name
-						})
-
-						if ans == "Yes" then
-							local PlayerData = Core.GetPlayer(v)
-							PlayerData.Banned = true
-							v:Kick("You have been banned")
-							Functions.Hint("Data Banned "..tostring(v),{plr})
-						end
-					else
-						error(v.Name.." is currently an admin. Unadmin them before trying to perm ban them (this is so you don't accidentally ban an admin)")
-					end
-				end
-			end
-		};
-		--]]
-		--[[
-		UnDataBan = {
-			Prefix = Settings.Prefix;
-			Commands = {"undataban";"undban";"untban";"unpermban";};
-			Args = {"userid";};
-			Hidden = false;
-			Description = "Removes any data persistence bans (timeban or permban)";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-
-				local userId = tonumber(args[1])
-				assert(userId,tostring(userId).." is not a valid user ID")
-				local PlayerData = Core.GetData(tostring(userId))
-				assert(PlayerData,"No saved data found for "..userId)
-				PlayerData.TimeBan = false
-				PlayerData.Banned = false
-				Core.SaveData(tostring(userId),PlayerData)
-				Functions.Hint("Removed data ban for "..userId,{plr})
 			end
 		};
 		--]]

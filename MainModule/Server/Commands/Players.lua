@@ -13,7 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cmds","commands","cmdlist"};
 			Args = {};
-			Description = "Shows you a list of commands";
+			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
@@ -58,7 +58,7 @@ return function(Vargs, env)
 							Desc = "["..cStr.."] "..v.Description,
 							Filter = cStr
 						})
-						cmdCount = cmdCount + 1
+						cmdCount += 1
 					end
 				end
 
@@ -107,9 +107,9 @@ return function(Vargs, env)
 							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
 							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
 							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
-							{Text = "Admin Level: "..cmd.AdminLevel, Desc = "Rank required to run the command"},
-							{Text = "Fun: "..tostring(cmd.Fun), Desc = "Is the command fun?"},
-							{Text = "Hidden: "..tostring(cmd.Hidden), Desc = "Is the command hidden from the command list?"},
+							{Text = "Admin Level: "..cmd.AdminLevel.." ("..Admin.LevelToListName(cmd.AdminLevel)..")", Desc = "Rank required to run the command"},
+							{Text = "Fun: "..tostring(cmd.Fun and "Yes" or "No"), Desc = "Is the command fun?"},
+							{Text = "Hidden: "..tostring(cmd.Hidden and "Yes" or "No"), Desc = "Is the command hidden from the command list?"},
 							{Text = "Description: "..cmd.Description, Desc = "Command description"}
 						};
 						Size = {400,220}
@@ -128,7 +128,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"Notepad",{})
 			end
 		};
-					
+
 		Paint = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"paint","canvas","draw"};
@@ -150,7 +150,7 @@ return function(Vargs, env)
 				Functions.Hint('"'..Settings.Prefix..'cmds"',{plr})
 			end
 		};
-						
+
 		NotifyMe = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifyme"};
@@ -165,6 +165,96 @@ return function(Vargs, env)
 					Message = args[2];
 					Time = tonumber(args[1]);
 				})
+			end
+		};
+
+		RandomNum = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"rand","random","randnum","dice"};
+			Args = {"num m";"num n"};
+			Description = "Generates a number using Lua's math.random";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
+				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
+				
+				if args[2] then
+					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
+					Functions.Hint(math.random(args[1], args[2]), {plr})
+				elseif args[1] then
+					Functions.Hint(math.random(args[1]), {plr})
+				else
+					Functions.Hint(math.random(), {plr})
+				end
+			end
+		};
+
+		BrickColorList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"brickcolors";"colors";"colorlist"};
+			Args = {};
+			Description = "Shows you a list of Roblox BrickColors for reference";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local children = {
+					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+				}
+				
+				local brickColorNames = {}
+				for i = 1, 127 do
+					table.insert(brickColorNames, BrickColor.palette(i).Name)
+				end
+				table.sort(brickColorNames)
+				
+				for i, bc in ipairs(brickColorNames) do
+					bc = BrickColor.new(bc)
+					table.insert(children, {
+						Class = "TextLabel";
+						Size = UDim2.new(1, -10, 0, 30);
+						Position = UDim2.new(0, 5, 0, 30*(i-1));
+						BackgroundTransparency = 1;
+						TextXAlignment = "Left";
+						Text = "  "..bc.Name;
+						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
+						ZIndex = 1;
+						Children = {
+							{
+								Class = "Frame";
+								BackgroundColor3 = bc.Color;
+								Size = UDim2.new(0, 80, 1, -4);
+								Position = UDim2.new(1, -82, 0, 2);
+								ZIndex = 2;
+							}
+						};
+					})
+				end
+
+				Remote.MakeGui(plr, "Window", {
+					Name = "BrickColorList";
+					Title = "BrickColors";
+					Size  = {270, 300};
+					MinSize = {150, 100};
+					Content = children;
+					Ready = true;
+				})
+			end
+		};
+		
+		MaterialList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"materials";"materiallist","mats"};
+			Args = {};
+			Description = "Shows you a list of Roblox materials for reference";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local mats = {
+					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
+					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
+				}
+				for i, mat in ipairs(mats) do
+					mats[i] = {Text = mat; Desc = "Enum value: "..Enum.Material[mat].Value}
+				end
+				Remote.MakeGui(plr,"List",{Title = "Materials"; Tab = mats})
 			end
 		};
 
@@ -220,20 +310,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GetPing = {
-			Prefix = Settings.Prefix;
-			Commands = {"getping";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Shows the target player's ping";
-			Fun = false;
-			AdminLevel = "Helpers";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
-				end
-			end
-		};
 
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
@@ -256,7 +332,7 @@ return function(Vargs, env)
 
 		RequestHelp = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"help";"requesthelp";"gethelp";"lifealert";};
+			Commands = {"help";"requesthelp";"gethelp";"lifealert";"sos";};
 			Args = {};
 			Hidden = false;
 			Description = "Calls admins for help";
@@ -294,7 +370,7 @@ return function(Vargs, env)
 										OnIgnore = Core.Bytecode("return false");
 									})
 
-									num = num+1
+									num += 1
 									if ret then
 										if not answered then
 											answered = true
@@ -315,7 +391,7 @@ return function(Vargs, env)
 						end)
 					end
 				else
-					Functions.Message("Help System","Help System Disabled by Place Owner",{plr})
+					Functions.Message("Help System","The help system has been disabled by the place owner.",{plr})
 				end
 			end
 		};
@@ -406,39 +482,46 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local usage={
-					'NOTE: This info is temporary.';
-					'A revamped user manual is being made.';
 					'';
 					'Mouse over things in lists to expand them';
 					'You can also resize windows by dragging the edges';
 					'';
-					'<b>Commands:</b>';
-					'Timeban, Works with non-ingame players, <i>'.. Settings.Prefix ..'tban Player time(d/h/m/s)</i> | Example: <i>'.. Settings.Prefix ..'timeban Sceleratis 10h</i> (10 hours ban), d = days, h = hour, m = minutes, s = seconds';
-					'<b>Special Functions:</b>';
-					'Ex: <i>'..Settings.Prefix..'kill FUNCTION</i>, so like <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i>';
-					'Put <i>/e</i> in front to silence it (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
-					'<i>'..Settings.SpecialPrefix..'me</i> - Runs a command on you';
-					'<i>'..Settings.SpecialPrefix..'all</i> - Runs a command on everyone';
-					'<i>'..Settings.SpecialPrefix..'admins</i> - Runs a command on all admins in the game';
-					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Same as !admins but for people who are not an admin';
-					'<i>'..Settings.SpecialPrefix..'others</i> - Runs command on everyone BUT you';
-					'<i>'..Settings.SpecialPrefix..'random</i> - Runs command on a random person';
-					'<i>'..Settings.SpecialPrefix..'friends</i> - Runs command on anyone on your friends list';
-					'<i>%TEAMNAME</i> - Runs command on everyone in the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
-					'<i>$GROUPID</i> - Run a command on everyone in the group GROUPID, Will default to the GroupId setting if no id is given';
-					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
-					'<i>#NUMBER</i> - Will run command on NUMBER of random players. <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
-					'<i>radius-NUMBER</i> -- Lets you run a command on anyone within a NUMBER stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5 stud radius of you.';
+					'Put <i>/e</i> in front to silence commands in chat (<i>/e '..Settings.Prefix..'kill scel</i>) or enable chat command hiding in client settings';
+					'Player commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'info</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
 					'';
-					'Certain commands can be used by anyone, these commands have <i>'..Settings.PlayerPrefix..'</i> infront, such as <i>'..Settings.PlayerPrefix..'clean</i> and <i>'..Settings.PlayerPrefix..'rejoin</i>';
-					'<i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,!nonadmins,-scel</i>';
+					'<b>――――― Player Selectors ―――――</b>';
+					'Usage example: <i>'..Settings.Prefix..'kill '..Settings.SpecialPrefix..'all</i> (where <i>'..Settings.SpecialPrefix..'all</i> is the selector)';
+					'<i>'..Settings.SpecialPrefix..'me</i> - Yourself';
+					'<i>'..Settings.SpecialPrefix..'all</i> - Everyone in the server';
+					'<i>'..Settings.SpecialPrefix..'admins</i> - Admin in the server';
+					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Non-admins (normal players) in the server';
+					'<i>'..Settings.SpecialPrefix..'others</i> - Everyone except yourself';
+					'<i>'..Settings.SpecialPrefix..'random</i> - A random person in the server';
+					'<i>@USERNAME</i> - Targets a specific player with that exact username';
+					'<i>#NUM</i> - NUM random players in the server <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
+					'<i>'..Settings.SpecialPrefix..'friends</i> - Your friends who are in the server';
+					'<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
+					'<i>$GROUPID</i> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)';
+					'<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. '..Settings.Prefix..'kill all,-scel will kill everyone except scel';
+					'<i>radius-NUM</i> -- Anyone within a NUM-stud radius of you. '..Settings.Prefix..'ff radius-5 will ff anyone within a 5-stud radius of you.';
+					'';
+					'<b>――――― Repetition ―――――</b>';
+					'Multiple player selections - <i>'..Settings.Prefix..'kill me,noob1,noob2,'..Settings.SpecialPrefix..'random,%raiders,$123456,'..Settings.SpecialPrefix..'nonadmins,-scel</i>';
 					'Multiple Commands at a time - <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' '..Settings.Prefix..'sparkles me '..Settings.BatchKey..' '..Settings.Prefix..'rocket jim</i>';
-					'You can add a wait if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
+					'You can add a delay if you want; <i>'..Settings.Prefix..'ff me '..Settings.BatchKey..' !wait 10 '..Settings.BatchKey..' '..Settings.Prefix..'m hi we waited 10 seconds</i>';
 					'<i>'..Settings.Prefix..'repeat 10(how many times to run the cmd) 1(how long in between runs) '..Settings.Prefix..'respawn jim</i>';
-					'Place HeadAdmins can edit some settings in-game via the '..Settings.Prefix..'settings command';
-					'Please refer to the Tips and Tricks section under the settings in the script for more detailed explanations'
+					'';
+					'<b>――――― Reference Info ―――――</b>';
+					'<i>'..Settings.Prefix..'cmds</i> for a list of available commands';
+					'<i>'..Settings.Prefix..'cmdinfo &lt;command w/o prefix&gt;</i> for detailed info about a command';
+					'<i>'..Settings.PlayerPrefix..'brickcolors</i> for a list of BrickColors';
+					'<i>'..Settings.PlayerPrefix..'materials</i> for a list of materials';
+					'';
+					'<i>'..Settings.Prefix..'capes</i> for a list of preset admin capes';
+					'<i>'..Settings.Prefix..'musiclist</i> for a list of preset audios';
+					'<i>'..Settings.Prefix..'insertlist</i> for a list of insertable assets using '..Settings.Prefix..'insert';
 				}
-				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {280, 240}, RichText = true})
+				Remote.MakeGui(plr,"List",{Title = 'Usage', Tab = usage, Size = {300, 250}, RichText = true})
 			end
 		};
 
@@ -580,7 +663,7 @@ return function(Vargs, env)
 				end
 			end
 		};]]
-		
+
 		InspectAvatar = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"inspectavatar";"avatarinspect";"viewavatar";"examineavatar";};
@@ -608,7 +691,7 @@ return function(Vargs, env)
 				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
-		
+
 		NumPlayers = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"pnum","numplayers","playercount"};
@@ -633,9 +716,9 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		TimeDate = {
-			Prefix = Settings.Prefix;
+			Prefix = Settings.PlayerPrefix;
 			Commands = {"timedate";"date";"datetime";};
 			Args = {};
 			Hidden = false;
@@ -677,7 +760,52 @@ return function(Vargs, env)
 				})
 			end
 		};
+		
+		ViewProfile = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hasSafeChat
+
+					local gameData = nil
+					if Admin.CheckAdmin(plr) then
+						local level, rank = Admin.GetLevel(v)
+						gameData = {
+							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+						}
+						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							gameData[k] = d
+						end
+					end
+
+					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
+					if privacyMode then hasSafeChat = "[Redacted]" else
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					end
+
+					Remote.MakeGui(plr, "Profile", {
+						Target = v;
+						SafeChat = hasSafeChat;
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						GameData = gameData;
+						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+					})
+				end
+			end
+		};
 
 
 	}
 end
+

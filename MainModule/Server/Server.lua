@@ -47,7 +47,7 @@ newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, elapsedTime, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay =
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task =
 	_G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
@@ -57,7 +57,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay =
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, elapsedTime, require, table, type, task.wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay;
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -358,6 +358,7 @@ Vector3int16 = service.Localize(Vector3int16)
 BrickColor = service.Localize(BrickColor)
 TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
+task = service.Localize(task)
 
 --// Wrap                                                                                                                                                                                                                                                                                                                                                    require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
@@ -435,8 +436,9 @@ for ind,loc in next,{
 	Region3 = Region3;
 	CFrame = CFrame;
 	Ray = Ray;
+	task = task;
 	service = service
-	}do locals[ind] = loc end
+	} do locals[ind] = loc end
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
@@ -460,7 +462,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 
 	--// Warn if possibly malicious
 	if data.PremiumID or data.PremiumId then
-		warn("You might be using a malicious version of the Adonis loader!")
+		warn("\n ⚠ You might be using a malicious version of the Adonis loader ⚠\n -- If you are teleported to a 'Loading...' game, your game could be identified by the backdoor creators! 👁️‍🗨️--\n -- 🔰 Remember, there's no such thing as Adonis Premium or Gold! -- \n -- 💠 Grab the genuine Adonis Loader from the toolbox! ✔️-- \n ")
 	end
 
 	--// Server Variables

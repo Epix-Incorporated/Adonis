@@ -414,17 +414,17 @@ return function(Vargs)
 					local target = Settings.SpecialPrefix..'all'
 					if not b then b = 'Global' end
 					if not service.Players:FindFirstChild(p.Name) then b='Nil' end
-					if a:sub(1,1)=='@' then
+					if string.sub(a1,1)=='@' then
 						b='Private'
 						target,a=a:match('@(.%S+) (.+)')
 						Remote.Send(p,'Function','SendToChat',p,a,b)
-					elseif a:sub(1,1)=='#' then
-						if a:sub(1,7)=='#ignore' then
-							target=a:sub(9)
+					elseif string.sub(a,1,1)=='#' then
+						if string.sub(a,1,7)=='#ignore' then
+							target=string.sub(a,9)
 							b='Ignore'
 						end
-						if a:sub(1,9)=='#unignore' then
-							target=a:sub(11)
+						if string.sub(a,1,9)=='#unignore' then
+							target=string.sub(a,11)
 							b='UnIgnore'
 						end
 					end
@@ -483,13 +483,13 @@ return function(Vargs)
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
 							Process.Command(p,msg,{Chat = true;})
-						elseif msg:sub(1,3)=="/e " then
+						elseif string.sub(msg,1,3)=="/e " then
 							service.Events.PlayerChatted:Fire(p,msg)
-							msg = msg:sub(4)
+							msg = string.sub(msg,4)
 							Process.Command(p,msg,{Chat = true;})
-						elseif msg:sub(1,8)=="/system " then
+						elseif string.sub(msg,1,8)=="/system " then
 							service.Events.PlayerChatted:Fire(p,msg)
-							msg = msg:sub(9)
+							msg = string.sub(msg,9)
 							Process.Command(p,msg,{Chat = true;})
 						else
 							service.Events.PlayerChatted:Fire(p,msg)
@@ -608,7 +608,7 @@ return function(Vargs)
 
 			if not ran then
 				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
-				warn("~! ::Adonis:: SOMETHING FAILED DURING PLAYERADDED:");
+				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
 
@@ -635,8 +635,8 @@ return function(Vargs)
 				end)
 
 				--// Character added
-				p.CharacterAdded:Connect(function()
-					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p);
+				p.CharacterAdded:Connect(function(...)
+					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p, ...);
 					if not ran then
 						logError(err);
 					end
@@ -663,10 +663,12 @@ return function(Vargs)
 
 			service.Events.PlayerRemoving:Fire(p)
 
-			local level = (p and Admin.GetLevel(p)) or 0
-			if Settings.AntiNil and level < 1 then
-				pcall(function() service.UnWrap(p):Kick("Anti Nil") end)
-			end
+			spawn(function()
+				local level = (p and data.AdminLevel) or 0
+				if Settings.AntiNil and level < 1 then
+					pcall(function() local p = service.UnWrap(p) p:Kick("Anti Nil") wait() if p then pcall(service.Delete, p) end end)
+				end
+			end)
 
 			delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
@@ -681,6 +683,7 @@ return function(Vargs)
 			})
 
 			Core.SavePlayerData(p, data)
+			return;
 		end;
 
 		FinishLoading = function(p)
@@ -733,7 +736,7 @@ return function(Vargs)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == service.Workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p);
+					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character);
 					if not ran then
 						logError(err)
 					end
@@ -749,6 +752,7 @@ return function(Vargs)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Welcome.";
 							Message = "Click here for commands.";
+							Icon = "rbxassetid://7536783953";
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -759,6 +763,7 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
+								Icon = "rbxassetid://7495471249";
 								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
@@ -770,10 +775,11 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
+								Icon = "rbxassetid://7495468117";
 								Time = 10;
 								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window",{
-										Title = "How to change the DataStore";
+										Title = "How to change the DataStore key";
 										Size = {700,300};
 										Icon = "rbxassetid://357249130";
 									})
@@ -812,7 +818,7 @@ return function(Vargs)
 			end
 		end;
 
-		CharacterAdded = function(p)
+		CharacterAdded = function(p, Character, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key];
 
@@ -820,32 +826,18 @@ return function(Vargs)
 				keyData.PlayerLoaded = true;
 			end
 
-			if p.Character and keyData and keyData.FinishedLoading then
+			wait();
+			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Anti Exploit stuff
 				pcall(Anti.CheckNameID, p)
 
-				--// Character Child Santization
-				--local function SanitizeCharacter()
-				--	if Anti.RLocked(p.Character) then
-				--		Anti.Detected(p, "Kick", "Character Locked")
-				--	else
-				--		Anti.Sanitize(p.Character,{
-				--			"Backpack";
-				--			"PlayerGui";
-				--		})
-				--	end
-				--end
-
-				--SanitizeCharacter()
-				--p.Character.DescendantAdded:Connect(function(child)
-				--	SanitizeCharacter()
-				--end)
-
 				--// Wait for UI stuff to finish
 				wait(1);
-				p:WaitForChild("PlayerGui", 9e9);
+				if not p:FindFirstChildWhichIsA("PlayerGui") then
+					p:WaitForChild("PlayerGui", 9e9);
+				end
 				Remote.Get(p,"UIKeepAlive");
 
 				--//GUI loading
@@ -895,7 +887,7 @@ return function(Vargs)
 				Functions.Donor(p)
 
 				--// Fire added event
-				service.Events.CharacterAdded:Fire(p)
+				service.Events.CharacterAdded:Fire(p, Character, ...)
 
 				--// Run OnSpawn commands
 				for i,v in next,Settings.OnSpawn do

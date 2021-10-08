@@ -30,7 +30,7 @@ return function(Vargs)
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {
 			__index = function(self, ind)
-				local targInd = Admin.CommandCache[ind:lower()]
+				local targInd = Admin.CommandCache[string.lower(ind)]
 				if targInd then
 					return rawget(Commands, targInd)
 				end
@@ -39,9 +39,9 @@ return function(Vargs)
 			__newindex = function(self, ind, val)
 				rawset(Commands, ind, val)
 				if val and type(val) == "table" and val.Commands and val.Prefix then
-					for i,cmd in next,val.Commands do
+					for i,cmd in pairs(val.Commands) do
 						Admin.PrefixCache[val.Prefix] = true;
-						Admin.CommandCache[(val.Prefix..cmd):lower()] = ind;
+						Admin.CommandCache[string.lower((val.Prefix..cmd))] = ind;
 					end
 				end
 			end;
@@ -51,12 +51,12 @@ return function(Vargs)
 
 		--// Load command modules
 		if server.CommandModules then
-			for i,module in next,server.CommandModules:GetChildren() do
+			for i,module in ipairs(server.CommandModules:GetChildren()) do
 				local func = require(module)
 				local ran,tab = pcall(func, Vargs, getfenv())
 
 				if ran and tab and type(tab) == "table" then
-					for ind,cmd in next,tab do
+					for ind,cmd in pairs(tab) do
 						Commands[ind] = cmd;
 					end
 
@@ -76,22 +76,22 @@ return function(Vargs)
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
 
-	function RunAfterPlugins()
+	local function RunAfterPlugins()
 		--// Load custom user-supplied commands (settings.Commands)
-		for ind,cmd in next,Settings.Commands do
-			if cmd.Function then
+		for ind,cmd in pairs(Settings.Commands) do
+			if type(cmd) == "table" and cmd.Function then
 				setfenv(cmd.Function, getfenv());
 				Commands[ind] = cmd;
 			end
 		end
 
 		--// Change command permissions based on settings
-		for ind, cmd in next, Settings.Permissions or {} do
-			local com,level = cmd:match("^(.*):(.*)")
+		for ind, cmd in pairs(Settings.Permissions or {}) do
+			local com,level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
-				if level:find(",") then
+				if string.find(level, ",") then
 					local newLevels = {}
-					for lvl in level:gmatch("[^%,]+") do
+					for lvl in string.gmatch(level, "[^%,]+") do
 						table.insert(newLevels, service.Trim(lvl))
 					end
 
@@ -103,14 +103,14 @@ return function(Vargs)
 		end
 
 		--// Update existing permissions to new levels
-		for i,cmd in next,Commands do
+		for i,cmd in pairs(Commands) do
 			if type(cmd) == "table" and cmd.AdminLevel then
 				local lvl = cmd.AdminLevel;
 				if type(lvl) == "string" then
 					cmd.AdminLevel = Admin.StringToComLevel(lvl);
 					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
 				elseif type(lvl) == "table" then
-					for b,v in next,lvl do
+					for b,v in pairs(lvl) do
 						lvl[b] = Admin.StringToComLevel(v);
 					end
 				end
