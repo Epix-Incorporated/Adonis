@@ -426,7 +426,7 @@ return function(Vargs, env)
 							end
 						end
 
-						Remote.MakeGui(p,"Notification",{
+						Remote.MakeGui(plr,"Notification",{
 							Title = "Notification";
 							Message = "Removed warning from ".. v.Name;
 							Icon = "rbxassetid://7536784790";
