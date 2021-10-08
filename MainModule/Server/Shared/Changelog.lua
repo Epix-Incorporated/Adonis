@@ -5,7 +5,7 @@ return {
 	"[v229 10.8.2021 13:35 EST]";
 	"*Fixed an issue with icons in notifications caused by a merge";
 	"*Fixed an issue where :gerald could only be used once";
-	"*Added ':removewarning player warning_message'";
+	"*Added ':removewarning player warning'";
 	"*Added Settings.Aliases";
 	"*Special characters are now escaped in alises";
 	"*Alias arguments can now be defined as part of the alias string (eg, ':somealias <player> <color>' -> ':ff <player> | :fire <player> <color>')";
