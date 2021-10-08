@@ -1313,8 +1313,8 @@ return function(Vargs, env)
 						)
 
 						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
-						pcall(function() plr:Kick(reason) end)
-						Remote.MakeGui(p,"Notification",{
+						pcall(function() v:Kick(reason) end)
+						Remote.MakeGui(plr,"Notification",{
 							Title = "Notification";
 							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
 							Icon = "rbxassetid://7536784790";
