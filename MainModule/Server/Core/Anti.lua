@@ -25,7 +25,7 @@ return function(Vargs)
 		Settings = server.Settings;
 
 		--// Client check
-		service.StartLoop("ClientCheck",30, Anti.CheckAllClients, true)
+		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
 
 		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
@@ -47,7 +47,7 @@ return function(Vargs)
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick("::Adonis::\n".. tostring(info)) end)
+			pcall(function()service.UnWrap(p):Kick(":: Adonis ::\n".. tostring(info)) end)
 
 			wait(1)
 
@@ -113,23 +113,9 @@ return function(Vargs)
 			end
 		end;
 
-		Sanitize = function(obj, classList)
-			if Anti.RLocked(obj) then
-				pcall(service.Delete, obj)
-			else
-				for i,child in next,obj:GetChildren() do
-					if Anti.RLocked(child) or Functions.IsClass(child, classList) then
-						pcall(service.Delete, child)
-					else
-						pcall(Anti.Sanitize, child, classList)
-					end
-				end
-			end
-		end;
-
 		isFake = function(p)
-			if Anti.ObjRLocked(p) or not p:IsA("Player") then
-				return true,1
+			if not p:IsA("Player") then
+				return true, 1
 			else
 				local players = service.Players:GetPlayers()
 				local found = 0
@@ -176,27 +162,6 @@ return function(Vargs)
 			end
 		end;
 
-		GetClassName = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local ran,err = pcall(function()
-				local test = obj[testName]
-			end)
-			if err then
-				local class = err:match(testName.." is not a valid member of (.*)")
-				if class then
-					return class
-				end
-			end
-		end;
-
-		RLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
-		end;
-
-		ObjRLocked = function(obj)
-			return not pcall(function() return obj.GetFullName(obj) end)
-		end;
-
 		AssignName = function()
 			local name = math.random(100000,999999)
 			return name
@@ -209,14 +174,27 @@ return function(Vargs)
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if action:lower() == 'log' then
+					if string.lower(action) == 'log' then
 						-- yay?
-					elseif action:lower() == 'kick' then
+					elseif string.lower(action) == 'kick' then
 						Anti.RemovePlayer(player, info)
+						if Settings.AENotifs == true then
+							for _, plr in pairs(service.Players:GetPlayers()) do
+								if Admin.GetLevel(plr) > Settings.Ranks.Moderators then
+									Remote.MakeGui(plr, "Notification", {
+										Title = "Notification",
+										Message = string.format("%s has been kicked, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
+										Time = 30;
+										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
+									})
+								end
+							end
+						end
+
 						--player:Kick("Adonis; Disconnected by server; \n"..tostring(info))
-					elseif action:lower() == 'kill' then
+					elseif string.lower(action) == 'kill' then
 						player.Character:BreakJoints()
-					elseif action:lower() == 'crash' then
+					elseif string.lower(action) == 'crash' then
 						Remote.Send(player,'Function','Kill')
 						wait(5)
 						pcall(function()
@@ -226,6 +204,19 @@ return function(Vargs)
 						end)
 
 						Anti.RemovePlayer(player, info)
+						if Settings.AENotifs == true then
+							for _, plr in pairs(service.Players:GetPlayers()) do
+								if Admin.GetLevel(plr) > Settings.Ranks.Moderators then
+									Remote.MakeGui(plr, "Notification", {
+										Title = "Notification",
+										Message = string.format("%s was crashed, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
+										Time = 30;
+										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
+									})
+								end
+							end
+						end
+
 					else
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
@@ -241,7 +232,7 @@ return function(Vargs)
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over full info)";
 				Desc = tostring(info);
 				Player = player;
 			})

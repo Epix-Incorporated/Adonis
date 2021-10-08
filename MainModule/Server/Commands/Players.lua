@@ -13,7 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cmds","commands","cmdlist"};
 			Args = {};
-			Description = "Shows you a list of commands";
+			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local commands = Admin.SearchCommands(plr,"all")
@@ -107,9 +107,9 @@ return function(Vargs, env)
 							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
 							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
 							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
-							{Text = "Admin Level: "..cmd.AdminLevel, Desc = "Rank required to run the command"},
-							{Text = "Fun: "..tostring(cmd.Fun), Desc = "Is the command fun?"},
-							{Text = "Hidden: "..tostring(cmd.Hidden), Desc = "Is the command hidden from the command list?"},
+							{Text = "Admin Level: "..cmd.AdminLevel.." ("..Admin.LevelToListName(cmd.AdminLevel)..")", Desc = "Rank required to run the command"},
+							{Text = "Fun: "..tostring(cmd.Fun and "Yes" or "No"), Desc = "Is the command fun?"},
+							{Text = "Hidden: "..tostring(cmd.Hidden and "Yes" or "No"), Desc = "Is the command hidden from the command list?"},
 							{Text = "Description: "..cmd.Description, Desc = "Command description"}
 						};
 						Size = {400,220}
@@ -310,20 +310,6 @@ return function(Vargs, env)
 			end
 		};
 
-		GetPing = {
-			Prefix = Settings.Prefix;
-			Commands = {"getping";};
-			Args = {"player";};
-			Hidden = false;
-			Description = "Shows the target player's ping";
-			Fun = false;
-			AdminLevel = "Helpers";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v,"Ping").."ms",{plr})
-				end
-			end
-		};
 
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
@@ -511,6 +497,7 @@ return function(Vargs, env)
 					'<i>'..Settings.SpecialPrefix..'nonadmins</i> - Non-admins (normal players) in the server';
 					'<i>'..Settings.SpecialPrefix..'others</i> - Everyone except yourself';
 					'<i>'..Settings.SpecialPrefix..'random</i> - A random person in the server';
+					'<i>@USERNAME</i> - Targets a specific player with that exact username';
 					'<i>#NUM</i> - NUM random players in the server <i>'..Settings.Prefix..'ff #5</i> will ff 5 random players.';
 					'<i>'..Settings.SpecialPrefix..'friends</i> - Your friends who are in the server';
 					'<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: '..Settings.Prefix..'kill %raiders';
@@ -771,6 +758,50 @@ return function(Vargs, env)
 					AutoUpdate = 59,
 					Size = {270, 390};
 				})
+			end
+		};
+		
+		ViewProfile = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hasSafeChat
+
+					local gameData = nil
+					if Admin.CheckAdmin(plr) then
+						local level, rank = Admin.GetLevel(v)
+						gameData = {
+							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+						}
+						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							gameData[k] = d
+						end
+					end
+
+					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
+					if privacyMode then hasSafeChat = "[Redacted]" else
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					end
+
+					Remote.MakeGui(plr, "Profile", {
+						Target = v;
+						SafeChat = hasSafeChat;
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						GameData = gameData;
+						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+					})
+				end
 			end
 		};
 

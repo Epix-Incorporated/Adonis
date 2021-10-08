@@ -61,6 +61,7 @@ return function(data)
 	client.UI.Make("Notification",{
 		Title = "New Message";
 		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name);
+		Icon = "rbxassetid://7501175720";
 		Time = false;
 		OnClick = function() window:Ready() end;
 		OnClose = function() window:Destroy() end;

@@ -212,7 +212,7 @@ return function(Vargs, env)
 
 		YouBeenTrolled = {
 			Prefix = "?";
-			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";};--//add more :)
+			Commands = {"trolled";"freebobuc";"freedonor";"adminpls";"enabledonor"};--//add more :)
 			Args = {};
 			Fun = true;
 			Hidden = true;
@@ -422,7 +422,7 @@ return function(Vargs, env)
 						audio.Volume = 0.5
 						audio:Play()
 						wait(2)
-						for i,part in next,Variables.FrozenObjects do
+						for i,part in pairs(Variables.FrozenObjects) do
 							part.Anchored = false
 						end
 
@@ -491,7 +491,7 @@ return function(Vargs, env)
 				if not speed or not tonumber(speed) then
 					speed = 1000
 				end
-				for i,v in next,service.GetPlayers(plr,args[1]) do
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","Dizzy",tonumber(speed))
 				end
 			end
@@ -983,7 +983,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,p in next,players do
+				for i,p in pairs(players) do
 					service.TrackTask("Thread: Thanos", function()
 						for t = 0.1,1.1,0.05 do
 							if p.Character then
@@ -1110,7 +1110,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for i,p in next,service.GetPlayers(plr,args[1]) do
+				for i,p in ipairs(service.GetPlayers(plr,args[1])) do
 					service.TrackTask("Thread: UFO", function()
 						local char = p.Character
 						local torso = p.Character:FindFirstChild("HumanoidRootPart")
@@ -1184,7 +1184,7 @@ return function(Vargs, env)
 									torso.Anchored = true
 									tween:Play()
 
-									for i,v in next,p.Character:GetChildren() do
+									for i,v in ipairs(p.Character:GetChildren()) do
 										if v:IsA("BasePart") then
 											service.TweenService:Create(v, TweenInfo.new(1), {
 												Transparency = 1
@@ -1216,7 +1216,7 @@ return function(Vargs, env)
 										end
 									]])
 
-									for i,v in next,p.Character:GetChildren() do
+									for i,v in ipairs(p.Character:GetChildren()) do
 										if v:IsA("BasePart") then
 											v.Anchored = true
 											v.Transparency = 1
@@ -1402,7 +1402,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for i,p in next,service.GetPlayers(plr,args[1]) do
+				for i,p in ipairs(service.GetPlayers(plr,args[1])) do
 					spawn(function()
 						local char = p.Character
 						local torso = p.Character:FindFirstChild("HumanoidRootPart")
@@ -1674,7 +1674,7 @@ return function(Vargs, env)
 				local nukes = {}
 				local partsHit = {}
 
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in ipairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -1714,7 +1714,7 @@ return function(Vargs, env)
 				end
 
 				for i = 1, 333 do
-					for i,v in next,nukes do
+					for i,v in pairs(nukes) do
 						local curPos = v.CFrame
 						v.Size = v.Size + Vector3.new(3, 3, 3)
 						v.CFrame = curPos
@@ -1722,7 +1722,7 @@ return function(Vargs, env)
 					wait(1/44)
 				end
 
-				for i,v in next,nukes do
+				for i,v in pairs(nukes) do
 					v:Destroy()
 				end
 
@@ -1763,7 +1763,7 @@ return function(Vargs, env)
 						partsHit = nil
 						finished = true
 					elseif partsHit and objs and Variables.WildFire ~= partsHit then
-						for i,v in next,objs do
+						for i,v in pairs(objs) do
 							v:Destroy()
 						end
 
@@ -1813,7 +1813,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i,v in next,Functions.GetPlayers(plr, args[1]) do
+				for i,v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -2012,7 +2012,7 @@ return function(Vargs, env)
 						k.Name='Epix Puke'
 						Routine(function()
 							repeat
-								wait(0.15)
+								wait(0.07)
 								local p = service.New("Part",v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2059,7 +2059,7 @@ return function(Vargs, env)
 								end)
 							until run==false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head'))
 						end)
-						wait(10)
+						wait(12)
 						run = false
 						k:Destroy()
 					end)
@@ -2703,7 +2703,7 @@ return function(Vargs, env)
 
 							torso.Transparency = 1
 
-							for i,v in next,torso:GetChildren() do
+							for i,v in ipairs(torso:GetChildren()) do
 								if v:IsA'Motor6D' then
 									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
 								end
@@ -4813,11 +4813,12 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character.PrimaryPart then
-						local Explosion = service.New("Explosion")
-						Explosion.Position = v.Character.PrimaryPart.Position
-						Explosion.BlastRadius = args[2] or 20
-						Explosion.Archivable = false
-						Explosion.Parent = workspace.Terrain
+						service.New("Explosion", {
+							Position = v.Character.PrimaryPart.Position,
+							BlastRadius = args[2] or 20,
+							Archivable = false,
+							Parent = workspace.Terrain
+						})
 					end
 				end
 			end

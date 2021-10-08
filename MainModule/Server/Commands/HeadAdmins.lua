@@ -11,28 +11,27 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tban";"timedban";"timeban";"tempban";"temporaryban"};
-			Args = {"player";"number<s/m/h/d>";};
+			Commands = {"tempban";"timedban";"timeban";"tban";"temporaryban"};
+			Args = {"player";"number<s/m/h/d>";"reason"};
 			Hidden = false;
-			Filter = true;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local time = args[2]
-
-				if time:lower():sub(#time)=='s' then
-					time = time:sub(1,#time-1)
+				local lower, sub = string.lower, string.sub
+				if sub(lower(time), #time)=='s' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)
-				elseif time:lower():sub(#time)=='m' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='m' then
+					time = sub(time, 1, #time-1)
 					time = tonumber(time)*60
-				elseif time:lower():sub(#time)=='h' then
-					time = time:sub(1,#time-1)
-					time = (tonumber(time)*60)*60
-				elseif time:lower():sub(#time)=='d' then
-					time = time:sub(1,#time-1)
+				elseif sub(lower(time), #time)=='h' then
+					time = sub(time, 1, #time-1)
+					time = ((time)*60)*60
+				elseif sub(lower(time), #time)=='d' then
+					time = sub(time, 1, #time-1)
 					time = ((tonumber(time)*60)*60)*24
 				end
 
@@ -49,16 +48,18 @@ return function(Vargs, env)
 				}) do
 					if level > Admin.GetLevel(v) then
 						local endTime = os.time() + tonumber(time)
-
+						local reason = service.Filter(args[3], plr, v) or "No reason provided";
 						local data = {
 							Name = v.Name;
 							UserId = v.UserId;
 							EndTime = endTime;
+							Reason = reason;
 						}
 
 						table.insert(timebans, data)
 
-						v:Kick("\nBanned until ".. service.FormatTime(endTime, true))
+						-- Please make a Admin.AddTimeBan function like Admin.AddBan
+						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, true))
 						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...",{plr})
 
 						Core.DoSave({
@@ -67,7 +68,7 @@ return function(Vargs, env)
 							Value = data;
 						})
 
-						Functions.Hint("Banned "..tostring(v.Name).." for "..tostring(time),{plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for ".. tostring(time),{plr})
 					end
 				end
 			end
@@ -102,7 +103,7 @@ return function(Vargs, env)
 
 		PermenantBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"permban", "permenantban", "pban", "gameban", "saveban", "databan"};
+			Commands = {"permban", "permanentban", "pban", "gameban", "saveban", "databan"};
 			Args = {"player", "reason"};
 			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
@@ -129,7 +130,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"unpermban", "unpermenantban", "unpban", "ungameban", "saveunban", "undataban"};
+			Commands = {"unpermban", "unpermanentban", "unpban", "ungameban", "saveunban", "undataban"};
 			Args = {"player";};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
@@ -159,6 +160,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now an admin',{plr})
@@ -187,6 +189,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
+							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a temp admin',{plr})
@@ -326,11 +329,10 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
 				local objects = service.GetAdonisObjects()
-
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					v:Destroy()
-					table.remove(objects, i)
 				end
+				table.clear(objects)
 
 				--for i,v in next,Functions.GetPlayers() do
 				--	Remote.Send(v, "Function", "ClearAllInstances")
@@ -424,7 +426,7 @@ return function(Vargs, env)
 
 		FullShutdown = {
 			Prefix = Settings.Prefix;
-			Commands = {"fullshutdown"};
+			Commands = {"fullshutdown","globalshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
 			PanicMode = true;

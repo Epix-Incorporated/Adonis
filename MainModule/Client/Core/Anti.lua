@@ -61,7 +61,7 @@ return function()
 				wait(5)
 				--Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
-				Anti.Detected("kick","Roblox Locked")
+				Anti.Detected("kick","Player is Roblox Locked")
 			end
 		end)
 
@@ -199,7 +199,7 @@ return function()
 				end
 
 				if service.Player.userId ~= realId then
-					Detected("log", "Local userID does not match server userID")
+					Detected("log", "Local UserID does not match server UserID")
 				end
 			end)
 		end;
@@ -207,8 +207,9 @@ return function()
 		AntiGui = function() --// Future
 			service.Player.DescendantAdded:Connect(function(c)
 				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
+					local d = c.Name
 					c:Destroy()
-					Detected("log", "Unknown GUI detected and destroyed")
+					Detected("log", "Unknown GUI detected and destroyed: "..d)
 				end
 			end)
 		end;
@@ -223,7 +224,7 @@ return function()
 						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 							t.Active = false
 							t:Destroy()
-							Detected('log','HopperBin detected (Building Tools)')
+							Detected('log','HopperBin Detected (BTools)')
 						end
 					end
 				end
@@ -248,7 +249,7 @@ return function()
 					end
 					if rawequal(new, Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill", "Noclipping")
+						Detected("kill", "NoClipping")
 						event:Disconnect()
 					end
 				end)
@@ -256,7 +257,7 @@ return function()
 				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
-						Detected("kill", "Noclipping")
+						Detected("kill", "NoClipping")
 					end
 				end
 			end
@@ -300,15 +301,14 @@ return function()
 			})
 
 			local lookFor = {
-				--'stigma';
-				--'sevenscript';
-				--"a".."ssh".."ax";
-				--"a".."ssh".."urt";
-				--'elysian';
 				'current identity is 0';
 				'gui made by kujo';
 				"tetanus reloaded hooked";
-				--"brackhub";
+				"hookmetamethod";
+				"hookfunction";
+				"HttpGet";
+				"^Chunk %w+, at Line %d+";
+				"syn.";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
@@ -318,7 +318,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message),string.lower(v)) and not string.find(string.lower(Message),"failed to load") then
+					if string.find(string.lower(Message),string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message),"failed to load") then
 						return true
 					end
 				end
@@ -330,7 +330,7 @@ return function()
 						Detected("crash","Disallowed Services Detected")
 					end
 				end) then
-					Detected("kick","Finding Error")
+					Detected("kick","Disallowed Services Finding Error")
 				end
 			end
 
@@ -346,7 +346,7 @@ return function()
 			local function checkTool(t)
 				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("log","Building tools detected; "..tostring(t.BinType))
+						Detected("log","Building Tools detected; "..tostring(t.BinType))
 					end
 				end
 			end
@@ -401,7 +401,7 @@ return function()
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
 				if Script and Script=='tpircsnaisyle'then
-					Detected("kick", "Elysian")
+					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
 					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
 				elseif not Script or ((not Trace or Trace == "")) then
@@ -475,14 +475,14 @@ return function()
 
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
-							Detected("crash", "Exploit detected")
+							Detected("crash", "Exploit detected; "..v.message)
 						end
 					end
 				end
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
-					local func,err = loadstring("print('LOADSTRING TEST')")
+					local func,err = loadstring("print('LolloDev5123 was here')")
 				end)
 				if ran then
 					Detected("crash", "Exploit detected; Loadstring usable")
@@ -536,13 +536,7 @@ return function()
 				return obj.GetFullName(obj)
 			end)
 		end;
-
-		ObjRLocked = function(obj)
-			return not pcall(function()
-				return obj.GetFullName(obj)
-			end)
-		end;
-
+		
 		CoreRLocked = function(obj)
 			local testName = tostring(math.random()..math.random())
 			local _,err = pcall(function()

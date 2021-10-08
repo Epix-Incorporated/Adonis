@@ -28,6 +28,7 @@ return function(Vargs)
 		Remote.MakeGui(p,"Notification",{
 			Title = "Urgent Message!";
 			Message = "Click to view messages";
+			Icon = "rbxassetid://7495456913";
 			Time = 20;
 			OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand',':adonisalerts')");
 		})
@@ -59,7 +60,8 @@ return function(Vargs)
 		AdminLevel = "Players";
 		Function = function(plr,args)
 			Remote.MakeGui(plr,"List",{
-				Title = "~URGENT MESSAGES~ [Recent: ".. LastDateTime .."]",
+				Title = "URGENT MESSAGES [Recent: ".. LastDateTime .."]",
+				Icon = "rbxassetid://7467273592",
 				Table = Messages,
 				Font = "Code",
 				PageSize = 100;

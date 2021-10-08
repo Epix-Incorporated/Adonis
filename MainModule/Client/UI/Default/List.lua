@@ -110,9 +110,9 @@ return function(data)
 
 	function doSearch(tab, text)
 		local found = {}
-		text = tostring(text):lower()
-		for i,v in next,tab do
-			if text == "" or (type(v) == "string" and v:lower():find(text)) or (type(v) == "table" and ((v.Text and tostring(v.Text):lower():find(text)) or (v.Filter and v.Filter:lower():find(text)))) then
+		text = string.lower(tostring(text))
+		for i,v in pairs(tab) do
+			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)
 			end
 		end
@@ -126,20 +126,27 @@ return function(data)
 		if not genDebounce then
 			genDebounce = true;
 
-			if search.Text ~= "Search" and search.Text ~= "" then
+			if search.Text ~= "" then
 				PageCounter = 1;
 				gotList = getListTab(doSearch(Tab, search.Text));
 			else
 				PageCounter = PageNumber;
-				search.Text = "Search"
+				search.Text = ""
 				gotList = getListTab(Tab);
 			end
 
 			if PagesEnabled and #gotList > PageSize then
+			
+
 				scroller.Size = UDim2.new(1,-10,1,-60);
 				nextPageButton.Visible = true;
 				pageCounterLabel.Visible = true;
-				pageCounterLabel.Text = "Page: ".. PageCounter;
+				if currentListTab then
+					local maxPages = math.ceil(#currentListTab/PageSize);
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+				else
+					pageCounterLabel.Text = "Page: ".. PageCounter;
+				end
 
 				if PageCounter > 1 then
 					lastPageButton.Visible = true;
@@ -153,7 +160,7 @@ return function(data)
 				pageCounterLabel.Visible = false;
 			end
 
-			for i,v in next,scroller:GetChildren() do
+			for i,v in ipairs(scroller:GetChildren()) do
 				v:Destroy()
 			end
 
@@ -172,6 +179,7 @@ return function(data)
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
 			if Tab then
+				currentListTab = Tab;
 				genList(Tab)
 			end
 		end;
@@ -204,7 +212,7 @@ return function(data)
 	nextPageButton = window:Add("TextButton", {
 		Size = UDim2.new(0, 50, 0, 20);
 		Position = UDim2.new(1, -60, 1, -25);
-		Text = "Next";
+		Text = ">";
 		Visible = false;
 		Debounce = true;
 		OnClick = function()
@@ -223,7 +231,7 @@ return function(data)
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter+1, 1, maxPages);
 
-					pageCounterLabel.Text = "Page: ".. PageCounter;
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
 
 					if PageCounter > 1 then
 						lastPageButton.Visible = true;
@@ -255,7 +263,7 @@ return function(data)
 	lastPageButton = window:Add("TextButton", {
 		Size = UDim2.new(0, 50, 0, 20);
 		Position = UDim2.new(0, 10, 1, -25);
-		Text = "Last";
+		Text = "<";
 		Visible = false;
 		Debounce = true;
 		OnClick = function()
@@ -274,7 +282,7 @@ return function(data)
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter-1, 1, maxPages);
 
-					pageCounterLabel.Text = "Page: ".. PageCounter;
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
 
 					if PageCounter == 1 then
 						lastPageButton.Visible = false;
@@ -315,18 +323,20 @@ return function(data)
 		BackgroundTransparency = 0.5;
 		BorderSizePixel = 0;
 		TextColor3 = Color3.new(1, 1, 1);
-		Text = "Search";
+		Text = "";
 		PlaceholderText = "Search";
 		TextStrokeTransparency = 0.8;
 	})
 
-	search.FocusLost:Connect(function(enter)
+	search:GetPropertyChangedSignal("Text"):Connect(function()
+		currentListTab = Tab;
 		genList(Tab)
 	end)
 
 	--window:SetPosition(UDim2.new(0.25, 0, 0.5, -window.AbsoluteSize.Y/2))
 	gTable = window.gTable
 	window:Ready()
+	currentListTab = Tab;
 	genList(Tab)
 
 	if Update and AutoUpdate then
