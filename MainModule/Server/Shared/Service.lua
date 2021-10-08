@@ -735,6 +735,10 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return new or "Filter Error"
 		end;
 
+		EscapeSpecialCharacters = function(x)
+		   return x:gsub("([^%w])", "%%%1")
+		end;
+
 		MetaFunc = function(func)
 	    return service.NewProxy {
 	        __call = function(tab,...)

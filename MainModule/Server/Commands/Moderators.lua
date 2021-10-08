@@ -393,8 +393,44 @@ return function(Vargs, env)
 							Message = args[2];
 						})
 
-						Remote.MakeGui(plr, "Hint", {
+						Remote.MakeGui(p,"Notification",{
+							Title = "Notification";
 							Message = "Warned ".. v.Name;
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
+						})
+					end
+				end
+			end
+		};
+
+		RemoveWarning = {
+			Prefix = Settings.Prefix;
+			Commands = {"removewarning"};
+			Args = {"player","message";};
+			Filter = false;
+			Description = "Removes the specified warning from the target player(s)";
+			AdminLevel = "Moderators";
+			Function = function(plr, args, data)
+				assert(args[1] and args[2], "Argument missing or nil")
+
+				local plrLevel = data.PlayerData.Level
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local targLevel = Admin.GetLevel(v)
+					if plrLevel > targLevel then
+						local data = Core.GetPlayer(v)
+
+						for i,v in ipairs(data.Warnings) do
+							if v.Message:lower() == args[2]:lower() then
+								table.remove(data.Warnings, i)
+							end
+						end
+
+						Remote.MakeGui(p,"Notification",{
+							Title = "Notification";
+							Message = "Removed warning from ".. v.Name;
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
 						})
 					end
 				end
@@ -5256,7 +5292,7 @@ return function(Vargs, env)
 							if not v or v.Parent ~= service.Players then
 								service.StopLoop(UserId .. "LOOPHEAL")
 							end
-	
+
 							local Character = v.Character
 							if Character then
 								local Humanoid = Character:FindFirstChildOfClass("Humanoid")

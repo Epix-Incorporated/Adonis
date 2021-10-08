@@ -1296,18 +1296,30 @@ return function(Vargs, env)
 				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
 				local level = data.PlayerData.Level
+				local reason = string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+
 				for _, v in pairs(service.GetPlayers(plr,args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = true;
-					UseFakePlayer = true;
+						DontError = false;
+						IsServer = false;
+						IsKicking = true;
+						UseFakePlayer = true;
 					})) do
+
 					if level > Admin.GetLevel(v) then
-						trello.makeCard(list.id,
+						trello.makeCard(
+							list.id,
 							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), tostring(v.UserId)),
-							string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+							reason
 						)
-						Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
+
+						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
+						pcall(function() plr:Kick(reason) end)
+						Remote.MakeGui(p,"Notification",{
+							Title = "Notification";
+							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
+						})
 					end
 				end
 
