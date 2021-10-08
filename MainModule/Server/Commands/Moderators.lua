@@ -1973,7 +1973,7 @@ return function(Vargs, env)
 							TextXAlignment = "Left";
 							Text = "  "..v.Name;
 							ToolTip = v:GetFullName();
-							ZIndex = 1;
+							ZIndex = 2;
 							Children = {
 								{
 									Class = "TextButton";
