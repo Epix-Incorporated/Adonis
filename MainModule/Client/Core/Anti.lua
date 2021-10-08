@@ -308,7 +308,7 @@ return function()
 				"hookfunction";
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
-				"syn.";
+				"syn%.";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
