@@ -110,9 +110,9 @@ return function(data)
 
 	function doSearch(tab, text)
 		local found = {}
-		text = tostring(text):lower()
-		for i,v in next,tab do
-			if text == "" or (type(v) == "string" and v:lower():find(text)) or (type(v) == "table" and ((v.Text and tostring(v.Text):lower():find(text)) or (v.Filter and v.Filter:lower():find(text)))) then
+		text = string.lower(tostring(text))
+		for i,v in pairs(tab) do
+			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)
 			end
 		end
@@ -160,7 +160,7 @@ return function(data)
 				pageCounterLabel.Visible = false;
 			end
 
-			for i,v in next,scroller:GetChildren() do
+			for i,v in ipairs(scroller:GetChildren()) do
 				v:Destroy()
 			end
 

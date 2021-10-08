@@ -1290,27 +1290,29 @@ return function(Vargs, env)
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
 
-				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then server.Functions.Hint('Trello has not been configured in settings', {plr}) return end
+				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then Functions.Hint('Trello has not been configured in settings', {plr}) return end
 
 				local trello = HTTP.Trello.API(appkey,token)
 				local lists = trello.getLists(board)
 				local list = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 
 				local level = data.PlayerData.Level
-				for i,v in pairs(service.GetPlayers(plr,args[1], {
+				for _, v in pairs(service.GetPlayers(plr,args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					}))do
+					})) do
 					if level > Admin.GetLevel(v) then
-						trello.makeCard(list.id,tostring(v)..":".. tostring(v.UserId),
-							"Administrator: " .. tostring(plr) ..
-								"\nReason: ".. (args[2] or "N/A"))
-						HTTP.Trello.Update()
-						Functions.Hint("Trello banned ".. tostring(v),{plr})
+						trello.makeCard(list.id,
+							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), tostring(v.UserId)),
+							string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+						)
+						Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
 					end
 				end
+
+				HTTP.Trello.Update()
 			end;
 		};
 

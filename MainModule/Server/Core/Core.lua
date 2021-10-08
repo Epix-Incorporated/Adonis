@@ -103,13 +103,14 @@ return function(Vargs)
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
-		CrossServer = function() return false end;
+		CrossServer = function(...) return false end;
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		PanicMode = false;
 		FixingEvent = false;
 		ScriptCache = {};
 		Connections = {};
+		BytecodeCache = {};
 		LastEventValue = 1;
 
 		Variables = {
@@ -129,8 +130,10 @@ return function(Vargs)
 		};
 
 		Panic = function(reason)
-			local hint = Instance.new("Hint", workspace)
-			hint.Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~"
+			service.New("Hint", {
+				Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~",
+				Parent = workspace,
+			})
 			Core.PanicMode = true;
 
 			warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;")
@@ -521,7 +524,9 @@ return function(Vargs)
 		end;
 
 		Bytecode = function(str)
-			local f,buff = Core.Loadstring(str)
+			if Core.BytecodeCache[str] then return Core.BytecodeCache[str] end
+			local f, buff = Core.Loadstring(str)
+			Core.BytecodeCache[str] = buff
 			return buff
 		end;
 
@@ -539,9 +544,11 @@ return function(Vargs)
 				ScriptType.Name = "[Adonis] ".. type
 
 				if allowCodes then
-					local exec = Instance.new("StringValue",ScriptType)
-					exec.Name = "Execute"
-					exec.Value = execCode
+					service.New("StringValue", {
+						Name = "Execute",
+						Value = execCode,
+						Parent = ScriptType,
+					})
 				end
 
 				local wrapped = Core.RegisterScript {
@@ -631,7 +638,7 @@ return function(Vargs)
 
 					Core.SetData(key, data)
 					Logs.AddLog(Logs.Script,{
-						Text = "Saved data for "..tostring(p);
+						Text = "Saved data for ".. p.Name;
 						Desc = "Player data was saved to the datastore";
 					})
 
@@ -641,11 +648,12 @@ return function(Vargs)
 		end;
 
 		SaveAllPlayerData = function(queueWaitTime)
+			local TrackTask = service.TrackTask
 			for key,pdata in pairs(Core.PlayerData) do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
-					service.TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
+					TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
 				end
 			end
 			--[[ --// OLD METHOD (Kept in case this messes anything up)
@@ -663,7 +671,7 @@ return function(Vargs)
 
 		GetDataStore = function()
 			local ran,store = pcall(function()
-				return service.DataStoreService:GetDataStore(Settings.DataStore:sub(1,50),"Adonis")
+				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
 			return ran and store
@@ -741,9 +749,10 @@ return function(Vargs)
 						local ran, ret = Core.DS_WriteLimiter("Write", Core.DataStore.SetAsync, Core.DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
+							return;
 						else
 							logError("DataStore SetAsync Failed: ".. tostring(ret));
-							error(ret);
+							return error(ret);
 						end
 
 						task.wait(6)
@@ -777,7 +786,7 @@ return function(Vargs)
 					if not ran then
 						err = ret;
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
-						error(ret);
+						return error(ret);
 					end
 
 					wait(6)

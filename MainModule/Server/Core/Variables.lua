@@ -43,6 +43,7 @@ return function(Vargs)
 		Logs:AddLog("Script", "Finished Variables AfterInit");
 	end
 
+	local Lighting = service.Lighting
 	server.Variables = {
 		Init = Init;
 		RunAfterInit = AfterInit;
@@ -57,38 +58,38 @@ return function(Vargs)
 		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605"}; --// Strings are items, numbers are gamepasses
 		WebPanel_Initiated = false;
 		LightingSettings = {
-			Ambient = service.Lighting.Ambient;
-			OutdoorAmbient = service.Lighting.OutdoorAmbient;
-			Brightness = service.Lighting.Brightness;
-			TimeOfDay = service.Lighting.TimeOfDay;
-			FogColor = service.Lighting.FogColor;
-			FogEnd = service.Lighting.FogEnd;
-			FogStart = service.Lighting.FogStart;
-			GlobalShadows = service.Lighting.GlobalShadows;
-			Outlines = service.Lighting.Outlines;
-			ShadowColor = service.Lighting.ShadowColor;
-			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
-			ColorShift_Top = service.Lighting.ColorShift_Top;
-			GeographicLatitude = service.Lighting.GeographicLatitude;
-			Name = service.Lighting.Name;
+			Ambient = Lighting.Ambient;
+			OutdoorAmbient = Lighting.OutdoorAmbient;
+			Brightness = Lighting.Brightness;
+			TimeOfDay = Lighting.TimeOfDay;
+			FogColor = Lighting.FogColor;
+			FogEnd = Lighting.FogEnd;
+			FogStart = Lighting.FogStart;
+			GlobalShadows = Lighting.GlobalShadows;
+			Outlines = Lighting.Outlines;
+			ShadowColor = Lighting.ShadowColor;
+			ColorShift_Bottom = Lighting.ColorShift_Bottom;
+			ColorShift_Top = Lighting.ColorShift_Top;
+			GeographicLatitude = Lighting.GeographicLatitude;
+			Name = Lighting.Name;
 		};
 
 		OriginalLightingSettings = {
-			Ambient = service.Lighting.Ambient;
-			OutdoorAmbient = service.Lighting.OutdoorAmbient;
-			Brightness = service.Lighting.Brightness;
-			TimeOfDay = service.Lighting.TimeOfDay;
-			FogColor = service.Lighting.FogColor;
-			FogEnd = service.Lighting.FogEnd;
-			FogStart = service.Lighting.FogStart;
-			GlobalShadows = service.Lighting.GlobalShadows;
-			Outlines = service.Lighting.Outlines;
-			ShadowColor = service.Lighting.ShadowColor;
-			ColorShift_Bottom = service.Lighting.ColorShift_Bottom;
-			ColorShift_Top = service.Lighting.ColorShift_Top;
-			GeographicLatitude = service.Lighting.GeographicLatitude;
-			Name = service.Lighting.Name;
-			Sky = service.Lighting:FindFirstChildOfClass("Sky") and service.Lighting:FindFirstChildOfClass("Sky"):Clone();
+			Ambient = Lighting.Ambient;
+			OutdoorAmbient = Lighting.OutdoorAmbient;
+			Brightness = Lighting.Brightness;
+			TimeOfDay = Lighting.TimeOfDay;
+			FogColor = Lighting.FogColor;
+			FogEnd = Lighting.FogEnd;
+			FogStart = Lighting.FogStart;
+			GlobalShadows = Lighting.GlobalShadows;
+			Outlines = Lighting.Outlines;
+			ShadowColor = Lighting.ShadowColor;
+			ColorShift_Bottom = Lighting.ColorShift_Bottom;
+			ColorShift_Top = Lighting.ColorShift_Top;
+			GeographicLatitude = Lighting.GeographicLatitude;
+			Name = Lighting.Name;
+			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
 
 		HelpRequests = {};
