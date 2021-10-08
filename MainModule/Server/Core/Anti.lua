@@ -26,6 +26,7 @@ return function(Vargs)
 
 		--// Client check
 		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
+
 		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
 	end
@@ -173,9 +174,9 @@ return function(Vargs)
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if action:lower() == 'log' then
+					if string.lower(action) == 'log' then
 						-- yay?
-					elseif action:lower() == 'kick' then
+					elseif string.lower(action) == 'kick' then
 						Anti.RemovePlayer(player, info)
 						if Settings.AENotifs == true then
 							for _, plr in pairs(service.Players:GetPlayers()) do
@@ -189,11 +190,11 @@ return function(Vargs)
 								end
 							end
 						end
-						
+
 						--player:Kick("Adonis; Disconnected by server; \n"..tostring(info))
-					elseif action:lower() == 'kill' then
+					elseif string.lower(action) == 'kill' then
 						player.Character:BreakJoints()
-					elseif action:lower() == 'crash' then
+					elseif string.lower(action) == 'crash' then
 						Remote.Send(player,'Function','Kill')
 						wait(5)
 						pcall(function()
@@ -215,7 +216,7 @@ return function(Vargs)
 								end
 							end
 						end
-						
+
 					else
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
@@ -231,7 +232,7 @@ return function(Vargs)
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(info:sub(1, 50)) .. " (Mouse over full info)";
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over full info)";
 				Desc = tostring(info);
 				Player = player;
 			})

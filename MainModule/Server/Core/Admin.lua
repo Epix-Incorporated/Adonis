@@ -164,7 +164,7 @@ return function(Vargs)
 		local numArgs = 0;
 
 		--local cmdArgs =
-		for arg in aliasCmd:gmatch("<(%S+)>") do
+		for arg in string.gmatch(aliasCmd, "<(%S+)>") do
 			if arg ~= "" and arg ~= " " then
 				local arg = "<".. arg ..">"
 				if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
@@ -181,7 +181,7 @@ return function(Vargs)
 		for i,argType in next,argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = out:gsub(argType, replaceWith)
+				out = string.gsub(out, argType, replaceWith)
 			end
 		end
 
@@ -206,7 +206,7 @@ return function(Vargs)
 		DoHideChatCmd = function(p, message, data)
 			local pData = data or Core.GetPlayer(p);
 			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and 
+				if Variables.BlankPrefix and
 					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
 					local isCMD = Admin.GetCommand(message)
 					if isCMD then
@@ -225,7 +225,7 @@ return function(Vargs)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
-				for i,v in next,groups do
+				for i,v in ipairs(groups) do
 					if (isID and group == v.Id) or (not isID and group == v.Name) then
 						return v
 					end
@@ -258,8 +258,13 @@ return function(Vargs)
 		DoCheck = function(p, check, banCheck)
 			local pType = type(p)
 			local cType = type(check)
+
+			local lower = string.lower
+			local match = string.match
+			local sub = string.sub
+
 			if pType == "string" and cType == "string" then
-				if p == check or check:lower():sub(1,#tostring(p)) == p:lower() then
+				if p == check or sub(lower(check), 1, #tostring(p)) == lower(p) then
 					return true
 				end
 			elseif pType == "number" and (cType == "number" or tonumber(check)) then
@@ -272,9 +277,9 @@ return function(Vargs)
 				end
 			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
 				local isGood = p and p.Parent == service.Players
-				if isGood and check:match("^Group:(.*):(.*)") then
-					local sGroup,sRank = check:match("^Group:(.*):(.*)")
-					local group,rank = tonumber(sGroup),tonumber(sRank)
+				if isGood and match(check, "^Group:(.*):(.*)") then
+					local sGroup,sRank = match(check, "^Group:(.*):(.*)")
+					local group, rank = tonumber(sGroup), tonumber(sRank)
 					if group and rank then
 						local pGroup = Admin.GetPlayerGroup(p, group)
 						if pGroup then
@@ -284,30 +289,30 @@ return function(Vargs)
 							end
 						end
 					end
-				elseif isGood and check:sub(1, 6) == "Group:" then --check:match("^Group:(.*)") then
-					local group = tonumber(check:match("^Group:(.*)"))
+				elseif isGood and sub(check, 1, 6) == "Group:" then --check:match("^Group:(.*)") then
+					local group = tonumber(match(check, "^Group:(.*)"))
 					if group then
 						local pGroup = Admin.GetPlayerGroup(p, group)
 						if pGroup then
 							return true
 						end
 					end
-				elseif isGood and check:sub(1, 5) == "Item:" then --check:match("^Item:(.*)") then
-					local item = tonumber(check:match("^Item:(.*)"))
+				elseif isGood and sub(check, 1, 5) == "Item:" then --check:match("^Item:(.*)") then
+					local item = tonumber(match(check, "^Item:(.*)"))
 					if item then
 						if service.MarketPlace:PlayerOwnsAsset(p, item) then
 							return true
 						end
 					end
-				elseif p and check:sub(1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
-					local item = tonumber(check:match("^GamePass:(.*)"))
+				elseif p and sub(check, 1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
+					local item = tonumber(match(check, "^GamePass:(.*)"))
 					if item then
 						if service.MarketPlace:UserOwnsGamePassAsync(p.UserId, item) then
 							return true
 						end
 					end
-				elseif check:match("^(.*):(.*)") then
-					local player, sUserid = check:match("^(.*):(.*)")
+				elseif match(check, "^(.*):(.*)") then
+					local player, sUserid = match(check, "^(.*):(.*)")
 					local userid = tonumber(sUserid)
 					if player and userid and p.Name == player or p.userId == userid then
 						return true
@@ -605,7 +610,7 @@ return function(Vargs)
 				local index,value
 
 				for ind,ent in ipairs(list) do
-					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or ent:lower()==p.Name:lower() or ent:lower()==(p.Name..":"..p.userId):lower()) then
+					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.userId)) then
 						index = ind
 						value = ent
 					end
@@ -732,7 +737,7 @@ return function(Vargs)
 			end
 
 			if type(check) == "table" then
-					if type(name) == "string" and check.Name and check.Name:lower() == name:lower() then
+					if type(name) == "string" and check.Name and string.lower(check.Name) == string.lower(name) then
 						return true;
 					elseif id and check.UserId and check.UserId == id then
 						return true;
@@ -754,7 +759,7 @@ return function(Vargs)
 
 		RemoveBan = function(name, doSave)
 			local ret
-			for i,v in next,Settings.Banned do
+			for i,v in pairs(Settings.Banned) do
 				if Admin.DoBanCheck(name, v) then
 					table.remove(Settings.Banned, i)
 					ret = v
@@ -803,6 +808,7 @@ return function(Vargs)
 						Message = error;
 						Color = Color3.new(1,0,0)
 					})
+					return;
 				end
 			end
 		end;
@@ -818,7 +824,7 @@ return function(Vargs)
 					isDonor = false;
 				}})
 				if error then
-					error = error:match(":(.+)$") or "Unknown error"
+					error = string.match(error, ":(.+)$") or "Unknown error"
 					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
 				end
 			end
@@ -944,16 +950,16 @@ return function(Vargs)
 		end;
 
 		GetArgs = function(msg,num,...)
-			local args = Functions.Split((msg:match("^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
-			for i,v in next,{...} do table.insert(args,v) end
+			local args = Functions.Split((string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
+			for i,v in pairs({...}) do table.insert(args,v) end
 			return args
 		end;
 
 		AliasFormat = function(aliases, msg)
 			if aliases then
-				for alias,cmd in next,aliases do
+				for alias,cmd in pairs(aliases) do
 					if not Admin.CheckAliasBlacklist(alias) then
-						if msg:match("^"..alias) or msg:match("%s".. alias) then
+						if string.match(msg, "^"..alias) or string.match(msg, "%s".. alias) then
 							msg = FormatAliasArgs(alias, cmd, msg);
 						end
 					end

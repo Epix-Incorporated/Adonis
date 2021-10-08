@@ -25,16 +25,15 @@ local WaitTime = 10
 local RateLimit = function()
 	if Requests >= MaxRequests then
 		warn("Trello RateLimit Reached! Waiting 10 seconds...")
-		wait(WaitTime)
+		task.wait(WaitTime)
 		Requests = 0
 	end
 	Requests += 1
-	coroutine.wrap(function()
-		wait(WaitTime/2)
+	task.delay(WaitTime/2, function()
 		if #Queue == 0 then
 			Requests = 0
 		end
-	end)()
+	end)
 end
 
 local HttpFunctions; HttpFunctions = {
@@ -48,10 +47,14 @@ local HttpFunctions; HttpFunctions = {
 
 	--// Same as the GetRandom() function
 	GenerateRequestID = function()
-		local Len = math.random(5,10)
+		local format = string.format
+		local random = math.random
+
+		local Len = random(5,10)
+
 		local Res = {};
 		for Idx = 1, Len do
-			Res[Idx] = string.format('%02x', math.random(126));
+			Res[Idx] = format('%02x', random(126));
 		end;
 		return table.concat(Res)
 	end;
@@ -152,7 +155,7 @@ local HttpFunctions; HttpFunctions = {
 	end;
 
 	Trim = function(str)
-		return str:match("^%s*(.-)%s*$")
+		return string.match(str, "^%s*(.-)%s*$")
 	end;
 
 	GetListObject = function(Lists, Name)
@@ -160,12 +163,12 @@ local HttpFunctions; HttpFunctions = {
 		for _, List in pairs(Lists) do
 			if type(Name)=="table" then
 				for _, Name in pairs(Name) do
-					if HttpFunctions.Trim(List.name):lower() == HttpFunctions.Trim(Name):lower() then
+					if string.lower(HttpFunctions.Trim(List.name)) == string.lower( HttpFunctions.Trim(Name)) then
 						return List
 					end
 				end
 			elseif type(Name)=="string" then
-				if HttpFunctions.Trim(List.name):lower() == HttpFunctions.Trim(Name):lower() then
+				if string.lower(HttpFunctions.Trim(List.name)) == string.lower(HttpFunctions.Trim(Name)) then
 					return List
 				end
 			end
@@ -179,14 +182,15 @@ return function(AppKey, Token)
 		return
 	end
 
-	local AppKey = AppKey or ""
-	local Token = Token or ""
+	AppKey = AppKey or ""
+	Token = Token or ""
+
 	local Base = "https://api.trello.com/1/"
 	local Arguments = "key="..tostring(AppKey).."&token="..tostring(Token)
 
 	local GetUrl = function(str)
 		local Token = Token
-		if str:find("?") then
+		if string.find(str, "?") then
 			Token="&"..Arguments
 		else
 			Token="?"..Arguments
@@ -351,7 +355,7 @@ return function(AppKey, Token)
 			end;
 
 			CreateLabel = function(BoardID, Name, Color)
-				local Color = Color or "null"
+				Color = Color or "null"
 				return HttpFunctions.Decode(HttpFunctions.Post(GetUrl("labels"),"&name="..HttpFunctions.UrlEncode(Name).."&color="..HttpFunctions.UrlEncode(Color).."&idBoard="..HttpFunctions.UrlEncode(BoardID),2))
 			end;
 		};
@@ -385,9 +389,9 @@ return function(AppKey, Token)
 	API.getLabel = API.Labels.GetLabel
 	API.makeCard = API.Lists.MakeCard
 	API.doAction = function(method,subUrl,data)
-		if method:lower()=="post" then
+		if string.lower(method)=="post" then
 			return HttpFunctions.Decode(HttpFunctions.Post(GetUrl(subUrl),data,2))
-		elseif method:lower()=="get" then
+		elseif string.lower(method)=="get" then
 			return HttpFunctions.Decode(HttpFunctions.Get(GetUrl(subUrl)))
 		end
 	end;
