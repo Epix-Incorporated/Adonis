@@ -3537,13 +3537,13 @@ return function(data)
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch then
 				inputMoved(input.Position.X, input.Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -3625,7 +3625,7 @@ return function(data)
 			if gTable.Active then
 				inFrame = true
 
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					BringToFront()
 				end
 			end
@@ -3656,7 +3656,7 @@ return function(data)
 		end)
 
 		Event(InputService.InputEnded, function(input)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				dragDragging = false
 			end
 		end)
