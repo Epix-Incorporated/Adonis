@@ -243,8 +243,8 @@ return function(Vargs)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
-				for i,v in ipairs(groups) do
-					if (isID and group == v.Id) or (not isID and group == v.Name) then
+				for _, v in ipairs(groups) do
+					if isID and group == v.Id or not isID and group == v.Name then
 						return v
 					end
 				end
