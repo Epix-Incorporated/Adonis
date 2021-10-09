@@ -106,7 +106,6 @@ return function(Vargs)
 		CrossServer = function(...) return false end;
 		ExecuteScripts = {};
 		LastDataSave = 0;
-		PanicMode = false;
 		FixingEvent = false;
 		ScriptCache = {};
 		Connections = {};
@@ -128,34 +127,6 @@ return function(Vargs)
 			SavedSettings = "32K5j4";
 			SavedTables = 	"32K5j4";
 		};
-
-		Panic = function(reason)
-			service.New("Hint", {
-				Text = "~= Adonis PanicMode Enabled: "..tostring(reason).." =~",
-				Parent = workspace,
-			})
-			Core.PanicMode = true;
-
-			warn("SOMETHING SEVERE HAPPENED; ENABLING PANIC MODE; REASON BELOW;")
-			warn(tostring(reason))
-			warn("ENABLING CHAT MODE AND DISABLING CLIENT CHECKS;")
-			warn("MODS NOW HAVE ACCESS TO PANIC COMMANDS SUCH AS :SHUTDOWN")
-
-			--[[
-			for i,v in pairs(service.Players:GetPlayers()) do
-				cPcall(function()
-					v.Chatted:Connect(function(msg)
-						Process.Chat(v,msg)
-					end)
-				end)
-			end
-			--]]
-
-			Logs.AddLog(Logs.Script,{
-				Text = "ENABLED PANIC MODE";
-				Desc = tostring(reason);
-			})
-		end;
 
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
@@ -227,7 +198,6 @@ return function(Vargs)
 
 			if error then
 				warn(error)
-				Core.Panic("Error while making RemoteEvent")
 			end
 		end;
 
@@ -420,7 +390,7 @@ return function(Vargs)
 					container.Parent = parentObj
 				end)
 
-				if not Core.PanicMode and not ok then
+				if not ok then
 					p:Kick("\n[CLI-192385] Loading Error \n[HookClient Error: "..tostring(err).."]")
 					return false
 				else

@@ -1197,11 +1197,10 @@ return function(Vargs, env)
 			Commands = {"shutdown"};
 			Args = {"reason"};
 			Description = "Shuts the server down";
-			PanicMode = true;
 			Filter = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				if Core.DataStore and not Core.PanicMode then
+				if Core.DataStore then
 					Core.UpdateData("ShutdownLogs", function(logs)
 						if plr then
 							table.insert(logs, 1, {
