@@ -1570,8 +1570,8 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local p=service.New('Part',service.Workspace)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local p=service.New("Part", workspace)
 					table.insert(Variables.Objects,p)
 					p.Transparency=1
 					p.CFrame=v.Character.HumanoidRootPart.CFrame+Vector3.new(0,-3,0)
@@ -1689,7 +1689,7 @@ return function(Vargs, env)
 							Reflectance = .2;
 							TopSurface = 0;
 							BottomSurface = 0;
-							Parent = service.Workspace;
+							Parent = workspace.Terrain;
 						})
 
 						p.Touched:Connect(function(hit)
@@ -1700,7 +1700,7 @@ return function(Vargs, env)
 									Position = hit.Position;
 									BlastRadius = 10000;
 									BlastPressure = math.huge;
-									Parent = service.Workspace;
+									Parent = workspace.Terrain;
 								})
 
 							end
@@ -1803,7 +1803,7 @@ return function(Vargs, env)
 						})
 
 						ex.Hit:Connect(fire)
-						ex.Parent = service.Workspace;
+						ex.Parent = workspace.Terrain;
 						part.Anchored = false
 						part:BreakJoints()
 						f:Destroy()
@@ -1923,7 +1923,7 @@ return function(Vargs, env)
 							wait(5)
 							BodyVelocity:remove()
 							if knownchar.Parent then
-								service.New("Explosion",service.Workspace).Position = knownchar.HumanoidRootPart.Position
+								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
 							end
 						end
@@ -2038,7 +2038,7 @@ return function(Vargs, env)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Puke Peice' and o.Name~='Blood Peice' and o.Name~='Blood Plate' and o.Name~='Puke Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf = CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
-										local g=service.New('Part',service.Workspace)
+										local g=service.New("Part", workspace.Terrain)
 										g.Anchored=true
 										g.CanCollide=false
 										g.Size=Vector3.new(0.1,0.1,0.1)
@@ -2112,7 +2112,7 @@ return function(Vargs, env)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
-										local g=service.New('Part',service.Workspace)
+										local g=service.New("Part", workspace.Terrain)
 										g.Anchored=true
 										g.CanCollide=false
 										g.Size=Vector3.new(0.1,0.1,0.1)
