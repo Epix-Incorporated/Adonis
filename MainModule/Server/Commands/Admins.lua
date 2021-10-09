@@ -639,7 +639,7 @@ return function(Vargs, env)
 				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = service.Workspace
+					obj.Parent = workspace
 					pcall(obj.MakeJoints, obj)
 					obj:PivotTo(plr.Character:GetPivot())
 				end
