@@ -39,7 +39,7 @@ return function()
 				return
 			end
 
-			if (#game.Players:GetPlayers() == 0) then
+			if (#service.Players:GetPlayers() == 0) then
 				return
 			end
 			
@@ -48,13 +48,13 @@ return function()
 			
 			wait(2)
 			
-			for _,player in pairs(game.Players:GetPlayers()) do
+			for _,player in pairs(service.Playerss:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end
-			game.Players.PlayerAdded:connect(function(player)
+			service.Players.PlayerAdded:connect(function(player)
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end)
-			while (#game.Players:GetPlayers() > 0) do
+			while (#service.Players:GetPlayers() > 0) do
 				wait(1)
 			end	
 			
@@ -73,7 +73,7 @@ return function()
 				return
 			end
 			
-			if (#game.Players:GetPlayers() == 0) then
+			if (#service.Players:GetPlayers() == 0) then
 				return
 			end
 
