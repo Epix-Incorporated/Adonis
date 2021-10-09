@@ -120,7 +120,7 @@ return function(data)
 			end
 		end
 		i = i + 1
-		addOverviewEntry("Server Speed:", math.round(service.Workspace:GetRealPhysicsFPS()))
+		addOverviewEntry("Server Speed:", math.round(workspace:GetRealPhysicsFPS()))
 		addOverviewEntry("Server Start Time:", data.ServerStartTime)
 		addOverviewEntry("Server Age:", data.ServerAge)
 
@@ -143,10 +143,10 @@ return function(data)
 			return entry:Add(valueType, value)
 		end
 
-		addWorkspaceEntry("Streaming Enabled:", "TextLabel", {Text = " "..boolToStr(service.Workspace.StreamingEnabled).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Interpolation Throttling:", "TextLabel", {Text = " "..string.sub(tostring(service.Workspace.InterpolationThrottling),34).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Gravity:", "TextLabel", {Text = " "..service.Workspace.Gravity.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Fallen Parts Destroy Height:", "TextLabel", {Text = " "..service.Workspace.FallenPartsDestroyHeight.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
+		addWorkspaceEntry("Streaming Enabled:", "TextLabel", {Text = " "..boolToStr(workspace.StreamingEnabled).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
+		addWorkspaceEntry("Interpolation Throttling:", "TextLabel", {Text = " "..string.sub(tostring(workspace.InterpolationThrottling),34).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
+		addWorkspaceEntry("Gravity:", "TextLabel", {Text = " "..workspace.Gravity.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
+		addWorkspaceEntry("Fallen Parts Destroy Height:", "TextLabel", {Text = " "..workspace.FallenPartsDestroyHeight.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
 		i = i + 1
 		addWorkspaceEntry("Objects:", "TextLabel", {Text = " "..data.ObjectCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
 		addWorkspaceEntry("Cameras:", "TextLabel", {Text = " "..data.CameraCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
