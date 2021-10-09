@@ -30,7 +30,7 @@
 			Event =  service.New("RemoteFunction", {
 				Name = "DexEvent";
 				Parent = service.ReplicatedStorage;
-			})
+			}, true, true)
 
 			Event.OnServerInvoke = (function(Plr, Action, ...)
 				local pData = Authorized[Plr];
