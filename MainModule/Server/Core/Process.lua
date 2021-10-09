@@ -414,9 +414,9 @@ return function(Vargs)
 					local target = Settings.SpecialPrefix..'all'
 					if not b then b = 'Global' end
 					if not service.Players:FindFirstChild(p.Name) then b='Nil' end
-					if string.sub(a1,1)=='@' then
+					if string.sub(a,1,1)=='@' then
 						b='Private'
-						target,a=a:match('@(.%S+) (.+)')
+						target,a=string.match(a,'@(.%S+) (.+)')
 						Remote.Send(p,'Function','SendToChat',p,a,b)
 					elseif string.sub(a,1,1)=='#' then
 						if string.sub(a,1,7)=='#ignore' then
