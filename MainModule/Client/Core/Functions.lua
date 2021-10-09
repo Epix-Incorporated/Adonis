@@ -641,7 +641,7 @@ return function()
 			if not parent or parent == "LocalContainer" then
 				par = service.LocalContainer()
 			elseif parent == "Camera" then
-				par = service.Workspace.CurrentCamera
+				par = workspace.CurrentCamera
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
