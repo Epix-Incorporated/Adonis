@@ -963,15 +963,16 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 
-				if Admin.CheckAdmin(plr) and not string.match(args[2],"^%s*$") then
-					for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-						Variables.AuthorizedToReply[v] = true;
-						Remote.MakeGui(v, "PrivateMessage", {
-							Title = messageRecipient;
-							Player = plr;
-							Message = service.Filter(args[2], plr, v);
-						})
-					end
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local replyTicket = Functions.GetRandom()
+					Variables.PMtickets[v] = replyTicket
+
+					Remote.MakeGui(v, "PrivateMessage", {
+						Title = messageRecipient;
+						Player = plr;
+						Message = service.Filter(args[2], plr, v);
+						replyTicket = replyTicket;
+					})
 				end
 			end
 		};--]]
