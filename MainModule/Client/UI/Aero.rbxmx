@@ -8431,7 +8431,7 @@ return function(data)
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
-	blur.Parent = service.Workspace.CurrentCamera
+	blur.Parent = workspace.CurrentCamera
 
 	local fadeSteps = 10
 	local blurSize = 10
@@ -11420,7 +11420,7 @@ end
 							v.Position = UDim2.new(0.5, -xsize / 2, 1, -(math.abs((i - 1) - #cont:GetChildren()) * 50))
 						end
 
-						local cam = service.Workspace.CurrentCamera
+						local cam = workspace.CurrentCamera
 						local char = player.Character
 						local head = char:FindFirstChild("Head")
 
