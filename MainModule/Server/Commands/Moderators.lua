@@ -2464,61 +2464,88 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local cf = CFrame.new(v.Character.HumanoidRootPart.CFrame.p + Vector3.new(0,1,0))
-						local origpos = v.Character.HumanoidRootPart.Position
+				local opt = BrickColor.new("White")
+				if args[2] then
+					if string.lower(args[2]) == "rainbow" then
+						opt = "rainbow"
+					else
+						opt = BrickColor.new(args[2]) or BrickColor.new("White")
+					end
+				end
 
-						local mod = service.New("Model", workspace)
-						mod.Name = v.Name .. "_ADONISJAIL"
-						local top = service.New("Part", mod)
-						top.Locked = true
-						--top.formFactor = "Symmetric"
-						top.Size = Vector3.new(6,1,6)
-						top.TopSurface = 0
-						top.BottomSurface = 0
-						top.Anchored = true
-						top.CanCollide = true;
-						top.BrickColor = BrickColor.new("Really black")
-						top.Transparency = 1
-						top.CFrame = cf * CFrame.new(0,3.5,0)
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local cHumanoidRootPart	= v.Character and v.Character.PrimaryPart or v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if cHumanoidRootPart then
+
+						local cf = CFrame.new(cHumanoidRootPart.CFrame.p + Vector3.new(0,1,0))
+						local origpos = cHumanoidRootPart.Position
+
+						local mod = service.New("Model", {
+							Name = v.Name .. "_ADONISJAIL",
+						})
+						local top = service.New("Part", {
+							Locked = true,
+							Size = Vector3.new(6, 1, 6),
+							TopSurface = 0,
+							BottomSurface = 0,
+							Anchored = true,
+							CanCollide = true,
+							BrickColor = BrickColor.new("Really black"),
+							Transparency = 1,
+							CFrame = cf*CFrame.new(0, 3.5, 0),
+
+							Parent = mod,
+						})
+
 						local bottom = top:Clone()
 						bottom.Transparency = 0
-						bottom.Parent = mod
 						bottom.CanCollide = true
 						bottom.CFrame = cf * CFrame.new(0,-3.5,0)
 						local front = top:Clone()
 						front.Transparency = 1
 						front.Reflectance = 0
-						front.Parent = mod
 						front.Size = Vector3.new(6,6,1)
 						front.CFrame = cf * CFrame.new(0,0,-3)
 						local back = front:Clone()
 						back.Transparency = 1
-						back.Parent = mod
 						back.CFrame = cf * CFrame.new(0,0,3)
+						back.Parent = mod
 						local right = front:Clone()
 						right.Transparency = 1
-						right.Parent = mod
 						right.Size = Vector3.new(1,6,6)
 						right.CFrame = cf * CFrame.new(3,0,0)
 						local left = right:Clone()
 						left.Transparency = 1
-						left.Parent = mod
 						left.CFrame = cf * CFrame.new(-3,0,0)
-						local msh = service.New("BlockMesh", front)
-						msh.Scale = Vector3.new(1,1,0)
+
+						bottom.Parent = mod
+						front.Parent = mod
+						right.Parent = mod
+						left.Parent = mod
+
+						local msh = service.New("BlockMesh", {
+							Scale = Vector3.new(1, 1, 0),
+							Parent = front
+						})
+
 						local msh2 = msh:Clone()
-						msh2.Parent = back
 						local msh3 = msh:Clone()
-						msh3.Parent = right
 						msh3.Scale = Vector3.new(0,1,1)
 						local msh4 = msh3:Clone()
+
+						msh2.Parent = back
+						msh3.Parent = right
 						msh4.Parent = left
-						local brick = service.New('Part',mod)
-						local box = service.New('SelectionBox',brick)
-						box.Adornee = brick
-						box.Color = BrickColor.new('White')
+
+						local brick = service.New('Part', mod)
+						local box = service.New('SelectionBox', {
+							Adornee = brick,
+							Parent = brick,
+						})
+						if typeof(opt) == "BrickColor" then
+							box.Color = BrickColor.new("White")
+						end
+
 						brick.Anchored = true
 						brick.CanCollide = false
 						brick.Transparency = 1
@@ -2526,11 +2553,13 @@ return function(Vargs, env)
 						brick.CFrame = cf
 						--table.insert(Variables.Objects, mod)
 
-						local value = service.New('StringValue',mod)
-						value.Name = 'Player'
-						value.Value = v.Name
+						local value = service.New('StringValue', {
+							Name = 'Player',
+							Value = v.Name,
+							Parent = mod,
+						})
 
-						v.Character.HumanoidRootPart.CFrame = cf
+						cHumanoidRootPart.CFrame = cf
 
 						local ind = tostring(v.userId)
 						local jail = {
@@ -2540,28 +2569,40 @@ return function(Vargs, env)
 							Jail = mod;
 							Tools = {};
 						}
-
 						Variables.Jails[ind] = jail
 
-						for l,k in pairs(v.Backpack:GetChildren()) do
-							if k:IsA("Tool") or k:IsA("HopperBin") then
-								table.insert(jail.Tools,k)
-								k.Parent = nil
+						local Backpack = v:FindFirstChildOfClass("Backpack")
+						if Backpack then
+							for _, k in ipairs(Backpack:GetChildren()) do
+								if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
+									table.insert(jail.Tools,k)
+									k.Parent = nil
+								end
 							end
 						end
 
+						mod.Parent = workspace
 						service.TrackTask("Thread: JailLoop"..tostring(ind), function()
 							while wait() and Variables.Jails[ind] == jail and mod.Parent == workspace do
 								if Variables.Jails[ind] == jail and v.Parent == service.Players then
+									if opt == "rainbow" then
+										box.Color3 = Color3.fromHSV(tick()%5/5,1,1)
+									end
+
 									if v.Character then
 										local torso = v.Character:FindFirstChild('HumanoidRootPart')
 										if torso then
-											for l,k in pairs(v.Backpack:GetChildren()) do
-												if k:IsA("Tool") or k:IsA("HopperBin") then
-													table.insert(jail.Tools,k)
-													k.Parent = nil
+
+											local Backpack = v:FindFirstChildOfClass("Backpack")
+											if Backpack then
+												for _, k in ipairs(Backpack:GetChildren()) do
+													if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
+														table.insert(jail.Tools,k)
+														k.Parent = nil
+													end
 												end
 											end
+
 											if (torso.Position-origpos).Magnitude>3.3 then
 												torso.CFrame = cf
 											end
@@ -2573,7 +2614,9 @@ return function(Vargs, env)
 								end
 							end
 
-							mod:Destroy()
+							if mod then
+								mod:Destroy()
+							end
 						end)
 					end
 				end

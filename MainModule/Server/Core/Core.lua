@@ -178,8 +178,8 @@ return function(Vargs)
 			local ran, error = pcall(function()
 				if server.Running then
 					local rTable = {};
-					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false})
-					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event})
+					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false}, true, true)
+					local func = service.New("RemoteFunction", {Name = "__FUNCTION", Parent = event}, true, true)
 					local secureTriggered = true
 					local tripDet = math.random()
 
@@ -1303,7 +1303,7 @@ return function(Vargs)
 				__metatable = true;
 			})
 
-			if not _G.Adonis then
+			if not rawget(_G,"Adonis") then
 				rawset(_G,"Adonis",AdonisGTable)
 				Routine(service.StartLoop,"APICheck",1,function()
 					rawset(_G,"Adonis",AdonisGTable)
