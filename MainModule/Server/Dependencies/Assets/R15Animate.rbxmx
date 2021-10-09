@@ -521,22 +521,6 @@ Humanoid.Seated:Connect(onSeated)
 Humanoid.PlatformStanding:Connect(onPlatformStanding)
 Humanoid.Swimming:Connect(onSwimming)
 
--- setup emote chat hook
---[[
-Game.Players.LocalPlayer.Chatted:Connect(function(msg)
-	local emote = ""
-	if (string.sub(msg, 1, 3) == "/e ") then
-		emote = string.sub(msg, 4)
-	elseif (string.sub(msg, 1, 7) == "/emote ") then
-		emote = string.sub(msg, 8)
-	end
-	
-	if (pose == "Standing" and emoteNames[emote] ~= nil) then
-		playAnimation(emote, 0.1, Humanoid)
-	end
---	print("===> " .. string.sub(msg, 1, 3) .. "(" .. emote .. ")")
-end)--]]
-
 
 -- main program
 
