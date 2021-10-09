@@ -514,7 +514,7 @@ return service.NewProxy({
 			if not client.Variables.LocalContainer or not client.Variables.LocalContainer.Parent then
 				client.Variables.LocalContainer = service.New("Folder")
 				client.Variables.LocalContainer.Name = "__ADONIS_LOCALCONTAINER_" .. client.Functions.GetRandom()
-				client.Variables.LocalContainer.Parent = service.Workspace
+				client.Variables.LocalContainer.Parent = workspace
 			end
 			return client.Variables.LocalContainer
 		end;
