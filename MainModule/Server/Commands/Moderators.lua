@@ -965,7 +965,7 @@ return function(Vargs, env)
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local replyTicket = Functions.GetRandom()
-					Variables.PMtickets[v] = replyTicket
+					Variables.PMtickets[replyTicket] = plr
 
 					Remote.MakeGui(v, "PrivateMessage", {
 						Title = messageRecipient;

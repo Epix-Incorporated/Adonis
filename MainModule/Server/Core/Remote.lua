@@ -912,6 +912,7 @@ return function(Vargs)
 					local message = args[3]
 
 					local replyTicket = Functions.GetRandom()
+					Variables.PMtickets[replyTicket] = p
 					Remote.MakeGui(target,"PrivateMessage",{
 						Title = title;
 						Player = p;
