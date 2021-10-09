@@ -77,7 +77,7 @@ return function()
 				return
 			end
 
-			if server.Core.DataStore and not server.Core.PanicMode then
+			if server.Core.DataStore then
 				server.Core.UpdateData("ShutdownLogs", function(logs)
 					if plr then
 						table.insert(logs, 1, {
