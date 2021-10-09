@@ -14,7 +14,7 @@ return function()
 		local function teleport(player)
 			local joindata = player:GetJoinData()
 			local data = joindata.TeleportData
-			if typeof(data) == "table" and data[parameterName] then
+			if type(data) == "table" and data[parameterName] then
 				server.Functions.Message("Server Restart", "Teleporting back to main server...", {player}, false, 1000)
 				wait(waitTime)
 				waitTime = waitTime / 2
@@ -24,7 +24,7 @@ return function()
 	
 		service.Events.PlayerAdded:Connect(teleport)
 		
-		for _,player in ipairs(service.GetPlayers()) do
+		for _, player in ipairs(service.GetPlayers()) do
 			teleport(player)
 		end
 	
@@ -54,8 +54,8 @@ return function()
 			service.Players.PlayerAdded:connect(function(player)
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end)
-			while (#service.Players:GetPlayers() > 0) do
-				wait(1)
+			while #service.Players:GetPlayers() > 0 do
+				service.Players.PlayerRemoving:Wait()
 			end	
 			
 		end
