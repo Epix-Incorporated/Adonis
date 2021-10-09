@@ -151,7 +151,7 @@ return function(Vargs)
 			{Name="tunnel",ID=9650822};
 			{Name="spanish",ID=5982975};
 			{Name="venom",ID=1372262};
-			{Name="wind",ID=5816105707};
+			{Name="wind",ID=6537631123};
 			{Name="guitar",ID=5986151};
 			{Name="pianoremix",ID=142407859};
 			{Name="antidote",ID=145579822};
