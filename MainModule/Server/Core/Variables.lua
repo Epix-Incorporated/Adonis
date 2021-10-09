@@ -92,6 +92,8 @@ return function(Vargs)
 			Sky = Lighting:FindFirstChildOfClass("Sky") and Lighting:FindFirstChildOfClass("Sky"):Clone();
 		};
 
+		PMtickets = {};
+
 		HelpRequests = {};
 
 		Objects = {};
