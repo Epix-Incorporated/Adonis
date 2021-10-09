@@ -919,7 +919,7 @@ return function(data)
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
-	blur.Parent = service.Workspace.CurrentCamera
+	blur.Parent = workspace.CurrentCamera
 
 	local fadeSteps = 10
 	local blurSize = 10
