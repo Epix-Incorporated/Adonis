@@ -911,10 +911,12 @@ return function(Vargs)
 					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
 					local message = args[3]
 
+					local replyTicket = Functions.GetRandom()
 					Remote.MakeGui(target,"PrivateMessage",{
 						Title = title;
 						Player = p;
 						Message = service.Filter(message, p, target);
+						replyTicket = replyTicket;
 					})
 
 					Logs:AddLog(Logs.Script,{
