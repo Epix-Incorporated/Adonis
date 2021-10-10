@@ -155,7 +155,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Notification", {
 						Title = "Notification";
-						Message = service.Filter(args[2], plr, v, (#tostring(args[1]) / 19) + 2.5);
+						Message = service.Filter(args[2], plr, v);
 					})
 				end
 			end
