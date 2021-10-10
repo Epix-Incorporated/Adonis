@@ -1099,17 +1099,15 @@ return function(Vargs)
 		end;
 
 		Shutdown = function(reason)
-			if not Core.PanicMode then
-				Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
-				wait(1)
-			end
+			Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
+			wait(1)
 
-			service.Players.PlayerAdded:Connect(function(p)
-				p:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
+			service.Players.PlayerAdded:Connect(function(player)
+				player:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
-			for i,p in ipairs(service.Players:GetPlayers()) do
-				p:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
+			for _, v in ipairs(service.Players:GetPlayers()) do
+				v:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
 

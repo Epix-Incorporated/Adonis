@@ -9,7 +9,7 @@ local descs = {};			--// Contains settings descriptions
 
 			--------------
 			-- SETTINGS --
-		    --------------
+		  --------------
 																																																																				--[[
 
 		--// Basic Lua Info
@@ -206,6 +206,12 @@ local descs = {};			--// Contains settings descriptions
 		-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
 	};	-- Format: {"Command:NewLevel"; "Command:Customrank1,Customrank2,Customrank3";}
 
+	--// Use the below table to define "pre-set" command aliases
+	--// Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."}
+	settings.Aliases = {
+		[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
+	};
+
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {};			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Blacklist = {};		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -348,6 +354,8 @@ local descs = {};			--// Contains settings descriptions
 	descs.Creators = [[ Anyone to be identified as a place owner; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 
 	descs.Permissions = [[ Command permissions; Format: {"Command:NewLevel";} ]]
+	descs.Aliases = [[ Command aliases; Format: {[":alias <arg1> <arg2> ..."] = ":command <arg1> <arg2> ..."} ]]
+
 	descs.Commands = [[ Custom commands ]]
 	descs.Banned = [[ List of people banned from the game; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
 	descs.Muted = [[ List of people muted; Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID";} ]]
@@ -445,6 +453,7 @@ local descs = {};			--// Contains settings descriptions
 		--"Creators";
 		" ";
 		"Permissions";
+		--"Aliases";
 		--"Commands";
 		" ";
 		"Banned";

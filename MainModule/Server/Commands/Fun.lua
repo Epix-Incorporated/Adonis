@@ -157,9 +157,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				--// Apparently Rojo doesn't handle mesh parts very well, so I'm loading this remotely (using require to bypass insertservice restrictions)
 				--// The model is free to take so feel free to that 👍
-				--// Here's the URL https://www.roblox.com/library/7405942066/AssetModule
+				--// Here's the URL https://www.roblox.com/library/7679952474/AssetModule
 
-				local rAssets = require(7405942066);
+				local rAssets = require(7679952474); --// This apparently caches, so don't delete anything else future usage breaks
 				local gerald = rAssets.Gerald;
 
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -172,8 +172,6 @@ return function(Vargs, env)
 						end
 					end
 				end
-
-				rAssets:Destroy(); --// Dunno if this is actually going to help anything but why not
 			end
 		};
 
@@ -4487,7 +4485,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		BlurEffect = {
 			Prefix = Settings.Prefix;
 			Commands = {"blur";"screenblur";"blureffect"};
@@ -4665,7 +4663,7 @@ return function(Vargs, env)
 				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
 					local hat = service.Insert(id)
 					assert(hat,"Invalid ID")
-					
+
 					for i,v in pairs(service.GetPlayers(plr, args[1])) do
 						if v.Character and hat then
 							hat:Clone().Parent = v.Character

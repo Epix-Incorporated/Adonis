@@ -45,7 +45,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "UserPanel";
 		Title = "Adonis";
-		Icon = "rbxassetid://4335479121";
+		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
@@ -353,9 +353,9 @@ return function(data)
 				Size = UDim2.new(0, 18, 0, 18);
 				Position = UDim2.new(1, -22, 0, 4);
 			})
-			
+
 		end
-		
+
 
 		--// Donor Tab
 		do
@@ -1127,7 +1127,7 @@ return function(data)
 					end
 				end
 			})
-			
+
 			orgTextTransparency = removeButton.TextTransparency
 			if removeButton.AutoButtonColor then -- considers certain themes with AutoButtonColor = false
 				autoButtonColor = true
@@ -1467,7 +1467,7 @@ return function(data)
 									})
 								end
 							end
-						elseif  not canEditTables[setting] then 
+						elseif  not canEditTables[setting] then
 							gameTab:Add("TextLabel", {
 								Text = "  "..setting..": ";
 								ToolTip = desc;

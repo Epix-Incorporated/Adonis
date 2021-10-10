@@ -706,7 +706,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 
 				if cmd and #service.GetPlayers(from, str, {
 					DontError = true;
-				}) > 0 then
+					}) > 0 then
 					return str
 				else
 					return service.Filter(str, from, from)
@@ -735,18 +735,22 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			return new or "Filter Error"
 		end;
 
+		EscapeSpecialCharacters = function(x)
+			return x:gsub("([^%w])", "%%%1")
+		end;
+
 		MetaFunc = function(func)
-	    return service.NewProxy {
-	        __call = function(tab,...)
-	            local args = {pcall(func, ...)}
-	            local success = args[1]
-	            if not success then
-	                warn(args[2])
-	            else
-	                return unpack(args, 2)
-	            end
-	        end
-	    }
+			return service.NewProxy({
+				__call = function(tab,...)
+					local args = {pcall(func, ...)}
+					local success = args[1]
+					if not success then
+						warn(args[2])
+					else
+						return unpack(args, 2)
+					end
+				end
+			})
 		end;
 
 		NewProxy = function(meta)
@@ -915,7 +919,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			LoopQueue[name] = nil
 		end;
 
-		New = function(class, data, noWrap)
+		New = function(class, data, noWrap, noAdd)
 			local new = noWrap and oldInstNew(class) or Instance.new(class)
 			if data then
 				if type(data) == "table" then
@@ -939,7 +943,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 				end
 			end
 
-			if new then
+			if new and not noAdd then
 				table.insert(CreatedItems, new)
 			end
 

@@ -897,17 +897,27 @@ return function(Vargs)
 			end;
 
 			PrivateMessage = function(p,args)
+				if not type(args[1]) == "string" then return end
+
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
-				if Variables.AuthorizedToReply[p] or Admin.CheckAdmin(p) then
-					local title = args[1]
-					local target = args[2]
-					local from = args[3]
-					local message = args[4]
-					if args[2]:match("^%s*$") then return end
+				local target = Variables.PMtickets[args[1]]
+				if target or Admin.CheckAdmin(p) then
+					if target then
+						Variables.PMtickets[args[1]] = nil;
+					else
+						target = args[2]
+					end
+
+					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
+					local message = args[3]
+
+					local replyTicket = Functions.GetRandom()
+					Variables.PMtickets[replyTicket] = p
 					Remote.MakeGui(target,"PrivateMessage",{
-						Title = "Reply from ".. p.Name;--title;
+						Title = title;
 						Player = p;
 						Message = service.Filter(message, p, target);
+						replyTicket = replyTicket;
 					})
 
 					Logs:AddLog(Logs.Script,{
@@ -915,6 +925,8 @@ return function(Vargs)
 						Desc = message,
 						Player = p;
 					})
+				else
+					Anti.Detected(p, "info", "Invalid PrivateMessage ticket! Got: ".. tostring(args[2]))
 				end
 			end;
 		};
