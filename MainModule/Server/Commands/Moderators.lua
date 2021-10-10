@@ -4938,7 +4938,6 @@ return function(Vargs, env)
 			Args = {"player";"text";};
 			Filter = false;
 			NoFilter = true;
-			NoStudio = true; --Text filtering does not work in studio
 			Description = "Test out Roblox's text filtering on a player";
 			AdminLevel = "Moderators";
 			Function = function(plr,args)

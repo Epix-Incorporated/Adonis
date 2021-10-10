@@ -1079,7 +1079,6 @@ return function(Vargs, env)
 			Description = "A world unlike our own.";
 			Fun = true;
 			Hidden = true;
-			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
 				local data = server.Core.GetPlayer(plr)
@@ -1375,7 +1374,6 @@ return function(Vargs, env)
 			Fun = true; 										-- Someone's always standing in the
 			Hidden = true; 										-- Darkest corner of my room
 			AdminLevel = "Admins"; 								-- He's tall and wears a suit of black,
-			NoStudio = true; -- TeleportService does not work in Studio
 			Function = function(plr,args) 						-- Dressed like the perfect groom
 				local data = server.Core.GetPlayer(plr)
 				local forYou = {
