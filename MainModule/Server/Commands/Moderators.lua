@@ -3259,7 +3259,7 @@ return function(Vargs, env)
 			end
 		};
 
-		Invisible = {
+Invisible = {
 			Prefix = Settings.Prefix;
 			Commands = {"invisible";"invis"};
 			Args = {"player";};
@@ -3270,7 +3270,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in ipairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in next,v.Character:GetChildren() do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") then
 								obj.Transparency = 1
 								for a, b in next,obj:GetChildren() do
@@ -3279,6 +3279,10 @@ return function(Vargs, env)
 									elseif b:IsA("BasePart") then
 										v.Transparency = 1
 									end
+								end
+							elseif obj:IsA("Accessory") then
+								if obj:FindFirstChild("Handle") then
+									obj.Handle.Transparency = 1
 								end
 							elseif obj:IsA("ForceField") then
 								obj.Visible = false
@@ -3300,7 +3304,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in ipairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in next,v.Character:GetChildren() do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
 								obj.Transparency = 0
 								for a, b in next,obj:GetChildren() do
@@ -3309,6 +3313,10 @@ return function(Vargs, env)
 									elseif b:IsA("BasePart") then
 										v.Transparency = 0
 									end
+								end
+							elseif obj:IsA("Accessory") then
+								if obj:FindFirstChild("Handle") then
+									obj.Handle.Transparency = 0
 								end
 							elseif obj:IsA("ForceField") then
 								obj.Visible = true
