@@ -813,8 +813,8 @@ return function(Vargs)
 				Remote.MakeGui(v,"Notification",{
 					Title = title;
 					Message = message;
-					Time = tim or (#tostring(message) / 19) + 2.5; -- Automatically determine time if it was not entered
-					Icon = "rbxassetid://"..icon.. or "rbxassetid://7510999669" -- use default 'i' icon if icon argument is missing
+					Time = tim;
+					Icon = "rbxassetid://"..icon or "rbxassetid://7510999669" -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
