@@ -3270,11 +3270,16 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in ipairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in next,v.Character:GetDescendants() do
+						for a, obj in next,v.Character:GetChildren() do
 							if obj:IsA("BasePart") then
 								obj.Transparency = 1
-							elseif obj:IsA("Decal") then
-								obj.Transparency = 1
+								for a, b in next,obj:GetChildren() do
+									if b:IsA("Decal") then
+										v.Transparency = 1
+									elseif b:IsA("BasePart") then
+										v.Transparency = 1
+									end
+								end
 							elseif obj:IsA("ForceField") then
 								obj.Visible = false
 							end
@@ -3295,11 +3300,16 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i, v in ipairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						for a, obj in next,v.Character:GetDescendants() do
+						for a, obj in next,v.Character:GetChildren() do
 							if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then
 								obj.Transparency = 0
-							elseif obj:IsA("Decal") then
-								obj.Transparency = 0
+								for a, b in next,obj:GetChildren() do
+									if b:IsA("Decal") then
+										v.Transparency = 0
+									elseif b:IsA("BasePart") then
+										v.Transparency = 0
+									end
+								end
 							elseif obj:IsA("ForceField") then
 								obj.Visible = true
 							end
