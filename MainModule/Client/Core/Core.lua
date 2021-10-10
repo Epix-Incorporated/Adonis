@@ -340,7 +340,7 @@ return function()
 				__metatable = "API";
 			}
 
-			if not _G.Adonis then
+			if not rawget(_G,"Adonis") then
 				rawset(_G,"Adonis",AdonisGTable)
 				StartLoop("APICheck",1,function()
 					rawset(_G,"Adonis",AdonisGTable)

@@ -14,9 +14,9 @@ return function(Vargs)
 	--if true then return end --// fully disabled
 	service.TrackTask("Thread: WEBPANEL_JSON_UPDATE", function()
 		wait(1)
-		local enabled = _G.ADONISWEB_CMD_JSON_DOUPDATE;
-		local secret = _G.ADONISWEB_CMD_JSON_SECRET;
-		local endpoint = _G.ADONISWEB_CMD_JSON_ENDPOINT;
+		local enabled = rawget(_G,"ADONISWEB_CMD_JSON_DOUPDATE");
+		local secret = rawget(_G,"ADONISWEB_CMD_JSON_SECRET");
+		local endpoint = rawget(_G,"ADONISWEB_CMD_JSON_ENDPOINT");
 		if not enabled or not secret or not endpoint then return end
 
 		print("WEB ENABLED DO UPDATE");

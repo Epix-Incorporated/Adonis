@@ -158,19 +158,37 @@ return function(Vargs)
 		end
 	end)
 
+	local function stripArgPlaceholders(alias)
+		return service.Trim(alias:gsub("<%S+>", ""))
+	end
+
 	local function FormatAliasArgs(alias, aliasCmd, msg)
 		local uniqueArgs = {}
 		local argTab = {}
 		local numArgs = 0;
 
-		--local cmdArgs =
-		for arg in string.gmatch(aliasCmd, "<(%S+)>") do
+		--// First try to extract args info from the alias
+		for arg in string.gmatch(alias, "<(%S+)>") do
 			if arg ~= "" and arg ~= " " then
 				local arg = "<".. arg ..">"
-				if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
+				if not uniqueArgs[arg] then
 					numArgs = numArgs+1;
-					uniqueArgs[arg] = true; --// :cmd <arg1> <arg2>
+					uniqueArgs[arg] = true;
 					table.insert(argTab, arg)
+				end
+			end
+		end
+
+		--// If no args in alias string, check the command string instead and try to guess args based on order of appearance
+		if numArgs == 0 then
+			for arg in string.gmatch(aliasCmd, "<(%S+)>") do
+				if arg ~= "" and arg ~= " " then
+					local arg = "<".. arg ..">"
+					if not uniqueArgs[arg] then --// Get only unique placeholder args, repeats will be matched to the same arg pos
+						numArgs = numArgs+1;
+						uniqueArgs[arg] = true; --// :cmd <arg1> <arg2>
+						table.insert(argTab, arg)
+					end
 				end
 			end
 		end
@@ -181,7 +199,7 @@ return function(Vargs)
 		for i,argType in next,argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, argType, replaceWith)
+				out = string.gsub(out, service.EscapeSpecialCharacters(argType), replaceWith)
 			end
 		end
 
@@ -956,15 +974,30 @@ return function(Vargs)
 		end;
 
 		AliasFormat = function(aliases, msg)
+			local foundPlayerAlias = false; --// Check if there's a player-defined alias first then ifnot check settings aliases
 			if aliases then
 				for alias,cmd in pairs(aliases) do
-					if not Admin.CheckAliasBlacklist(alias) then
-						if string.match(msg, "^"..alias) or string.match(msg, "%s".. alias) then
+					local tAlias = stripArgPlaceholders(alias)
+					if not Admin.CheckAliasBlacklist(tAlias) then
+						local escAlias = service.EscapeSpecialCharacters(tAlias)
+						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
 							msg = FormatAliasArgs(alias, cmd, msg);
 						end
 					end
 				end
 			end
+
+			--if not foundPlayerAlias then
+				for alias,cmd in pairs(Settings.Aliases) do
+					local tAlias = stripArgPlaceholders(alias)
+					if not Admin.CheckAliasBlacklist(tAlias) then
+						local escAlias = service.EscapeSpecialCharacters(tAlias)
+						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
+							msg = FormatAliasArgs(alias, cmd, msg);
+						end
+					end
+				end
+			--end
 
 			return msg
 		end;
