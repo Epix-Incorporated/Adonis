@@ -430,7 +430,6 @@ return function(Vargs, env)
 			Commands = {"fullshutdown","globalshutdown"};
 			Args = {"reason"};
 			Description = "Initiates a shutdown for every running game server";
-			PanicMode = true;
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
