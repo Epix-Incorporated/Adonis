@@ -144,7 +144,7 @@ return function(Vargs, env)
 
 		Notification = {
 			Prefix = Settings.Prefix;
-			Commands = {"notify","notification"};
+			Commands = {"notify","notification","notice"};
 			Args = {"player","message"};
 			Description = "Sends the player a notification";
 			Filter = true;
@@ -155,7 +155,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Notification", {
 						Title = "Notification";
-						Message = service.Filter(args[2], plr, v);
+						Message = service.Filter(args[2], plr, v, (#tostring(args[1]) / 19) + 2.5);
 					})
 				end
 			end
@@ -309,7 +309,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
+					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
 				end
 			end
 		};
@@ -367,6 +367,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
 						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = (#tostring(args[1]) / 19) + 2.5;
 					})
 				end
 			end
@@ -740,6 +741,11 @@ return function(Vargs, env)
 					if v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.MaxHealth = math.huge
 						v.Character.Humanoid.Health = 9e9
+						Remote.MakeGui(v,"Notification",{
+							Title = "God mode";
+							Message = "Character God mode has been enabled. You will not take damage from non-explosive weapons.";
+							Time = 15;
+						})
 					end
 				end
 			end
@@ -758,6 +764,11 @@ return function(Vargs, env)
 					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
 						v.Character.Humanoid.MaxHealth = 100
 						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+						Remote.MakeGui(v,"Notification",{
+							Title = "God mode";
+							Message = "Character God mode has been disabled by an admin.";
+							Time = 15;
+						})
 					end
 				end
 			end
@@ -2412,6 +2423,7 @@ return function(Vargs, env)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
+					Functions.Notification("Noclip","Character noclip has been enabled. You will now be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
@@ -2451,6 +2463,7 @@ return function(Vargs, env)
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
+						Functions.Notification("Noclip","Character noclip has been disabled. You will no longer be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 					end
 				end
 			end
@@ -2459,9 +2472,9 @@ return function(Vargs, env)
 		Jail = {
 			Prefix = Settings.Prefix;
 			Commands = {"jail";"imprison";};
-			Args = {"player";};
+			Args = {"player";"BrickColor"};
 			Hidden = false;
-			Description = "Jails the target player(s), removing their tools until they are un-jailed";
+			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the colour of the jail bars";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3935,6 +3948,7 @@ return function(Vargs, env)
 					for a, tm in ipairs(service.Teams:GetChildren()) do
 						if string.sub(string.lower(tm.Name),1,#args[2]) == string.lower(args[2]) then
 							v.Team = tm
+							Functions.Notification("Team","You are now on the '"..tm.Name.."' team.",{v},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 						end
 					end
 				end
@@ -4014,6 +4028,7 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
+					Functions.Notification("Team","Your team has been reset and you are now on the Neutral team.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
