@@ -1151,17 +1151,20 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
 						local tools = {}
-						table.insert(tools,{Text="==== "..v.Name.."'s Tools ====",Desc=string.lower(v.Name)})
 						for k,t in pairs(v.Backpack:GetChildren()) do
 							if t:IsA("Tool") then
-								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
+								table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
 							elseif t:IsA("HopperBin") then
-								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType).." | Name: "..t.Name})
+								table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
 							else
-								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | Name: "..t.Name})
+								table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName})
 							end
 						end
-						Remote.MakeGui(plr,"List",{Title = v.Name,Tab = tools})
+						Remote.MakeGui(plr, "List", {
+							Title = "@"..v.Name.."'s tools";
+							Icon = server.MatIcons["Inventory 2"];
+							Table = tools;
+						})
 					end)
 				end
 			end
@@ -1215,6 +1218,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr,'List',{
 					Title = 'Players',
+					Icon = server.MatIcons.People;
 					Tab = plrs,
 					AutoUpdate = update and 1;
 					Update = "PlayerList";
@@ -1271,7 +1275,11 @@ return function(Vargs, env)
 					local x,y,z=tostring(v):match('(.*),(.*),(.*)')
 					table.insert(temp,{Text=i,Desc='X:'..x..' Y:'..y..' Z:'..z})
 				end
-				Remote.MakeGui(plr,"List",{Title = 'Waypoints', Tab = temp})
+				Remote.MakeGui(plr, "List", {
+					Title = 'Waypoints';
+					Icon = server.MatIcons.People;
+					Tab = temp;
+				})
 			end
 		};
 
@@ -1991,6 +1999,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Window", {
 					Name = "ToolList";
 					Title = "Tools";
+					Icon = server.MatIcons.Build;
 					Size  = {300, 300};
 					MinSize = {150, 100};
 					Content = children;
