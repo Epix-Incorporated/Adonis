@@ -720,8 +720,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -737,9 +739,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = math.huge
-						v.Character.Humanoid.Health = 9e9
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.MaxHealth = math.huge
+						Humanoid.Health = 9e9
 					end
 				end
 			end
@@ -755,9 +759,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = 100
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.MaxHealth = 100
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -1152,10 +1158,10 @@ return function(Vargs, env)
 					Routine(function()
 						local tools = {}
 						table.insert(tools,{Text="==== "..v.Name.."'s Tools ====",Desc=string.lower(v.Name)})
-						for k,t in pairs(v.Backpack:GetChildren()) do
-							if t:IsA("Tool") then
+						for k,t in ipairs(v:FindFirstChildOfClass("Backpack"):GetChildren()) do
+							if t.ClassName == "Tool" then
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
-							elseif t:IsA("HopperBin") then
+							elseif t.ClassName == "HopperBin" then
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType).." | Name: "..t.Name})
 							else
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | Name: "..t.Name})
@@ -3136,7 +3142,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						local hum = v.Character:FindFirstChildWhichIsA("Humanoid")
+						local hum = v.Character:FindFirstChildWhichOfClass("Humanoid")
 						if hum then
 							hum.Health = 0
 						end
@@ -3204,8 +3210,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.PlatformStand = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.PlatformStand = true
 					end
 				end
 			end
@@ -3221,8 +3229,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.PlatformStand = false
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.PlatformStand = false
 					end
 				end
 			end
@@ -3238,8 +3248,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Jump = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.Jump = true
 					end
 				end
 			end
@@ -3255,8 +3266,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Sit = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.Sit = true
 					end
 				end
 			end
@@ -3837,8 +3849,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid:TakeDamage(args[2])
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid:TakeDamage(args[2])
 					end
 				end
 			end
@@ -3855,9 +3868,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = args[2]
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.MaxHealth = args[2]
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -3874,10 +3888,11 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						local humanoid = v.Character.Humanoid
-						humanoid.JumpPower = args[2] or 50
-						humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.JumpPower = args[2] or 50
+						Humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
 					end
 				end
 			end
@@ -3894,10 +3909,11 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						local humanoid = v.Character.Humanoid
-						humanoid.JumpHeight = args[2] or 7.2
-						humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.JumpHeight = args[2] or 7.2
+						Humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
 					end
 				end
 			end
@@ -3914,11 +3930,13 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.WalkSpeed = args[2] or 16
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.WalkSpeed = args[2] or 16
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "Character walk speed has been set to "..v.Character.Humanoid.WalkSpeed;
+							Message = "Character walk speed has been set to ".. (args[2] or 16);
 							Time = 15;
 						})
 					end
@@ -5335,11 +5353,13 @@ return function(Vargs, env)
 					Routine(function()
 						v.CharacterAppearanceId = v.UserId
 
-						if v.Character and v.Character:FindFirstChild("Humanoid") then
+						local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+						if Humanoid then
 							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
 
 							if success then
-								v.Character.Humanoid:ApplyDescription(desc)
+								Humanoid:ApplyDescription(desc)
 							end
 						end
 					end)
