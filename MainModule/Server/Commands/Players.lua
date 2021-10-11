@@ -804,7 +804,77 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		ServerDetails = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"serverinfo";"serverdetails";"gameinfo";"gamedetails";};
+			Args = {};
+			Description = "Shows you details about the current server";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local adminDictionary = {}
+				for i,v in pairs(service.GetPlayers()) do
+					local level, rank = Admin.GetLevel(v);
+					if level > 0 then
+						adminDictionary[v.Name] = rank or "Uknown"
+					end
+				end
 
+				local donorList = {}
+				for i,v in pairs(service.GetPlayers()) do
+					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
+						table.insert(donorList, v.Name)
+					end
+				end
+
+				local nilPlayers = 0
+				for i,v in pairs(service.NetworkServer:GetChildren()) do
+					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+						nilPlayers = nilPlayers + 1
+					end
+				end
+
+				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
+				if s then
+					r = service.HttpService:JSONDecode(r)
+				end
+
+				local serverInfo = s and {
+					country = r.country,
+					city = r.city,
+					region = r.region,
+					zipcode = r.zip,
+					timezone = r.timezone,
+					query = r.query,
+					coords = "LAT: "..r.lat..", LON: "..r.lon
+				} or nil
+
+				local stats: Stats =  -- because the 'stats' global is depreciated
+
+					Remote.MakeGui(plr,"ServerDetails",{
+						CreatorId = game.CreatorId;
+						PrivateServerId = game.PrivateServerId;
+						PrivateServerOwnerId = game.PrivateServerOwnerId;
+						ServerStartTime = server.ServerStartTime;
+						ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
+						ServerInternetInfo = serverInfo;
+						WorkspaceInfo = (Admin.CheckAdmin(plr) and {
+							ObjectCount = #Variables.Objects;
+							CameraCount = #Variables.Cameras;
+							NilPlayerCount = nilPlayers;
+							HttpEnabled = HTTP.CheckHttp();
+							LoadstringEnabled = HTTP.LoadstringEnabled;
+						}) or nil;
+						Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
+						Donors = donorList;
+						CmdPrefix = Settings.Prefix;
+						CmdPlayerPrefix = Settings.PlayerPrefix;
+						SplitKey = Settings.SplitKey;
+					})
+			end
+		};
 
 	}
 end
