@@ -99,7 +99,7 @@ return function(data)
 	local name = data.Title
 	local text = data.Message or data.Text or ""
 	local time = data.Time
-	local icon = data.Icon or "rbxassetid://7510999669"
+	local icon = data.Icon or client.MatIcons.Info
 	
 	local returner = nil
 	
