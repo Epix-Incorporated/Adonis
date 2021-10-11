@@ -646,9 +646,8 @@ return function()
 				par = service.PlayerGui
 			end
 
-			for ind,obj in ipairs(par:GetChildren()) do
-				
-match and string.match(obj.Name,object)) or (obj.Name == object or object == obj) then
+			for ind, obj in ipairs(par:GetChildren()) do
+				if match and string.match(obj.Name,object) or obj.Name == object or object == obj then
 					obj:Destroy()
 				end
 			end
