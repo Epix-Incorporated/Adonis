@@ -14,6 +14,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "ColorPicker";
 		Title = data.Title or "Color Picker";
+		Icon = client.MatIcons.Create;
 		Size  = {250,230};
 		MinSize = {150, 230};
 		MaxSize = {math.huge, 230};
