@@ -48,7 +48,7 @@ return function()
 			
 			wait(2)
 			
-			for _,player in pairs(service.Playerss:GetPlayers()) do
+			for _,player in pairs(service.Players:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end
 			service.Players.PlayerAdded:connect(function(player)
