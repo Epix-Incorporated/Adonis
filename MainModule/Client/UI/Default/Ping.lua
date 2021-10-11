@@ -9,6 +9,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "Ping";
 		Title = "Ping";
+		Icon = client.MatIcons.Leaderboard;
 		Size  = {150,70};
 		Position = UDim2.new(0, 10, 1, -80);
 		AllowMultiple = false;
