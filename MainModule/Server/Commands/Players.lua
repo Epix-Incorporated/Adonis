@@ -818,7 +818,7 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers()) do
 					local level, rank = Admin.GetLevel(v);
 					if level > 0 then
-						adminDictionary[v.Name] = rank or "Uknown"
+						adminDictionary[v.Name] = rank or "Unknown"
 					end
 				end
 
