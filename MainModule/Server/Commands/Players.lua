@@ -257,6 +257,56 @@ return function(Vargs, env)
 				Remote.MakeGui(plr,"List",{Title = "Materials"; Tab = mats})
 			end
 		};
+											
+		MaterialIconList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"materialicons";"maticons"; "icons";"iconlist";"iconcollection";};
+			Args = {};
+			Description = "Shows you a collection of Material UI icons";
+			AdminLevel = "Players";
+			Function = function(plr,args)
+				local children = {
+					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
+				}
+
+				local i = 1
+				for name, id in pairs(require(server.Shared.MatIcons)) do
+					if type(id) == "number" then
+						table.insert(children, {
+							Class = "TextLabel";
+							Size = UDim2.new(1, -10, 0, 30);
+							Position = UDim2.new(0, 5, 0, 30*(i-1));
+							BackgroundTransparency = 1;
+							TextXAlignment = "Left";
+							Text = "  "..name;
+							ToolTip = "ID: "..id;
+							ZIndex = 1;
+							Children = {
+								{
+									Class = "ImageLabel";
+									Image = "rbxassetid://"..id;
+									Size = UDim2.new(0, 26, 1, -4);
+									Position = UDim2.new(1, -28, 0, 2);
+									ZIndex = 2;
+									BackgroundTransparency = 1;
+								}
+							};
+						})
+						i += 1
+					end
+				end
+
+				Remote.MakeGui(plr, "Window", {
+					Name = "MaterialIconList";
+					Title = "Material Icons";
+					Icon = server.MatIcons.Category;
+					Size  = {240, 300};
+					MinSize = {150, 100};
+					Content = children;
+					Ready = true;
+				})
+			end
+		};
 
 		ClientTab = {
 			Prefix = Settings.PlayerPrefix;
@@ -326,7 +376,12 @@ return function(Vargs, env)
 						table.insert(temptable,v.Name)
 					end
 				end
-				Remote.MakeGui(plr,'List',{Title = 'Donors In-Game'; Tab = temptable; Update = 'DonorList'})
+				Remote.MakeGui(plr, "List", {
+					Title = "Donors In-Game";
+					Icon = server.MatIcons["People alt"];
+					Tab = temptable;
+					Update = "DonorList"
+				})
 			end
 		};
 
@@ -454,6 +509,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				Remote.MakeGui(plr,"List",{
 					Title = 'Change Log',
+					Icon = server.MatIcons["Text snippet"];
 					Table = server.Changelog,
 					Size = {500,400}
 				})
