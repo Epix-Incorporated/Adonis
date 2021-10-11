@@ -5,6 +5,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "CreateCard";
 		Title = "Create Card";
+		Icon = client.MatIcons["Add circle"];
 		Size  = {400, 330};
 		AllowMultiple = false;
 		OnClose = function()
