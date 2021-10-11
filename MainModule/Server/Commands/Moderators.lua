@@ -2023,8 +2023,8 @@ return function(Vargs, env)
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
 				}
 
-				for i, v in next,Settings.Storage:GetChildren() do
-					if v:IsA("Tool") or v:IsA("HopperBin") then
+				for i, v in ipairs(Settings.Storage:GetChildren()) do
+					if v.ClassName == "Tool" or v.ClassName == "HopperBin" then
 						table.insert(children, {
 							Class = "TextLabel";
 							Size = UDim2.new(1, -10, 0, 30);
@@ -2074,7 +2074,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in ipairs(service.GetPlayers(plr,args[1])) do
 					local piano = Deps.Assets.Piano:clone()
-					piano.Parent = v:FindFirstChild("PlayerGui") or v.Backpack
+					piano.Parent = v:FindFirstChildOfClass("StarterGear")("PlayerGui") or v.Backpack
 					piano.Disabled = false
 				end
 			end
@@ -2127,7 +2127,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				service.StopLoop("ChickenSpam")
 				for i,v in pairs(Variables.Objects) do
-					if v:IsA("Script") or v:IsA("LocalScript") then
+					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
 					end
 					v:Destroy()
@@ -2150,11 +2150,11 @@ return function(Vargs, env)
 				end
 
 				for i,v in ipairs(workspace:GetChildren()) do
-					if v:IsA('Message') or v:IsA('Hint') then
+					if v.ClassName == "Message" or v.ClassName == "Hint" then
 						v:Destroy()
 					end
 
-					if v.Name:match('A_Probe (.*)') then
+					if string.match(v.Name,'A_Probe (.*)') then
 						v:Destroy()
 					end
 				end
@@ -2174,7 +2174,7 @@ return function(Vargs, env)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
 
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -2269,8 +2269,8 @@ return function(Vargs, env)
 						Functions.SetLighting(i,v)
 					end
 				end
-				for i,v in pairs(service.Lighting:GetChildren()) do
-					if v:IsA("Sky") then
+				for i,v in ipairs(service.Lighting:GetChildren()) do
+					if v.ClassName == "Sky" then
 						service.Delete(v)
 					end
 				end
@@ -2813,13 +2813,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v:FindFirstChild("Backpack") then
-						for a,q in pairs(service.StarterPack:GetChildren()) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						for a,q in ipairs(service.StarterPack:GetChildren()) do
 							local q = q:Clone()
 							if not q:FindFirstChild(Variables.CodeName) then
 								service.New("StringValue", q).Name = Variables.CodeName
 							end
-							q.Parent = v.Backpack
+							q.Parent = Backpack
 						end
 					end
 				end
@@ -2835,14 +2836,16 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local sword = service.Insert(125013769)
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:FindFirstChild("Backpack") then
-						local sword = service.Insert(125013769)
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
 						local config = sword:FindFirstChild("Configurations")
 						if config then
 							config.CanTeamkill.Value = true
 						end
-						sword.Parent = v.Backpack
+						sword:Clone().Parent = Backpack
 					end
 				end
 			end
@@ -3637,7 +3640,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name),1,#args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3674,9 +3677,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, string.lower(args[1]))) do
-					if v:FindFirstChild("StarterGear") then
-						for a,tool in pairs(v.StarterGear:GetChildren()) do
-							if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					local StarterGear = v:FindFirstChildOfClass("StarterGear")
+					if StarterGear then
+						for a,tool in ipairs(StarterGear:GetChildren()) do
+							if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 								if string.lower(args[2]) == "all" or string.find(string.lower(tool.Name), string.lower(args[2])) == 1 then
 									tool:Destroy()
 								end
@@ -3699,7 +3703,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3795,9 +3799,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v:FindFirstChild("Backpack") then
-						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
-						for a, tool in pairs(v.Backpack:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
+					local Backpack = v.Character and v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						for a, tool in pairs(v.Character:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
+						for a, tool in pairs(Backpack:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
 					end
 				end
 			end
@@ -4198,7 +4203,7 @@ return function(Vargs, env)
 				elseif string.find(args[2], ',') then
 					local x,y,z = string.match(args[2],'(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						if not v.Character or not v:FindFirstChild("HumanoidRootPart") then continue end
+						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
 						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						if Humanoid then
@@ -4785,7 +4790,7 @@ return function(Vargs, env)
 					end
 
 					for i, v in ipairs(workspace:GetChildren()) do
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
+						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
 									Title = "Override paused track?";
@@ -4813,7 +4818,7 @@ return function(Vargs, env)
 					s:Play()
 				elseif id == "off" or id == "0" then
 					for i, v in ipairs(workspace:GetChildren()) do
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
+						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
 					end
@@ -5263,7 +5268,7 @@ return function(Vargs, env)
 						else
 							local newDescription = humanoid:GetAppliedDescription()
 							local defaultDescription = Instance.new("HumanoidDescription")
-							for _, property in next, {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
+							for _, property in ipairs({"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"}) do
 								if assetHD[property] ~= defaultDescription[property] then
 									newDescription[property] = assetHD[property]
 								end
