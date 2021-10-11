@@ -160,7 +160,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now an admin',{plr})
@@ -189,7 +189,7 @@ return function(Vargs, env)
 							Title = "Notification";
 							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 						Functions.Hint(v.Name..' is now a temp admin',{plr})
