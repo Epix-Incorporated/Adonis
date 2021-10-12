@@ -248,19 +248,6 @@ return function()
 			end
 		end;
 
-		Paranoid = function()
-			wait(1)
-			local char = service.Player.Character
-			local torso = char:WaitForChild("Head")
-			local humPart = char:WaitForChild("HumanoidRootPart", 2)
-			local hum = char:WaitForChild("Humanoid", 2)
-			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
-				if (humPart.Position-torso.Position).Magnitude > 10 and hum and hum.Health > 0 then
-					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
-				end
-			end
-		end;
-
 		MainDetection = function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
