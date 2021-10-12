@@ -1093,11 +1093,6 @@ return function(Vargs)
 			return AllGrabbedPlayers
 		end;
 
-		AssignName = function()
-			local name=math.random(100000,999999)
-			return name
-		end;
-
 		Shutdown = function(reason)
 			Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
 			wait(1)
