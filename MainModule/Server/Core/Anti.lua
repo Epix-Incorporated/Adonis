@@ -32,9 +32,6 @@ return function(Vargs)
 	end
 
 	local function RunAfterPlugins(data)
-		--// Fake finder
-		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
-
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
 	end
