@@ -177,20 +177,5 @@ return function(Vargs)
 				end
 			end
 		end;
-
-		CheckNameID = function(p)
-			if p.userId > 0 and p.userId ~= game.CreatorId and p.Character then
-				local realId = service.Players:GetUserIdFromNameAsync(p.Name) or p.userId
-				local realName = service.Players:GetNameFromUserIdAsync(p.userId) or p.Name
-
-				if realName and realId then
-					if (tonumber(realId) and realId~=p.userId) or (tostring(realName)~="nil" and realName~=p.Name) then
-						Anti.Detected(p,'log','Name/UserId does not match')
-					end
-
-					Remote.Send(p,"LaunchAnti","NameId",{RealID = realId; RealName = realName})
-				end
-			end
-		end;
 	};
 end
