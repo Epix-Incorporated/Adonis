@@ -830,9 +830,6 @@ return function(Vargs)
 			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
-				--// Anti Exploit stuff
-				pcall(Anti.CheckNameID, p)
-
 				--// Wait for UI stuff to finish
 				wait(1);
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
