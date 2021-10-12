@@ -182,24 +182,9 @@ return function()
 
 	local Detectors = service.ReadOnly({
 		Speed = function(data)
-			service.StartLoop("AntiSpeed",1,function()
+			service.StartLoop("AntiSpeed", 1, function()
 				if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
-					Detected('kill','Speed exploiting')
-				end
-			end)
-		end;
-
-		NameId = function(data)
-			local realId = data.RealID
-			local realName = data.RealName
-
-			service.StartLoop("NameIDCheck",10,function()
-				if service.Player.Name ~= realName then
-					Detected("log", "Local username does not match server username")
-				end
-
-				if service.Player.userId ~= realId then
-					Detected("log", "Local UserID does not match server UserID")
+					Detected("kill", "Speed exploiting")
 				end
 			end)
 		end;
@@ -356,7 +341,7 @@ return function()
 			service.DataModel.ChildAdded:Connect(checkServ)
 
 			service.Events.CharacterRemoving:Connect(function()
-				for i,_ in next,coreNums do
+				for i, _ in next,coreNums do
 					if coreClears[i] then
 						coreNums[i] = 0
 					end
