@@ -324,10 +324,9 @@ local descs = {};			--// Contains settings descriptions
 	settings.Detection = true			-- Attempts to detect certain known exploits
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-	settings.AntiNil = true				-- Try's to prevent non-admins from hiding in "nil"
 	settings.AntiSpeed = true 			-- Attempts to detect speed exploits
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
-	settings.AntiParanoid = false		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiParanoid = true		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiBuildingTools = false	-- Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
 
@@ -429,7 +428,6 @@ local descs = {};			--// Contains settings descriptions
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
-	descs.AntiNil = [[ Try's to prevent non-admins from hiding in "nil" ]]
 	descs.AntiSpeed = [[ Attempted to detect speed exploits ]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
@@ -526,7 +524,6 @@ local descs = {};			--// Contains settings descriptions
 		"Detection";
 		"CheckClients";
 		" ";
-		"AntiNil";
 		"AntiSpeed";
 		"AntiNoclip";
 		"AntiParanoid";
