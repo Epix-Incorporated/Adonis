@@ -904,10 +904,8 @@ return function(Vargs, env)
 					zipcode = r.zip,
 					timezone = r.timezone,
 					query = r.query,
-					coords = "LAT: "..r.lat..", LON: "..r.lon
+					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]
 				} or nil
-
-				local stats: Stats =  -- because the 'stats' global is depreciated
 
 					Remote.MakeGui(plr,"ServerDetails",{
 						CreatorId = game.CreatorId;
