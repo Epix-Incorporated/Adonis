@@ -200,6 +200,10 @@ return function()
 						if not hasCompleted then
 							Detected("kick", "Anti kick found! 534534")
 						end
+						local success, err = pcall(workspace.GetRealPhysicsFPS, game)
+						if success or string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+							Detected("kick", "Anti FPS detection found!")
+						end
 					end)()
 				end
 
