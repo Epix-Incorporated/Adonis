@@ -34,6 +34,15 @@ return function(Vargs)
 	local function RunAfterPlugins(data)
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
+
+		service.Players.PlayerAdded:Connect(function(player)
+			if not player.Character then
+				player.CharacterAdded:Wait()
+			end
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators then
+				Anti.CharacterCheck(player)
+			end
+		end)
 	end
 
 	server.Anti = {
@@ -55,6 +64,155 @@ return function(Vargs)
 				Text = "Server removed "..tostring(p);
 				Desc = info;
 			})
+		end;
+
+		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
+			local function protectHat(hat)
+				local handle = hat:WaitForChild("Handle", 30)
+
+				if handle then
+					task.defer(function()
+						local joint = handle:WaitForChild("AccessoryWeld")
+
+						local connection
+						connection = joint.AncestryChanged:Connect(function(_, parent)
+							if not connection.Connected or parent then
+								return
+							end
+
+							connection:Disconnect()
+							Anti.Detected(player, "log", "Hat weld removed")
+
+							if handle and handle:CanSetNetworkOwnership() then
+								handle:SetNetworkOwner(nil)
+							end
+						end)
+					end)
+
+					if handle:IsA("Part") then
+						local mesh = handle:FindFirstChildOfClass("SpecialMesh") or handle:WaitForChild("Mesh")
+
+						mesh.AncestryChanged:Connect(function(child, parent)
+							task.defer(function()
+								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) then
+									mesh.Parent = handle
+									Anti.Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
+								end
+							end)
+						end)
+					end
+				end
+			end
+
+			local function onCharacterAdded(character)
+				for _, v in ipairs(character:GetChildren()) do
+					if v:IsA("Accoutrement") then
+						coroutine.wrap(protectHat)(v)
+					end
+				end
+
+				character.ChildAdded:Connect(function(child)
+					if child:IsA("Accoutrement") then
+						protectHat(child)
+					elseif child:IsA("BackpackItem") then
+						local count = 0
+
+						task.defer(function()
+							for _, v in ipairs(character:GetChildren()) do
+								if v:IsA("BackpackItem") then
+									count += 1
+									if count > 1 then
+										v.Parent = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack", player)
+										Anti.Detected(player, "log", "Multiple tools equipped at the same time")
+									end
+								end
+							end
+						end)
+					end
+				end)
+
+
+				local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
+
+				humanoid.AncestryChanged:Connect(function(child, parent)
+					task.defer(function()
+						if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
+							humanoid.Parent = character
+							Anti.Detected(player, "kill", "Humanoid removed")
+						end
+					end)
+				end)
+
+				humanoid.StateChanged:Connect(function(last, state)
+					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
+						Anti.Detected(player, "kill", "Humanoid came out of dead state")
+					end
+				end)
+
+				if game:GetService("Players").CharacterAutoLoads then
+					local connection
+
+					connection = humanoid.Died:Connect(function()
+						if not connection.Connected then
+							return
+						end
+
+						connection:Disconnect()
+
+						task.wait(game:GetService("Players").RespawnTime + 1.5)
+
+						if workspace:IsAncestorOf(humanoid) then
+							player:LoadCharacter()
+							Anti.Detected(player, "log", "Player took too long to respawn. Respawning manually")
+						end
+					end)
+				end
+
+				local animator = humanoid:WaitForChild("Animator")
+
+				animator.AnimationPlayed:Connect(function(animationTrack)
+					local animationId = animationTrack.Animation.AnimationId
+					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
+						Anti.Detected(player, "kill", "Player played an inappropriate character animation")
+					end
+				end)
+
+				local connections = {}
+				local function makeConnection(Conn)
+					local connection
+					connection = Conn:Connect(function(_, parent)
+						if not connection.Connected or parent then
+							return
+						end
+
+						for _, v in ipairs(connections) do
+							v:Disconnect()
+						end
+
+						if humanoid then
+							Anti.Detected(player, "kill", "Character joint removed (Paranoid?)")
+						end
+					end)
+
+					table.insert(connections, connection)
+				end
+
+				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+
+				if Settings.AntiParanoid then
+					makeConnection(rootJoint.AncestryChanged)
+
+					if humanoid.RigType == Enum.HumanoidRigType.R15 then
+						makeConnection(character:WaitForChild("UpperTorso"):WaitForChild("Waist").AncestryChanged)
+					end
+				end
+			end
+
+			if player.Character then
+				coroutine.wrap(onCharacterAdded)(player.Character)
+			end
+			player.CharacterAdded:Connect(onCharacterAdded)
 		end;
 
 		CheckAllClients = function()
