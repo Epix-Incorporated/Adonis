@@ -126,6 +126,12 @@ return function()
 		return true
 	end;
 
+	Player.Idled:Connect(function(time)
+		if time > 30 * 60 then
+			Detected("kick", "Anti idle")
+		end
+	end)
+
 	do
 		local OldEnviroment = getfenv()
 		local OldSuccess, OldError = pcall(function() return game:________() end)
@@ -170,25 +176,31 @@ return function()
 				end
 
 				do
-					local success, err = pcall(Player.Kick, workspace, "")
-					if success or string.match(err, "Expected ':' not '.' calling member function Kick") then
-						Detected("kick", "Anti kick found! 772068")
-					end
-					if #service.Players:GetPlayers() > 1 then
-						for _, v in ipairs(service.Players:GetPlayers()) do
-							if v ~= Player then
-								local success, err = pcall(Player.Kick, v, "")
-								if success or string.match(err, "Cannot kick a non-local Player from a LocalScript") then
-									Detected("kick", "Anti kick found! 21656")
+					local hasCompleted = false
+					coroutine.wrap(function()
+						local success, err = pcall(Player.Kick, workspace, "")
+						if success or string.match(err, "Expected ':' not '.' calling member function Kick") then
+							Detected("kick", "Anti kick found! 772068")
+						end
+						if #service.Players:GetPlayers() > 1 then
+							for _, v in ipairs(service.Players:GetPlayers()) do
+								if v ~= Player then
+									local success, err = pcall(Player.Kick, v, "")
+									if success or string.match(err, "Cannot kick a non-local Player from a LocalScript") then
+										Detected("kick", "Anti kick found! 21656")
+									end
 								end
 							end
 						end
-					end
-					Player.Idled:Connect(function(time)
-						if time > 30 * 60 then
-							Detected("kick", "Anti idle")
+						hasCompleted = true
+					end)()
+
+					coroutine.wrap(function()
+						task.wait(4)
+						if not hasCompleted then
+							Detected("kick", "Anti kick found! 534534")
 						end
-					end)
+					end)()
 				end
 
 				-- this part you can choose whether or not you wanna use
