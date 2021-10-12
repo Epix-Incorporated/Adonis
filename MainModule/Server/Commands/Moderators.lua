@@ -1528,7 +1528,7 @@ return function(Vargs, env)
 				local command = args[3]
 				local name = string.lower(plr.Name)
 				assert(command, "Argument #1 needs to be supplied")
-				if strng.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or string.find(command, "^"..Settings.Prefix.."loop") or string.find(command,"^"..Settings.Prefix.."repeat") then
+				if string.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or string.find(command, "^"..Settings.Prefix.."loop") or string.find(command,"^"..Settings.Prefix.."repeat") then
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
