@@ -663,13 +663,6 @@ return function(Vargs)
 
 			service.Events.PlayerRemoving:Fire(p)
 
-			spawn(function()
-				local level = (p and data.AdminLevel) or 0
-				if Settings.AntiNil and level < 1 then
-					pcall(function() local p = service.UnWrap(p) p:Kick("Anti Nil") wait() if p then pcall(service.Delete, p) end end)
-				end
-			end)
-
 			delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
