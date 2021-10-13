@@ -203,7 +203,7 @@ return function(Vargs)
 				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
 
-				if Settings.AntiParanoid then
+				if Settings.AntiRootJointDeletion then
 					makeConnection(rootJoint.AncestryChanged)
 
 					if humanoid.RigType == Enum.HumanoidRigType.R15 then
