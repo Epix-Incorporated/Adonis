@@ -52,7 +52,7 @@ return function(Vargs)
 			end
 
 			-- // Handles rollout mechanism
-			local ReleaseTick = 1634124944
+			local ReleaseTick = 1634170947
 			local CanRollout = false
 			xpcall(function() -- Just pcalling if something goes wrong with the release mechanism.
 				CanRollout = os.time() > ReleaseTick + 9 * 24 * 60 * 60
