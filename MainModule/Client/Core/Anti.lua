@@ -97,7 +97,7 @@ return function()
 
 	Player.Idled:Connect(function(time)
 		if time > 30 * 60 then
-			Detected("kick", "Anti idle")
+			Detected("kick", "Anti idle found!")
 		end
 	end)
 
