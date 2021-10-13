@@ -39,7 +39,7 @@ return function(Vargs)
 			if not player.Character then
 				player.CharacterAdded:Wait()
 			end
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators and (Core.DebugMode == true or os.time() > 1634124944 + 7 * 24 * 60 * 60) then
 				Anti.CharacterCheck(player)
 			end
 		end)
@@ -115,7 +115,7 @@ return function(Vargs)
 				character.ChildAdded:Connect(function(child)
 					if child:IsA("Accoutrement") then
 						protectHat(child)
-					elseif child:IsA("BackpackItem") then
+					elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 						local count = 0
 
 						task.defer(function()
@@ -135,14 +135,16 @@ return function(Vargs)
 
 				local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
 
-				humanoid.AncestryChanged:Connect(function(child, parent)
-					task.defer(function()
-						if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
-							humanoid.Parent = character
-							Anti.Detected(player, "kill", "Humanoid removed")
-						end
+				if Settings.AntiHumanoidDeletion then
+					humanoid.AncestryChanged:Connect(function(child, parent)
+						task.defer(function()
+							if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
+								humanoid.Parent = character
+								Anti.Detected(player, "kill", "Humanoid removed")
+							end
+						end)
 					end)
-				end)
+				end
 
 				humanoid.StateChanged:Connect(function(last, state)
 					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
@@ -150,7 +152,7 @@ return function(Vargs)
 					end
 				end)
 
-				if game:GetService("Players").CharacterAutoLoads then
+				if game:GetService("Players").CharacterAutoLoads and Settings.AntiGod == true then
 					local connection
 
 					connection = humanoid.Died:Connect(function()
