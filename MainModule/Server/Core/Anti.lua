@@ -43,7 +43,7 @@ return function(Vargs)
 			["6"] = 10, -- When 6 days have passed 10% of all games with adonis get the feature enabled
 			["7"] = 5, -- When 7 days have passed 20% of all games with adonis get the feature enabled
 			["8"] = 2, -- When 8 days have passed 50% of all games with adonis get the feature enabled
-			-- Day 8 all games with Adonis get access to feature
+			-- Day 9 all games with Adonis get access to feature
 		]
 
 		service.Players.PlayerAdded:Connect(function(player)
@@ -59,7 +59,7 @@ return function(Vargs)
 				or os.time() > ReleaseTick + 2 * 24 * 60 * 60
 				and (
 					game.GameId == 0 or
-					game.GameId % rolloutTable[math.clamp(math.floor((os.time() - 1634124944) / 60 / 60 / 24), 2, 8)] == 1
+					game.GameId % rolloutTable[tostring(math.clamp(math.floor((os.time() - ReleaseTick) / 60 / 60 / 24), 2, 8))] == 1
 				)
 			end, warn)
 
