@@ -81,11 +81,12 @@ return function(Vargs)
 							end
 
 							connection:Disconnect()
-							Anti.Detected(player, "log", "Hat weld removed")
 
 							if handle and handle:CanSetNetworkOwnership() then
 								handle:SetNetworkOwner(nil)
 							end
+
+							Anti.Detected(player, "log", "Hat weld removed")
 						end)
 					end)
 
