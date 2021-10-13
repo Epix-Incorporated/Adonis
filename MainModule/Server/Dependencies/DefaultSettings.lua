@@ -326,7 +326,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
-	settings.AntiParanoid = true		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiRootJointDeletion = true		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiHumanoidDeletion = true -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 	settings.AntiMultiTool = true -- Prevents multitooling and because of that many other exploits
 	settings.AntiGod = true -- If a player does not respawn when they should have they get respawned
@@ -434,7 +434,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
-	descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
+	descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
 	descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
 	descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits ]]
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
@@ -534,7 +534,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"AENotifs";
 		"AntiNoclip";
-		"AntiParanoid";
+		"AntiRootJointDeletion";
 		"AntiHumanoidDeletion";
 		"AntiMultiTool";
 		"AntiGod";
