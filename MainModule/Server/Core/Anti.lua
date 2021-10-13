@@ -318,13 +318,13 @@ return function(Vargs)
 			})
 
 			if Settings.AENotifs == true then
-				for _, plr in pairs(service.Players:GetPlayers()) do
+				for _, plr in ipairs(service.Players:GetPlayers()) do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
 							Message = string.format
 								action,
-								"%s was detected for exploiting, action: %s info: %s  (Mouse over full info)",
+								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,
 								string.sub(info, 1, 50)
 							),
