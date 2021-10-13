@@ -3133,7 +3133,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						local hum = v.Character:FindFirstChildWhichIsA("Humanoid")
+						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then
 							hum.Health = 0
 						end
