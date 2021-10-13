@@ -324,11 +324,14 @@ local descs = {};			--// Contains settings descriptions
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-	settings.AntiSpeed = true 			-- Attempts to detect speed exploits
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiParanoid = true		-- Attempts to detect paranoid and kills the player if found
-	settings.AntiBuildingTools = false	-- Attempts to detect any HopperBin(s)/Building Tools added to the client
-	settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
+	settings.AntiHumanoidDeletion = true -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
+	settings.AntiMultiTool = true -- Prevents multitooling and because of that many other exploits
+	settings.AntiGod = true -- If a player does not respawn when they should have they get respawned
+	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
+	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
+	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 
 	---------------------
 	-- END OF SETTINGS --
@@ -428,11 +431,15 @@ local descs = {};			--// Contains settings descriptions
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
-	descs.AntiSpeed = [[ Attempted to detect speed exploits ]]
+	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
-	descs.AntiBuildingTools = [[ Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-	descs.AntiLeak = [[ Attempts to prevent place downloading/saving; Do not use if game saves ]]
+	descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
+	descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits ]]
+	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
+	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
+	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
+	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 
 	order = {
 		"HideScript";
@@ -445,14 +452,8 @@ local descs = {};			--// Contains settings descriptions
 		"MobileTheme";
 		" ";
 		"Ranks";
-		--"Moderators";
-		--"Admins";
-		--"HeadAdmins";
-		--"Creators";
 		" ";
 		"Permissions";
-		--"Aliases";
-		--"Commands";
 		" ";
 		"Banned";
 		"Muted";
@@ -460,7 +461,6 @@ local descs = {};			--// Contains settings descriptions
 		"Whitelist";
 		"MusicList";
 		"CapeList";
-		--"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";
@@ -524,9 +524,13 @@ local descs = {};			--// Contains settings descriptions
 		"Detection";
 		"CheckClients";
 		" ";
-		"AntiSpeed";
+		"AENotifs";
 		"AntiNoclip";
 		"AntiParanoid";
+		"AntiHumanoidDeletion";
+		"AntiMultiTool";
+		"AntiGod";
+		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiLeak";
 	}
