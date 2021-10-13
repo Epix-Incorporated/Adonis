@@ -46,7 +46,7 @@ return function(Vargs)
 			-- Day 9 all games with Adonis get access to feature
 		]
 
-		service.Players.PlayerAdded:Connect(function(player)
+		function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
 			end
@@ -66,7 +66,13 @@ return function(Vargs)
 			if Admin.GetLevel(player) < Settings.Ranks.Moderators and (Core.DebugMode == true or CanRollout) then
 				Anti.CharacterCheck(player)
 			end
-		end)
+		end
+
+		for _, v in ipairs(service.Players:GetPlayers()) do
+			coroutine.wrap(pcall)(onPlayerAdded, v)
+		end
+
+		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
 	server.Anti = {
