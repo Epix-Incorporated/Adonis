@@ -69,38 +69,7 @@ return function()
 	end
 
 	local function RunLast()
-	--[[	client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
-			Anti.RunLast = nil;
+		Anti.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -179,14 +148,14 @@ return function()
 					local hasCompleted = false
 					coroutine.wrap(function()
 						local success, err = pcall(Player.Kick, workspace, "If this appears, you have a glitch. 4524234234")
-						if success or string.match(err, "Expected ':' not '.' calling member function Kick") then
+						if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
 							Detected("kick", "Anti kick found! 772068")
 						end
 						if #service.Players:GetPlayers() > 1 then
 							for _, v in ipairs(service.Players:GetPlayers()) do
 								if v ~= Player then
 									local success, err = pcall(Player.Kick, v, "If this appears, you have a glitch. 7756756756")
-									if success or string.match(err, "Cannot kick a non-local Player from a LocalScript") then
+									if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
 										Detected("kick", "Anti kick found! 21656")
 									end
 								end
@@ -201,7 +170,7 @@ return function()
 							Detected("kick", "Anti kick found! 534534")
 						end
 						local success, err = pcall(workspace.GetRealPhysicsFPS, game)
-						if success or string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+						if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
 							Detected("kick", "Anti FPS detection found!")
 						end
 					end)()
