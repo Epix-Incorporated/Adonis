@@ -2079,9 +2079,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in ipairs(service.GetPlayers(plr,args[1])) do
-					local piano = Deps.Assets.Piano:clone()
-					piano.Parent = v:FindFirstChildOfClass("StarterGear")("PlayerGui") or v.Backpack
-					piano.Disabled = false
+					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
+					if Dropper then
+						local piano = Deps.Assets.Piano:clone()
+						piano.Parent = Dropper
+						piano.Disabled = false
+					end
 				end
 			end
 		};
