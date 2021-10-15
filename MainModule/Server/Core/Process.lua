@@ -568,10 +568,6 @@ return function(Vargs)
 					end
 				end)
 
-				--p:SetSpecial("Kick", Anti.RemovePlayer)
-				--p:SetSpecial("Detected", Anti.Detected)
-				--Core.UpdateConnection(p)
-
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
@@ -859,11 +855,7 @@ return function(Vargs)
 
 				if level < 1 then
 					if Settings.AntiNoclip then
-						Remote.Send(p,"LaunchAnti","HumanoidState")
-					end
-
-					if Settings.AntiParanoid then
-						Remote.Send(p,"LaunchAnti","Paranoid")
+						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
 
