@@ -5718,7 +5718,7 @@ return function(Vargs, env)
 
 		UnMute = {
 			Prefix = Settings.Prefix;
-			Commands = {"unmute";};
+			Commands = {"unmute";"unsilence"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";
