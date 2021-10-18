@@ -4046,7 +4046,7 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
-					Functions.Notification("Team","Your team has been reset and you are now on the Neutral team.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
+					Functions.Notification("Team","Your team has been reset and you are now on the Neutral team.",{player},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
