@@ -745,6 +745,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = math.huge
 						Humanoid.Health = 9e9
+						Functions.Notification("God mode","Character God mode has been enabled. You will not take damage from non-explosive weapons.",{v},15,7510999669)
 					end
 				end
 			end
@@ -765,6 +766,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
+						Functions.Notification("God mode","Character God mode has been disabled.",{v},15,7510999669)
 					end
 				end
 			end
