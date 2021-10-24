@@ -385,9 +385,9 @@ return function(data)
 			OnClicked = function()
 				local tools = {}
 				for k,t in pairs(player.Backpack:GetChildren()) do
-					if t:IsA("Tool") then
+					if t.ClassName == "Tool" then
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
-					elseif t:IsA("HopperBin") then
+					elseif t.ClassName == "HopperBin" then
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
 					else
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName})

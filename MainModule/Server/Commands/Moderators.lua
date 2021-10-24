@@ -720,8 +720,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -737,9 +739,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = math.huge
-						v.Character.Humanoid.Health = 9e9
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.MaxHealth = math.huge
+						Humanoid.Health = 9e9
 					end
 				end
 			end
@@ -755,9 +759,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = 100
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.MaxHealth = 100
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -1152,10 +1158,10 @@ return function(Vargs, env)
 					Routine(function()
 						local tools = {}
 						table.insert(tools,{Text="==== "..v.Name.."'s Tools ====",Desc=string.lower(v.Name)})
-						for k,t in pairs(v.Backpack:GetChildren()) do
-							if t:IsA("Tool") then
+						for k,t in ipairs(v:FindFirstChildOfClass("Backpack"):GetChildren()) do
+							if t.ClassName == "Tool" then
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
-							elseif t:IsA("HopperBin") then
+							elseif t.ClassName == "HopperBin" then
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType).." | Name: "..t.Name})
 							else
 								table.insert(tools,{Text=t.Name,Desc="Class: "..t.ClassName.." | Name: "..t.Name})
@@ -1528,7 +1534,7 @@ return function(Vargs, env)
 				local command = args[3]
 				local name = string.lower(plr.Name)
 				assert(command, "Argument #1 needs to be supplied")
-				if strng.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or string.find(command, "^"..Settings.Prefix.."loop") or string.find(command,"^"..Settings.Prefix.."repeat") then
+				if string.lower(string.sub(command,1,#Settings.Prefix+string.len("repeat"))) == string.lower(Settings.Prefix.."repeat") or string.sub(command,1,#Settings.Prefix+string.len("loop")) == string.lower(Settings.Prefix.."loop") or string.find(command, "^"..Settings.Prefix.."loop") or string.find(command,"^"..Settings.Prefix.."repeat") then
 					error("Cannot repeat the loop command in a loop command")
 					return
 				end
@@ -2023,8 +2029,8 @@ return function(Vargs, env)
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
 				}
 
-				for i, v in next,Settings.Storage:GetChildren() do
-					if v:IsA("Tool") or v:IsA("HopperBin") then
+				for i, v in ipairs(Settings.Storage:GetChildren()) do
+					if v.ClassName == "Tool" or v.ClassName == "HopperBin" then
 						table.insert(children, {
 							Class = "TextLabel";
 							Size = UDim2.new(1, -10, 0, 30);
@@ -2073,9 +2079,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in ipairs(service.GetPlayers(plr,args[1])) do
-					local piano = Deps.Assets.Piano:clone()
-					piano.Parent = v:FindFirstChild("PlayerGui") or v.Backpack
-					piano.Disabled = false
+					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
+					if Dropper then
+						local piano = Deps.Assets.Piano:clone()
+						piano.Parent = Dropper
+						piano.Disabled = false
+					end
 				end
 			end
 		};
@@ -2127,7 +2136,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				service.StopLoop("ChickenSpam")
 				for i,v in pairs(Variables.Objects) do
-					if v:IsA("Script") or v:IsA("LocalScript") then
+					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
 					end
 					v:Destroy()
@@ -2150,11 +2159,11 @@ return function(Vargs, env)
 				end
 
 				for i,v in ipairs(workspace:GetChildren()) do
-					if v:IsA('Message') or v:IsA('Hint') then
+					if v.ClassName == "Message" or v.ClassName == "Hint" then
 						v:Destroy()
 					end
 
-					if v.Name:match('A_Probe (.*)') then
+					if string.match(v.Name,'A_Probe (.*)') then
 						v:Destroy()
 					end
 				end
@@ -2174,7 +2183,7 @@ return function(Vargs, env)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
 
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -2269,8 +2278,8 @@ return function(Vargs, env)
 						Functions.SetLighting(i,v)
 					end
 				end
-				for i,v in pairs(service.Lighting:GetChildren()) do
-					if v:IsA("Sky") then
+				for i,v in ipairs(service.Lighting:GetChildren()) do
+					if v.ClassName == "Sky" then
 						service.Delete(v)
 					end
 				end
@@ -2813,13 +2822,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v:FindFirstChild("Backpack") then
-						for a,q in pairs(service.StarterPack:GetChildren()) do
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						for a,q in ipairs(service.StarterPack:GetChildren()) do
 							local q = q:Clone()
 							if not q:FindFirstChild(Variables.CodeName) then
 								service.New("StringValue", q).Name = Variables.CodeName
 							end
-							q.Parent = v.Backpack
+							q.Parent = Backpack
 						end
 					end
 				end
@@ -2835,14 +2845,16 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
+				local sword = service.Insert(125013769)
+
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v:FindFirstChild("Backpack") then
-						local sword = service.Insert(125013769)
+					local Backpack = v:FindFirstChildOfClass("Backpack")
+					if Backpack then
 						local config = sword:FindFirstChild("Configurations")
 						if config then
 							config.CanTeamkill.Value = true
 						end
-						sword.Parent = v.Backpack
+						sword:Clone().Parent = Backpack
 					end
 				end
 			end
@@ -3133,7 +3145,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					if v.Character then
-						local hum = v.Character:FindFirstChildWhichIsA("Humanoid")
+						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then
 							hum.Health = 0
 						end
@@ -3201,8 +3213,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.PlatformStand = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.PlatformStand = true
 					end
 				end
 			end
@@ -3218,8 +3232,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.PlatformStand = false
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.PlatformStand = false
 					end
 				end
 			end
@@ -3235,8 +3251,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Jump = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.Jump = true
 					end
 				end
 			end
@@ -3252,8 +3269,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.Sit = true
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.Sit = true
 					end
 				end
 			end
@@ -3637,7 +3655,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name),1,#args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3674,9 +3692,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i, v in pairs(service.GetPlayers(plr, string.lower(args[1]))) do
-					if v:FindFirstChild("StarterGear") then
-						for a,tool in pairs(v.StarterGear:GetChildren()) do
-							if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					local StarterGear = v:FindFirstChildOfClass("StarterGear")
+					if StarterGear then
+						for a,tool in ipairs(StarterGear:GetChildren()) do
+							if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 								if string.lower(args[2]) == "all" or string.find(string.lower(tool.Name), string.lower(args[2])) == 1 then
 									tool:Destroy()
 								end
@@ -3699,7 +3718,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool:IsA("Tool") or tool:IsA("HopperBin") then
+					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3795,9 +3814,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v:FindFirstChild("Backpack") then
-						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
-						for a, tool in pairs(v.Backpack:GetChildren()) do if tool:IsA("Tool") or tool:IsA("HopperBin") then tool:Destroy() end end
+					local Backpack = v.Character and v:FindFirstChildOfClass("Backpack")
+					if Backpack then
+						for a, tool in pairs(v.Character:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
+						for a, tool in pairs(Backpack:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
 					end
 				end
 			end
@@ -3832,8 +3852,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid:TakeDamage(args[2])
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid:TakeDamage(args[2])
 					end
 				end
 			end
@@ -3850,9 +3871,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.MaxHealth = args[2]
-						v.Character.Humanoid.Health = v.Character.Humanoid.MaxHealth
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if Humanoid then
+						Humanoid.MaxHealth = args[2]
+						Humanoid.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -3869,10 +3891,11 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						local humanoid = v.Character.Humanoid
-						humanoid.JumpPower = args[2] or 50
-						humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.JumpPower = args[2] or 50
+						Humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
 					end
 				end
 			end
@@ -3889,10 +3912,11 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						local humanoid = v.Character.Humanoid
-						humanoid.JumpHeight = args[2] or 7.2
-						humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.JumpHeight = args[2] or 7.2
+						Humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
 					end
 				end
 			end
@@ -3909,11 +3933,13 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert(args[1],"Argument missing or nil")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					if v.Character and v.Character:FindFirstChild("Humanoid") then
-						v.Character.Humanoid.WalkSpeed = args[2] or 16
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.WalkSpeed = args[2] or 16
 						Remote.MakeGui(v,"Notification",{
 							Title = "Notification";
-							Message = "Character walk speed has been set to "..v.Character.Humanoid.WalkSpeed;
+							Message = "Character walk speed has been set to ".. (args[2] or 16);
 							Time = 15;
 						})
 					end
@@ -4198,7 +4224,7 @@ return function(Vargs, env)
 				elseif string.find(args[2], ',') then
 					local x,y,z = string.match(args[2],'(.*),(.*),(.*)')
 					for i,v in pairs(service.GetPlayers(plr,args[1])) do
-						if not v.Character or not v:FindFirstChild("HumanoidRootPart") then continue end
+						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
 						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						if Humanoid then
@@ -4785,7 +4811,7 @@ return function(Vargs, env)
 					end
 
 					for i, v in ipairs(workspace:GetChildren()) do
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
+						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
 									Title = "Override paused track?";
@@ -4813,7 +4839,7 @@ return function(Vargs, env)
 					s:Play()
 				elseif id == "off" or id == "0" then
 					for i, v in ipairs(workspace:GetChildren()) do
-						if v:IsA("Sound") and v.Name == "ADONIS_SOUND" then
+						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
 					end
@@ -5263,7 +5289,7 @@ return function(Vargs, env)
 						else
 							local newDescription = humanoid:GetAppliedDescription()
 							local defaultDescription = Instance.new("HumanoidDescription")
-							for _, property in next, {"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"} do
+							for _, property in ipairs({"BackAccessory", "BodyTypeScale", "ClimbAnimation", "DepthScale", "Face", "FaceAccessory", "FallAnimation", "FrontAccessory", "GraphicTShirt", "HairAccessory", "HatAccessory", "Head", "HeadColor", "HeadScale", "HeightScale", "IdleAnimation", "JumpAnimation", "LeftArm", "LeftArmColor", "LeftLeg", "LeftLegColor", "NeckAccessory", "Pants", "ProportionScale", "RightArm", "RightArmColor", "RightLeg", "RightLegColor", "RunAnimation", "Shirt", "ShouldersAccessory", "SwimAnimation", "Torso", "TorsoColor", "WaistAccessory", "WalkAnimation", "WidthScale"}) do
 								if assetHD[property] ~= defaultDescription[property] then
 									newDescription[property] = assetHD[property]
 								end
@@ -5330,11 +5356,13 @@ return function(Vargs, env)
 					Routine(function()
 						v.CharacterAppearanceId = v.UserId
 
-						if v.Character and v.Character:FindFirstChild("Humanoid") then
+						local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+						if Humanoid then
 							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
 
 							if success then
-								v.Character.Humanoid:ApplyDescription(desc)
+								Humanoid:ApplyDescription(desc)
 							end
 						end
 					end)
