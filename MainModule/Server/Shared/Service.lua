@@ -736,7 +736,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		EscapeSpecialCharacters = function(x)
-			return x:gsub("([^%w])", "%%%1")
+			return string.gsub(x, "([^%w])", "%%%1")
 		end;
 
 		MetaFunc = function(func)
@@ -766,7 +766,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if ran then
 				return "Unknown"
 			else
-				return err:match("%S+$")
+				return string.match(err, "%S+$")
 			end
 		end;
 

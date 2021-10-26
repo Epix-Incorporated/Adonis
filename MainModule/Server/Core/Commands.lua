@@ -51,9 +51,10 @@ return function(Vargs)
 
 		--// Load command modules
 		if server.CommandModules then
+			local env = GetEnv()
 			for i,module in ipairs(server.CommandModules:GetChildren()) do
 				local func = require(module)
-				local ran,tab = pcall(func, Vargs, getfenv())
+				local ran,tab = pcall(func, Vargs, env)
 
 				if ran and tab and type(tab) == "table" then
 					for ind,cmd in pairs(tab) do
