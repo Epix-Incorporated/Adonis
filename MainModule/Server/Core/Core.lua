@@ -54,7 +54,7 @@ return function(Vargs)
 		disableAllGUIs(server.Client.UI);
 
 		Core.Init = nil;
-		Logs:AddLog("Script", "Core Module Initialized")
+		AddLog("Script", "Core Module Initialized")
 	end;
 
 	local function RunAfterPlugins(data)
@@ -97,7 +97,7 @@ return function(Vargs)
 		service.StartLoop("SaveAllPlayerData", Core.DS_AllPlayerDataSaveInterval, Core.SaveAllPlayerData, true)
 
 		Core.RunAfterPlugins = nil;
-		Logs:AddLog("Script", "Core Module RunAfterPlugins Finished");
+		AddLog("Script", "Core Module RunAfterPlugins Finished");
 	end
 
 	server.Core = {
@@ -193,7 +193,7 @@ return function(Vargs)
 					event.Parent = remoteParent;
 					secureTriggered = false;
 
-					Logs.AddLog(Logs.Script,{
+					AddLog(Logs.Script,{
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";
 					})
@@ -342,7 +342,7 @@ return function(Vargs)
 
 			clientLoader.Removing = false;
 
-			Logs:AddLog("Script", "Created client");
+			AddLog("Script", "Created client");
 		end;
 
 		HookClient = function(p)
@@ -613,7 +613,7 @@ return function(Vargs)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
 					Core.SetData(key, data)
-					Logs.AddLog(Logs.Script,{
+					AddLog(Logs.Script,{
 						Text = "Saved data for ".. p.Name;
 						Desc = "Player data was saved to the datastore";
 					})
@@ -964,7 +964,7 @@ return function(Vargs)
 				Core.CrossServer("LoadData", "TableUpdate", data);
 			end
 
-			Logs.AddLog(Logs.Script,{
+			AddLog(Logs.Script,{
 				Text = "Saved setting change to datastore";
 				Desc = "A setting change was issued and saved";
 			})
@@ -1098,7 +1098,7 @@ return function(Vargs)
 						end
 					end
 
-					Logs.AddLog(Logs.Script,{
+					AddLog(Logs.Script,{
 						Text = "Loaded saved data";
 						Desc = "Data was retrieved from the datastore and loaded successfully";
 					})
@@ -1126,6 +1126,7 @@ return function(Vargs)
 			local service = service
 			local Routine = Routine
 			local cPcall = cPcall
+			local MetaFunc = service.MetaFunc
 			local API_Special = {
 				AddAdmin = Settings.Allowed_API_Calls.DataStore;
 				RemoveAdmin = Settings.Allowed_API_Calls.DataStore;
@@ -1150,7 +1151,7 @@ return function(Vargs)
 			}
 
 			local API = {
-				Access = service.MetaFunc(function(...)
+				Access = MetaFunc(function(...)
 					local args = {...}
 					local key = args[1]
 					local ind = args[2]
@@ -1167,7 +1168,7 @@ return function(Vargs)
 							return service.NewProxy {
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
-										Logs.AddLog(Logs.Script,{
+										AddLog(Logs.Script,{
 											Text = "Access to "..tostring(inde).." was granted";
 											Desc = "A server script was granted access to "..tostring(inde);
 										})
@@ -1178,7 +1179,7 @@ return function(Vargs)
 											return targ[inde]
 										end
 									elseif API_Special[inde] == false then
-										Logs.AddLog(Logs.Script,{
+										AddLog(Logs.Script,{
 											Text = "Access to "..tostring(inde).." was denied";
 											Desc = "A server script attempted to access "..tostring(inde).." via _G.Adonis.Access";
 										})
@@ -1204,7 +1205,7 @@ return function(Vargs)
 				end);
 
 				Scripts = service.ReadOnly({
-					ExecutePermission = function(srcScript, code)
+					ExecutePermission = MetaFunc(function(srcScript, code)
 						local exists;
 
 						for i,v in pairs(Core.ScriptCache) do
@@ -1237,48 +1238,48 @@ return function(Vargs)
 							end
 							return data.Source, module
 						end
-					end;
+					end);
 
-					ReportLBI = function(scr, origin)
+					ReportLBI = MetaFunc(function(scr, origin)
 						if origin == "Server" then
 							return true
 						end
-					end;
+					end);
 				}, nil, nil, true);
 
-				CheckAdmin = service.MetaFunc(Admin.CheckAdmin);
+				CheckAdmin = MetaFunc(Admin.CheckAdmin);
 
-				IsAdmin = service.MetaFunc(Admin.CheckAdmin);
+				IsAdmin = MetaFunc(Admin.CheckAdmin);
 
-				IsBanned = service.MetaFunc(Admin.CheckBan);
+				IsBanned = MetaFunc(Admin.CheckBan);
 
-				IsMuted = service.MetaFunc(Admin.IsMuted);
+				IsMuted = MetaFunc(Admin.IsMuted);
 
-				CheckDonor = service.MetaFunc(Admin.CheckDonor);
+				CheckDonor = MetaFunc(Admin.CheckDonor);
 
-				GetLevel = service.MetaFunc(Admin.GetLevel);
+				GetLevel = MetaFunc(Admin.GetLevel);
 
-				SetLighting = service.MetaFunc(Functions.SetLighting);
+				SetLighting = MetaFunc(Functions.SetLighting);
 
-				SetPlayerLighting = service.MetaFunc(Remote.SetLighting);
+				SetPlayerLighting = MetaFunc(Remote.SetLighting);
 
-				NewParticle = service.MetaFunc(Functions.NewParticle);
+				NewParticle = MetaFunc(Functions.NewParticle);
 
-				RemoveParticle = service.MetaFunc(Functions.RemoveParticle);
+				RemoveParticle = MetaFunc(Functions.RemoveParticle);
 
-				NewLocal = service.MetaFunc(Remote.NewLocal);
+				NewLocal = MetaFunc(Remote.NewLocal);
 
-				MakeLocal = service.MetaFunc(Remote.MakeLocal);
+				MakeLocal = MetaFunc(Remote.MakeLocal);
 
-				MoveLocal = service.MetaFunc(Remote.MoveLocal);
+				MoveLocal = MetaFunc(Remote.MoveLocal);
 
-				RemoveLocal = service.MetaFunc(Remote.RemoveLocal);
+				RemoveLocal = MetaFunc(Remote.RemoveLocal);
 
-				Hint = service.MetaFunc(Functions.Hint);
+				Hint = MetaFunc(Functions.Hint);
 
-				Message = service.MetaFunc(Functions.Message);
+				Message = MetaFunc(Functions.Message);
 
-				RunCommandAsNonAdmin = service.MetaFunc(server.Admin.RunCommandAsNonAdmin);
+				RunCommandAsNonAdmin = MetaFunc(Admin.RunCommandAsNonAdmin);
 			}
 
 			local AdonisGTable = service.NewProxy({
@@ -1305,7 +1306,7 @@ return function(Vargs)
 			end
 
 
-			Logs.AddLog(Logs.Script,{
+			AddLog(Logs.Script,{
 				Text = "Started _G API";
 				Desc = "_G API was initialized and is ready to use";
 			})
