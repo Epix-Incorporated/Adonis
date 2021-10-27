@@ -87,13 +87,14 @@ return function(Vargs)
 		end
 
 		--// Change command permissions based on settings
+		local Trim = service.Trim
 		for ind, cmd in pairs(Settings.Permissions or {}) do
 			local com,level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
 				if string.find(level, ",") then
 					local newLevels = {}
 					for lvl in string.gmatch(level, "[^%,]+") do
-						table.insert(newLevels, service.Trim(lvl))
+						table.insert(newLevels, Trim(lvl))
 					end
 
 					Admin.SetPermission(com, newLevels)
