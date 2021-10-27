@@ -208,7 +208,9 @@ return function(Vargs)
 		UpdateConnections = function()
 			if service.NetworkServer then
 				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
-					Core.Connections[cli] = cli:GetPlayer()
+					if cli:IsA("NetworkReplicator") then
+						Core.Connections[cli] = cli:GetPlayer()
+					end
 				end
 			end
 		end;
@@ -216,7 +218,7 @@ return function(Vargs)
 		UpdateConnection = function(p)
 			if service.NetworkServer then
 				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
-					if cli:GetPlayer() == p then
+					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						Core.Connections[cli] = p
 					end
 				end
@@ -225,9 +227,9 @@ return function(Vargs)
 
 		GetNetworkClient = function(p)
 			if service.NetworkServer then
-				for i,v in ipairs(service.NetworkServer:GetChildren()) do
-					if v:GetPlayer() == p then
-						return v
+				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
+					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
+						return cli
 					end
 				end
 			end

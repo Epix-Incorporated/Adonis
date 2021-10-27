@@ -1469,7 +1469,7 @@ return function(Vargs, env)
 
 				local nilPlayers = 0
 				for i,v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+					if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
 				end
