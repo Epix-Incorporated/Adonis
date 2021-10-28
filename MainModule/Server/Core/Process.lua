@@ -149,7 +149,7 @@ return function(Vargs)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
-									Logs:AddLog("Script", string.format("%s requested client keys", p.Name))
+									AddLog("Script", string.format("%s requested client keys", p.Name))
 								else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
@@ -542,7 +542,7 @@ return function(Vargs)
 		]==]
 
 		PlayerAdded = function(p)
-			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
+			AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
 
 			local key = tostring(p.UserId)
 			local keyData = {
@@ -609,7 +609,7 @@ return function(Vargs)
 			end)
 
 			if not ran then
-				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
+				AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
@@ -678,7 +678,7 @@ return function(Vargs)
 				end
 			end)
 
-			Logs.AddLog("Script", {
+			AddLog("Script", {
 				Text = string.format("Triggerd PlayerRemoving for %s", p.Name);
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
