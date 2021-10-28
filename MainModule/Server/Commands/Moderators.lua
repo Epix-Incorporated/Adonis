@@ -6055,7 +6055,7 @@ return function(Vargs, env)
 						Target = v;
 						SafeChat = hasSafeChat;
 						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						IsDonor = Admin.IsDonor(v.UserId);
 						GameData = gameData;
 						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
