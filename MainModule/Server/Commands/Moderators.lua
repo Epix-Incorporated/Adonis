@@ -6046,18 +6046,18 @@ return function(Vargs, env)
 					end
 
 					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					if privacyMode then hasSafeChat = "[Redacted]" else
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
-					end
+					--if privacyMode then hasSafeChat = "[Redacted]" else
+					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+					hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					--end
 
 					Remote.MakeGui(plr, "Profile", {
 						Target = v;
 						SafeChat = hasSafeChat;
 						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						IsDonor = Admin.CheckDonor(v.UserId);
+						IsDonor = Admin.CheckDonor(v);
 						GameData = gameData;
-						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Code = --[[(privacyMode and "[Redacted]") or]] service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
 					})
 				end
