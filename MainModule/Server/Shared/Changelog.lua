@@ -1,6 +1,11 @@
 return {
-	"Version: 229";
+	"Version: 230";
 	"*Drag edges to expand*";
+	"";
+	"[v230-RC TBD]";
+	"(Git/fxeP1) Admin/Commands/Core/Process.lua | Optimizations #540";
+	"(Git/ccuser44) [AntiCheat] : Huge addition to server side. Yeeted some client side exploits. Removed unnecessary stuff. #536";
+	
 	"";
 	"[v229 10.8.2021 13:35 EST]";
 	"*Fixed an issue with icons in notifications caused by a merge";
