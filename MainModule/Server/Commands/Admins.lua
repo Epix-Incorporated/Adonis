@@ -150,7 +150,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
-				assert(args[1], "Argument missing or nil")
+				assert(args[1], "Missing player name")
 
 				local temp = args[2] ~= "true";
 				local sendLevel = data.PlayerData.Level
@@ -230,7 +230,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Missing player name")
 
 				local sendLevel = data.PlayerData.Level
 				local plrs = service.GetPlayers(plr, args[1], {
@@ -429,7 +429,7 @@ return function(Vargs, env)
 			Description = "Makes a system small message,";
 			AdminLevel = "Admins";
 			Function = function(plr, args)
-				assert(args[1], "Argument missing or nil")
+				assert(args[1], "Missing message")
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
@@ -448,7 +448,7 @@ return function(Vargs, env)
 			Description = "Sets a small hint message at the top of the screen";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Missing message (or enter 'off' to disable)")
 
 				if args[1] == "off" or args[1] == "false" then
 					Variables.NotifMessage = nil
@@ -474,7 +474,7 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Missing player name")
 				Variables.BanMessage = args[1]
 			end
 		};
@@ -487,7 +487,7 @@ return function(Vargs, env)
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Missing unwhitelisted message")
 				Variables.LockMessage = args[1]
 			end
 		};
@@ -500,7 +500,7 @@ return function(Vargs, env)
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+				assert(args[1],"Missing message")
 				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
@@ -774,7 +774,7 @@ return function(Vargs, env)
 				end
 
 				if action == "create" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					local code = args[4] or " "
 
 					if sb[class][name] then
@@ -800,7 +800,7 @@ return function(Vargs, env)
 						Functions.Hint("Created "..class.." "..name,{plr})
 					end
 				elseif action == "edit" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					if sb[class][name] then
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
@@ -819,7 +819,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "close" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					local scr = sb[class][name].Script
 					local tab = Core.GetScript(scr)
 					if sb[class][name] then
@@ -831,7 +831,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "clear" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					local scr = sb[class][name].Script
 					local tab = Core.GetScript(scr)
 					if scr and tab then
@@ -841,7 +841,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "remove" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					if sb[class][name] then
 						pcall(function()
 							sb[class][name].Script.Disabled = true
@@ -855,7 +855,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "append" then
-					assert(args[1] and args[2] and args[3] and args[4],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3] and args[4],"Missing arguments")
 					if sb[class][name] then
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
@@ -867,7 +867,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "run" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					if sb[class][name] then
 						if class == "LocalScript" then
 							sb[class][name].Script.Parent = plr.Backpack
@@ -882,7 +882,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "stop" then
-					assert(args[1] and args[2] and args[3],"Argument missing or nil")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					if sb[class][name] then
 						sb[class][name].Script.Disabled = true
 						Functions.Hint("Stopped "..class.." "..name,{plr})
@@ -913,7 +913,7 @@ return function(Vargs, env)
 			NoFilter = true;
 			Function = function(plr,args)
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				assert(args[1], "Missing 1st argument.")
+				assert(args[1], "Missing Script code")
 
 				local bytecode = Core.Bytecode(args[1])
 				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
@@ -935,7 +935,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				assert(args[1], "Missing 1st argument.")
+				assert(args[1], "Missing LocalScript code")
 
 				local bytecode = Core.Bytecode(args[1])
 				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
@@ -958,7 +958,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr,args)
-				assert(args[2], "Missing 2nd argument.")
+				assert(args[2], "Missing LocalScript code")
 
 				local bytecode = Core.Bytecode(args[2])
 				assert(string.find(bytecode,"\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
@@ -1335,8 +1335,8 @@ return function(Vargs, env)
 			Description = "Same as message but says whatever you want upper message to be instead of your name.";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
-				assert(args[2],"Argument missing or nil")
+				assert(args[1],"Missing message title")
+				assert(args[2],"Missing message")
 				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
