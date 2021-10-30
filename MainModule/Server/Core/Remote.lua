@@ -397,7 +397,9 @@ return function(Vargs)
 				local tab = {}
 				for i,v in pairs(commands) do
 					if not v.Hidden and not v.Disabled then
-						table.insert(tab,Admin.FormatCommand(v))
+						for a,b in pairs(v.Commands) do
+							table.insert(tab,Admin.FormatCommand(v,a))
+						end
 					end
 				end
 				return tab

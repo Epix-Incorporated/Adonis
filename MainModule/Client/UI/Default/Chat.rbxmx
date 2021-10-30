@@ -2462,7 +2462,7 @@ end
 							v.Position = UDim2.new(0.5, -xsize / 2, 1, -(math.abs((i - 1) - #cont:GetChildren()) * 50))
 						end
 
-						local cam = service.Workspace.CurrentCamera
+						local cam = workspace.CurrentCamera
 						local char = player.Character
 						local head = char:FindFirstChild("Head")
 

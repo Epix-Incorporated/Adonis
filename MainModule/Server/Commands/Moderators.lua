@@ -144,7 +144,7 @@ return function(Vargs, env)
 
 		Notification = {
 			Prefix = Settings.Prefix;
-			Commands = {"notify","notification"};
+			Commands = {"notify","notification","notice"};
 			Args = {"player","message"};
 			Description = "Sends the player a notification";
 			Filter = true;
@@ -313,7 +313,7 @@ return function(Vargs, env)
 				assert(args[2], "You forgot to supply a message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
+					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
 				end
 			end
 		};
@@ -372,6 +372,27 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
 						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = (#tostring(args[1]) / 19) + 2.5;
+					})
+				end
+			end
+		};
+
+		TimeHint = {
+			Prefix = Settings.Prefix;
+			Commands = {"th";"timehint";"thint"};
+			Args = {"time";"message"};
+			Filter = true;
+			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				assert(args[2], "A message is required")
+				assert(args[1], "Time amount (in seconds) is required")
+				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[2])
+				for _, v in ipairs(service.GetPlayers()) do
+					Remote.MakeGui(v, "Hint", {
+						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = tonumber(args[1]);
 					})
 				end
 			end
@@ -751,6 +772,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = math.huge
 						Humanoid.Health = 9e9
+						Functions.Notification("God mode","Character God mode has been enabled. You will not take damage from non-explosive weapons.",{v},15,7510999669)
 					end
 				end
 			end
@@ -771,6 +793,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
+						Functions.Notification("God mode","Character God mode has been disabled.",{v},15,7510999669)
 					end
 				end
 			end
@@ -1477,7 +1500,7 @@ return function(Vargs, env)
 
 				local nilPlayers = 0
 				for i,v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+					if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
 				end
@@ -2431,6 +2454,7 @@ return function(Vargs, env)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
+					Functions.Notification("Noclip","Character noclip has been enabled. You will now be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
@@ -2470,6 +2494,7 @@ return function(Vargs, env)
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
+						Functions.Notification("Noclip","Character noclip has been disabled. You will no longer be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 					end
 				end
 			end
@@ -2478,9 +2503,9 @@ return function(Vargs, env)
 		Jail = {
 			Prefix = Settings.Prefix;
 			Commands = {"jail";"imprison";};
-			Args = {"player";};
+			Args = {"player";"BrickColor"};
 			Hidden = false;
-			Description = "Jails the target player(s), removing their tools until they are un-jailed";
+			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the colour of the jail bars";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -2881,29 +2906,40 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
-						if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-							v.Character.Archivable = true
-							local cl = v.Character:Clone()
+						local Character = v.Character
+						local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+
+						if Humanoid then
+							Character.Archivable = true
+
+							local cl = Character:Clone()
 							table.insert(Variables.Objects,cl)
+
+							local Animate
 							local anim = cl:FindFirstChild("Animate")
 							if anim then
-								local Animate = v.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								Animate = Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 								Animate:ClearAllChildren()
-								for _,v in ipairs(anim:GetChildren()) do
+								for _, v in ipairs(anim:GetChildren()) do
 									v.Parent = Animate
 								end
-								Animate.Parent = cl
-								Animate.Disabled = false
 								anim:Destroy()
+
+								Animate.Parent = cl
 							end
+
+							if Character.PrimaryPart then
+								cl:SetPrimaryPartCFrame(Character.PrimaryPart.CFrame)
+							end
+							if Animate then
+								Animate.Disabled = false
+							end
+							cl:FindFirstChild("Humanoid").Died:Connect(function()
+								cl:Destroy()
+							end)
+
+							cl.Archivable = false
 							cl.Parent = workspace
-							cl:MoveTo(v.Character:GetModelCFrame().p)
-							cl:MakeJoints()
-							cl:WaitForChild("Humanoid")
-							v.Character.Archivable = false
-							repeat wait(0.5) until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
-							wait(5)
-							if cl then cl:Destroy() end
 						end
 					end)
 				end
@@ -3972,6 +4008,7 @@ return function(Vargs, env)
 					for a, tm in ipairs(service.Teams:GetChildren()) do
 						if string.sub(string.lower(tm.Name),1,#args[2]) == string.lower(args[2]) then
 							v.Team = tm
+							Functions.Notification("Team","You are now on the '"..tm.Name.."' team.",{v},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 						end
 					end
 				end
@@ -4051,6 +4088,7 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
+					Functions.Notification("Team","Your team has been reset and you are now on the Neutral team.",{player},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
@@ -5749,7 +5787,7 @@ return function(Vargs, env)
 
 		UnMute = {
 			Prefix = Settings.Prefix;
-			Commands = {"unmute";};
+			Commands = {"unmute";"unsilence"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";
@@ -5905,10 +5943,10 @@ return function(Vargs, env)
 
 				local function makeBot(player)
 					local char = player.Character
-					local torso = player.Character:FindFirstChild("HumanoidRootPart")
+					local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
 					local pos = torso.CFrame
-					local clone
 
+					local clone
 					char.Archivable = true
 					clone = char:Clone()
 					char.Archivable = false
@@ -5916,13 +5954,14 @@ return function(Vargs, env)
 					for i = 1, num do
 						local new = clone:Clone()
 						local hum = new:FindFirstChildOfClass("Humanoid")
+
 						local brain = Deps.Assets.BotBrain:Clone()
 						local event = brain.Event
+
 						local oldAnim = new:FindFirstChild("Animate")
 						local isR15 = (hum.RigType == "R15")
 						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
 
-						new.Parent = workspace
 						new.Name = player.Name
 						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0,math.rad((360/num)*i),0)*CFrame.new((num*0.2)+5,0,0)
 
@@ -5935,10 +5974,11 @@ return function(Vargs, env)
 						end
 
 						anim.Parent = new
-						anim.Disabled = false
-
 						brain.Parent = new
+
+						anim.Disabled = false
 						brain.Disabled = false
+						new.Parent = workspace
 
 						wait()
 
@@ -6034,6 +6074,50 @@ return function(Vargs, env)
 				assert(string.lower(args[2]) == "true" or string.lower(args[2]) == "false", "Invalid argument #2 (boolean expected)")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.LoadCode(v,"service.StarterGui:SetCore('ResetButtonCallback',"..string.lower(args[2])..")")
+				end
+			end
+		};
+
+		ViewProfile = {
+			Prefix = Settings.Prefix;
+			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hasSafeChat
+
+					local gameData = nil
+					if Admin.CheckAdmin(plr) then
+						local level, rank = Admin.GetLevel(v)
+						gameData = {
+							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+						}
+						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							gameData[k] = d
+						end
+					end
+
+					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
+					--if privacyMode then hasSafeChat = "[Redacted]" else
+					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+					hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					--end
+
+					Remote.MakeGui(plr, "Profile", {
+						Target = v;
+						SafeChat = hasSafeChat;
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						IsDonor = Admin.CheckDonor(v);
+						GameData = gameData;
+						Code = --[[(privacyMode and "[Redacted]") or]] service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+					})
 				end
 			end
 		};

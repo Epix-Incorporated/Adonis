@@ -334,16 +334,18 @@ return function(Vargs, env)
 		RequestHelp = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"help";"requesthelp";"gethelp";"lifealert";"sos";};
-			Args = {};
+			Args = {"reason"};
 			Hidden = false;
 			Description = "Calls admins for help";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
 					local pending = Variables.HelpRequests[plr.Name];
+					local reason = args[1] or "No reason provided";
 
 					if pending and os.time() - pending.Time < 30 then
 						error("You can only send a help request once every 30 seconds.");
@@ -356,6 +358,7 @@ return function(Vargs, env)
 							pending = {
 								Time = os.time();
 								Pending = true;
+								Reason = reason;
 							}
 
 							Variables.HelpRequests[plr.Name] = pending;
@@ -364,7 +367,8 @@ return function(Vargs, env)
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p,"Notification",{
 										Title = "Help Request";
-										Message = plr.Name.." needs help!";
+										Message = plr.Name.." needs help! Reason: "..pending.Reason;
+										Icon = "rbxassetid://7543068357";
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
 										OnClose = Core.Bytecode("return false");
@@ -477,7 +481,7 @@ return function(Vargs, env)
 
 		Usage = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"usage";};
+			Commands = {"usage";"usermanual"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you how to use some syntax related things";
@@ -623,7 +627,7 @@ return function(Vargs, env)
 
 		GetPremium = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"getpremium";"purcahsepremium";"robloxpremium"};
+			Commands = {"getpremium";"purchasepremium";"robloxpremium"};
 			Args = {};
 			Description = "Prompts you to purchase Roblox Premium";
 			Hidden = false;
@@ -764,52 +768,6 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
-		ViewProfile = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Players";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
-					local hasSafeChat
-
-					local gameData = nil
-					if Admin.CheckAdmin(plr) then
-						local level, rank = Admin.GetLevel(v)
-						gameData = {
-							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
-							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
-						}
-						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
-							gameData[k] = d
-						end
-					end
-
-					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					if privacyMode then hasSafeChat = "[Redacted]" else
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
-					end
-
-					Remote.MakeGui(plr, "Profile", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
-						GameData = gameData;
-						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
-					})
-				end
-			end
-		};
-
-
 	}
 end
 

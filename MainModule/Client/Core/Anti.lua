@@ -69,38 +69,7 @@ return function()
 	end
 
 	local function RunLast()
-	--[[	client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
-			Anti.RunLast = nil;
+		Anti.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -125,6 +94,12 @@ return function()
 		end
 		return true
 	end;
+
+	Player.Idled:Connect(function(time)
+		if time > 30 * 60 then
+			Detected("kick", "Anti idle found!")
+		end
+	end)
 
 	do
 		local OldEnviroment = getfenv()
@@ -169,6 +144,36 @@ return function()
 					end
 				end
 
+				local hasCompleted = false
+				coroutine.wrap(function()
+					local success, err = pcall(Player.Kick, workspace, "If this appears, you have a glitch. Method 1")
+					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
+						Detected("kick", "Anti kick found! Method 1")
+					end
+					if #service.Players:GetPlayers() > 1 then
+						for _, v in ipairs(service.Players:GetPlayers()) do
+							if v ~= Player then
+								local success, err = pcall(Player.Kick, v, "If this appears, you have a glitch. Method 2")
+								if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
+									Detected("kick", "Anti kick found! Method 2")
+								end
+							end
+						end
+					end
+					hasCompleted = true
+				end)()
+
+				coroutine.wrap(function()
+					task.wait(4)
+					if not hasCompleted then
+						Detected("kick", "Anti kick found! Method 3")
+					end
+					local success, err = pcall(workspace.GetRealPhysicsFPS, game)
+					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+						Detected("kick", "Anti FPS detection found!")
+					end
+				end)()
+
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
@@ -182,24 +187,9 @@ return function()
 
 	local Detectors = service.ReadOnly({
 		Speed = function(data)
-			service.StartLoop("AntiSpeed",1,function()
+			service.StartLoop("AntiSpeed", 1, function()
 				if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
-					Detected('kill','Speed exploiting')
-				end
-			end)
-		end;
-
-		NameId = function(data)
-			local realId = data.RealID
-			local realName = data.RealName
-
-			service.StartLoop("NameIDCheck",10,function()
-				if service.Player.Name ~= realName then
-					Detected("log", "Local username does not match server username")
-				end
-
-				if service.Player.userId ~= realId then
-					Detected("log", "Local UserID does not match server UserID")
+					Detected("kill", "Speed exploiting")
 				end
 			end)
 		end;
@@ -259,19 +249,6 @@ return function()
 						doing = false
 						Detected("kill", "NoClipping")
 					end
-				end
-			end
-		end;
-
-		Paranoid = function()
-			wait(1)
-			local char = service.Player.Character
-			local torso = char:WaitForChild("Head")
-			local humPart = char:WaitForChild("HumanoidRootPart", 2)
-			local hum = char:WaitForChild("Humanoid", 2)
-			while hum and torso and humPart and rawequal(torso.Parent, char) and rawequal(humPart.Parent, char) and char.Parent ~= nil and hum.Health>0 and hum and hum.Parent and wait(1) do
-				if (humPart.Position-torso.Position).Magnitude > 10 and hum and hum.Health > 0 then
-					Detected("kill","HumanoidRootPart too far from Torso (Paranoid?)")
 				end
 			end
 		end;
@@ -356,7 +333,7 @@ return function()
 			service.DataModel.ChildAdded:Connect(checkServ)
 
 			service.Events.CharacterRemoving:Connect(function()
-				for i,_ in next,coreNums do
+				for i, _ in next,coreNums do
 					if coreClears[i] then
 						coreNums[i] = 0
 					end

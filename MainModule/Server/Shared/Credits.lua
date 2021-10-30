@@ -20,7 +20,7 @@ return {
 		{Text = "@GitHub kent911t", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub crywink", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub jaydensar", 		Desc = "GitHub Contributor"};
-		{Text = "@GitHub ccuser44",		Desc = "GitHub Contributor"};
+		{Text = "ALE111_boiPNG/@GitHub ccuser44",		Desc = "GitHub Contributor also made FE++ anti cheat which is used"};
 		{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheLegendarySpark",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub DaEnder",		Desc = "GitHub Contributor"};

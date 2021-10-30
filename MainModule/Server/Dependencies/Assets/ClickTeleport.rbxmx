@@ -12,12 +12,12 @@
 			<ProtectedString name="Source"><![CDATA[wait()
 local mode = script.Mode.Value--"Teleport"
 local name = script.Target.Value
-local localplayer = game.Players.LocalPlayer
+local localplayer = game:GetService("Players").LocalPlayer
 local mouse = localplayer:GetMouse()
 local tool = script.Parent
 local use = false
 local holding = false
-local target = game.Players:WaitForChild(name)
+local target = game:GetService("Players"):WaitForChild(name)
 local char = target.Character
 local hum = char:FindFirstChild('Humanoid')
 if not hum then tool:Destroy() end

@@ -102,7 +102,7 @@ return function(Vargs, env)
 			end
 		};
 
-		PermenantBan = {
+		PermanentBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"permban", "permanentban", "pban", "gameban", "saveban", "databan"};
 			Args = {"player", "reason"};

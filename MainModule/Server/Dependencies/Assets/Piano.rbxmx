@@ -11,7 +11,7 @@
 			<string name="ScriptGuid">{38BE1E96-4280-4914-BAED-94753E9321C1}</string>
 			<ProtectedString name="Source"><![CDATA[wait(0.5)
 ExistingSounds = {}
-Player = game.Players.LocalPlayer
+Player = game:GetService("Players").LocalPlayer
 Gui = script:WaitForChild("PianoGui")
 Humanoid = Player.Character.Humanoid
 Tools = Instance.new("Folder",game:service("ReplicatedStorage"))
@@ -289,7 +289,7 @@ LocalSounds = {
 
 SoundFolder = script.SoundFolder
 
-SoundFolder.Parent = game.Players.LocalPlayer.Character
+SoundFolder.Parent = game:GetService("Players").LocalPlayer.Character
 
 function PreloadAudio(sounds)
 	for i, v in pairs(sounds) do
@@ -318,7 +318,7 @@ function PlayNoteSound(note, source, range, sounds)
 	
 	if source then
 		local a = 1/range^2
-		local distance = (game.Workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
+		local distance = (workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
 		local volume = -a*distance^2 + 1
 		if volume < 0.05 then
 			audio:remove()
@@ -338,7 +338,7 @@ function PlayNoteSound(note, source, range, sounds)
 	delay(4, function() audio:Stop() audio:remove() end ) -- remove the audio in 4 seconds, enough time for it to play
 end
 
-Camera = game.Workspace.CurrentCamera
+Camera = workspace.CurrentCamera
 
 
 function SetCamera(cframe)

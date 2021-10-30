@@ -32,11 +32,24 @@ return function(Vargs)
 	end
 
 	local function RunAfterPlugins(data)
-		--// Fake finder
-		--service.RbxEvent(service.Players.ChildAdded, server.Anti.RemoveIfFake)
-
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
+
+		function onPlayerAdded(player)
+			if not player.Character then
+				player.CharacterAdded:Wait()
+			end
+
+			if Admin.GetLevel(player) < 1 then --// Changed from Settings.Moderators.Level to just <1.... I figure we should just ignore anyone who's in any rank above normal player ~ Scel
+				Anti.CharacterCheck(player)
+			end
+		end
+
+		for _, v in ipairs(service.Players:GetPlayers()) do
+			coroutine.wrap(pcall)(onPlayerAdded, v)
+		end
+
+		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
 	server.Anti = {
@@ -58,6 +71,158 @@ return function(Vargs)
 				Text = "Server removed "..tostring(p);
 				Desc = info;
 			})
+		end;
+
+		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
+			local function protectHat(hat)
+				local handle = hat:WaitForChild("Handle", 30)
+
+				if handle then
+					task.defer(function()
+						local joint = handle:WaitForChild("AccessoryWeld")
+
+						local connection
+						connection = joint.AncestryChanged:Connect(function(_, parent)
+							if not connection.Connected or parent then
+								return
+							end
+
+							connection:Disconnect()
+
+							if handle and handle:CanSetNetworkOwnership() then
+								handle:SetNetworkOwner(nil)
+							end
+
+							Anti.Detected(player, "log", "Hat weld removed")
+						end)
+					end)
+
+					if handle:IsA("Part") then
+						local mesh = handle:FindFirstChildOfClass("SpecialMesh") or handle:WaitForChild("Mesh")
+
+						mesh.AncestryChanged:Connect(function(child, parent)
+							task.defer(function()
+								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) then
+									mesh.Parent = handle
+									Anti.Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
+								end
+							end)
+						end)
+					end
+				end
+			end
+
+			local function onCharacterAdded(character)
+				for _, v in ipairs(character:GetChildren()) do
+					if v:IsA("Accoutrement") then
+						coroutine.wrap(protectHat)(v)
+					end
+				end
+
+				character.ChildAdded:Connect(function(child)
+					if child:IsA("Accoutrement") then
+						protectHat(child)
+					elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
+						local count = 0
+
+						task.defer(function()
+							for _, v in ipairs(character:GetChildren()) do
+								if v:IsA("BackpackItem") then
+									count += 1
+									if count > 1 then
+										v.Parent = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack", player)
+										Anti.Detected(player, "log", "Multiple tools equipped at the same time")
+									end
+								end
+							end
+						end)
+					end
+				end)
+
+
+				local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
+
+				if Settings.AntiHumanoidDeletion then
+					humanoid.AncestryChanged:Connect(function(child, parent)
+						task.defer(function()
+							if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
+								humanoid.Parent = character
+								Anti.Detected(player, "kill", "Humanoid removed")
+							end
+						end)
+					end)
+				end
+
+				humanoid.StateChanged:Connect(function(last, state)
+					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
+						Anti.Detected(player, "kill", "Humanoid came out of dead state")
+					end
+				end)
+
+				if game:GetService("Players").CharacterAutoLoads and Settings.AntiGod == true then
+					local connection
+
+					connection = humanoid.Died:Connect(function()
+						if not connection.Connected then
+							return
+						end
+
+						connection:Disconnect()
+
+						task.wait(game:GetService("Players").RespawnTime + 1.5)
+
+						if workspace:IsAncestorOf(humanoid) then
+							player:LoadCharacter()
+							Anti.Detected(player, "log", "Player took too long to respawn. Respawning manually")
+						end
+					end)
+				end
+
+				local animator = humanoid:WaitForChild("Animator")
+
+				animator.AnimationPlayed:Connect(function(animationTrack)
+					local animationId = animationTrack.Animation.AnimationId
+					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
+						Anti.Detected(player, "kill", "Player played an inappropriate character animation")
+					end
+				end)
+
+				local connections = {}
+				local function makeConnection(Conn)
+					local connection
+					connection = Conn:Connect(function(_, parent)
+						if not connection.Connected or parent then
+							return
+						end
+
+						for _, v in ipairs(connections) do
+							v:Disconnect()
+						end
+
+						if humanoid then
+							Anti.Detected(player, "kill", "Character joint removed (Paranoid?)")
+						end
+					end)
+
+					table.insert(connections, connection)
+				end
+
+				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+
+				if Settings.AntiRootJointDeletion then
+					makeConnection(rootJoint.AncestryChanged)
+
+					if humanoid.RigType == Enum.HumanoidRigType.R15 then
+						makeConnection(character:WaitForChild("UpperTorso"):WaitForChild("Waist").AncestryChanged)
+					end
+				end
+			end
+
+			if player.Character then
+				coroutine.wrap(onCharacterAdded)(player.Character)
+			end
+			player.CharacterAdded:Connect(onCharacterAdded)
 		end;
 
 		CheckAllClients = function()
@@ -113,110 +278,35 @@ return function(Vargs)
 			end
 		end;
 
-		isFake = function(p)
-			if not p:IsA("Player") then
-				return true, 1
-			else
-				local players = service.Players:GetPlayers()
-				local found = 0
-
-				if service.NetworkServer then
-					local net = false
-					for i,v in pairs(service.NetworkServer:GetChildren()) do
-						if v:IsA("NetworkReplicator") and v:GetPlayer() == p then
-							net = true
-						end
-					end
-					if not net then
-						return true,1
-					end
-				end
-
-				for i,v in pairs(players) do
-					if tostring(v) == tostring(p) then
-						found = found+1
-					end
-				end
-
-				if found>1 then
-					return true,found
-				else
-					return false
-				end
-			end
-		end;
-
-		RemoveIfFake = function(p)
-			local isFake
-			local ran,err = pcall(function() isFake = Anti.isFake(p) end)
-			if isFake or not ran then
-				Anti.RemovePlayer(p)
-			end
-		end;
-
-		FindFakePlayers = function()
-			for i,v in pairs(service.Players:GetPlayers()) do
-				if Anti.isFake(v) then
-					Anti.RemovePlayer(v, "Fake")
-				end
-			end
-		end;
-
-		AssignName = function()
-			local name = math.random(100000,999999)
-			return name
-		end;
-
-		Detected = function(player,action,info)
+		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
 			if service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if string.lower(action) == 'log' then
+					if string.lower(action) == "log" then
 						-- yay?
-					elseif string.lower(action) == 'kick' then
+					elseif string.lower(action) == "kick" then
 						Anti.RemovePlayer(player, info)
-						if Settings.AENotifs == true then
-							for _, plr in pairs(service.Players:GetPlayers()) do
-								if Admin.GetLevel(plr) > Settings.Ranks.Moderators then
-									Remote.MakeGui(plr, "Notification", {
-										Title = "Notification",
-										Message = string.format("%s has been kicked, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
-										Time = 30;
-										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
-									})
-								end
-							end
-						end
+					elseif string.lower(action) == "kill" then
+						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
 
-						--player:Kick("Adonis; Disconnected by server; \n"..tostring(info))
-					elseif string.lower(action) == 'kill' then
+						if humanoid then
+							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+							Humanoid.Health = 0
+						end
 						player.Character:BreakJoints()
-					elseif string.lower(action) == 'crash' then
-						Remote.Send(player,'Function','Kill')
-						wait(5)
+					elseif string.lower(action) == "crash" then
+						Remote.Send(player, "Function", "Kill")
+						task.wait(5)
 						pcall(function()
-							local scr = Core.NewScript("LocalScript",[[while true do end]])
+							local scr = Core.NewScript("LocalScript", [[while true do end]])
 							scr.Parent = player.Backpack
 							scr.Disabled = false
 						end)
 
 						Anti.RemovePlayer(player, info)
-						if Settings.AENotifs == true then
-							for _, plr in pairs(service.Players:GetPlayers()) do
-								if Admin.GetLevel(plr) > Settings.Ranks.Moderators then
-									Remote.MakeGui(plr, "Notification", {
-										Title = "Notification",
-										Message = string.format("%s was crashed, info: %s",player.Name, string.gsub(tostring(info), "\n", "")),
-										Time = 30;
-										OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
-									})
-								end
-							end
-						end
-
 					else
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
@@ -236,19 +326,22 @@ return function(Vargs)
 				Desc = tostring(info);
 				Player = player;
 			})
-		end;
 
-		CheckNameID = function(p)
-			if p.userId > 0 and p.userId ~= game.CreatorId and p.Character then
-				local realId = service.Players:GetUserIdFromNameAsync(p.Name) or p.userId
-				local realName = service.Players:GetNameFromUserIdAsync(p.userId) or p.Name
-
-				if realName and realId then
-					if (tonumber(realId) and realId~=p.userId) or (tostring(realName)~="nil" and realName~=p.Name) then
-						Anti.Detected(p,'log','Name/UserId does not match')
+			if Settings.AENotifs == true then
+				for _, plr in ipairs(service.Players:GetPlayers()) do
+					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators then
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Notification",
+							Message = string.format
+								action,
+								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
+								player.Name,
+								string.sub(info, 1, 50)
+							),
+							Time = 30;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
+						})
 					end
-
-					Remote.Send(p,"LaunchAnti","NameId",{RealID = realId; RealName = realName})
 				end
 			end
 		end;

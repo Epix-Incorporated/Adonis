@@ -360,8 +360,8 @@ return function(Vargs)
 				if not plr or Admin.CheckAdmin(plr) then
 					local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
 
-					for i,v in pairs(service.NetworkServer:GetChildren()) do
-						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+					for i,cli in pairs(service.NetworkServer:GetChildren()) do
+						if cli:IsA("NetworkReplicator") and cli and cli:GetPlayer() and not service.Players:FindFirstChild(cli:GetPlayer().Name) then
 							nilplayers+=1
 						end
 					end
@@ -377,18 +377,10 @@ return function(Vargs)
 					table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
 					table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
 					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Server Speed: "..math.round(service.Workspace:GetRealPhysicsFPS())})
+					table.insert(tab,{Text = "Server Speed: "..math.round(workspace:GetRealPhysicsFPS())})
 					table.insert(tab,{Text = "Server Start Time: "..service.FormatTime(server.ServerStartTime)})
 					table.insert(tab,{Text = "Server Age: "..service.FormatTime(os.time()-server.ServerStartTime)})
 					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-					--[[
-					if workspace.AllowThirdPartySales == true then
-						table.insert(tab,{Text = "Third Party Sales: [ON]"})
-					else
-						table.insert(tab,{Text = "Third Party Sales: [OFF]"})
-					end
-					]]
 
 					local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
 					local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"

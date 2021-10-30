@@ -12,7 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -24,6 +24,7 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
+		Defaults = server.Defaults
 
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
@@ -49,31 +50,24 @@ return function(Vargs)
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 
-		--[[
-			-- Not used in adonis anymore
-			service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
-			service.RbxEvent(service.LogService.MessageOut, Process.LogService)
-			service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
-		]]
-
 		--// Load client onto existing players
 		if existingPlayers then
 			for i,p in ipairs(existingPlayers) do
 				Core.LoadExistingPlayer(p);
 			end
 		end
-		
+
 		service.TrackTask("Thread: ChatCharacterLimit", function()
 			local ChatModules = service.Chat:WaitForChild("ClientChatModules",5)
 			if ChatModules then
 				local ChatSettings = ChatModules:WaitForChild("ChatSettings",5)
-				if ChatSettings then 
+				if ChatSettings then
 					local success, ChatSettingsModule = pcall(function()
 						return require(ChatSettings)
 					end)
-					if success then 
+					if success then
 						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
-						if NewChatLimit and type(NewChatLimit) == 'number' then 
+						if NewChatLimit and type(NewChatLimit) == 'number' then
 							Process.MaxChatCharacterLimit = NewChatLimit
 							AddLog("Script", "Chat Character Limit automatically set to " .. NewChatLimit);
 						end
@@ -148,7 +142,7 @@ return function(Vargs)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
-									Logs:AddLog("Script", string.format("%s requested client keys", p.Name))
+									AddLog("Script", string.format("%s requested client keys", p.Name))
 								else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
@@ -550,7 +544,7 @@ return function(Vargs)
 		]==]
 
 		PlayerAdded = function(p)
-			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
+			AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
 
 			local key = tostring(p.UserId)
 			local keyData = {
@@ -577,10 +571,6 @@ return function(Vargs)
 					end
 				end)
 
-				--p:SetSpecial("Kick", Anti.RemovePlayer)
-				--p:SetSpecial("Detected", Anti.Detected)
-				--Core.UpdateConnection(p)
-
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
@@ -600,8 +590,9 @@ return function(Vargs)
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-					for listName, list in next,Variables.Whitelist.Lists do
-						if Admin.CheckTable(p, list) then
+					local CheckTable = Admin.CheckTable
+					for listName, list in pairs(Variables.Whitelist.Lists) do
+						if CheckTable(p, list) then
 							listed = true
 							break;
 						end
@@ -616,7 +607,7 @@ return function(Vargs)
 			end)
 
 			if not ran then
-				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
+				AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
@@ -672,20 +663,13 @@ return function(Vargs)
 
 			service.Events.PlayerRemoving:Fire(p)
 
-			spawn(function()
-				local level = (p and data.AdminLevel) or 0
-				if Settings.AntiNil and level < 1 then
-					pcall(function() local p = service.UnWrap(p) p:Kick("Anti Nil") wait() if p then pcall(service.Delete, p) end end)
-				end
-			end)
-
 			delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
 				end
 			end)
 
-			Logs.AddLog("Script", {
+			AddLog("Script", {
 				Text = string.format("Triggerd PlayerRemoving for %s", p.Name);
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
@@ -706,6 +690,15 @@ return function(Vargs)
 				Text = string.format("%s finished loading", p.Name);
 				Desc = "Client finished loading";
 			})
+
+			--// Run OnJoin commands
+			for i,v in pairs(Settings.OnJoin) do
+				TrackTask("Thread: OnJoin_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
+				AddLog("Script", {
+					Text = "OnJoin: Executed "..tostring(v);
+					Desc = "Executed OnJoin command; "..tostring(v)
+				})
+			end
 
 			--// Start keybind listener
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
@@ -743,7 +736,7 @@ return function(Vargs)
 			--// Finish things up
 			if Remote.Clients[key] then
 				Remote.Clients[key].FinishedLoading = true
-				if p.Character and p.Character.Parent == service.Workspace then
+				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
 					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character);
 					if not ran then
@@ -780,7 +773,7 @@ return function(Vargs)
 
 						wait(1)
 
-						if level > 300 and Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
@@ -808,15 +801,6 @@ return function(Vargs)
 					end
 				end
 
-				--// Run OnJoin commands
-				for i,v in next,Settings.OnJoin do
-					AddLog("Script", {
-						Text = "OnJoin: Executed "..tostring(v);
-						Desc = "Executed OnJoin command; "..tostring(v)
-					})
-					Admin.RunCommandAsPlayer(v, p)
-				end
-
 				--// REF_1_ALBRT - 57s_Dxl - 100392_659;
 				--// COMP[[CHAR+OFFSET] < INT[0]]
 				--// EXEC[[BYTE[N]+BYTE[x]] + ABS[CHAR+OFFSET]]
@@ -839,9 +823,6 @@ return function(Vargs)
 			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
-				--// Anti Exploit stuff
-				pcall(Anti.CheckNameID, p)
-
 				--// Wait for UI stuff to finish
 				wait(1);
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
@@ -850,39 +831,36 @@ return function(Vargs)
 				Remote.Get(p,"UIKeepAlive");
 
 				--//GUI loading
+				local MakeGui = Remote.MakeGui
 				if Variables.NotifMessage then
-					Remote.MakeGui(p,"Notif",{
+					MakeGui(p,"Notif",{
 						Message = Variables.NotifMessage
 					})
 				end
 
 				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
-					Remote.MakeGui(p,"Console")
+					MakeGui(p,"Console")
 				end
 
 				if Settings.HelpButton then
-					Remote.MakeGui(p,"HelpButton")
+					MakeGui(p,"HelpButton")
 				end
 
 				if Settings.TopBarShift then
-					Remote.MakeGui(p, "TopBar")
+					MakeGui(p, "TopBar")
 				end
 
 				if Settings.CustomChat then
-					Remote.MakeGui(p,"Chat")
+					MakeGui(p,"Chat")
 				end
 
 				if Settings.PlayerList then
-					Remote.MakeGui(p,"PlayerList")
+					MakeGui(p,"PlayerList")
 				end
 
 				if level < 1 then
 					if Settings.AntiNoclip then
-						Remote.Send(p,"LaunchAnti","HumanoidState")
-					end
-
-					if Settings.AntiParanoid then
-						Remote.Send(p,"LaunchAnti","Paranoid")
+						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
 
@@ -893,18 +871,18 @@ return function(Vargs)
 					end
 				end--]=]
 
-				Functions.Donor(p)
+				spawn(Functions.Donor, p)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, Character, ...)
 
 				--// Run OnSpawn commands
-				for i,v in next,Settings.OnSpawn do
+				for i,v in pairs(Settings.OnSpawn) do
+					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
 						Desc = "Executed OnSpawn command; "..tostring(v)
 					})
-					Admin.RunCommandAsPlayer(v,p)
 				end
 			end
 		end;
