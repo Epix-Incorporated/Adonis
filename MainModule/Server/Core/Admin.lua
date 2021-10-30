@@ -942,8 +942,8 @@ return function(Vargs)
 			end
 		end;
 
-		FormatCommand = function(command)
-			local text = command.Prefix.. command.Commands[1]
+		FormatCommand = function(command,cmdn)
+			local text = command.Prefix.. command.Commands[cmdn or 1]
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
 
