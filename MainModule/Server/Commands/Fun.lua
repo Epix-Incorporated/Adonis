@@ -1570,8 +1570,8 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
-					local p=service.New('Part',service.Workspace)
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local p=service.New("Part", workspace)
 					table.insert(Variables.Objects,p)
 					p.Transparency=1
 					p.CFrame=v.Character.HumanoidRootPart.CFrame+Vector3.new(0,-3,0)
@@ -1689,7 +1689,7 @@ return function(Vargs, env)
 							Reflectance = .2;
 							TopSurface = 0;
 							BottomSurface = 0;
-							Parent = service.Workspace;
+							Parent = workspace.Terrain;
 						})
 
 						p.Touched:Connect(function(hit)
@@ -1700,7 +1700,7 @@ return function(Vargs, env)
 									Position = hit.Position;
 									BlastRadius = 10000;
 									BlastPressure = math.huge;
-									Parent = service.Workspace;
+									Parent = workspace.Terrain;
 								})
 
 							end
@@ -1803,7 +1803,7 @@ return function(Vargs, env)
 						})
 
 						ex.Hit:Connect(fire)
-						ex.Parent = service.Workspace;
+						ex.Parent = workspace.Terrain;
 						part.Anchored = false
 						part:BreakJoints()
 						f:Destroy()
@@ -1923,7 +1923,7 @@ return function(Vargs, env)
 							wait(5)
 							BodyVelocity:remove()
 							if knownchar.Parent then
-								service.New("Explosion",service.Workspace).Position = knownchar.HumanoidRootPart.Position
+								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
 							end
 						end
@@ -2004,9 +2004,9 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
-						if (not v:IsA('Player')) or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head')) or v.Character:FindFirstChild('Epix Puke') then return end
+						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run=true
-						local k=service.New('StringValue',v.Character)
+						local k=service.New("StringValue", v.Character)
 						k.Name='Epix Puke'
 						Routine(function()
 							repeat
@@ -2038,7 +2038,7 @@ return function(Vargs, env)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Puke Peice' and o.Name~='Blood Peice' and o.Name~='Blood Plate' and o.Name~='Puke Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf = CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
-										local g=service.New('Part',service.Workspace)
+										local g=service.New("Part", workspace.Terrain)
 										g.Anchored=true
 										g.CanCollide=false
 										g.Size=Vector3.new(0.1,0.1,0.1)
@@ -2074,12 +2074,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
-						if (not v:IsA('Player')) or (not v) or (not v.Character) or (not v.Character:FindFirstChild('Head')) or v.Character:FindFirstChild('Epix Bleed') then return end
+						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("ADONIS_BLEED") then return end
 						local run=true
-						local k=service.New('StringValue',v.Character)
-						k.Name='ADONIS_BLEED'
+						local k=service.New("StringValue", v.Character)
+						k.Name="ADONIS_BLEED"
 						Routine(function()
 							repeat
 								wait(0.15)
@@ -2112,7 +2112,7 @@ return function(Vargs, env)
 									if o and p and (not service.Players:FindFirstChild(o.Parent.Name)) and o.Name~='Blood Peice' and o.Name~='Puke Peice' and o.Name~='Puke Plate' and o.Name~='Blood Plate' and (o.Parent.Name=='Workspace' or o.Parent:IsA('Model')) and (o.Parent~=p.Parent) and o:IsA('Part') and (o.Parent.Name~=v.Character.Name) and (not o.Parent:IsA('Accessory')) and (not o.Parent:IsA('Tool')) then
 										local cf=CFrame.new(p.CFrame.X,o.CFrame.Y+o.Size.Y/2,p.CFrame.Z)
 										p:Destroy()
-										local g=service.New('Part',service.Workspace)
+										local g=service.New("Part", workspace.Terrain)
 										g.Anchored=true
 										g.CanCollide=false
 										g.Size=Vector3.new(0.1,0.1,0.1)
@@ -2679,31 +2679,30 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(p,args)
-				for i,plr in pairs(service.GetPlayers(p,args[1])) do
-					--Routine(function()
-					if (plr and plr.Character and plr.Character:FindFirstChild"HumanoidRootPart") then
-						local human = plr.Character:FindFirstChildOfClass"Humanoid"
+				for _, plr in ipairs(service.GetPlayers(p,args[1])) do
+					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
 						if not human then
-							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
+							Remote.MakeGui(p, "Output", {Title = "Output"; Message = plr.Name.." doesn't have a Humanoid [Transformation Error]"})
 							return
 						end
 
 						if human.RigType == Enum.HumanoidRigType.R6 then
-							if plr.Character:FindFirstChild"Shirt" then
+							if plr.Character:FindFirstChild("Shirt") then
 								plr.Character.Shirt.Parent = plr.Character.HumanoidRootPart
 							end
-							if plr.Character:FindFirstChild"Pants" then
+							if plr.Character:FindFirstChild("Pants") then
 								plr.Character.Pants.Parent = plr.Character.HumanoidRootPart
 							end
-							local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild"Torso" or plr.Character:FindFirstChild"UpperTorso", CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
-							local head = char:FindFirstChild"Head"
+							local char, torso, ca1, ca2 = plr.Character, plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("UpperTorso"), CFrame.Angles(0, math.rad(90), 0), CFrame.Angles(0, math.rad(-90), 0)
+							local head = char:FindFirstChild("Head")
 
 							torso.Transparency = 1
 
-							for i,v in ipairs(torso:GetChildren()) do
-								if v:IsA'Motor6D' then
-									local lc0 = service.New('CFrameValue', {Name='LastC0';Value=v.C0;Parent=v})
+							for _, v in ipairs(torso:GetChildren()) do
+								if v:IsA("Motor6D") then
+									local lc0 = service.New("CFrameValue", {Name="LastC0";Value=v.C0;Parent=v})
 								end
 							end
 
@@ -2728,16 +2727,15 @@ return function(Vargs, env)
 
 							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
 
-							for d,e in next, char:GetDescendants() do
-								if e:IsA"BasePart" then
-									e.BrickColor = BrickColor.new("Brown")
+							for _, v in ipairs(char:GetDescendants()) do
+								if v:IsA("BasePart") then
+									v.BrickColor = BrickColor.new("Brown")
 								end
 							end
 						elseif human.RigType == Enum.HumanoidRigType.R15 then
 							Remote.MakeGui(p,'Output',{Title = 'Output'; Message = "Cannot support R15 for "..plr.Name.." [Dog Transformation Error]"})
 						end
 					end
-					--end)
 				end
 			end
 		};
@@ -3279,14 +3277,14 @@ return function(Vargs, env)
 						torso.BottomSurface = 0
 						torso.TopSurface = 0
 
-						for i,v in pairs(char:GetChildren()) do
+						for _, v in ipairs(char:GetChildren()) do
 							if v:IsA("BasePart") then
 								v.Anchored = true
 							end
 						end
 
 						local function size(part)
-							for _,v in pairs(part:GetChildren()) do
+							for _, v in ipairs(part:GetChildren()) do
 								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
 									local p1 = v.Part1
 									local c0 = {v.C0:components()}

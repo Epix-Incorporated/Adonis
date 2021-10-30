@@ -248,8 +248,8 @@ return function(Vargs)
 			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
 			local isID = type(group) == "number"
 			if groups then
-				for i,v in ipairs(groups) do
-					if (isID and group == v.Id) or (not isID and group == v.Name) then
+				for _, v in ipairs(groups) do
+					if isID and group == v.Id or not isID and group == v.Name then
 						return v
 					end
 				end
@@ -942,8 +942,8 @@ return function(Vargs)
 			end
 		end;
 
-		FormatCommand = function(command)
-			local text = command.Prefix.. command.Commands[1]
+		FormatCommand = function(command,cmdn)
+			local text = command.Prefix.. command.Commands[cmdn or 1]
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
 

@@ -144,7 +144,7 @@ return function(Vargs, env)
 
 		Notification = {
 			Prefix = Settings.Prefix;
-			Commands = {"notify","notification"};
+			Commands = {"notify","notification","notice"};
 			Args = {"player","message"};
 			Description = "Sends the player a notification";
 			Filter = true;
@@ -309,7 +309,7 @@ return function(Vargs, env)
 				assert(args[1] and args[2], "Argument missing or nil")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v})
+					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
 				end
 			end
 		};
@@ -367,6 +367,27 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
 						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = (#tostring(args[1]) / 19) + 2.5;
+					})
+				end
+			end
+		};
+
+		TimeHint = {
+			Prefix = Settings.Prefix;
+			Commands = {"th";"timehint";"thint"};
+			Args = {"time";"message"};
+			Filter = true;
+			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				assert(args[2], "A message is required")
+				assert(args[1], "Time amount (in seconds) is required")
+				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[2])
+				for _, v in ipairs(service.GetPlayers()) do
+					Remote.MakeGui(v, "Hint", {
+						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Time = tonumber(args[1]);
 					})
 				end
 			end
@@ -744,6 +765,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = math.huge
 						Humanoid.Health = 9e9
+						Functions.Notification("God mode","Character God mode has been enabled. You will not take damage from non-explosive weapons.",{v},15,7510999669)
 					end
 				end
 			end
@@ -764,6 +786,7 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
+						Functions.Notification("God mode","Character God mode has been disabled.",{v},15,7510999669)
 					end
 				end
 			end
@@ -2421,6 +2444,7 @@ return function(Vargs, env)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
+					Functions.Notification("Noclip","Character noclip has been enabled. You will now be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
@@ -2460,6 +2484,7 @@ return function(Vargs, env)
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
+						Functions.Notification("Noclip","Character noclip has been disabled. You will no longer be able to walk though walls.",{p},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 					end
 				end
 			end
@@ -2468,9 +2493,9 @@ return function(Vargs, env)
 		Jail = {
 			Prefix = Settings.Prefix;
 			Commands = {"jail";"imprison";};
-			Args = {"player";};
+			Args = {"player";"BrickColor"};
 			Hidden = false;
-			Description = "Jails the target player(s), removing their tools until they are un-jailed";
+			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the colour of the jail bars";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
@@ -3972,6 +3997,7 @@ return function(Vargs, env)
 					for a, tm in ipairs(service.Teams:GetChildren()) do
 						if string.sub(string.lower(tm.Name),1,#args[2]) == string.lower(args[2]) then
 							v.Team = tm
+							Functions.Notification("Team","You are now on the '"..tm.Name.."' team.",{v},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 						end
 					end
 				end
@@ -4051,6 +4077,7 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
+					Functions.Notification("Team","Your team has been reset and you are now on the Neutral team.",{player},15,7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
 				end
 			end
 		};
@@ -5742,7 +5769,7 @@ return function(Vargs, env)
 
 		UnMute = {
 			Prefix = Settings.Prefix;
-			Commands = {"unmute";};
+			Commands = {"unmute";"unsilence"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Makes it so the target player(s) can talk again. No effect if on Trello mute list.";

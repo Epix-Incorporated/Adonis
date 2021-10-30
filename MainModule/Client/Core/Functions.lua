@@ -331,7 +331,7 @@ return function()
 				end
 				return r;
 			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
-				if (#(x) < 6) then
+				if #(x) < 6 then
 					return ''
 				end
 				local c = 0
@@ -357,7 +357,7 @@ return function()
 			data = gsub(data, '[^'..b..'=]', '')
 
 			return (gsub(gsub(data, '.', function(x)
-				if (x == '=') then
+				if x == '=' then
 					return ''
 				end
 				local r, f = '', (find(b, x) - 1)
@@ -366,7 +366,7 @@ return function()
 				end
 				return r;
 			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then
+				if #x ~= 8 then
 					return ''
 				end
 				local c = 0
@@ -641,13 +641,13 @@ return function()
 			if not parent or parent == "LocalContainer" then
 				par = service.LocalContainer()
 			elseif parent == "Camera" then
-				par = service.Workspace.CurrentCamera
+				par = workspace.CurrentCamera
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
 
-			for ind,obj in ipairs(par:GetChildren()) do
-				if (match and string.match(obj.Name,object)) or (obj.Name == object or object == obj) then
+			for ind, obj in ipairs(par:GetChildren()) do
+				if match and string.match(obj.Name,object) or obj.Name == object or object == obj then
 					obj:Destroy()
 				end
 			end
@@ -1056,7 +1056,7 @@ return function()
 
 				if Variables.KeybindsEnabled and not (textbox) and key and Variables.KeyBinds[key] and not Variables.WaitingForBind then
 					local isAdmin = Remote.Get("CheckAdmin")
-					if (time() - timer > 5 or isAdmin) then
+					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
 							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])

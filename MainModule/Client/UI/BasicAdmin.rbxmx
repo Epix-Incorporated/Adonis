@@ -100,7 +100,7 @@ return function(data)
 					end
 					local titleSize_Y = Top.Size.Y.Offset
 					messageClone.Size = UDim2.new(1,0,0,bodyBounds_Y+titleSize_Y)
-					if (messageClone ~= nil and messageClone.Parent == baseClip) then
+					if messageClone ~= nil and messageClone.Parent == baseClip then
 						messageClone:TweenPosition(UDim2.new(0,0,0.5,-messageClone.Size.Y.Offset/2),'Out','Quint',0.5,true)
 					else
 						if toDisconnect then

@@ -143,7 +143,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank"};
+			Commands = {"unadmin";"unmod","unowner","unhelper","unpadmin","unheadadmin","unrank","unpa";"unoa";"unta"};
 			Args = {"player", "temp (true/false)"};
 			Hidden = false;
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
@@ -423,7 +423,7 @@ return function(Vargs, env)
 
 		SystemNotify = {
 			Prefix = Settings.Prefix;
-			Commands = {"sn","systemnotify","sysnotif","sysnotify"};
+			Commands = {"sn","systemnotify","sysnotif","sysnotify","systemsmallmessage","snmessage","snmsg","ssmsg","ssmessage"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Makes a system small message,";
@@ -481,7 +481,7 @@ return function(Vargs, env)
 
 		SetLockMessage = {
 			Prefix = Settings.Prefix;
-			Commands = {"setlockmessage"; "slockmsg"};
+			Commands = {"setlockmessage"; "slockmsg";"setlmsg"};
 			Args = {"message";};
 			Filter = true;
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
@@ -513,7 +513,7 @@ return function(Vargs, env)
 
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
-			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcgui";"setcore"};
+			Commands = {"setcoreguienabled";"setcoreenabled";"showcoregui";"setcoregui";"setcgui";"setcore";"setcge"};
 			Args = {"player";"element";"true/false";};
 			Hidden = false;
 			Description = "SetCoreGuiEnabled. Enables/Disables CoreGui elements. ";
@@ -639,7 +639,7 @@ return function(Vargs, env)
 				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)
-					obj.Parent = service.Workspace
+					obj.Parent = workspace
 					pcall(obj.MakeJoints, obj)
 					obj:PivotTo(plr.Character:GetPivot())
 				end
@@ -906,7 +906,7 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s";"ss";"serverscript";"sscript";"makescript";"script"};
+			Commands = {"s";"ss";"serverscript";"sscript";"makescript";"script";"scr"};
 			Args = {"code";};
 			Description = "Executes the given code on the server";
 			AdminLevel = "Admins";
@@ -929,7 +929,7 @@ return function(Vargs, env)
 
 		MakeLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"ls";"localscript";"lscript";"makelscript"};
+			Commands = {"ls";"localscript";"lscript";"makelscript";"lscr"};
 			Args = {"code";};
 			Description = "Executes the given code on the client";
 			AdminLevel = "Admins";
@@ -1281,6 +1281,7 @@ return function(Vargs, env)
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
 			Fun = false;
+			Filter = true;
 			CrossServerDenied = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args,data)

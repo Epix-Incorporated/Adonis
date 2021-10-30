@@ -3537,13 +3537,13 @@ return function(data)
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch then
 				inputMoved(input.Position.X, input.Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -3625,7 +3625,7 @@ return function(data)
 			if gTable.Active then
 				inFrame = true
 
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					BringToFront()
 				end
 			end
@@ -3656,7 +3656,7 @@ return function(data)
 		end)
 
 		Event(InputService.InputEnded, function(input)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				dragDragging = false
 			end
 		end)
@@ -8431,7 +8431,7 @@ return function(data)
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false
 	blur.Size = 0
-	blur.Parent = service.Workspace.CurrentCamera
+	blur.Parent = workspace.CurrentCamera
 
 	local fadeSteps = 10
 	local blurSize = 10
@@ -11420,7 +11420,7 @@ end
 							v.Position = UDim2.new(0.5, -xsize / 2, 1, -(math.abs((i - 1) - #cont:GetChildren()) * 50))
 						end
 
-						local cam = service.Workspace.CurrentCamera
+						local cam = workspace.CurrentCamera
 						local char = player.Character
 						local head = char:FindFirstChild("Head")
 
