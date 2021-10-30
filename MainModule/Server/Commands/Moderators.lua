@@ -6033,5 +6033,49 @@ return function(Vargs, env)
 			end
 		};
 
+		ViewProfile = {
+			Prefix = Settings.Prefix;
+			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr,args)
+				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+					local hasSafeChat
+
+					local gameData = nil
+					if Admin.CheckAdmin(plr) then
+						local level, rank = Admin.GetLevel(v)
+						gameData = {
+							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+						}
+						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							gameData[k] = d
+						end
+					end
+
+					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
+					--if privacyMode then hasSafeChat = "[Redacted]" else
+					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+					hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					--end
+
+					Remote.MakeGui(plr, "Profile", {
+						Target = v;
+						SafeChat = hasSafeChat;
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						IsDonor = Admin.CheckDonor(v);
+						GameData = gameData;
+						Code = --[[(privacyMode and "[Redacted]") or]] service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+					})
+				end
+			end
+		};
+
 	}
 end
