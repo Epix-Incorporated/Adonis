@@ -3,6 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v230-RC TBD]";
+	"*Hardcoded level check references have been replaced with references to the associated ranks in Settings";
 	"(Git/evanultra01) Updated WOF audio id #526";
 	"(Git/coasterteam) Merge Trelloban command and client anti fixes #523";
 	"(Git/CommodoreGamer118) Made console show all sub-commands/aliases for commands #532";

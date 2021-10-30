@@ -1059,7 +1059,7 @@ return function(Vargs)
 			local funAllowed = Settings.FunCommands
 			local crossServerAllowed = Settings.CrossServerCommands
 
-			if adminLevel >= 900 then
+			if adminLevel >= Settings.Ranks.Creators.Level then
 				return true
 			elseif cmd.Fun and not funAllowed then
 				return false

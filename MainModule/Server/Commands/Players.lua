@@ -177,7 +177,7 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
 				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
-				
+
 				if args[2] then
 					assert(args[2] >= args[1], "Second argument n cannot be smaller than first")
 					Functions.Hint(math.random(args[1], args[2]), {plr})
@@ -199,13 +199,13 @@ return function(Vargs, env)
 				local children = {
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
 				}
-				
+
 				local brickColorNames = {}
 				for i = 1, 127 do
 					table.insert(brickColorNames, BrickColor.palette(i).Name)
 				end
 				table.sort(brickColorNames)
-				
+
 				for i, bc in ipairs(brickColorNames) do
 					bc = BrickColor.new(bc)
 					table.insert(children, {
@@ -239,7 +239,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		MaterialList = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"materials";"materiallist","mats"};
@@ -713,7 +713,7 @@ return function(Vargs, env)
 					num += 1
 				end
 
-				if nilNum > 0 and Admin.GetLevel(plr) >= 100 then
+				if nilNum > 0 and Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 					Functions.Hint("There are currently "..tostring(num).." player(s); "..tostring(nilNum).." are nil or loading", {plr})
 				else
 					Functions.Hint("There are "..tostring(num).." player(s)", {plr})
@@ -766,4 +766,3 @@ return function(Vargs, env)
 		};
 	}
 end
-
