@@ -780,7 +780,7 @@ return function(Vargs)
 			for i,v in pairs(players) do
 				Remote.MakeGui(v,"Hint",{
 					Message = message;
-					Time = time;
+					Time = time or (#tostring(message) / 19) + 2.5; -- Should make longer messages not dissapear too quickly
 				})
 			end
 		end;
@@ -792,7 +792,7 @@ return function(Vargs)
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = tim;
+					Time = tim or (#tostring(message) / 19) + 2.5;
 				})
 			end
 		end;
@@ -803,7 +803,18 @@ return function(Vargs)
 				Remote.MakeGui(v,"Notify",{
 					Title = title;
 					Message = message;
+					Time = tim or (#tostring(message) / 19) + 2.5;
+				})
+			end
+		end;
+
+		Notification = function(title,message,players,tim,icon) -- note that icon is the AssetId without "rbxassetid://" at the start
+			for i,v in pairs(players) do
+				Remote.MakeGui(v,"Notification",{
+					Title = title;
+					Message = message;
 					Time = tim;
+					Icon = "rbxassetid://"..icon or "rbxassetid://7510999669" -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
