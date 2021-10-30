@@ -159,7 +159,8 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr, args)
-				assert(args[1] and args[2], "Argument(s) missing or nil")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
 					Message = args[2];
@@ -407,6 +408,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you rejoin the server";
 			Fun = false;
+			NoStudio = true; --Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
@@ -420,6 +422,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you follow the player you gave the username of to the server they are in";
 			Fun = false;
+			NoStudio = true; --TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
 			Function = function(plr,args)
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
@@ -531,15 +534,16 @@ return function(Vargs, env)
 
 		GlobalJoin = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend";};
+			Commands = {"joinfriend";"globaljoin"};
 			Args = {"username";};
 			Hidden = false;
 			Description = "Joins your friend outside/inside of the game (must be online)";
 			Fun = false;
+			NoStudio = true;
 			AdminLevel = "Players";
 			Function = function(plr,args) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-
+				assert(args[1],"Missing player name")
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 
 				if player then

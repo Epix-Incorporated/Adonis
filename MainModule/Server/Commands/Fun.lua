@@ -122,7 +122,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
+				assert(args[1],"Missing player name")
+				assert(args[2], "Missing FPS value")
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid number")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","SetFPS",tonumber(args[2]))
@@ -1334,6 +1335,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Sends player to The Forest for a time out";
 			Fun = true;
+			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -1351,6 +1353,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Sends player to The Maze for a time out";
 			Fun = true;
+			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args,data)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
@@ -3658,9 +3661,9 @@ return function(Vargs, env)
 
 				if not args[2] or not tonumber(args[2]) then
 					num = 1
-					Functions.Hint("Size changed to 1 [Argument #2 wasn't supplied correctly.]", {plr})
+					Functions.Hint("Size changed to 1 [Argument #2 (size multiplier) wasn't supplied correctly.]", {plr})
 				elseif tonumber(args[2]) and tonumber(args[2]) > sizeLimit then
-					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 went over the size limit]", {plr})
+					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
 				end
 
 				for i,v in next,service.GetPlayers(plr,args[1]) do
@@ -4006,7 +4009,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2],"Argument missing or nil")
+				assert(args[1] and args[2],"Missing player names (must specify two)")
 				for i,player1 in pairs(service.GetPlayers(plr,args[1])) do
 					for i2,player2 in pairs(service.GetPlayers(plr,args[2])) do
 						local torso1 = player1.Character:FindFirstChild("HumanoidRootPart")
@@ -4634,7 +4637,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				if not args[2] then error("Argument missing or nil") end
+				if not args[2] then error("Need to supply hat ID") end
 
 				local id = args[2]
 
@@ -4919,7 +4922,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local num = assert(tonumber(args[1]), "Argument missing or not number.")
+				local num = assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 				workspace.Gravity = num or 196.2
 			end
 		};

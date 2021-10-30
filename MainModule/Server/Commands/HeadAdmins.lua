@@ -18,7 +18,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				assert(args[1] and args[2], "Argument missing or nil")
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing time amount")
 				local time = args[2]
 				local lower, sub = string.lower, string.sub
 				if sub(lower(time), #time)=='s' then
@@ -83,7 +84,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				assert(args[1], "Argument missing or nil")
+				assert(args[1], "Missing player name")
 				local timebans = Core.Variables.TimeBans or {}
 
 				for i, data in next, timebans do
@@ -210,7 +211,7 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "Argument #1 must be supplied")
+				assert(args[1], "Missing message")
 
 				local globalMessage = string.format([[
 					local server = server
@@ -244,8 +245,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "Argument #1 must be supplied")
-				assert(args[2], "Argument #2 must be supplied")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
 
 
 				local globalMessage = string.format([[
@@ -279,7 +280,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				if not args[1] then error("Missing argument") end
+				if not args[1] then error("You need to supply a list name.") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 				local list = trello.Boards.MakeList(Settings.Trello_Primary,args[1])
 				Functions.Hint("Made list "..list.name,{plr})
@@ -295,7 +296,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				if not args[1] then error("Missing argument") end
+				if not args[1] then error("Enter a valid list name") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
 				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
 				if not list then error("List not found.") end
