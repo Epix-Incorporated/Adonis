@@ -12,7 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
-	local AddLog
+	local AddLog, TrackTask, Defaults
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -25,10 +25,12 @@ return function(Vargs)
 		Variables = server.Variables;
 		Settings = server.Settings;
 		Commands = server.Commands;
+		Defaults = server.Defaults
 
+		TrackTask = service.TrackTask
 		AddLog = Logs.AddLog;
 
-		service.TrackTask("Thread: ChatServiceHandler", function()
+		TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService();
 
@@ -81,9 +83,10 @@ return function(Vargs)
 		end)
 
 		--// Make sure the default ranks are always present for compatability with existing commands
-		for rank,data in next,server.Defaults.Settings.Ranks do
-			if not server.Settings.Ranks[rank] then
-				server.Settings.Ranks[rank] = data;
+		local Ranks = Settings.Ranks
+		for rank,data in pairs(Defaults.Settings.Ranks) do
+			if not Ranks[rank] then
+				Ranks[rank] = data;
 			end
 		end
 
@@ -113,9 +116,10 @@ return function(Vargs)
 		Settings.Moderators = Settings.Ranks.Moderators.Users;--]]
 
 		if Settings.CustomRanks then
-			for name,users in next,Settings.CustomRanks do
-				if not Settings.Ranks[name] then
-					Settings.Ranks[name] = {
+			local Ranks = Settings.Ranks
+			for name,users in pairs(Settings.CustomRanks) do
+				if not Ranks[name] then
+					Ranks[name] = {
 						Level = 1;
 						Users = users;
 					};
@@ -130,13 +134,13 @@ return function(Vargs)
 	local function RunAfterPlugins(data)
 		--// Backup Map
 		if Settings.AutoBackup then
-			service.TrackTask("Thread: Initial Map Backup", Admin.RunCommand, Settings.Prefix.."backupmap")
+			TrackTask("Thread: Initial Map Backup", Admin.RunCommand, Settings.Prefix.."backupmap")
 		end
 
 		--// Run OnStartup Commands
-		for i,v in next,Settings.OnStartup do
+		for i,v in pairs(Settings.OnStartup) do
 			warn("Running startup command ".. tostring(v))
-			service.TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
+			TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v);
 			AddLog("Script",{
 				Text = "Startup: Executed "..tostring(v);
 				Desc = "Executed startup command; "..tostring(v)
@@ -159,7 +163,7 @@ return function(Vargs)
 	end)
 
 	local function stripArgPlaceholders(alias)
-		return service.Trim(alias:gsub("<%S+>", ""))
+		return service.Trim(string.gsub(alias, "<%S+>", ""))
 	end
 
 	local function FormatAliasArgs(alias, aliasCmd, msg)
@@ -196,10 +200,11 @@ return function(Vargs)
 		local suppliedArgs = Admin.GetArgs(msg, numArgs) -- User supplied args (when running :alias arg)
 		local out = aliasCmd;
 
-		for i,argType in next,argTab do
+		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
+		for i,argType in pairs(argTab) do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
-				out = string.gsub(out, service.EscapeSpecialCharacters(argType), replaceWith)
+				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
 			end
 		end
 
@@ -252,21 +257,22 @@ return function(Vargs)
 		end;
 
 		IsMuted = function(player)
-			for _,v in next,Settings.Muted do
-				if Admin.DoCheck(player, v) then
+			local DoCheck = Admin.DoCheck
+			for _,v in pairs(Settings.Muted) do
+				if DoCheck(player, v) then
 					return true
 				end
 			end
 
-			for _,v in next,HTTP.Trello.Mutes do
-				if Admin.DoCheck(player, v) then
+			for _,v in pairs(HTTP.Trello.Mutes) do
+				if DoCheck(player, v) then
 					return true
 				end
 			end
 
 			if HTTP.WebPanel.Mutes then
-				for _,v in next,HTTP.WebPanel.Mutes do
-					if Admin.DoCheck(player, v) then
+				for _,v in pairs(HTTP.WebPanel.Mutes) do
+					if DoCheck(player, v) then
 						return true
 					end
 				end
@@ -553,8 +559,9 @@ return function(Vargs)
 		end;
 
 		IsTempAdmin = function(p)
-			for i,v in next,Admin.TempAdmins do
-				if Admin.DoCheck(p,v) then
+			local DoCheck = Admin.DoCheck
+			for i,v in pairs(Admin.TempAdmins) do
+				if DoCheck(p,v) then
 					return true, i
 				end
 			end
@@ -582,12 +589,13 @@ return function(Vargs)
 			end
 
 			if list then
+				local DoCheck = Admin.DoCheck
 				for ind,check in ipairs(list) do
-					if Admin.DoCheck(p, check) and not (type(check) == "string" and (check:match("^Group:") or check:match("^Item:"))) then
+					if DoCheck(p, check) and not (type(check) == "string" and (string.match(check,"^Group:") or string.match(check,"^Item:"))) then
 						table.remove(list, ind)
 
 						if not temp and Settings.SaveAdmins then
-							service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+							TrackTask("Thread: RemoveAdmin", Core.DoSave, {
 								Type = "TableRemove";
 								Table = {"Settings", "Ranks", listName, "Users"};
 								Value = check;
@@ -645,7 +653,7 @@ return function(Vargs)
 				table.insert(newList,value)
 
 				if Settings.SaveAdmins and levelName and not temp then
-					service.TrackTask("Thread: SaveAdmin", Core.DoSave, {
+					TrackTask("Thread: SaveAdmin", Core.DoSave, {
 						Type = "TableAdd";
 						Table = {"Settings", "Ranks", levelName, "Users"};
 						Value = value
@@ -663,7 +671,7 @@ return function(Vargs)
 				return true
 			else
 				--if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
-				for ind,pass in next,Variables.DonorPass do
+				for ind,pass in pairs(Variables.DonorPass) do
 					local ran, ret;
 					if type(pass) == "number" then
 						ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
@@ -682,13 +690,13 @@ return function(Vargs)
 		CheckBan = function(p)
 			local doCheck = Admin.DoCheck
 			local banCheck = Admin.DoBanCheck
-			for ind,admin in next,Settings.Banned do
+			for ind,admin in pairs(Settings.Banned) do
 				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
 					return true, (type(admin) == "table" and admin.Reason)
 				end
 			end
 
-			for ind,ban in next,Core.Variables.TimeBans do
+			for ind,ban in pairs(Core.Variables.TimeBans) do
 				if (p.UserId == ban.UserId) then
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
@@ -698,14 +706,14 @@ return function(Vargs)
 				end
 			end
 
-			for ind,admin in next,HTTP.Trello.Bans do
+			for ind,admin in pairs(HTTP.Trello.Bans) do
 				if doCheck(p, admin) or banCheck(p, admin) then
 					return true, (type(admin) == "table" and admin.Reason)
 				end
 			end
 
 			if HTTP.WebPanel.Bans then
-				for ind,admin in next,HTTP.WebPanel.Bans do
+				for ind,admin in pairs(HTTP.WebPanel.Bans) do
 					if doCheck(p,admin) or banCheck(p, admin) then
 						return true, (type(admin) == "table" and admin.Reason)
 					end
@@ -799,7 +807,7 @@ return function(Vargs)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
 				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
-				local ran, error = service.TrackTask("Command: ".. tostring(coma), com.Function, false, args)
+				local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
 				if error then
 					--logError("SERVER","Command",error)
 				end
@@ -809,14 +817,19 @@ return function(Vargs)
 		RunCommandAsPlayer = function(coma,plr,...)
 			local ind,com = Admin.GetCommand(coma)
 			if com then
+				local adminLvl = Admin.GetLevel(plr)
+
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local adminLvl = Admin.GetLevel(plr)
-				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
-					Player = plr;
-					Level = adminLvl;
-					isDonor = (Admin.CheckDonor(plr) and (Settings.DonorCommands or com.AllowDonors)) or false;
-				}})
+
+				local ran, error = TrackTask(tostring(plr) .. ": ".. coma, com.Function, plr, args, {
+					PlayerData = {
+						Player = plr;
+						Level = adminLvl;
+						isDonor = ((Settings.DonorCommands or com.AllowDonors) and Admin.CheckDonor(plr)) or false;
+					}
+				})
+
 				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
 				if error then
 					--logError(plr,"Command",error)
@@ -836,7 +849,7 @@ return function(Vargs)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local ran, error = service.TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
+				local ran, error = TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = 0;
 					isDonor = false;
@@ -905,7 +918,7 @@ return function(Vargs)
 				local foundCmds = {};
 				matched = string.lower(matched);
 
-				for ind,cmd in next,Commands do
+				for ind,cmd in pairs(Commands) do
 					if type(cmd) == "table" and ((checkPrefix and prefixChar == cmd.Prefix) or not checkPrefix) then
 						for _,alias in pairs(cmd.Commands) do
 							if string.lower(alias) == matched then
@@ -923,7 +936,7 @@ return function(Vargs)
 		SetPermission = function(comString, newLevel)
 			local cmds = Admin.FindCommands(comString)
 			if cmds then
-				for ind,cmd in next,cmds do
+				for ind,cmd in pairs(cmds) do
 					cmd.AdminLevel = newLevel;
 				end
 			end
@@ -934,8 +947,8 @@ return function(Vargs)
 			local cmdArgs = command.Args or command.Arguments
 			local splitter = Settings.SplitKey
 
-			for ind,arg in next,cmdArgs do
-				text = text..splitter.."<"..arg..">"
+			for ind,arg in pairs(cmdArgs) do
+				text ..= splitter.."<"..arg..">"
 			end
 
 			return text
@@ -943,7 +956,7 @@ return function(Vargs)
 
 		CheckTable = function(p,tab)
 			local doCheck = Admin.DoCheck
-			for i,v in next,tab do
+			for i,v in pairs(tab) do
 				if doCheck(p,v) then
 					return true
 				end
@@ -975,11 +988,14 @@ return function(Vargs)
 
 		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false; --// Check if there's a player-defined alias first then ifnot check settings aliases
+
+			local CheckAliasBlacklist, EscapeSpecialCharacters = Admin.CheckAliasBlacklist, service.EscapeSpecialCharacters
+
 			if aliases then
 				for alias,cmd in pairs(aliases) do
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
-						local escAlias = service.EscapeSpecialCharacters(tAlias)
+						local escAlias = EscapeSpecialCharacters(tAlias)
 						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
 							msg = FormatAliasArgs(alias, cmd, msg);
 						end
@@ -990,8 +1006,8 @@ return function(Vargs)
 			--if not foundPlayerAlias then
 				for alias,cmd in pairs(Settings.Aliases) do
 					local tAlias = stripArgPlaceholders(alias)
-					if not Admin.CheckAliasBlacklist(tAlias) then
-						local escAlias = service.EscapeSpecialCharacters(tAlias)
+					if not CheckAliasBlacklist(tAlias) then
+						local escAlias = EscapeSpecialCharacters(tAlias)
 						if string.match(msg, "^"..escAlias) or string.match(msg, "%s".. escAlias) then
 							msg = FormatAliasArgs(alias, cmd, msg);
 						end
@@ -1028,8 +1044,9 @@ return function(Vargs)
 		end;
 
 		IsBlacklisted = function(p)
-			for i,list in next,Variables.Blacklist.Lists do
-				if Admin.CheckTable(p, list) then
+			local CheckTable = Admin.CheckTable
+			for i,list in pairs(Variables.Blacklist.Lists) do
+				if CheckTable(p, list) then
 					return true
 				end
 			end
@@ -1068,7 +1085,7 @@ return function(Vargs)
 				isDonor = Admin.CheckDonor(p);
 			}
 
-			for index,command in next,Commands do
+			for index,command in pairs(Commands) do
 				if checkPerm(pDat, command) then
 					tab[index] = command
 				end

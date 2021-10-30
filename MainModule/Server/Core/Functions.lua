@@ -1061,7 +1061,7 @@ return function(Vargs)
 
 		CleanWorkspace = function()
 			for _, v in ipairs(workspace:GetChildren()) do
-				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Hat") then
+				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Accoutrement") or v.ClassName == "Hat" then
 					v:Destroy()
 				end
 			end
@@ -1083,7 +1083,7 @@ return function(Vargs)
 			local AllGrabbedPlayers = {}
 			for i,v in pairs(service.NetworkServer:GetChildren()) do
 				pcall(function()
-					if v:IsA("ServerReplicator") then
+					if v:IsA("NetworkReplicator") then
 						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))
 						end

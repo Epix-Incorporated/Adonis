@@ -12,7 +12,7 @@ return function(Vargs)
 	local service = Vargs.Service;
 
 	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -24,6 +24,7 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
+		Defaults = server.Defaults
 
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
@@ -62,18 +63,18 @@ return function(Vargs)
 				Core.LoadExistingPlayer(p);
 			end
 		end
-		
+
 		service.TrackTask("Thread: ChatCharacterLimit", function()
 			local ChatModules = service.Chat:WaitForChild("ClientChatModules",5)
 			if ChatModules then
 				local ChatSettings = ChatModules:WaitForChild("ChatSettings",5)
-				if ChatSettings then 
+				if ChatSettings then
 					local success, ChatSettingsModule = pcall(function()
 						return require(ChatSettings)
 					end)
-					if success then 
+					if success then
 						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
-						if NewChatLimit and type(NewChatLimit) == 'number' then 
+						if NewChatLimit and type(NewChatLimit) == 'number' then
 							Process.MaxChatCharacterLimit = NewChatLimit
 							AddLog("Script", "Chat Character Limit automatically set to " .. NewChatLimit);
 						end
@@ -148,7 +149,7 @@ return function(Vargs)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
-									Logs:AddLog("Script", string.format("%s requested client keys", p.Name))
+									AddLog("Script", string.format("%s requested client keys", p.Name))
 								else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
@@ -541,7 +542,7 @@ return function(Vargs)
 		]==]
 
 		PlayerAdded = function(p)
-			Logs:AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
+			AddLog("Script", "Doing PlayerAdded Event for ".. p.Name)
 
 			local key = tostring(p.UserId)
 			local keyData = {
@@ -591,8 +592,9 @@ return function(Vargs)
 				if Variables.Whitelist.Enabled then
 					local listed = false
 
-					for listName, list in next,Variables.Whitelist.Lists do
-						if Admin.CheckTable(p, list) then
+					local CheckTable = Admin.CheckTable
+					for listName, list in pairs(Variables.Whitelist.Lists) do
+						if CheckTable(p, list) then
 							listed = true
 							break;
 						end
@@ -607,7 +609,7 @@ return function(Vargs)
 			end)
 
 			if not ran then
-				Logs:AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
+				AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
 				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
 				warn(tostring(err))
 			end
@@ -676,7 +678,7 @@ return function(Vargs)
 				end
 			end)
 
-			Logs.AddLog("Script", {
+			AddLog("Script", {
 				Text = string.format("Triggerd PlayerRemoving for %s", p.Name);
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
@@ -697,6 +699,15 @@ return function(Vargs)
 				Text = string.format("%s finished loading", p.Name);
 				Desc = "Client finished loading";
 			})
+
+			--// Run OnJoin commands
+			for i,v in pairs(Settings.OnJoin) do
+				TrackTask("Thread: OnJoin_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
+				AddLog("Script", {
+					Text = "OnJoin: Executed "..tostring(v);
+					Desc = "Executed OnJoin command; "..tostring(v)
+				})
+			end
 
 			--// Start keybind listener
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
@@ -771,7 +782,7 @@ return function(Vargs)
 
 						wait(1)
 
-						if level > 300 and Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
@@ -797,15 +808,6 @@ return function(Vargs)
 					if newVer then
 						Core.SetData("VersionNumber",newVer)
 					end
-				end
-
-				--// Run OnJoin commands
-				for i,v in next,Settings.OnJoin do
-					AddLog("Script", {
-						Text = "OnJoin: Executed "..tostring(v);
-						Desc = "Executed OnJoin command; "..tostring(v)
-					})
-					Admin.RunCommandAsPlayer(v, p)
 				end
 
 				--// REF_1_ALBRT - 57s_Dxl - 100392_659;
@@ -841,30 +843,31 @@ return function(Vargs)
 				Remote.Get(p,"UIKeepAlive");
 
 				--//GUI loading
+				local MakeGui = Remote.MakeGui
 				if Variables.NotifMessage then
-					Remote.MakeGui(p,"Notif",{
+					MakeGui(p,"Notif",{
 						Message = Variables.NotifMessage
 					})
 				end
 
 				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
-					Remote.MakeGui(p,"Console")
+					MakeGui(p,"Console")
 				end
 
 				if Settings.HelpButton then
-					Remote.MakeGui(p,"HelpButton")
+					MakeGui(p,"HelpButton")
 				end
 
 				if Settings.TopBarShift then
-					Remote.MakeGui(p, "TopBar")
+					MakeGui(p, "TopBar")
 				end
 
 				if Settings.CustomChat then
-					Remote.MakeGui(p,"Chat")
+					MakeGui(p,"Chat")
 				end
 
 				if Settings.PlayerList then
-					Remote.MakeGui(p,"PlayerList")
+					MakeGui(p,"PlayerList")
 				end
 
 				if level < 1 then
@@ -884,18 +887,18 @@ return function(Vargs)
 					end
 				end--]=]
 
-				Functions.Donor(p)
+				spawn(Functions.Donor, p)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, Character, ...)
 
 				--// Run OnSpawn commands
-				for i,v in next,Settings.OnSpawn do
+				for i,v in pairs(Settings.OnSpawn) do
+					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
 						Desc = "Executed OnSpawn command; "..tostring(v)
 					})
-					Admin.RunCommandAsPlayer(v,p)
 				end
 			end
 		end;

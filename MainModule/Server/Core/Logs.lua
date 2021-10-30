@@ -360,8 +360,8 @@ return function(Vargs)
 				if not plr or Admin.CheckAdmin(plr) then
 					local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
 
-					for i,v in pairs(service.NetworkServer:GetChildren()) do
-						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+					for i,cli in pairs(service.NetworkServer:GetChildren()) do
+						if cli:IsA("NetworkReplicator") and cli and cli:GetPlayer() and not service.Players:FindFirstChild(cli:GetPlayer().Name) then
 							nilplayers+=1
 						end
 					end

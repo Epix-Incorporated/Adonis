@@ -1469,7 +1469,7 @@ return function(Vargs, env)
 
 				local nilPlayers = 0
 				for i,v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+					if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
 				end
@@ -2871,29 +2871,40 @@ return function(Vargs, env)
 			Function = function(plr,args)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Routine(function()
-						if v and v.Character and v.Character:FindFirstChild("Humanoid") then
-							v.Character.Archivable = true
-							local cl = v.Character:Clone()
+						local Character = v.Character
+						local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+
+						if Humanoid then
+							Character.Archivable = true
+
+							local cl = Character:Clone()
 							table.insert(Variables.Objects,cl)
+
+							local Animate
 							local anim = cl:FindFirstChild("Animate")
 							if anim then
-								local Animate = v.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								Animate = Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 								Animate:ClearAllChildren()
-								for _,v in ipairs(anim:GetChildren()) do
+								for _, v in ipairs(anim:GetChildren()) do
 									v.Parent = Animate
 								end
-								Animate.Parent = cl
-								Animate.Disabled = false
 								anim:Destroy()
+
+								Animate.Parent = cl
 							end
+
+							if Character.PrimaryPart then
+								cl:SetPrimaryPartCFrame(Character.PrimaryPart.CFrame)
+							end
+							if Animate then
+								Animate.Disabled = false
+							end
+							cl:FindFirstChild("Humanoid").Died:Connect(function()
+								cl:Destroy()
+							end)
+
+							cl.Archivable = false
 							cl.Parent = workspace
-							cl:MoveTo(v.Character:GetModelCFrame().p)
-							cl:MakeJoints()
-							cl:WaitForChild("Humanoid")
-							v.Character.Archivable = false
-							repeat wait(0.5) until not cl:FindFirstChild("Humanoid") or cl.Humanoid.Health <= 0
-							wait(5)
-							if cl then cl:Destroy() end
 						end
 					end)
 				end
@@ -5887,10 +5898,10 @@ return function(Vargs, env)
 
 				local function makeBot(player)
 					local char = player.Character
-					local torso = player.Character:FindFirstChild("HumanoidRootPart")
+					local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
 					local pos = torso.CFrame
-					local clone
 
+					local clone
 					char.Archivable = true
 					clone = char:Clone()
 					char.Archivable = false
@@ -5898,13 +5909,14 @@ return function(Vargs, env)
 					for i = 1, num do
 						local new = clone:Clone()
 						local hum = new:FindFirstChildOfClass("Humanoid")
+
 						local brain = Deps.Assets.BotBrain:Clone()
 						local event = brain.Event
+
 						local oldAnim = new:FindFirstChild("Animate")
 						local isR15 = (hum.RigType == "R15")
 						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
 
-						new.Parent = workspace
 						new.Name = player.Name
 						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0,math.rad((360/num)*i),0)*CFrame.new((num*0.2)+5,0,0)
 
@@ -5917,10 +5929,11 @@ return function(Vargs, env)
 						end
 
 						anim.Parent = new
-						anim.Disabled = false
-
 						brain.Parent = new
+
+						anim.Disabled = false
 						brain.Disabled = false
+						new.Parent = workspace
 
 						wait()
 
