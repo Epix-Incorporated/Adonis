@@ -569,10 +569,6 @@ return function(Vargs)
 					end
 				end)
 
-				--p:SetSpecial("Kick", Anti.RemovePlayer)
-				--p:SetSpecial("Detected", Anti.Detected)
-				--Core.UpdateConnection(p)
-
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
 				local banned, reason = Admin.CheckBan(p)
@@ -664,13 +660,6 @@ return function(Vargs)
 			local key = tostring(p.UserId)
 
 			service.Events.PlayerRemoving:Fire(p)
-
-			spawn(function()
-				local level = (p and data.AdminLevel) or 0
-				if Settings.AntiNil and level < 1 then
-					pcall(function() local p = service.UnWrap(p) p:Kick("Anti Nil") wait() if p then pcall(service.Delete, p) end end)
-				end
-			end)
 
 			delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
@@ -832,9 +821,6 @@ return function(Vargs)
 			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
-				--// Anti Exploit stuff
-				pcall(Anti.CheckNameID, p)
-
 				--// Wait for UI stuff to finish
 				wait(1);
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
@@ -872,11 +858,7 @@ return function(Vargs)
 
 				if level < 1 then
 					if Settings.AntiNoclip then
-						Remote.Send(p,"LaunchAnti","HumanoidState")
-					end
-
-					if Settings.AntiParanoid then
-						Remote.Send(p,"LaunchAnti","Paranoid")
+						Remote.Send(p, "LaunchAnti", "HumanoidState")
 					end
 				end
 
