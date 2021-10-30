@@ -159,8 +159,8 @@ return function(Vargs, env)
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
 			Function = function(plr, args)
-				assert(args[1], "Must provide the amount of time")
-				assert(args[2], "You forgot to supply a message")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
 					Message = args[2];
@@ -543,7 +543,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr,args) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				assert(args[1],"Must enter valid Roblox username")
+				assert(args[1],"Missing player name")
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 
 				if player then

@@ -122,8 +122,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"You need to specify a player name")
-				assert(args[2], "You need to provide a FPS value")
+				assert(args[1],"Missing player name")
+				assert(args[2], "Missing FPS value")
 				assert(tonumber(args[2]),tostring(args[2]).." is not a valid number")
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					Remote.Send(v,"Function","SetFPS",tonumber(args[2]))
@@ -4009,7 +4009,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1] and args[2],"You need to specify two player names")
+				assert(args[1] and args[2],"Missing player names (must specify two)")
 				for i,player1 in pairs(service.GetPlayers(plr,args[1])) do
 					for i2,player2 in pairs(service.GetPlayers(plr,args[2])) do
 						local torso1 = player1.Character:FindFirstChild("HumanoidRootPart")
@@ -4922,7 +4922,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				local num = assert(tonumber(args[1]), "You need to specify a gravity value (Gravity value must be a number)")
+				local num = assert(tonumber(args[1]), "Missing gravity value (or enter 'fix' to reset to normal)'")
 				workspace.Gravity = num or 196.2
 			end
 		};

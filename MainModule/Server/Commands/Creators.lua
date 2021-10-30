@@ -71,8 +71,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			NoStudio = true;
 			Function = function(plr,args)
-				assert(args[1], "Must provide valid PlaceId")
-				assert(tonumber(args[1]), "Invalid PlaceId (PlaceId must be a number)")
+				assert(args[1], "Missing PlaceId")
+				assert(tonumber(args[1]), "Invalid PlaceId")
 
 				local ans = Remote.GetGui(plr,"YesNoPrompt",{
 					Question = "Force all game-players to teleport to place '".. args[1].."'?";
@@ -215,8 +215,8 @@ return function(Vargs, env)
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
 			Function = function(plr, args)
-				assert(args[1], "Provide a player name");
-				assert(args[2], "Enter a command to run as the target player");
+				assert(args[1], "Missing player name");
+				assert(args[2], "Missing command name");
 				for i,v in next,Functions.GetPlayers(plr, args[1]) do
 					Process.Command(v, args[2], {isSystem = true});
 				end

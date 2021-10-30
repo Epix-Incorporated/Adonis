@@ -474,7 +474,7 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Must provide message banned players will see")
+				assert(args[1],"Missing player name")
 				Variables.BanMessage = args[1]
 			end
 		};
@@ -487,7 +487,7 @@ return function(Vargs, env)
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"Must provide message unwhitelisted players will see")
+				assert(args[1],"Missing unwhitelisted message")
 				Variables.LockMessage = args[1]
 			end
 		};
@@ -500,7 +500,7 @@ return function(Vargs, env)
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
 			AdminLevel = "Admins";
 			Function = function(plr,args)
-				assert(args[1],"You need to provide a message")
+				assert(args[1],"Missing message")
 				for i,v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v,"Message")
 					Remote.MakeGui(v,"Message",{
@@ -774,7 +774,7 @@ return function(Vargs, env)
 				end
 
 				if action == "create" then
-					assert(args[1] and args[2] and args[3],"Specify if it is a script/localscript and the name of the script")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					local code = args[4] or " "
 
 					if sb[class][name] then
@@ -800,7 +800,7 @@ return function(Vargs, env)
 						Functions.Hint("Created "..class.." "..name,{plr})
 					end
 				elseif action == "edit" then
-					assert(args[1] and args[2] and args[3],"Specify if it is a script/localscript and the name of the script")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					if sb[class][name] then
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
@@ -819,7 +819,7 @@ return function(Vargs, env)
 						error(class.." "..name.." not found!")
 					end
 				elseif action == "close" then
-					assert(args[1] and args[2] and args[3],"Specify if it is a script or localscript and the name of the script")
+					assert(args[1] and args[2] and args[3],"Missing arguments")
 					local scr = sb[class][name].Script
 					local tab = Core.GetScript(scr)
 					if sb[class][name] then

@@ -18,8 +18,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args,data)
-				assert(args[1], "You need to enter a player name")
-				assert(args[2], "Enter an amount of time - see "..Settings.PlayerPrefix.."usage for info")
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing time amount")
 				local time = args[2]
 				local lower, sub = string.lower, string.sub
 				if sub(lower(time), #time)=='s' then
@@ -84,7 +84,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr,args)
-				assert(args[1], "Must supply valid player name")
+				assert(args[1], "Missing player name")
 				local timebans = Core.Variables.TimeBans or {}
 
 				for i, data in next, timebans do
@@ -211,7 +211,7 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "A message must be provided")
+				assert(args[1], "Missing message")
 
 				local globalMessage = string.format([[
 					local server = server
@@ -245,8 +245,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr,args)
-				assert(args[1], "You need to specify the amount of time")
-				assert(args[2], "You forgot to supply a message!")
+				assert(args[1], "Missing time amount")
+				assert(args[2], "Missing message")
 
 
 				local globalMessage = string.format([[
