@@ -3,9 +3,21 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v230-RC TBD]";
-	"(Git/fxeP1) Admin/Commands/Core/Process.lua | Optimizations #540";
+	"(Git/evanultra01) Updated WOF audio id #526";
+	"(Git/coasterteam) Merge Trelloban command and client anti fixes #523";
+	"(Git/CommodoreGamer118) Made console show all sub-commands/aliases for commands #532";
+	"(Git/DaEnder) Fixed the typo in repeat command #535";
+	"(Git/joritochip) Fix blank PMs on mobile devices #537";
 	"(Git/ccuser44) [AntiCheat] : Huge addition to server side. Yeeted some client side exploits. Removed unnecessary stuff. #536";
-	
+	"(Git/ccuser44) Some small code improvements #528";
+	"(Git/ccuser44) Removed panic mode stuff. #527";
+	"(Git/alau740) !help now takes a reason, add :timehint #516";
+	"(Git/alau740) !profile is now :profile (mod level command) #541";
+	"(Git/alau740) Change font for notification title, fix icon duplication, more cmd feedback + more #531";
+	"(Git/fxeP1) CustomChat typo fix #524";
+	"(Git/fxeP1) TP X,Y,Z typo fix, Humanoid fixes #534";
+	"(Git/fxeP1) PM fix, Jail fixes, FullClear fix #529";
+	"(Git/fxeP1) Admin/Commands/Core/Process.lua | Optimizations #540";
 	"";
 	"[v229 10.8.2021 13:35 EST]";
 	"*Fixed an issue with icons in notifications caused by a merge";
@@ -22,7 +34,7 @@ return {
 	"(Git/Expertcoders) Notification icons #505";
 	"(Git/ccuser44) Reintroduced vanilla loadstring usage (when available) #504";
 	"(Git/alau740) :cmdinfo now shows admin rank for command, fix cmd alias typo #499";
-	"(Git/fxeP1) Map resotre/backup fix, HideChatCmd fixes, Anti Responding fix(?) #496";
+	"(Git/fxeP1) Map restore/backup fix, HideChatCmd fixes, Anti Responding fix(?) #496";
 	"(Git/alau740) Add timeban alias :tempban #495";
 	"(Git/Expertcoderz) Replaced :inspect with !profile #494";
 	"(Git/ccuser44) Fixed ban naming #492";

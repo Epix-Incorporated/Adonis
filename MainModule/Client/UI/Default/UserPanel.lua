@@ -1245,7 +1245,7 @@ return function(data)
 						toggle.Text = text
 					end
 				};
-									{
+				--[[{ --// Not totally removing this as it may come back in a different capacity in the future ~ Scel
 					Text = "Privacy Mode: ";
 					Desc = "- Hide certain info from your profile";
 					Entry = "Boolean";
@@ -1259,7 +1259,7 @@ return function(data)
 						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
 						toggle.Text = text
 					end
-				};
+				};--]]
 				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
