@@ -50,13 +50,6 @@ return function(Vargs)
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
 		service.RbxEvent(service.Players.PlayerRemoving, service.EventTask("PlayerRemoving", Process.PlayerRemoving))
 
-		--[[
-			-- Not used in adonis anymore
-			service.RbxEvent(service.Workspace.ChildAdded, Process.WorkspaceChildAdded)
-			service.RbxEvent(service.LogService.MessageOut, Process.LogService)
-			service.RbxEvent(service.ScriptContext.Error, Process.ErrorMessage)
-		]]
-
 		--// Load client onto existing players
 		if existingPlayers then
 			for i,p in ipairs(existingPlayers) do
@@ -734,7 +727,7 @@ return function(Vargs)
 			--// Finish things up
 			if Remote.Clients[key] then
 				Remote.Clients[key].FinishedLoading = true
-				if p.Character and p.Character.Parent == service.Workspace then
+				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
 					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character);
 					if not ran then
