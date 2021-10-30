@@ -85,23 +85,16 @@ local unique = {}
 local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
 local locals = {}
 local server = {}
-local Queues = {}
 local service = {}
 local RbxEvents = {}
-local Debounces = {}
-local LoopQueue = {}
 local ErrorLogs = {}
-local RealMethods = {}
-local RunningLoops = {}
 local HookedEvents = {}
-local WaitingEvents = {}
 local ServiceSpecific = {}
-local ServiceVariables = {}
 local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
 local isModule = function(module)
-	for ind, modu in next, server.Modules do
+	for ind, modu in pairs(server.Modules) do
 		if module == modu then
 			return true
 		end
@@ -164,7 +157,7 @@ local GetEnv; GetEnv = function(env, repl)
 		__metatable = unique;
 	})
 	if repl and type(repl) == "table" then
-		for ind, val in next, repl do
+		for ind, val in pairs(repl) do
 			scriptEnv[ind] = val
 		end
 	end
@@ -259,7 +252,7 @@ local CleanUp = function()
 
 	pcall(service.Threads.StopAll)
 	pcall(function()
-		for i,v in next,RbxEvents do
+		for i,v in pairs(RbxEvents) do
 			print("Disconnecting event")
 			v:Disconnect()
 			table.remove(RbxEvents, i)
@@ -309,7 +302,8 @@ locals = {
 	Pcall = Pcall;
 }
 
-service = setfenv(require(Folder.Shared.Service), GetEnv(nil, {server = server}))(function(eType, msg, desc, ...)
+
+service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = {...}
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
@@ -329,7 +323,7 @@ end, function(c, parent, tab)
 	if not isModule(c) and c ~= server.Loader and c ~= server.Dropper and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
 		tab.UnHook()
 	end
-end, ServiceSpecific)
+end, ServiceSpecific, GetEnv(nil, {server = server}))
 
 --// Localize
 os = service.Localize(os)
@@ -375,7 +369,7 @@ server.PluginsFolder = Folder.Plugins;
 server.Service = service
 
 --// Setting things up
-for ind,loc in next,{
+for ind,loc in pairs({
 	_G = _G;
 	game = game;
 	spawn = spawn;
@@ -438,7 +432,7 @@ for ind,loc in next,{
 	Ray = Ray;
 	task = task;
 	service = service
-	} do locals[ind] = loc end
+	}) do locals[ind] = loc end
 
 --// Init
 return service.NewProxy({__metatable = "Adonis"; __tostring = function() return "Adonis" end; __call = function(tab, data)
@@ -502,29 +496,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 		Parent = server.Client;
 	})
 
-	for index, module in next,Folder.Shared:GetChildren() do
+	for index, module in ipairs(Folder.Shared:GetChildren()) do
 		module:Clone().Parent = shared;
 	end
 
-	for index,plugin in next,(data.ClientPlugins or {}) do
+	for index,plugin in pairs(data.ClientPlugins or {}) do
 		plugin:Clone().Parent = server.Client.Plugins;
 	end
 
-	for index,theme in next,(data.Themes or {}) do
+	for index,theme in pairs(data.Themes or {}) do
 		theme:Clone().Parent = server.Client.UI;
 	end
 
-	for index,pkg in next,(data.Packages or {}) do
+	for index,pkg in pairs(data.Packages or {}) do
 		LoadPackage(pkg, Folder.Parent, false);
 	end
 
-	for setting,value in next, server.Defaults.Settings do
+	for setting,value in pairs(server.Defaults.Settings) do
 		if server.Settings[setting] == nil then
 			server.Settings[setting] = value
 		end
 	end
 
-	for desc,value in next, server.Defaults.Descriptions do
+	for desc,value in pairs(server.Defaults.Descriptions) do
 		if server.Descriptions[desc] == nil then
 			server.Descriptions[desc] = value
 		end
@@ -540,10 +534,10 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Credits = require(server.Shared.Credits)
 
 	--// Load services
-	for ind, serv in next,ServicesWeUse do local temp = service[serv] end
+	for ind, serv in ipairs(ServicesWeUse) do local temp = service[serv] end
 
 	--// Load core modules
-	for ind,load in next,LoadingOrder do
+	for ind,load in ipairs(LoadingOrder) do
 		local modu = Folder.Core:FindFirstChild(load)
 		if modu then
 			LoadModule(modu,true,{script = script}, true) --noenv
@@ -558,7 +552,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	local runAfterInit = {}
 	local runAfterPlugins = {}
 
-	for i,name in next,LoadingOrder do
+	for i,name in ipairs(LoadingOrder) do
 		local core = server[name]
 
 		if core then
@@ -590,21 +584,21 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Logs.Errors = ErrorLogs
 
 	--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
-	for i,f in next,runAfterInit do
+	for i,f in pairs(runAfterInit) do
 		f(data);
 	end
 
 	--// Load Plugins
-	for index,plugin in next,server.PluginsFolder:GetChildren() do
+	for index,plugin in ipairs(server.PluginsFolder:GetChildren()) do
 		LoadModule(plugin, false, {script = plugin}, true); --noenv
 	end
 
-	for index,plugin in next,(data.ServerPlugins or {}) do
+	for index,plugin in pairs(data.ServerPlugins or {}) do
 		LoadModule(plugin, false, {script = plugin});
 	end
 
 	--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
-	for i,f in next,runAfterPlugins do
+	for i,f in pairs(runAfterPlugins) do
 		f(data);
 	end
 
@@ -616,7 +610,7 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
 	--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
-	for i,f in next,runLast do
+	for i,f in pairs(runLast) do
 		f(data);
 	end
 

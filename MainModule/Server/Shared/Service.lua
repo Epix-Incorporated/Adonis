@@ -36,7 +36,9 @@ local methods = setmetatable({},{
 })
 
 
-return function(errorHandler, eventChecker, fenceSpecific)
+return function(errorHandler, eventChecker, fenceSpecific, env)
+	if env then setfenv(1, env) end
+
 	local _G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
