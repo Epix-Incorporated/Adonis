@@ -1365,7 +1365,7 @@ return function(Vargs, env)
 		};
 
 		ClownYoink = {
-			Prefix = Settings.Prefix; 					-- Someone's always watching me
+			Prefix = Settings.Prefix; 							-- Someone's always watching me
 			Commands = {"clown","yoink","youloveme","van"};   	-- Someone's always there
 			Args = {"player"}; 									-- When I'm sleeping he just waits
 			Description = "Clowns."; 							-- And he stares
@@ -1493,13 +1493,19 @@ return function(Vargs, env)
 									end
 								end
 
-								local gui = Instance.new("ScreenGui",service.ReplicatedStorage)
+								local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
 								local bg = Instance.new("Frame", gui)
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0,0,0)
 								bg.Size = UDim2.new(2,0,2,0)
 								bg.Position = UDim2.new(-0.5,0,-0.5,0)
-								if p and p.Parent == service.Players then service.TeleportService:Teleport(527443962,p,nil,bg) end
+								if p and p.Parent == service.Players then
+									if service.RunService:IsStudio() then
+										p:Kick("You were saved by the Studio environment.")
+									else
+										service.TeleportService:Teleport(527443962,p,nil,bg)
+									end
+								end
 								wait(0.5)
 								pcall(function() van:Destroy() end)
 								pcall(function() gui:Destroy() end)
@@ -1509,7 +1515,6 @@ return function(Vargs, env)
 				end
 			end;
 		};
-
 
 		Chik3n = {
 			Prefix = Settings.Prefix;
