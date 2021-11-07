@@ -4102,7 +4102,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
-				assert(args[1]), "Missing player name"
+				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid FOV number")
 				for i,v in ipairs(service.GetPlayers(plr,args[1])) do
 					Remote.LoadCode(v,[[workspace.CurrentCamera.FieldOfView=]].. math.clamp(tonumber(args[2]), 1, 120))
