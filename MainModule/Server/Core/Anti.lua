@@ -332,10 +332,10 @@ return function(Vargs)
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
-							Message = string.format
-								action,
+							Message = string.format(
 								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,
+								action,
 								string.sub(info, 1, 50)
 							),
 							Time = 30;
