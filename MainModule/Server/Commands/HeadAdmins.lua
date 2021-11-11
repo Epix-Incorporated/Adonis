@@ -446,5 +446,25 @@ return function(Vargs, env)
 				end
 			end;
 		};
+																		
+		bones = {
+			Prefix = Settings.Prefix;
+			Commands = {"bones"};
+			Args = {};
+			Description = "bones (very destruct)";
+			AdminLevel = "HeadAdmins";
+			Filter = true;
+			IsCrossServer = false;
+			Function = function(plr,args)
+				while wait() do
+					local bone = Instance.new("Part",workspace)
+					bone.Name = "bone"
+					bone.Size = Vector3.new(0.35,0.53,4.36)
+					local boneMesh = Instance.new("SpecialMesh",bone)
+					boneMesh.MeshId = "rbxassetid://523610338"
+					boneMesh.Scale = Vector3.new(0.025, 0.025, 0.025)
+				end
+			end;
+		};
 	}
 end
