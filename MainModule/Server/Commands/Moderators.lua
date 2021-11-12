@@ -2874,21 +2874,20 @@ return function(Vargs, env)
 		Sword = {
 			Prefix = Settings.Prefix;
 			Commands = {"sword";"givesword";};
-			Args = {"player";};
+			Args = {"player";"allow teamkill (default: true)";};
 			Hidden = false;
 			Description = "Gives the target player(s) a sword";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr,args)
 				local sword = service.Insert(125013769)
-
+				local config = sword:FindFirstChild("Configurations")
+				if config then
+					config.CanTeamkill.Value = if args[2] and args[2]:lower() == "false" then false else true
+				end
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
 					if Backpack then
-						local config = sword:FindFirstChild("Configurations")
-						if config then
-							config.CanTeamkill.Value = true
-						end
 						sword:Clone().Parent = Backpack
 					end
 				end
