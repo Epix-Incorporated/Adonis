@@ -3100,7 +3100,7 @@ return function(Vargs, env)
 
 		Refresh = {
 			Prefix = Settings.Prefix;
-			Commands = {"refresh"};
+			Commands = {"refresh","ref"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Refreshes the target player(s)'s character";
@@ -3203,7 +3203,7 @@ return function(Vargs, env)
 
 		Respawn = {
 			Prefix = Settings.Prefix;
-			Commands = {"respawn";"re";"reset"};
+			Commands = {"respawn";"re";"reset";"res"};
 			Args = {"player";};
 			Hidden = false;
 			Description = "Respawns the target player(s)";
