@@ -2072,14 +2072,14 @@ return function(Vargs, env)
 							TextXAlignment = "Left";
 							Text = "  "..v.Name;
 							ToolTip = v:GetFullName();
-							ZIndex = 1;
+							ZIndex = 2;
 							Children = {
 								{
 									Class = "TextButton";
 									Size = UDim2.new(0, 80, 1, -4);
 									Position = UDim2.new(1, -82, 0, 2);
 									Text = "Spawn";
-									ZIndex = 2;
+									ZIndex = 3;
 									OnClick = Core.Bytecode([[
 										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
 									]]);
