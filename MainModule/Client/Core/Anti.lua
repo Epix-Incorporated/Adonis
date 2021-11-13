@@ -144,6 +144,37 @@ return function()
 					end
 				end
 				
+				--[[
+				local hasCompleted = false
+				coroutine.wrap(function()
+					local success, err = pcall(Player.Kick, workspace, "If this appears, you have a glitch. Method 1")
+					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
+						Detected("kick", "Anti kick found! Method 1")
+					end
+					if #service.Players:GetPlayers() > 1 then
+						for _, v in ipairs(service.Players:GetPlayers()) do
+							if v ~= Player then
+								local success, err = pcall(Player.Kick, v, "If this appears, you have a glitch. Method 2")
+								if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
+									Detected("kick", "Anti kick found! Method 2")
+								end
+							end
+						end
+					end
+					hasCompleted = true
+				end)()
+
+				coroutine.wrap(function()
+					task.wait(4)
+					if not hasCompleted then
+						Detected("kick", "Anti kick found! Method 3")
+					end
+					local success, err = pcall(workspace.GetRealPhysicsFPS, game)
+					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+						Detected("kick", "Anti FPS detection found!")
+					end
+				end)()
+				]]
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
