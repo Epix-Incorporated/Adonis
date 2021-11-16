@@ -486,7 +486,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
-				local usage={
+				local usage = {
 					"";
 					"Mouse over things in lists to expand them";
 					"You can also resize windows by dragging the edges";
