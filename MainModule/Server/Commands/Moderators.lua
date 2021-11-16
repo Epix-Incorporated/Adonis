@@ -798,6 +798,42 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		FullGod = {
+			Prefix = Settings.Prefix;
+			Commands = {"fullgod", "totalgod"};
+			Args = {"player"};
+			Description = "Makes the target player(s) immune from both explosions and conventional damage";
+			AdminLevel = 100;
+			Function = function(plr: Player, args)
+				for _, v: Player in pairs(service.Players:GetPlayers()) do
+					if v.Character then
+						service.New("ForceField", v.Character).Visible = false
+						local hum: Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if hum then
+							hum.MaxHealth = math.huge; hum.Health = 9e9
+						end
+					end
+				end
+			end
+		};
+
+		UnFullGod = {
+			Prefix = Settings.Prefix;
+			Commands = {"unfullgod", "untotalgod"};
+			Args = {"player"};
+			Description = "Removes :fullgod effects";
+			AdminLevel = 100;
+			Function = function(plr: Player, args)
+				for _, v: Player in pairs(service.Players:GetPlayers()) do
+					if v.Character then
+						for z, cl in ipairs(v.Character:GetChildren()) do if cl:IsA("ForceField") then cl:Destroy() end end
+						v.Character.Humanoid.MaxHealth = 100
+						v.Character.Humanoid.Health = 100
+					end
+				end
+			end
+		};
 
 		RemoveHats = {
 			Prefix = Settings.Prefix;
