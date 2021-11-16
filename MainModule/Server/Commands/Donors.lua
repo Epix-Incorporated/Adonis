@@ -194,13 +194,13 @@ return function(Vargs, env)
 					end
 
 					Functions.RemoveParticle(torso, "DONOR_FIRE")
-					Functions.NewParticle(torso, "Fire",{
+					Functions.NewParticle(torso, "Fire", {
 						Name = "DONOR_FIRE";
 						Color = color;
 						SecondaryColor = secondary;
 					})
 					Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
-					Functions.NewParticle(torso, "PointLight",{
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_FIRE_LIGHT";
 						Color = color;
 						Range = 15;
@@ -236,12 +236,12 @@ return function(Vargs, env)
 
 					Functions.RemoveParticle(torso, "DONOR_SPARKLES")
 					Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
-					Functions.NewParticle(torso, "Sparkles",{
+					Functions.NewParticle(torso, "Sparkles", {
 						Name = "DONOR_SPARKLES";
 						SparkleColor = color;
 					})
 
-					Functions.NewParticle(torso, "PointLight",{
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_SPARKLES_LIGHT";
 						Color = color;
 						Range = 15;
@@ -276,7 +276,7 @@ return function(Vargs, env)
 					end
 
 					Functions.RemoveParticle(torso, "DONOR_LIGHT")
-					Functions.NewParticle(torso, "PointLight",{
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_LIGHT";
 						Color = color;
 						Range = 15;
@@ -324,7 +324,7 @@ return function(Vargs, env)
 					end
 
 					Functions.RemoveParticle(torso, "DONOR_PARTICLE")
-					Functions.NewParticle(torso, "ParticleEmitter",{
+					Functions.NewParticle(torso, "ParticleEmitter", {
 						Name = "DONOR_PARTICLE";
 						Texture = 'rbxassetid://'..Functions.GetTexture(args[1]);
 						Size = NumberSequence.new({
@@ -481,9 +481,9 @@ return function(Vargs, env)
 				local hat = plr.Character:FindFirstChild(args[1])
 				if hat and hat:IsA("Accessory") then	
 					hat:Destroy()
-					Functions.Hint(args[1].." has been removed",{plr})	
+					Functions.Hint(args[1].." has been removed", {plr})	
 				else
-					Functions.Hint(args[1].." is not a valid accessory",{plr})
+					Functions.Hint(args[1].." is not a valid accessory", {plr})
 				end
 
 			end
