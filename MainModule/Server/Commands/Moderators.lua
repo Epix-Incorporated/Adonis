@@ -576,12 +576,14 @@ return function(Vargs, env)
 		ForceField = {
 			Prefix = Settings.Prefix;
 			Commands = {"ff";"forcefield";};
-			Args = {"player";};
+			Args = {"player", "visible? (default: true)"};
 			Description = "Gives a force field to the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then service.New("ForceField", v.Character) end
+					if v.Character then
+						service.New("ForceField", v.Character).Visible = if args[2] and args[2]:lower() == "false" then false else true
+					end
 				end
 			end
 		};
@@ -794,42 +796,6 @@ return function(Vargs, env)
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
 						Functions.Notification("God mode","Character God mode has been disabled.",{v},15,7510999669)
-					end
-				end
-			end
-		};
-		
-		FullGod = {
-			Prefix = Settings.Prefix;
-			Commands = {"fullgod", "totalgod"};
-			Args = {"player"};
-			Description = "Makes the target player(s) immune from both explosions and conventional damage";
-			AdminLevel = 100;
-			Function = function(plr: Player, args)
-				for _, v: Player in pairs(service.Players:GetPlayers()) do
-					if v.Character then
-						service.New("ForceField", v.Character).Visible = false
-						local hum: Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if hum then
-							hum.MaxHealth = math.huge; hum.Health = 9e9
-						end
-					end
-				end
-			end
-		};
-
-		UnFullGod = {
-			Prefix = Settings.Prefix;
-			Commands = {"unfullgod", "untotalgod"};
-			Args = {"player"};
-			Description = "Removes :fullgod effects";
-			AdminLevel = 100;
-			Function = function(plr: Player, args)
-				for _, v: Player in pairs(service.Players:GetPlayers()) do
-					if v.Character then
-						for z, cl in ipairs(v.Character:GetChildren()) do if cl:IsA("ForceField") then cl:Destroy() end end
-						v.Character.Humanoid.MaxHealth = 100
-						v.Character.Humanoid.Health = 100
 					end
 				end
 			end
@@ -2099,7 +2065,7 @@ return function(Vargs, env)
 				}
 
 				for i, v in ipairs(Settings.Storage:GetChildren()) do
-					if v.ClassName == "Tool" or v.ClassName == "HopperBin" then
+					if v:IsA("BackpackItem") then
 						table.insert(children, {
 							Class = "TextLabel";
 							Size = UDim2.new(1, -10, 0, 30);
@@ -2123,7 +2089,7 @@ return function(Vargs, env)
 							};
 						})
 
-						num = num+1;
+						num += 1;
 					end
 				end
 
@@ -2655,7 +2621,7 @@ return function(Vargs, env)
 						local Backpack = v:FindFirstChildOfClass("Backpack")
 						if Backpack then
 							for _, k in ipairs(Backpack:GetChildren()) do
-								if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
+								if k:IsA("BackpackItem") then
 									table.insert(jail.Tools,k)
 									k.Parent = nil
 								end
@@ -2677,7 +2643,7 @@ return function(Vargs, env)
 											local Backpack = v:FindFirstChildOfClass("Backpack")
 											if Backpack then
 												for _, k in ipairs(Backpack:GetChildren()) do
-													if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
+													if k:IsA("BackpackItem") then
 														table.insert(jail.Tools,k)
 														k.Parent = nil
 													end
@@ -3736,7 +3702,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
+					if tool:IsA("BackpackItem") then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name),1,#args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3776,7 +3742,7 @@ return function(Vargs, env)
 					local StarterGear = v:FindFirstChildOfClass("StarterGear")
 					if StarterGear then
 						for a,tool in ipairs(StarterGear:GetChildren()) do
-							if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
+							if tool:IsA("BackpackItem") then
 								if string.lower(args[2]) == "all" or string.find(string.lower(tool.Name), string.lower(args[2])) == 1 then
 									tool:Destroy()
 								end
@@ -3799,7 +3765,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
+					if tool:IsA("BackpackItem") then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3897,8 +3863,11 @@ return function(Vargs, env)
 				for i,v in pairs(service.GetPlayers(plr,args[1])) do
 					local Backpack = v.Character and v:FindFirstChildOfClass("Backpack")
 					if Backpack then
-						for a, tool in pairs(v.Character:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
-						for a, tool in pairs(Backpack:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
+						if v.Character:FindFirstChildOfClass("Humanoid") then
+							v.Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+						end
+						for a, tool in pairs(Backpack:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
+						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
 					end
 				end
 			end
