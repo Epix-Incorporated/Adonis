@@ -204,8 +204,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
-				local wot = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
-				Remote.Send(plr, "Function", "PlayAudio", wot[math.random(1,#wot)])
+				local wot = {3657191505, 754995791, 160715357, 4881542521, 907286018, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159, 7788753053, 4463753554, 4632160580, 6464746939}
+				Remote.Send(plr, "Function", "PlayAudio", wot[math.random(1, #wot)])
 			end
 		};
 
