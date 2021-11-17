@@ -780,7 +780,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr, args: {[number]:string})
+			Function = function(plr: Player, args: {[number]:string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local hasSafeChat
 
@@ -824,7 +824,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr, args: {[number]:string})
+			Function = function(plr: Player, args: {[number]:string})
 				local adminDictionary = {}
 				for i, v in pairs(service.GetPlayers()) do
 					local level, rank = Admin.GetLevel(v);
@@ -862,7 +862,7 @@ return function(Vargs, env)
 					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 
-					Remote.MakeGui(plr,"ServerDetails",{
+					Remote.MakeGui(plr, "ServerDetails", {
 						CreatorId = game.CreatorId;
 						PrivateServerId = game.PrivateServerId;
 						PrivateServerOwnerId = game.PrivateServerOwnerId;
