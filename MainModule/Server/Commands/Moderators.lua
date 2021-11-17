@@ -6079,7 +6079,7 @@ return function(Vargs, env)
 			Args = {"autoupdate"};
 			Description = "Shows you technical server performance statistics";
 			AdminLevel = "Moderators";
-			Function = function(plr, args)
+			Function = function(plr, args: {[number]:string})
 				local update = (args[1] ~= "false")
 				local tab = {}
 				local perfStats = {
