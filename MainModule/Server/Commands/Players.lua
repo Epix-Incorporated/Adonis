@@ -774,14 +774,14 @@ return function(Vargs, env)
 		
 		ViewProfile = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"profile";"inspect";"playerinfo";"whois";"viewprofile"};
+			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
 			Args = {"player"};
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr,args)
-				for i,v in pairs(service.GetPlayers(plr,args[1])) do
+			Function = function(plr, args: {[number]:string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local hasSafeChat
 
 					local gameData = nil
@@ -818,15 +818,15 @@ return function(Vargs, env)
 		
 		ServerDetails = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverinfo";"serverdetails";"gameinfo";"gamedetails";};
+			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
 			Args = {};
 			Description = "Shows you details about the current server";
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr,args)
+			Function = function(plr, args: {[number]:string})
 				local adminDictionary = {}
-				for i,v in pairs(service.GetPlayers()) do
+				for i, v in pairs(service.GetPlayers()) do
 					local level, rank = Admin.GetLevel(v);
 					if level > 0 then
 						adminDictionary[v.Name] = rank or "Unknown"
@@ -834,14 +834,14 @@ return function(Vargs, env)
 				end
 
 				local donorList = {}
-				for i,v in pairs(service.GetPlayers()) do
+				for i, v in pairs(service.GetPlayers()) do
 					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
 						table.insert(donorList, v.Name)
 					end
 				end
 
 				local nilPlayers = 0
-				for i,v in pairs(service.NetworkServer:GetChildren()) do
+				for i, v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 						nilPlayers = nilPlayers + 1
 					end
@@ -859,7 +859,7 @@ return function(Vargs, env)
 					zipcode = r.zip,
 					timezone = r.timezone,
 					query = r.query,
-					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]
+					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 
 					Remote.MakeGui(plr,"ServerDetails",{
