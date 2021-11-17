@@ -146,14 +146,15 @@ return function()
 
 				local hasCompleted = false
 				coroutine.wrap(function()
-					local success, err = pcall(Player.Kick, workspace, "If this appears, you have a glitch. Method 1")
+					local LocalPlayer = service.UnWrap(Player)
+					local success, err = pcall(LocalPlayer.Kick, service.UnWrap(workspace), "If this appears, you have a glitch. Method 1")
 					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
 						Detected("kick", "Anti kick found! Method 1")
 					end
 					if #service.Players:GetPlayers() > 1 then
 						for _, v in ipairs(service.Players:GetPlayers()) do
-							if v ~= Player then
-								local success, err = pcall(Player.Kick, v, "If this appears, you have a glitch. Method 2")
+							if service.UnWrap(v) ~= LocalPlayer then
+								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
 								if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
 									Detected("kick", "Anti kick found! Method 2")
 								end
@@ -168,7 +169,7 @@ return function()
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
 					end
-					local success, err = pcall(workspace.GetRealPhysicsFPS, game)
+					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, service.UnWrap(game))
 					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
 						Detected("kick", "Anti FPS detection found!")
 					end
