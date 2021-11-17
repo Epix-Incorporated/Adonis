@@ -575,13 +575,15 @@ return function(Vargs, env)
 
 		ForceField = {
 			Prefix = Settings.Prefix;
-			Commands = {"ff", "forcefield"};
-			Args = {"player"};
+			Commands = {"ff";"forcefield";};
+			Args = {"player", "visible? (default: true)"};
 			Description = "Gives a force field to the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then service.New("ForceField", v.Character) end
+					if v.Character then
+						service.New("ForceField", v.Character).Visible = if args[2] and args[2]:lower() == "false" then false else true
+					end
 				end
 			end
 		};
@@ -2063,7 +2065,7 @@ return function(Vargs, env)
 				}
 
 				for i, v in ipairs(Settings.Storage:GetChildren()) do
-					if v.ClassName == "Tool" or v.ClassName == "HopperBin" then
+					if v:IsA("BackpackItem") then
 						table.insert(children, {
 							Class = "TextLabel";
 							Size = UDim2.new(1, -10, 0, 30);
@@ -2087,7 +2089,7 @@ return function(Vargs, env)
 							};
 						})
 
-						num = num+1;
+						num += 1;
 					end
 				end
 
@@ -2619,8 +2621,8 @@ return function(Vargs, env)
 						local Backpack = v:FindFirstChildOfClass("Backpack")
 						if Backpack then
 							for _, k in ipairs(Backpack:GetChildren()) do
-								if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
-									table.insert(jail.Tools, k)
+								if k:IsA("BackpackItem") then
+									table.insert(jail.Tools,k)
 									k.Parent = nil
 								end
 							end
@@ -2641,8 +2643,8 @@ return function(Vargs, env)
 											local Backpack = v:FindFirstChildOfClass("Backpack")
 											if Backpack then
 												for _, k in ipairs(Backpack:GetChildren()) do
-													if k.ClassName == "Tool" or k.ClassName == "HopperBin" then
-														table.insert(jail.Tools, k)
+													if k:IsA("BackpackItem") then
+														table.insert(jail.Tools,k)
 														k.Parent = nil
 													end
 												end
@@ -3700,8 +3702,8 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
-						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1,#args[2])==string.lower(args[2]) then
+					if tool:IsA("BackpackItem") then
+						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name),1,#args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
 							if not parent.Archivable then
@@ -3739,8 +3741,8 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, string.lower(args[1]))) do
 					local StarterGear = v:FindFirstChildOfClass("StarterGear")
 					if StarterGear then
-						for a, tool in ipairs(StarterGear:GetChildren()) do
-							if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
+						for a,tool in ipairs(StarterGear:GetChildren()) do
+							if tool:IsA("BackpackItem") then
 								if string.lower(args[2]) == "all" or string.find(string.lower(tool.Name), string.lower(args[2])) == 1 then
 									tool:Destroy()
 								end
@@ -3763,7 +3765,7 @@ return function(Vargs, env)
 				local found = {}
 				local temp = service.New("Folder")
 				for a, tool in pairs(Settings.Storage:GetChildren()) do
-					if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then
+					if tool:IsA("BackpackItem") then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
 							tool.Archivable = true
 							local parent = tool.Parent
@@ -3861,8 +3863,11 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local Backpack = v.Character and v:FindFirstChildOfClass("Backpack")
 					if Backpack then
-						for a, tool in pairs(v.Character:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
-						for a, tool in pairs(Backpack:GetChildren()) do if tool.ClassName == "Tool" or tool.ClassName == "HopperBin" then tool:Destroy() end end
+						if v.Character:FindFirstChildOfClass("Humanoid") then
+							v.Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+						end
+						for a, tool in pairs(Backpack:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
+						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
 					end
 				end
 			end
