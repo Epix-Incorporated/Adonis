@@ -14,7 +14,7 @@ return function()
 		local function teleport(player)
 			local joindata = player:GetJoinData()
 			local data = joindata.TeleportData
-			if typeof(data) == "table" and data[parameterName] then
+			if type(data) == "table" and data[parameterName] then
 				server.Functions.Message("Server Restart", "Teleporting back to main server...", {player}, false, 1000)
 				wait(waitTime)
 				waitTime = waitTime / 2
@@ -24,7 +24,7 @@ return function()
 	
 		service.Events.PlayerAdded:Connect(teleport)
 		
-		for _,player in ipairs(service.GetPlayers()) do
+		for _, player in ipairs(service.GetPlayers()) do
 			teleport(player)
 		end
 	
@@ -39,7 +39,7 @@ return function()
 				return
 			end
 
-			if (#game.Players:GetPlayers() == 0) then
+			if (#service.Players:GetPlayers() == 0) then
 				return
 			end
 			
@@ -48,14 +48,14 @@ return function()
 			
 			wait(2)
 			
-			for _,player in pairs(game.Players:GetPlayers()) do
+			for _,player in pairs(service.Players:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end
-			game.Players.PlayerAdded:connect(function(player)
+			service.Players.PlayerAdded:connect(function(player)
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end)
-			while (#game.Players:GetPlayers() > 0) do
-				wait(1)
+			while #service.Players:GetPlayers() > 0 do
+				service.Players.PlayerRemoving:Wait()
 			end	
 			
 		end
@@ -67,13 +67,14 @@ return function()
 		Description = "Restarts the server";	-- Command Description
 		Hidden = false; -- Is it hidden from the command list?
 		Fun = false;	-- Is it fun?
+		NoStudio = true; -- TeleportService does not work in Studio 
 		AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
 		Function = function(plr,args)    -- Function to run for command
 			if (game:GetService("RunService"):IsStudio()) then
 				return
 			end
 			
-			if (#game.Players:GetPlayers() == 0) then
+			if (#service.Players:GetPlayers() == 0) then
 				return
 			end
 

@@ -36,7 +36,9 @@ local methods = setmetatable({},{
 })
 
 
-return function(errorHandler, eventChecker, fenceSpecific)
+return function(errorHandler, eventChecker, fenceSpecific, env)
+	if env then setfenv(1, env) end
+
 	local _G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
@@ -736,7 +738,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 		end;
 
 		EscapeSpecialCharacters = function(x)
-			return x:gsub("([^%w])", "%%%1")
+			return string.gsub(x, "([^%w])", "%%%1")
 		end;
 
 		MetaFunc = function(func)
@@ -766,7 +768,7 @@ return function(errorHandler, eventChecker, fenceSpecific)
 			if ran then
 				return "Unknown"
 			else
-				return err:match("%S+$")
+				return string.match(err, "%S+$")
 			end
 		end;
 

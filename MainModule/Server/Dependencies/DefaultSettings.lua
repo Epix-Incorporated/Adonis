@@ -303,7 +303,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 
-	settings.AutoClean = false		-- Will auto clean service.Workspace of things like hats and tools
+	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
@@ -324,12 +324,15 @@ local descs = {};			--// Contains settings descriptions
 	settings.Detection = true			-- Attempts to detect certain known exploits
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-	settings.AntiNil = true				-- Try's to prevent non-admins from hiding in "nil"
-	settings.AntiSpeed = true 			-- Attempts to detect speed exploits
+	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
-	settings.AntiParanoid = false		-- Attempts to detect paranoid and kills the player if found
-	settings.AntiBuildingTools = false	-- Attempts to detect any HopperBin(s)/Building Tools added to the client
-	settings.AntiLeak = false			-- Attempts to prevent place downloading/saving; Do not use if game saves
+	settings.AntiRootJointDeletion = true		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiHumanoidDeletion = true -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
+	settings.AntiMultiTool = true -- Prevents multitooling and because of that many other exploits
+	settings.AntiGod = true -- If a player does not respawn when they should have they get respawned
+	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
+	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
+	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 
 	---------------------
 	-- END OF SETTINGS --
@@ -409,7 +412,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
-	descs.AutoClean = [[ Will auto clean service.Workspace of things like hats and tools ]]
+	descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
 
@@ -429,12 +432,15 @@ local descs = {};			--// Contains settings descriptions
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
-	descs.AntiNil = [[ Try's to prevent non-admins from hiding in "nil" ]]
-	descs.AntiSpeed = [[ Attempted to detect speed exploits ]]
+	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
-	descs.AntiParanoid = [[ Attempts to detect paranoid and kills the player if found ]]
-	descs.AntiBuildingTools = [[ Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-	descs.AntiLeak = [[ Attempts to prevent place downloading/saving; Do not use if game saves ]]
+	descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
+	descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
+	descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits ]]
+	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
+	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
+	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
+	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 
 	order = {
 		"HideScript";
@@ -526,10 +532,13 @@ local descs = {};			--// Contains settings descriptions
 		"Detection";
 		"CheckClients";
 		" ";
-		"AntiNil";
-		"AntiSpeed";
+		"AENotifs";
 		"AntiNoclip";
-		"AntiParanoid";
+		"AntiRootJointDeletion";
+		"AntiHumanoidDeletion";
+		"AntiMultiTool";
+		"AntiGod";
+		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiLeak";
 	}

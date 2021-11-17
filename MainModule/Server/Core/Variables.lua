@@ -49,6 +49,7 @@ return function(Vargs)
 		RunAfterInit = AfterInit;
 		ZaWarudo = false;
 		CodeName = math.random();
+		IsStudio = service.RunService:IsStudio(); --Used to check if Adonis is running inside Roblox Studio as things like TeleportService and DataStores (if API Access is disabled) do not work in Studio
 		AuthorizedToReply = {};
 		FrozenObjects = {};
 		ScriptBuilder = {};
@@ -153,7 +154,7 @@ return function(Vargs)
 			{Name="tunnel",ID=9650822};
 			{Name="spanish",ID=5982975};
 			{Name="venom",ID=1372262};
-			{Name="wind",ID=1015394};
+			{Name="wind",ID=6537631123};
 			{Name="guitar",ID=5986151};
 			{Name="pianoremix",ID=142407859};
 			{Name="antidote",ID=145579822};

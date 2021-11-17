@@ -17,7 +17,7 @@ return function(Vargs)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	--// *Try?* to enable AllowThirdPartySales (honestly, this obviously wouldn't work but roblox be kinda weird sometimes so yolo)
-	pcall(function() service.Workspace.AllowThirdPartySales = true end)
+	pcall(function() workspace.AllowThirdPartySales = true end)
 
 	--// Worksafe
 	if Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
