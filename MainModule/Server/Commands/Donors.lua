@@ -28,12 +28,65 @@ return function(Vargs, env)
 			Commands = {"cape", "donorcape"};
 			Args = {};
 			Hidden = false;
-			Description = "Get donor cape";
+			Description = "Get donor cape (remove using "..Settings.PlayerPrefix.."uncape)";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {[number]:string})
 				Functions.Donor(plr)
+			end
+		};
+
+		DonorTShirt = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"tshirt", "givetshirt"};
+			Args = {"ID"};
+			Hidden = false;
+			Description = "Give you the t-shirt that belongs to <ID>";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player, args: {[number]:string})
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local tShirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId) or error("Item ID passed has invalid item type")
+					assert(tShirt, "Unexpected error occured; clothing is missing")
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("ShirtGraphic") then v:Destroy() end
+					end
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.GraphicTShirt = ClothingId
+					end
+					tShirt:Clone().Parent = plr.Character
+				end
+			end
+		};
+		
+		DonorRemoveTShirt = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removetshirt", "untshirt", "notshirt"};
+			Args = {};
+			Hidden = false;
+			Description = "Remove the t-shirt you are wearing, if any";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player, args: {[number]:string})
+				if plr.Character then
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("ShirtGraphic") then v:Destroy() end
+					end
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.GraphicTShirt = 0
+					end
+				end
 			end
 		};
 
@@ -51,20 +104,17 @@ return function(Vargs, env)
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
-					if Shirt then
-						for g,k in pairs(plr.Character:GetChildren()) do
-							if k:IsA("Shirt") then k:Destroy() end
-						end
-						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
-
-						if humandescrip then
-							humandescrip.Shirt = ClothingId
-						end
-						Shirt:Clone().Parent = plr.Character
-					else
-						error("Unexpected error occured. Clothing is missing")
+					assert(Shirt, "Unexpected error occured; clothing is missing")
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("Shirt") then v:Destroy() end
 					end
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.Shirt = ClothingId
+					end
+					Shirt:Clone().Parent = plr.Character
 				end
 			end
 		};
@@ -72,9 +122,9 @@ return function(Vargs, env)
 		DonorPants = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"pants", "givepants"};
-			Args = {"id"};
+			Args = {"ID"};
 			Hidden = false;
-			Description = "Give you the pants that belongs to <id>";
+			Description = "Give you the pants that belongs to <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
@@ -83,22 +133,19 @@ return function(Vargs, env)
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
-					if Pants then
-						for g,k in pairs(plr.Character:GetChildren()) do
-							if k:IsA("Pants") then k:Destroy() end
-						end
-
-						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
-
-						if humandescrip then
-							humandescrip.Pants = ClothingId
-						end
-
-						Pants:Clone().Parent = plr.Character
-					else
-						error("Unexpected error occured. Clothing is missing")
+					assert(Pants, "Unexpected error occured; clothing is missing")
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("Pants") then v:Destroy() end
 					end
+
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.Pants = ClothingId
+					end
+
+					Pants:Clone().Parent = plr.Character
 				end
 			end
 		};
@@ -106,9 +153,9 @@ return function(Vargs, env)
 		DonorFace = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"face", "giveface"};
-			Args = {"id"};
+			Args = {"ID"};
 			Hidden = false;
-			Description = "Gives you the face that belongs to <id>";
+			Description = "Gives you the face that belongs to <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
@@ -128,15 +175,12 @@ return function(Vargs, env)
 					humandescrip.Face = id
 				end
 
-				if info.AssetTypeId == 18 then
-					if plr.Character:FindFirstChild("Head") then
-						local face = service.Insert(args[1])
-						if face then
-							face.Parent = plr.Character:FindFirstChild("Head")
-						end
+				assert(info.AssetTypeId == 18, "Invalid face ID")
+				if plr.Character:FindFirstChild("Head") then
+					local face = service.Insert(args[1])
+					if face then
+						face.Parent = plr.Character:FindFirstChild("Head")
 					end
-				else
-					error("Invalid face ID")
 				end
 			end
 		};
@@ -155,10 +199,7 @@ return function(Vargs, env)
 					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
-								local str = BrickColor.new('Institutional white').Color
-								local teststr = args[1]
-								if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-								p.BrickColor = str
+								p.BrickColor = BrickColor.new(args[1]).Color
 							end
 							p.Material = Enum.Material.Neon
 						end
