@@ -4795,7 +4795,7 @@ return function(Vargs, env)
 		Explode = {
 			Prefix = Settings.Prefix;
 			Commands = {"explode", "boom", "boomboom"};
-			Args = {"player", "radius (default: 20 studs)", "blast pressure (default: 500,000)"};
+			Args = {"player", "radius (default: 20 studs)", "blast pressure (default: 500,000)", "visible? (default: true)"};
 			Hidden = false;
 			Description = "Explodes the target player(s)";
 			Fun = true;
@@ -4807,6 +4807,7 @@ return function(Vargs, env)
 							Archivable = false;
 							BlastPressure = args[3] or 500_000;
 							BlastRadius = args[2] or 20;
+							Visible = if args[4] and args[4]:lower() == "false" then false else true;
 							Position = v.Character.PrimaryPart.Position;
 							Parent = workspace.Terrain;
 						})
