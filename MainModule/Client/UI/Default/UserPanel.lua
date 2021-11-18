@@ -594,7 +594,7 @@ return function(data)
 			},{
 				"Access to !sparkles <BrickColor>";
 				"Access to !unsparkles";
-				"Access to !particle <textureid> <startColor3> <endColor3>";
+				"Access to !particle <textureID> <startColor3> <endColor3>";
 				"Access to !unparticle";
 				"Access to !fire <BrickColor>";
 				"Access to !unfire";
@@ -606,6 +606,8 @@ return function(data)
 				"Access to !neon <BrickColor>";
 				"Access to !shirt <ID>";
 				"Access to !pants <ID>";
+				"Access to !tshirt <ID>";
+				"Access to !removetshirt";
 			}
 
 
@@ -614,7 +616,7 @@ return function(data)
 					table.insert(donorPerks, v)
 				end
 			else
-				table.insert(donorPerks, "Donor capes are disabled here by the developer")
+				table.insert(donorPerks, "Donor capes are disabled here")
 			end
 
 			if chatMod.DonorCommands then
