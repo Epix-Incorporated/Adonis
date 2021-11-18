@@ -4795,7 +4795,7 @@ return function(Vargs, env)
 		Explode = {
 			Prefix = Settings.Prefix;
 			Commands = {"explode", "boom", "boomboom"};
-			Args = {"player", "radius"};
+			Args = {"player", "radius (default: 20 studs)", "blast pressure (default: 500,000)"};
 			Hidden = false;
 			Description = "Explodes the target player(s)";
 			Fun = true;
@@ -4804,10 +4804,11 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character.PrimaryPart then
 						service.New("Explosion", {
-							Position = v.Character.PrimaryPart.Position,
-							BlastRadius = args[2] or 20,
-							Archivable = false,
-							Parent = workspace.Terrain
+							Archivable = false;
+							BlastPressure = args[3] or 500_000;
+							BlastRadius = args[2] or 20;
+							Position = v.Character.PrimaryPart.Position;
+							Parent = workspace.Terrain;
 						})
 					end
 				end
