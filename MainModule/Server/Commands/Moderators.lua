@@ -4437,9 +4437,63 @@ return function(Vargs, env)
 			end
 		};
 
+		TShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"tshirt", "givetshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the t-shirt that belongs to <ID>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.GraphicTShirt = ClothingId
+						end
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+		
+		RemoveTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removetshirt", "untshirt", "notshirt"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any t-shirt(s) worn by the target player(s)";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.GraphicTShirt = 0
+						end
+					end
+				end
+			end
+		};
+		
 		Shirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"shirt", "giveshirt"};
+			Commands = {"removetshirt", "giveshirt"};
 			Args = {"player", "ID"};
 			Hidden = false;
 			Description = "Give the target player(s) the shirt that belongs to <ID>";
@@ -4449,17 +4503,20 @@ return function(Vargs, env)
 				local ClothingId = tonumber(args[2])
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
-				if Shirt then
-					for i, v in pairs(service.GetPlayers(plr, args[1])) do
-						if v.Character then
-							for g, k in pairs(v.Character:GetChildren()) do
-								if k:IsA("Shirt") then k:Destroy() end
-							end
-							Shirt:Clone().Parent = v.Character
+				assert(Shirt, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Shirt") then k:Destroy() end
 						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end
+						Shirt:Clone().Parent = v.Character
 					end
-				else
-					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
@@ -4476,17 +4533,20 @@ return function(Vargs, env)
 				local ClothingId = tonumber(args[2])
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
-				if Pants then
-					for i, v in pairs(service.GetPlayers(plr, args[1])) do
-						if v.Character then
-							for g, k in pairs(v.Character:GetChildren()) do
-								if k:IsA("Pants") then k:Destroy() end
-							end
-							Pants:Clone().Parent = v.Character
+				assert(Pants, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
 						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end
+						Pants:Clone().Parent = v.Character
 					end
-				else
-					error("Unexpected error occured. Clothing is missing")
 				end
 			end
 		};
