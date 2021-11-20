@@ -79,6 +79,10 @@
 						end
 					elseif Action == "InstanceNew" then
 						return service.New(args[1], args[2]);
+					elseif Action == "CallFunction" then
+						local rets = {pcall(function() return (args[1][args[2]](args[1])) end)}
+						table.remove(rets,1)
+						return rets
 					end
 				end
 			end)
@@ -92306,8 +92310,8 @@ function CreateFunctionCaller(oh)
 			CurrentFunctionCallerWindow = nil
 			local list = SelectionVar():Get()
 			for i,v in pairs(list) do
-				local rets = {pcall(function() return (v[option.Name](v)) end)}
-				table.remove(rets,1)
+				local rets = RemoteEvent:InvokeServer("CallFunction",v,option.Name)
+				print(rets)
 				pcall(function() print("Function", option.Name, "on", v, ":", unpack(rets)) end)
 			end
 			
@@ -93978,7 +93982,7 @@ local function makeObject(obj, par)
 	
 	obj.Properties.Parent = par--]]
 	
-	RemoteEvent:InvokeServer("NewInstance", obj.ClassName, obj.Properties)
+	RemoteEvent:InvokeServer("InstanceNew", obj.ClassName, obj.Properties)
 end
 
 local function writeObject(obj)
@@ -94292,7 +94296,7 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 		CurrentInsertObjectWindow.Visible = false
 		local list = SelectionVar():Get()
 		for i = 1,#list do
-			pcall(function() Instance.new(option,list[i]) RemoteEvent:InvokeServer("NewInstance", option, list[i]) end)
+			RemoteEvent:InvokeServer("InstanceNew", option, list[i])
 		end
 		DestroyRightClick()
 	end
