@@ -83,6 +83,17 @@
 						local rets = {pcall(function() return (args[1][args[2]](args[1])) end)}
 						table.remove(rets,1)
 						return rets
+					elseif Action == "CallRemote" then
+						print(args[2])
+						if args[1]:IsA("RemoteFunction") then
+							return args[1]:InvokeClient(table.unpack(args[2]))
+						elseif args[1]:IsA("RemoteEvent") then
+							args[1]:FireClient(table.unpack(args[2]))
+						elseif args[1]:IsA("BindableFunction") then
+							return args[1]:Invoke(table.unpack(args[2]))
+						elseif args[1]:IsA("BindableEvent") then
+							args[1]:Fire(table.unpack(args[2]))
+						end
 					end
 				end
 			end)
@@ -4141,6 +4152,8 @@ local function ToValue(value,type)
 		local x = tonumber(list[1]) or 0
 		local y = tonumber(list[2]) or 0
 		return NumberRange.new(x,y)
+	elseif type == "UserName" then
+		return Players:FindFirstChild(value)
 	else
 		return nil
 	end
@@ -91198,6 +91211,8 @@ function createDDown(dBut, callback,...)
 		newOption.Name = "Option "..tostring(i)
 		newOption.Parent = base.Parent.Parent.Parent
 		newOption.BackgroundTransparency = 0
+		newOption.BackgroundColor3 = Color3.fromRGB(24, 24, 29)
+		newOption.BorderSizePixel = 0
 		newOption.ZIndex = 2
 		table.insert(activeOptions,newOption)
 		newOption.Position = UDim2.new(-0.4, dBut.Position.X.Offset, dBut.Position.Y.Scale, dBut.Position.Y.Offset + (#activeOptions * dBut.Size.Y.Offset))
@@ -92289,7 +92304,7 @@ function CreateInsertObject()
 	if not CurrentInsertObjectWindow then return end
 	CurrentInsertObjectWindow.Visible = true
 	if currentRightClickMenu and CurrentInsertObjectWindow.Visible then
-		CurrentInsertObjectWindow.Position = UDim2.new(0,currentRightClickMenu.Position.X.Offset-currentRightClickMenu.Size.X.Offset-6,0,0)
+		CurrentInsertObjectWindow.Position = UDim2.new(0,currentRightClickMenu.Position.X.Offset-currentRightClickMenu.Size.X.Offset,0,0)
 	end
 	if CurrentInsertObjectWindow.Visible then
 		CurrentInsertObjectWindow.Parent = explorerPanel.Parent
@@ -92319,7 +92334,7 @@ function CreateFunctionCaller(oh)
 		end
 	)
 	if currentRightClickMenu and CurrentFunctionCallerWindow then
-		CurrentFunctionCallerWindow.Position = UDim2.new(0,currentRightClickMenu.Position.X.Offset-currentRightClickMenu.Size.X.Offset*1.5-2,0,0)
+		CurrentFunctionCallerWindow.Position = UDim2.new(0,currentRightClickMenu.Position.X.Offset-currentRightClickMenu.Size.X.Offset*1.5,0,0)
 	end
 	if CurrentFunctionCallerWindow then
 		CurrentFunctionCallerWindow.Parent = explorerPanel.Parent
@@ -92424,8 +92439,8 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 	local frame = Instance.new("TextButton")	
 	frame.Name = "DropDown"
 	frame.Size = UDim2.new(0, 200, 0, 0)
+	frame.BackgroundTransparency = 1
 	frame.AutoButtonColor = false
-	frame.Style = Enum.ButtonStyle.RobloxRoundDropdownButton
 	frame.Active = false
 	
 	local menu = nil
@@ -92456,7 +92471,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 		
 		frame.Size = menu.Size + UDim2.new(0, 0, 0, 6)
 		
-		menu.Position = UDim2.new(0, -16, 0, -10)
+		menu.Position = UDim2.new(0, 0, 0, 0)
 		menu.BackgroundTransparency = 0
 		menu.BackgroundColor3 = DropDown.BackColor
 		menu.BorderColor3 = DropDown.BorderColor
@@ -92999,7 +93014,7 @@ local function ToPropValue(value,type)
 	end
 end
 
-function PromptRemoteCaller(inst)
+function PromptCaller(inst)
 	if CurrentRemoteWindow then
 		CurrentRemoteWindow:Destroy()
 		CurrentRemoteWindow = nil
@@ -93013,14 +93028,25 @@ function PromptRemoteCaller(inst)
 	local ArgumentList = CurrentRemoteWindow.MainWindow.Arguments
 	local ArgumentTemplate = CurrentRemoteWindow.MainWindow.ArgumentTemplate
 	
-	if inst:IsA("RemoteEvent") then
+	if inst:IsA("RemoteEvent") or inst:IsA("BindableEvent") then
 		CurrentRemoteWindow.Title.Text = "Fire Event"
 		CurrentRemoteWindow.MainWindow.Ok.Text = "Fire"
 		CurrentRemoteWindow.MainWindow.DisplayReturned.Visible = false
 		CurrentRemoteWindow.MainWindow.Desc2.Visible = false
 	end
+
+	if inst:IsA("RemoteEvent") or inst:IsA("RemoteFunction") then
+		local newArgument = ArgumentTemplate:Clone()
+		newArgument.Parent = ArgumentList
+		newArgument.Visible = true
+		newArgument.Type.Text = "UserNameToFire"
+	end
 	
 	local newArgument = ArgumentTemplate:Clone()
+	if inst:IsA("RemoteEvent") or inst:IsA("RemoteFunction") then
+		newArgument.Position = UDim2.new(0,0,0,20)
+		ArgumentList.CanvasSize = UDim2.new(0,0,0,40)
+	end
 	newArgument.Parent = ArgumentList
 	newArgument.Visible = true
 	newArgument.Type.MouseButton1Down:connect(function()
@@ -93033,12 +93059,21 @@ function PromptRemoteCaller(inst)
 		if CurrentRemoteWindow and inst.Parent ~= nil then
 			local MyArguments = {}
 			for i,v in pairs(ArgumentList:GetChildren()) do
+				if inst:IsA("RemoteFunction") or inst:IsA("RemoteEvent") and i == 1 then
+					local Players = game:GetService("Players")
+					if Players:FindFirstChild(v.Value.Text) then
+						table.insert(MyArguments,Players[v.Value.Text])
+					else
+						CreateCaution("Remote Caller","The username defined is not in-game.")
+						return
+					end
+				end
 				table.insert(MyArguments,ToValue(v.Value.Text,v.Type.Text))
 			end
-			if inst:IsA("RemoteFunction") then
+			if inst:IsA("RemoteFunction") or inst:IsA("RemoteEvent") then
 				if displayValues then
 					spawn(function()
-						local myResults = inst:InvokeServer(unpack(MyArguments))
+						local myResults = RemoteEvent:InvokeServer("CallRemote",inst,MyArguments)
 						if myResults then
 							CreateTableCaution("Remote Caller",myResults)
 						else
@@ -93047,11 +93082,11 @@ function PromptRemoteCaller(inst)
 					end)
 				else
 					spawn(function()
-						inst:InvokeServer(unpack(MyArguments))
+						RemoteEvent:InvokeServer("CallRemote",inst,MyArguments)
 					end)
 				end
 			else
-				inst:FireServer(unpack(MyArguments))
+				RemoteEvent:InvokeServer("CallRemote",inst,MyArguments)
 			end
 			CurrentRemoteWindow:Destroy()
 			CurrentRemoteWindow = nil
@@ -93075,7 +93110,10 @@ function PromptRemoteCaller(inst)
 	
 	CurrentRemoteWindow.MainWindow.Subtract.MouseButton1Up:connect(function()
 		if CurrentRemoteWindow then
-			if #ArgumentList:GetChildren() > 1 then
+			if (inst:IsA("RemoteFunction") or inst:IsA("RemoteEvent")) and #ArgumentList:GetChildren() > 2 then
+				ArgumentList:GetChildren()[#ArgumentList:GetChildren()]:Destroy()
+				ArgumentList.CanvasSize = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
+			elseif inst:IsA("RemoteFunction") == false and inst:IsA("RemoteEvent") == false and #ArgumentList:GetChildren() > 1 then
 				ArgumentList:GetChildren()[#ArgumentList:GetChildren()]:Destroy()
 				ArgumentList.CanvasSize = UDim2.new(0,0,0,#ArgumentList:GetChildren() * 20)
 			end
@@ -93114,7 +93152,7 @@ function rightClickMenu(sObj)
 	local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 	
 	currentRightClickMenu = CreateRightClickMenu(
-		{"Cut","Copy","Paste Into","Duplicate","Delete",false,"Group","Ungroup","Select Children",false,"Teleport To","Call Function","Call Remote",false,"Insert Part","Insert Object",false},
+		{"Cut","Copy","Paste Into","Duplicate","Delete",false,"Group","Ungroup","Select Children",false,"Teleport To","Call Function","Call Remote/Bindable",false,"Insert Part","Insert Object",false},
 		"",
 		false,
 		function(option)
@@ -93251,12 +93289,12 @@ function rightClickMenu(sObj)
 						table.insert(insertedParts,newPart)
 					end)
 				end
-			elseif option == "Call Remote" then
+			elseif option == "Call Remote/Bindable" then
 				if not Option.Modifiable then return end
 				local list = Selection:Get()
 				for i = 1,#list do
-					if list[i]:IsA("RemoteFunction") or list[i]:IsA("RemoteEvent") then
-						PromptRemoteCaller(list[i])
+					if list[i]:IsA("RemoteFunction") or list[i]:IsA("RemoteEvent") or list[i]:IsA("BindableFunction") or list[i]:IsA("BindableEvent") then
+						PromptCaller(list[i])
 						break
 					end
 				end
@@ -94720,9 +94758,9 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 							<bool name="AutoLocalize">true</bool>
 							<token name="AutomaticSize">0</token>
 							<Color3 name="BackgroundColor3">
-								<R>0.862745166</R>
-								<G>0.862745166</G>
-								<B>0.862745166</B>
+								<R>0.592156862</R>
+								<G>0.592156862</G>
+								<B>0.592156862</B>
 							</Color3>
 							<float name="BackgroundTransparency">0</float>
 							<Color3 name="BorderColor3">
@@ -94888,9 +94926,9 @@ CurrentInsertObjectWindow = CreateInsertObjectMenu(
 								<bool name="AutoLocalize">true</bool>
 								<token name="AutomaticSize">0</token>
 								<Color3 name="BackgroundColor3">
-									<R>0</R>
-									<G>0</G>
-									<B>0</B>
+									<R>1</R>
+									<G>1</G>
+									<B>1</B>
 								</Color3>
 								<float name="BackgroundTransparency">0</float>
 								<Color3 name="BorderColor3">
@@ -95762,7 +95800,7 @@ Edited by: wally, ic3, Yarios]]></string>
 					<token name="BorderMode">0</token>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
-					<bool name="Draggable">true</bool>
+					<bool name="Draggable">false</bool>
 					<int name="LayoutOrder">0</int>
 					<string name="Name">About</string>
 					<Ref name="NextSelectionDown">null</Ref>
