@@ -92,7 +92,7 @@ return function(Vargs, env)
 
 		DonorShirt = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"shirt", "giveshirt"};
+			Commands = {"shirt", "giveshirt", "donorshirt"};
 			Args = {"ID"};
 			Hidden = false;
 			Description = "Give you the shirt that belongs to <ID>";
@@ -121,7 +121,7 @@ return function(Vargs, env)
 
 		DonorPants = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"pants", "givepants"};
+			Commands = {"pants", "givepants", "donorpants"};
 			Args = {"ID"};
 			Hidden = false;
 			Description = "Give you the pants that belongs to <ID>";
@@ -152,7 +152,7 @@ return function(Vargs, env)
 
 		DonorFace = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"face", "giveface"};
+			Commands = {"face", "giveface", "donorface"};
 			Args = {"ID"};
 			Hidden = false;
 			Description = "Gives you the face that belongs to <ID>";
@@ -532,7 +532,7 @@ return function(Vargs, env)
 
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"removehats", "nohats"};
+			Commands = {"removehats", "nohats", "nodonorhats"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes any hats you are currently wearing";
