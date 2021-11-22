@@ -39,7 +39,7 @@ return function(Vargs, env)
 
 		DonorTShirt = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"tshirt", "givetshirt"};
+			Commands = {"tshirt", "givetshirt", "donortshirt"};
 			Args = {"ID"};
 			Hidden = false;
 			Description = "Give you the t-shirt that belongs to <ID>";
