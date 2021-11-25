@@ -132,6 +132,33 @@ return function(Vargs)
 			SavedTables = 	"32K5j4";
 		};
 
+		DS_BLACKLIST = {
+			Trello_Enabled = true;
+			Trello_Primary = true;
+			Trello_Secondary = true;
+			Trello_Token = true;
+			Trello_AppKey = true;
+
+			DataStore = true;
+			DataStoreKey = true;
+			DataStoreEnabled = true;
+
+			Creators = true;
+			Permissions = true;
+
+			G_API = true;
+			G_Access = true;
+			G_Access_Key = true;
+			G_Access_Perms = true;
+			Allowed_API_Calls = true;
+
+			OnStartup = true;
+			OnSpawn = true;
+			OnJoin = true;
+
+			CustomRanks = true;
+		};
+
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true;
@@ -1020,7 +1047,7 @@ return function(Vargs)
 			else
 				local SavedSettings
 				local SavedTables
-				local Blacklist = {DataStoreKey = true;}
+				local Blacklist = Core.DS_BLACKLIST
 				if Core.DataStore and Settings.DataStoreEnabled then
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
@@ -1072,7 +1099,7 @@ return function(Vargs)
 
 					if SavedTables then
 						for i,tData in pairs(SavedTables) do
-							if tData.TableName and tData.TableKey then
+							if tData.TableName and tData.TableKey and not Blacklist[tData.TableName] then
 								local data = GetData(tData.TableKey);
 								if data then
 									for k,v in ipairs(data) do

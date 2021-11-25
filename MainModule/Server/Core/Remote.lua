@@ -58,6 +58,52 @@ return function(Vargs)
 
 		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
 
+		--// Settings any client/user can grab
+		AllowedSettings = {
+			Theme = true;
+			MobileTheme = true;
+			DefaultTheme = true;
+			HelpButtonImage = true;
+			Prefix = true;
+			PlayerPrefix = true;
+			SpecialPrefix = true;
+			BatchKey = true;
+			AnyPrefix = true;
+			DonorCommands = true;
+			DonorCapes = true;
+			ConsoleKeyCode = true;
+			SplitKey = true;
+		};
+
+		--// Settings that are never sent to the client
+		--// These are blacklisted at the datastore level and cannot be updated in-game
+		BlockedSettings = {
+			Trello_Enabled = true;
+			Trello_Primary = true;
+			Trello_Secondary = true;
+			Trello_Token = true;
+			Trello_AppKey = true;
+
+			DataStore = true;
+			DataStoreKey = true;
+			DataStoreEnabled = true;
+
+			Creators = true;
+			Permissions = true;
+
+			G_API = true;
+			G_Access = true;
+			G_Access_Key = true;
+			G_Access_Perms = true;
+			Allowed_API_Calls = true;
+
+			OnStartup = true;
+			OnSpawn = true;
+			OnJoin = true;
+
+			CustomRanks = true;
+		};
+
 		Returnables = {
 			RateLimits = function(p, args)
 				return server.Process.RateLimits
@@ -194,33 +240,17 @@ return function(Vargs)
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
 				local ret = nil
-				local blocked = {
-					DataStore = true;
-					DataStoreKey = true;
-
-					Trello_Enabled = true;
-					Trello_PrimaryBoard = true;
-					Trello_SecondaryBoards = true;
-					Trello_AppKey = true;
-					Trello_Token = true;
-
-					WebPanel_ApiKey = true;
-
-					--G_Access = true;
-					G_Access_Key = true;
-					--G_Access_Perms = true;
-					--Allowed_API_Calls = true;
-				}
+				local allowed = Remote.AllowedSettings
 
 				if type(setting) == "table" then
 					ret = {}
 					for i,set in pairs(setting) do
-						if Settings[set] and not (blocked[set] and not level>=Settings.Ranks.Creators.Level) then
+						if Settings[set] ~= nil and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
 							ret[set] = Settings[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Settings[setting] and not (blocked[setting] and not level>=Settings.Ranks.Creators.Level) then
+					if Settings[setting] and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
 						ret = Settings[setting]
 					end
 				end
@@ -240,30 +270,7 @@ return function(Vargs)
 						sets.Settings[i] = v
 					end
 
-					local blocked = {
-						HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
-						DataStore = true;
-						DataStoreKey = true;
-						DataStoreEnabled = true;
-
-						--Trello_Enabled = true;
-						--Trello_PrimaryBoard = true;
-						--Trello_SecondaryBoards = true;
-						Trello_AppKey = true;
-						Trello_Token = true;
-
-						G_API = true;
-						G_Access = true;
-						G_Access_Key = true;
-						G_Access_Perms = true;
-						Allowed_API_Calls = true;
-
-						OnStartup = true;
-						OnSpawn = true;
-						OnJoin = true;
-
-						CustomRanks = true; -- Not supported yet
-					}
+					local blocked = Remote.BlockedSettings
 
 					for setting,value in pairs(sets.Settings) do
 						if blocked[setting] then

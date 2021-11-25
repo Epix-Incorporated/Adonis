@@ -129,6 +129,16 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
+--[[
+local require = function(mod, ...)
+	if mod and tonumber(mod) then
+		warn("Requiring Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+	end
+
+	return require(mod, ...)
+end
+--]]
+
 local Pcall = function(func, ...)
 	local ran,error = pcall(func,...)
 	if error then
@@ -354,7 +364,8 @@ TweenInfo = service.Localize(TweenInfo)
 Axes = service.Localize(Axes)
 task = service.Localize(task)
 
---// Wrap                                                                                                                                                                                                                                                                                                                                                    require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end --]]
+--// Wrap
+--require = function(obj) return service.Wrap(oldReq(service.UnWrap(obj))) end
 Instance = {new = function(obj, parent) return oldInstNew(obj, service.UnWrap(parent)) end}
 require = function(obj) return oldReq(service.UnWrap(obj)) end
 rawequal = service.RawEqual

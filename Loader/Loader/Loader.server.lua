@@ -106,6 +106,10 @@ else
 		table.insert(data.Themes,Theme)
 	end
 
+	if tonumber(moduleId) then
+		warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+	end
+
 	local module = require(moduleId)
 	local response = module(data)
 

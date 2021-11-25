@@ -74,6 +74,14 @@ return function(Vargs)
 		end;
 
 		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
+			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
+
+			local function Detected(...)
+				if charGood then
+					Anti.Detected(...)
+				end
+			end
+
 			local function protectHat(hat)
 				local handle = hat:WaitForChild("Handle", 30)
 
@@ -93,7 +101,7 @@ return function(Vargs)
 								handle:SetNetworkOwner(nil)
 							end
 
-							Anti.Detected(player, "log", "Hat weld removed")
+							Detected(player, "log", "Hat weld removed")
 						end)
 					end)
 
@@ -104,7 +112,7 @@ return function(Vargs)
 							task.defer(function()
 								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) then
 									mesh.Parent = handle
-									Anti.Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
+									Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
 								end
 							end)
 						end)
@@ -112,7 +120,13 @@ return function(Vargs)
 				end
 			end
 
+			local function onCharacterRemoving(character)
+				charGood = false
+			end
+
 			local function onCharacterAdded(character)
+				charGood = true
+
 				for _, v in ipairs(character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						coroutine.wrap(protectHat)(v)
@@ -131,14 +145,13 @@ return function(Vargs)
 									count += 1
 									if count > 1 then
 										v.Parent = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack", player)
-										Anti.Detected(player, "log", "Multiple tools equipped at the same time")
+										Detected(player, "log", "Multiple tools equipped at the same time")
 									end
 								end
 							end
 						end)
 					end
 				end)
-
 
 				local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid")
 
@@ -147,7 +160,7 @@ return function(Vargs)
 						task.defer(function()
 							if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
 								humanoid.Parent = character
-								Anti.Detected(player, "kill", "Humanoid removed")
+								Detected(player, "kill", "Humanoid removed")
 							end
 						end)
 					end)
@@ -155,7 +168,7 @@ return function(Vargs)
 
 				humanoid.StateChanged:Connect(function(last, state)
 					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
-						Anti.Detected(player, "kill", "Humanoid came out of dead state")
+						Detected(player, "kill", "Humanoid came out of dead state")
 					end
 				end)
 
@@ -172,8 +185,8 @@ return function(Vargs)
 						task.wait(game:GetService("Players").RespawnTime + 1.5)
 
 						if workspace:IsAncestorOf(humanoid) then
+							Detected(player, "log", "Player took too long to respawn. Respawning manually")
 							player:LoadCharacter()
-							Anti.Detected(player, "log", "Player took too long to respawn. Respawning manually")
 						end
 					end)
 				end
@@ -183,7 +196,7 @@ return function(Vargs)
 				animator.AnimationPlayed:Connect(function(animationTrack)
 					local animationId = animationTrack.Animation.AnimationId
 					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-						Anti.Detected(player, "kill", "Player played an inappropriate character animation")
+						Detected(player, "kill", "Player played an inappropriate character animation")
 					end
 				end)
 
@@ -200,7 +213,7 @@ return function(Vargs)
 						end
 
 						if humanoid then
-							Anti.Detected(player, "kill", "Character joint removed (Paranoid?)")
+							Detected(player, "kill", "Character joint removed (Paranoid?)")
 						end
 					end)
 
@@ -222,6 +235,8 @@ return function(Vargs)
 			if player.Character then
 				coroutine.wrap(onCharacterAdded)(player.Character)
 			end
+
+			player.CharacterRemoving:Connect(onCharacterRemoving)
 			player.CharacterAdded:Connect(onCharacterAdded)
 		end;
 
@@ -329,7 +344,7 @@ return function(Vargs)
 
 			if Settings.AENotifs == true then
 				for _, plr in ipairs(service.Players:GetPlayers()) do
-					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators then
+					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
 							Message = string.format(

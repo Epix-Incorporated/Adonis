@@ -95,11 +95,11 @@ return function()
 		return true
 	end;
 
-	Player.Idled:Connect(function(time)
+	--[[Player.Idled:Connect(function(time)
 		if time > 30 * 60 then
-			Detected("kick", "Anti idle found!")
+			Detected("kick", "Anti-idle")
 		end
-	end)
+	end)--]]
 
 	do
 		local OldEnviroment = getfenv()
@@ -144,6 +144,7 @@ return function()
 					end
 				end
 
+				--// Broken ~ Scel
 				local hasCompleted = false
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
@@ -151,16 +152,18 @@ return function()
 					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
 						Detected("kick", "Anti kick found! Method 1")
 					end
+					--[[
 					if #service.Players:GetPlayers() > 1 then
 						for _, v in ipairs(service.Players:GetPlayers()) do
 							if service.UnWrap(v) ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
 								if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
-									Detected("kick", "Anti kick found! Method 2")
+									--Detected("kick", "Anti kick found! Method 2")
 								end
 							end
 						end
 					end
+					--]]
 					hasCompleted = true
 				end)()
 
@@ -175,6 +178,8 @@ return function()
 					end
 				end)()
 
+				--[==[
+				--// Potential for false positives is too high ~ Scel
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
@@ -182,6 +187,7 @@ return function()
 						Detected("log", "Malicious Object?: " .. v)
 					end
 				end
+				--]==]
 			end
 		end)
 	end
@@ -514,7 +520,7 @@ return function()
 				return obj.GetFullName(obj)
 			end)
 		end;
-		
+
 		CoreRLocked = function(obj)
 			local testName = tostring(math.random()..math.random())
 			local _,err = pcall(function()

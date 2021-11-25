@@ -14,7 +14,7 @@
 		print(msg..' from '..plr.Name..' Example Plugin')
 	end)
 
-	service.Events.PlayerJoined(function(p)
+	service.Events.PlayerAdded(function(p)
 		print(p.Name..' Joined! Example Plugin')
 	end)
 

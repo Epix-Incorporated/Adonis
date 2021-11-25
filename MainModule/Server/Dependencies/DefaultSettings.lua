@@ -301,7 +301,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
-	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 
 	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
@@ -325,12 +324,12 @@ local descs = {};			--// Contains settings descriptions
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-	settings.AntiNoclip = true			-- Attempts to detect noclipping and kills the player if found
-	settings.AntiRootJointDeletion = true		-- Attempts to detect paranoid and kills the player if found
-	settings.AntiHumanoidDeletion = true -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
-	settings.AntiMultiTool = true -- Prevents multitooling and because of that many other exploits
-	settings.AntiGod = true -- If a player does not respawn when they should have they get respawned
-	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
+	settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
+	settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
+	settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
+	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
+	settings.AntiSpeed = false 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 
@@ -453,14 +452,8 @@ local descs = {};			--// Contains settings descriptions
 		"MobileTheme";
 		" ";
 		"Ranks";
-		--"Moderators";
-		--"Admins";
-		--"HeadAdmins";
-		--"Creators";
 		" ";
 		"Permissions";
-		--"Aliases";
-		--"Commands";
 		" ";
 		"Banned";
 		"Muted";
@@ -468,7 +461,6 @@ local descs = {};			--// Contains settings descriptions
 		"Whitelist";
 		"MusicList";
 		"CapeList";
-		--"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";

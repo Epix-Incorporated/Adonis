@@ -9,11 +9,11 @@ return function(Vargs)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
+	warn("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
+
 	local r, AlertTab = xpcall(require, function()
 		warn("Something went wrong while requiring the urgent messages module");
-	end, 5479981424) --xpcall(function() return require(5479981424); end, function(err)
-		--warn("Something went wrong while requiring the urgent messages module");
-	--end); -- Causes an error?
+	end, 8096250407)
 
 	local Alerts = (r and AlertTab) or require(Deps.__URGENT_MESSAGES)
 

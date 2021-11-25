@@ -656,7 +656,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
 					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptSendFriendRequest",service.Players."..v.Name..")")
@@ -673,7 +673,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
 					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptUnfriend",service.Players."..v.Name..")")
@@ -690,7 +690,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.LoadCode(plr, "service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
 				end
 			end
@@ -771,7 +771,7 @@ return function(Vargs, env)
 				})
 			end
 		};
-		
+
 		ViewProfile = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
@@ -815,7 +815,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		ServerDetails = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
