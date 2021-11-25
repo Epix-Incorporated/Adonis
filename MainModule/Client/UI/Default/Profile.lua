@@ -17,6 +17,7 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "Profile_"..player.UserId;
 		Title = "Profile (@"..player.Name..")";
+		Icon = client.MatIcons["Account circle"];
 		Size  = {400, 400};
 		AllowMultiple = false;
 	})
@@ -46,6 +47,7 @@ return function(data)
 	if player ~= service.Players.LocalPlayer then
 		window:AddTitleButton({
 			Text = "";
+			ToolTip = isFriends and "Unfriend" or "Add friend";
 			OnClick = isFriends and function()
 				service.StarterGui:SetCore("PromptUnfriend", player)
 			end
@@ -55,19 +57,20 @@ return function(data)
 		}):Add("ImageLabel", {
 			Size = UDim2.new(0, 20, 0, 20);
 			Position = UDim2.new(0, 5, 0, 0);
-			Image = (isFriends and "rbxassetid://5422934472") or "rbxassetid://5107197931";
+			Image = isFriends and client.MatIcons["Person remove"] or client.MatIcons["Person add"];
 			BackgroundTransparency = 1;
 		})
 	end
 	window:AddTitleButton({
 		Text = "";
+		ToolTip = "View avatar";
 		OnClick = function()
 			service.GuiService:InspectPlayerFromUserId(player.UserId)
 		end
 	}):Add("ImageLabel", {
 		Size = UDim2.new(0, 18, 0, 18);
 		Position = UDim2.new(0, 6, 0, 1);
-		Image = "rbxassetid://7495451175";
+		Image = client.MatIcons["Person search"];
 		BackgroundTransparency = 1;
 	})
 
@@ -200,6 +203,13 @@ return function(data)
 				Text = "";
 				TextStrokeTransparency = 0.8;
 			})
+			search:Add("ImageLabel", {
+				Image = client.MatIcons.Search;
+				Position = UDim2.new(1, -21, 0, 3);
+				Size = UDim2.new(0, 18, 0, 18);
+				ImageTransparency = 0.2;
+				BackgroundTransparency = 1;
+			})
 			local scroller = friendstab:Add("ScrollingFrame",{
 				List = {};
 				ScrollBarThickness = 2;
@@ -287,6 +297,13 @@ return function(data)
 			PlaceholderText = ("Search %d groups (%d owned)"):format(groupCount, ownCount);
 			Text = "";
 			TextStrokeTransparency = 0.8;
+		})
+		search:Add("ImageLabel", {
+			Image = client.MatIcons.Search;
+			Position = UDim2.new(1, -21, 0, 3);
+			Size = UDim2.new(0, 18, 0, 18);
+			ImageTransparency = 0.2;
+			BackgroundTransparency = 1;
 		})
 		local scroller = groupstab:Add("ScrollingFrame",{
 			List = {};
@@ -385,9 +402,9 @@ return function(data)
 			OnClicked = function()
 				local tools = {}
 				for k,t in pairs(player.Backpack:GetChildren()) do
-					if t:IsA("Tool") then
+					if t.ClassName == "Tool" then
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
-					elseif t:IsA("HopperBin") then
+					elseif t.ClassName == "HopperBin" then
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
 					else
 						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName})
@@ -395,6 +412,7 @@ return function(data)
 				end
 				client.UI.Make("List", {
 					Title = "@"..player.Name.."'s tools";
+					Icon = client.MatIcons["Inventory 2"];
 					Table = tools;
 				})
 			end

@@ -25,7 +25,8 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name = "Countdown";
 		Title = "Countdown";
-		Size = {textSize.X + 20, textSize.Y + 20};
+		Icon = client.MatIcons["Hourglass full"];
+		Size = {textSize.X + 30, textSize.Y + 20};
 		Position = UDim2.new(0, 10, 1, -(textSize.Y + 30));
 		OnClose = function()
 			tock:Stop()

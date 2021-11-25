@@ -9,110 +9,165 @@ return function(Vargs, env)
 	if env then setfenv(1, env) end
 
 	return {
-        DonorUncape = {
+		DonorUncape = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"uncape";"removedonorcape";};
+			Commands = {"uncape", "removedonorcape"};
 			Args = {};
 			Hidden = false;
 			Description = "Remove donor cape";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				Functions.UnCape(plr)
 			end
 		};
 
 		DonorCape = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"cape";"donorcape";};
+			Commands = {"cape", "donorcape"};
 			Args = {};
 			Hidden = false;
-			Description = "Get donor cape";
+			Description = "Get donor cape (remove using "..Settings.PlayerPrefix.."uncape)";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				Functions.Donor(plr)
+			end
+		};
+
+		DonorTShirt = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"tshirt", "givetshirt", "donortshirt"};
+			Args = {"ID"};
+			Hidden = false;
+			Description = "Give you the t-shirt that belongs to <ID>";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player, args: {[number]:string})
+				if plr.Character then
+					local ClothingId = tonumber(args[1])
+					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+					local tShirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+
+					assert(Sthirt, "Could not retrieve shirt asset for the supplied ID")
+
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("ShirtGraphic") then v:Destroy() end
+					end
+
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.GraphicTShirt = ClothingId
+					end
+
+					if tShirt:IsA("Model") then
+						tShirt = tShirt:FindFirstChildOfClass("ShirtGraphic")
+					end
+
+					tShirt:Clone().Parent = plr.Character
+				end
+			end
+		};
+
+		DonorRemoveTShirt = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"removetshirt", "untshirt", "notshirt"};
+			Args = {};
+			Hidden = false;
+			Description = "Remove the t-shirt you are wearing, if any";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player, args: {[number]:string})
+				if plr.Character then
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("ShirtGraphic") then v:Destroy() end
+					end
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.GraphicTShirt = 0
+					end
+				end
 			end
 		};
 
 		DonorShirt = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"shirt";"giveshirt";};
-			Args = {"ID";};
+			Commands = {"shirt", "giveshirt", "donorshirt"};
+			Args = {"ID"};
 			Hidden = false;
 			Description = "Give you the shirt that belongs to <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
-					if Shirt then
-						for g,k in pairs(plr.Character:GetChildren()) do
-							if k:IsA("Shirt") then k:Destroy() end
-						end
-						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
-
-						if humandescrip then
-							humandescrip.Shirt = ClothingId
-						end
-						Shirt:Clone().Parent = plr.Character
-					else
-						error("Unexpected error occured. Clothing is missing")
+					assert(Shirt, "Unexpected error occured; clothing is missing")
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("Shirt") then v:Destroy() end
 					end
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.Shirt = ClothingId
+					end
+					Shirt:Clone().Parent = plr.Character
 				end
 			end
 		};
 
 		DonorPants = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"pants";"givepants";};
-			Args = {"id";};
+			Commands = {"pants", "givepants", "donorpants"};
+			Args = {"ID"};
 			Hidden = false;
-			Description = "Give you the pants that belongs to <id>";
+			Description = "Give you the pants that belongs to <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
-					if Pants then
-						for g,k in pairs(plr.Character:GetChildren()) do
-							if k:IsA("Pants") then k:Destroy() end
-						end
-
-						local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
-
-						if humandescrip then
-							humandescrip.Pants = ClothingId
-						end
-
-						Pants:Clone().Parent = plr.Character
-					else
-						error("Unexpected error occured. Clothing is missing")
+					assert(Pants, "Unexpected error occured; clothing is missing")
+					for _, v in pairs(plr.Character:GetChildren()) do
+						if v:IsA("Pants") then v:Destroy() end
 					end
+
+					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+					if humandescrip then
+						humandescrip.Pants = ClothingId
+					end
+
+					Pants:Clone().Parent = plr.Character
 				end
 			end
 		};
 
 		DonorFace = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"face";"giveface";};
-			Args = {"id";};
+			Commands = {"face", "giveface", "donorface"};
+			Args = {"ID"};
 			Hidden = false;
-			Description = "Gives you the face that belongs to <id>";
+			Description = "Gives you the face that belongs to <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
 					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
@@ -128,37 +183,31 @@ return function(Vargs, env)
 					humandescrip.Face = id
 				end
 
-				if info.AssetTypeId == 18 then
-					if plr.Character:FindFirstChild("Head") then
-						local face = service.Insert(args[1])
-						if face then
-							face.Parent = plr.Character:FindFirstChild("Head")
-						end
+				assert(info.AssetTypeId == 18, "Invalid face ID")
+				if plr.Character:FindFirstChild("Head") then
+					local face = service.Insert(args[1])
+					if face then
+						face.Parent = plr.Character:FindFirstChild("Head")
 					end
-				else
-					error("Invalid face ID")
 				end
 			end
 		};
 
 		DonorNeon = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"neon";"donorneon"};
-			Args = {"color";};
+			Commands = {"neon", "donorneon"};
+			Args = {"color"};
 			Hidden = false;
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
-								local str = BrickColor.new('Institutional white').Color
-								local teststr = args[1]
-								if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-								p.BrickColor = str
+								p.BrickColor = BrickColor.new(args[1]).Color
 							end
 							p.Material = Enum.Material.Neon
 						end
@@ -169,14 +218,14 @@ return function(Vargs, env)
 
 		DonorFire = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"fire";"donorfire";};
-			Args = {"color (optional)";};
+			Commands = {"fire", "donorfire"};
+			Args = {"color (optional)"};
 			Hidden = false;
 			Description = "Gives you fire with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -193,14 +242,14 @@ return function(Vargs, env)
 						secondary = str
 					end
 
-					Functions.RemoveParticle(torso,"DONOR_FIRE")
-					Functions.NewParticle(torso,"Fire",{
+					Functions.RemoveParticle(torso, "DONOR_FIRE")
+					Functions.NewParticle(torso, "Fire", {
 						Name = "DONOR_FIRE";
 						Color = color;
 						SecondaryColor = secondary;
 					})
-					Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
-					Functions.NewParticle(torso,"PointLight",{
+					Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_FIRE_LIGHT";
 						Color = color;
 						Range = 15;
@@ -212,14 +261,14 @@ return function(Vargs, env)
 
 		DonorSparkles = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"sparkles";"donorsparkles";};
-			Args = {"color (optional)";};
+			Commands = {"sparkles", "donorsparkles"};
+			Args = {"color (optional)"};
 			Hidden = false;
 			Description = "Gives you sparkles with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -234,14 +283,14 @@ return function(Vargs, env)
 						color = str
 					end
 
-					Functions.RemoveParticle(torso,"DONOR_SPARKLES")
-					Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
-					Functions.NewParticle(torso,"Sparkles",{
+					Functions.RemoveParticle(torso, "DONOR_SPARKLES")
+					Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
+					Functions.NewParticle(torso, "Sparkles", {
 						Name = "DONOR_SPARKLES";
 						SparkleColor = color;
 					})
 
-					Functions.NewParticle(torso,"PointLight",{
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_SPARKLES_LIGHT";
 						Color = color;
 						Range = 15;
@@ -253,14 +302,14 @@ return function(Vargs, env)
 
 		DonorLight = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"light";"donorlight";};
-			Args = {"color (optional)";};
+			Commands = {"light", "donorlight"};
+			Args = {"color (optional)"};
 			Hidden = false;
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -275,8 +324,8 @@ return function(Vargs, env)
 						color = str
 					end
 
-					Functions.RemoveParticle(torso,"DONOR_LIGHT")
-					Functions.NewParticle(torso,"PointLight",{
+					Functions.RemoveParticle(torso, "DONOR_LIGHT")
+					Functions.NewParticle(torso, "PointLight", {
 						Name = "DONOR_LIGHT";
 						Color = color;
 						Range = 15;
@@ -288,15 +337,15 @@ return function(Vargs, env)
 
 		DonorParticle = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"particle";"donorparticle"};
-			Args = {"textureid";"startColor3";"endColor3";};
+			Commands = {"particle", "donorparticle"};
+			Args = {"textureid", "startColor3", "endColor3"};
 			Hidden = false;
 			Description = "Put a custom particle emitter on your character";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
-				assert(args[1],"Argument missing or nil")
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing TextureId")
 
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
@@ -304,12 +353,12 @@ return function(Vargs, env)
 					local endColor = {}
 
 					if args[2] then
-						for s in args[2]:gmatch("[%d]+")do
+						for s in args[2]:gmatch("[%d]+") do
 							table.insert(startColor,tonumber(s))
 						end
 					end
 					if args[3] then--276138620 :)
-						for s in args[3]:gmatch("[%d]+")do
+						for s in args[3]:gmatch("[%d]+") do
 							table.insert(endColor,tonumber(s))
 						end
 					end
@@ -323,8 +372,8 @@ return function(Vargs, env)
 						endc = Color3.new(endColor[1],endColor[2],endColor[3])
 					end
 
-					Functions.RemoveParticle(torso,"DONOR_PARTICLE")
-					Functions.NewParticle(torso,"ParticleEmitter",{
+					Functions.RemoveParticle(torso, "DONOR_PARTICLE")
+					Functions.NewParticle(torso, "ParticleEmitter", {
 						Name = "DONOR_PARTICLE";
 						Texture = 'rbxassetid://'..Functions.GetTexture(args[1]);
 						Size = NumberSequence.new({
@@ -352,85 +401,85 @@ return function(Vargs, env)
 
 		DonorUnparticle = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"unparticle";"removeparticles";"undonorparticle"};
+			Commands = {"unparticle", "removeparticles", "undonorparticle"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes donor particles on you";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso,"DONOR_PARTICLE")
+				Functions.RemoveParticle(torso, "DONOR_PARTICLE")
 			end
 		};
 
 		DonorUnfire = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"unfire";"undonorfire";};
+			Commands = {"unfire", "undonorfire"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes donor fire on you";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso,"DONOR_FIRE")
-				Functions.RemoveParticle(torso,"DONOR_FIRE_LIGHT")
+				Functions.RemoveParticle(torso, "DONOR_FIRE")
+				Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
 			end
 		};
 
 		DonorUnsparkles = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"unsparkles";"undonorsparkles";};
+			Commands = {"unsparkles", "undonorsparkles"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes donor sparkles on you";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso,"DONOR_SPARKLES")
-				Functions.RemoveParticle(torso,"DONOR_SPARKLES_LIGHT")
+				Functions.RemoveParticle(torso, "DONOR_SPARKLES")
+				Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
 			end
 		};
 
 		DonorUnlight = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"unlight";"undonorlight";};
+			Commands = {"unlight", "undonorlight"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes donor light on you";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
-				Functions.RemoveParticle(torso,"DONOR_LIGHT")
+				Functions.RemoveParticle(torso, "DONOR_LIGHT")
 			end
 		};
 
 		DonorHat = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"hat";"gethat";"donorhat"};
-			Args = {"ID";};
+			Commands = {"hat", "gethat", "donorhat"};
+			Args = {"ID"};
 			Hidden = false;
 			Description = "Gives you the hat specified by <ID>";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local id = tonumber(args[1])
 				local hats = 0
-				for i,v in pairs(plr.Character:GetChildren()) do if v:IsA("Accoutrement") then hats = hats+1 end end
+				for i, v in pairs(plr.Character:GetChildren()) do if v:IsA("Accoutrement") then hats = hats+1 end end
 				if id and hats<15 then
 					local market = service.MarketPlace
 					local info = market:GetProductInfo(id)
 					if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
 						local hat = service.Insert(id)
-						assert(hat,"Invalid ID")
+						assert(hat, "Invalid ID")
 						local banned = {
 							Script = true;
 							LocalScript = true;
@@ -446,7 +495,7 @@ return function(Vargs, env)
 						}
 
 						local removeScripts; removeScripts = function(obj)
-							for i,v in pairs(obj:GetChildren()) do
+							for i, v in pairs(obj:GetChildren()) do
 								pcall(function()
 									removeScripts(v)
 									if banned[v.ClassName] then
@@ -467,39 +516,39 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
- 		DonorRemoveHat = {
+
+		DonorRemoveHat = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"removehat";"removedonorhat"};
+			Commands = {"removehat", "removedonorhat"};
 			Args = {"Accessory"};
 			Hidden = false;
 			Description = "Remove any accessories you are currently wearing";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
+			Function = function(plr: Player, args: {string})
 				local hat = plr.Character:FindFirstChild(args[1])
-				if hat and hat:IsA("Accessory") then	
+				if hat and hat:IsA("Accessory") then
 					hat:Destroy()
-					Functions.Hint(args[1].." has been removed",{plr})	
+					Functions.Hint(args[1].." has been removed", {plr})
 				else
-					Functions.Hint(args[1].." is not a valid accessory",{plr})
+					Functions.Hint(args[1].." is not a valid accessory", {plr})
 				end
 
 			end
 		};
-    
+
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"removehats";"nohats";};
+			Commands = {"removehats", "nohats", "nodonorhats"};
 			Args = {};
 			Hidden = false;
 			Description = "Removes any hats you are currently wearing";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr,args)
-				for _,v in pairs(plr.Character:GetChildren()) do
+			Function = function(plr: Player, args: {string})
+				for _, v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end
@@ -507,5 +556,5 @@ return function(Vargs, env)
 			end
 		};
 
-    }
+	}
 end

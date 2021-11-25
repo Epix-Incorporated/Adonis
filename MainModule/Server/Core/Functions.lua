@@ -780,7 +780,7 @@ return function(Vargs)
 			for i,v in pairs(players) do
 				Remote.MakeGui(v,"Hint",{
 					Message = message;
-					Time = time;
+					Time = time or (#tostring(message) / 19) + 2.5; -- Should make longer messages not dissapear too quickly
 				})
 			end
 		end;
@@ -792,7 +792,7 @@ return function(Vargs)
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = tim;
+					Time = tim or (#tostring(message) / 19) + 2.5;
 				})
 			end
 		end;
@@ -803,7 +803,18 @@ return function(Vargs)
 				Remote.MakeGui(v,"Notify",{
 					Title = title;
 					Message = message;
+					Time = tim or (#tostring(message) / 19) + 2.5;
+				})
+			end
+		end;
+
+		Notification = function(title,message,players,tim,icon) -- note that icon is the AssetId without "rbxassetid://" at the start
+			for i,v in pairs(players) do
+				Remote.MakeGui(v,"Notification",{
+					Title = title;
+					Message = message;
 					Time = tim;
+					Icon = "rbxassetid://"..icon or "rbxassetid://7510999669" -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
@@ -1061,7 +1072,7 @@ return function(Vargs)
 
 		CleanWorkspace = function()
 			for _, v in ipairs(workspace:GetChildren()) do
-				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Hat") then
+				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Accoutrement") or v.ClassName == "Hat" then
 					v:Destroy()
 				end
 			end
@@ -1083,7 +1094,7 @@ return function(Vargs)
 			local AllGrabbedPlayers = {}
 			for i,v in pairs(service.NetworkServer:GetChildren()) do
 				pcall(function()
-					if v:IsA("ServerReplicator") then
+					if v:IsA("NetworkReplicator") then
 						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
 							table.insert(AllGrabbedPlayers, (v:GetPlayer() or "NoPlayer"))
 						end
@@ -1093,23 +1104,16 @@ return function(Vargs)
 			return AllGrabbedPlayers
 		end;
 
-		AssignName = function()
-			local name=math.random(100000,999999)
-			return name
-		end;
-
 		Shutdown = function(reason)
-			if not Core.PanicMode then
-				Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
-				wait(1)
-			end
+			Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
+			wait(1)
 
-			service.Players.PlayerAdded:Connect(function(p)
-				p:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
+			service.Players.PlayerAdded:Connect(function(player)
+				player:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
-			for i,p in ipairs(service.Players:GetPlayers()) do
-				p:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
+			for _, v in ipairs(service.Players:GetPlayers()) do
+				v:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
 

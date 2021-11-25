@@ -16,7 +16,7 @@ return function(data)
 		Name  = "Alert";
 		Title = "Alert";
 		Size  = {300,150};
-		Icon = "rbxassetid://53252104";
+		Icon = client.MatIcons["Priority high"];
 		AllowMultiple = false;
 		OnClose = function()
 			alarm:Stop()

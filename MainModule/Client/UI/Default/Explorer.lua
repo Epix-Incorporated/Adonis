@@ -12,6 +12,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "Explorer";
 		Title = "Game Explorer";
+		Icon = client.MatIcons.Folder;
 		Size  = {400, 300};
 		MinSize = {150, 100};
 		AllowMultiple = false;
@@ -95,8 +96,15 @@ return function(data)
 			PlaceholderText = "Search";
 			TextStrokeTransparency = 0.8;
 		})
+		search:Add("ImageLabel", {
+			Image = client.MatIcons.Search;
+			Position = UDim2.new(1, -21, 0, 3);
+			Size = UDim2.new(0, 18, 0, 18);
+			ImageTransparency = 0.2;
+			BackgroundTransparency = 1;
+		})
 
-		search.FocusLost:Connect(function(enter)
+		search:GetPropertyChangedSignal("Text"):Connect(function()
 			getList(curObject, search.Text)
 		end)
 

@@ -12,6 +12,7 @@ return function(data)
 		local window = client.UI.Make("Window",{
 			Name  = "BubbleChat";
 			Title = "Bubble Chat";
+			Icon = client.MatIcons.Chat;
 			Size  = {260,57};
 			Position = UDim2.new(0, 10, 1, -80);
 			AllowMultiple = false;

@@ -99,7 +99,7 @@ return function(data)
 	local name = data.Title
 	local text = data.Message or data.Text or ""
 	local time = data.Time
-	local icon = data.Icon or "rbxassetid://7510999669"
+	local icon = data.Icon or client.MatIcons.Info
 	
 	local returner = nil
 	
@@ -497,7 +497,7 @@ end]]></ProtectedString>
 					<int name="BorderSizePixel">0</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">1</token>
+					<token name="Font">4</token>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>

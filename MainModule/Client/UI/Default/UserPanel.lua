@@ -273,7 +273,7 @@ return function(data)
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a system created by Sceleratis (Davey_Bones) and updated regularly with contributions from the community.\n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.";
+				Text = "Adonis is a frequently updated, community maintained, open source administration system created by Sceleratis (Davey_Bones). \n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.\nHave an idea? Want to participate? Join us on GitHub! (GitHub.com/Sceleratis/Adonis)";
 				TextWrapped = true;
 				Size = UDim2.new(1, -145, 1, -10);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -594,7 +594,7 @@ return function(data)
 			},{
 				"Access to !sparkles <BrickColor>";
 				"Access to !unsparkles";
-				"Access to !particle <textureid> <startColor3> <endColor3>";
+				"Access to !particle <textureID> <startColor3> <endColor3>";
 				"Access to !unparticle";
 				"Access to !fire <BrickColor>";
 				"Access to !unfire";
@@ -606,6 +606,8 @@ return function(data)
 				"Access to !neon <BrickColor>";
 				"Access to !shirt <ID>";
 				"Access to !pants <ID>";
+				"Access to !tshirt <ID>";
+				"Access to !removetshirt";
 			}
 
 
@@ -614,7 +616,7 @@ return function(data)
 					table.insert(donorPerks, v)
 				end
 			else
-				table.insert(donorPerks, "Donor capes are disabled here by the developer")
+				table.insert(donorPerks, "Donor capes are disabled here")
 			end
 
 			if chatMod.DonorCommands then
@@ -1245,7 +1247,7 @@ return function(data)
 						toggle.Text = text
 					end
 				};
-									{
+				--[[{ --// Not totally removing this as it may come back in a different capacity in the future ~ Scel
 					Text = "Privacy Mode: ";
 					Desc = "- Hide certain info from your profile";
 					Entry = "Boolean";
@@ -1259,7 +1261,7 @@ return function(data)
 						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
 						toggle.Text = text
 					end
-				};
+				};--]]
 				{
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
@@ -1427,7 +1429,7 @@ return function(data)
 							i = i-1;
 							for rank,data in next,value do
 								i = i+1;
-								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then
+								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
 										Text = "  "..rank..": ";
 										ToolTip = "Permission Level: ".. data.Level;

@@ -109,7 +109,7 @@ return function(Vargs)
 
 		local admins = {}
 		for _, v in pairs(service.NetworkServer:GetChildren()) do
-			if v and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(), false) then
+			if v:IsA("NetworkReplicator") and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(), false) then
 				table.insert(admins, v:GetPlayer().Name)
 			end
 		end

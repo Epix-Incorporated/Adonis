@@ -6,6 +6,7 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "Notepad";
 		Title = "Notepad";
+		Icon = client.MatIcons.Description;
 	})
 
 	local topbar = window:Add("Frame", {

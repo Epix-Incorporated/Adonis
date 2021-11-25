@@ -6,6 +6,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "Credits";
 		Title = "Credits";
+		Icon = client.MatIcons.Grade;
 		Size  = {280, 300};
 		AllowMultiple = false;
 	})
@@ -25,8 +26,8 @@ return function(data)
 			List = {};
 			ScrollBarThickness = 3;
 			BackgroundTransparency = 1;
-			Position = UDim2.new(0, 0, 0, 28);
-			Size = UDim2.new(1, 0, 1, -28);
+			Position = UDim2.new(0, 5, 0, 30);
+			Size = UDim2.new(1, -10, 1, -35);
 		})
 
 		local search = tab:Add("TextBox", {
@@ -39,6 +40,13 @@ return function(data)
 			PlaceholderText = "Search";
 			TextStrokeTransparency = 0.8;
 		})
+		search:Add("ImageLabel", {
+			Image = client.MatIcons.Search;
+			Position = UDim2.new(1, -20, 0, 2);
+			Size = UDim2.new(0, 16, 0, 16);
+			ImageTransparency = 0.2;
+			BackgroundTransparency = 1;
+		})
 
 		local function generate()
 			local i = 1
@@ -50,17 +58,17 @@ return function(data)
 						Text = "  "..credit.Text.." ";
 						ToolTip = credit.Desc;
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-						Size = UDim2.new(1, -10, 0, 30);
-						Position = UDim2.new(0, 5, 0, (30*(i-1)));
+						Size = UDim2.new(1, 0, 0, 30);
+						Position = UDim2.new(0, 0, 0, (30*(i-1)));
 						TextXAlignment = "Left";
 					})
 					i += 1
 				end
 			end
-			scroller:ResizeCanvas(false, true, false, false, 5, 5)
+			scroller:ResizeCanvas(false, true, false, false, 5, 0)
 		end
 
-		search.FocusLost:Connect(generate)
+		search:GetPropertyChangedSignal("Text"):Connect(generate)
 		generate()
 	end
 
