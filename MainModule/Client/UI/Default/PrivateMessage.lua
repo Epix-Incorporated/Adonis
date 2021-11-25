@@ -42,7 +42,7 @@ return function(data)
 				if (reply:IsFocused()) then
 					reply:ReleaseFocus() -- Prevents box text from being checked before it is populated on mobile devices
 				end
-				
+
 				if service.Trim(reply.Text) == "" then
 					debounce = false
 					UI.Make("Hint", {
@@ -77,7 +77,7 @@ return function(data)
 	UI.Make("Notification",{
 		Title = "New Message";
 		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name);
-		Icon = "rbxassetid://7501175720";
+		Icon = "rbxassetid://7501175708";
 		Time = false;
 		OnClick = function() window:Ready() end;
 		OnClose = function() window:Destroy() end;

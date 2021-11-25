@@ -371,7 +371,7 @@ return function(Vargs, env)
 									local ret = Remote.MakeGuiGet(p, "Notification", {
 										Title = "Help Request";
 										Message = plr.Name.." needs help! Reason: "..pending.Reason;
-										Icon = "rbxassetid://7543068357";
+										Icon = "rbxassetid://7501175708";
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
 										OnClose = Core.Bytecode("return false");

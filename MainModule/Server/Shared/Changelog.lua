@@ -2,7 +2,7 @@ return {
 	"Version: 230";
 	"*Drag edges to expand*";
 	"";
-	"[v230 11.25.2021 13:00 EST]";
+	"[v230 11.25.2021 14:00 EST]";
 	"*Happy Thanksgiving (To those in the US)";
 	"*Hardcoded level check references have been replaced with references to the associated ranks in Settings";
 	"*For security, certain things now use an allowlist rather than a denylist";

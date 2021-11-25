@@ -4472,19 +4472,27 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {[number]:string})
 				local ClothingId = tonumber(args[2])
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId) or error("Item ID passed has invalid item type")
-				assert(Shirt, "Unexpected error occured; clothing is missing")
+				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+
+				assert(Shirt, "Could not retrieve shirt asset for the supplied ID")
+
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						for g, k in pairs(v.Character:GetChildren()) do
 							if k:IsA("ShirtGraphic") then k:Destroy() end
 						end
+
 						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
 						if humandescrip then
 							humandescrip.GraphicTShirt = ClothingId
 						end
+
+						if Shirt:IsA("Model") then
+							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
+						end
+
 						Shirt:Clone().Parent = v.Character
 					end
 				end

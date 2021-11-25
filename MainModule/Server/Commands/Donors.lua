@@ -50,22 +50,30 @@ return function(Vargs, env)
 				if plr.Character then
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-					local tShirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId) or error("Item ID passed has invalid item type")
-					assert(tShirt, "Unexpected error occured; clothing is missing")
+					local tShirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+
+					assert(Sthirt, "Could not retrieve shirt asset for the supplied ID")
+
 					for _, v in pairs(plr.Character:GetChildren()) do
 						if v:IsA("ShirtGraphic") then v:Destroy() end
 					end
+
 					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
 					if humandescrip then
 						humandescrip.GraphicTShirt = ClothingId
 					end
+
+					if tShirt:IsA("Model") then
+						tShirt = tShirt:FindFirstChildOfClass("ShirtGraphic")
+					end
+
 					tShirt:Clone().Parent = plr.Character
 				end
 			end
 		};
-		
+
 		DonorRemoveTShirt = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
@@ -520,9 +528,9 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
 				local hat = plr.Character:FindFirstChild(args[1])
-				if hat and hat:IsA("Accessory") then	
+				if hat and hat:IsA("Accessory") then
 					hat:Destroy()
-					Functions.Hint(args[1].." has been removed", {plr})	
+					Functions.Hint(args[1].." has been removed", {plr})
 				else
 					Functions.Hint(args[1].." is not a valid accessory", {plr})
 				end
@@ -550,4 +558,3 @@ return function(Vargs, env)
 
 	}
 end
-																
