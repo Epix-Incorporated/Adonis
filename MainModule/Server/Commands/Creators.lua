@@ -18,8 +18,8 @@ return function(Vargs, env)
 			Filter = true;
 			Hidden = false;
 			Fun = false;
-			Function = function(plr: Player, args: {[number]:string}, data: {})
-				local reason = args[2] or "No reason provided";
+			Function = function(plr: Player, args: {string}, data: {})
+				local reason = args[2] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
 					local UserId = service.Players:GetUserIdFromNameAsync(i)
@@ -43,7 +43,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "UnDirectBans the player (Saves)";
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				for i in string.gmatch(args[1], "[^,]+") do
 
 					local userid = service.Players:GetUserIdFromNameAsync(i)
@@ -70,7 +70,7 @@ return function(Vargs, env)
 			CrossServerDenied = true;
 			IsCrossServer = true;
 			NoStudio = true;
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing PlaceId")
 				assert(tonumber(args[1]), "Invalid PlaceId")
 
@@ -80,7 +80,7 @@ return function(Vargs, env)
 				})
 				if ans == "Yes" then
 					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
-						error("CrossServer Handler Not Ready");
+						error("CrossServer Handler Not Ready")
 					end
 				end
 			end;
@@ -95,14 +95,14 @@ return function(Vargs, env)
 			Fun = false;
 			NoStudio = true;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local id = tonumber(args[2])
 				local players = service.GetPlayers(plr, args[1])
 				local servers = Core.GetData("PrivateServers") or {}
 				local code = servers[args[2]]
 				if code then
 					for i, v in pairs(players) do
-						service.TeleportService:TeleportToPrivateServer(code.ID,code.Code, {v})
+						service.TeleportService:TeleportToPrivateServer(code.ID, code.Code, {v})
 					end
 				elseif id then
 					for i, v in pairs(players) do
@@ -122,12 +122,12 @@ return function(Vargs, env)
 			Description = "Lets you give <player> <amount> player points";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local ran,failed = pcall(function() service.PointsService:AwardPoints(v.userId,tonumber(args[2])) end)
-					if ran and service.PointsService:GetAwardablePoints()>=tonumber(args[2]) then
+					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.userId, tonumber(args[2])) end)
+					if ran and service.PointsService:GetAwardablePoints() >= tonumber(args[2]) then
 						Functions.Hint('Gave '..args[2]..' points to '..v.Name, {plr})
-					elseif service.PointsService:GetAwardablePoints()<tonumber(args[2]) then
+					elseif service.PointsService:GetAwardablePoints() < tonumber(args[2]) then
 						Functions.Hint("You don't have "..args[2]..' points to give to '..v.Name, {plr})
 					else
 						Functions.Hint("(Unknown Error) Failed to give "..args[2]..' points to '..v.Name, {plr})
@@ -145,7 +145,7 @@ return function(Vargs, env)
 			Description = "Opens the settings manager";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Settings"})
 			end
 		};
@@ -158,11 +158,11 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
-					if sendLevel>targLevel then
+					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -187,7 +187,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -214,7 +214,7 @@ return function(Vargs, env)
 			Arguments = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name");
 				assert(args[2], "Missing command name");
 				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
@@ -229,9 +229,9 @@ return function(Vargs, env)
 			Arguments = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
-				local id = tonumber(args[1]);
-				assert(id, "Must supply valid UserId");
+			Function = function(plr: Player, args: {string})
+				local id = tonumber(args[1])
+				assert(id, "Must supply valid UserId")
 				local username = (service.Players:GetNameFromUserIdAsync(args[1]))
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
 					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
@@ -239,8 +239,8 @@ return function(Vargs, env)
 					Size = {281.25, 187.5};
 				})
 				if ans == "Yes" then
-					Core.RemoveData(tostring(id));
-					Core.PlayerData[tostring(id)] = nil;
+					Core.RemoveData(tostring(id))
+					Core.PlayerData[tostring(id)] = nil
 
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
@@ -258,7 +258,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Opens the the terminal";
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Terminal")
 			end
 		};
@@ -271,7 +271,7 @@ return function(Vargs, env)
 			Description = "Task manager";
 			Hidden = true;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "TaskManager", {})
 			end
 		};

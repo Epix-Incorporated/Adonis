@@ -15,7 +15,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local commands = Admin.SearchCommands(plr, "all")
 				local tab = {}
 				local cStr = ""
@@ -81,7 +81,7 @@ return function(Vargs, env)
 			Args = {"command"};
 			Description = "Shows you information about a specific command";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
 
 				local commands = Admin.SearchCommands(plr, "all")
@@ -122,7 +122,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Opens a textbox window for you to type into";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Notepad", {})
 			end
 		};
@@ -133,7 +133,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Opens a canvas window for you to draw on";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Paint", {})
 			end
 		};
@@ -144,7 +144,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you the command prefix using the :cmds command";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Functions.Hint('"'..Settings.Prefix..'cmds"', {plr})
 			end
 		};
@@ -156,7 +156,7 @@ return function(Vargs, env)
 			Hidden = true;
 			Description = "Sends yourself a notification";
 			AdminLevel = "Players";
-			Function = function(plr, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
@@ -173,7 +173,7 @@ return function(Vargs, env)
 			Args = {"num m", "num n"};
 			Description = "Generates a number using Lua's math.random";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert((not args[1]) or tonumber(args[1]), "Argument(s) provided must be numbers")
 				assert((not args[2]) or tonumber(args[2]), "Arguments provided must be numbers")
 
@@ -194,7 +194,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you a list of Roblox BrickColors for reference";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local children = {
 					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
 				}
@@ -245,7 +245,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you a list of Roblox materials for reference";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local mats = {
 					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
 					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
@@ -265,7 +265,7 @@ return function(Vargs, env)
 			Description = "Opens the client settings panel";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Client"})
 			end
 		};
@@ -278,7 +278,7 @@ return function(Vargs, env)
 			Description = "Opens the donation panel";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Donate"})
 			end
 		};
@@ -291,7 +291,7 @@ return function(Vargs, env)
 			Description = "Prompts you to take a copy of the script";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				service.MarketPlace:PromptPurchase(plr, Core.LoaderID)
 			end
 		};
@@ -304,7 +304,7 @@ return function(Vargs, env)
 			Description = "Shows you your current ping (latency)";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Ping")
 			end
 		};
@@ -318,7 +318,7 @@ return function(Vargs, env)
 			Description = "Shows a list of donators who are currently in the server";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local temptable = {}
 				for _, v in pairs(service.Players:GetPlayers()) do
 					if Admin.CheckDonor(v) then
@@ -343,7 +343,7 @@ return function(Vargs, env)
 			Fun = false;
 			Filter = true;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if Settings.HelpSystem == true then
 					local num = 0
 					local answered = false
@@ -413,7 +413,7 @@ return function(Vargs, env)
 			Fun = false;
 			NoStudio = true; --Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
@@ -427,7 +427,7 @@ return function(Vargs, env)
 			Fun = false;
 			NoStudio = true; --TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 				if player then
 					local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(player)
@@ -450,7 +450,7 @@ return function(Vargs, env)
 			Description = "Shows you Adonis development credits";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Credits")
 			end
 		};
@@ -461,7 +461,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you the script's changelog";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Change Log";
 					Icon = server.MatIcons["Text snippet"];
@@ -477,7 +477,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you a random quote";
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local quotes = require(Deps.Assets.Quotes)
 				Functions.Message("Random Quote", quotes[math.random(1, #quotes)], {plr})
 			end
@@ -491,7 +491,7 @@ return function(Vargs, env)
 			Description = "Shows you how to use some syntax related things";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local usage = {
 					"";
 					"Mouse over things in lists to expand them";
@@ -550,7 +550,7 @@ return function(Vargs, env)
 			Fun = false;
 			NoStudio = true;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string}) -- uses Player:GetFriendsOnline()
+			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
 				assert(args[1], "Missing player name")
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
@@ -577,7 +577,7 @@ return function(Vargs, env)
 			Description = "Shows info about the script (Adonis)";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
 			end
 		};
@@ -590,7 +590,7 @@ return function(Vargs, env)
 			Description = "Opens the alias manager";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Aliases";})
 			end
 		};
@@ -603,7 +603,7 @@ return function(Vargs, env)
 			Description = "Opens the keybind manager";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "KeyBinds";})
 			end
 		};
@@ -616,7 +616,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				service.SocialService:PromptGameInvite(plr)
 			end
 		};
@@ -629,7 +629,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Friends")
 			end
 		};
@@ -642,7 +642,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				service.MarketplaceService:PromptPremiumPurchase(plr)
 			end
 		};
@@ -655,8 +655,8 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
 					assert(v~=plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
 					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptSendFriendRequest",service.Players."..v.Name..")")
@@ -672,8 +672,8 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
 					assert(v~=plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
 					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptUnfriend",service.Players."..v.Name..")")
@@ -689,8 +689,8 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr: Player, args[1])) do
 					Remote.LoadCode(plr, "service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
 				end
 			end
@@ -704,7 +704,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
@@ -715,7 +715,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Tells you how many players are in the server";
 			AdminLevel = "Players";
-			Function = function(plr, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local num = 0
 				local nilNum = 0
 				for _, v in ipairs(service.GetPlayers()) do
@@ -741,7 +741,7 @@ return function(Vargs, env)
 			Description = "Shows you the current time and date.";
 			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local ostime = os.time()
 				local tab = {
 					{Text = "―――――――――――――――――――――――"},

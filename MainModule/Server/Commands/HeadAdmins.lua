@@ -17,7 +17,7 @@ return function(Vargs, env)
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing time amount")
 				local time = args[2]
@@ -83,7 +83,7 @@ return function(Vargs, env)
 			Description = "Removes specified player from Timebans list";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				local timebans = Core.Variables.TimeBans or {}
 
@@ -111,7 +111,7 @@ return function(Vargs, env)
 			Filter = true;
 			Hidden = false;
 			Fun = false;
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
 
@@ -135,7 +135,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local ret = Admin.RemoveBan(args[1], true)
 				if ret then
 					Functions.Hint(tostring(ret)..' has been Unbanned', {plr})
@@ -151,7 +151,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) an admin; Saves";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -180,7 +180,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary admin; Does not save";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -210,7 +210,7 @@ return function(Vargs, env)
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
 				local globalMessage = string.format([[
@@ -244,7 +244,7 @@ return function(Vargs, env)
 			Filter = true;
 			IsCrossServer = true;
 			CrossServerDenied = true;
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 
@@ -279,7 +279,7 @@ return function(Vargs, env)
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if not args[1] then error("You need to supply a list name.") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 				local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
@@ -295,7 +295,7 @@ return function(Vargs, env)
 			Description = "Views the specified Trello list from the primary board set in Settings.";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if not args[1] then error("Enter a valid list name") end
 				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
 				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
@@ -317,7 +317,7 @@ return function(Vargs, env)
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CreateCard")
 			end
 		};
@@ -328,7 +328,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Removes any instance created server-side by Adonis; May break things";
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local objects = service.GetAdonisObjects()
 				for i, v in pairs(objects) do
 					v:Destroy()
@@ -347,7 +347,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Changes the backup for the restore map command to the map's current state";
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local plr_name = plr and plr.Name
 
 				if plr then
@@ -405,7 +405,7 @@ return function(Vargs, env)
 			Description = "Lets you explore the game, kinda like a file browser";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Explorer")
 			end
 		};
@@ -418,7 +418,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Fun = false;
 			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.SocialService:PromptGameInvite(v)
 				end
@@ -433,7 +433,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			IsCrossServer = true;
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
 					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
@@ -448,4 +448,3 @@ return function(Vargs, env)
 		};
 	}
 end
-																

@@ -18,7 +18,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Functions.UnCape(plr)
 			end
 		};
@@ -32,7 +32,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				Functions.Donor(plr)
 			end
 		};
@@ -99,7 +99,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
@@ -128,7 +128,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					local ClothingId = tonumber(args[1])
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
@@ -159,7 +159,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
 					plr.Character.Head:FindFirstChild("face"):Destroy()
 				end
@@ -194,7 +194,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				if plr.Character then
 					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
@@ -217,7 +217,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -260,7 +260,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -301,7 +301,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				if torso then
 					local color = Color3.new(1,1,1)
@@ -336,7 +336,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing TextureId")
 
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -400,7 +400,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				Functions.RemoveParticle(torso, "DONOR_PARTICLE")
 			end
@@ -415,7 +415,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				Functions.RemoveParticle(torso, "DONOR_FIRE")
 				Functions.RemoveParticle(torso, "DONOR_FIRE_LIGHT")
@@ -431,7 +431,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				Functions.RemoveParticle(torso, "DONOR_SPARKLES")
 				Functions.RemoveParticle(torso, "DONOR_SPARKLES_LIGHT")
@@ -447,7 +447,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local torso = plr.Character:FindFirstChild("HumanoidRootPart")
 				Functions.RemoveParticle(torso, "DONOR_LIGHT")
 			end
@@ -462,7 +462,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local id = tonumber(args[1])
 				local hats = 0
 				for i, v in pairs(plr.Character:GetChildren()) do if v:IsA("Accoutrement") then hats = hats+1 end end
@@ -518,7 +518,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local hat = plr.Character:FindFirstChild(args[1])
 				if hat and hat:IsA("Accessory") then	
 					hat:Destroy()
@@ -539,7 +539,7 @@ return function(Vargs, env)
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				for _, v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
@@ -550,3 +550,4 @@ return function(Vargs, env)
 
 	}
 end
+																
