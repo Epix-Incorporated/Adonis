@@ -13,9 +13,9 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = name or "SelectionPrompt";
 		Title = name or "Selection Prompt";
+		Icon = client.MatIcons["Format list bulleted"];
 		Size  = {225,150};
 		SizeLocked = true;
-		--Icon = "rbxassetid://136615916";
 		OnClose = function()
 			if not answer then
 				answer = nil

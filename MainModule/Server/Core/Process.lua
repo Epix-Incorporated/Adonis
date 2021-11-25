@@ -754,7 +754,7 @@ return function(Vargs)
 						Remote.MakeGui(p,"Notification",{
 							Title = "Welcome.";
 							Message = "Click here for commands.";
-							Icon = "rbxassetid://7536783953";
+							Icon = server.MatIcons["Verified user"];
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -765,7 +765,7 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
-								Icon = "rbxassetid://7495471249";
+								Icon = server.MatIcons.Description;
 								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
@@ -777,13 +777,13 @@ return function(Vargs)
 							Remote.MakeGui(p,"Notification",{
 								Title = "Warning!";
 								Message = "Using default datastore key!";
-								Icon = "rbxassetid://7495468117";
+								Icon = server.MatIcons.Description;
 								Time = 10;
 								OnClick = Core.Bytecode([[
 									local window = client.UI.Make("Window",{
 										Title = "How to change the DataStore key";
 										Size = {700,300};
-										Icon = "rbxassetid://357249130";
+										Icon = "rbxassetid://7510994359";
 									})
 
 									window:Add("ImageLabel",{

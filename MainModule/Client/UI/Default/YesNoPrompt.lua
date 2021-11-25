@@ -11,7 +11,7 @@ return function(data)
 		Title = data.Title or "Prompt";
 		Size  = data.Size or {225,150};
 		SizeLocked = true;
-		--Icon = "rbxassetid://136615916";
+		Icon = client.MatIcons.Help;
 		OnClose = function()
 			if not answer then
 				answer = "No"

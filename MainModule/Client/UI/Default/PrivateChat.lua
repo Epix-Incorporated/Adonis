@@ -220,6 +220,7 @@ return function(data)
 	window = client.UI.Make("Window",{
 		Name  = "PrivateChat".. SessionName;
 		Title = "Private Chat";
+		Icon = client.MatIcons.Forum;
 		Size  = {500,300};
 		OnClose = function()
 			if sessionEvent then

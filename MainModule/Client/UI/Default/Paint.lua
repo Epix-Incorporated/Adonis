@@ -8,6 +8,7 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "Paint";
 		Title = "Paint";
+		Icon = client.MatIcons.Palette;
 	})
 
 	local topbar = window:Add("Frame", {

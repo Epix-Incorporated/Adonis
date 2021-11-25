@@ -18,7 +18,9 @@ return function(data)
 	local window = client.UI.Make("Window", {
 		Name  = "ServerDetails";
 		Title = "Server Details";
+		Icon = client.MatIcons.Topic;
 		Size  = {420, 360};
+		MinSize = {374, 155};
 		AllowMultiple = false;
 	})
 
@@ -31,6 +33,10 @@ return function(data)
 		Text = "Overview"
 	})
 
+	local locationtab = tabFrame:NewTab("Location", {
+		Text = "Location"
+	})
+
 	local playerstab = tabFrame:NewTab("Players", {
 		Text = "Players"
 	})
@@ -38,182 +44,253 @@ return function(data)
 	local workspacetab = tabFrame:NewTab("Workspace", {
 		Text = "Workspace"
 	})
-
-	local securitytab = tabFrame:NewTab("Security", {
-		Text = "Security"
-	})
+	
+	if data.WorkspaceInfo then
+		window:AddTitleButton({
+			Text = "";
+			ToolTip = "Advanced stats";
+			OnClick = function()
+				client.Remote.Send("ProcessCommand", data.CmdPrefix.."perfstats")
+			end
+		}):Add("ImageLabel", {
+			Size = UDim2.new(0, 18, 0, 18);
+			Position = UDim2.new(0, 6, 0, 1);
+			Image = client.MatIcons.Leaderboard;
+			BackgroundTransparency = 1;
+		})
+		window:AddTitleButton({
+			Text = "";
+			ToolTip = "Game explorer";
+			OnClick = function()
+				client.Remote.Send("ProcessCommand", data.CmdPrefix.."explorer")
+			end
+		}):Add("ImageLabel", {
+			Size = UDim2.new(0, 18, 0, 18);
+			Position = UDim2.new(0, 6, 0, 1);
+			Image = client.MatIcons.Folder;
+			BackgroundTransparency = 1;
+		})
+	end
 
 	do
 
-		local function getServerType()
-			if game:GetService("RunService"):IsStudio() then
-				return "Studio"
-			else
-				if data.PrivateServerId ~= "" then
-					if data.PrivateServerOwnerId ~= 0 then
-						return "Private"
-					else
-						return "Reserved"
-					end
+		local serverType = "[Error]"
+		if service.RunService:IsStudio() then
+			serverType = "Studio"
+		else
+			if data.PrivateServerId ~= "" then
+				if data.PrivateServerOwnerId ~= 0 then
+					serverType = "Private"
 				else
-					return "Standard"
+					serverType = "Reserved"
 				end
+			else
+				serverType = "Standard"
 			end
 		end
 
+		local entries = {
+			{"Game ID", game.GameId},
+			{"Game Creator", service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name.." (#"..data.CreatorId..")"},
+			{"Creator Type", game.CreatorType.Name},
+			{"Place ID", game.PlaceId},
+			{"Place Name", service.MarketPlace:GetProductInfo(game.PlaceId).Name or "[Error]"},
+			{"Place Version", game.PlaceVersion},
+			"",
+			{"Server Job ID", game.JobId or "[Error]"},
+			{"Server Type", serverType},
+			"",
+			{"Server Speed", math.round(service.Workspace:GetRealPhysicsFPS())},
+			{"Server Age", data.ServerAge},
+			{"Server Start Time", service.FormatTime(data.ServerStartTime)}
+		}
 
-
-
-
-
-		local i = 1
-		local function addOverviewEntry(name, value, toolTip)
-			local entry = overviewtab:Add("TextLabel", {
-				Text = "  "..name.." ";
-				ToolTip = toolTip;
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-				TextXAlignment = "Left";
-			})
-			entry:Add("TextLabel", {
-				Text = " "..value.."  ";
-				BackgroundTransparency = 1;
-				Size = UDim2.new(0, 120, 1, 0);
-				Position = UDim2.new(1, -120, 0, 0);
-				TextXAlignment = "Right";
-			})
-
-			i = i + 1
+		if serverType == "Reserved" then
+			table.insert(entries, 10, {"Private Server ID", data.PrivateServerId})
+		elseif serverType == "Private" then
+			table.insert(entries, 10, {"Private Server ID", data.PrivateServerId})
+			table.insert(entries, 11, {"Private Server Owner", (service.Players:GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..data.PrivateServerOwnerId..")"})
 		end
 
-		addOverviewEntry("Place Name:", service.MarketPlace:GetProductInfo(game.PlaceId).Name)
-		addOverviewEntry("Place ID:", game.PlaceId)
-		addOverviewEntry("Place Version:", game.PlaceVersion)
-		addOverviewEntry("Game ID:", game.GameId)
-		addOverviewEntry("Creator:", service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name.." ("..data.CreatorId..")")
-		addOverviewEntry("Creator Type:", string.sub((tostring(game.CreatorType)), 18))
-		--[[if game.Genre then
-			addOverviewEntry("Genre:", tostring(game.Genre))
-		end]]
-		i = i + 1
-		addOverviewEntry("Job ID:", game.JobId or "[Error]")
-		addOverviewEntry("Server Type:", getServerType())
-		if getServerType() == "Reserved" then
-			addOverviewEntry("Private Server ID:", data.PrivateServerId)
-		elseif getServerType() == "Private" then
-			addOverviewEntry("Private Server ID:", data.PrivateServerId)
-			addOverviewEntry("Private Server Owner:", (game:GetService("Players"):GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]").." ("..game.PrivateServerOwnerId..")")
-		end
-		if data.ServerInternetInfo then
-			--Server Internet Info
-			local serii = data.ServerInternetInfo
-			addOverviewEntry("Timezone:", serii.timezone or "[Error]")
-			addOverviewEntry("Country:", serii.country or "[Error]")
-			if game:GetService("RunService"):IsStudio() then else
-				addOverviewEntry("Region:", serii.region or "[Error]")
-				addOverviewEntry("City:", serii.city or "[Error]")
-			  addOverviewEntry("Zipcode:", serii.zipcode or "[Error]")
-				addOverviewEntry("IP Address:", serii.query or "[Error]")
-				addOverviewEntry("Coordinates:", serii.coords or "[Error]") --"0 LAT 0 LON"
-				--Sensitive Data when running on studio
+		local i, currentPos = 0, 0
+		for _, v in ipairs(entries) do
+			if type(v) == "table" then
+				i += 1
+				overviewtab:Add("TextLabel", {
+					Name = v[1]; -- for autoupdating info later
+					Text = "  "..v[1]..":";
+					ToolTip = v[3];
+					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Size = UDim2.new(1, -10, 0, 30);
+					Position = UDim2.new(0, 5, 0, currentPos+5);
+					TextXAlignment = "Left";
+				}):Add("TextBox", {
+					Text = v[2];
+					BackgroundTransparency = 1;
+					AnchorPoint = Vector2.new(1, 0);
+					Size = UDim2.new(1, -150, 1, 0);
+					Position = UDim2.new(1, -5, 0, 0);
+					TextXAlignment = "Right";
+					TextEditable = false;
+					ClearTextOnFocus = false;
+				})
+				currentPos += 30
+			else
+				currentPos += 10
 			end
 		end
-		i = i + 1
-		addOverviewEntry("Server Speed:", math.round(workspace:GetRealPhysicsFPS()))
-		addOverviewEntry("Server Start Time:", data.ServerStartTime)
-		addOverviewEntry("Server Age:", data.ServerAge)
 
 		overviewtab:ResizeCanvas(false, true, false, false, 5, 5)
-	end
 
-	do
-		local i = 1
-		local function addWorkspaceEntry(name, valueType, value, toolTip)
-			local entry = workspacetab:Add("TextLabel", {
-				Text = "  "..name.." ";
-				ToolTip = toolTip;
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-				TextXAlignment = "Left";
-			})
+		spawn(function()
+			while wait(0.5) do
+				pcall(function()
+					overviewtab["Server Speed"].TextLabel.Text = math.round(service.Workspace:GetRealPhysicsFPS())
+					overviewtab["Server Age"].TextLabel.Text = service.FormatTime(os.time()-data.ServerStartTime)
+				end)
+			end
+		end)
 
-			i = i + 1
-			return entry:Add(valueType, value)
-		end
-
-		addWorkspaceEntry("Streaming Enabled:", "TextLabel", {Text = " "..boolToStr(workspace.StreamingEnabled).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Interpolation Throttling:", "TextLabel", {Text = " "..string.sub(tostring(workspace.InterpolationThrottling),34).."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Gravity:", "TextLabel", {Text = " "..workspace.Gravity.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Fallen Parts Destroy Height:", "TextLabel", {Text = " "..workspace.FallenPartsDestroyHeight.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -125, 0, 0);TextXAlignment = "Right";})
-		i = i + 1
-		addWorkspaceEntry("Objects:", "TextLabel", {Text = " "..data.ObjectCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Cameras:", "TextLabel", {Text = " "..data.CameraCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-		addWorkspaceEntry("Nil Players:", "TextLabel", {Text = " "..data.NilPlayerCount.."  ";BackgroundTransparency = 1;Size = UDim2.new(0, 120, 1, 0);Position = UDim2.new(1, -120, 0, 0);TextXAlignment = "Right";})
-
-		if client.Remote.Get("AdminLevel") >= 300 then --// TODO: Replace this with something that can reference the actual current level pulled from the associated rank in settings....
-			workspacetab:Add("TextButton", {
-				Text = "Open Game Explorer";
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 35);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+10);
-				OnClicked = function()
-					client.UI.Make("Explorer", {})
-				end
-			})
-		else
-			workspacetab:Add("TextButton", {
-				Text = "Open Game Explorer (Insufficient Permissions)";
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 35);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+10);
-				AutoButtonColor = false
-			})
-		end
-
-		workspacetab:ResizeCanvas(false, true, false, false, 5, 5)
 	end
 
 	do
 
-		local Players = service.Players
-		local sortedPlayers = {}
+		local function show()
+			local entries = {}
+			if data.ServerInternetInfo then
+				local serii = data.ServerInternetInfo
+				for _, v in ipairs({
+					{"Timezone", serii.timezone or "[Error]"},
+					{"Country", serii.country or "[Error]"},
+					{"Region", serii.region or "[Error]"},
+					{"City", serii.city or "[Error]"},
+					{"Zipcode", serii.zipcode or "[Error]"},
+					{"IP Address", serii.query or "[Error]"},
+					{"Coordinates", serii.coords or "[Error]"},
+					}) do table.insert(entries, v) end
+			else
+				table.insert(entries, {"ERROR: Server internet info failed to load"})
+			end
 
-		for _, player in ipairs(Players:GetPlayers()) do
-			table.insert(sortedPlayers, player.Name)
-		end
-
-		table.sort(sortedPlayers)
-
-		local i = 2
-		local playerCount = 0
-		local adminCount = 0
-		for _, playerName in ipairs(sortedPlayers) do
-			local entryText = ""
-			local player = Players:FindFirstChild(playerName);
-			if player then
-				if playerName == player.DisplayName then
-					entryText = playerName
-				else
-					entryText = player.DisplayName.." (@"..playerName..")"
-				end
-
-				local entry = playerstab:Add("TextLabel", {
-					Text = "             "..entryText;
-					ToolTip = "ID: "..Players[playerName].UserId;
+			local i = 1
+			for _, v in ipairs(entries) do
+				locationtab:Add("TextLabel", {
+					Text = "  "..v[1]..":";
+					ToolTip = v[3];
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
 					TextXAlignment = "Left";
-					--[[OnClicked = function()
-						client.Remote.Send("InspectPlayer")
-					end;]]
+				}):Add("TextBox", {
+					Text = v[2];
+					BackgroundTransparency = 1;
+					AnchorPoint = Vector2.new(1, 0);
+					Size = UDim2.new(1, -150, 1, 0);
+					Position = UDim2.new(1, -5, 0, 0);
+					TextXAlignment = "Right";
+					TextEditable = false;
+					ClearTextOnFocus = false;
+				})
+				i += 1
+			end
+
+			locationtab:ResizeCanvas(false, true, false, false, 5, 5)
+		end
+
+		if service.RunService:IsStudio() then
+			local notice = locationtab:Add("TextLabel", {
+				Text = "Server location info has been hidden in a Studio environment for your privacy, since it may be based on your device's location.";
+				BackgroundTransparency = 0.4;
+				Size = UDim2.new(1, -10, 0, 80);
+				Position = UDim2.new(0, 5, 0, 5);
+				TextXAlignment = "Left";
+				TextYAlignment = "Top";
+				TextWrapped = true;
+			})
+			notice:Add("UIPadding", {
+				PaddingLeft = UDim.new(0, 5);PaddingRight = UDim.new(0, 5);PaddingTop = UDim.new(0, 5);PaddingBottom = UDim.new(0, 5);
+			})
+			notice:Add("ImageLabel", {
+				Image = client.MatIcons["Privacy tip"];
+				ImageTransparency = 0.2;
+				BackgroundTransparency = 1;
+				Size = UDim2.new(0, 24, 0, 24);
+				Position = UDim2.new(1, -140, 1, -28);
+			})
+			notice:Add("TextButton", {
+				Text = "Show Anyway";
+				Size = UDim2.new(0, 110, 0, 30);
+				Position = UDim2.new(1, -110, 1, -30);
+				TextXAlignment = "Center";
+				OnClick = function()
+					show()
+					notice:Destroy()
+				end
+			})
+		else
+			show()
+		end
+
+	end
+
+	do
+
+		local search = playerstab:Add("TextBox", {
+			Size = UDim2.new(1, -10, 0, 25);
+			Position = UDim2.new(0, 5, 0, 5);
+			BackgroundTransparency = 0.5;
+			BorderSizePixel = 0;
+			TextColor3 = Color3.new(1, 1, 1);
+			Text = "";
+			TextStrokeTransparency = 0.8;
+		})
+		search:Add("ImageLabel", {
+			Image = client.MatIcons.Search;
+			Position = UDim2.new(1, -21, 0, 3);
+			Size = UDim2.new(0, 18, 0, 18);
+			ImageTransparency = 0.2;
+			BackgroundTransparency = 1;
+		})
+		local scroller = playerstab:Add("ScrollingFrame",{
+			List = {};
+			ScrollBarThickness = 2;
+			BackgroundTransparency = 1;
+			Position = UDim2.new(0, 5, 0, 32);
+			Size = UDim2.new(1, -10, 1, -37);
+		})
+
+		local playerCount = 0
+		local adminCount = 0
+		local function getList(filter: string)
+			playerCount, adminCount = 0, 0
+			local sortedPlayers = {}
+			for _, player in ipairs(service.Players:GetPlayers()) do
+				table.insert(sortedPlayers, player.Name)
+			end
+			table.sort(sortedPlayers)
+
+			local i = 1
+			scroller:ClearAllChildren()
+			for _, playerName in ipairs(sortedPlayers) do
+				local player: Player = service.Players:FindFirstChild(playerName)
+				if not player then continue end
+				if not (playerName:sub(1, #filter):lower() == filter:lower() or (player.DisplayName:sub(1, #filter):lower() == filter:lower())) then continue end
+				local entry = scroller:Add("TextButton", {
+					Text = "             "..(playerName == player.DisplayName and "@"..playerName or (player.DisplayName.." (@"..playerName..")"));
+					ToolTip = "User ID: "..service.Players[playerName].UserId.." [Click to open profile]";
+					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Size = UDim2.new(1, 0, 0, 30);
+					Position = UDim2.new(0, 0, 0, (30*(i-1))+5);
+					TextXAlignment = "Left";
+					OnClicked = function()
+						client.Remote.Send("ProcessCommand", data.CmdPlayerPrefix.."profile"..data.SplitKey..playerName)
+						window:Close()
+					end;
 				})
 
-				local subEntryText = data.Admins[playerName]
+				local subEntryText = data.Admins and data.Admins[playerName]
 				if subEntryText and subEntryText ~= "Player" then
-					adminCount = adminCount + 1
+					adminCount += 1
 
 					if table.find(data.Donors, playerName) then
 						subEntryText = subEntryText.." | Donor"
@@ -227,7 +304,7 @@ return function(data)
 						TextXAlignment = "Right";
 					})
 				elseif table.find(data.Donors, playerName) then
-					playerCount = playerCount + 1
+					playerCount += 1
 					entry:Add("TextLabel", {
 						Text = " Donor  ";
 						BackgroundTransparency = 1;
@@ -236,55 +313,81 @@ return function(data)
 						TextXAlignment = "Right";
 					})
 				else
-					playerCount = playerCount + 1
+					playerCount += 1
 				end
 
 				spawn(function()
 					entry:Add("ImageLabel", {
-						Image = game:GetService("Players"):GetUserThumbnailAsync(Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+						Image = service.Players:GetUserThumbnailAsync(service.Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
 						BackgroundTransparency = 1;
 						Size = UDim2.new(0, 30, 0, 30);
 						Position = UDim2.new(0, 0, 0, 0);
 					})
 				end)
-				i = i + 1
+				i += 1
+			end
+			scroller:ResizeCanvas(false, true, false, false, 5, 5)
+			search.PlaceholderText = "Players: "..playerCount..(data.Admins and " | Admins: "..adminCount or "").." | Donors: "..#data.Donors
+		end
+
+		search:GetPropertyChangedSignal("Text"):Connect(function()
+			getList(search.Text)
+		end)
+
+		getList("")
+	end
+
+	if data.WorkspaceInfo then
+		local i, currentPos = 0, 0
+		for _, v in ipairs({
+			{"Streaming Enabled", boolToStr(service.Workspace.StreamingEnabled)},
+			{"Interpolation Throttling", service.Workspace.InterpolationThrottling.Name},
+			{"Gravity", service.Workspace.Gravity},
+			{"Fallen Parts Destroy Height", service.Workspace.FallenPartsDestroyHeight},
+			{"Objects", data.WorkspaceInfo.ObjectCount},
+			{"Cameras", data.WorkspaceInfo.CameraCount},
+			{"Nil Players", data.WorkspaceInfo.NilPlayerCount},
+			"",
+			{"HTTP Service Enabled", boolToStr(data.WorkspaceInfo.HttpEnabled)},
+			{"Loadstring Enabled", boolToStr(data.WorkspaceInfo.LoadstringEnabled)},
+			"",
+			}) do
+			if type(v) == "table" then
+				i += 1
+				workspacetab:Add("TextLabel", {
+					Name = v[1]; -- for autoupdating info later
+					Text = "  "..v[1]..":";
+					ToolTip = v[3];
+					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Size = UDim2.new(1, -10, 0, 30);
+					Position = UDim2.new(0, 5, 0, currentPos+5);
+					TextXAlignment = "Left";
+				}):Add("TextLabel", {
+					Text = v[2];
+					BackgroundTransparency = 1;
+					AnchorPoint = Vector2.new(1, 0);
+					Size = UDim2.new(1, -150, 1, 0);
+					Position = UDim2.new(1, -5, 0, 0);
+					TextXAlignment = "Right";
+				})
+				currentPos += 30
+			else
+				currentPos += 10
 			end
 		end
 
-		playerstab:Add("TextLabel", {
-			Size = UDim2.new(1, -10, 0, 25);
-			Position = UDim2.new(0, 5, 0, 5);
-			BackgroundTransparency = 0.5;
-			Text = "Players: "..playerCount.." | Admins: "..adminCount.." | Donors: "..#data.Donors;
+		workspacetab:Add("TextLabel", {
+			Text = "Click on the title bar buttons to view technical performance statistics or to open the game hierarchy explorer.";
+			TextWrapped = true;
+			TextYAlignment = "Top";
+			BackgroundTransparency = 1;
+			Size = UDim2.new(1, -10, 0, 40);
+			Position = UDim2.new(0, 5, 0, currentPos+10);
 		})
-	end
 
-	do
-		local i = 1
-		local function addSecurityEntry(name, value, toolTip)
-			local entry = securitytab:Add("TextLabel", {
-				Text = "  "..name.." ";
-				ToolTip = toolTip;
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
-				TextXAlignment = "Left";
-			})
-			entry:Add("TextLabel", {
-				Text = " "..value.."  ";
-				BackgroundTransparency = 1;
-				Size = UDim2.new(0, 120, 1, 0);
-				Position = UDim2.new(1, -120, 0, 0);
-				TextXAlignment = "Right";
-			})
-
-			i = i + 1
-		end
-
-		addSecurityEntry("HTTP Service:", boolToStr(data.HttpEnabled))
-		addSecurityEntry("Loadstring Enabled:", boolToStr(data.LoadstringEnabled))
-
-		securitytab:ResizeCanvas(false, true, false, false, 5, 5)
+		workspacetab:ResizeCanvas(false, true, false, false, 5, 5)
+	else
+		workspacetab:Disable()
 	end
 
 	window:Ready()

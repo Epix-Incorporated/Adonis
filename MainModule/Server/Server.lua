@@ -532,6 +532,11 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Threading = require(server.Deps.ThreadHandler)
 	server.Changelog = require(server.Shared.Changelog)
 	server.Credits = require(server.Shared.Credits)
+	server.MatIcons = setmetatable({}, {
+		__index = function(t, k)
+			return "rbxassetid://"..require(server.Shared.MatIcons)[k]
+		end,
+	})
 
 	--// Load services
 	for ind, serv in ipairs(ServicesWeUse) do local temp = service[serv] end

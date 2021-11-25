@@ -61,7 +61,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
 							Message = "You are a(n) "..rankName..". Click to view commands.";
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -96,7 +96,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
 							Message = "You are a temp "..rankName..". Click to view commands.";
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -129,7 +129,7 @@ return function(Vargs, env)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
 							Message = "Your admin permission level was set to "..newLevel.." for this server only. Click to view commands.";
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -168,7 +168,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = "Your admin powers have been removed";
-									Icon = "rbxassetid://7536810074";
+									Icon = server.MatIcons["Remove moderator"];
 									Time = 10;
 								})
 							else
@@ -246,7 +246,7 @@ return function(Vargs, env)
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
-									Icon = "rbxassetid://7536810074";
+									Icon = server.MatIcons["Remove moderator"];
 									Time = 10;
 								})
 							else
@@ -277,7 +277,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = "You are a temp moderator. Click to view commands.";
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
@@ -306,7 +306,7 @@ return function(Vargs, env)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = "You are a moderator. Click to view commands.";
-							Icon = "rbxassetid://7536784790";
+							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})

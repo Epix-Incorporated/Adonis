@@ -325,7 +325,12 @@ return function(Vargs, env)
 						table.insert(temptable, v.Name)
 					end
 				end
-				Remote.MakeGui(plr, "List", {Title = "Donors In-Game"; Tab = temptable; Update = "DonorList"})
+				Remote.MakeGui(plr, "List", {
+					Title = "Donors In-Game";
+					Icon = server.MatIcons["People alt"];
+					Tab = temptable;
+					Update = "DonorList";
+				})
 			end
 		};
 
@@ -459,6 +464,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {[number]:string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Change Log";
+					Icon = server.MatIcons["Text snippet"];
 					Table = server.Changelog;
 					Size = {500,400};
 				})
@@ -765,5 +771,119 @@ return function(Vargs, env)
 				})
 			end
 		};
+		
+		ViewProfile = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
+			Args = {"player"};
+			Description = "Shows comphrehensive information about a player";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {[number]:string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local hasSafeChat
+
+					local gameData = nil
+					if Admin.CheckAdmin(plr) then
+						local level, rank = Admin.GetLevel(v)
+						gameData = {
+							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+						}
+						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							gameData[k] = d
+						end
+					end
+
+					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
+					if privacyMode then hasSafeChat = "[Redacted]" else
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
+					end
+
+					Remote.MakeGui(plr, "Profile", {
+						Target = v;
+						SafeChat = hasSafeChat;
+						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						GameData = gameData;
+						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+					})
+				end
+			end
+		};
+		
+		ServerDetails = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
+			Args = {};
+			Description = "Shows you details about the current server";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {[number]:string})
+				local adminDictionary = {}
+				for i, v in pairs(service.GetPlayers()) do
+					local level, rank = Admin.GetLevel(v);
+					if level > 0 then
+						adminDictionary[v.Name] = rank or "Unknown"
+					end
+				end
+
+				local donorList = {}
+				for i, v in pairs(service.GetPlayers()) do
+					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
+						table.insert(donorList, v.Name)
+					end
+				end
+
+				local nilPlayers = 0
+				for i, v in pairs(service.NetworkServer:GetChildren()) do
+					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+						nilPlayers = nilPlayers + 1
+					end
+				end
+
+				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
+				if s then
+					r = service.HttpService:JSONDecode(r)
+				end
+
+				local serverInfo = s and {
+					country = r.country,
+					city = r.city,
+					region = r.region,
+					zipcode = r.zip,
+					timezone = r.timezone,
+					query = r.query,
+					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
+				} or nil
+
+					Remote.MakeGui(plr, "ServerDetails", {
+						CreatorId = game.CreatorId;
+						PrivateServerId = game.PrivateServerId;
+						PrivateServerOwnerId = game.PrivateServerOwnerId;
+						ServerStartTime = server.ServerStartTime;
+						ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
+						ServerInternetInfo = serverInfo;
+						WorkspaceInfo = (Admin.CheckAdmin(plr) and {
+							ObjectCount = #Variables.Objects;
+							CameraCount = #Variables.Cameras;
+							NilPlayerCount = nilPlayers;
+							HttpEnabled = HTTP.CheckHttp();
+							LoadstringEnabled = HTTP.LoadstringEnabled;
+						}) or nil;
+						Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
+						Donors = donorList;
+						CmdPrefix = Settings.Prefix;
+						CmdPlayerPrefix = Settings.PlayerPrefix;
+						SplitKey = Settings.SplitKey;
+					})
+			end
+		};
+
 	};
 end

@@ -356,50 +356,24 @@ return function(Vargs)
 				return tab
 			end;
 
-			ServerDetails = function(plr)
+			ServerPerfStats = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
-					local tab, nilplayers, nonnumber, adminnumber = {}, 0, 0, 0
-
-					for i,cli in pairs(service.NetworkServer:GetChildren()) do
-						if cli:IsA("NetworkReplicator") and cli and cli:GetPlayer() and not service.Players:FindFirstChild(cli:GetPlayer().Name) then
-							nilplayers+=1
-						end
+					local tab = {}
+					local perfStats = {
+						{"ContactsCount"; "How many parts are currently in contact with one another"},
+						{"DataReceiveKbps"; "Roughly how many kB/s of data are being received by the server"},
+						{"DataSendKbps"; "Roughly how many kB/s of data are being sent by the server"},
+						{"HeartbeatTimeMs"; "The total amount of time in ms it takes long it takes to update all Task Scheduler jobs"},
+						{"InstanceCount"; "How many Instances are currently in memory"},
+						{"MovingPrimitivesCount"; "How many physically simulated components are currently moving in the game world"},
+						{"PhysicsReceiveKbps"; "Roughly how many kB/s of physics data are being received by the server"},
+						{"PhysicsSendKbps"; "Roughly how many kB/s of physics data are being sent by the server"},
+						{"PhysicsStepTimeMs"; "How long it takes for the physics engine to update its current state, in milliseconds"},
+						{"PrimitivesCount"; "How many physically simulated components currently exist in the game world"},
+					};
+					for _, v in ipairs(perfStats) do
+						table.insert(tab, {Text = v[1]..": "..tostring(service.Stats[v[1]]):sub(1,7); Desc = v[2];})
 					end
-					for i,v in pairs(service.Players:GetPlayers()) do
-						if Admin.CheckAdmin(v,false) then
-							adminnumber+=1
-						else
-							nonnumber+=1
-						end
-					end
-
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Place Name: "..service.MarketPlace:GetProductInfo(game.PlaceId).Name})
-					table.insert(tab,{Text = "Place Owner: "..service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Server Speed: "..math.round(workspace:GetRealPhysicsFPS())})
-					table.insert(tab,{Text = "Server Start Time: "..service.FormatTime(server.ServerStartTime)})
-					table.insert(tab,{Text = "Server Age: "..service.FormatTime(os.time()-server.ServerStartTime)})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-					local LoadstringEnabled = HTTP.LoadstringEnabled and "ON" or "OFF"
-					local StreamingEnabled =  workspace.StreamingEnabled and "ON" or "OFF"
-					local HttpEnabled = HTTP.CheckHttp() and "ON" or "OFF"
-
-					table.insert(tab,{Text = "Loadstring: [".. LoadstringEnabled .."]"})
-					table.insert(tab,{Text = "Streaming: [".. StreamingEnabled .."]"})
-					table.insert(tab,{Text = "HttpEnabled: [".. HttpEnabled .."]"})
-
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "In-Game Admins: "..adminnumber})
-					table.insert(tab,{Text = "In-Game Non Admins: "..nonnumber})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
-					table.insert(tab,{Text = "Nil Players: "..nilplayers})
-					table.insert(tab,{Text = "Objects: "..#Variables.Objects})
-					table.insert(tab,{Text = "Cameras: "..#Variables.Cameras})
-					table.insert(tab,{Text = "Gravity: "..tostring(workspace.Gravity)})
-					table.insert(tab,{Text = "Fallen Parts Destroy Height: "..tostring(workspace.FallenPartsDestroyHeight)})
-					table.insert(tab,{Text = "―――――――――――――――――――――――"})
 					return tab
 				end
 			end;

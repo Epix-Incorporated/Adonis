@@ -455,6 +455,12 @@ return service.NewProxy({
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
 
+		client.MatIcons = setmetatable({}, {
+			__index = function(t, k)
+				return "rbxassetid://"..require(client.Shared.MatIcons)[k]
+			end,
+		})
+
 		--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
 		log("Get dependencies")
 		for ind,obj in ipairs(Folder:WaitForChild("Dependencies",9e9):GetChildren()) do client.Deps[obj.Name] = obj end

@@ -7,6 +7,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "OnlineFriends";
 		Title = "Online Friends";
+		Icon = client.MatIcons.People;
 		Size  = {390, 320};
 		MinSize = {180, 120};
 		AllowMultiple = false;
@@ -45,6 +46,13 @@ return function(data)
 			Text = "";
 			PlaceholderText = "Search";
 			TextStrokeTransparency = 0.8;
+		})
+		search:Add("ImageLabel", {
+			Image = client.MatIcons.Search;
+			Position = UDim2.new(1, -21, 0, 3);
+			Size = UDim2.new(0, 18, 0, 18);
+			ImageTransparency = 0.2;
+			BackgroundTransparency = 1;
 		})
 
 		function generate()
@@ -102,7 +110,7 @@ return function(data)
 			window:SetTitle("Online Friends ("..friendCount..")")
 		end
 
-		search.FocusLost:Connect(generate)
+		search:GetPropertyChangedSignal("Text"):Connect(generate)
 		generate()
 	end
 
@@ -110,13 +118,14 @@ return function(data)
 	
 	window:AddTitleButton({
 		Text = "";
+		ToolTip = "Invite";
 		OnClick = function()
 			service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
 		end
 	}):Add("ImageLabel", {
-		Size = UDim2.new(0, 20, 0, 20);
-		Position = UDim2.new(0, 5, 0, 0);
-		Image = "rbxassetid://5422934472";
+		Size = UDim2.new(0, 16, 0, 16);
+		Position = UDim2.new(0, 8, 0, 2);
+		Image = client.MatIcons.Send;
 		BackgroundTransparency = 1;
 	})
 end

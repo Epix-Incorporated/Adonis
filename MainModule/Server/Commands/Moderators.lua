@@ -1190,17 +1190,20 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						local tools = {}
-						table.insert(tools, {Text="==== "..v.Name.."'s Tools ====", Desc=string.lower(v.Name)})
-						for k, t in ipairs(v:FindFirstChildOfClass("Backpack"):GetChildren()) do
-							if t.ClassName == "Tool" then
-								table.insert(tools, {Text=t.Name, Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip.." | Name: "..t.Name})
-							elseif t.ClassName == "HopperBin" then
-								table.insert(tools, {Text=t.Name, Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType).." | Name: "..t.Name})
+						for k, t in pairs(v.Backpack:GetChildren()) do
+							if t:IsA("Tool") then
+								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
+							elseif t:IsA("HopperBin") then
+								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
 							else
-								table.insert(tools, {Text=t.Name, Desc="Class: "..t.ClassName.." | Name: "..t.Name})
+								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName})
 							end
 						end
-						Remote.MakeGui(plr, "List", {Title = v.Name, tab = tools})
+						Remote.MakeGui(plr, "List", {
+							Title = "@"..v.Name.."'s tools";
+							Icon = server.MatIcons["Inventory 2"];
+							Table = tools;
+						})
 					end)
 				end
 			end
@@ -1254,6 +1257,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Players",
+					Icon = server.MatIcons.People;
 					Tab = plrs,
 					AutoUpdate = update and 1;
 					Update = "PlayerList";
@@ -1310,7 +1314,11 @@ return function(Vargs, env)
 					local x, y, z=tostring(v):match("(.*),(.*),(.*)")
 					table.insert(temp, {Text=i, Desc="X:"..x.." Y:"..y.." Z:"..z})
 				end
-				Remote.MakeGui(plr, "List", {Title = "Waypoints", Tab = temp})
+				Remote.MakeGui(plr, "List", {
+					Title = 'Waypoints';
+					Icon = server.MatIcons.People;
+					Tab = temp;
+				})
 			end
 		};
 
@@ -1474,70 +1482,6 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {[number]:string})
 				Remote.Send(plr, "Function", "UnLoadGuiData")
 			end;
-		};
-
-		ServerDetails = {
-			Prefix = Settings.Prefix;
-			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
-			Args = {};
-			Description = "Opens the server information window";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {[number]:string})
-				local adminDictionary = {}
-				for i, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v);
-					if level > 0 then
-						adminDictionary[v.Name] = rank or "Uknown"
-					end
-				end
-
-				local donorList = {}
-				for i, v in pairs(service.GetPlayers()) do
-					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
-						table.insert(donorList, v.Name)
-					end
-				end
-
-				local nilPlayers = 0
-				for i, v in pairs(service.NetworkServer:GetChildren()) do
-					if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers += 1
-					end
-				end
-
-				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
-				if s then
-					r = service.HttpService:JSONDecode(r)
-				end
-
-				local serverInfo = s and {
-					country = r.country,
-					city = r.city,
-					region = r.region,
-					zipcode = r.zip,
-					timezone = r.timezone,
-					query = r.query,
-					coords = r.lat .. " LAT ".. r.lon .. " LON"
-				} or nil
-
-				Remote.MakeGui(plr, "ServerDetails", {
-					CreatorId = game.CreatorId;
-					PrivateServerId = game.PrivateServerId;
-					PrivateServerOwnerId = game.PrivateServerOwnerId;
-					ServerStartTime = service.FormatTime(server.ServerStartTime);
-					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
-					HttpEnabled = HTTP.CheckHttp();
-					ServerInternetInfo = serverInfo;
-					LoadstringEnabled = HTTP.LoadstringEnabled;
-					Admins = adminDictionary;
-					Donors = donorList;
-					ObjectCount = #Variables.Objects;
-					CameraCount = #Variables.Cameras;
-					NilPlayerCount = nilPlayers;
-				})
-			end
 		};
 
 		Clean = {
@@ -2096,6 +2040,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Window", {
 					Name = "ToolList";
 					Title = "Tools";
+					Icon = server.MatIcons.Build;
 					Size  = {300, 300};
 					MinSize = {150, 100};
 					Content = children;
@@ -6125,6 +6070,41 @@ return function(Vargs, env)
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
 					})
 				end
+			end
+		};
+		
+		ServerPerfStats = {
+			Prefix = Settings.Prefix;
+			Commands = {"perfstats", "performancestats", "serverstats"};
+			Args = {"autoupdate"};
+			Description = "Shows you technical server performance statistics";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				local update = (args[1] ~= "false")
+				local tab = {}
+				local perfStats = {
+					{"ContactsCount"; "How many parts are currently in contact with one another"},
+					{"DataReceiveKbps"; "Roughly how many kB/s of data are being received by the server"},
+					{"DataSendKbps"; "Roughly how many kB/s of data are being sent by the server"},
+					{"HeartbeatTimeMs"; "The total amount of time in ms it takes long it takes to update all Task Scheduler jobs"},
+					{"InstanceCount"; "How many Instances are currently in memory"},
+					{"MovingPrimitivesCount"; "How many physically simulated components are currently moving in the game world"},
+					{"PhysicsReceiveKbps"; "Roughly how many kB/s of physics data are being received by the server"},
+					{"PhysicsSendKbps"; "Roughly how many kB/s of physics data are being sent by the server"},
+					{"PhysicsStepTimeMs"; "How long it takes for the physics engine to update its current state, in milliseconds"},
+					{"PrimitivesCount"; "How many physically simulated components currently exist in the game world"},
+				};
+				for _, v in ipairs(perfStats) do
+					table.insert(tab, {Text = v[1]..": "..tostring(service.Stats[v[1]]):sub(1,7); Desc = v[2];})
+				end
+				Remote.MakeGui(plr, "List", {
+					Title = "Server Stats";
+					Icon = server.MatIcons.Leaderboard;
+					Tab = tab;
+					AutoUpdate = update and 1;
+					Update = "ServerPerfStats";
+					UpdateArgs = {};
+				})
 			end
 		};
 

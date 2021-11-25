@@ -9,6 +9,7 @@ return function(data)
 	local window = client.UI.Make("Window",{
 		Name  = "Terminal";
 		Title = "Terminal";
+		Icon = client.MatIcons.Code;
 		Size  = {500,300};
 		AllowMultiple = false;
 		OnClose = function()
@@ -30,6 +31,7 @@ return function(data)
 		PlaceholderText = "Enter command";
 		TextXAlignment = "Left"
 	})
+	textbox:Add("UIPadding", {PaddingLeft = UDim.new(0, 6);})
 	
 	local function out(put, lines)
 		table.insert(lines,put)
