@@ -4041,6 +4041,21 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		TeamList = {
+			Prefix = Settings.Prefix;
+			Commands = {"teams", "teamlist", "manageteams"};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the teams manager GUI";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				Remote.MakeGui(plr, "Teams", {
+					CmdPrefix = Settings.Prefix; CmdPlayerPrefix = Settings.PlayerPrefix; CmdSpecialPrefix = Settings.SpecialPrefix; CmdSplitKey = Settings.SplitKey;
+				})
+			end
+		};
 
 		SetFOV = {
 			Prefix = Settings.Prefix;
