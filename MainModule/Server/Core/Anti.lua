@@ -246,17 +246,19 @@ return function(Vargs)
 				local function makeConnection(Conn)
 					local connection
 					connection = Conn:Connect(function(_, parent)
-						if not connection.Connected or parent or humanoid and humanoid.Health <= 0 then
-							return
-						end
+						task.defer(function()
+							if not connection.Connected or parent or humanoid and humanoid.Health <= 0 then
+								return
+							end
 
-						for _, v in ipairs(connections) do
-							v:Disconnect()
-						end
+							for _, v in ipairs(connections) do
+								v:Disconnect()
+							end
 
-						if humanoid then
-							Detected(player, "kill", "Character joint removed (Paranoid?)")
-						end
+							if humanoid then
+								Detected(player, "kill", "Character joint removed (Paranoid?)")
+							end
+						end)
 					end)
 
 					table.insert(connections, connection)
