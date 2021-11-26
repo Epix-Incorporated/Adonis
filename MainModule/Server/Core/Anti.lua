@@ -246,7 +246,7 @@ return function(Vargs)
 				local function makeConnection(Conn)
 					local connection
 					connection = Conn:Connect(function(_, parent)
-						if not connection.Connected or parent then
+						if not connection.Connected or parent or humanoid and humanoid.Health <= 0 then
 							return
 						end
 
