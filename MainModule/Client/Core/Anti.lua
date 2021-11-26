@@ -103,7 +103,7 @@ return function()
 				return
 			end
 			hasActivated = true
-			Detected("crash", "Tamper Protection 790438\n"..tostring(message).."\n"..debug.traceback())
+			Detected("crash", "Tamper Protection 790438; "..tostring(message).."; "..debug.traceback())
 			wait(1)
 			pcall(Disconnect, "Adonis_790438")
 			pcall(Kill, "Adonis_790438")
@@ -123,9 +123,9 @@ return function()
 		end)
 
 		if
-			type(event) ~= "userdata" or
+			type(connection) ~= "userdata" or
 			not rawequal(typeof(connection), "RBXScriptConnection") or
-			event.Connected ~= true or
+			connection.Connected ~= true or
 			not rawequal(type(connection.Disconnect), "function") or
 			not rawequal(typeof(idledEvent), "RBXScriptSignal") or
 			not rawequal(type(idledEvent.Connect), "function") or
