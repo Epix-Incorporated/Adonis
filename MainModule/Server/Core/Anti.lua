@@ -35,7 +35,7 @@ return function(Vargs)
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
 
-		local rolloutTable = [
+		local rolloutTable = {
 			["2"] = 100, -- When 2 days have passed 1% of all games with adonis get the feature enabled
 			["3"] = 50, -- When 3 days have passed 2% of all games with adonis get the feature enabled
 			["4"] = 25, -- When 4 days have passed 4% of all games with adonis get the feature enabled
@@ -44,7 +44,7 @@ return function(Vargs)
 			["7"] = 5, -- When 7 days have passed 20% of all games with adonis get the feature enabled
 			["8"] = 2, -- When 8 days have passed 50% of all games with adonis get the feature enabled
 			-- Day 9 all games with Adonis get access to feature
-		]
+		}
 
 		function onPlayerAdded(player)
 			if not player.Character then
