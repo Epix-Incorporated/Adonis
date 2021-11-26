@@ -144,8 +144,8 @@ return function(Vargs)
 							end
 							
 							Logs.AddLog(Logs.Script, {
-								Text = "AE: Hat mesh deletion reset network ownership for player: "..tostring(player);
-								Desc = "The AE reset hash handle network ownership for player: "..tostring(player);
+								Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
+								Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
 								Player = player;
 							})
 						end)
