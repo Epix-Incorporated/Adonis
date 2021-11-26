@@ -76,16 +76,33 @@ return function(Vargs)
 		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
 
-			local function Detected(...)
+			local function Detected(player, action, ...)
 				if charGood then
-					Anti.Detected(...)
+					if Settings.CharacterCheckLogs ~= true and (string.lower(action) == "log" or string.lower(action) == "kill") then
+						if action == "kill" then
+							local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+							if humanoid then
+								humanoid.Health = 0
+							end
+						end
+
+						Logs.AddLog(Logs.Script, {
+							Text = "Character AE Detected "..tostring(player);
+							Desc = "The Anti-Exploit character check detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason);
+							Player = player;
+						})
+
+						warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
+					else
+						Anti.Detected(player, action, ...)
+					end
 				end
 			end
 
 			local function protectHat(hat)
 				local handle = hat:WaitForChild("Handle", 30)
 
-				if handle and Settings.ProtectHats == true then
+				if handle then
 					task.defer(function()
 						local joint = handle:WaitForChild("AccessoryWeld")
 
@@ -128,13 +145,13 @@ return function(Vargs)
 				charGood = true
 
 				for _, v in ipairs(character:GetChildren()) do
-					if v:IsA("Accoutrement") then
+					if v:IsA("Accoutrement") and Settings.ProtectHats == true then
 						coroutine.wrap(protectHat)(v)
 					end
 				end
 
 				character.ChildAdded:Connect(function(child)
-					if child:IsA("Accoutrement") then
+					if child:IsA("Accoutrement") and Settings.ProtectHats == true then
 						protectHat(child)
 					elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 						local count = 0
