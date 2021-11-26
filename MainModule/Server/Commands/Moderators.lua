@@ -4551,7 +4551,7 @@ return function(Vargs, env)
 		RemoveShirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"removeshirt", "noshirt"};
-			Args = {"player", "ID"};
+			Args = {"player"};
 			Hidden = false;
 			Description = "Give the target player(s) the shirt that belongs to <ID>";
 			Fun = false;
