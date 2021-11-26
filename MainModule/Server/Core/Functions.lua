@@ -1209,16 +1209,16 @@ return function(Vargs, envVars, GetEnv)
 		ConvertPlayerCharacterToRig = function(plr: Player, rigType: EnumItem)
 			rigType = rigType or Enum.HumanoidRigType.R15
 
-			local Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
 			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-			local newCharacterModel = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
-			local Animate = newCharacterModel.Animate
+			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
+			local Animate: BaseScript = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
 			newCharacterModel.Name = plr.Name
 
-			local oldcframe = plr.Character and plr.Character.PrimaryPart and plr.Character.PrimaryPart.CFrame
+			local oldCFrame = plr.Character and plr.Character:GetPivot() or CFrame.new()
 
 			if plr.Character then
 				plr.Character:Destroy()
@@ -1226,9 +1226,7 @@ return function(Vargs, envVars, GetEnv)
 			end
 			plr.Character = newCharacterModel
 
-			if oldcframe then
-				newCharacterModel:SetPrimaryPartCFrame(oldcframe)
-			end
+			newCharacterModel:SetPivot(oldCFrame)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.

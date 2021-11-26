@@ -4517,7 +4517,7 @@ return function(Vargs, env)
 
 		Shirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetshirt", "giveshirt"};
+			Commands = {"shirt", "giveshirt"};
 			Args = {"player", "ID"};
 			Hidden = false;
 			Description = "Give the target player(s) the shirt that belongs to <ID>";
@@ -4530,9 +4530,12 @@ return function(Vargs, env)
 				assert(Shirt, "Unexpected error occured; clothing is missing")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("Shirt") then k:Destroy() end
+						for _, shirt in pairs(v.Character:GetChildren()) do
+							if shirt.ClassName == "Shirt" then
+								shirt:Destroy()
+							end
 						end
+
 						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
@@ -4540,6 +4543,27 @@ return function(Vargs, env)
 							humandescrip.Shirt = ClothingId
 						end
 						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		RemoveShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removeshirt", "noshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the shirt that belongs to <ID>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for _, shirt in pairs(v.Character:GetChildren()) do
+							if shirt.ClassName == "Shirt" then
+								shirt:Destroy()
+							end
+						end
 					end
 				end
 			end
@@ -5528,9 +5552,9 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					task.defer(function()
-						service.StartLoop(UserId .. "LOOPHEAL", 0.1, function()
+						service.StartLoop(v.UserId .. "LOOPHEAL", 0.1, function()
 							if not v or v.Parent ~= service.Players then
-								service.StopLoop(UserId .. "LOOPHEAL")
+								service.StopLoop(v.UserId .. "LOOPHEAL")
 							end
 
 							local Character = v.Character
