@@ -142,6 +142,12 @@ return function(Vargs)
 							if handle and handle:CanSetNetworkOwnership() then
 								handle:SetNetworkOwner(nil)
 							end
+							
+							Logs.AddLog(Logs.Script, {
+								Text = "AE: Hat mesh deletion reset network ownership for player: "..tostring(player);
+								Desc = "The AE reset hash handle network ownership for player: "..tostring(player);
+								Player = player;
+							})
 						end)
 					end)
 
@@ -210,6 +216,11 @@ return function(Vargs)
 					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
 						humanoid.Health = 0
 						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+						Logs.AddLog(Logs.Script, {
+							Text = "AE: Humanoid came out of dead state for player: "..tostring(player);
+							Desc = "AE: Humanoid came out of dead state for player: "..tostring(player);
+							Player = player;
+						})
 					end
 				end)
 
@@ -257,6 +268,11 @@ return function(Vargs)
 							if humanoid then
 								humanoid.Health = 0
 								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+								Logs.AddLog(Logs.Script, {
+									Text = "AE: Waist joint deleted by player: "..tostring(player);
+									Desc = "AE: Waist joint deleted by player: "..tostring(player);
+									Player = player;
+								})
 							end
 						end)
 					end)
