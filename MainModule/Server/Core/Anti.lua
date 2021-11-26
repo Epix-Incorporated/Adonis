@@ -101,7 +101,7 @@ return function(Vargs)
 		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
 
-			local function Detected(player, action, ...)
+			local function Detected(player, action, reason)
 				if charGood then
 					if Settings.CharacterCheckLogs ~= true and (string.lower(action) == "log" or string.lower(action) == "kill") then
 						if action == "kill" then
@@ -119,7 +119,7 @@ return function(Vargs)
 
 						warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
 					else
-						Anti.Detected(player, action, ...)
+						Anti.Detected(player, action, reason)
 					end
 				end
 			end
@@ -369,7 +369,7 @@ return function(Vargs)
 
 						if humanoid then
 							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-							Humanoid.Health = 0
+							humanoid.Health = 0
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
