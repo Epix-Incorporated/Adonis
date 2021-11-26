@@ -52,6 +52,8 @@ return function(Vargs)
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
+	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
+
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
@@ -360,6 +362,21 @@ return function(Vargs)
 			})
 
 			if Settings.AENotifs == true then
+				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
+				if os.clock() < antiNotificationResetTick then
+					antiNotificationDebounce = {}
+					antiNotificationResetTick = os.clock() + 60
+				end
+
+				if not antiNotificationDebounce[debounceIndex] then
+					antiNotificationDebounce[debounceIndex] = 1
+				elseif
+					(string.lower(action) == "log" or string.lower(action) == "kill") and
+					antiNotificationDebounce[debounceIndex] > 3
+				then
+					return
+				end
+
 				for _, plr in ipairs(service.Players:GetPlayers()) do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
