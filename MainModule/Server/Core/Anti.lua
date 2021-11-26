@@ -85,7 +85,7 @@ return function(Vargs)
 			local function protectHat(hat)
 				local handle = hat:WaitForChild("Handle", 30)
 
-				if handle then
+				if handle and Settings.ProtectHats == true then
 					task.defer(function()
 						local joint = handle:WaitForChild("AccessoryWeld")
 
