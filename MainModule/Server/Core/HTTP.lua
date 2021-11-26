@@ -88,6 +88,7 @@ return function(Vargs)
 					local blacklist = {}
 					local insertlist = {}
 					local boards = {}
+					local customranks = {}
 
 					local function grabData(board)
 						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
@@ -102,7 +103,7 @@ return function(Vargs)
 							end, 30, true))
 						end
 
-						local lists = trello.getLists(board)
+						local lists = trello.getListsAndCards(board)
 						local banList = trello.getListObj(lists,{"Banlist","Ban List","Bans"})
 						local commandList = trello.getListObj(lists,{"Commands","Command List"})
 						local adminList = trello.getListObj(lists,{"Admins","Admin List","Adminlist"})
@@ -118,7 +119,7 @@ return function(Vargs)
 
 						local function getNames(list, targTab)
 							if list and list.id then
-								local cards = trello.getCards(list.id)
+								local cards = list.cards or trello.getCards(list.id)
 								for l,k in pairs(cards) do
 									table.insert(targTab, k.name)
 								end
@@ -135,7 +136,7 @@ return function(Vargs)
 						getNames(wList, whitelist);
 
 						if musicList then
-							local cards = trello.getCards(musicList.id)
+							local cards = musicList.cards or trello.getCards(musicList.id)
 							for l,k in pairs(cards) do
 								if string.match(k.name, '^(.*):(.*)') then
 									local a,b=string.match(k.name, '^(.*):(.*)')
@@ -145,7 +146,7 @@ return function(Vargs)
 						end
 
 						if insertList then
-							local cards = trello.getCards(insertList.id)
+							local cards = insertList.cards or trello.getCards(insertList.id)
 
 							for _, k in pairs(cards) do
 								if string.match(k.name, '^(.*):(.*)') then
@@ -156,7 +157,7 @@ return function(Vargs)
 						end
 
 						if permList then
-							local cards = trello.getCards(permList.id)
+							local cards = permList.cards or trello.getCards(permList.id)
 							for _, k in pairs(cards) do
 								local com,level = string.match(k.name, "^(.*):(.*)")
 								if com and level then
@@ -166,7 +167,7 @@ return function(Vargs)
 						end
 
 						if commandList then
-							local cards = trello.getCards(commandList.id)
+							local cards = commandList.cards or trello.getCards(commandList.id)
 							for _, k in pairs(cards) do
 								if not HTTP.Trello.PerformedCommands[tostring(k.id)] then
 									local cmd = k.name
@@ -193,6 +194,26 @@ return function(Vargs)
 								end
 							end
 						end
+						
+						--// Load all custom ranks; see if they exist in ranks and see if they are on the trello
+						--// Due to multiple boards; going to set them to the internal ranks before setting them to the end one
+						--// This will let multiple boards combine one rank into one
+						for _,list in pairs(lists) do 
+							--// Make sure it exists as a custom rank & is not one of the four main ranks
+							if list and list.name and Settings.Ranks[list.name] and not table.find({"Moderators", "Admins", "HeadAdmins", "Creators"}, list.name) then 
+								local Users = {}
+								local TrelloRankName = string.format("[Trello] %s", server.Functions.Trim(list.name))
+								if not customranks[TrelloRankName] then
+									customranks[TrelloRankName] = {
+										Level = Settings.Ranks[list.name].Level or 1;
+										Users = Users
+									}
+								end
+								Users = customranks[TrelloRankName].Users 
+								getNames(list, Users)
+							end
+						end
+						
 					end
 
 					for i,v in pairs(Settings.Trello_Secondary) do table.insert(boards,v) end
@@ -234,6 +255,20 @@ return function(Vargs)
 						Level = Settings.Ranks.Moderators.Level;
 						Users = HTTP.Trello.Moderators or {};
 					}
+					
+					--// Load up and custom ranks that were fetched from Trello
+					for rank,info in pairs(customranks) do 
+						--// Don't set any of your hardcoded ranks to have the IsExternal value to true, it'll delete the rank if you're not careful!
+						info.IsExternal = true 
+						Settings.Ranks[rank] = info
+					end
+					
+					--// Clear any rcustom anks that were not fetched from Trello
+					for name,rank in pairs(Settings.Ranks) do 
+						if rank.IsExternal and not customranks[name] then 
+							Settings.Ranks[name] = nil
+						end
+					end
 
 					Variables.Blacklist.Lists.Trello = blacklist;
 					Variables.Whitelist.Lists.Trello = whitelist;
