@@ -1228,7 +1228,7 @@ return function(Vargs, envVars, GetEnv)
 			end
 			plr.Character = newCharacterModel
 
-			newCharacterModel:SetPivot(oldCFrame)
+			newCharacterModel:PivotTo(oldCFrame)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.
