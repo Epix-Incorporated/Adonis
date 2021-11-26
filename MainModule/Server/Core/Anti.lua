@@ -209,8 +209,9 @@ return function(Vargs)
 				end
 
 				humanoid.StateChanged:Connect(function(last, state)
-					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
-						Detected(player, "kill", "Humanoid came out of dead state")
+					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
+						humanoid.Health = 0
+						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 					end
 				end)
 
@@ -256,7 +257,8 @@ return function(Vargs)
 							end
 
 							if humanoid then
-								Detected(player, "kill", "Character joint removed (Paranoid?)")
+								humanoid.Health = 0
+								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 							end
 						end)
 					end)
