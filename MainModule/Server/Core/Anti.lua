@@ -35,35 +35,12 @@ return function(Vargs)
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
 
-		local rolloutTable = {
-			["2"] = 100, -- When 2 days have passed 1% of all games with adonis get the feature enabled
-			["3"] = 50, -- When 3 days have passed 2% of all games with adonis get the feature enabled
-			["4"] = 25, -- When 4 days have passed 4% of all games with adonis get the feature enabled
-			["5"] = 20, -- When 5 days have passed 5% of all games with adonis get the feature enabled
-			["6"] = 10, -- When 6 days have passed 10% of all games with adonis get the feature enabled
-			["7"] = 5, -- When 7 days have passed 20% of all games with adonis get the feature enabled
-			["8"] = 2, -- When 8 days have passed 50% of all games with adonis get the feature enabled
-			-- Day 9 all games with Adonis get access to feature
-		}
-
 		local function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
 			end
 
-			-- // Handles rollout mechanism
-			local ReleaseTick = 1638016728
-			local CanRollout = false
-			xpcall(function() -- Just pcalling if something goes wrong with the release mechanism.
-				CanRollout = os.time() > ReleaseTick + 9 * 24 * 60 * 60
-				or os.time() > ReleaseTick + 2 * 24 * 60 * 60
-				and (
-					game.GameId == 0 or
-					game.GameId % rolloutTable[tostring(math.clamp(math.floor((os.time() - ReleaseTick) / 60 / 60 / 24), 2, 8))] == 1
-				)
-			end, warn)
-
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and (Core.DebugMode == true or CanRollout) then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and Core.DebugMode == true then
 				Anti.CharacterCheck(player)
 			end
 		end
