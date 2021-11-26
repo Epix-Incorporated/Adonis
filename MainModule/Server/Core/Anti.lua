@@ -142,8 +142,6 @@ return function(Vargs)
 							if handle and handle:CanSetNetworkOwnership() then
 								handle:SetNetworkOwner(nil)
 							end
-
-							Detected(player, "log", "Hat weld removed")
 						end)
 					end)
 
