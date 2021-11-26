@@ -46,7 +46,7 @@ return function(Vargs)
 			-- Day 9 all games with Adonis get access to feature
 		}
 
-		function onPlayerAdded(player)
+		local function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
 			end
