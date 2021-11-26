@@ -14,7 +14,7 @@ return function(Vargs, envVars, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
+	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
@@ -35,6 +35,7 @@ return function(Vargs, envVars, GetEnv)
 		UnEncrypted = Remote.UnEncrypted
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
+		Pcall = server.Pcall
 
 		--// NetworkServer Events
 		if service.NetworkServer then

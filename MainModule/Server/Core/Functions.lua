@@ -7,6 +7,7 @@ return function(Vargs, envVars, GetEnv)
 	local env = GetEnv(getfenv(), envVars)
 	setfenv(1, env)
 
+	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -19,6 +20,7 @@ return function(Vargs, envVars, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
+		logError = server.logError;
 
 		Functions.Init = nil;
 		Logs:AddLog("Script", "Functions Module Initialized")
