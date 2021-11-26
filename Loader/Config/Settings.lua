@@ -332,7 +332,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiSpeed = false 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
-	settings.AntiHatWeld = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
+	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
 
 	---------------------
 	-- END OF SETTINGS --
@@ -441,7 +441,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
-	descs.AntiHatWeld = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
+	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
 	order = {
 		"HideScript";
@@ -535,7 +535,7 @@ local descs = {};			--// Contains settings descriptions
 		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiLeak";
-		"AntiHatWeld";
+		"ProtectHats";
 	}
 
 return {Settings = settings, Descriptions = descs, Order = order}
