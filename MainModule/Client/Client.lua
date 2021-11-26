@@ -66,9 +66,12 @@ local dumplog = function() warn(":: Adonis :: Dumping client log...") for i,v in
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
+local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
-	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
-	dumplog();
+	if not isStudio then
+		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
+		dumplog();
+	end
 end)
 
 local unique = {}

@@ -52,7 +52,7 @@ return function(Vargs, env)
 					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 					local tShirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
 
-					assert(Sthirt, "Could not retrieve shirt asset for the supplied ID")
+					assert(tShirt, "Could not retrieve shirt asset for the supplied ID")
 
 					for _, v in pairs(plr.Character:GetChildren()) do
 						if v:IsA("ShirtGraphic") then v:Destroy() end

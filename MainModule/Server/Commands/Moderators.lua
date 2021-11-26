@@ -8,6 +8,10 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
+	local Routine = env.Routine
+	local Pcall = env.Pcall
+	local cPcall = env.cPcall
+
 	return {
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
@@ -1051,7 +1055,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveLocal(p, "WINDOW_COLORCORRECTION", "Camera")
 				end
 			end
@@ -1219,38 +1223,26 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrs = {}
-				local playz = Functions.GrabNilPlayers("all")
 				local update = (args[1] ~= "false")
 
 				Functions.Hint("Pinging players. Please wait. No ping = Ping > 5sec.", {plr})
-
-				for i, v in pairs(playz) do
+				for i, v in ipairs(Functions.GrabNilPlayers("all")) do
 					if type(v) == "string" and v == "NoPlayer" then
 						table.insert(plrs, {Text="PLAYERLESS CLIENT", Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
 					else
 						local ping = "..."
 
 						if v and service.Players:FindFirstChild(v.Name) then
-							local h = ""
-							local mh = ""
-							local ws = ""
-							local jp = ""
-							local hn = ""
 							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-
-							if v.Character and hum then
-								h = hum.Health
-								mh = hum.MaxHealth
-								ws = hum.WalkSpeed
-								jp = hum.JumpPower
-								hn = hum.Name
-							else
-								h = "NO CHARACTER/HUMANOID"
-							end
-
-							table.insert(plrs, {Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = "Lower: "..string.lower(v.Name).." - Health: "..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
+							table.insert(plrs, {
+								Text = string.format("[%s] %s (@%s)", ping, v.Name, v.DisplayName);
+								Desc = string.format("Lower: %s - Health: %d - MaxHealth: %d - WalkSpeed: %d JumpPower: %d Humanoid Name: %s", v.Name, hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
+							})
 						else
-							table.insert(plrs, {Text = "[LOADING] "..v.Name, Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping})
+							table.insert(plrs, {
+								Text = "[LOADING] "..v.Name,
+								Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping
+							})
 						end
 					end
 				end
@@ -4489,8 +4481,8 @@ return function(Vargs, env)
 							humandescrip.GraphicTShirt = ClothingId
 						end
 
-						if Shirt:IsA("Model") then
-							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
+						if Shirt and Shirt.ClassName == "Model" then
+							Shirt = Shirt:FindFirstChildOfClass("ShirtGraphic") or Shirt
 						end
 
 						Shirt:Clone().Parent = v.Character
