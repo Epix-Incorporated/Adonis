@@ -156,7 +156,7 @@ return function(Vargs)
 
 						mesh.AncestryChanged:Connect(function(child, parent)
 							task.defer(function()
-								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) then
+								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) and hat and hat.Parent then
 									mesh.Parent = handle
 									Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
 								end
