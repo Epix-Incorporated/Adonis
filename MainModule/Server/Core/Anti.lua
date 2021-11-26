@@ -63,7 +63,7 @@ return function(Vargs)
 				)
 			end, warn)
 
-			if Admin.GetLevel(player) < 1 and (Core.DebugMode == true or CanRollout) then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and (Core.DebugMode == true or CanRollout) then
 				Anti.CharacterCheck(player)
 			end
 		end
