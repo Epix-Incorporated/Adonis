@@ -112,6 +112,7 @@ return function()
 		savedUI = {};
 		localSounds = {};
 		ESPObjects = {};
+		NotificationHistory = {};
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			Brightness = service.Lighting.Brightness;
