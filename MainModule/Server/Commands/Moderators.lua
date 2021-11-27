@@ -1484,70 +1484,6 @@ return function(Vargs, env)
 			end;
 		};
 
-		ServerDetails = {
-			Prefix = Settings.Prefix;
-			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
-			Args = {};
-			Description = "Opens the server information window";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local adminDictionary = {}
-				for i, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v);
-					if level > 0 then
-						adminDictionary[v.Name] = rank or "Uknown"
-					end
-				end
-
-				local donorList = {}
-				for i, v in pairs(service.GetPlayers()) do
-					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
-						table.insert(donorList, v.Name)
-					end
-				end
-
-				local nilPlayers = 0
-				for i, v in pairs(service.NetworkServer:GetChildren()) do
-					if v:IsA("NetworkReplicator") and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers += 1
-					end
-				end
-
-				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
-				if s then
-					r = service.HttpService:JSONDecode(r)
-				end
-
-				local serverInfo = s and {
-					country = r.country,
-					city = r.city,
-					region = r.region,
-					zipcode = r.zip,
-					timezone = r.timezone,
-					query = r.query,
-					coords = r.lat .. " LAT ".. r.lon .. " LON"
-				} or nil
-
-				Remote.MakeGui(plr, "ServerDetails", {
-					CreatorId = game.CreatorId;
-					PrivateServerId = game.PrivateServerId;
-					PrivateServerOwnerId = game.PrivateServerOwnerId;
-					ServerStartTime = service.FormatTime(server.ServerStartTime);
-					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
-					HttpEnabled = HTTP.CheckHttp();
-					ServerInternetInfo = serverInfo;
-					LoadstringEnabled = HTTP.LoadstringEnabled;
-					Admins = adminDictionary;
-					Donors = donorList;
-					ObjectCount = #Variables.Objects;
-					CameraCount = #Variables.Cameras;
-					NilPlayerCount = nilPlayers;
-				})
-			end
-		};
-
 		Clean = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"clean"};
@@ -6172,50 +6108,6 @@ return function(Vargs, env)
 				assert(string.lower(args[2]) == "true" or string.lower(args[2]) == "false", "Invalid argument #2 (boolean expected)")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.LoadCode(v, "service.StarterGui:SetCore('ResetButtonCallback', "..string.lower(args[2])..")")
-				end
-			end
-		};
-
-		ViewProfile = {
-			Prefix = Settings.Prefix;
-			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
-			Args = {"player"};
-			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local hasSafeChat
-
-					local gameData = nil
-					if Admin.CheckAdmin(plr) then
-						local level, rank = Admin.GetLevel(v)
-						gameData = {
-							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
-							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
-						}
-						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
-							gameData[k] = d
-						end
-					end
-
-					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					--if privacyMode then hasSafeChat = "[Redacted]" else
-					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-					hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
-					--end
-
-					Remote.MakeGui(plr, "Profile", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
-						IsDonor = Admin.CheckDonor(v);
-						GameData = gameData;
-						Code = --[[(privacyMode and "[Redacted]") or]] service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
-					})
 				end
 			end
 		};
