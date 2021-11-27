@@ -796,14 +796,14 @@ return function(Vargs, env)
 						end
 					end
 					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-					local hasSafeChat = if policyResult then
+					local hasSafeChat = if elevated and policyResult then
 						(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
-						else "[Error]"
+						else "[Error/Redacted]"
 
 					Remote.RemoveGui(plr, "Profile_"..v.UserId)
 					Remote.MakeGui(plr, "Profile", {
 						Target = v;
-						SafeChat = elevated and hasSafeChat;
+						SafeChat = hasSafeChat;
 						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
 						GameData = gameData;
