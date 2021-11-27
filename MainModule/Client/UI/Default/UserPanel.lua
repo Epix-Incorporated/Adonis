@@ -441,7 +441,7 @@ return function(data)
 
 								currentColor = newColor or currentColor
 								new.BackgroundColor3 = currentColor
-								donorData.Cape.Color = currentColor
+								donorData.Cape.Color = {currentColor.R; currentColor.G; currentColor.B;}
 								updateStatus()
 							end)
 						end
