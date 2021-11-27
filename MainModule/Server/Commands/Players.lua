@@ -781,11 +781,10 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local hasSafeChat
-
+				local elevated: boolean = Admin.CheckAdmin(plr)
+				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local gameData = nil
-					if Admin.CheckAdmin(plr) then
+					if elevated then
 						local level, rank = Admin.GetLevel(v)
 						gameData = {
 							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
@@ -796,21 +795,22 @@ return function(Vargs, env)
 							gameData[k] = d
 						end
 					end
+					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+					local hasSafeChat = if policyResult then
+						(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
+						else "[Error]"
 
-					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					if privacyMode then hasSafeChat = "[Redacted]" else
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
-					end
-
+					Remote.RemoveGui(plr, "Profile_"..v.UserId)
 					Remote.MakeGui(plr, "Profile", {
 						Target = v;
-						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						SafeChat = elevated and hasSafeChat;
+						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
 						GameData = gameData;
-						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+						CmdPrefix = Settings.Prefix;
+						CmdSplitKey = Settings.SplitKey;
 					})
 				end
 			end
@@ -818,7 +818,7 @@ return function(Vargs, env)
 
 		ServerDetails = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
+			Commands = {"serverinfo", "server", "serverdetails", "gameinfo", "gamedetails"};
 			Args = {};
 			Description = "Shows you details about the current server";
 			Hidden = false;
