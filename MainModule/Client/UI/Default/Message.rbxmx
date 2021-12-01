@@ -271,6 +271,18 @@ return function(data)
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
 	
+	local log  = {
+		Type = "Full Screen Message";
+		Title = title;
+		Message = message;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	if client.Variables.CommsCentreBindableEvent then client.Variables.CommsCentreBindableEvent:Fire(log) end
+	
 	
 	local blur = service.New("BlurEffect")
 	blur.Enabled = false

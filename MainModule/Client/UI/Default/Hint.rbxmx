@@ -217,6 +217,18 @@ return function(data)
 	local str = data.Message
 	local time = data.Time or 15
 	
+	local log  = {
+		Type = "Hint";
+		Title = "Hint";
+		Message = str;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	if client.Variables.CommsCentreBindableEvent then client.Variables.CommsCentreBindableEvent:Fire(log) end
+	
 	--client.UI.Make("HintHolder")
 	local container = client.UI.Get("HintHolder",nil,true)
 	if not container then 
