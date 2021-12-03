@@ -2444,7 +2444,7 @@ return function(Vargs, env)
 			Commands = {"jail", "imprison"};
 			Args = {"player", "BrickColor"};
 			Hidden = false;
-			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the colour of the jail bars";
+			Description = "Jails the target player(s), removing their tools until they are un-jailed; Specify a BrickColor to change the color of the jail bars";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
