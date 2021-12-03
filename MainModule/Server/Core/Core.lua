@@ -18,7 +18,10 @@ function disableAllGUIs(folder)
 end;
 
 --// Core
-return function(Vargs)
+return function(Vargs, envVars, GetEnv)
+	local env = GetEnv(getfenv(), envVars)
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -884,7 +887,7 @@ return function(Vargs)
 		end;
 
 		ClearAllData = function()
-			local tabs = Core.GetData("SavedTables");
+			local tabs = Core.GetData("SavedTables") or {};
 
 			for i,v in pairs(tabs) do
 				if v.TableKey then
@@ -1099,7 +1102,7 @@ return function(Vargs)
 
 					if SavedTables then
 						for i,tData in pairs(SavedTables) do
-							if tData.TableName and tData.TableKey and not Blacklist[tData.TableName] then
+							if tData.TableName and tData.TableKey and not Blacklist[tData.tableName] then
 								local data = GetData(tData.TableKey);
 								if data then
 									for k,v in ipairs(data) do
@@ -1266,12 +1269,6 @@ return function(Vargs)
 							return data.Source, module
 						end
 					end);
-
-					ReportLBI = MetaFunc(function(scr, origin)
-						if origin == "Server" then
-							return true
-						end
-					end);
 				}, nil, nil, true);
 
 				CheckAdmin = MetaFunc(Admin.CheckAdmin);
@@ -1319,7 +1316,7 @@ return function(Vargs)
 						error("_G API is disabled")
 					end
 				end;
-				__newindex = function(tabl,ind,new)
+				__newindex = function()
 					error("Read-only")
 				end;
 				__metatable = true;

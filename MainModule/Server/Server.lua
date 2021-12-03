@@ -181,7 +181,7 @@ local GetVargTable = function()
 	}
 end
 
-local LoadModule = function(plugin, yield, envVars, noEnv)
+local LoadModule = function(plugin, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(plugin) == "function"
 	local plugin = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or plugin
@@ -192,12 +192,20 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 	end
 
 	if type(plug) == "function" then
-		if yield then
+		if isCore then
+			local ran,err = service.TrackTask("CoreModule: ".. tostring(plugin), plug, GetVargTable(), envVars, GetEnv)
+			if not ran then
+				warn("Core Module encountered an error while loading:", plugin)
+				warn(err)
+			else
+				return err;
+			end
+		elseif yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
-				warn("Module encountered an error while loading: "..tostring(plugin))
-				warn(tostring(err))
+				warn("Module encountered an error while loading:", plugin)
+				warn(err)
 			else
 				return err;
 			end
@@ -205,8 +213,8 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 			--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
-				warn("Module encountered an error while loading: "..tostring(plugin))
-				warn(tostring(err))
+				warn("Module encountered an error while loading:", plugin)
+				warn(err)
 			else
 				return err;
 			end
@@ -543,20 +551,29 @@ return service.NewProxy({__metatable = "Adonis"; __tostring = function() return 
 	server.Threading = require(server.Deps.ThreadHandler)
 	server.Changelog = require(server.Shared.Changelog)
 	server.Credits = require(server.Shared.Credits)
-	server.MatIcons = setmetatable({}, {
-		__index = function(t, k)
-			return "rbxassetid://"..require(server.Shared.MatIcons)[k]
-		end,
-	})
+	do
+		local MaterialIcons = require(server.Shared.MatIcons)
+
+		server.MatIcons = setmetatable({}, {
+			__index = function(self, ind)
+				local materialIcon = MaterialIcons[ind]
+				if materialIcon then self[ind] = string.format("rbxassetid://%d", materialIcon)end
+
+				return string.format("rbxassetid://%d", materialIcon)
+			end,
+			__metatable = "Adonis"
+		})
+	end
+
 
 	--// Load services
 	for ind, serv in ipairs(ServicesWeUse) do local temp = service[serv] end
 
 	--// Load core modules
 	for ind,load in ipairs(LoadingOrder) do
-		local modu = Folder.Core:FindFirstChild(load)
-		if modu then
-			LoadModule(modu,true,{script = script}, true) --noenv
+		local CoreModule = Folder.Core:FindFirstChild(load)
+		if CoreModule then
+			LoadModule(CoreModule, true, {script = script}, nil, true) --noenv, CoreModule
 		end
 	end
 

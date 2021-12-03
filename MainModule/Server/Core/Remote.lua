@@ -7,11 +7,14 @@ origEnv = nil
 logError = nil
 
 --// Remote
-return function(Vargs)
+return function(Vargs, envVars, GetEnv)
+	local env = GetEnv(getfenv(), envVars)
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults, Commands
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;

@@ -8,9 +8,13 @@ logError = nil
 
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...
-return function(Vargs)
+return function(Vargs, envVars, GetEnv)
+	local env = GetEnv(getfenv(), envVars)
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
 
