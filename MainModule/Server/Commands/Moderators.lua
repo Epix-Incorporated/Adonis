@@ -4525,7 +4525,7 @@ return function(Vargs, env)
 
 		Shirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetshirt", "giveshirt"};
+			Commands = {"shirt", "giveshirt"};
 			Args = {"player", "ID"};
 			Hidden = false;
 			Description = "Give the target player(s) the shirt that belongs to <ID>";
