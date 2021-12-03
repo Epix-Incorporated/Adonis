@@ -5,6 +5,7 @@ service = nil
 return function(data)
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
+	local Icon = data.Icon
 	local Tabs = data.Tabs
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
@@ -174,6 +175,7 @@ return function(data)
 	window = client.UI.Make("Window",{
 		Name  = "List";
 		Title = Title;
+		Icon = Icon;
 		Size  = Size or {240, 225};
 		MinSize = {150, 100};
 		OnRefresh = Update and function()
