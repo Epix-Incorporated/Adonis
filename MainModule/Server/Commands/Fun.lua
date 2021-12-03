@@ -3239,7 +3239,7 @@ return function(Vargs, env)
 					if torso then
 						Functions.NewParticle(torso, "ParticleEmitter", {
 							Name = "PARTICLE";
-							Texture = "rbxassetid://".. Functions.GetTexture(args[1]);
+							Texture = "rbxassetid://".. Functions.GetTexture(args[2]);
 							Size = NumberSequence.new({
 								NumberSequenceKeypoint.new(0, 0);
 								NumberSequenceKeypoint.new(.1,.25,.25);
