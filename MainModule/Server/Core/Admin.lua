@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Admin
-return function(Vargs)
+return function(Vargs, envVars, GetEnv)
+	local env = GetEnv(getfenv(), envVars)
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 

@@ -104,7 +104,6 @@ return function()
 		ParticlesEnabled = true;
 		CapesEnabled = true;
 		HideChatCommands = false;
-		PrivacyMode = false;
 		Particles = {};
 		KeyBinds = {};
 		Aliases = {};

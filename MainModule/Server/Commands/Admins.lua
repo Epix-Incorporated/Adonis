@@ -8,6 +8,8 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
+	local Routine = env.Routine
+
 	return {
 		--[[
 		--// Unfortunately not viable

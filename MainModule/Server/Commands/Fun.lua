@@ -8,6 +8,10 @@ return function(Vargs, env)
 
 	if env then setfenv(1, env) end
 
+	local Routine = env.Routine
+	local Pcall = env.Pcall
+	local cPcall = env.cPcall
+
 	return {
 		Glitch = {
 			Prefix = Settings.Prefix;
@@ -1766,7 +1770,7 @@ return function(Vargs, env)
 
 				Variables.WildFire = partsHit
 
-				function fire(part)
+				local function fire(part)
 					if finished or not partsHit or not objs then
 						objs = nil
 						partsHit = nil
@@ -3235,7 +3239,7 @@ return function(Vargs, env)
 					if torso then
 						Functions.NewParticle(torso, "ParticleEmitter", {
 							Name = "PARTICLE";
-							Texture = "rbxassetid://".. Functions.GetTexture(args[1]);
+							Texture = "rbxassetid://".. Functions.GetTexture(args[2]);
 							Size = NumberSequence.new({
 								NumberSequenceKeypoint.new(0, 0);
 								NumberSequenceKeypoint.new(.1,.25,.25);
@@ -3699,34 +3703,34 @@ return function(Vargs, env)
 							end
 						end
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
+						local CFrame_new = CFrame.new
+
 						local Motors = {}
 						local Percent = num
 
 						table.insert(Motors, char.HumanoidRootPart.RootJoint)
-						for i, motor in pairs(char.Torso:GetChildren()) do
-							if Motor:IsA("Motor6D") == false then continue end
-							table.insert(Motors, Motor)
+						for _, motor in ipairs(char.Torso:GetChildren()) do
+							if motor:IsA("Motor6D") then table.insert(Motors, motor) end
 						end
-						for i, v in pairs(Motors) do
-							v.C0 = CFrame.new((v.C0.Position * Percent)) * (v.C0 - v.C0.Position)
-							v.C1 = CFrame.new((v.C1.Position * Percent)) * (v.C1 - v.C1.Position)
-						end
-
-
-						for i, part in pairs(char:GetChildren()) do
-							if Part:IsA("BasePart") == false then continue end
-							Part.Size = Part.Size * Percent
+						for _, Motor in pairs(Motors) do
+							Motor.C0 = CFrame_new((Motor.C0.Position * Percent)) * (Motor.C0 - Motor.C0.Position)
+							Motor.C1 = CFrame_new((Motor.C1.Position * Percent)) * (Motor.C1 - Motor.C1.Position)
 						end
 
 
-						for i, Accessory in pairs(char:GetChildren()) do
-							if Accessory:IsA("Accessory") == false then continue end
+						for _, part in ipairs(char:GetChildren()) do
+							if part:IsA("BasePart") then part.Size *= Percent end
+						end
 
-							Accessory.Handle.AccessoryWeld.C0 = CFrame.new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
-							Accessory.Handle.AccessoryWeld.C1 = CFrame.new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
-
-							if Accessory.Handle:FindFirstChildOfClass("SpecialMesh") then
-								Accessory.Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
+						for _, Accessory in pairs(char:GetChildren()) do
+							local Handle = Accessory:IsA("Accessory") and v:FindFirstChild("Handle")
+							if Handle then
+								Handle.AccessoryWeld.C0 = CFrame_new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
+								Handle.AccessoryWeld.C1 = CFrame_new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
+	
+								if Handle:FindFirstChildOfClass("SpecialMesh") then
+									Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
+								end
 							end
 						end
 					end

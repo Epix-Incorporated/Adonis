@@ -311,16 +311,10 @@ return function()
 							return data.Source, module
 						end
 					end);
-
-					ReportLBI = MetaFunc(function(scr, origin)
-						if origin == "Local" then
-							return true
-						end
-					end);
 				}, nil, nil, true);
 			}
 
-			AdonisGTable = NewProxy{
+			local AdonisGTable = NewProxy{
 				__index = function(tab,ind)
 					if ind == "Scripts" then
 						return API.Scripts
@@ -334,7 +328,7 @@ return function()
 						error("_G API is disabled")
 					end
 				end;
-				__newindex = function(tabl,ind,new)
+				__newindex = function()
 					error("Read-only")
 				end;
 				__metatable = "API";

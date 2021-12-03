@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Anti-Exploit
-return function(Vargs)
+return function(Vargs, envVars, GetEnv)
+	local env = GetEnv(getfenv(), envVars)
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -35,20 +38,19 @@ return function(Vargs)
 		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
 
-		function onPlayerAdded(player)
+		local function onPlayerAdded(player)
 			if not player.Character then
 				player.CharacterAdded:Wait()
 			end
 
 			if Admin.GetLevel(player) < 1 then --// Changed from Settings.Moderators.Level to just <1.... I figure we should just ignore anyone who's in any rank above normal player ~ Scel
-				Anti.CharacterCheck(player)
+				pcall(Anti.CharacterCheck, player)
 			end
 		end
 
 		for _, v in ipairs(service.Players:GetPlayers()) do
-			coroutine.wrap(pcall)(onPlayerAdded, v)
+			task.spawn(onPlayerAdded, v)
 		end
-
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
@@ -309,7 +311,7 @@ return function(Vargs)
 
 						if humanoid then
 							humanoid:ChangeState(Enum.HumanoidStateType.Dead)
-							Humanoid.Health = 0
+							humanoid.Health = 0
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
