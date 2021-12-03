@@ -4768,12 +4768,12 @@ return function(Vargs, env)
 			end
 		};
 
-		Paint = {
+		PlayerBrickColor = {
 			Prefix = Settings.Prefix;
-			Commands = {"paint"};
+			Commands = {"playerbrickcolor", "paint"};
 			Args = {"player", "brickcolor"};
 			Hidden = false;
-			Description = "Paints the target player(s)";
+			Description = "Paints the target player(s)'s BrickColor";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
