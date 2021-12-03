@@ -3798,13 +3798,49 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Backpack = v.Character and v:FindFirstChildOfClass("Backpack")
-					if Backpack then
-						if v.Character:FindFirstChildOfClass("Humanoid") then
-							v.Character:FindFirstChildOfClass("Humanoid"):UnequipTools()
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
+							if tool:IsA("BackpackItem") then tool:Destroy() end
 						end
-						for a, tool in pairs(Backpack:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
-						for a, tool in pairs(v.Character:GetChildren()) do if tool:IsA("BackpackItem") then tool:Destroy() end end
+					end
+					if v.Character then
+						local hum = v.Character:FindFirstChildOfClass("Humanoid")
+						if hum then hum:UnequipTools() end
+						for _, tool in pairs(v.Character:GetChildren()) do
+							if tool:IsA("BackpackItem") then tool:Destroy() end
+						end
+					end
+				end
+			end
+		};
+
+		RemoveTool = {
+			Prefix = Settings.Prefix;
+			Commands = {"removetool"};
+			Args = {"player", "tool name"};
+			Hidden = false;
+			Description = "Remove a specified tool from the target player(s)'s backpack";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
+							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
+								tool:Destroy()
+							end
+						end
+					end
+					if v.Character then
+						for _, tool in pairs(v.Character:GetChildren()) do
+							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
+								local hum = v.Character:FindFirstChildOfClass("Humanoid")
+								if hum then hum:UnequipTools() end
+								tool:Destroy()
+							end
+						end
 					end
 				end
 			end
