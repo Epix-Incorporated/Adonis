@@ -858,7 +858,7 @@ return function(Vargs, env)
 					region = r.region,
 					zipcode = r.zip,
 					timezone = r.timezone,
-					query = r.query,
+					query = Admin.CheckAdmin(plr) and (r.query) or "[Redacted]",
 					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 
