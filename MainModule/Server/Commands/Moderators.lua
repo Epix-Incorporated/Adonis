@@ -3798,16 +3798,16 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local backpack = v:FindFirstChildOfClass("Backpack")
-					if backpack then
-						for _, tool in pairs(backpack:GetChildren()) do
-							if tool:IsA("BackpackItem") then tool:Destroy() end
-						end
-					end
 					if v.Character then
 						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then hum:UnequipTools() end
 						for _, tool in pairs(v.Character:GetChildren()) do
+							if tool:IsA("BackpackItem") then tool:Destroy() end
+						end
+					end
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
 							if tool:IsA("BackpackItem") then tool:Destroy() end
 						end
 					end
@@ -3825,19 +3825,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local backpack = v:FindFirstChildOfClass("Backpack")
-					if backpack then
-						for _, tool in pairs(backpack:GetChildren()) do
-							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
-								tool:Destroy()
-							end
-						end
-					end
 					if v.Character then
 						for _, tool in pairs(v.Character:GetChildren()) do
 							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
 								local hum = v.Character:FindFirstChildOfClass("Humanoid")
 								if hum then hum:UnequipTools() end
+								tool:Destroy()
+							end
+						end
+					end
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
+							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
 								tool:Destroy()
 							end
 						end
