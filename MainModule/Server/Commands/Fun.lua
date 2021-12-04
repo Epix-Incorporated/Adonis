@@ -4770,7 +4770,7 @@ return function(Vargs, env)
 
 		PlayerBrickColor = {
 			Prefix = Settings.Prefix;
-			Commands = {"playerbrickcolor", "paint"};
+			Commands = {"playerbrickcolor", "brickcolor"};
 			Args = {"player", "brickcolor"};
 			Hidden = false;
 			Description = "Paints the target player(s)'s BrickColor";
