@@ -28,7 +28,7 @@ return function(data)
 		Size = UDim2.new(1, 0, 0, 30);
 		Position = UDim2.new(0, 0, 1, -30);
 		PlaceholderText = "Enter command";
-		TextXAlignment = "Left"
+		TextXAlignment = "Left";
 		ClearTextOnFocus = false;
 	})
 	textbox:Add("UIPadding", {PaddingLeft = UDim.new(0, 6);})
