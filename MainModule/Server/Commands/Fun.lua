@@ -3920,7 +3920,7 @@ return function(Vargs, env)
 			end
 		};
 		
-		Head = {
+		HeadPackage = {
 			Prefix = Settings.Prefix;
 			Commands = {"head", "headpackage"};
 			Args = {"player", "id"};
@@ -3929,18 +3929,18 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 17, "ID is not a head!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
+				if (args[2] ~= "0") then
+					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+					assert(id == 17, "ID is not a head!")
 				end
-
-				model:Destroy()
+				
+				local target = service.GetPlayers(plr, args[1])[1]
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")				
+				
+				local descriptionClone = target_humanoid:GetAppliedDescription()
+				descriptionClone.Head = args[2]
+				
+				target_humanoid:ApplyDescription(descriptionClone)
 			end
 		};
 
