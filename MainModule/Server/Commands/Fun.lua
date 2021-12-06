@@ -3146,40 +3146,52 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[Trail = {
+		Trail = {
 			Prefix = Settings.Prefix;
 			Commands = {"trail", "trails"};
-			Args = {"player", "textureid"};
+			Args = {"player", "textureid", "color"};
 			Description = "Adds trails to the target's character's parts";
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
 				assert(args[1], "Player argument missing")
 				local newTrail = service.New("Trail", {
-					Color = (args[2] and (args[2]:lower() == "truecolors" or args[2]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 					Texture = args[2] and "rbxassetid://"..args[2];
 					TextureMode = "Stretch";
 					TextureLength = 2;
+					Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 					Name = "ADONIS_TRAIL";
 				})
 
 				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					for k, p in pairs(char:GetChildren()) do
+						print(k,p)
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
+							local attachment0 = service.New("Attachment", {
+								Parent = p;
+								Name = "ADONIS_TRAIL_ATTACHMENT0";
+							})
+							local attachment1 = service.New("Attachment", {
+								Position = Vector3.new(0,-0.05,0);
+								Parent = p;
+								Name = "ADONIS_TRAIL_ATTACHMENT1";
+							})
 							Functions.NewParticle(p, "Trail", {
-								Color = (args[2] and (args[2]:lower() == "truecolors" or args[2]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
+								Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
 								TextureLength = 2;
+								Attachment0 = attachment0;
+								Attachment1 = attachment1;
 								Name = "ADONIS_CMD_TRAIL";
 							})
 						end
 					end
 				end
 			end;
-		};--]]
+		};
 
 		UnParticle = {
 			Prefix = Settings.Prefix;
