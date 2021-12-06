@@ -4770,27 +4770,45 @@ return function(Vargs, env)
 
 		PlayerBrickColor = {
 			Prefix = Settings.Prefix;
-			Commands = {"playerbrickcolor", "brickcolor"};
-			Args = {"player", "brickcolor"};
+			Commands = {"playerbrickcolor", "brickcolor", "playercolor"};
+			Args = {"player", "brickcolor or RGB"};
 			Hidden = false;
 			Description = "Paints the target player(s)'s BrickColor";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+				local color3 = {}
+				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
 
 				if not args[2] then
 					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-				elseif not brickColor then
-					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
-					brickColor = BrickColor.new("Pearl")
+					
+				-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
+				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
+					for s in args[2]:gmatch("[%d]+") do
+						table.insert(color3, tonumber(s))
+					end
+					
+					-- Check if input was right
+					if (#color3 == 3) then
+						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
+					else
+						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
+						brickColor = BrickColor.new("Medium stone grey")
+					end
+				end
+				
+				if (typeof(color3) == "Color3") then
+					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
+					brickColor = color3
 				end
 
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
 						local bc = v.Character:FindFirstChildOfClass"BodyColors"
 
-						for i, v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
+						for i, v in pairs(BodyColorGroups) do
 							bc[v] = brickColor
 						end
 					end
