@@ -1207,6 +1207,23 @@ return function(Vargs, env)
 							Title = "@"..v.Name.."'s tools";
 							Icon = server.MatIcons["Inventory 2"];
 							Table = tools;
+							Size = {280, 225};
+							TitleButtons = {
+								{
+									Text = "";
+									OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."tools')");
+									Children = {
+										{
+											Class = "ImageLabel";
+											Size = UDim2.new(0, 18, 0, 18);
+											Position = UDim2.new(0, 6, 0, 1);
+											Image = server.MatIcons.Build;
+											BackgroundTransparency = 1;
+											ZIndex = 3;
+										}
+									}
+								}
+							};
 						})
 					end)
 				end
@@ -1985,58 +2002,21 @@ return function(Vargs, env)
 
 		ToolList = {
 			Prefix = Settings.Prefix;
-			Commands = {"tools", "toollist"};
+			Commands = {"tools", "toollist", "toolcenter"};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you a list of tools that can be obtains via the give command";
+			Description = "Shows you a list of tools that can be obtained via the give command";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local prefix = Settings.Prefix
-				local split = Settings.SplitKey
-				local specialPrefix = Settings.SpecialPrefix
-				local num = 0
-				local children = {
-					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
-				}
-
-				for i, v in ipairs(Settings.Storage:GetChildren()) do
-					if v:IsA("BackpackItem") then
-						table.insert(children, {
-							Class = "TextLabel";
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*num);
-							BackgroundTransparency = 1;
-							TextXAlignment = "Left";
-							Text = "  "..v.Name;
-							ToolTip = v:GetFullName();
-							ZIndex = 2;
-							Children = {
-								{
-									Class = "TextButton";
-									Size = UDim2.new(0, 80, 1, -4);
-									Position = UDim2.new(1, -82, 0, 2);
-									Text = "Spawn";
-									ZIndex = 3;
-									OnClick = Core.Bytecode([[
-										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
-									]]);
-								}
-							};
-						})
-
-						num += 1;
+				local tools = {}
+				for _, tool in ipairs(Settings.Storage:GetChildren()) do
+					if tool:IsA("BackpackItem") then
+						table.insert(tools, tool.Name)
 					end
 				end
-
-				Remote.MakeGui(plr, "Window", {
-					Name = "ToolList";
-					Title = "Tools";
-					Icon = server.MatIcons.Build;
-					Size  = {300, 300};
-					MinSize = {150, 100};
-					Content = children;
-					Ready = true;
+				Remote.MakeGui(plr, "ToolCenter", {
+					Tools = tools; Prefix = Settings.Prefix; SplitKey = Settings.SplitKey; SpecialPrefix = Settings.SpecialPrefix;
 				})
 			end
 		};
