@@ -154,12 +154,18 @@ return function(Vargs, envVars, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+			
+			["Settings.Ranks.Creators.Users"] = true;
 
 			OnStartup = true;
 			OnSpawn = true;
 			OnJoin = true;
 
 			CustomRanks = true;
+			Ranks = true;
+			
+			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
+			DS_BLACKLIST = true;
 		};
 
 		DisconnectEvent = function()
@@ -866,7 +872,8 @@ return function(Vargs, envVars, GetEnv)
 		end;
 
 		IndexPathToTable = function(tableAncestry)
-			if type(tableAncestry) == "string" then
+			local Blacklist = Core.DS_BLACKLIST
+			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
 				return server.Settings[tableAncestry], tableAncestry;
 			elseif type(tableAncestry) == "table" then
 				local curTable = server;
@@ -878,12 +885,18 @@ return function(Vargs, envVars, GetEnv)
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
+						--// Not allowed or table is not found
 						return nil;
 					end
+				end
+				
+				if curName and type(curName) == 'string' and Blacklist[curName] then
+					return nil
 				end
 
 				return curTable, curName;
 			end
+			return nil
 		end;
 
 		ClearAllData = function()
@@ -1002,7 +1015,8 @@ return function(Vargs, envVars, GetEnv)
 
 		LoadData = function(key, data, serverId)
 			if serverId and serverId == game.JobId then return end;
-
+			
+			local Blacklist = Core.DS_BLACKLIST
 			local CheckMatch = Functions.CheckMatch;
 			if key == "TableUpdate" then
 				local tab = data;
@@ -1021,6 +1035,12 @@ return function(Vargs, envVars, GetEnv)
 
 				local realTable,tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
+				
+				if displayName and type(displayName) == 'string' and Blacklist[displayName] then 
+					--// warn("Stopped " .. displayName .. " from being set!")
+					--// Debugging --Coasterteam
+					return
+				end
 
 				if realTable and tab.Action == "Add" then
 					for i,v in pairs(realTable) do
@@ -1050,7 +1070,6 @@ return function(Vargs, envVars, GetEnv)
 			else
 				local SavedSettings
 				local SavedTables
-				local Blacklist = Core.DS_BLACKLIST
 				if Core.DataStore and Settings.DataStoreEnabled then
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
