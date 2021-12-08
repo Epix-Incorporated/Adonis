@@ -4338,16 +4338,17 @@ return function(Vargs, env)
 								
 								
 								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
-                                for i=#partInput,1,-1 do
-                                    if (partInput[i] == "RightArm") then
-                                        if (rigType == Enum.HumanoidRigType.R15) then
+								
+								if (rigType == Enum.HumanoidRigType.R15) then
+									for i=#partInput,1,-1 do
+	                                    if (partInput[i] == "RightArm") then
                                             local foundKeys = {}
                                             for k2,v2 in pairs(partInput) do
                                                 if (v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand") then
                                                     table.insert(foundKeys, k2)
                                                 end
                                             end
-                                            -- If not all 3 were found just remove all 3 and add them manually
+                                            -- If not all keys were found just remove all keys and add them manually
                                             if (#foundKeys ~= 3) then
                                                 for _,foundKey in pairs(foundKeys) do
                                                     table.remove(partInput, foundKey)
@@ -4356,24 +4357,16 @@ return function(Vargs, env)
                                                 table.insert(partInput, "RightLowerArm")
                                                 table.insert(partInput, "RightHand")
                                             end
-                                            table.remove(partInput, i) -- Remove the group part input
-                                            
-                                        elseif (rigType == Enum.HumanoidRigType.R6) then
-                                            for i=#partInput,1,-1 do
-                                                if (partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand") then
-                                                    table.remove(partInput, i)
-                                                end
-                                            end
-                                        end
-                                    elseif (partInput[i] == "LeftArm") then
-                                        if (rigType == Enum.HumanoidRigType.R15) then
+											table.remove(partInput, i) -- Remove the group part input
+											
+	                                    elseif (partInput[i] == "LeftArm") then
                                             local foundKeys = {}
                                             for k2,v2 in pairs(partInput) do
                                                 if (v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand") then
                                                     table.insert(foundKeys, k2)
                                                 end
-                                            end
-                                            -- If not all 3 were found just remove all 3 and add them manually
+											end
+											
                                             if (#foundKeys ~= 3) then
                                                 for _,foundKey in pairs(foundKeys) do
                                                     table.remove(partInput, foundKey)
@@ -4382,24 +4375,16 @@ return function(Vargs, env)
                                                 table.insert(partInput, "LeftLowerArm")
                                                 table.insert(partInput, "LeftHand")
                                             end
-                                            table.remove(partInput, i) -- Remove the group part input
-                                            
-                                        elseif (rigType == Enum.HumanoidRigType.R6) then
-                                            for i=#partInput,1,-1 do
-                                                if (partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand") then
-                                                    table.remove(partInput, i)
-                                                end
-                                            end
-                                        end
-                                    elseif (partInput[i] == "RightLeg") then
-                                        if (rigType == Enum.HumanoidRigType.R15) then
+                                            table.remove(partInput, i)
+
+	                                    elseif (partInput[i] == "RightLeg") then
                                             local foundKeys = {}
                                             for i=#partInput,1,-1 do
                                                 if (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
                                                     table.insert(foundKeys, partInput[i])
                                                 end
-                                            end
-                                            -- If not all 3 were found just remove all 3 and add them manually
+											end
+											
                                             if (#foundKeys ~= 3) then
                                                 for _,foundKey in pairs(foundKeys) do
                                                     table.remove(partInput, foundKey)
@@ -4408,24 +4393,16 @@ return function(Vargs, env)
                                                 table.insert(partInput, "RightLowerLeg")
                                                 table.insert(partInput, "RightFoot")
                                             end
-                                            table.remove(partInput, i) -- Remove the group part input
- 
-                                        elseif (rigType == Enum.HumanoidRigType.R6) then
-                                            for i=#partInput,1,-1 do
-                                                if (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
-                                                    table.remove(partInput, i)
-                                                end
-                                            end
-                                        end
-                                    elseif (partInput[i] == "LeftLeg") then
-                                        if (rigType == Enum.HumanoidRigType.R15) then
+											table.remove(partInput, i)
+											
+	                                    elseif (partInput[i] == "LeftLeg") then
                                             local foundKeys = {}
                                             for k2,v2 in pairs(partInput) do
                                                 if (v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot") then
                                                     table.insert(foundKeys, k2)
                                                 end
-                                            end
-                                            -- If not all 3 were found just remove all 3 and add them manually
+											end
+											
                                             if (#foundKeys ~= 3) then
                                                 for _,foundKey in pairs(foundKeys) do
                                                     table.remove(partInput, foundKey)
@@ -4434,24 +4411,16 @@ return function(Vargs, env)
                                                 table.insert(partInput, "LeftLowerLeg")
                                                 table.insert(partInput, "LeftFoot")
                                             end
-                                            table.remove(partInput, i) -- Remove the group part input
- 
-                                        elseif (rigType == Enum.HumanoidRigType.R6) then
-                                            for i=#partInput,1,-1 do
-                                                if (partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot") then
-                                                    table.remove(partInput, i)
-                                                end
-                                            end
-                                        end
-                                    elseif (partInput[i] == "Torso") then
-                                        if (rigType == Enum.HumanoidRigType.R15) then
+											table.remove(partInput, i)
+											
+	                                    elseif (partInput[i] == "Torso") then
                                             local foundKeys = {}
                                             for k2,v2 in pairs(partInput) do
                                                 if (v2 == "UpperTorso" or v2 == "LowerTorso") then
                                                     table.insert(foundKeys, k2)
                                                 end
-                                            end
-                                            -- If not all 2 were found just remove all 2 and add them manually
+											end
+											
                                             if (#foundKeys ~= 2) then
                                                 for _,foundKey in pairs(foundKeys) do
                                                     table.remove(partInput, foundKey)
@@ -4459,19 +4428,28 @@ return function(Vargs, env)
                                                 table.insert(partInput, "UpperTorso")
                                                 table.insert(partInput, "LowerTorso")
                                             end
-                                            table.remove(partInput, i) -- Remove the group part input
- 
-                                        elseif (rigType == Enum.HumanoidRigType.R6) then
-                                            for i=#partInput,1,-1 do
-                                                if (partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso") then
-                                                    table.remove(partInput, i)
-                                                end
-                                            end
-                                        end
-                                    end
+											table.remove(partInput, i)
+	                                    end
+									end
 								end
-								
-								
+									
+								if (rigType == Enum.HumanoidRigType.R6) then
+									for i=#partInput,1,-1 do
+										if (partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso") then
+											table.remove(partInput, i)
+										end
+									end
+								end
+									
+									
 								-- Make chosen parts transparent
 								for k,v in pairs(partInput) do
 									if (v ~= "limbs" or v ~= "face" or v ~= "accessories") then
