@@ -156,6 +156,7 @@ return function(Vargs, envVars, GetEnv)
 			Allowed_API_Calls = true;
 			
 			["Settings.Ranks.Creators.Users"] = true;
+			["Admin.SpecialLevels"] = true;
 
 			OnStartup = true;
 			OnSpawn = true;
