@@ -215,14 +215,14 @@ return function(Vargs, env)
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
 						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
-						ZIndex = 2;
+						ZIndex = 11;
 						Children = {
 							{
 								Class = "Frame";
 								BackgroundColor3 = bc.Color;
 								Size = UDim2.new(0, 80, 1, -4);
 								Position = UDim2.new(1, -82, 0, 2);
-								ZIndex = 3;
+								ZIndex = 12;
 							}
 						};
 					})
