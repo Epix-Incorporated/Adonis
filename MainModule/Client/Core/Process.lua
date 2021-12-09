@@ -6,6 +6,7 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Processing
 return function()
