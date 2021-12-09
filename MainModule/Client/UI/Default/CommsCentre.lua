@@ -141,10 +141,7 @@ return function(data)
 		end
 	end
 	
-	client.Variables.CommsCentreBindableEvent = service.New("BindableEvent");
-	
-	client.Variables.CommsCentreBindableEvent.Event:Connect(function(v)
-		print(v)
+	service.HookEvent('ToggleConsole', function()
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 
