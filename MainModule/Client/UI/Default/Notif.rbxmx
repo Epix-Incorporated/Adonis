@@ -57,7 +57,7 @@ return function(data)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	if client.Variables.CommsCentreBindableEvent then client.Variables.CommsCentreBindableEvent:Fire(log) end
+	service.Events.CommsCentre:fire(log)
 
 	
 	if str and type(str)=="string" then
