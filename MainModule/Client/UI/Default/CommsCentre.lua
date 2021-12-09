@@ -141,7 +141,7 @@ return function(data)
 		end
 	end
 	
-	service.HookEvent('ToggleConsole', function()
+	service.HookEvent('CommsCentre', function(v)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 
