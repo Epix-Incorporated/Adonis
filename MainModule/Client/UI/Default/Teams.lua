@@ -80,8 +80,7 @@ return function(data)
 				self.Active = false
 				self.AutoButtonColor = false
 				self.Text = "..."
-				client.Remote.Send("ProcessCommand", ("%snewteam%s%s%s%s")
-					:format(data.CmdPrefix, data.CmdSplitKey, teamName.Text, data.CmdSplitKey, teamColor.Text))
+				client.Remote.Send("ProcessCommand", string.format("%snewteam%s%s%s%s", data.CmdPrefix, data.CmdSplitKey, teamName.Text, data.CmdSplitKey, teamColor.Text));
 				teamName.Text = ""
 				teamColor.Text = ""
 				wait(1.2)
@@ -95,7 +94,7 @@ return function(data)
 	})
 
 	teamName:GetPropertyChangedSignal("Text"):Connect(function()
-		teamName.Text = teamName.Text:gsub(data.CmdSplitKey, "")
+		teamName.Text = string.gsub(teamName.Text, data.CmdSplitKey, "")
 	end)
 	teamColor:GetPropertyChangedSignal("Text"):Connect(function()
 		teamColor.TextColor3 = BrickColor.new(teamColor.Text).Color
@@ -119,7 +118,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				TextXAlignment = "Left";
 				Text = "";
-				ZIndex = 2;
+				ZIndex = 11;
 				Children = {
 					{
 						Class = "Frame";
@@ -128,7 +127,7 @@ return function(data)
 						Size = UDim2.new(0, 35, 1, -4);
 						Position = UDim2.new(0, 2, 0.5, 0);
 						ToolTip = team.TeamColor.Name;
-						ZIndex = 3;
+						ZIndex = 13;
 					},
 					{
 						Class = "TextLabel";
@@ -139,7 +138,7 @@ return function(data)
 						TextYAlignment = "Center";
 						Text = team.Name;
 						ToolTip = "[Auto-Assignable]: "..tostring(team.AutoAssignable);
-						ZIndex = 3
+						ZIndex = 13;
 					},
 					{
 						Class = "TextButton";
@@ -147,13 +146,12 @@ return function(data)
 						Size = UDim2.new(0, 60, 0, 26);
 						Position = UDim2.new(1, -30, 0.5, 0);
 						Text = "Join";
-						ZIndex = 3;
+						ZIndex = 13;
 						OnClick = function(self)
 							self.Active = false
 							self.AutoButtonColor = false
 							self.Text = "..."
-							client.Remote.Send("ProcessCommand", ("%steam%s%sme%s%s")
-								:format(data.CmdPrefix, data.CmdSplitKey, data.CmdSpecialPrefix, data.CmdSplitKey, team.Name))
+							client.Remote.Send("ProcessCommand", string.format("%steam%s%sme%s%s", data.CmdPrefix, data.CmdSplitKey, data.CmdSpecialPrefix, data.CmdSplitKey, team.Name));
 							wait(1.2)
 							if self then
 								self.Active = true
@@ -168,11 +166,10 @@ return function(data)
 						Size = UDim2.new(0, 26, 0, 26);
 						Position = UDim2.new(1, -2, 0.5, 0);
 						Image = client.MatIcons.Clear;
-						ZIndex = 3;
+						ZIndex = 13;
 						OnClick = function(self)
 							self.Visible = false
-							client.Remote.Send("ProcessCommand", ("%sremoveteam%s%s")
-								:format(data.CmdPrefix, data.CmdSplitKey, team.Name))
+							client.Remote.Send("ProcessCommand", string.format("%sremoveteam%s%s", data.CmdPrefix, data.CmdSplitKey, team.Name));
 							wait(1.2)
 							if self then
 								self.Visible = true
