@@ -1758,19 +1758,21 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local RANK_DESCRIPTION_FORMAT = "Rank: %s; Level: %d"
+				local RANK_RICHTEXT = "<b><font color='rgb(77, 77, 255)'>%s (Level: %d)</font></b>"
+				local RANK_TEXT_FORMAT = "%s [%s]"
+
 				local temptable = {};
 				local unsorted = {};
-				local levelListCache = {}
 
 				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>==== Admins In-Game ====</font></b>")
 
-				for i, v in pairs(service.GetPlayers()) do
-					local data = Core.GetPlayer(v);
+				for i, v in ipairs(service.GetPlayers()) do
 					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
 						table.insert(unsorted, {
-							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
-							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
+							Text = string.format(RANK_TEXT_FORMAT, v.Name, (rankName or ("Level: ".. level)));
+							Desc = string.format(RANK_DESCRIPTION_FORMAT, rankName or (level >= 1000 and "Place Owner") or "Unknown", level);
 							SortLevel = level;
 						})
 					end
@@ -1785,7 +1787,7 @@ return function(Vargs, env)
 					table.insert(temptable, v)
 				end
 
-				unsorted = {};
+				table.clear(unsorted)
 
 				table.insert(temptable, "")
 				table.insert(temptable, "<b><font color='rgb(180, 60, 0)'>==== All Admins ====</font></b>")
@@ -1793,7 +1795,7 @@ return function(Vargs, env)
 				for rank, data in pairs(Settings.Ranks) do
 					if not data.Hidden then
 						table.insert(unsorted, {
-							Text = "<b><font color='rgb(77, 77, 255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
+							Text = string.format(RANK_RICHTEXT, rank, data.Level);
 							Desc = "";
 							Level = data.Level;
 							Users = data.Users;
@@ -1806,7 +1808,7 @@ return function(Vargs, env)
 					return one.Level > two.Level;
 				end)
 
-				for i, v in ipairs(unsorted) do
+				for _, v in ipairs(unsorted) do
 					local Users = v.Users or {};
 					local Level = v.Level or 0;
 					local Rank = v.Rank or "Unknown";
@@ -1817,10 +1819,10 @@ return function(Vargs, env)
 
 					table.insert(temptable, v)
 
-					for i, user in ipairs(Users) do
+					for _, user in ipairs(Users) do
 						table.insert(temptable, {
 							Text = "  ".. user;
-							Desc = "Rank: ".. Rank .."; Level: ".. Level;
+							Desc = string.format(RANK_DESCRIPTION_FORMAT, Rank, Level);
 							--SortLevel = data.Level;
 						});
 					end

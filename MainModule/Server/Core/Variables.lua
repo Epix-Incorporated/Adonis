@@ -7,8 +7,8 @@ origEnv = nil
 logError = nil
 
 --// Special Variables
-return function(Vargs, envVars, GetEnv)
-	local env = GetEnv(getfenv(), envVars)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local server = Vargs.Server;
@@ -30,10 +30,9 @@ return function(Vargs, envVars, GetEnv)
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
 
-
-		for ind, music in next, Settings.MusicList or {} do table.insert(Variables.MusicList, music) end
-		for ind, music in next, Settings.InsertList or {} do table.insert(Variables.InsertList, music) end
-		for ind, cape in next, Settings.CapeList or {} do table.insert(Variables.Capes, cape) end
+		for ind, music in ipairs(Settings.MusicList or {}) do table.insert(Variables.MusicList, music) end
+		for ind, music in ipairs(Settings.InsertList or {}) do table.insert(Variables.InsertList, music) end
+		for ind, cape in ipairs(Settings.CapeList or {}) do table.insert(Variables.Capes, cape) end
 
 		Variables.Init = nil;
 		Logs:AddLog("Script", "Variables Module Initialized")
