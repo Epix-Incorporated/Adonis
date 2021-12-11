@@ -1035,7 +1035,7 @@ return function()
 			local keyVal = tonumber(keyVal);
 			if keyVal then
 				for i,e in ipairs(Enum.KeyCode:GetEnumItems()) do
-					if e.Value == tonumber(keyVal) then
+					if e.Value == keyVal then
 						return e.Name;
 					end
 				end

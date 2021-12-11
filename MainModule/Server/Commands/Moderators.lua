@@ -1207,6 +1207,23 @@ return function(Vargs, env)
 							Title = "@"..v.Name.."'s tools";
 							Icon = server.MatIcons["Inventory 2"];
 							Table = tools;
+							Size = {280, 225};
+							TitleButtons = {
+								{
+									Text = "";
+									OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."tools')");
+									Children = {
+										{
+											Class = "ImageLabel";
+											Size = UDim2.new(0, 18, 0, 18);
+											Position = UDim2.new(0, 6, 0, 1);
+											Image = server.MatIcons.Build;
+											BackgroundTransparency = 1;
+											ZIndex = 3;
+										}
+									}
+								}
+							};
 						})
 					end)
 				end
@@ -1741,19 +1758,21 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local RANK_DESCRIPTION_FORMAT = "Rank: %s; Level: %d"
+				local RANK_RICHTEXT = "<b><font color='rgb(77, 77, 255)'>%s (Level: %d)</font></b>"
+				local RANK_TEXT_FORMAT = "%s [%s]"
+
 				local temptable = {};
 				local unsorted = {};
-				local levelListCache = {}
 
 				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>==== Admins In-Game ====</font></b>")
 
-				for i, v in pairs(service.GetPlayers()) do
-					local data = Core.GetPlayer(v);
+				for i, v in ipairs(service.GetPlayers()) do
 					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
 						table.insert(unsorted, {
-							Text = v.Name .. " [".. (rankName or ("Level: ".. level)) .."]";
-							Desc = "Rank: ".. (rankName or (level >= 1000 and "Place Owner") or "Unknown") .."; Permission Level: ".. level;
+							Text = string.format(RANK_TEXT_FORMAT, v.Name, (rankName or ("Level: ".. level)));
+							Desc = string.format(RANK_DESCRIPTION_FORMAT, rankName or (level >= 1000 and "Place Owner") or "Unknown", level);
 							SortLevel = level;
 						})
 					end
@@ -1768,7 +1787,7 @@ return function(Vargs, env)
 					table.insert(temptable, v)
 				end
 
-				unsorted = {};
+				table.clear(unsorted)
 
 				table.insert(temptable, "")
 				table.insert(temptable, "<b><font color='rgb(180, 60, 0)'>==== All Admins ====</font></b>")
@@ -1776,7 +1795,7 @@ return function(Vargs, env)
 				for rank, data in pairs(Settings.Ranks) do
 					if not data.Hidden then
 						table.insert(unsorted, {
-							Text = "<b><font color='rgb(77, 77, 255)'>".. rank .." (Level: ".. data.Level ..")</font></b>";
+							Text = string.format(RANK_RICHTEXT, rank, data.Level);
 							Desc = "";
 							Level = data.Level;
 							Users = data.Users;
@@ -1789,7 +1808,7 @@ return function(Vargs, env)
 					return one.Level > two.Level;
 				end)
 
-				for i, v in ipairs(unsorted) do
+				for _, v in ipairs(unsorted) do
 					local Users = v.Users or {};
 					local Level = v.Level or 0;
 					local Rank = v.Rank or "Unknown";
@@ -1800,10 +1819,10 @@ return function(Vargs, env)
 
 					table.insert(temptable, v)
 
-					for i, user in ipairs(Users) do
+					for _, user in ipairs(Users) do
 						table.insert(temptable, {
 							Text = "  ".. user;
-							Desc = "Rank: ".. Rank .."; Level: ".. Level;
+							Desc = string.format(RANK_DESCRIPTION_FORMAT, Rank, Level);
 							--SortLevel = data.Level;
 						});
 					end
@@ -1985,58 +2004,21 @@ return function(Vargs, env)
 
 		ToolList = {
 			Prefix = Settings.Prefix;
-			Commands = {"tools", "toollist"};
+			Commands = {"tools", "toollist", "toolcenter"};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you a list of tools that can be obtains via the give command";
+			Description = "Shows you a list of tools that can be obtained via the give command";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local prefix = Settings.Prefix
-				local split = Settings.SplitKey
-				local specialPrefix = Settings.SpecialPrefix
-				local num = 0
-				local children = {
-					Core.Bytecode([[Object:ResizeCanvas(false, true, false, false, 5, 5)]]);
-				}
-
-				for i, v in ipairs(Settings.Storage:GetChildren()) do
-					if v:IsA("BackpackItem") then
-						table.insert(children, {
-							Class = "TextLabel";
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*num);
-							BackgroundTransparency = 1;
-							TextXAlignment = "Left";
-							Text = "  "..v.Name;
-							ToolTip = v:GetFullName();
-							ZIndex = 10;
-							Children = {
-								{
-									Class = "TextButton";
-									Size = UDim2.new(0, 80, 1, -4);
-									Position = UDim2.new(1, -82, 0, 2);
-									Text = "Spawn";
-									ZIndex = 11;
-									OnClick = Core.Bytecode([[
-										client.Remote.Send("ProcessCommand", "]]..prefix..[[give]]..split..specialPrefix..[[me]]..split..v.Name..[[");
-									]]);
-								}
-							};
-						})
-
-						num += 1;
+				local tools = {}
+				for _, tool in ipairs(Settings.Storage:GetChildren()) do
+					if tool:IsA("BackpackItem") then
+						table.insert(tools, tool.Name)
 					end
 				end
-
-				Remote.MakeGui(plr, "Window", {
-					Name = "ToolList";
-					Title = "Tools";
-					Icon = server.MatIcons.Build;
-					Size  = {300, 300};
-					MinSize = {150, 100};
-					Content = children;
-					Ready = true;
+				Remote.MakeGui(plr, "ToolCenter", {
+					Tools = tools; Prefix = Settings.Prefix; SplitKey = Settings.SplitKey; SpecialPrefix = Settings.SpecialPrefix;
 				})
 			end
 		};
@@ -3798,16 +3780,16 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local backpack = v:FindFirstChildOfClass("Backpack")
-					if backpack then
-						for _, tool in pairs(backpack:GetChildren()) do
-							if tool:IsA("BackpackItem") then tool:Destroy() end
-						end
-					end
 					if v.Character then
 						local hum = v.Character:FindFirstChildOfClass("Humanoid")
 						if hum then hum:UnequipTools() end
 						for _, tool in pairs(v.Character:GetChildren()) do
+							if tool:IsA("BackpackItem") then tool:Destroy() end
+						end
+					end
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
 							if tool:IsA("BackpackItem") then tool:Destroy() end
 						end
 					end
@@ -3825,19 +3807,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local backpack = v:FindFirstChildOfClass("Backpack")
-					if backpack then
-						for _, tool in pairs(backpack:GetChildren()) do
-							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
-								tool:Destroy()
-							end
-						end
-					end
 					if v.Character then
 						for _, tool in pairs(v.Character:GetChildren()) do
 							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
 								local hum = v.Character:FindFirstChildOfClass("Humanoid")
 								if hum then hum:UnequipTools() end
+								tool:Destroy()
+							end
+						end
+					end
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if backpack then
+						for _, tool in pairs(backpack:GetChildren()) do
+							if tool:IsA("BackpackItem") and string.sub(tool.Name:lower(), 1, #args[2])== args[2]:lower() then
 								tool:Destroy()
 							end
 						end

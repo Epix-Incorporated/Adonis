@@ -3,8 +3,8 @@ service = nil
 cPcall = nil
 
 --// Function stuff
-return function(Vargs, envVars, GetEnv)
-	local env = GetEnv(getfenv(), envVars)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local logError

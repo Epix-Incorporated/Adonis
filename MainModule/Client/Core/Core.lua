@@ -6,6 +6,7 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Core
 return function()
@@ -106,7 +107,7 @@ return function()
 	client.Core = {
 		Init = Init;
 		RunLast = RunLast;
-		RunAfterLoaded = RunAfterLoaded;
+		--RunAfterLoaded = RunAfterLoaded;
 		RunAfterPlugins = RunAfterPlugins;
 		Name = script.Name;
 		Special = script.Name;

@@ -7,8 +7,8 @@ origEnv = nil
 logError = nil
 
 --// HTTP
-return function(Vargs, envVars, GetEnv)
-	local env = GetEnv(getfenv(), envVars)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local server = Vargs.Server;
