@@ -1,13 +1,14 @@
 server, service = nil, nil
 --// Originally written by Merely
 --// Edited by GitHub@LolloDev5123 and Irreflexive
+--// GitHub@Expertcoderz was here to make things look better
 
 return function()
 	
-	local TeleportService = game:GetService("TeleportService")
+	local TeleportService = service.TeleportService
 	local parameterName = "ADONIS_SOFTSHUTDOWN"
 	
-	if (game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0)  then
+	if game.PrivateServerId ~= "" and game.PrivateServerOwnerId == 0  then
 		--// This is a reserved server
 		
 		local waitTime = 5
@@ -17,7 +18,7 @@ return function()
 			if type(data) == "table" and data[parameterName] then
 				server.Functions.Message("Server Restart", "Teleporting back to main server...", {player}, false, 1000)
 				wait(waitTime)
-				waitTime = waitTime / 2
+				waitTime /= 2
 				TeleportService:Teleport(game.PlaceId, player)
 			end
 		end
@@ -35,23 +36,19 @@ return function()
 		Arguments = 0;
 		Description = "Restart the server, placing all of the players in a reserved server and teleporting each of them to the new server";
 		Function = function(p,args,data)
-			if (game:GetService("RunService"):IsStudio()) then
-				return
-			end
+			if service.RunService:IsStudio() then return end
 
-			if (#service.Players:GetPlayers() == 0) then
-				return
-			end
+			if #service.Players:GetPlayers() == 0 then return end
 			
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			server.Functions.Message("Server Restart", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
 			
-			wait(2)
+			task.wait(2)
 			
-			for _,player in pairs(service.Players:GetPlayers()) do
+			for _, player in pairs(service.Players:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end
-			service.Players.PlayerAdded:connect(function(player)
+			service.Players.PlayerAdded:Connect(function(player)
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end)
 			while #service.Players:GetPlayers() > 0 do
@@ -61,22 +58,16 @@ return function()
 		end
 	}
 	server.Commands.SoftShutdown = {
-		Prefix = server.Settings.Prefix;	-- Prefix to use for command
-		Commands = {"softshutdown","restart","sshutdown"};	-- Commands
-		Args = {"reason"};	-- Command arguments
-		Description = "Restarts the server";	-- Command Description
-		Hidden = false; -- Is it hidden from the command list?
-		Fun = false;	-- Is it fun?
-		NoStudio = true; -- TeleportService does not work in Studio 
-		AdminLevel = "Admins";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
-		Function = function(plr,args)    -- Function to run for command
-			if (game:GetService("RunService"):IsStudio()) then
-				return
-			end
-			
-			if (#service.Players:GetPlayers() == 0) then
-				return
-			end
+		Prefix = server.Settings.Prefix;
+		Commands = {"softshutdown", "restart", "sshutdown", "restartserver"};
+		Args = {"reason"};
+		Description = "Restarts the server";
+		Hidden = false;
+		Fun = false;
+		NoStudio = true; --// TeleportService does not work in Studio 
+		AdminLevel = "Admins";
+		Function = function(plr: Player, args: {string})
+			if #service.Players:GetPlayers() == 0 then return end
 
 			if server.Core.DataStore then
 				server.Core.UpdateData("ShutdownLogs", function(logs)
@@ -88,7 +79,7 @@ return function()
 							Reason = args[1] or "N/A"
 						})
 					else
-						table.insert(logs,1,{
+						table.insert(logs, 1, {
 							User = "[Server]",
 							Restart = true,
 							Time = service.GetTime(),
@@ -97,7 +88,7 @@ return function()
 					end
 
 					if #logs > 1000 then
-						table.remove(logs,#logs)
+						table.remove(logs, #logs)
 					end
 
 					return logs
@@ -107,16 +98,16 @@ return function()
 		
 			local newserver = TeleportService:ReserveServer(game.PlaceId)
 			server.Functions.Message("Server Restart", "The server is restarting, please wait...", service.GetPlayers(), false, 1000)
-			wait(1)
+			task.wait(1)
 			
-			for _,player in pairs(game.Players:GetPlayers()) do
+			for _, player in pairs(service.Players:GetPlayers()) do
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end
-			game.Players.PlayerAdded:connect(function(player)
+			service.Players.PlayerAdded:Connect(function(player)
 				TeleportService:TeleportToPrivateServer(game.PlaceId, newserver, { player }, "", {[parameterName] = true})
 			end)
-			while (#game.Players:GetPlayers() > 0) do
-				wait(1)
+			while #service.Players:GetPlayers() > 0 do
+				task.wait(1)
 			end	
 			-- done
 		end
