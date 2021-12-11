@@ -684,26 +684,48 @@ return function(Vargs, env)
 			end
 		};
 
-		Color = {
+		PlayerColor = {
 			Prefix = Settings.Prefix;
-			Commands = {"color", "bodycolor"};
-			Args = {"player", "color"};
+			Commands = {"color", "playercolor", "bodycolor"};
+			Args = {"player", "brickcolor or RGB"};
 			Hidden = false;
-			Description = "Make the target the color you choose";
+			Description = "Makes the target player(s)'s BrickColor to the color you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for _, p in pairs(v.Character:GetChildren()) do
-							if p:IsA("Part") then
-								if args[2] then
-									local str = BrickColor.new("Institutional white").Color
-									local teststr = args[2]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
-							end
+				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+				local color3 = {}
+				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
+
+				if not args[2] then
+					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
+					
+				-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
+				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
+					for s in args[2]:gmatch("[%d]+") do
+						table.insert(color3, tonumber(s))
+					end
+					
+					-- Check if input was right
+					if (#color3 == 3) then
+						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
+					else
+						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
+						brickColor = BrickColor.new("Medium stone grey")
+					end
+				end
+				
+				if (typeof(color3) == "Color3") then
+					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
+					brickColor = color3
+				end
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
+						local bc = v.Character:FindFirstChildOfClass"BodyColors"
+
+						for i, v in pairs(BodyColorGroups) do
+							bc[v] = brickColor
 						end
 					end
 				end
@@ -4787,36 +4809,6 @@ return function(Vargs, env)
 						end
 						v2.Character.HumanoidRootPart.CFrame = vpos
 						v.Character.HumanoidRootPart.CFrame = v2pos
-					end
-				end
-			end
-		};
-
-		Paint = {
-			Prefix = Settings.Prefix;
-			Commands = {"paint"};
-			Args = {"player", "brickcolor"};
-			Hidden = false;
-			Description = "Paints the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-
-				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-				elseif not brickColor then
-					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
-					brickColor = BrickColor.new("Pearl")
-				end
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i, v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
-							bc[v] = brickColor
-						end
 					end
 				end
 			end
