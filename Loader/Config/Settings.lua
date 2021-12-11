@@ -324,9 +324,9 @@ local descs = {};			--// Contains settings descriptions
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-	settings.CharacterCheckLogs = true		-- If the character checks appear in exploit logs and exploit notifications
+	settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
 	settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
-	settings.AntiRootJointDeletion = true		-- Attempts to detect paranoid and kills the player if found
+	settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiHumanoidDeletion = true -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 	settings.AntiMultiTool = true -- Prevents multitooling and because of that many other exploits
 	settings.AntiGod = true -- If a player does not respawn when they should have they get respawned
