@@ -728,8 +728,8 @@ return function(data)
 		end
 	end)
 
-	service.HookEvent('ToggleConsole', function(open)
-		if opened or not open then
+	service.HookEvent('ToggleConsole', function()
+		if opened then
 			close()
 		else
 			open()
