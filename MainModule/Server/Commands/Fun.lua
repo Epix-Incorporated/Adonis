@@ -3919,6 +3919,30 @@ return function(Vargs, env)
 				model:Destroy()
 			end
 		};
+		
+		HeadPackage = {
+			Prefix = Settings.Prefix;
+			Commands = {"head", "headpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Head package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if (args[2] ~= "0") then
+					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+					assert(id == 17, "ID is not a head!")
+				end
+				
+				local target = service.GetPlayers(plr, args[1])[1]
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")				
+				
+				local descriptionClone = target_humanoid:GetAppliedDescription()
+				descriptionClone.Head = args[2]
+				
+				target_humanoid:ApplyDescription(descriptionClone)
+			end
+		};
 
 		LoopFling = {
 			Prefix = Settings.Prefix;
