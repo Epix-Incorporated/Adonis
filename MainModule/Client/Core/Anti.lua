@@ -136,11 +136,6 @@ return function()
 
 		task.wait(200)
 		connection:Disconnect()
-		task.wait()
-		if connection and connection.Connected ~= false then
-			idleTamper("Event is still connected after disconnect")
-		end
-		task.wait()
 	end)()
 
 	do
