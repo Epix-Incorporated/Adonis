@@ -246,6 +246,15 @@ return function(AppKey, Token)
 					return {}
 				end
 			end;
+			
+			GetListsAndCards = function(BoardID)
+				local Response = HttpFunctions.Decode(HttpFunctions.Get(GetUrl("boards/"..tostring(BoardID).."/lists?cards=open&fields=id&fields=labels&fields=name&fields=desc")))
+				if type(Response)=="table" then
+					return Response
+				else
+					return {}
+				end
+			end;
 
 			GetList = function(BoardID, Name)
 				local Lists = API.Boards.GetLists(BoardID)
@@ -377,6 +386,7 @@ return function(AppKey, Token)
 	API.epochToHuman = API.EpochToHuman
 	API.getBoard = API.Boards.GetBoard
 	API.getLists = API.Boards.GetLists
+	API.getListsAndCards = API.Boards.GetListsAndCards
 	API.getList = API.Boards.GetList
 	API.getCards = API.Lists.GetCards
 	API.getCard = API.Lists.GetCard

@@ -66,9 +66,12 @@ local dumplog = function() warn(":: Adonis :: Dumping client log...") for i,v in
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
+local isStudio = game:GetService("RunService"):IsStudio()
 game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
-	warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
-	dumplog();
+	if not isStudio then
+		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!");
+		dumplog();
+	end
 end)
 
 local unique = {}
@@ -442,7 +445,7 @@ return service.NewProxy({
 		log("Begin init");
 
 		local remoteName,depsName = string.match(data.Name, "(.*)\\(.*)")
-		Folder = service.Wrap(data.Folder or folder and folder:Clone() or Folder)
+		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
 		setfenv(1,setmetatable({}, {__metatable = unique}))
 		client.Folder = Folder;
@@ -455,11 +458,20 @@ return service.NewProxy({
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
 
-		client.MatIcons = setmetatable({}, {
-			__index = function(t, k)
-				return "rbxassetid://"..require(client.Shared.MatIcons)[k]
-			end,
-		})
+		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
+		do
+			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
+			client.MatIcons = setmetatable({}, {
+				__index = function(self, ind)
+					local materialIcon = MaterialIcons[ind]
+					if materialIcon then
+						self[ind] = string.format("rbxassetid://%d", materialIcon)
+						return self[ind]
+					end
+				end,
+				__metatable = "Adonis"
+			})
+		end
 
 		--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
 		log("Get dependencies")

@@ -392,7 +392,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Changed = {};
 				Timeout = timeout or 0;
 				Running = false;
-				Function = func;
+				--Function = func;
 				R_Status = "Idle";
 				Finished = {};
 				Function = function(...) newTask.R_Status = "Running" newTask.Running = true local ret = {func(...)} newTask.R_Status = "Finished" newTask.Running = false newTask.Remove() return unpack(ret) end;
@@ -471,7 +471,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Running = coroutine.running;
 		Create = coroutine.create;
 		Start = coroutine.resume;
-		Wrap = coroutine.wrap;
+		--Wrap = coroutine.wrap;
 		Get = coroutine.running;
 		New = function(func) local new = coroutine.create(func) table.insert(service.Threads.Threads,new) return new end;
 		End = function(thread) repeat if thread and service.Threads.Status(thread) ~= "dead" then service.Threads.Stop(thread) service.Threads.Resume(thread) else thread = false break end until not thread or service.Threads.Status(thread) == "dead" end;

@@ -1,6 +1,25 @@
 return {
-	"Version: 230";
+	"Version: 231";
 	"*Drag edges to expand*";
+	"";
+	"[v231 WIP]";
+	"*Credits updated";
+	"(Git/Coasterteam) Various bug, vulnerability, fixes and changes, additional logging (already in release)";
+	"(Git/CommodoreGamer118) Misc visibility changes/fixes";
+	"(Git/GalacticInspired) Disallow players to see server ip in !serverinfo #583";
+	"(Git/spaggos) !donorneon Command fix. #597";
+	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
+	"(Git/moo1210) UserPanel, \"Admins\" Command, server change #591";
+	"(Git/fxeP1) UserPanel, \"Admins\" Command, server change #591";
+	"(Git/Expertcoderz) Minor code improvements to softshutdown & F3X #595";
+	"(Git/Expertcoderz) Fix :removetools & :removetool #582";
+	"(Git/Expertcoderz) Tool Center (enhanced :tools) + TextPrompt UI #587";
+	"(Git/Expertcoderz) Fix terminal";
+	"(Git/karl-police) Added 'head' command #579";
+	"(Git/karl-police) Removed \"color\" because it is the same as \"paint\" and changed \"paint\" to \"playercolor\" #580";
+	"(Git/karl-police) Uncommented and modified \"Trail\" command #584";
+	"(Git/karl-police) Added a command called \"TransparentPart\", which allows you to make individual parts and more transparent #590";
+	"(Git/karl-police) Fixed the \"particle\" command #576";
 	"";
 	"[v230 11.25.2021 14:00 EST]";
 	"*Happy Thanksgiving (To those in the US)";
@@ -52,7 +71,7 @@ return {
 	"(Git/alau740) Add missing icons, add '@username' to ':usage' #508";
 	"(Git/ccuser44) Removed some pre-fe code #507";
 	"(Git/jaydensar, joritochip, LolloDev5123) Various GitHub repo-specific changes";
-	"(Git/Expertcoders) Notification icons #505";
+	"(Git/Expertcoderz) Notification icons #505";
 	"(Git/ccuser44) Reintroduced vanilla loadstring usage (when available) #504";
 	"(Git/alau740) :cmdinfo now shows admin rank for command, fix cmd alias typo #499";
 	"(Git/fxeP1) Map restore/backup fix, HideChatCmd fixes, Anti Responding fix(?) #496";

@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Admin
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -417,8 +420,8 @@ return function(Vargs)
 			data.LastLevelUpdate = os.time()
 
 			AddLog("Script", {
-				Text = "Updating cached level for ".. tostring(p);
-				Desc = "Updating the cached admin level for ".. tostring(p);
+				Text = "Updating cached level for ".. p.Name;
+				Desc = "Updating the cached admin level for ".. p.Name;
 				Player = p;
 			})
 
@@ -671,12 +674,12 @@ return function(Vargs)
 				return true
 			else
 				--if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
-				for ind,pass in pairs(Variables.DonorPass) do
+				for _, pass in ipairs(Variables.DonorPass) do
 					local ran, ret;
 					if type(pass) == "number" then
-						ran,ret = pcall(function() return service.MarketPlace:UserOwnsGamePassAsync(p.UserId, pass) end)
+						ran,ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
 					elseif type(pass) == "string" and tonumber(pass) then
-						ran,ret = pcall(function() return service.MarketPlace:PlayerOwnsAsset(p, tonumber(pass)) end)
+						ran,ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
 					if ran and ret then
@@ -690,6 +693,7 @@ return function(Vargs)
 		CheckBan = function(p)
 			local doCheck = Admin.DoCheck
 			local banCheck = Admin.DoBanCheck
+
 			for ind,admin in pairs(Settings.Banned) do
 				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
 					return true, (type(admin) == "table" and admin.Reason)
@@ -737,12 +741,12 @@ return function(Vargs)
 					Value = value;
 				})
 
-				Core.CrossServer("Loadstring", [[
-					local player = game:GetService("Players"):FindFirstChild("]]..p.Name..[[")
+				Core.CrossServer("Loadstring", string.format([[
+					local player = game:GetService("Players"):FindFirstChild("%s")
 					if player then
-						player:Kick("]]..Variables.BanMessage..[[ | Reason: ]]..(value.Reason or "No reason provided")..[[")
+						player:Kick("%s | Reason: %s")
 					end
-				]])
+				]], p.Name, Variables.BanMessage, (string.gsub(reason, "\"", "\\%1") or "No reason provided")))
 			end
 
 			if type(p) ~= "table" then
@@ -806,11 +810,14 @@ return function(Vargs)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
+
 				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
-				local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
+				--[[local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
 				if error then
 					--logError("SERVER","Command",error)
-				end
+				end]]
+
+				TrackTask("Command: ".. coma, com.Function, false, args)
 			end
 		end;
 
@@ -822,7 +829,7 @@ return function(Vargs)
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
 
-				local ran, error = TrackTask(tostring(plr) .. ": ".. coma, com.Function, plr, args, {
+				local ran, error = TrackTask(plr.Name .. ": ".. coma, com.Function, plr, args, {
 					PlayerData = {
 						Player = plr;
 						Level = adminLvl;
@@ -830,7 +837,7 @@ return function(Vargs)
 					}
 				})
 
-				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..tostring(plr)..": "..coma,com.Function,60*5,plr,args)
+				--local task,ran,error = service.Threads.TimeoutRunTask("COMMAND:"..plr.Name..": "..coma,com.Function,60*5,plr,args)
 				if error then
 					--logError(plr,"Command",error)
 					error = string.match(error, ":(.+)$") or "Unknown error"
@@ -849,14 +856,18 @@ return function(Vargs)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
 				local args = Admin.GetArgs(coma,#cmdArgs,...)
-				local ran, error = TrackTask(tostring(plr) ..": ".. coma, com.Function, plr, args, {PlayerData = {
+				local _, error = TrackTask(plr.Name ..": ".. coma, com.Function, plr, args, {PlayerData = {
 					Player = plr;
 					Level = 0;
 					isDonor = false;
 				}})
 				if error then
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr,'Output',{Title = ''; Message = error; Color = Color3.new(1,0,0)})
+					Remote.MakeGui(plr, 'Output', {
+						Title = '';
+						Message = error;
+						Color = Color3.new(1,0,0)
+					})
 				end
 			end
 		end;

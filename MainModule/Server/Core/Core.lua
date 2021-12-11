@@ -18,7 +18,10 @@ function disableAllGUIs(folder)
 end;
 
 --// Core
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -151,12 +154,19 @@ return function(Vargs)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+			
+			["Settings.Ranks.Creators.Users"] = true;
+			["Admin.SpecialLevels"] = true;
 
 			OnStartup = true;
 			OnSpawn = true;
 			OnJoin = true;
 
 			CustomRanks = true;
+			Ranks = true;
+			
+			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
+			DS_BLACKLIST = true;
 		};
 
 		DisconnectEvent = function()
@@ -863,7 +873,8 @@ return function(Vargs)
 		end;
 
 		IndexPathToTable = function(tableAncestry)
-			if type(tableAncestry) == "string" then
+			local Blacklist = Core.DS_BLACKLIST
+			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
 				return server.Settings[tableAncestry], tableAncestry;
 			elseif type(tableAncestry) == "table" then
 				local curTable = server;
@@ -875,16 +886,22 @@ return function(Vargs)
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
+						--// Not allowed or table is not found
 						return nil;
 					end
+				end
+				
+				if curName and type(curName) == 'string' and Blacklist[curName] then
+					return nil
 				end
 
 				return curTable, curName;
 			end
+			return nil
 		end;
 
 		ClearAllData = function()
-			local tabs = Core.GetData("SavedTables");
+			local tabs = Core.GetData("SavedTables") or {};
 
 			for i,v in pairs(tabs) do
 				if v.TableKey then
@@ -999,7 +1016,8 @@ return function(Vargs)
 
 		LoadData = function(key, data, serverId)
 			if serverId and serverId == game.JobId then return end;
-
+			
+			local Blacklist = Core.DS_BLACKLIST
 			local CheckMatch = Functions.CheckMatch;
 			if key == "TableUpdate" then
 				local tab = data;
@@ -1018,6 +1036,12 @@ return function(Vargs)
 
 				local realTable,tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
+				
+				if displayName and type(displayName) == 'string' and Blacklist[displayName] then 
+					--// warn("Stopped " .. displayName .. " from being set!")
+					--// Debugging --Coasterteam
+					return
+				end
 
 				if realTable and tab.Action == "Add" then
 					for i,v in pairs(realTable) do
@@ -1047,7 +1071,6 @@ return function(Vargs)
 			else
 				local SavedSettings
 				local SavedTables
-				local Blacklist = Core.DS_BLACKLIST
 				if Core.DataStore and Settings.DataStoreEnabled then
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
@@ -1099,7 +1122,7 @@ return function(Vargs)
 
 					if SavedTables then
 						for i,tData in pairs(SavedTables) do
-							if tData.TableName and tData.TableKey and not Blacklist[tData.TableName] then
+							if tData.TableName and tData.TableKey and not Blacklist[tData.tableName] then
 								local data = GetData(tData.TableKey);
 								if data then
 									for k,v in ipairs(data) do
@@ -1266,12 +1289,6 @@ return function(Vargs)
 							return data.Source, module
 						end
 					end);
-
-					ReportLBI = MetaFunc(function(scr, origin)
-						if origin == "Server" then
-							return true
-						end
-					end);
 				}, nil, nil, true);
 
 				CheckAdmin = MetaFunc(Admin.CheckAdmin);
@@ -1319,7 +1336,7 @@ return function(Vargs)
 						error("_G API is disabled")
 					end
 				end;
-				__newindex = function(tabl,ind,new)
+				__newindex = function()
 					error("Read-only")
 				end;
 				__metatable = true;

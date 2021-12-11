@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Special Variables
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -292,26 +295,16 @@ return function(Vargs)
 								end
 
 								if v and service.Players:FindFirstChild(v.Name) then
-									local h = ""
-									local mh = ""
-									local ws = ""
-									local jp = ""
-									local hn = ""
 									local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-
-									if v.Character and hum then
-										h = hum.Health
-										mh = hum.MaxHealth
-										ws = hum.WalkSpeed
-										jp = hum.JumpPower
-										hn = hum.Name
-									else
-										h = "NO CHARACTER/HUMANOID"
-									end
-
-									table.insert(plrs,{Text = "["..ping.."] "..v.Name.. " (".. v.DisplayName ..")", Desc = 'Lower: '..v.Name:lower()..' - Health: '..h..((not hum and "") or " - MaxHealth: "..mh.." - WalkSpeed: "..ws.." - JumpPower: "..jp.." - Humanoid Name: "..hum.Name)})
+									table.insert(plrs, {
+										Text = string.format("[%s] %s (@%s)", ping, v.Name, v.DisplayName);
+										Desc = string.format("Lower: %s - Health: %d - MaxHealth: %d - WalkSpeed: %d JumpPower: %d Humanoid Name: %s", v.Name, hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
+									})
 								else
-									table.insert(plrs,{Text = '[LOADING] '..v.Name, Desc = 'Lower: '..v.Name:lower()..' - Ping: '..ping})
+									table.insert(plrs, {
+										Text = "[LOADING] "..v.Name,
+										Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping
+									})
 								end
 							end
 						end)

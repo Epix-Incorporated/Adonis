@@ -146,12 +146,18 @@ return function(Vargs)
 		AdminLevel = "Creators";
 		Function = function(plr,args)
 			--error("Disabled", 0)
-			local func,err = Core.Loadstring(args[1],GetEnv())
-			if func then
-				func()
-			else
-				logError("DEBUG",err)
-				Functions.Hint(err,{plr})
+			local ans = Remote.GetGui(plr, "YesNoPrompt", {
+				Question = "Are you sure you want to load this script into the server env?";
+				Title = "Adonis DebugLoadstring";
+			})
+			if ans == "Yes" then
+				local func,err = Core.Loadstring(args[1],GetEnv())
+				if func then
+					func()
+				else
+					logError("DEBUG",err)
+					Functions.Hint(err,{plr})
+				end
 			end
 		end
 	};

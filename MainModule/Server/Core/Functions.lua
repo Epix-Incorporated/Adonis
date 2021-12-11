@@ -3,10 +3,11 @@ service = nil
 cPcall = nil
 
 --// Function stuff
-return function(Vargs)
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
 
+	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
 		Functions = server.Functions;
@@ -19,6 +20,7 @@ return function(Vargs)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
+		logError = server.logError;
 
 		Functions.Init = nil;
 		Logs:AddLog("Script", "Functions Module Initialized")
@@ -256,7 +258,7 @@ return function(Vargs)
 									userId = tonumber(matched);
 								})
 
-								insert(players, fakePlayer)
+								table.insert(players, fakePlayer)
 								plus()
 							end
 						end
@@ -814,7 +816,7 @@ return function(Vargs)
 					Title = title;
 					Message = message;
 					Time = tim;
-					Icon = "rbxassetid://"..icon or "rbxassetid://7510999669" -- use default 'i' icon if icon argument is missing
+					Icon = string.format("rbxassetid://%d", icon or "7510999669") -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
@@ -1206,19 +1208,19 @@ return function(Vargs)
 			end
 		end;
 
-		ConvertPlayerCharacterToRig = function(plr, rigType)
+		ConvertPlayerCharacterToRig = function(plr: Player, rigType: EnumItem)
 			rigType = rigType or Enum.HumanoidRigType.R15
 
-			local Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
-			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(userId)
-			local newCharacterModel = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
-			local Animate = newCharacterModel.Animate
+			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
+			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
+			local Animate: BaseScript = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
 			newCharacterModel.Name = plr.Name
 
-			local oldcframe = plr.Character and plr.Character.PrimaryPart and plr.Character.PrimaryPart.CFrame
+			local oldCFrame = plr.Character and plr.Character:GetPivot() or CFrame.new()
 
 			if plr.Character then
 				plr.Character:Destroy()
@@ -1226,9 +1228,7 @@ return function(Vargs)
 			end
 			plr.Character = newCharacterModel
 
-			if oldcframe then
-				newCharacterModel:SetPrimaryPartCFrame(oldcframe)
-			end
+			newCharacterModel:PivotTo(oldCFrame)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.

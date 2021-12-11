@@ -7,7 +7,10 @@ origEnv = nil
 logError = nil
 
 --// Anti-Exploit
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -46,9 +49,8 @@ return function(Vargs)
 		end
 
 		for _, v in ipairs(service.Players:GetPlayers()) do
-			coroutine.wrap(pcall)(onPlayerAdded, v)
+			task.spawn(onPlayerAdded, v)
 		end
-
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 

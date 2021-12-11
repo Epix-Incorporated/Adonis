@@ -215,14 +215,14 @@ return function(Vargs, env)
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
 						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
-						ZIndex = 2;
+						ZIndex = 11;
 						Children = {
 							{
 								Class = "Frame";
 								BackgroundColor3 = bc.Color;
 								Size = UDim2.new(0, 80, 1, -4);
 								Position = UDim2.new(1, -82, 0, 2);
-								ZIndex = 3;
+								ZIndex = 12;
 							}
 						};
 					})
@@ -781,11 +781,10 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local hasSafeChat
-
+				local elevated: boolean = Admin.CheckAdmin(plr)
+				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local gameData = nil
-					if Admin.CheckAdmin(plr) then
+					if elevated then
 						local level, rank = Admin.GetLevel(v)
 						gameData = {
 							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
@@ -796,21 +795,22 @@ return function(Vargs, env)
 							gameData[k] = d
 						end
 					end
+					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+					local hasSafeChat = if elevated and policyResult then
+						(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
+						else "[Error/Redacted]"
 
-					local privacyMode = Core.PlayerData[tostring(v.UserId)].Client.PrivacyMode
-					if privacyMode then hasSafeChat = "[Redacted]" else
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						hasSafeChat = policyResult and table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes" or not policyResult and "[Error]"
-					end
-
+					Remote.RemoveGui(plr, "Profile_"..v.UserId)
 					Remote.MakeGui(plr, "Profile", {
 						Target = v;
 						SafeChat = hasSafeChat;
-						CanChat = service.Chat:CanUserChatAsync(v.UserId) or "[Error]";
+						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
 						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
 						GameData = gameData;
-						Code = (privacyMode and "[Redacted]") or service.LocalizationService:GetCountryRegionForPlayerAsync(v) or "[Error]";
+						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
+						CmdPrefix = Settings.Prefix;
+						CmdSplitKey = Settings.SplitKey;
 					})
 				end
 			end
@@ -818,7 +818,7 @@ return function(Vargs, env)
 
 		ServerDetails = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverinfo", "serverdetails", "gameinfo", "gamedetails"};
+			Commands = {"serverinfo", "server", "serverdetails", "gameinfo", "gamedetails"};
 			Args = {};
 			Description = "Shows you details about the current server";
 			Hidden = false;
@@ -858,7 +858,7 @@ return function(Vargs, env)
 					region = r.region,
 					zipcode = r.zip,
 					timezone = r.timezone,
-					query = r.query,
+					query = Admin.CheckAdmin(plr) and (r.query) or "[Redacted]",
 					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 

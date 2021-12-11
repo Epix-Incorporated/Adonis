@@ -12,7 +12,7 @@ return function(data)
 
 	local Routine = Routine
 
-	local player = data.Target
+	local player: Player = data.Target
 
 	local window = client.UI.Make("Window", {
 		Name  = "Profile_"..player.UserId;
@@ -74,7 +74,7 @@ return function(data)
 		BackgroundTransparency = 1;
 	})
 
-	do
+	do --// General Tab
 		generaltab:Add("ImageLabel", {
 			Size = UDim2.new(0, 120, 0, 120);
 			Position = UDim2.new(0, 5, 0, 5);
@@ -104,10 +104,9 @@ return function(data)
 		end
 
 		for i, v in ipairs({
-			{"Membership", player.MembershipType.Name, "The player's Roblox membership type (premium)"},
-			{"Safe Chat Enabled", (data.SafeChat), "Does the player have safe chat applied?"},
-			{"Can Chat", boolToStr(data.CanChat), "Does the player's account settings allow them to chat?"},
-			{"Country/Region Code", data.Code, "The player's country or region code based on geolocation"}
+			{"Membership", player.MembershipType.Name, "The player's Roblox membership type (Premium)"},
+			{"Safe Chat Enabled", data.SafeChat, "Does the player have safe chat applied?"},
+			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = "  "..v[1]..": ";
@@ -124,30 +123,32 @@ return function(data)
 				TextXAlignment = "Right";
 			})
 		end
-
-		local credentials = {
+		
+		local c = 0
+		for i, v in ipairs({
+			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
 			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
 			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
 			{player:GetRankInGroup(886423) == 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
-			{player.UserId == (1237666 or 698712377), "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You are looking at the creator of the Adonis admin system!"},
+			{player.UserId == (1237666 or 698712377), "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
 			{player:IsInGroup(3514227), "DevForum Member", "rbxassetid://6383940476", "User is a member of the Roblox Developer Forum"},
-		}
-		for i, v in ipairs(credentials) do
+			}) do
 			if v[1] then
 				generaltab:Add("TextLabel", {
 					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, (32*(i-1))+255);
+					Position = UDim2.new(0, 5, 0, 32*c + 225);
 					BackgroundTransparency = 0.4;
 					Text = v[2];
-					ToolTip = v[4]
+					ToolTip = v[4];
 				}):Add("ImageLabel", {
 					Image = v[3];
 					BackgroundTransparency = 1;
 					Size = UDim2.new(0, 24, 0, 24);
 					Position = UDim2.new(0, 4, 0, 3);
 				})
+				c += 1
 			end
 		end
 
@@ -156,7 +157,7 @@ return function(data)
 
 	window:Ready()
 
-	do
+	do --// Friends Tab
 		local function iterPageItems(pages)
 			return coroutine.wrap(function()
 				local pagenum = 1
@@ -267,7 +268,7 @@ return function(data)
 
 	end
 
-	do
+	do --// Groups Tab
 		local sortedGroups = {}    
 		local groupInfoRef = {}
 
@@ -294,7 +295,7 @@ return function(data)
 			Size = UDim2.new(1, -10, 0, 25);
 			Position = UDim2.new(0, 5, 0, 5);
 			BackgroundTransparency = 0.5;
-			PlaceholderText = ("Search %d groups (%d owned)"):format(groupCount, ownCount);
+			PlaceholderText = ("Search %d group%s (%d owned)"):format(groupCount, groupCount ~= 1 and "s" or "", ownCount);
 			Text = "";
 			TextStrokeTransparency = 0.8;
 		})
@@ -352,7 +353,7 @@ return function(data)
 		getList()
 	end
 
-	if data.GameData then
+	if data.GameData then --// Game Tab
 		local gameplayDataToDisplay = {
 			{"Admin Level", data.GameData.AdminLevel, "The player's Adonis rank"},
 			{"Muted", boolToStr(data.GameData.IsMuted), "Is the player muted? (IGNORES TRELLO MUTELIST)"},
@@ -382,10 +383,8 @@ return function(data)
 				Size = UDim2.new(1, -10, 0, 30);
 				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
 				TextXAlignment = "Left";
-			}):Add("TextBox", {
+			}):Add("TextLabel", {
 				Text = v[2];
-				TextEditable = false;
-				ClearTextOnFocus = false;
 				BackgroundTransparency = 1;
 				Size = UDim2.new(0, 120, 1, 0);
 				Position = UDim2.new(1, -130, 0, 0);
@@ -396,25 +395,19 @@ return function(data)
 
 		gametab:Add("TextButton", {
 			Text = "View Tools";
+			ToolTip = string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name);
 			BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 			Size = UDim2.new(1, -10, 0, 35);
 			Position = UDim2.new(0, 5, 0, (30*(i-1))+10);
-			OnClicked = function()
-				local tools = {}
-				for k,t in pairs(player.Backpack:GetChildren()) do
-					if t.ClassName == "Tool" then
-						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
-					elseif t.ClassName == "HopperBin" then
-						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
-					else
-						table.insert(tools, {Text=t.Name,Desc="Class: "..t.ClassName})
-					end
+			OnClicked = function(self)
+				if self.Active then
+					self.Active = false
+					self.AutoButtonColor = false
+					client.Remote.Send("ProcessCommand", string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name))
+					wait(2)
+					self.AutoButtonColor = true
+					self.Active = true
 				end
-				client.UI.Make("List", {
-					Title = "@"..player.Name.."'s tools";
-					Icon = client.MatIcons["Inventory 2"];
-					Table = tools;
-				})
 			end
 		})
 

@@ -64,6 +64,18 @@ return function(data)
 	msg.TextStrokeTransparency = 1
 	frame.BackgroundTransparency = 1
 	
+	local log  = {
+		Type = "Small Screen Message";
+		Title = title;
+		Message = message;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsCentre:fire(log)
+	
 	local fadeSteps = 10
 	local blurSize = 10
 	local textFade = 0.1

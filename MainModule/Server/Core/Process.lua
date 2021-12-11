@@ -7,11 +7,14 @@ origEnv = nil
 logError = nil
 
 --// Processing
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask
+	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
@@ -32,6 +35,7 @@ return function(Vargs)
 		UnEncrypted = Remote.UnEncrypted
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
+		Pcall = server.Pcall
 
 		--// NetworkServer Events
 		if service.NetworkServer then

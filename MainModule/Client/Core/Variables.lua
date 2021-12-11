@@ -104,7 +104,6 @@ return function()
 		ParticlesEnabled = true;
 		CapesEnabled = true;
 		HideChatCommands = false;
-		PrivacyMode = false;
 		Particles = {};
 		KeyBinds = {};
 		Aliases = {};
@@ -112,6 +111,7 @@ return function()
 		savedUI = {};
 		localSounds = {};
 		ESPObjects = {};
+		CommunicationsHistory = {};
 		LightingSettings = {
 			Ambient = service.Lighting.Ambient;
 			Brightness = service.Lighting.Brightness;

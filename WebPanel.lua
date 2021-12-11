@@ -3,7 +3,7 @@
 	Currently in beta.
 
 	Author: Cald_fan
-	Contributors: joritochip (Requests, handling custom commands, command overrides)
+	Contributors: joritochip (Requests, handling custom commands, command overrides), Coasterteam (Additional logging)
 
 ]]
 
@@ -423,11 +423,15 @@ return function(Vargs)
 						if typeof(v.command) ~= "string" then
 							v.command = tostring(v.command)
 						end
-
+						
+						warn("WebPanel executed command from Web Panel: " .. tostring(v.command))
+						Logs:AddLog("Script", "WebPanel Executed command: " .. tostring(v.command))
+						
 						Process.Command(fakePlayer, v.command, {
 							AdminLevel = 900,
 							DontLog = true,
-							IgnoreErrors = true
+							IgnoreErrors = true,
+							RemoteExecution = true
 						})
 					end
 				end
