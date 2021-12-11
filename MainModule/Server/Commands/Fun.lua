@@ -227,6 +227,44 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Effect", {Mode = "trolling";})
 			end
 		};
+												
+		Trigger = {
+			Prefix = Settings.Prefix;
+			Commands = {"trigger"};
+			Args = {"player"};
+			Description = "Makes the target player really angry";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local char = v.Character
+					local head = char and char:FindFirstChild("Head")
+					if head then
+						local o1 = service.New("Sound", head)
+						o1.SoundId = "rbxassetid://429400881"
+						o1:Play()
+						o1 = service.New("Sound", head)
+						o1.Volume = 3
+						o1.SoundId = "rbxassetid://606862847"
+						o1:Play()
+						head.face.Texture = "rbxassetid://412416747"
+						head.BrickColor = BrickColor.new("Maroon")
+						for i=1, 10 do
+							task.wait(0.1)
+							head.Size *= 1.3
+						end
+						local g = service.New("Explosion", char)
+						g.Position = head.Position
+						g.BlastRadius = 5
+						g.BlastPressure = 100_000
+						local PS33 = service.New("Sound", char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso"))
+						PS33.SoundId = "rbxassetid://165969964"
+						PS33.Volume = 10
+						PS33:Play()
+						head:Destroy()
+					end
+				end
+			end
+		};
 
 		Brazil = {
 			Prefix = Settings.Prefix;
