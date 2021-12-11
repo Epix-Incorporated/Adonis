@@ -5,6 +5,7 @@ return {
 	"[v231 WIP]";
 	"*Credits updated";
 	"(Git/Coasterteam) Various bug, vulnerability, fixes and changes, additional logging (already in release)";
+	"(Git/CommodoreGamer118) Misc visibility changes/fixes";
 	"(Git/GalacticInspired) Disallow players to see server ip in !serverinfo #583";
 	"(Git/spaggos) !donorneon Command fix. #597";
 	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
