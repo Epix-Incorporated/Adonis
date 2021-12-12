@@ -249,7 +249,7 @@ return function(Vargs, env)
 								task.wait(0.1)
 								head.Size *= 1.3
 							end
-							local g = service.New("Explosion", {
+							service.New("Explosion", {
 								Parent = char;
 								Position = head.Position;
 								BlastRadius = 5;
