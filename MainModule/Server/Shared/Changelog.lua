@@ -11,6 +11,10 @@ return {
 	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
 	"(Git/moo1210) UserPanel, \"Admins\" Command, server change #591";
 	"(Git/fxeP1) UserPanel, \"Admins\" Command, server change #591";
+	"(Git/P3tray) Add commandto open CommsCentre";
+	"(Git/P3tray) Fix console";
+	"(Git/Expertcoderz) Minor code improvements/fixes #601";
+	"(Git/Expertcoderz) Added text truncation for Groups tab entries";
 	"(Git/Expertcoderz) Minor code improvements to softshutdown & F3X #595";
 	"(Git/Expertcoderz) Fix :removetools & :removetool #582";
 	"(Git/Expertcoderz) Tool Center (enhanced :tools) + TextPrompt UI #587";
