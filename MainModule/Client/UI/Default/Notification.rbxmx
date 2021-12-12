@@ -118,6 +118,7 @@ return function(data)
 	if not holder then
 		client.UI.Make("NotificationHolder")
 		holder = client.UI.Get("NotificationHolder",nil,true)
+		holder.Object.ScrollingFrame.Active = false
 	end
 	
 	holder = holder.Object.ScrollingFrame
