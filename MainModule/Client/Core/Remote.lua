@@ -279,7 +279,7 @@ return function()
 				if Remote.PendingReturns[args[1]] then
 					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:fire(unpack(args,2))
+					service.Events[args[1]]:Fire(unpack(args,2))
 				end
 			end;
 

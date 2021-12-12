@@ -11,7 +11,7 @@ return {
 	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
 	"(Git/moo1210) UserPanel, \"Admins\" Command, server change #591";
 	"(Git/fxeP1) UserPanel, \"Admins\" Command, server change #591";
-	"(Git/P3tray) Add commandto open CommsCentre";
+	"(Git/P3tray) Add commandto open CommsCenter";
 	"(Git/P3tray) Fix console";
 	"(Git/Expertcoderz) Minor code improvements/fixes #601";
 	"(Git/Expertcoderz) Added text truncation for Groups tab entries";
@@ -69,7 +69,7 @@ return {
 	"*Added ':removewarning player warning'";
 	"*Added Settings.Aliases";
 	"*Special characters are now escaped in alises";
-	"*Alias arguments can now be defined as part of the alias string (eg, ':somealias <player> <color>' -> ':ff <player> | :fire <player> <color>')";
+	"*Alias arguments can now be defined as part of the alias string (eg, ':somealias <player> <color>' -> ':ff <player> | :Fire <player> <color>')";
 	"(Git/fxeP1) TrelloBan fix, Commands/PlayerFinders/Track Command changes #515";
 	"(Git/alau740) Notifications for some commands, add some music #513";
 	"(Git/alau740) Add missing icons, add '@username' to ':usage' #508";
@@ -469,7 +469,7 @@ return {
 	"*Added :serverlist (just shows servers by jobid and number of players)";
 	"*Possibly fixed existing servers not updating to newest DataStore.SavedTables";
 	"*Aliases now support positional arguments";
-	"**Example: If \":ff <arg1> | :fire <arg1> <arg2>\" is bound to \":bob\" and you chat \":bob me Really red\", it will :ff you and give you really red fire";
+	"**Example: If \":ff <arg1> | :Fire <arg1> <arg2>\" is bound to \":bob\" and you chat \":bob me Really red\", it will :ff you and give you really red fire";
 	"*Git merges:";
 	"(Git/EnderUwU) Added :joinserver <player> <jobid>";
 	"(Git/Awesomewebm) :pause, :resume, and changes to :music";
@@ -1555,7 +1555,7 @@ return {
 	"+Dressed like the perfect groom";
 	"";
 	"1.0.63b";
-	"*Events can now be fired using service.Events.EventName:fire(args)";
+	"*Events can now be fired using service.Events.EventName:Fire(args)";
 	"";
 	"1.0.62b";
 	"+Added :clearguis to clear message/hint/related script GUIs from everyone or specific people";

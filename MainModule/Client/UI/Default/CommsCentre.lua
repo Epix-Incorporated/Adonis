@@ -106,12 +106,12 @@ return function(data)
 	end, function() return false end)
 	
 	window = client.UI.Make("Window",{
-		Name  = "CommunicationsCentre";
-		Title =  if isAmerica then "Communications Center" else "Communications Centre";
+		Name  = "CommunicationsCenter";
+		Title =  if isAmerica then "Communications Center" else "Communications Center";
 		Icon = client.MatIcons.Forum;
 		Size  = {500, 300};
 		OnClose = function()
-			client.Variables.CommsCentreBindableEvent = nil
+			client.Variables.CommsCenterBindableEvent = nil
 		end;
 	})
 
@@ -141,7 +141,7 @@ return function(data)
 		end
 	end
 	
-	service.HookEvent("CommsCentre", function(v)
+	service.HookEvent("CommsCenter", function(v)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 

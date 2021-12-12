@@ -740,7 +740,7 @@ return function(data)
 	BindEvent(service.UserInputService.InputBegan, function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) and InputObject.KeyCode.Name == (client.Variables.CustomConsoleKey or consoleKey) then
-			service.Events.ToggleConsole:fire()
+			service.Events.ToggleConsole:Fire()
 		end
 	end)
 

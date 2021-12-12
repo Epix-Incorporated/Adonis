@@ -74,7 +74,7 @@ return function(data)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCentre:fire(log)
+	service.Events.CommsCenter:Fire(log)
 	
 	local fadeSteps = 10
 	local blurSize = 10
