@@ -321,19 +321,28 @@ return function(data)
 				local groupInfo = groupInfoRef[groupName]
 				if (groupName:sub(1, #search.Text):lower() == search.Text:lower()) or (groupInfo.Role:sub(1, #search.Text):lower() == search.Text:lower()) then
 					local entry = scroller:Add("TextLabel", {
-						Text = "             "..groupName.." ";
+						Text = "";
 						ToolTip = "ID: "..groupInfo.Id.." | Rank: "..groupInfo.Rank.." | Is Primary Group: "..boolToStr(groupInfo.IsPrimary);
 						BackgroundTransparency = ((i-1)%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, (30*(i-1)));
 						TextXAlignment = "Left";
 					})
-					entry:Add("TextLabel", {
+					local rankLabel = entry:Add("TextLabel", {
 						Text = groupInfo.Role;
 						BackgroundTransparency = 1;
-						Size = UDim2.new(0, 120, 1, 0);
-						Position = UDim2.new(1, -130, 0, 0);
+						Size = UDim2.new(0, 0, 1, 0);
+						Position = UDim2.new(1, -10, 0, 0);
+						ClipsDescendants = false;
 						TextXAlignment = "Right";
+					})
+					entry:Add("TextLabel", {
+						Text = groupName;
+						BackgroundTransparency = 1;
+						Size = UDim2.new(1, -50-rankLabel.TextBounds.X, 1, 0);
+						Position = UDim2.new(0, 36, 0, 0);
+						TextXAlignment = "Left";
+						TextTruncate = "AtEnd";
 					})
 					Routine(function()
 						entry:Add("ImageLabel", {
