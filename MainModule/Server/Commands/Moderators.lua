@@ -4707,7 +4707,7 @@ return function(Vargs, env)
 					local rootPart = char and char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
 						local new = audio:Clone()
-						print(new.TimeLength)
+
 						if (looped == false) then
 							new.Ended:Connect(function() 
 								new:Destroy() -- Destroy character audio after sound is finished if loop is off.
