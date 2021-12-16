@@ -3723,8 +3723,8 @@ return function(Vargs, env)
 						end
 
 						for _, Accessory in pairs(char:GetChildren()) do
-							local Handle = Accessory:IsA("Accessory") and v:FindFirstChild("Handle")
-							if Handle then
+							if Accessory:IsA("Accessory") and Accessory:FindFirstChild("Handle") then
+								local Handle = Accessory:FindFirstChild("Handle")
 								Handle.AccessoryWeld.C0 = CFrame_new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
 								Handle.AccessoryWeld.C1 = CFrame_new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
 	
