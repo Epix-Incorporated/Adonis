@@ -2,7 +2,7 @@ return {
 	"Version: 231";
 	"*Drag edges to expand*";
 	"";
-	"[v231 WIP]";
+	"[v231 12.18.2021 18:45 EST]";
 	"*Credits updated";
 	"*:servers alias for :privateservers is now :createdservers";
 	"*:servers alias for :crossservers changed to :gameservers";
@@ -11,7 +11,7 @@ return {
 	"(Git/GalacticInspired) Disallow players to see server ip in !serverinfo #583";
 	"(Git/spaggos) !donorneon Command fix. #597";
 	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
-	"(Git/moo1210) UserPanel, \"Admins\" Command, server change #591";
+	"(Git/moo1210) QOL Updates and ratelimit bug";
 	"(Git/fxeP1) UserPanel, \"Admins\" Command, server change #591";
 	"(Git/ccuser44) Improvements and fixes to anti-cheat #563";
 	"(Git/alau740)  Mark :trigger as a fun command #607";
