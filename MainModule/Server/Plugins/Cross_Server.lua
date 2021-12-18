@@ -74,6 +74,10 @@ return function(Vargs)
 		Loadstring = function(jobId, source)
 			Core.Loadstring(source, GetEnv{})()
 		end;
+		
+		Message = function(jobId, fromPlayer, message, time)
+			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
+		end;
 
 		DataStoreUpdate = function(jobId, type, data)
 			if type and data then
