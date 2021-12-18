@@ -740,12 +740,7 @@ return function(Vargs, envVars, GetEnv)
 					Value = value;
 				})
 
-				Core.CrossServer("Loadstring", [[
-					local player = game:GetService("Players"):FindFirstChild("]]..p.Name..[[")
-					if player then
-						player:Kick("]]..Variables.BanMessage..[[ | Reason: ]]..(value.Reason or "No reason provided")..[[")
-					end
-				]])
+				Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
 			end
 
 			if type(p) ~= "table" then
