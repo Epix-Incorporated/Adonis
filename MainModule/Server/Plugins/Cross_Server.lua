@@ -88,6 +88,14 @@ return function(Vargs)
 		UpdateSetting = function(jobId, setting, newValue)
 			Settings[setting] = newValue;
 		end;
+		
+		RemovePlayer = function(jobId, name, BanMessage, reason)
+			--// probably should move this to userid
+			local player =	service.Players:FindFirstChild(name)
+			if player then
+				player:Kick(string.format("%s | Reason: %s", BanMessage, reason))
+			end
+		end;
 
 		LoadData = function(jobId, key, dat)
 			Core.LoadData(key, dat, jobId);
