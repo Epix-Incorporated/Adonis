@@ -3228,7 +3228,6 @@ return function(Vargs, env)
 				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					for k, p in pairs(char:GetChildren()) do
-						print(k,p)
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
 							local attachment0 = service.New("Attachment", {
