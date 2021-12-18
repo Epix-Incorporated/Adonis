@@ -1399,7 +1399,8 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
+					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
+					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5) 
 				end
 			end
 		};
