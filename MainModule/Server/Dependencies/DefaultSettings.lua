@@ -324,6 +324,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
 	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+	settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
 	settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
@@ -433,6 +434,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
 	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
+	descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
 	descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
@@ -527,6 +529,7 @@ local descs = {};			--// Contains settings descriptions
 		"CheckClients";
 		" ";
 		"AENotifs";
+		"CharacterCheckLogs";
 		"AntiNoclip";
 		"AntiRootJointDeletion";
 		"AntiHumanoidDeletion";
