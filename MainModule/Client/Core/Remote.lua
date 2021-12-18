@@ -368,7 +368,15 @@ return function()
 				if handler and type(handler) == "function" then
 					Pcall(handler, unpack(args, 2))
 				end
-			end
+			end;
+					
+			SendNotification = function(title, text, duration)
+				service.StarterGui:SetCore('SendNotification', {
+					Title = title or "Notification",
+					Text = text or 'Hello there!',
+					Duration = duration or 5
+				})
+			end;
 		};
 
 		Fire = function(...)
