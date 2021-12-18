@@ -213,23 +213,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
 
-				local globalMessage = string.format([[
-					local server = server
-					local service = server.Service
-					local Remote = server.Remote
-
-					for i, v in pairs(service.Players:GetPlayers()) do
-						Remote.RemoveGui(v, "Message")
-						Remote.MakeGui(v, "Message", {
-							Title = "Global Message from %s";
-							Message = "%s";
-							Scroll = true;
-							Time = (#("%s") / 19) + 2.5;
-						})
-					end
-				]], plr.Name, args[1], args[1])
-
-				if not Core.CrossServer("Loadstring", globalMessage) then
+				if not Core.CrossServer("Message", plr.Name, args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;
@@ -249,23 +233,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 
 
-				local globalMessage = string.format([[
-					local server = server
-					local service = server.Service
-					local Remote = server.Remote
-
-					for i, v in pairs(service.Players:GetPlayers()) do
-						Remote.RemoveGui(v, "Message")
-						Remote.MakeGui(v, "Message", {
-							Title = "Global Message from %s";
-							Message = "%s";
-							Scroll = true;
-							Time = %s;
-						})
-					end
-				]], plr.Name, args[2], args[1])
-
-				if not Core.CrossServer("Loadstring", globalMessage) then
+				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
 			end;
