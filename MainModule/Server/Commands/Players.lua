@@ -818,7 +818,7 @@ return function(Vargs, env)
 						Target = v;
 						SafeChat = hasSafeChat;
 						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						IsDonor = Admin.CheckDonor(v);
 						GameData = gameData;
 						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
