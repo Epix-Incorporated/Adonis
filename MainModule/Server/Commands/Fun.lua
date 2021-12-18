@@ -232,6 +232,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"trigger"};
 			Args = {"player"};
+			Fun = true;
 			Description = "Makes the target player really angry";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
