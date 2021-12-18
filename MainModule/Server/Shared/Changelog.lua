@@ -4,6 +4,8 @@ return {
 	"";
 	"[v231 WIP]";
 	"*Credits updated";
+	"*:servers alias for :privateservers is now :createdservers";
+	"*:servers alias for :crossservers changed to :gameservers";
 	"(Git/Coasterteam) Various bug, vulnerability, fixes and changes, additional logging (already in release)";
 	"(Git/CommodoreGamer118) Misc visibility changes/fixes";
 	"(Git/GalacticInspired) Disallow players to see server ip in !serverinfo #583";
@@ -11,10 +13,10 @@ return {
 	"(Git/P3tray) Added service event for console toggle (service.Events.ToggleConsole)";
 	"(Git/moo1210) UserPanel, \"Admins\" Command, server change #591";
 	"(Git/fxeP1) UserPanel, \"Admins\" Command, server change #591";
-	"(Git/P3tray) Add commandto open CommsCenter";
-	"(Git/P3tray) Fix console";
-	"(Git/Expertcoderz) Minor code improvements/fixes #601";
-	"(Git/Expertcoderz) Added text truncation for Groups tab entries";
+	"(Git/ccuser44) Improvements and fixes to anti-cheat #563";
+	"(Git/alau740)  Mark :trigger as a fun command #607";
+	"(Git/Expertcoderz) Fix critical typo in comments #611";
+	"(Git/Expertcoderz) [Minor] Fixed donor status displayed on !profile to include donors who donated not with the pass #613";
 	"(Git/Expertcoderz) Minor code improvements to softshutdown & F3X #595";
 	"(Git/Expertcoderz) Fix :removetools & :removetool #582";
 	"(Git/Expertcoderz) Tool Center (enhanced :tools) + TextPrompt UI #587";
@@ -24,6 +26,9 @@ return {
 	"(Git/karl-police) Uncommented and modified \"Trail\" command #584";
 	"(Git/karl-police) Added a command called \"TransparentPart\", which allows you to make individual parts and more transparent #590";
 	"(Git/karl-police) Fixed the \"particle\" command #576";
+	"(Git/karl-police) Change \"Transparency\" command to make everything transparent #608";
+	"(Git/karl-police) Added new commands to change some player animations #609";
+	"(git/karl-police) Enhanced the \"CharacterAudio\" command #610";
 	"";
 	"[v230 11.25.2021 14:00 EST]";
 	"*Happy Thanksgiving (To those in the US)";

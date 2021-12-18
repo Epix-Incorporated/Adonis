@@ -134,7 +134,7 @@ return function(Vargs)
 
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
-		Commands = {"serverlist", "servers", "crossserverlist", "listservers"};
+		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
 		Args = {};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";

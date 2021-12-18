@@ -4167,7 +4167,7 @@ return function(Vargs, env)
 
 		ListServers = {
 			Prefix = Settings.Prefix;
-			Commands = {"servers", "privateservers"};
+			Commands = {"privateservers", "createdservers"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you a list of private servers that were created with :makeserver";
@@ -4679,11 +4679,11 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2] and tonumber(args[2]), "Missing or invalid AudioId")
-				
+
 				local volume = tonumber(args[3]) or 1
 				local looped = args[4]
 				local pitch = tonumber(args[5]) or 1
-				
+
 				if (looped) then
 					if looped == "true" or looped == "1" then
 						looped = true
@@ -4693,7 +4693,7 @@ return function(Vargs, env)
 				else
 					looped = true -- should be on by default
 				end
-				
+
 				local audio = service.New("Sound", {
 					Volume = volume;
 					Looped = looped;
@@ -4709,7 +4709,7 @@ return function(Vargs, env)
 						local new = audio:Clone()
 
 						if (looped == false) then
-							new.Ended:Connect(function() 
+							new.Ended:Connect(function()
 								new:Destroy() -- Destroy character audio after sound is finished if loop is off.
 							end)
 						end
