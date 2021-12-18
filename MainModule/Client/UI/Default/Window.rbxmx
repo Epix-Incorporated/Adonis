@@ -4644,7 +4644,7 @@ end]]></ProtectedString>
 						<YS>0</YS>
 						<YO>0</YO>
 					</UDim2>
-					<bool name="ClipsDescendants">true</bool>
+					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="ElasticBehavior">0</token>
 					<token name="HorizontalScrollBarInset">0</token>
@@ -4668,9 +4668,9 @@ end]]></ProtectedString>
 						<G>1</G>
 						<B>1</B>
 					</Color3>
-					<float name="ScrollBarImageTransparency">0</float>
+					<float name="ScrollBarImageTransparency">1</float>
 					<int name="ScrollBarThickness">3</int>
-					<token name="ScrollingDirection">2</token>
+					<token name="ScrollingDirection">1</token>
 					<bool name="ScrollingEnabled">true</bool>
 					<bool name="Selectable">true</bool>
 					<Ref name="SelectionImageObject">null</Ref>
