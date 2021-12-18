@@ -266,24 +266,24 @@ return function(Vargs, GetEnv)
 						Settings.Ranks[rank] = info
 					end
 					
-					--// Clear any rcustom anks that were not fetched from Trello
+					--// Clear any custom ranks that were not fetched from Trello
 					for name,rank in pairs(Settings.Ranks) do 
 						if rank.IsExternal and not customranks[name] then 
 							Settings.Ranks[name] = nil
 						end
 					end
 
-					Variables.Blacklist.Lists.Trello = blacklist;
-					Variables.Whitelist.Lists.Trello = whitelist;
+					Variables.Blacklist.Lists.Trello = blacklist
+					Variables.Whitelist.Lists.Trello = whitelist
 
-					for i,v in pairs(service.GetPlayers()) do
+					for i, v in pairs(service.GetPlayers()) do
 						if Admin.CheckBan(v) then
 							v:Kick(Variables.BanMessage)
 						end
 
 						if v and v.Parent then
-							for ind,admin in pairs(HTTP.Trello.Mutes) do
-								if Admin.DoCheck(v,admin) then
+							for ind, admin in pairs(HTTP.Trello.Mutes) do
+								if Admin.DoCheck(v, admin) then
 									Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 								end
 							end
