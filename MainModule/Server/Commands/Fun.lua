@@ -4858,6 +4858,214 @@ return function(Vargs, env)
 			end
 		};
 
+		WalkAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"walkanimation", "walkanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s walk animation, based on the default animation system. Supports 'R15' and 'R6' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+				
+				local animId
+				
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507777826" -- Default R15 animation
+				elseif (args[2] == "R6") then
+					animId = "180426354"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "walk") then
+									found = true
+									local walkAnimation = v2:FindFirstChildOfClass("Animation")
+									if (walkAnimation) then
+										walkAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local walkAnimation = Instance.new("Animation")
+										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
+										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.Parent = v2
+									end
+								end
+							end
+							
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		RunAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"runanimation", "runanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s run animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507767714"
+				elseif (args[2] == "R6") then
+					animId = "180426354"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "run") then
+									found = true
+									local runAnimation = v2:FindFirstChildOfClass("Animation")
+									if (runAnimation) then
+										runAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local runAnimation = Instance.new("Animation")
+										runAnimation.Name = "RunAnim"
+										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'run' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		JumpAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"jumpanimation", "jumpanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s jump animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507765000"
+				elseif (args[2] == "R6") then
+					animId = "125750702"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "jump") then
+									found = true
+									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
+									if (jumpAnimation) then
+										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local jumpAnimation = Instance.new("Animation")
+										jumpAnimation.Name = "JumpAnim"
+										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'jump' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		FallAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"fallanimation", "fallanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s fall animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507767968"
+				elseif (args[2] == "R6") then
+					animId = "180436148"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "fall") then
+									found = true
+									local fallAnimation = v2:FindFirstChildOfClass("Animation")
+									if (fallAnimation) then
+										fallAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local fallAnimation = Instance.new("Animation")
+										fallAnimation.Name = "FallAnim"
+										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'fall' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
 		BlurEffect = {
 			Prefix = Settings.Prefix;
 			Commands = {"blur", "screenblur", "blureffect"};
