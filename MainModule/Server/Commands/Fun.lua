@@ -4374,20 +4374,34 @@ return function(Vargs, env)
 							local GroupPartInputs = {"LeftArm", "RightArm", "RightLeg", "LeftLeg", "Torso"}
 							local PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}
 
-							local usageText = "\nPossible inputs are: \n" ..
-								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso\n" ..
-								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot\n" ..
-								"\n"..
-								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.\n"..
-								"Special Inputs: all, accessories\n"..
-								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.\n"..
-								"limbs: Changes the transparency of all limbs\n"..
-								"face: Changes the transparency of the face"..
-								"accessories: Changes transparency of accessories\n"
+							local usageText = {
+								"Possible inputs are:",
+								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
+								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
+								"",
+								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
+								"Special Inputs: all, accessories",
+								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
+								"limbs: Changes the transparency of all limbs",
+								"face: Changes the transparency of the face",
+								"accessories: Changes transparency of accessories"
+							}
 
 							if not (args[2]) then
-								print(usageText)
-								assert(args[2], "No parts specified. See developer console for possible inputs.")
+								--assert(args[2], "No parts specified. See developer console for possible inputs.")
+								local tab = {}
+								for _,v in pairs(usageText) do 
+									table.insert(tab, {
+										Text = v;
+										Desc = v;
+									})
+								end
+								--// Generate the UI for this player
+								server.Remote.MakeGui(plr, "List", {
+									Tab = tab;
+									Title = "Command Usage";
+								})
+								return
 							end
 
 							local partInput = {}
