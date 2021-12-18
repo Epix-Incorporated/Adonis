@@ -3,8 +3,8 @@ client = nil
 service = nil
 
 return function(data)
-	local gTable, window, commslog, layout;
-	local messageObjs = {};
+	local gTable, window, commslog, layout
+	local messageObjs = {}
 
 	local function newMessage(Type, Title, Message, Icon, Time, Function)
 		print(Icon)
@@ -93,25 +93,25 @@ return function(data)
 			}
 		})
 
-		table.insert(messageObjs, newMsg);
+		table.insert(messageObjs, newMsg)
 
 		if #messageObjs > 200 then
-			messageObjs[1]:Destroy();
-			table.remove(messageObjs, 1);
+			messageObjs[1]:Destroy()
+			table.remove(messageObjs, 1)
 		end
 	end
 	
-	local result, code = pcall(function()
-		service.LocalizationService:GetCountryRegionForPlayerAsync(game.Players.LocalPlayer)
-	end)
+	local success, isAmerica = xpcall(function()
+		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
+	end, function() return false end)
 	
 	window = client.UI.Make("Window",{
-		Name  = "CommunicationsCentre";
-		Title =  (result and code == "US") and "Communications Center" or "Communications Centre";
+		Name  = "CommunicationsCenter";
+		Title =  if isAmerica then "Communications Center" else "Communications Center";
 		Icon = client.MatIcons.Forum;
-		Size  = {500,300};
+		Size  = {500, 300};
 		OnClose = function()
-			client.Variables.CommsCentreBindableEvent = nil;
+			client.Variables.CommsCenterBindableEvent = nil
 		end;
 	})
 
@@ -136,15 +136,15 @@ return function(data)
 	end)
 
 	if client.Variables.CommunicationsHistory then
-		for i,v in ipairs(client.Variables.CommunicationsHistory) do
+		for i, v in ipairs(client.Variables.CommunicationsHistory) do
 			newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function);
 		end
 	end
 	
-	service.HookEvent('CommsCentre', function(v)
+	service.HookEvent("CommsCenter", function(v)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 
 	gTable = window.gTable
-	window:Ready();
+	window:Ready()
 end

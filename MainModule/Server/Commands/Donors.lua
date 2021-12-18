@@ -207,7 +207,7 @@ return function(Vargs, env)
 					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
-								p.BrickColor = BrickColor.new(args[1]).Color
+								p.BrickColor = BrickColor.new(args[1])
 							end
 							p.Material = Enum.Material.Neon
 						end

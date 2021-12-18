@@ -670,7 +670,7 @@ return function(Vargs, GetEnv)
 			GiveReturn = function(p,args)
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:fire(unpack(args,2))
+					service.Events[args[1]]:Fire(unpack(args,2))
 				end
 			end;
 
@@ -893,8 +893,8 @@ return function(Vargs, GetEnv)
 						Check = true
 					})
 				elseif Process.RateLimit(p, "RateLog") then
-					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
-					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Command));
+					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Command));
 				end
 			end;
 

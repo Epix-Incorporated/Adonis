@@ -166,7 +166,7 @@ return function()
 		end;
 
 		CharacterAdded = function(...)
-			service.Events.CharacterAdded:fire(...)
+			service.Events.CharacterAdded:Fire(...)
 
 			wait();
 			UI.GetHolder()
@@ -205,7 +205,7 @@ return function()
 				textbox:ReleaseFocus()
 			end
 
-			service.Events.CharacterRemoving:fire()
+			service.Events.CharacterRemoving:Fire()
 		end
 	}
 end

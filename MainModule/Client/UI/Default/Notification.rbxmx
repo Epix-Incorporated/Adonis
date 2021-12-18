@@ -118,6 +118,7 @@ return function(data)
 	if not holder then
 		client.UI.Make("NotificationHolder")
 		holder = client.UI.Get("NotificationHolder",nil,true)
+		holder.Object.ScrollingFrame.Active = false
 	end
 	
 	holder = holder.Object.ScrollingFrame
@@ -135,7 +136,7 @@ return function(data)
 	}
 	
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCentre:fire(log)
+	service.Events.CommsCenter:Fire(log)
 	
 	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then

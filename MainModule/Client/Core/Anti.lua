@@ -95,11 +95,48 @@ return function()
 		return true
 	end;
 
-	--[[Player.Idled:Connect(function(time)
-		if time > 30 * 60 then
-			Detected("kick", "Anti-idle")
+	local idleTamper
+	do
+		local hasActivated = false
+		idleTamper = function(message)
+			if hasActivated then
+				return
+			end
+			hasActivated = true
+			Detected("crash", "Tamper Protection 790438; "..tostring(message).."; "..debug.traceback())
+			wait(1)
+			pcall(Disconnect, "Adonis_790438")
+			pcall(Kill, "Adonis_790438")
+			pcall(Kick, Player, "Adonis_790438")
 		end
-	end)--]]
+	end
+
+	coroutine.wrap(function()
+		local connection
+		local idledEvent = service.UnWrap(Player).Idled
+		connection = idledEvent:Connect(function(time)
+			if type(time) ~= "number" or not (time > 0) then
+				idleTamper("Invalid time data")
+			elseif time > 30 * 60 then
+				Detected("kick", "Anti-idle detected")
+			end
+		end)
+
+		if
+			type(connection) ~= "userdata" or
+			not rawequal(typeof(connection), "RBXScriptConnection") or
+			connection.Connected ~= true or
+			not rawequal(type(connection.Disconnect), "function") or
+			not rawequal(typeof(idledEvent), "RBXScriptSignal") or
+			not rawequal(type(idledEvent.Connect), "function") or
+			not rawequal(type(idledEvent.Wait), "function")
+		then
+			idleTamper("Userdata disrepencies detected")
+		end
+
+		task.wait(200)
+		connection:Disconnect()
+	end)()
 
 	do
 		local OldEnviroment = getfenv()
@@ -144,7 +181,6 @@ return function()
 					end
 				end
 
-				--// Broken ~ Scel
 				local hasCompleted = false
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
@@ -152,18 +188,17 @@ return function()
 					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
 						Detected("kick", "Anti kick found! Method 1")
 					end
-					--[[
+
 					if #service.Players:GetPlayers() > 1 then
 						for _, v in ipairs(service.Players:GetPlayers()) do
-							if service.UnWrap(v) ~= LocalPlayer then
+							if service.UnWrap(v) and service.UnWrap(v) ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
-								if success or not string.match(err, "Cannot kick a non-local Player from a LocalScript") then
-									--Detected("kick", "Anti kick found! Method 2")
+								if success or err ~= "Cannot kick a non-local Player from a LocalScript" then
+									Detected("kick", "Anti kick found! Method 2")
 								end
 							end
 						end
 					end
-					--]]
 					hasCompleted = true
 				end)()
 

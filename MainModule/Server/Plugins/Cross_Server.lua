@@ -74,6 +74,10 @@ return function(Vargs)
 		Loadstring = function(jobId, source)
 			Core.Loadstring(source, GetEnv{})()
 		end;
+		
+		Message = function(jobId, fromPlayer, message, time)
+			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
+		end;
 
 		DataStoreUpdate = function(jobId, type, data)
 			if type and data then
@@ -134,7 +138,7 @@ return function(Vargs)
 
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
-		Commands = {"serverlist", "servers", "crossserverlist", "listservers"};
+		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
 		Args = {};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";
