@@ -4338,6 +4338,19 @@ return function(Vargs, env)
 						for k, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 								p.Transparency = args[2]
+								if (p.Name == "Head") then
+									for _, v2 in pairs(p:GetChildren()) do
+										if v2:IsA("Decal") then
+											v2.Transparency = args[2]
+										end
+									end
+								end
+							elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+								for _, v2 in pairs(p:GetChildren()) do
+									if v2:IsA("BasePart") then
+										v2.Transparency = args[2]
+									end
+								end
 							end
 						end
 					end
