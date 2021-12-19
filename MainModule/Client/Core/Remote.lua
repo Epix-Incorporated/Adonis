@@ -370,7 +370,7 @@ return function()
 				end
 			end;
 					
-			SendNotification = function(title, text, duration)
+			SendNotification = function(args)
 				local title, text, duration = args[1], args[2], args[3]
 				service.StarterGui:SetCore('SendNotification', {
 					Title = title or "Notification",
