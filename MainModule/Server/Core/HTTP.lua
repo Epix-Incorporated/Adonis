@@ -82,6 +82,7 @@ return function(Vargs, GetEnv)
 				if not HTTP.CheckHttp() then
 					--HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
 					warn('Http is not enabled! Cannot connect to Trello!')
+					return;
 				else
 					local admins, mods, HeadAdmins, creators = {}, {}, {}, {}
 					local bans = {}
@@ -129,7 +130,14 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						getNames(banList, bans);
+						-- Reasons will be filtered inside Admin.CheckBan
+						for i, cardData in ipairs(banList.cards or trello.getCards(banList.id)) do
+							table.insert(bans, {
+								Name = cardData.name,
+								Reason = cardData.desc,
+							})
+						end
+
 						getNames(creatorList , creators);
 						getNames(modList, mods);
 						getNames(adminList, admins)
@@ -277,8 +285,10 @@ return function(Vargs, GetEnv)
 					Variables.Whitelist.Lists.Trello = whitelist
 
 					for i, v in pairs(service.GetPlayers()) do
-						if Admin.CheckBan(v) then
-							v:Kick(Variables.BanMessage)
+						local isBanned, Reason = Admin.CheckBan(v)
+						if isBanned then
+							v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
+							continue
 						end
 
 						if v and v.Parent then

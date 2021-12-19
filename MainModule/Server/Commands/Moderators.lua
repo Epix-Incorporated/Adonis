@@ -1134,9 +1134,16 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr , "List", {
+				local banned = {}
+				for i, banData in ipairs(HTTP.Trello.Bans) do
+					table.insert(banned, {
+						Text = banData.Name,
+						Desc = banData.Reason or "No reason specified",
+					})
+				end
+				Remote.MakeGui(plr ,"List", {
 					Title = "Synced Ban List";
-					Tab = HTTP.Trello.Bans;
+					Tab = banned;
 				})
 			end
 		};
