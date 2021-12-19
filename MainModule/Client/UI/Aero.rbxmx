@@ -290,7 +290,7 @@ return function(data)
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 
-	toggle.MouseButton1Down:connect(function()
+	toggle.MouseButton1Down:Connect(function()
 		spawn(function()
 			local effect = Instance.new("ImageLabel", toggle)
 			effect.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -489,7 +489,7 @@ return function(data)
 	frame.Name = name
 	main.Text = text
 
-	main.MouseButton1Click:connect(function()
+	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
 				returner = clickfunc()
@@ -499,7 +499,7 @@ return function(data)
 		end
 	end)
 
-	close.MouseButton1Click:connect(function()
+	close.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if closefunc then
 				returner = closefunc()
@@ -8025,7 +8025,7 @@ return function(data)
 		frame.BackgroundTransparency = 1
 		frame.Size = UDim2.new(1, 0, 0,150)
 		frame.CanvasSize = UDim2.new(0, 0, 0, 0)
-		frame.ChildAdded:connect(function(c)
+		frame.ChildAdded:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -8033,7 +8033,7 @@ return function(data)
 			end
 		end)
 
-		frame.ChildRemoved:connect(function(c)
+		frame.ChildRemoved:Connect(function(c)
 			if #frame:GetChildren() == 0 then
 				frame.Visible = false
 			else
@@ -12357,7 +12357,7 @@ return function(data)
 		end
 	end
 
-	text.FocusLost:connect(function(enterPressed)
+	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
 				spawn(function()
@@ -12375,7 +12375,7 @@ return function(data)
 		close()
 	end)
 
-	text.Changed:connect(function(c)
+	text.Changed:Connect(function(c)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
@@ -12408,7 +12408,7 @@ return function(data)
 					new.Visible = true
 					new.Parent = players
 					new.Position = UDim2.new(0,0,0,20*pNum)
-					new.MouseButton1Down:connect(function()
+					new.MouseButton1Down:Connect(function()
 						text.Text = text.Text..tostring(v)
 						text:CaptureFocus()
 					end)
@@ -12434,7 +12434,7 @@ return function(data)
 					b.Text = v
 					b.Name = "Entry "..num
 					b.Position = UDim2.new(0,0,0,20*num)
-					b.MouseButton1Down:connect(function()
+					b.MouseButton1Down:Connect(function()
 						text.Text = b.Text
 						text:CaptureFocus()
 					end)

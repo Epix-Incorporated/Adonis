@@ -47,6 +47,19 @@ return function(data)
 	
 	client.UI.Remove("Notif",script.Parent.Parent)
 	
+	local log  = {
+		Type = "Notif";
+		Title = "Notif";
+		Message = str;
+		Icon = "rbxassetid://7501175708";
+		Time = os.date("%X");
+		Function = nil;
+	}
+
+	table.insert(client.Variables.CommunicationsHistory, log) 
+	service.Events.CommsCenter:Fire(log)
+
+	
 	if str and type(str)=="string" then
 		label.Text = str
 		label.Position = UDim2.new(0, 0, 0, ((topbar and 40) or 0) - 35)

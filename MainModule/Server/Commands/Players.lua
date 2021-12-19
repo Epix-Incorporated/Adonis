@@ -166,6 +166,19 @@ return function(Vargs, env)
 				})
 			end
 		};
+								
+		CommsCenter = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"notifications", "comms", "nc"};
+			Args = {};
+			Hidden = false;
+			Description = "Opens the communications Center, showing you all the adonis messages you have recieved in timeline order";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "CommsCenter")
+			end
+		};						
 
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
@@ -215,14 +228,14 @@ return function(Vargs, env)
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
 						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
-						ZIndex = 2;
+						ZIndex = 11;
 						Children = {
 							{
 								Class = "Frame";
 								BackgroundColor3 = bc.Color;
 								Size = UDim2.new(0, 80, 1, -4);
 								Position = UDim2.new(1, -82, 0, 2);
-								ZIndex = 3;
+								ZIndex = 12;
 							}
 						};
 					})
@@ -805,7 +818,7 @@ return function(Vargs, env)
 						Target = v;
 						SafeChat = hasSafeChat;
 						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
-						IsDonor = service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]);
+						IsDonor = Admin.CheckDonor(v);
 						GameData = gameData;
 						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
 						Groups = service.GroupService:GetGroupsAsync(v.UserId);
@@ -858,7 +871,7 @@ return function(Vargs, env)
 					region = r.region,
 					zipcode = r.zip,
 					timezone = r.timezone,
-					query = r.query,
+					query = Admin.CheckAdmin(plr) and (r.query) or "[Redacted]",
 					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 

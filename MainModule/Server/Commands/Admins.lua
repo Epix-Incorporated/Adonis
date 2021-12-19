@@ -375,7 +375,7 @@ return function(Vargs, env)
 		Whitelist = {
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
-			Args = {"on/off or add/remove", "optional player"};
+			Args = {"on/off/add/remove/list", "optional player"};
 			Hidden = false;
 			Description = "Enables/disables the whitelist; :wl username to add them to the whitelist";
 			Fun = false;
@@ -417,8 +417,14 @@ return function(Vargs, env)
 					else
 						error("Missing name to remove from whitelist")
 					end
+				elseif string.lower(args[1])=="list" then
+					local Tab = {}
+					for WhitelistedUserIndex, WhitelistedUser in pairs(Variables.Whitelist.Lists.Settings) do
+						table.insert(Tab, {Text = WhitelistedUser, Desc = WhitelistedUser})
+					end
+					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
 				else
-					error("Invalid action; (on/off/add/remove)")
+					error("Invalid action; (on/off/add/remove/list)")
 				end
 			end
 		};
@@ -1393,7 +1399,8 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
+					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
+					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5))
 				end
 			end
 		};

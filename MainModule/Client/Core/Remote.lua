@@ -6,6 +6,7 @@ Routine = nil
 GetEnv = nil
 origEnv = nil
 logError = nil
+log = nil
 
 --// Remote
 return function()
@@ -278,7 +279,7 @@ return function()
 				if Remote.PendingReturns[args[1]] then
 					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:fire(unpack(args,2))
+					service.Events[args[1]]:Fire(unpack(args,2))
 				end
 			end;
 
@@ -367,7 +368,16 @@ return function()
 				if handler and type(handler) == "function" then
 					Pcall(handler, unpack(args, 2))
 				end
-			end
+			end;
+					
+			SendNotification = function(args)
+				local title, text, duration = args[1], args[2], args[3]
+				service.StarterGui:SetCore('SendNotification', {
+					Title = title or "Notification",
+					Text = text or 'Hello there!',
+					Duration = duration or 5
+				})
+			end;
 		};
 
 		Fire = function(...)

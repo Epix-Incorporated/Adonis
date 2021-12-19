@@ -7,8 +7,8 @@ origEnv = nil
 logError = nil
 
 --// Anti-Exploit
-return function(Vargs, envVars, GetEnv)
-	local env = GetEnv(getfenv(), envVars)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local server = Vargs.Server;
@@ -43,8 +43,8 @@ return function(Vargs, envVars, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < 1 then --// Changed from Settings.Moderators.Level to just <1.... I figure we should just ignore anyone who's in any rank above normal player ~ Scel
-				pcall(Anti.CharacterCheck, player)
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and Core.DebugMode == true then
+				Anti.CharacterCheck(player)
 			end
 		end
 
@@ -53,6 +53,8 @@ return function(Vargs, envVars, GetEnv)
 		end
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
+
+	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
 
 	server.Anti = {
 		Init = Init;
@@ -78,16 +80,33 @@ return function(Vargs, envVars, GetEnv)
 		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
 
-			local function Detected(...)
+			local function Detected(player, action, reason)
 				if charGood then
-					Anti.Detected(...)
+					if Settings.CharacterCheckLogs ~= true and (string.lower(action) == "log" or string.lower(action) == "kill") then
+						if action == "kill" then
+							local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+							if humanoid then
+								humanoid.Health = 0
+							end
+						end
+
+						Logs.AddLog(Logs.Script, {
+							Text = "Character AE Detected "..tostring(player);
+							Desc = "The Anti-Exploit character check detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason);
+							Player = player;
+						})
+
+						warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
+					else
+						Anti.Detected(player, action, reason)
+					end
 				end
 			end
 
 			local function protectHat(hat)
 				local handle = hat:WaitForChild("Handle", 30)
 
-				if handle and Settings.ProtectHats == true then
+				if handle then
 					task.defer(function()
 						local joint = handle:WaitForChild("AccessoryWeld")
 
@@ -102,8 +121,12 @@ return function(Vargs, envVars, GetEnv)
 							if handle and handle:CanSetNetworkOwnership() then
 								handle:SetNetworkOwner(nil)
 							end
-
-							Detected(player, "log", "Hat weld removed")
+							
+							Logs.AddLog(Logs.Script, {
+								Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
+								Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
+								Player = player;
+							})
 						end)
 					end)
 
@@ -112,7 +135,7 @@ return function(Vargs, envVars, GetEnv)
 
 						mesh.AncestryChanged:Connect(function(child, parent)
 							task.defer(function()
-								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) then
+								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) and hat and hat.Parent then
 									mesh.Parent = handle
 									Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
 								end
@@ -130,13 +153,13 @@ return function(Vargs, envVars, GetEnv)
 				charGood = true
 
 				for _, v in ipairs(character:GetChildren()) do
-					if v:IsA("Accoutrement") then
+					if v:IsA("Accoutrement") and Settings.ProtectHats == true then
 						coroutine.wrap(protectHat)(v)
 					end
 				end
 
 				character.ChildAdded:Connect(function(child)
-					if child:IsA("Accoutrement") then
+					if child:IsA("Accoutrement") and Settings.ProtectHats == true then
 						protectHat(child)
 					elseif child:IsA("BackpackItem") and Settings.AntiMultiTool == true then
 						local count = 0
@@ -169,8 +192,14 @@ return function(Vargs, envVars, GetEnv)
 				end
 
 				humanoid.StateChanged:Connect(function(last, state)
-					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead then
-						Detected(player, "kill", "Humanoid came out of dead state")
+					if last == Enum.HumanoidStateType.Dead and state ~= Enum.HumanoidStateType.Dead and humanoid then
+						humanoid.Health = 0
+						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+						Logs.AddLog(Logs.Script, {
+							Text = "AE: Humanoid came out of dead state for player: "..tostring(player);
+							Desc = "AE: Humanoid came out of dead state for player: "..tostring(player);
+							Player = player;
+						})
 					end
 				end)
 
@@ -206,17 +235,25 @@ return function(Vargs, envVars, GetEnv)
 				local function makeConnection(Conn)
 					local connection
 					connection = Conn:Connect(function(_, parent)
-						if not connection.Connected or parent then
-							return
-						end
+						task.defer(function()
+							if not connection.Connected or parent or humanoid and humanoid.Health <= 0 then
+								return
+							end
 
-						for _, v in ipairs(connections) do
-							v:Disconnect()
-						end
+							for _, v in ipairs(connections) do
+								v:Disconnect()
+							end
 
-						if humanoid then
-							Detected(player, "kill", "Character joint removed (Paranoid?)")
-						end
+							if humanoid then
+								humanoid.Health = 0
+								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+								Logs.AddLog(Logs.Script, {
+									Text = "AE: Waist joint deleted by player: "..tostring(player);
+									Desc = "AE: Waist joint deleted by player: "..tostring(player);
+									Player = player;
+								})
+							end
+						end)
 					end)
 
 					table.insert(connections, connection)
@@ -345,6 +382,21 @@ return function(Vargs, envVars, GetEnv)
 			})
 
 			if Settings.AENotifs == true then
+				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
+				if os.clock() < antiNotificationResetTick then
+					antiNotificationDebounce = {}
+					antiNotificationResetTick = os.clock() + 60
+				end
+
+				if not antiNotificationDebounce[debounceIndex] then
+					antiNotificationDebounce[debounceIndex] = 1
+				elseif
+					(string.lower(action) == "log" or string.lower(action) == "kill") and
+					antiNotificationDebounce[debounceIndex] > 3
+				then
+					return
+				end
+
 				for _, plr in ipairs(service.Players:GetPlayers()) do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {

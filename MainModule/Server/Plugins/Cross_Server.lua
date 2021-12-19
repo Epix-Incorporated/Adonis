@@ -74,9 +74,17 @@ return function(Vargs)
 		Loadstring = function(jobId, source)
 			Core.Loadstring(source, GetEnv{})()
 		end;
-		
+
 		Message = function(jobId, fromPlayer, message, time)
 			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
+		end;
+
+		RemovePlayer = function(jobId, name, BanMessage, reason)
+			--// probably should move this to userid
+			local player =	service.Players:FindFirstChild(name)
+			if player then
+				player:Kick(string.format("%s | Reason: %s", BanMessage, reason))
+			end
 		end;
 
 		DataStoreUpdate = function(jobId, type, data)
@@ -88,7 +96,7 @@ return function(Vargs)
 		UpdateSetting = function(jobId, setting, newValue)
 			Settings[setting] = newValue;
 		end;
-		
+
 		RemovePlayer = function(jobId, name, BanMessage, reason)
 			--// probably should move this to userid
 			local player =	service.Players:FindFirstChild(name)
@@ -146,7 +154,7 @@ return function(Vargs)
 
 	Commands.CrossServerList = {
 		Prefix = Settings.Prefix;
-		Commands = {"serverlist", "servers", "crossserverlist", "listservers"};
+		Commands = {"serverlist", "gameservers", "crossserverlist", "listservers"};
 		Args = {};
 		Description = "Attempts to list all active servers (at the time the command was ran)";
 		AdminLevel = "Admins";

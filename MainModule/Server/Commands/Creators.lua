@@ -103,10 +103,24 @@ return function(Vargs, env)
 				if code then
 					for i, v in pairs(players) do
 						service.TeleportService:TeleportToPrivateServer(code.ID, code.Code, {v})
+						local TeleportValidation
+						TeleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(Player,TeleportResult,ErrorMessage)
+							if Player == v then
+								Functions.Hint(string.format("Failed to teleport %s: %s",v.Name,ErrorMessage), {plr})
+								TeleportValidation:Disconnect()
+							end
+						end)
 					end
 				elseif id then
 					for i, v in pairs(players) do
 						service.TeleportService:Teleport(args[2], v)
+						local TeleportValidation
+						TeleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(Player,TeleportResult,ErrorMessage)
+							if Player == v then
+								Functions.Hint(string.format("Failed to teleport %s: %s",v.Name,ErrorMessage), {plr})
+								TeleportValidation:Disconnect()
+							end
+						end)
 					end
 				else
 					error("Invalid place ID/server name")

@@ -1,7 +1,3 @@
-
-client = nil
-service = nil
-
 local canEditTables = {
 	Admins = true;
 	HeadAdmins = true;
@@ -26,7 +22,7 @@ local canEditTables = {
 local function tabToString(tab)
 	if type(tab) == "table" then
 		local str = ""
-		for i,v in next,tab do
+		for i,v in pairs(tab) do
 			if #str > 0 then
 				str = str.. "; "
 			end
@@ -40,6 +36,9 @@ local function tabToString(tab)
 end
 
 return function(data)
+	local client = client
+	local service = service
+
 	local gTable
 	local Functions = client.Functions;
 	local window = client.UI.Make("Window",{
@@ -82,7 +81,7 @@ return function(data)
 					selected = nil
 					items:ClearAllChildren();
 
-					for i,v in next,tab do
+					for i,v in ipairs(tab) do
 						items:Add("TextButton", {
 							Text = tabToString(v);
 							Size = UDim2.new(1, 0, 0, 25);
@@ -300,7 +299,7 @@ return function(data)
 					MouseButton1Down = function()
 						client.UI.Make("List", {
 							Title = "Changelog";
-							Table = require(client.Shared.Changelog);
+							Table = client.Changelog;
 						})
 					end
 				}
@@ -734,7 +733,7 @@ return function(data)
 				selected = nil
 				binds:ClearAllChildren();
 
-				for i,v in next,client.Variables.KeyBinds do
+				for i,v in pairs(client.Variables.KeyBinds) do
 					binds:Add("TextButton", {
 						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -969,7 +968,7 @@ return function(data)
 				selected = nil
 				aliases:ClearAllChildren();
 
-				for i,v in next,client.Variables.Aliases do
+				for i,v in pairs(client.Variables.Aliases) do
 					aliases:Add("TextButton", {
 						Text = "Alias: ".. i .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -1294,7 +1293,7 @@ return function(data)
 					Entry = "DropDown";
 					Setting = "CustomTheme";
 					Value = client.Variables.CustomTheme or "Game Theme";
-					Options = (function() local themes = {"Game Theme"} for i,v in next,client.UIFolder:GetChildren() do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
+					Options = (function() local themes = {"Game Theme"} for i,v in ipairs(client.UIFolder:GetChildren()) do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
 						if selection == "Game Theme" then
 							client.Variables.CustomTheme = nil
@@ -1316,7 +1315,7 @@ return function(data)
 				BackgroundTransparency = 1;
 			});]]
 
-			for i, setData in next,cliSettings do
+			for i, setData in ipairs(cliSettings) do
 				local label = clientTab:Add("TextLabel", {
 					Text = "  ".. setData.Text;
 					ToolTip = setData.Desc;
@@ -1398,7 +1397,7 @@ return function(data)
 				})
 
 				local i = 1;
-				for truei, setting in next,order do
+				for truei, setting in pairs(order) do
 					i = i+1;
 
 					local value = settings[setting]
@@ -1427,7 +1426,7 @@ return function(data)
 					elseif type(value) == "table" then
 						if setting == "Ranks" then
 							i = i-1;
-							for rank,data in next,value do
+							for rank,data in pairs(value) do
 								i = i+1;
 								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
@@ -1469,7 +1468,7 @@ return function(data)
 									})
 								end
 							end
-						elseif  not canEditTables[setting] then
+						elseif not canEditTables[setting] then
 							gameTab:Add("TextLabel", {
 								Text = "  "..setting..": ";
 								ToolTip = desc;

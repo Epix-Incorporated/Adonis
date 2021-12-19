@@ -7,8 +7,8 @@ origEnv = nil
 logError = nil
 
 --// Processing
-return function(Vargs, envVars, GetEnv)
-	local env = GetEnv(getfenv(), envVars)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local server = Vargs.Server;
@@ -464,7 +464,7 @@ return function(Vargs, envVars, GetEnv)
 					end
 				end
 
-				service.Events.CustomChat:fire(p,a,b)
+				service.Events.CustomChat:Fire(p,a,b)
 			elseif RateLimit(p, "RateLog") then
 				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
 				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
@@ -534,12 +534,12 @@ return function(Vargs, envVars, GetEnv)
 				end;
 
 				LogService = function(Message, Type)
-					--service.Events.Output:fire(Message, Type)
+					--service.Events.Output:Fire(Message, Type)
 				end;
 
 				ErrorMessage = function(Message, Trace, Script)
 					--[[if Running then
-						service.Events.ErrorMessage:fire(Message, Trace, Script)
+						service.Events.ErrorMessage:Fire(Message, Trace, Script)
 						if Message:lower():find("adonis") or Message:find(script.Name) then
 							logError(Message)
 						end
@@ -911,7 +911,7 @@ return function(Vargs, envVars, GetEnv)
 				})
 			end
 
-			service.Events.NetworkAdded:fire(cli)
+			service.Events.NetworkAdded:Fire(cli)
 		end;
 
 		NetworkRemoved = function(cli)

@@ -396,21 +396,21 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				R_Status = "Idle";
 				Finished = {};
 				Function = function(...) newTask.R_Status = "Running" newTask.Running = true local ret = {func(...)} newTask.R_Status = "Finished" newTask.Running = false newTask.Remove() return unpack(ret) end;
-				Remove = function() newTask.R_Status = "Removed" newTask.Running = false for i,v in pairs(service.Threads.Tasks) do if v == newTask then table.remove(service.Threads.Tasks,i) end end newTask.Changed:fire("Removed") newTask.Finished:fire() service.RemoveEvents(index.."_TASKCHANGED") service.RemoveEvents(index.."_TASKFINISHED") newTask.Thread = nil end;
+				Remove = function() newTask.R_Status = "Removed" newTask.Running = false for i,v in pairs(service.Threads.Tasks) do if v == newTask then table.remove(service.Threads.Tasks,i) end end newTask.Changed:Fire("Removed") newTask.Finished:Fire() service.RemoveEvents(index.."_TASKCHANGED") service.RemoveEvents(index.."_TASKFINISHED") newTask.Thread = nil end;
 				Thread = service.Threads.Create(function(...) return newTask.Function(...) end);
-				Resume = function(...) newTask.R_Status = "Resumed" newTask.Running = true newTask.Changed:fire("Resumed") local rets = {service.Threads.Resume(newTask.Thread,...)} if not rets[1] then ErrorHandler("TaskError", rets[2]) newTask.Changed:fire("Errored",rets[2]) newTask.Remove() end return unpack(rets) end;
+				Resume = function(...) newTask.R_Status = "Resumed" newTask.Running = true newTask.Changed:Fire("Resumed") local rets = {service.Threads.Resume(newTask.Thread,...)} if not rets[1] then ErrorHandler("TaskError", rets[2]) newTask.Changed:Fire("Errored",rets[2]) newTask.Remove() end return unpack(rets) end;
 				Status = function() if newTask.Timeout ~= 0 and ((os.time() - newTask.Created) > newTask.Timeout) then newTask:Stop() return "timeout" else return service.Threads.Status(newTask.Thread) end end;
-				Pause = function() newTask.R_Status = "Paused" newTask.Running = false service.Threads.Pause(newTask.Thread) newTask.Changed:fire("Paused") end;
-				Stop = function() newTask.R_Status = "Stopping" service.Threads.Stop(newTask.Thread) newTask.Changed:fire("Stopped") newTask.Remove() end;
-				Kill = function() newTask.R_Status = "Killing" service.Threads.End(newTask.Thread) newTask.Changed:fire("Killed") newTask.Remove() end;
+				Pause = function() newTask.R_Status = "Paused" newTask.Running = false service.Threads.Pause(newTask.Thread) newTask.Changed:Fire("Paused") end;
+				Stop = function() newTask.R_Status = "Stopping" service.Threads.Stop(newTask.Thread) newTask.Changed:Fire("Stopped") newTask.Remove() end;
+				Kill = function() newTask.R_Status = "Killing" service.Threads.End(newTask.Thread) newTask.Changed:Fire("Killed") newTask.Remove() end;
 			}
 
 			function newTask.Changed:Connect(func)
 				return service.Events[index.."_TASKCHANGED"]:Connect(func)
 			end;
 
-			function newTask.Changed:fire(...)
-				service.Events[index.."_TASKCHANGED"]:fire(...)
+			function newTask.Changed:Fire(...)
+				service.Events[index.."_TASKCHANGED"]:Fire(...)
 			end
 
 			function newTask.Finished:Connect(func)
@@ -421,8 +421,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				service.Events[index.."_TASKFINISHED"]:wait(0)
 			end
 
-			function newTask.Finished:fire(...)
-				service.Events[index.."_TASKFINISHED"]:fire(...)
+			function newTask.Finished:Fire(...)
+				service.Events[index.."_TASKFINISHED"]:Fire(...)
 			end
 
 			newTask.End = newTask.Stop

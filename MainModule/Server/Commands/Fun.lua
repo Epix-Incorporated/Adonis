@@ -228,6 +228,46 @@ return function(Vargs, env)
 			end
 		};
 
+		Trigger = {
+			Prefix = Settings.Prefix;
+			Commands = {"trigger"};
+			Args = {"player"};
+			Fun = true;
+			Description = "Makes the target player really angry";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					task.defer(function()
+						local char = v.Character
+						local head = char and char:FindFirstChild("Head")
+						if head then
+							service.New("Sound", {Parent = head; SoundId = "rbxassetid://429400881";}):Play()
+							service.New("Sound", {Parent = head; Volume = 3; SoundId = "rbxassetid://606862847";}):Play()
+							local face = head:FindFirstChild("face")
+							if face then face.Texture = "rbxassetid://412416747" end
+							head.BrickColor = BrickColor.new("Maroon")
+							for i = 1, 10 do
+								task.wait(0.1)
+								head.Size *= 1.3
+							end
+							service.New("Explosion", {
+								Parent = char;
+								Position = head.Position;
+								BlastRadius = 5;
+								BlastPressure = 100_000;
+							})
+							service.New("Sound", {
+								Parent = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso");
+								SoundId = "rbxassetid://165969964";
+								Volume = 10;
+							}):Play()
+							head:Destroy()
+						end
+					end)
+				end
+			end
+		};
+
 		Brazil = {
 			Prefix = Settings.Prefix;
 			Commands = {"brazil", "sendtobrazil"};
@@ -684,26 +724,48 @@ return function(Vargs, env)
 			end
 		};
 
-		Color = {
+		PlayerColor = {
 			Prefix = Settings.Prefix;
-			Commands = {"color", "bodycolor"};
-			Args = {"player", "color"};
+			Commands = {"color", "playercolor", "bodycolor"};
+			Args = {"player", "brickcolor or RGB"};
 			Hidden = false;
-			Description = "Make the target the color you choose";
+			Description = "Makes the target player(s)'s BrickColor to the color you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for _, p in pairs(v.Character:GetChildren()) do
-							if p:IsA("Part") then
-								if args[2] then
-									local str = BrickColor.new("Institutional white").Color
-									local teststr = args[2]
-									if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr) end
-									p.BrickColor = str
-								end
-							end
+				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
+				local color3 = {}
+				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
+
+				if not args[2] then
+					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
+
+					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
+				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
+					for s in args[2]:gmatch("[%d]+") do
+						table.insert(color3, tonumber(s))
+					end
+
+					-- Check if input was right
+					if (#color3 == 3) then
+						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
+					else
+						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
+						brickColor = BrickColor.new("Medium stone grey")
+					end
+				end
+
+				if (typeof(color3) == "Color3") then
+					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
+					brickColor = color3
+				end
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
+						local bc = v.Character:FindFirstChildOfClass"BodyColors"
+
+						for i, v in pairs(BodyColorGroups) do
+							bc[v] = brickColor
 						end
 					end
 				end
@@ -3146,20 +3208,20 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[Trail = {
+		Trail = {
 			Prefix = Settings.Prefix;
 			Commands = {"trail", "trails"};
-			Args = {"player", "textureid"};
+			Args = {"player", "textureid", "color"};
 			Description = "Adds trails to the target's character's parts";
 			AdminLevel = "Moderators";
 			Fun = true;
 			Function = function(plr, args)
 				assert(args[1], "Player argument missing")
 				local newTrail = service.New("Trail", {
-					Color = (args[2] and (args[2]:lower() == "truecolors" or args[2]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 					Texture = args[2] and "rbxassetid://"..args[2];
 					TextureMode = "Stretch";
 					TextureLength = 2;
+					Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 					Name = "ADONIS_TRAIL";
 				})
 
@@ -3168,18 +3230,29 @@ return function(Vargs, env)
 					for k, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
+							local attachment0 = service.New("Attachment", {
+								Parent = p;
+								Name = "ADONIS_TRAIL_ATTACHMENT0";
+							})
+							local attachment1 = service.New("Attachment", {
+								Position = Vector3.new(0,-0.05,0);
+								Parent = p;
+								Name = "ADONIS_TRAIL_ATTACHMENT1";
+							})
 							Functions.NewParticle(p, "Trail", {
-								Color = (args[2] and (args[2]:lower() == "truecolors" or args[2]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
+								Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
 								TextureLength = 2;
+								Attachment0 = attachment0;
+								Attachment1 = attachment1;
 								Name = "ADONIS_CMD_TRAIL";
 							})
 						end
 					end
 				end
 			end;
-		};--]]
+		};
 
 		UnParticle = {
 			Prefix = Settings.Prefix;
@@ -3727,7 +3800,7 @@ return function(Vargs, env)
 								local Handle = Accessory:FindFirstChild("Handle")
 								Handle.AccessoryWeld.C0 = CFrame_new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
 								Handle.AccessoryWeld.C1 = CFrame_new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
-	
+
 								if Handle:FindFirstChildOfClass("SpecialMesh") then
 									Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
 								end
@@ -3917,6 +3990,30 @@ return function(Vargs, env)
 				end
 
 				model:Destroy()
+			end
+		};
+
+		HeadPackage = {
+			Prefix = Settings.Prefix;
+			Commands = {"head", "headpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Head package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if (args[2] ~= "0") then
+					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+					assert(id == 17, "ID is not a head!")
+				end
+
+				local target = service.GetPlayers(plr, args[1])[1]
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")				
+
+				local descriptionClone = target_humanoid:GetAppliedDescription()
+				descriptionClone.Head = args[2]
+
+				target_humanoid:ApplyDescription(descriptionClone)
 			end
 		};
 
@@ -4240,12 +4337,307 @@ return function(Vargs, env)
 						for k, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 								p.Transparency = args[2]
+								if (p.Name == "Head") then
+									for _, v2 in pairs(p:GetChildren()) do
+										if v2:IsA("Decal") then
+											v2.Transparency = args[2]
+										end
+									end
+								end
+							elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+								for _, v2 in pairs(p:GetChildren()) do
+									if v2:IsA("BasePart") then
+										v2.Transparency = args[2]
+									end
+								end
 							end
 						end
 					end
 				end
 			end
 		};
+
+		TransparentPart = {
+			Prefix = Settings.Prefix;
+			Commands = {"transparentpart"};
+			Args = {"player", "parts", "value (0-1)"};
+			Hidden = false;
+			Description = "Set the transparency of the target's character's parts, including accessories. Supports comma separated list of parts.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, player in pairs(service.GetPlayers(plr, args[1])) do
+					if player.Character then
+						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local rigType =  humanoid.RigType
+							local GroupPartInputs = {"LeftArm", "RightArm", "RightLeg", "LeftLeg", "Torso"}
+							local PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}
+
+							local usageText = {
+								"Possible inputs are:",
+								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
+								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
+								"",
+								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
+								"Special Inputs: all, accessories",
+								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
+								"limbs: Changes the transparency of all limbs",
+								"face: Changes the transparency of the face",
+								"accessories: Changes transparency of accessories"
+							}
+
+							if not (args[2]) then
+								--assert(args[2], "No parts specified. See developer console for possible inputs.")
+								local tab = {}
+								for _,v in pairs(usageText) do 
+									table.insert(tab, {
+										Text = v;
+										Desc = v;
+									})
+								end
+								--// Generate the UI for this player
+								server.Remote.MakeGui(plr, "List", {
+									Tab = tab;
+									Title = "Command Usage";
+								})
+								return
+							end
+
+							local partInput = {}
+							local inputs = string.split(args[2], ",")
+
+							for k,v in pairs(inputs) do
+								if (v ~= "") then
+									if (v == "all") then
+										partInput = "all"
+										break -- break if "all" is found.
+									end
+
+									-- Validate inputs
+									if (v == "limbs" or v == "face" or v == "accessories") then
+										table.insert(partInput, v)
+									else
+										local found = false
+										while (found ~= true) do
+											for _,v2 in pairs(GroupPartInputs) do
+												if v == v2 then
+													table.insert(partInput, v)
+													found = true
+													break
+												end
+											end
+
+											for _,v2 in pairs(PartInputs) do
+												if v == v2 then
+													table.insert(partInput, v)
+													found = true
+													break
+												end
+											end
+
+											if not (found) then
+												assert(nil, "'"..v.."'".." is not a valid input. Run command with no arguments to see possible inputs.")
+											end	
+										end
+									end
+								else
+									assert(nil, "Part argument contains empty value.")
+								end
+							end
+
+
+							-- Check if partInput is a table
+							if (typeof(partInput) == "table") then
+								local hash = {}
+
+								-- Check for duplicates
+								for i,v in pairs(partInput) do
+									if not (hash[v]) then
+										hash[v] = i -- Store into table to check for duplicates.
+									else
+										assert(nil, "Duplicate '"..v.."'".." found in input. Specify each input once only.")
+									end
+								end
+
+
+								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
+
+								if (rigType == Enum.HumanoidRigType.R15) then
+									for i=#partInput,1,-1 do
+										if (partInput[i] == "RightArm") then
+											local foundKeys = {}
+											for k2,v2 in pairs(partInput) do
+												if (v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand") then
+													table.insert(foundKeys, k2)
+												end
+											end
+											-- If not all keys were found just remove all keys and add them manually
+											if (#foundKeys ~= 3) then
+												for _,foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "RightUpperArm")
+												table.insert(partInput, "RightLowerArm")
+												table.insert(partInput, "RightHand")
+											end
+											table.remove(partInput, i) -- Remove the group part input
+
+										elseif (partInput[i] == "LeftArm") then
+											local foundKeys = {}
+											for k2,v2 in pairs(partInput) do
+												if (v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand") then
+													table.insert(foundKeys, k2)
+												end
+											end
+
+											if (#foundKeys ~= 3) then
+												for _,foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "LeftUpperArm")
+												table.insert(partInput, "LeftLowerArm")
+												table.insert(partInput, "LeftHand")
+											end
+											table.remove(partInput, i)
+
+										elseif (partInput[i] == "RightLeg") then
+											local foundKeys = {}
+											for i=#partInput,1,-1 do
+												if (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+													table.insert(foundKeys, partInput[i])
+												end
+											end
+
+											if (#foundKeys ~= 3) then
+												for _,foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "RightUpperLeg")
+												table.insert(partInput, "RightLowerLeg")
+												table.insert(partInput, "RightFoot")
+											end
+											table.remove(partInput, i)
+
+										elseif (partInput[i] == "LeftLeg") then
+											local foundKeys = {}
+											for k2,v2 in pairs(partInput) do
+												if (v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot") then
+													table.insert(foundKeys, k2)
+												end
+											end
+
+											if (#foundKeys ~= 3) then
+												for _,foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "LeftUpperLeg")
+												table.insert(partInput, "LeftLowerLeg")
+												table.insert(partInput, "LeftFoot")
+											end
+											table.remove(partInput, i)
+
+										elseif (partInput[i] == "Torso") then
+											local foundKeys = {}
+											for k2,v2 in pairs(partInput) do
+												if (v2 == "UpperTorso" or v2 == "LowerTorso") then
+													table.insert(foundKeys, k2)
+												end
+											end
+
+											if (#foundKeys ~= 2) then
+												for _,foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "UpperTorso")
+												table.insert(partInput, "LowerTorso")
+											end
+											table.remove(partInput, i)
+										end
+									end
+								end
+
+								if (rigType == Enum.HumanoidRigType.R6) then
+									for i=#partInput,1,-1 do
+										if (partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot") then
+											table.remove(partInput, i)
+										elseif (partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso") then
+											table.remove(partInput, i)
+										end
+									end
+								end
+
+
+								-- Make chosen parts transparent
+								for k,v in pairs(partInput) do
+									if (v ~= "limbs" or v ~= "face" or v ~= "accessories") then
+										local part = player.Character:FindFirstChild(v)
+										if (part ~= nil and part:IsA("BasePart")) then
+											part.Transparency = args[3]
+										end
+
+									elseif (v == "limbs") then
+										for key, part in pairs(player.Character:GetChildren()) do
+											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+												part.Transparency = args[3]
+											end
+										end
+
+									elseif (v == "face") then
+										local headPart = player.Character:FindFirstChild("Head")
+										for _, v2 in pairs(headPart:GetChildren()) do
+											if v2:IsA("Decal") then
+												v2.Transparency = args[3]
+											end
+										end
+
+									elseif (v == "accessories") then
+										for key, part in pairs(player.Character:GetChildren()) do
+											if part:IsA("Accessory") then
+												for _, v2 in pairs(part:GetChildren()) do
+													if v2:IsA("BasePart") then
+														v2.Transparency = args[3]
+													end
+												end
+											end
+										end
+									end
+								end
+
+
+								-- If "all" is specified
+							elseif (partInput == "all") then
+								for k, p in pairs(player.Character:GetChildren()) do
+									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+										p.Transparency = args[3]
+										if (p.Name == "Head") then
+											for _, v2 in pairs(p:GetChildren()) do
+												if v2:IsA("Decal") then
+													v2.Transparency = args[3]
+												end
+											end
+										end
+									elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+										for _, v2 in pairs(p:GetChildren()) do
+											if v2:IsA("BasePart") then
+												v2.Transparency = args[3]
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		};
+
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk", "maketalk"};
@@ -4475,6 +4867,214 @@ return function(Vargs, env)
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Functions.PlayAnimation(v , args[2])
+				end
+			end
+		};
+
+		WalkAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"walkanimation", "walkanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s walk animation, based on the default animation system. Supports 'R15' and 'R6' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+				
+				local animId
+				
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507777826" -- Default R15 animation
+				elseif (args[2] == "R6") then
+					animId = "180426354"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "walk") then
+									found = true
+									local walkAnimation = v2:FindFirstChildOfClass("Animation")
+									if (walkAnimation) then
+										walkAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local walkAnimation = Instance.new("Animation")
+										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
+										walkAnimation.AnimationId = "rbxassetid://" .. animId
+										walkAnimation.Parent = v2
+									end
+								end
+							end
+							
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		RunAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"runanimation", "runanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s run animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507767714"
+				elseif (args[2] == "R6") then
+					animId = "180426354"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "run") then
+									found = true
+									local runAnimation = v2:FindFirstChildOfClass("Animation")
+									if (runAnimation) then
+										runAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local runAnimation = Instance.new("Animation")
+										runAnimation.Name = "RunAnim"
+										runAnimation.AnimationId = "rbxassetid://" .. animId
+										runAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'run' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		JumpAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"jumpanimation", "jumpanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s jump animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507765000"
+				elseif (args[2] == "R6") then
+					animId = "125750702"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "jump") then
+									found = true
+									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
+									if (jumpAnimation) then
+										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local jumpAnimation = Instance.new("Animation")
+										jumpAnimation.Name = "JumpAnim"
+										jumpAnimation.AnimationId = "rbxassetid://" .. animId
+										jumpAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'jump' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
+				end
+			end
+		};
+
+		FallAnimation = {
+			Prefix = Settings.Prefix;
+			Commands = {"fallanimation", "fallanim"};
+			Args = {"player", "animationID"};
+			Description = "Change the target player(s)'s fall animation, based on the default animation system. Supports 'R15' as animationID argument to use default rig animation.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr, args)
+				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
+
+				local animId
+
+				if not (args[2] == "R15" or args[2] == "R6") then
+					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
+					animId = args[2]
+				elseif (args[2] == "R15") then
+					animId = "507767968"
+				elseif (args[2] == "R6") then
+					animId = "180436148"
+				end
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if (v.Character) then
+						local animateScript = v.Character:FindFirstChild("Animate")
+						if (animateScript) then
+							local found = false
+							for _,v2 in pairs(animateScript:GetDescendants()) do
+								if (v2.Name == "fall") then
+									found = true
+									local fallAnimation = v2:FindFirstChildOfClass("Animation")
+									if (fallAnimation) then
+										fallAnimation.AnimationId = "rbxassetid://" .. animId
+									else
+										local fallAnimation = Instance.new("Animation")
+										fallAnimation.Name = "FallAnim"
+										fallAnimation.AnimationId = "rbxassetid://" .. animId
+										fallAnimation.Parent = v2
+									end
+								end
+							end
+
+							if not (found) then
+								assert(nil, "Instance 'StringValue' named 'fall' was not found. Please note, this command is designed for the default animation system.")
+							end
+						else
+							assert(nil, "Target player does not have the 'Animate' LocalScript")
+						end
+					end
 				end
 			end
 		};
@@ -4763,36 +5363,6 @@ return function(Vargs, env)
 						end
 						v2.Character.HumanoidRootPart.CFrame = vpos
 						v.Character.HumanoidRootPart.CFrame = v2pos
-					end
-				end
-			end
-		};
-
-		Paint = {
-			Prefix = Settings.Prefix;
-			Commands = {"paint"};
-			Args = {"player", "brickcolor"};
-			Hidden = false;
-			Description = "Paints the target player(s)";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-
-				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-				elseif not brickColor then
-					Functions.Hint("Brickcolor was invalid. Default was supplied: Pearl", {plr})
-					brickColor = BrickColor.new("Pearl")
-				end
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i, v in pairs{"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"} do
-							bc[v] = brickColor
-						end
 					end
 				end
 			end
