@@ -2,7 +2,7 @@ return {
 	"Version: 231";
 	"*Drag edges to expand*";
 	"";
-	"[v231 12.18.2021 18:45 EST]";
+	"[v231 12.18.2021 19:30 EST]";
 	"*Credits updated";
 	"*:servers alias for :privateservers is now :createdservers";
 	"*:servers alias for :crossservers changed to :gameservers";
