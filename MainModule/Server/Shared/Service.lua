@@ -1119,6 +1119,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				elysianexecute = true;
 				decompile = true;
 				make_writable = true;
+				hookmetamethod = true;
+				hookfunction = true;
 			}
 
 			return service.NewProxy {
