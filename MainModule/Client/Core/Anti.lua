@@ -59,7 +59,7 @@ return function()
 		service.Player.Changed:Connect(function()
 			if service.Player.Parent ~= service.Players then
 				wait(5)
-				--Anti.Detected("kick", "Parent not players", true)
+				Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
 				Anti.Detected("kick","Player is Roblox Locked")
 			end
@@ -104,7 +104,7 @@ return function()
 			end
 			hasActivated = true
 			Detected("crash", "Tamper Protection 790438; "..tostring(message).."; "..debug.traceback())
-			wait(1)
+			task.wait(1)
 			pcall(Disconnect, "Adonis_790438")
 			pcall(Kill, "Adonis_790438")
 			pcall(Kick, Player, "Adonis_790438")
@@ -142,14 +142,14 @@ return function()
 		local OldEnviroment = getfenv()
 		local OldSuccess, OldError = pcall(function() return game:________() end)
 		Routine(function()
-			while wait(5) do
+			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
 				if OldSuccess or not rawequal(OldSuccess, OldSuccess) or not rawequal(OldError, OldError) or rawequal(OldError, "new") or not OldError == OldError or OldError == "new" or rawequal(OldEnviroment, {1}) or OldEnviroment == {1} or not OldEnviroment == OldEnviroment then
 					Detected("crash", "Tamper Protection 658947")
-					wait(1)
+					task.wait(1)
 					pcall(Disconnect, "Adonis_658947")
 					pcall(Kill, "Adonis_658947")
 					pcall(Kick, Player, "Adonis_658947")
@@ -158,17 +158,17 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						--[[for i = 0, 10 do
+						for i = 0, 2 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
-								warn("detected????")
-								--Detected("kick", "Metamethod tampering 5634345")
+								--warn("detected????")
+								pcall(function() Detected("kick", "Metamethod tampering 5634345") end)
 							end
-						end--]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
+						end --// Fixed? // This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
 					end)
 
 					if Success then
-						Detected("crash", "Tamper Protection 906287")
-						wait(1)
+						pcall(function() Detected("crash", "Tamper Protection 906287") end)
+						task.wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -177,7 +177,7 @@ return function()
 					local Success, Error = pcall(function() return game:________() end)
 
 					if not Success == OldSuccess or not OldError == Error then
-						Detected("kick", "Methamethod tampering 456456")
+						pcall(function() Detected("kick", "Methamethod tampering 456456") end)
 					end
 				end
 
@@ -248,7 +248,7 @@ return function()
 
 		AntiTools = function()
 			if service.Player:WaitForChild("Backpack", 120) then
-				-- local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
+				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
 				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
 				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
@@ -270,7 +270,7 @@ return function()
 		end;
 
 		HumanoidState = function()
-			wait(1)
+			task.wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
@@ -286,7 +286,7 @@ return function()
 					end
 				end)
 
-				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
+				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and task.wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
 						Detected("kill", "NoClipping")
@@ -328,6 +328,17 @@ return function()
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
 				"syn%.";
+                                "reviz admin";
+                                "iy is already loaded";
+                                "infinite yield is already loaded";
+                                "infinite yield is already";
+                                "iy_debug";
+                                "current identity is 7";
+                                "current identity is 8";
+                                "returning json";
+                                "current identity is 99999";
+                                "shattervast";
+                                "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
@@ -365,7 +376,7 @@ return function()
 			local function checkTool(t)
 				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("log","Building Tools detected; "..tostring(t.BinType))
+						Detected("kick","Building Tools detected; "..tostring(t.BinType))
 					end
 				end
 			end
@@ -383,8 +394,8 @@ return function()
 			end)
 
 			service.ScriptContext.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick","Localscript Detected; "..tostring(child))
+				if Anti.GetClassName(child) ~= "CoreScript" then
+					Detected("kick","Non corescript Detected; "..tostring(child))
 				end
 			end)
 
@@ -565,7 +576,7 @@ return function()
 			if err and string.find(err, testName) and string.find(err, "GuiService:") then
 				return true
 			else
-				wait(0.5)
+				task.wait(0.5)
 				for _,v in next,service.LogService:GetLogHistory() do
 					if string.find(v.message,testName) and string.find(v.message,"GuiService:") then
 						return true
