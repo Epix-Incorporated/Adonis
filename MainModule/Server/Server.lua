@@ -129,7 +129,8 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
---[[
+
+if game:GetService("RunService"):IsStudio() then
 local require = function(mod, ...)
 	if mod and tonumber(mod) then
 		warn("Requiring Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
@@ -137,7 +138,7 @@ local require = function(mod, ...)
 
 	return require(mod, ...)
 end
---]]
+end
 
 local function Pcall(func, ...)
 	local pSuccess, pError = pcall(func, ...)
@@ -647,7 +648,7 @@ return service.NewProxy({
 		service.Events.AllModulesLoaded:Fire(os.time());
 
 		--// Queue handler
-		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
+		service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
 		for i,f in pairs(runLast) do
