@@ -155,7 +155,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				assert(args[2], "You need to provide a message to the player")
+				assert(args[2], "Missing message")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Notification", {
@@ -193,7 +193,7 @@ return function(Vargs, env)
 			Description = "Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = assert(tonumber(args[1]), "Enter a time for countdown")
+				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
 
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
@@ -269,8 +269,8 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "You need to specify the amount of time")
-				assert(args[2], "You forgot to supply a message!")
+				assert(args[1], "Missing or invalid time amount")
+				assert(args[2], "Missing message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
