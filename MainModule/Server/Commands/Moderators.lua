@@ -504,12 +504,11 @@ return function(Vargs, env)
 						local data = Core.GetPlayer(v)
 
 						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						local PlayerName = v.Name
 						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Message = "Warned ".. PlayerName;
+							Message = "Warned ".. v.Name;
 							Icon = "rbxassetid://7536784790";
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
