@@ -3,7 +3,7 @@ client, service = nil, nil
 return function(data)
 	local generate = nil
 
-	local window = client.UI.Make("Window",{
+	local window = client.UI.Make("Window", {
 		Name  = "OnlineFriends";
 		Title = "Online Friends";
 		Icon = client.MatIcons.People;
@@ -17,13 +17,7 @@ return function(data)
 
 	local function locationTypeToStr(int)
 		return ({
-			[0] = "Mobile Website";
-			[1] = "Mobile InGame";
-			[2] = "Website";
-			[3] = "Studio";
-			[4] = "InGame";
-			[5] = "Xbox";
-			[6] = "Team Create";
+			[0] = "Mobile Website"; [1] = "Mobile InGame"; [2] = "Website"; [3] = "Studio"; [4] = "InGame"; [5] = "Xbox"; [6] = "Team Create";
 		})[int]
 	end;
 
@@ -67,19 +61,12 @@ return function(data)
 
 		local filter = search.Text
 		scroller:ClearAllChildren()
-		local i = 1
 		local friendCount = 0
-		for _, friendName in ipairs(sortedFriends) do
-			friendCount = friendCount + 1
+		for i, friendName in ipairs(sortedFriends) do
+			friendCount += 1
 			if (friendName:sub(1, #filter):lower() == filter:lower()) or (friendInfo[friendName].displayName:sub(1, #filter):lower() == filter:lower()) then
-				local entryText = ""
-				if friendName == friendInfo[friendName].displayName then
-					entryText = friendName
-				else
-					entryText = friendInfo[friendName].displayName.." (@"..friendName..")"
-				end
 				local entry = scroller:Add("TextLabel", {
-					Text = "             "..entryText;
+					Text = "             "..(if friendName == friendInfo[friendName].displayName then friendName else friendInfo[friendName].displayName.." (@"..friendName..")");
 					ToolTip = "Location: "..friendInfo[friendName].lastLocation;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
@@ -101,7 +88,6 @@ return function(data)
 						Position = UDim2.new(0, 0, 0, 0);
 					})
 				end)
-				i += 1
 			end
 		end
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
