@@ -311,7 +311,7 @@ return function(Vargs, env)
 
 		Ping = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"ping"};
+			Commands = {"ping", "latency"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows you your current ping (latency)";
@@ -322,13 +322,23 @@ return function(Vargs, env)
 			end
 		};
 
+		ServerSpeed = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"serverspeed", "serverping", "serverfps", "serverlag"};
+			Args = {};
+			Description = "Shows you the FPS (speed) of the server";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Functions.Hint("The server FPS is "..service.Round(service.Workspace:GetRealPhysicsFPS()), {plr})
+			end
+		};
 
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"donors", "donorlist", "donatorlist"};
+			Commands = {"donors", "donorlist", "donatorlist", "donators"};
 			Args = {};
 			Hidden = false;
-			Description = "Shows a list of donators who are currently in the server";
+			Description = "Shows a list of Adonis donators who are currently in the server";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
