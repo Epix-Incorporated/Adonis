@@ -270,7 +270,7 @@ return function(Vargs, env)
 			Commands = {"terminal", "console"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the the terminal";
+			Description = "Opens the debug terminal";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Terminal")
