@@ -435,6 +435,7 @@ return function(Vargs, env)
 							Message = "Warned ".. v.Name;
 							Icon = "rbxassetid://7536784790";
 							Time = 5;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
 					end
 				end
@@ -506,8 +507,12 @@ return function(Vargs, env)
 						local PlayerName = v.Name
 						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
 
-						Remote.MakeGui(plr, "Hint", {
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Notification";
 							Message = "Warned ".. PlayerName;
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
 					end
 				end
