@@ -475,6 +475,7 @@ return function(Vargs, env)
 							Message = "Removed warning from ".. v.Name;
 							Icon = "rbxassetid://7536784790";
 							Time = 5;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
 					end
 				end
@@ -556,9 +557,13 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
 					data.Warnings = {}
-					Remote.MakeGui(plr, "Hint", {
-						Message = "Cleared warnings for ".. v.Name;
-					})
+					Remote.MakeGui(plr, "Notification", {
+							Title = "Notification";
+							Message = "Cleared warnings for ".. v.Name;
+							Icon = "rbxassetid://7536784790";
+							Time = 5;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
+						})
 				end
 			end
 		};
