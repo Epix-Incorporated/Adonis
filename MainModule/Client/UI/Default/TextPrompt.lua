@@ -1,24 +1,22 @@
-
-client = nil
-service = nil
+client, service = nil, nil
 
 return function(data)
 	local gTable
 	local answer
 
-	local window = client.UI.Make("Window",{
+	local window = client.UI.Make("Window", {
 		Name  = data.Name or "Prompt";
 		Title = data.Title or "Prompt";
-		Size  = data.Size or {225,150};
+		Size  = data.Size or {225, 150};
 		SizeLocked = true;
 		OnClose = function()
 			if not answer then
-				answer = ""
+				answer = data.DefaultAnswer or ""
 			end
 		end
 	})
 
-	local label = window:Add("TextLabel",{
+	local label = window:Add("TextLabel", {
 		Text = data.Question;
 		Font = "SourceSans";
 		TextScaled = true;
