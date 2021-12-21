@@ -1,6 +1,4 @@
-
-client = nil
-service = nil
+client, service = nil, nil
 
 return function(data)
 	local pinging = true
@@ -10,7 +8,7 @@ return function(data)
 		Name  = "Ping";
 		Title = "Ping";
 		Icon = client.MatIcons.Leaderboard;
-		Size  = {150,70};
+		Size  = {150, 70};
 		Position = UDim2.new(0, 10, 1, -80);
 		AllowMultiple = false;
 		NoHide = true;
