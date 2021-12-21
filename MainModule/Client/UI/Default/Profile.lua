@@ -127,7 +127,7 @@ return function(data)
 			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
 			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
 			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
-			{player:GetRankInGroup(886423) == 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
+			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
 			{player.UserId == 1237666 or player.UserId == 698712377, "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
