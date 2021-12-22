@@ -836,32 +836,36 @@ return function(Vargs, GetEnv)
 
 				--//GUI loading
 				local MakeGui = Remote.MakeGui
+				local RefreshGui = function(gui, ...)
+					Remote.RemoveGui(p, gui)
+					MakeGui(p, gui, ...)
+				end
 				if Variables.NotifMessage then
-					MakeGui(p,"Notif",{
+					RefreshGui("Notif",{
 						Message = Variables.NotifMessage
 					})
 				end
 
 				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
-					MakeGui(p,"Console")
+					RefreshGui("Console")
 				end
 
 				if Settings.HelpButton then
-					MakeGui(p,"HelpButton")
+					RefreshGui("HelpButton")
 				end
 
 				if Settings.TopBarShift then
-					MakeGui(p, "TopBar")
+					RefreshGui("TopBar")
 				end
 
 				if Settings.CustomChat then
-					MakeGui(p,"Chat")
+					RefreshGui("Chat")
 				end
 
 				if Settings.PlayerList then
-					MakeGui(p,"PlayerList")
+					RefreshGui("PlayerList")
 				end
-
+				
 				if level < 1 then
 					if Settings.AntiNoclip then
 						Remote.Send(p, "LaunchAnti", "HumanoidState")
