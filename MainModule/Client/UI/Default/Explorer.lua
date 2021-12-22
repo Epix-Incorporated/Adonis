@@ -82,7 +82,6 @@ return function(data)
 			nav.CanvasSize = UDim2.new(1, 0, 0, 20)
 			navText.Size = UDim2.new(1, 0, 0, 20)
 			navText.Text = game.Name.."."..obj:GetFullName()
-			warn(navText.TextBounds)
 			newEntry(obj.Parent or lastObject or game, "Previous Parent (Go Up..)", true, true, Color3.new(0.666667, 1, 1))
 			navText.Size = UDim2.new(0, navText.TextBounds.X + 10, 0, 20)
 		end
