@@ -824,6 +824,27 @@ return function(Vargs, env)
 			end
 		};
 
+		RemoveHat = {
+			Prefix = Settings.Prefix;
+			Commands = {"removehat", "nohats"};
+			Args = {"player", "accessory name"};
+			Hidden = false;
+			Description = "Removes specific hat(s) the target is currently wearing";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[2], "Argument(s) missing or nil")
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					if not p.Character then continue end
+					for _, v in pairs(p.Character:GetChildren()) do
+						if v:IsA("Accessory") and v.Name:lower() == args[2]:lower() then
+							v:Destroy()
+						end
+					end
+				end
+			end
+		};
+
 		PrivateChat = {
 			Prefix = Settings.Prefix;
 			Commands = {"privatechat", "dm", "pchat"};
