@@ -339,7 +339,7 @@ return function()
 				if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 					rawset(_G, "Adonis", AdonisGTable)
 					StartLoop("APICheck", 1, function()
-						if not rawget(_G, "Adonis") == AdonisGTable then
+						if rawget(_G, "Adonis") ~= AdonisGTable then
 							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 								rawset(_G, "Adonis", AdonisGTable)
 							else
