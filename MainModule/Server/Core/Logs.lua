@@ -336,8 +336,8 @@ return function(Vargs, GetEnv)
 					{"Month"; os.date("%m %B", ostime)},
 					{"Year"; os.date("%Y", ostime)},
 					{Text = "―――――――――――――――――――――――"},
-					{"Day of the year: "; os.date("%j", ostime)},
-					{"Day of the month: "; os.date("%d", ostime)},
+					{"Day of the year"; os.date("%j", ostime)},
+					{"Day of the month"; os.date("%d", ostime)},
 					{Text = "―――――――――――――――――――――――"},
 				}
 
