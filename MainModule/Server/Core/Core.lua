@@ -1342,11 +1342,21 @@ return function(Vargs, GetEnv)
 				__metatable = true;
 			})
 
-			if not rawget(_G,"Adonis") then
-				rawset(_G,"Adonis",AdonisGTable)
-				Routine(service.StartLoop,"APICheck",1,function()
-					rawset(_G,"Adonis",AdonisGTable)
-				end)
+			if not rawget(_G, "Adonis") then
+				if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+					rawset(_G, "Adonis", AdonisGTable)
+					StartLoop("APICheck", 1, function()
+						if not rawget(_G, "Adonis") == AdonisGTable then
+							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+								rawset(_G, "Adonis", AdonisGTable)
+							else
+								warn("ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
+							end
+						end
+					end, true)
+				else
+					warn("The _G table was locked and the Adonis _G API could not be loaded")
+				end
 			end
 
 
