@@ -841,7 +841,7 @@ return function(Vargs, GetEnv)
 					Refresh(p, gui, ignore, ...)
 				end
 				if Variables.NotifMessage then
-					RefreshGui("Notif",nil,{
+					MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
 				end
@@ -851,19 +851,19 @@ return function(Vargs, GetEnv)
 				end
 
 				if Settings.HelpButton then
-					RefreshGui("HelpButton")
+					MakeGui(p, "HelpButton")
 				end
 
 				if Settings.TopBarShift then
-					RefreshGui("TopBar")
+					MakeGui(p, "TopBar")
 				end
 
 				if Settings.CustomChat then
-					RefreshGui("Chat")
+					MakeGui(p, "Chat")
 				end
 
 				if Settings.PlayerList then
-					RefreshGui("PlayerList")
+					MakeGui(p, "PlayerList")
 				end
 				
 				if level < 1 then
