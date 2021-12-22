@@ -11,12 +11,15 @@ return function(data)
 		MinSize = {280, 150};
 	})
 
+	local connections: {RBXScriptConnection} = {}
+
 	local function generate()
 		task.wait(0.3)
 		window:ClearAllChildren()
 		if not localplayer.Character then return end
-		localplayer.Character.ChildAdded:Connect(generate)
-		localplayer.Character.ChildRemoved:Connect(generate)
+		for _, v in pairs(connections) do if v then v:Disconnect() end end
+		table.insert(connections, localplayer.Character.ChildAdded:Connect(generate))
+		table.insert(connections, localplayer.Character.ChildRemoved:Connect(generate))
 		local num = 0
 		for _, hat in pairs(service.Players.LocalPlayer.Character:GetChildren()) do
 			if not hat:IsA("Accoutrement") then continue end
