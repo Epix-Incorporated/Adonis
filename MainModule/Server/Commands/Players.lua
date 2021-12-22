@@ -85,11 +85,12 @@ return function(Vargs, env)
 				assert(args[1], "No command provided")
 
 				local commands = Admin.SearchCommands(plr, "all")
-				local cmd
+				local cmd, ind
 				for i, v in pairs(commands) do
 					for _, p in ipairs(v.Commands) do
 						if (v.Prefix or "")..p:lower() == args[1]:lower() then
 							cmd = v
+							ind = i
 							break
 						end
 					end
@@ -112,10 +113,11 @@ return function(Vargs, env)
 						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..formatStrForRichText(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
 						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
 						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
-						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"}
+						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
-					Size = {400, 220};
+					Size = {400, 225};
 				})
 			end
 		};
