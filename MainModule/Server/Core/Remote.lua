@@ -1174,6 +1174,12 @@ return function(Vargs, GetEnv)
 		RemoveGui = function(p,name,ignore)
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
+											
+		RefreshGui = function(p, name, ignore, data, themeData)
+			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
+			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
+			Remote.Send(p,"RefreshUI", name, ignore, themeData, data or {})
+		end;
 
 		NewParticle = function(p,target,type,properties)
 			Remote.Send(p,"Function","NewParticle",target,type,properties)
