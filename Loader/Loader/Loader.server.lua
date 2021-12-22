@@ -32,9 +32,9 @@ warn("Loading...");
 if rawget(_G, "__Adonis_MUTEX") and type(rawget(_G, "__Adonis_MUTEX")) == "string" then
 	warn("Adonis is already running! Aborting...; Running Location:", rawget(_G, "__Adonis_MUTEX"), "This Location:", script:GetFullName())
 else
-	if table.isfrozen and not table.isfrozen(_G) then
+	if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 		rawset(_G, "__Adonis_MUTEX", script:GetFullName())
-	elseif table.isfrozen then
+	else
 		warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
 	end
 
