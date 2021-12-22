@@ -841,7 +841,7 @@ return function(Vargs, GetEnv)
 					Refresh(p, gui, ignore, ...)
 				end
 				if Variables.NotifMessage then
-					RefreshGui("Notif",{
+					RefreshGui("Notif",nil,{
 						Message = Variables.NotifMessage
 					})
 				end
