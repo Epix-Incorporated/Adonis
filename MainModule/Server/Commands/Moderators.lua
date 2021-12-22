@@ -807,7 +807,7 @@ return function(Vargs, env)
 
 		RemoveHats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removehats", "nohats"};
+			Commands = {"removehats", "nohats", "clearhats"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Removes any hats the target is currently wearing";
@@ -826,7 +826,7 @@ return function(Vargs, env)
 
 		RemoveHat = {
 			Prefix = Settings.Prefix;
-			Commands = {"removehat", "nohats"};
+			Commands = {"removehat"};
 			Args = {"player", "accessory name"};
 			Hidden = false;
 			Description = "Removes specific hat(s) the target is currently wearing";
