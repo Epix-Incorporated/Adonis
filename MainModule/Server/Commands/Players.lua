@@ -770,8 +770,8 @@ return function(Vargs, env)
 					{"Month"; os.date("%m %B", ostime)},
 					{"Year"; os.date("%Y", ostime)},
 					{Text = "―――――――――――――――――――――――"},
-					{"Day of the year: "; os.date("%j", ostime)},
-					{"Day of the month: "; os.date("%d", ostime)},
+					{"Day of the year"; os.date("%j", ostime)},
+					{"Day of the month"; os.date("%d", ostime)},
 					{Text = "―――――――――――――――――――――――"},
 				}
 
@@ -786,7 +786,7 @@ return function(Vargs, env)
 					RichText = true;
 					Update = "DateTime";
 					AutoUpdate = 59;
-					Size = {287, 390};
+					Size = {288, 390};
 				})
 			end
 		};
