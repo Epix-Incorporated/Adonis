@@ -13,7 +13,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"uncape", "removedonorcape"};
 			Args = {};
-			Hidden = false;
 			Description = "Remove donor cape";
 			Fun = false;
 			Donors = true;
@@ -27,7 +26,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"cape", "donorcape"};
 			Args = {};
-			Hidden = false;
 			Description = "Get donor cape (remove using "..Settings.PlayerPrefix.."uncape)";
 			Fun = false;
 			Donors = true;
@@ -41,7 +39,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"tshirt", "givetshirt", "donortshirt"};
 			Args = {"ID"};
-			Hidden = false;
 			Description = "Give you the t-shirt that belongs to <ID>";
 			Fun = false;
 			Donors = true;
@@ -78,7 +75,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
 			Args = {};
-			Hidden = false;
 			Description = "Remove the t-shirt you are wearing, if any";
 			Fun = false;
 			Donors = true;
@@ -102,7 +98,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"shirt", "giveshirt", "donorshirt"};
 			Args = {"ID"};
-			Hidden = false;
 			Description = "Give you the shirt that belongs to <ID>";
 			Fun = false;
 			Donors = true;
@@ -131,7 +126,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"pants", "givepants", "donorpants"};
 			Args = {"ID"};
-			Hidden = false;
 			Description = "Give you the pants that belongs to <ID>";
 			Fun = false;
 			Donors = true;
@@ -162,7 +156,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"face", "giveface", "donorface"};
 			Args = {"ID"};
-			Hidden = false;
 			Description = "Gives you the face that belongs to <ID>";
 			Fun = false;
 			Donors = true;
@@ -197,7 +190,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"neon", "donorneon"};
 			Args = {"color"};
-			Hidden = false;
 			Description = "Changes your body material to neon and makes you the (optional) color of your choosing.";
 			Fun = false;
 			Donors = true;
@@ -220,7 +212,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"fire", "donorfire"};
 			Args = {"color (optional)"};
-			Hidden = false;
 			Description = "Gives you fire with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
@@ -263,7 +254,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"sparkles", "donorsparkles"};
 			Args = {"color (optional)"};
-			Hidden = false;
 			Description = "Gives you sparkles with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
@@ -304,7 +294,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"light", "donorlight"};
 			Args = {"color (optional)"};
-			Hidden = false;
 			Description = "Gives you a PointLight with the specified color (if you specify one)";
 			Fun = false;
 			Donors = true;
@@ -339,7 +328,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"particle", "donorparticle"};
 			Args = {"textureid", "startColor3", "endColor3"};
-			Hidden = false;
 			Description = "Put a custom particle emitter on your character";
 			Fun = false;
 			Donors = true;
@@ -403,7 +391,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unparticle", "removeparticles", "undonorparticle"};
 			Args = {};
-			Hidden = false;
 			Description = "Removes donor particles on you";
 			Fun = false;
 			Donors = true;
@@ -418,7 +405,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unfire", "undonorfire"};
 			Args = {};
-			Hidden = false;
 			Description = "Removes donor fire on you";
 			Fun = false;
 			Donors = true;
@@ -434,7 +420,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unsparkles", "undonorsparkles"};
 			Args = {};
-			Hidden = false;
 			Description = "Removes donor sparkles on you";
 			Fun = false;
 			Donors = true;
@@ -450,7 +435,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unlight", "undonorlight"};
 			Args = {};
-			Hidden = false;
 			Description = "Removes donor light on you";
 			Fun = false;
 			Donors = true;
@@ -465,7 +449,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"hat", "gethat", "donorhat"};
 			Args = {"ID"};
-			Hidden = false;
 			Description = "Gives you the hat specified by <ID>";
 			Fun = false;
 			Donors = true;
@@ -516,13 +499,27 @@ return function(Vargs, env)
 				end
 			end
 		};
+																		
+		DonorHatList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"myhats", "hatlist", "hats", "donorhats"};
+			Args = {};
+			Description = "Shows you a list of hats you are currently wearing";
+			Fun = false;
+			Donors = true;
+			AdminLevel = "Donors";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "HatList", {
+					PlayerPrefix = Settings.PlayerPrefix; SplitKey = Settings.SplitKey;
+				})
+			end
+		};
 
 		DonorRemoveHat = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removehat", "removedonorhat"};
-			Args = {"Accessory"};
-			Hidden = false;
-			Description = "Remove any accessories you are currently wearing";
+			Args = {"name"};
+			Description = "Removes a specific accessory you are currently wearing";
 			Fun = false;
 			Donors = true;
 			AdminLevel = "Donors";
@@ -530,9 +527,9 @@ return function(Vargs, env)
 				local hat = plr.Character:FindFirstChild(args[1])
 				if hat and hat:IsA("Accessory") then
 					hat:Destroy()
-					Functions.Hint(args[1].." has been removed", {plr})
+					Functions.Hint(args[1].." has been removed.", {plr})
 				else
-					Functions.Hint(args[1].." is not a valid accessory", {plr})
+					Functions.Hint(args[1].." is not a valid accessory. Run `"..Settings.PlayerPrefix.."myhats` for a list of accessories you are wearing.", {plr})
 				end
 
 			end
@@ -542,7 +539,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removehats", "nohats", "nodonorhats"};
 			Args = {};
-			Hidden = false;
 			Description = "Removes any hats you are currently wearing";
 			Fun = false;
 			Donors = true;
