@@ -836,9 +836,9 @@ return function(Vargs, GetEnv)
 
 				--//GUI loading
 				local MakeGui = Remote.MakeGui
-				local RefreshGui = function(gui, ...)
-					Remote.RemoveGui(p, gui)
-					MakeGui(p, gui, ...)
+				local Refresh = Remote.RefreshGui
+				local RefreshGui = function(gui, ignore, ...)
+					Refresh(p, gui, ignore, ...)
 				end
 				if Variables.NotifMessage then
 					RefreshGui("Notif",{
