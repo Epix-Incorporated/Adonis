@@ -537,7 +537,7 @@ return function(Vargs, env)
 
 		DonorRemoveHats = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"removehats", "nohats", "nodonorhats"};
+			Commands = {"removehats", "nohats", "nodonorhats", "clearhats"};
 			Args = {};
 			Description = "Removes any hats you are currently wearing";
 			Fun = false;
