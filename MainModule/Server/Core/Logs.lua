@@ -322,30 +322,30 @@ return function(Vargs, GetEnv)
 			DateTime = function()
 				-- NonAdmin ListUpdater, no level check
 				local ostime = os.time()
-				local tab = {}
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
+				local tab = {
+					{Text = "―――――――――――――――――――――――"},
+					{"Date"; os.date("%x", ostime)},
+					{"Time"; os.date("%H:%M | %I:%M %p", ostime)},
+					{"Timezone"; os.date("%Z", ostime)},
+					{Text = "―――――――――――――――――――――――"},
+					{"Minute"; os.date("%M", ostime)},
+					{"Hour"; os.date("%H | %I %p" , ostime)},
+					{"Day"; os.date("%d %A", ostime)},
+					{"Week (first Sunday)"; os.date("%U", ostime)},
+					{"Week (first Monday)"; os.date("%W", ostime)},
+					{"Month"; os.date("%m %B", ostime)},
+					{"Year"; os.date("%Y", ostime)},
+					{Text = "―――――――――――――――――――――――"},
+					{"Day of the year: "; os.date("%j", ostime)},
+					{"Day of the month: "; os.date("%d", ostime)},
+					{Text = "―――――――――――――――――――――――"},
+				}
 
-				table.insert(tab,{Text = "Date: "..os.date("%x",ostime)})
-				table.insert(tab,{Text = "Time: "..os.date("%H:%M | %I:%M %p",ostime)})
-				table.insert(tab,{Text = "Timezone: "..os.date("%Z",ostime)})
+				for i, v in ipairs(tab) do
+					if not v[2] then continue end
+					tab[i] = {Text = "<b>"..v[1]..":</b> "..v[2]; Desc = v[2];}
+				end
 
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-
-				table.insert(tab,{Text = "Minute: "..os.date("%M",ostime)})
-				table.insert(tab,{Text = "Hour: "..os.date("%H | %I %p",ostime)})
-				table.insert(tab,{Text = "Day: "..os.date("%d %A",ostime)})
-				table.insert(tab,{Text = "Week (First sunday): "..os.date("%U",ostime)})
-				table.insert(tab,{Text = "Week (First monday): "..os.date("%W",ostime)})
-				table.insert(tab,{Text = "Month: "..os.date("%m %B",ostime)})
-				table.insert(tab,{Text = "Year: "..os.date("%Y",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
-
-				table.insert(tab,{Text = "Day of the year: "..os.date("%j",ostime)})
-				table.insert(tab,{Text = "Day of the month: "..os.date("%d",ostime)})
-
-				table.insert(tab,{Text = "―――――――――――――――――――――――"})
 				return tab
 			end;
 
