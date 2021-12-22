@@ -462,18 +462,22 @@ for ind,loc in pairs({
 --// Init
 return service.NewProxy({
 	__call = function(tab, data)
-		if type(rawget(_G, "__Adonis_MODULE_MUTEX"))=="string" then
+		if type(rawget(_G, "__Adonis_MODULE_MUTEX")) == "string" then
 			warn("\n-----------------------------------------------"
 				.."\nAdonis server-side is already running! Aborting..."
 				.."\n-----------------------------------------------")
 			script:Destroy()
 			return "FAILED"
 		else
-			rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
+			if table.isfrozen and not table.isfrozen(_G) then
+				rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
+			elseif table.isfrozen then
+				warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+			end
 		end
 
 		--// Begin Script Loading
-		setfenv(1,setmetatable({}, {__metatable = unique}))
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
 		if not data or not data.Loader then
