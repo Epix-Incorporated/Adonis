@@ -4136,12 +4136,13 @@ return function(Vargs, env)
 			Description = "Makes a private server that you can teleport yourself and friends to using :place player(s) serverName; Will overwrite servers with the same name; Caps specific";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local place = tonumber(args[2]) or game.PlaceId
-				local code = service.TeleportService:ReserveServer(place)
+				local place = tonumber(args[2]) or game.PlaceId 
+				local filtered = service.Filter(args[1])
+				local code =  service.TeleportService:ReserveServer(place)
 				local servers = Core.GetData("PrivateServers") or {}
-				servers[args[1]] = {Code = code, ID = place}
+				servers[filtered] = {Code = code, ID = place}
 				Core.SetData("PrivateServers", servers)
-				Functions.Hint("Made server "..args[1].." | Place: "..place, {plr})
+				Functions.Hint("Made server "..filtered.." | Place: "..place, {plr})
 			end
 		};
 
