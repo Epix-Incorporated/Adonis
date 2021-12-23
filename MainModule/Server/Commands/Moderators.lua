@@ -2012,7 +2012,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local tools = {}
-				for _, tool in ipairs(Settings.Storage:GetChildren()) do
+				for _, tool in ipairs(if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren()) do
 					if tool:IsA("BackpackItem") then
 						table.insert(tools, tool.Name)
 					end
@@ -2052,14 +2052,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local listforclient={}
-				for i, v in pairs(Variables.InsertList) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
+				local tab = {}
+				for _, v in pairs(Variables.InsertList) do table.insert(tab, v) end
+				for _, v in pairs(HTTP.Trello.InsertList) do table.insert(tab, v) end
+				for i, v in pairs(tab) do
+					tab[i] = {Text = v.Name; Desc = v.ID;}
 				end
-				for i, v in pairs(HTTP.Trello.InsertList) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
-				end
-				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = listforclient;})
+				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab;})
 			end
 		};
 
@@ -2189,13 +2188,9 @@ return function(Vargs, env)
 						Routine(Remote.RemoveGui, v, true)
 					else
 						Routine(function()
-							Remote.RemoveGui(v, "Message")
-							Remote.RemoveGui(v, "Hint")
-							Remote.RemoveGui(v, "Notification")
-							Remote.RemoveGui(v, "PM")
-							Remote.RemoveGui(v, "Output")
-							Remote.RemoveGui(v, "Effect")
-							Remote.RemoveGui(v, "Alert")
+							for _, gui in ipairs({"Message", "Hint", "Notification", "PM", "Output", "Effect", "Alert"}) do
+								Remote.RemoveGui(v, gui)
+							end
 						end)
 					end
 				end
@@ -2817,13 +2812,16 @@ return function(Vargs, env)
 
 		Clone = {
 			Prefix = Settings.Prefix;
-			Commands = {"clone", "cloneplayer"};
-			Args = {"player"};
+			Commands = {"clone", "cloneplayer", "clonecharacter"};
+			Args = {"player", "copies (max: 50)"};
 			Hidden = false;
 			Description = "Clones the target player(s)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				if tonumber(args[2]) and tonumber(args[2]) > 50 then
+					error("Cannot make more than 50 clones.")
+				end
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						local Character = v.Character
@@ -2831,35 +2829,36 @@ return function(Vargs, env)
 
 						if Humanoid then
 							Character.Archivable = true
+							for _ = 1, tonumber(args[2]) or 1 do
+								local cl = Character:Clone()
+								table.insert(Variables.Objects, cl)
 
-							local cl = Character:Clone()
-							table.insert(Variables.Objects, cl)
+								local Animate
+								local anim = cl:FindFirstChild("Animate")
+								if anim then
+									Animate = Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+									Animate:ClearAllChildren()
+									for _, v in ipairs(anim:GetChildren()) do
+										v.Parent = Animate
+									end
+									anim:Destroy()
 
-							local Animate
-							local anim = cl:FindFirstChild("Animate")
-							if anim then
-								Animate = Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
-								Animate:ClearAllChildren()
-								for _, v in ipairs(anim:GetChildren()) do
-									v.Parent = Animate
+									Animate.Parent = cl
 								end
-								anim:Destroy()
 
-								Animate.Parent = cl
-							end
+								if Character.PrimaryPart then
+									cl:SetPrimaryPartCFrame(Character.PrimaryPart.CFrame)
+								end
+								if Animate then
+									Animate.Disabled = false
+								end
+								cl:FindFirstChild("Humanoid").Died:Connect(function()
+									cl:Destroy()
+								end)
 
-							if Character.PrimaryPart then
-								cl:SetPrimaryPartCFrame(Character.PrimaryPart.CFrame)
+								cl.Archivable = false
+								cl.Parent = workspace
 							end
-							if Animate then
-								Animate.Disabled = false
-							end
-							cl:FindFirstChild("Humanoid").Died:Connect(function()
-								cl:Destroy()
-							end)
-
-							cl.Archivable = false
-							cl.Parent = workspace
 						end
 					end)
 				end
@@ -2885,11 +2884,11 @@ return function(Vargs, env)
 					target_character = target_character:Clone()
 				end
 
-				assert(target_character, "Targeted player doesn't have a character or has a locked character")
+				assert(target_character, "Target player doesn't have a character or has a locked character")
 
 				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
 
-				assert(target_humandescrip, "Targeted player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
+				assert(target_humandescrip, "Target player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
 
 				target_humandescrip.Archivable = true
 				target_humandescrip = target_humandescrip:Clone()
@@ -2899,9 +2898,9 @@ return function(Vargs, env)
 						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
 							v.Character.Archivable = true
 
-							for d,e in pairs(v.Character:GetChildren()) do
-								if e:IsA"Accessory" then
-									e:Destroy()
+							for _, a in pairs(v.Character:GetChildren()) do
+								if a:IsA("Accessory") then
+									a:Destroy()
 								end
 							end
 
@@ -2909,9 +2908,9 @@ return function(Vargs, env)
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
 							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
 
-							for d,e in pairs(target_character:GetChildren()) do
-								if e:IsA"Accessory" then
-									e:Clone().Parent = v.Character
+							for _, a in pairs(target_character:GetChildren()) do
+								if a:IsA("Accessory") then
+									a:Clone().Parent = v.Character
 								end
 							end
 						end
@@ -3620,7 +3619,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local found = {}
 				local temp = service.New("Folder")
-				for a, tool in pairs(Settings.Storage:GetChildren()) do
+				for _, tool in pairs(if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren()) do
 					if tool:IsA("BackpackItem") then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name),1,#args[2])==string.lower(args[2]) then
 							tool.Archivable = true
@@ -3633,7 +3632,7 @@ return function(Vargs, env)
 						end
 					end
 				end
-				if #found>0 then
+				if #found > 0 then
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						for k, t in pairs(found) do
 							t:Clone().Parent = v.StarterGear
@@ -3660,7 +3659,7 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, string.lower(args[1]))) do
 					local StarterGear = v:FindFirstChildOfClass("StarterGear")
 					if StarterGear then
-						for a,tool in ipairs(StarterGear:GetChildren()) do
+						for _, tool in ipairs(StarterGear:GetChildren()) do
 							if tool:IsA("BackpackItem") then
 								if string.lower(args[2]) == "all" or string.find(string.lower(tool.Name), string.lower(args[2])) == 1 then
 									tool:Destroy()
@@ -3683,7 +3682,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local found = {}
 				local temp = service.New("Folder")
-				for a, tool in pairs(Settings.Storage:GetChildren()) do
+				for _, tool in pairs(if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren()) do
 					if tool:IsA("BackpackItem") then
 						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
 							tool.Archivable = true
@@ -3696,7 +3695,7 @@ return function(Vargs, env)
 						end
 					end
 				end
-				if #found>0 then
+				if #found > 0 then
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						for k, t in pairs(found) do
 							t:Clone().Parent = v.Backpack
@@ -3720,16 +3719,30 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local p1 = service.GetPlayers(plr, args[1])
-				local p2 = service.GetPlayers(plr, args[2])
-				for i, v in pairs(p1) do
-					for k, m in pairs(p2) do
-						for j, n in pairs(v.Backpack:GetChildren()) do
-							local b = n:clone()
-							n.Parent = m.Backpack
+				local victims = service.GetPlayers(plr, args[1])
+				local stealers = service.GetPlayers(plr, args[2])
+				for _, victim in pairs(victims) do
+					task.defer(function()
+						local backpack = victim:FindFirstChildOfClass("Backpack")
+						if not backpack then continue end
+						local character = victim.Character
+						if character then
+							local hum = character:FindFirstChildOfClass("Humanoid")
+							if hum then hum:UnequipTools() end
 						end
-					end
-					v.Backpack:ClearAllChildren()
+						for _, p in pairs(stealers) do
+							local destination = p:FindFirstChildOfClass("Backpack")
+							if not destination then continue end
+							for _, tool in pairs(backpack:GetChildren()) do
+								if #stealers > 1 then
+									tool:Clone().Parent = destination
+								else
+									tool.Parent = destination
+								end
+							end
+						end
+						backpack:ClearAllChildren()
+					end)
 				end
 			end
 		};
@@ -3746,9 +3759,11 @@ return function(Vargs, env)
 				local p1 = service.GetPlayers(plr, args[1])
 				local p2 = service.GetPlayers(plr, args[2])
 				for i, v in pairs(p1) do
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if not backpack then continue end
 					for k, m in pairs(p2) do
-						for j, n in pairs(v.Backpack:GetChildren()) do
-							n:Clone().Parent = m.Backpack
+						for j, n in pairs(backpack:GetChildren()) do
+							n:Clone().Parent = m:FindFirstChildOfClass("Backpack")
 						end
 					end
 				end
