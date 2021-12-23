@@ -145,6 +145,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
+	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
@@ -346,6 +347,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
 	descs.Storage = [[ Where things like tools are stored ]]
+	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
