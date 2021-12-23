@@ -6024,6 +6024,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local key = math.random()
 				local num = tonumber(args[2]) or 1
+				assert(num <= 50, "Cannot spawn more than 50 bots!")
 				local health = tonumber(args[6]) or 100
 				local speed = tonumber(args[7]) or 16
 				local damage = tonumber(args[8]) or 5
