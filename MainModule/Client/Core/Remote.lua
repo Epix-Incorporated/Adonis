@@ -341,6 +341,19 @@ return function()
 			RemoveUI = function(args)
 				UI.Remove(args[1],args[2])
 			end;
+				
+			RefreshUI = function(args)
+				local guiName = args[1]
+				local ignore = args[2]
+				
+				UI.Remove(guiName,ignore)
+				
+				local themeData = args[3]
+				local guiData = args[4]
+
+				Variables.LastServerTheme = themeData or Variables.LastServerTheme;
+				UI.Make(guiName,guiData,themeData)
+			end;
 
 			StartLoop = function(args)
 				local name = args[1]
