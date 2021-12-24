@@ -779,7 +779,7 @@ return function(Vargs, env)
 						Humanoid.MaxHealth = math.huge
 						Humanoid.Health = 9e9
 						if Settings.PlayerCommandFeedback then
-							Functions.Hint("Character God mode has been enabled.", {v})
+							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, "Info")
 						end
 					end
 				end
@@ -802,7 +802,7 @@ return function(Vargs, env)
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
 						if Settings.PlayerCommandFeedback then
-							Functions.Hint("Character God mode has been disabled.", {v})
+							Functions.Notification("God mode", "Character God mode has been disabled.", {v}, 15, "Info")
 						end
 					end
 				end
@@ -2380,7 +2380,7 @@ return function(Vargs, env)
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
 					if Settings.PlayerCommandFeedback then
-						Functions.Hint("Character noclip has been enabled.", {p})
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
 					end
 				end
 			end
@@ -2422,7 +2422,7 @@ return function(Vargs, env)
 						wait(0.5)
 						old:Destroy()
 						if Settings.PlayerCommandFeedback then
-							Functions.Hint("Character noclip has been disabled.", {p})
+							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 						end 
 					end
 				end
@@ -3951,7 +3951,11 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.WalkSpeed = args[2] or 16
 						if Settings.PlayerCommandFeedback then
-							Functions.Hint("Character walk speed has been set to ".. (args[2] or 16), {v})
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = "Character walk speed has been set to ".. (args[2] or 16);
+								Time = 15;
+							})
 						end
 					end
 				end
@@ -3974,7 +3978,7 @@ return function(Vargs, env)
 						if string.sub(string.lower(tm.Name), 1,#args[2]) == string.lower(args[2]) then
 							v.Team = tm
 							if Settings.PlayerCommandFeedback then
-								Functions.Hint("You are now on the '"..tm.Name.."' team.", {v})
+								Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
 							end
 						end
 					end
@@ -4056,7 +4060,7 @@ return function(Vargs, env)
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
 					if Settings.PlayerCommandFeedback then
-						Functions.Hint("Your team has been reset and you are now on the Neutral team.", {player})
+						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
 					end
 				end
 			end
@@ -5118,7 +5122,11 @@ return function(Vargs, env)
 							if sVal then
 								sVal.Value = speed
 								if Settings.PlayerCommandFeedback then
-									Functions.Hint("Character fly speed has been set to "..speed, {v})
+									Remote.MakeGui(v, "Notification", {
+										Title = "Notification";
+										Message = "Character fly speed has been set to "..speed;
+										Time = 15;
+									})
 								end
 							end
 						end
@@ -5943,7 +5951,11 @@ return function(Vargs, env)
 					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
 					if Settings.PlayerCommandFeedback then
-						Functions.Hint("Freecam has been enabled. Press Shift+P to toggle freecam on or off.", {v})
+						Remote.MakeGui(v, "Notification", {
+							Title = "Notification";
+							Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
+							Time = 15;
+						})
 					end
 				end
 			end
@@ -5972,7 +5984,11 @@ return function(Vargs, env)
 						service.Debris:AddItem(freecam, 2)
 
 						if Settings.PlayerCommandFeedback then
-							Functions.Hint("Freecam has been disabled.", {v})
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = "Freecam has been disabled.";
+								Time = 15;
+							})
 						end
 					end
 				end
