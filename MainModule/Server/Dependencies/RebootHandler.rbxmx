@@ -38,9 +38,11 @@
 
 		warn("CLEANING")
 
-		_G.Adonis = nil;
-		_G.__Adonis_MODULE_MUTEX = nil;
-		_G.__Adonis_MUTEX = nil;
+		if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+			rawset(_G, Adonis, nil)
+			rawset(_G, __Adonis_MODULE_MUTEX, nil)
+			rawset(_G, __Adonis_MUTEX, nil)
+		end
 
 		warn("_G VARIABLES CLEARED")
 
