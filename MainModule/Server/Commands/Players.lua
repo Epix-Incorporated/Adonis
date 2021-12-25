@@ -758,29 +758,35 @@ return function(Vargs, env)
 				local ostime = os.time()
 				local tab = {
 					{Text = "―――――――――――――――――――――――"},
-					{Text = "Date: "..os.date("%x", ostime)},
-					{Text = "Time: "..os.date("%H:%M | %I:%M %p", ostime)},
-					{Text = "Timezone: "..os.date("%Z", ostime)},
+					{"Date"; os.date("%x", ostime)},
+					{"Time"; os.date("%H:%M | %I:%M %p", ostime)},
+					{"Timezone"; os.date("%Z", ostime)},
 					{Text = "―――――――――――――――――――――――"},
-					{Text = "Minute: "..os.date("%M", ostime)},
-					{Text = "Hour: "..os.date("%H | %I %p" , ostime)},
-					{Text = "Day: "..os.date("%d %A", ostime)},
-					{Text = "Week (First sunday): "..os.date("%U", ostime)},
-					{Text = "Week (First monday): "..os.date("%W", ostime)},
-					{Text = "Month: "..os.date("%m %B", ostime)},
-					{Text = "Year: "..os.date("%Y", ostime)},
+					{"Minute"; os.date("%M", ostime)},
+					{"Hour"; os.date("%H | %I %p" , ostime)},
+					{"Day"; os.date("%d %A", ostime)},
+					{"Week (first Sunday)"; os.date("%U", ostime)},
+					{"Week (first Monday)"; os.date("%W", ostime)},
+					{"Month"; os.date("%m %B", ostime)},
+					{"Year"; os.date("%Y", ostime)},
 					{Text = "―――――――――――――――――――――――"},
-					{Text = "Day of the year: "..os.date("%j", ostime)},
-					{Text = "Day of the month: "..os.date("%d", ostime)},
+					{"Day of the year"; os.date("%j", ostime)},
+					{"Day of the month"; os.date("%d", ostime)},
 					{Text = "―――――――――――――――――――――――"},
 				}
+
+				for i, v in ipairs(tab) do
+					if not v[2] then continue end
+					tab[i] = {Text = "<b>"..v[1]..":</b> "..v[2]; Desc = v[2];}
+				end
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Date";
 					Table = tab;
+					RichText = true;
 					Update = "DateTime";
 					AutoUpdate = 59;
-					Size = {270, 390};
+					Size = {288, 390};
 				})
 			end
 		};
