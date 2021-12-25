@@ -112,30 +112,32 @@ return function()
 	end
 
 	coroutine.wrap(function()
-		local connection
-		local idledEvent = service.UnWrap(Player).Idled
-		connection = idledEvent:Connect(function(time)
-			if type(time) ~= "number" or not (time > 0) then
-				idleTamper("Invalid time data")
-			elseif time > 30 * 60 then
-				Detected("kick", "Anti-idle detected")
+		while true do
+			local connection
+			local idledEvent = service.UnWrap(Player).Idled
+			connection = idledEvent:Connect(function(time)
+				if type(time) ~= "number" or not (time > 0) then
+					idleTamper("Invalid time data")
+				elseif time > 30 * 60 then
+					Detected("kick", "Anti-idle detected")
+				end
+			end)
+
+			if
+				type(connection) ~= "userdata" or
+				not rawequal(typeof(connection), "RBXScriptConnection") or
+				connection.Connected ~= true or
+				not rawequal(type(connection.Disconnect), "function") or
+				not rawequal(typeof(idledEvent), "RBXScriptSignal") or
+				not rawequal(type(idledEvent.Connect), "function") or
+				not rawequal(type(idledEvent.Wait), "function")
+			then
+				idleTamper("Userdata disrepencies detected")
 			end
-		end)
 
-		if
-			type(connection) ~= "userdata" or
-			not rawequal(typeof(connection), "RBXScriptConnection") or
-			connection.Connected ~= true or
-			not rawequal(type(connection.Disconnect), "function") or
-			not rawequal(typeof(idledEvent), "RBXScriptSignal") or
-			not rawequal(type(idledEvent.Connect), "function") or
-			not rawequal(type(idledEvent.Wait), "function")
-		then
-			idleTamper("Userdata disrepencies detected")
+			task.wait(200)
+			connection:Disconnect()
 		end
-
-		task.wait(200)
-		connection:Disconnect()
 	end)()
 
 	do
