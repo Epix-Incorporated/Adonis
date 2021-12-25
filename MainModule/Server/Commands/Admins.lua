@@ -1284,7 +1284,7 @@ return function(Vargs, env)
 
 		TrelloBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"trelloban", "tban"};
+			Commands = {"trelloban"};
 			Args = {"player", "reason"};
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Hidden = false;
@@ -1324,6 +1324,7 @@ return function(Vargs, env)
 						pcall(function() v:Kick(reason) end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
+							Icon = server.MatIcons.Done;
 							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
 							Icon = "rbxassetid://7536784790";
 							Time = 5;
