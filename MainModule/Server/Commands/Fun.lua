@@ -4576,7 +4576,7 @@ return function(Vargs, env)
 
 								-- Make chosen parts transparent
 								for k,v in pairs(partInput) do
-									if (v ~= "limbs" or v ~= "face" or v ~= "accessories") then
+									if not (v == "limbs" or v == "face" or v == "accessories") then
 										local part = player.Character:FindFirstChild(v)
 										if (part ~= nil and part:IsA("BasePart")) then
 											part.Transparency = args[3]

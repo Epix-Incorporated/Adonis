@@ -712,7 +712,7 @@ return function(Vargs, GetEnv)
 
 			for ind,admin in pairs(HTTP.Trello.Bans) do
 				if doCheck(p, admin) or banCheck(p, admin) then
-					return true, (type(admin) == "table" and admin.Reason)
+					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
 				end
 			end
 

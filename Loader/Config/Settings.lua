@@ -145,6 +145,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
+	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
@@ -246,13 +247,14 @@ local descs = {};			--// Contains settings descriptions
 			-- Alternative option: AdminLevel = "Moderators"
 			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
 			Hidden = true;									--// Should this command be hidden from the command list?
-			Function = function(plr, args, data)	--// The command's function; This is the actual code of the command which runs when you run the command
+			Disabled = true;								--// If set to true this command won't be usable.
+			Function = function(plr: Player, args: {string}, data)	--// The command's function; This is the actual code of the command which runs when you run the command
 				--// "plr" is the player running the command
-				--// "args" is a table containing command arguments supplied by the user
+				--// "args" is an array of strings containing command arguments supplied by the user
 				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level)
-				print("This is 'arg1': ".. tostring(args[1]));
-				print("This is 'arg2': ".. tostring(args[2]));
-				print("This is 'etc'(arg 3): ".. tostring(args[3]));
+				print("This is 'arg1': ".. tostring(args[1]))
+				print("This is 'arg2': ".. tostring(args[2]))
+				print("This is 'etc'(arg 3): ".. tostring(args[3]))
 				error("this is an example error :o !")
 			end
 		};
@@ -288,6 +290,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.FunCommands = true			-- Are fun commands enabled?
 	settings.PlayerCommands = true 	-- Are players commands enabled?
+	settings.PlayerCommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
 	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
@@ -346,6 +349,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
 	descs.Storage = [[ Where things like tools are stored ]]
+	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
@@ -399,6 +403,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.FunCommands = [[ Are fun commands enabled? ]]
 	descs.PlayerCommands = [[ Are players commands enabled? ]]
+	descs.PlayerCommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 	descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 	descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 
@@ -495,6 +500,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"FunCommands";
 		"PlayerCommands";
+		"PlayerCommandFeedback";
 		"CrossServerCommands";
 		"ChatCommands";
 		"CreatorPowers";

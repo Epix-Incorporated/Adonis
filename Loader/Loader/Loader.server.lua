@@ -27,7 +27,7 @@ local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-warn("Loading...");
+warn("Loading...")
 
 if rawget(_G, "__Adonis_MUTEX") and type(rawget(_G, "__Adonis_MUTEX")) == "string" then
 	warn("Adonis is already running! Aborting...; Running Location:", rawget(_G, "__Adonis_MUTEX"), "This Location:", script:GetFullName())
@@ -90,9 +90,9 @@ else
 		setTab = {}
 	end
 
-	data.Settings = setTab.Settings;
-	data.Descriptions = setTab.Description;
-	data.Order = setTab.Order;
+	data.Settings = setTab.Settings
+	data.Descriptions = setTab.Description
+	data.Order = setTab.Order
 
 	for _, Plugin in ipairs(plugins:GetChildren()) do
 		if Plugin:IsA("Folder") then
@@ -111,7 +111,11 @@ else
 	end
 
 	if tonumber(moduleId) then
-		warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+		if game:GetService("RunService"):IsStudio() then
+			warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+		else
+			warn("Requiring Adonis MainModule. Model URL: ", "https://www.roblox.com/library/".. moduleId)
+		end
 	end
 
 	local module = require(moduleId)

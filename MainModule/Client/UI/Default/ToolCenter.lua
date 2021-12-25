@@ -154,7 +154,8 @@ return function(data)
 				ToolTip = "("..plr.DisplayName..")";
 				TextXAlignment = "Left";
 				OnClick = function(self)
-					if self.AutoButtonColor then
+					if self.Active then
+						self.Active = false
 						self.AutoButtonColor = false
 						selected = plr
 						inv.Visible = true
@@ -172,6 +173,7 @@ return function(data)
 						inv.Visible = false
 						for _, v in pairs(connections) do v:Disconnect() end
 						self.AutoButtonColor = true
+						self.Active = true
 						self.TextColor3 = Color3.new(1, 1, 1)
 					end
 				end,
