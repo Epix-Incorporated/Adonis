@@ -1,6 +1,4 @@
-client = nil
-service = nil
-Routine = nil
+client, service, Routine = nil, nil, nil
 
 local function boolToStr(bool)
 	return bool and "Yes" or "No"
@@ -129,9 +127,9 @@ return function(data)
 			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
 			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
 			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
-			{player:GetRankInGroup(886423) == 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
+			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
-			{player.UserId == (1237666 or 698712377), "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
+			{player.UserId == 1237666 or player.UserId == 698712377, "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
 			{player:IsInGroup(3514227), "DevForum Member", "rbxassetid://6383940476", "User is a member of the Roblox Developer Forum"},
 			}) do
@@ -322,7 +320,7 @@ return function(data)
 				if (groupName:sub(1, #search.Text):lower() == search.Text:lower()) or (groupInfo.Role:sub(1, #search.Text):lower() == search.Text:lower()) then
 					local entry = scroller:Add("TextLabel", {
 						Text = "";
-						ToolTip = "ID: "..groupInfo.Id.." | Rank: "..groupInfo.Rank.." | Is Primary Group: "..boolToStr(groupInfo.IsPrimary);
+						ToolTip = string.format("%sID: %d | Rank: %d%s", groupInfo.IsPrimary and "Primary Group | " or "", groupInfo.Id, groupInfo.Rank, groupInfo.Rank == 255 and " (Owner)" or "");
 						BackgroundTransparency = ((i-1)%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, (30*(i-1)));
@@ -336,7 +334,7 @@ return function(data)
 						ClipsDescendants = false;
 						TextXAlignment = "Right";
 					})
-					entry:Add("TextLabel", {
+					local groupLabel = entry:Add("TextLabel", {
 						Text = groupName;
 						BackgroundTransparency = 1;
 						Size = UDim2.new(1, -50-rankLabel.TextBounds.X, 1, 0);
@@ -344,6 +342,11 @@ return function(data)
 						TextXAlignment = "Left";
 						TextTruncate = "AtEnd";
 					})
+					if groupInfo.IsPrimary then
+						groupLabel.TextColor3 = Color3.new(0.666667, 1, 1)
+					elseif groupInfo.Rank >= 255 then
+						groupLabel.TextColor3 = Color3.new(1, 1, 0.5)
+					end
 					Routine(function()
 						entry:Add("ImageLabel", {
 							Image = groupInfo.EmblemUrl;
@@ -389,8 +392,8 @@ return function(data)
 				Text = "  "..v[1]..": ";
 				ToolTip = v[3];
 				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-				Size = UDim2.new(1, -10, 0, 30);
-				Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+				Size = UDim2.new(1, -10, 0, 25);
+				Position = UDim2.new(0, 5, 0, (25*(i-1))+5);
 				TextXAlignment = "Left";
 			}):Add("TextLabel", {
 				Text = v[2];
@@ -406,8 +409,8 @@ return function(data)
 			Text = "View Tools";
 			ToolTip = string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name);
 			BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-			Size = UDim2.new(1, -10, 0, 35);
-			Position = UDim2.new(0, 5, 0, (30*(i-1))+10);
+			Size = UDim2.new(1, -10, 0, 30);
+			Position = UDim2.new(0, 5, 0, (25*(i-1))+10);
 			OnClicked = function(self)
 				if self.Active then
 					self.Active = false

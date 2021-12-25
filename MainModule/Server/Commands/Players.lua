@@ -77,7 +77,7 @@ return function(Vargs, env)
 
 		CommandInfo = {
 			Prefix = Settings.Prefix;
-			Commands = {"cmdinfo", "commandinfo", "cmddetails"};
+			Commands = {"cmdinfo", "commandinfo", "cmddetails", "commanddetails"};
 			Args = {"command"};
 			Description = "Shows you information about a specific command";
 			AdminLevel = "Players";
@@ -85,34 +85,40 @@ return function(Vargs, env)
 				assert(args[1], "No command provided")
 
 				local commands = Admin.SearchCommands(plr, "all")
-				local cmd
+				local cmd, ind
 				for i, v in pairs(commands) do
 					for _, p in ipairs(v.Commands) do
-						if p:lower() == args[1]:lower() then
+						if (v.Prefix or "")..p:lower() == args[1]:lower() then
 							cmd = v
+							ind = i
 							break
 						end
 					end
 				end
-				assert(cmd, "Command not found / don't include prefix")
+				assert(cmd, "Command '"..args[1].."' not found")
+		
+				local function formatStrForRichText(str: string): string
+					return str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
+				end
 
 				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
 				if cmdArgs == "" then cmdArgs = "-" end
-				Remote.MakeGui(plr, "List",
-					{
-						Title = "Command Info";
-						Table = {
-							{Text = "Prefix: "..cmd.Prefix, Desc = "Prefix used to run the command"},
-							{Text = "Commands: "..table.concat(cmd.Commands, ", "), Desc = "Valid default aliases for the command"},
-							{Text = "Arguments: "..cmdArgs, Desc = "Parameters taken by the command"},
-							{Text = "Admin Level: "..cmd.AdminLevel.." ("..Admin.LevelToListName(cmd.AdminLevel)..")", Desc = "Rank required to run the command"},
-							{Text = "Fun: "..tostring(cmd.Fun and "Yes" or "No"), Desc = "Is the command fun?"},
-							{Text = "Hidden: "..tostring(cmd.Hidden and "Yes" or "No"), Desc = "Is the command hidden from the command list?"},
-							{Text = "Description: "..cmd.Description, Desc = "Command description"}
-						};
-						Size = {400,220}
-					}
-				)
+				Remote.MakeGui(plr, "List", {
+					Title = "Command Info";
+					Icon = server.MatIcons.Info;
+					Table = {
+						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
+						{Text = "<b>Commands:</b> "..formatStrForRichText(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
+						{Text = "<b>Arguments:</b> "..formatStrForRichText(cmdArgs), Desc = "Parameters taken by the command"},
+						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..formatStrForRichText(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
+						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
+						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
+						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
+					};
+					RichText = true;
+					Size = {400, 225};
+				})
 			end
 		};
 
@@ -434,7 +440,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you rejoin the server";
 			Fun = false;
-			NoStudio = true; --Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
+			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
@@ -448,7 +454,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Makes you follow the player you gave the username of to the server they are in";
 			Fun = false;
-			NoStudio = true; --TeleportService cannot be used in Roblox Studio
+			NoStudio = true; -- TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
@@ -597,7 +603,7 @@ return function(Vargs, env)
 			Commands = {"info", "about", "userpanel"};
 			Args = {};
 			Hidden = false;
-			Description = "Shows info about the script (Adonis)";
+			Description = "Shows info about the admin system (Adonis)";
 			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -646,7 +652,7 @@ return function(Vargs, env)
 
 		OnlineFriends = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"onlinefriends", "friendsonline"};
+			Commands = {"onlinefriends", "friendsonline", "friends"};
 			Args = {};
 			Description = "Shows a list of your friends who are currently online";
 			Hidden = false;
@@ -654,6 +660,19 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Friends")
+			end
+		};
+		
+		BlockedUsers = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"blockedusers", "blockedplayers", "blocklist"};
+			Args = {};
+			Description = "Shows a list of people you've blocked on Roblox";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "BlockedUsers")
 			end
 		};
 
@@ -891,26 +910,26 @@ return function(Vargs, env)
 					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
 				} or nil
 
-					Remote.MakeGui(plr, "ServerDetails", {
-						CreatorId = game.CreatorId;
-						PrivateServerId = game.PrivateServerId;
-						PrivateServerOwnerId = game.PrivateServerOwnerId;
-						ServerStartTime = server.ServerStartTime;
-						ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
-						ServerInternetInfo = serverInfo;
-						WorkspaceInfo = (Admin.CheckAdmin(plr) and {
-							ObjectCount = #Variables.Objects;
-							CameraCount = #Variables.Cameras;
-							NilPlayerCount = nilPlayers;
-							HttpEnabled = HTTP.CheckHttp();
-							LoadstringEnabled = HTTP.LoadstringEnabled;
-						}) or nil;
-						Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
-						Donors = donorList;
-						CmdPrefix = Settings.Prefix;
-						CmdPlayerPrefix = Settings.PlayerPrefix;
-						SplitKey = Settings.SplitKey;
-					})
+				Remote.MakeGui(plr, "ServerDetails", {
+					CreatorId = game.CreatorId;
+					PrivateServerId = game.PrivateServerId;
+					PrivateServerOwnerId = game.PrivateServerOwnerId;
+					ServerStartTime = server.ServerStartTime;
+					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
+					ServerInternetInfo = serverInfo;
+					WorkspaceInfo = (Admin.CheckAdmin(plr) and {
+						ObjectCount = #Variables.Objects;
+						CameraCount = #Variables.Cameras;
+						NilPlayerCount = nilPlayers;
+						HttpEnabled = HTTP.CheckHttp();
+						LoadstringEnabled = HTTP.LoadstringEnabled;
+					}) or nil;
+					Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
+					Donors = donorList;
+					CmdPrefix = Settings.Prefix;
+					CmdPlayerPrefix = Settings.PlayerPrefix;
+					SplitKey = Settings.SplitKey;
+				})
 			end
 		};
 
