@@ -393,6 +393,22 @@ return function(Vargs, env)
 			end
 		};
 
+		ForceRejoin = {
+			Prefix = Settings.Prefix;
+			Commands = {"forcerejoin"};
+			Args = {"player"};
+			Description = "Forces target player(s) to rejoin the server, same as them running !rejoin";
+			Hidden = false;
+			Fun = false;
+			NoStudio = true;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, v)
+				end
+			end
+		};
+
 		FullShutdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"fullshutdown", "globalshutdown"};
