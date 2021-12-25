@@ -155,7 +155,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				assert(args[2], "You need to provide a message to the player")
+				assert(args[2], "Missing message")
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Notification", {
@@ -193,7 +193,7 @@ return function(Vargs, env)
 			Description = "Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = assert(tonumber(args[1]), "Enter a time for countdown")
+				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
 
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
@@ -269,8 +269,8 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "You need to specify the amount of time")
-				assert(args[2], "You forgot to supply a message!")
+				assert(args[1], "Missing or invalid time amount")
+				assert(args[2], "Missing message")
 				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
@@ -787,7 +787,9 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = math.huge
 						Humanoid.Health = 9e9
-						Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, 7510999669)
+						if Settings.PlayerCommandFeedback then
+							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, "Info")
+						end
 					end
 				end
 			end
@@ -808,7 +810,9 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
-						Functions.Notification("God mode", "Character God mode has been disabled.", {v}, 15, 7510999669)
+						if Settings.PlayerCommandFeedback then
+							Functions.Notification("God mode", "Character God mode has been disabled.", {v}, 15, "Info")
+						end
 					end
 				end
 			end
@@ -2407,7 +2411,9 @@ return function(Vargs, env)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
-					Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, 7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
+					if Settings.PlayerCommandFeedback then
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+					end
 				end
 			end
 		};
@@ -2447,7 +2453,9 @@ return function(Vargs, env)
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
-						Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, 7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
+						if Settings.PlayerCommandFeedback then
+							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
+						end 
 					end
 				end
 			end
@@ -3994,11 +4002,13 @@ return function(Vargs, env)
 
 					if Humanoid then
 						Humanoid.WalkSpeed = args[2] or 16
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "Character walk speed has been set to ".. (args[2] or 16);
-							Time = 15;
-						})
+						if Settings.PlayerCommandFeedback then
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = "Character walk speed has been set to ".. (args[2] or 16);
+								Time = 15;
+							})
+						end
 					end
 				end
 			end
@@ -4019,7 +4029,9 @@ return function(Vargs, env)
 					for a, tm in ipairs(service.Teams:GetChildren()) do
 						if string.sub(string.lower(tm.Name), 1,#args[2]) == string.lower(args[2]) then
 							v.Team = tm
-							Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, 7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
+							if Settings.PlayerCommandFeedback then
+								Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+							end
 						end
 					end
 				end
@@ -4099,7 +4111,9 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
-					Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, 7510999669) -- Functions.Notification(title,message,player,time,icon) - note that icon is the AssetId without "rbxassetid://" at the start
+					if Settings.PlayerCommandFeedback then
+						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+					end
 				end
 			end
 		};
@@ -5159,11 +5173,13 @@ return function(Vargs, env)
 							local sVal = scr:FindFirstChild("Speed")
 							if sVal then
 								sVal.Value = speed
-								Remote.MakeGui(v, "Notification", {
-									Title = "Notification";
-									Message = "Character fly speed has been set to "..speed;
-									Time = 15;
-								})
+								if Settings.PlayerCommandFeedback then
+									Remote.MakeGui(v, "Notification", {
+										Title = "Notification";
+										Message = "Character fly speed has been set to "..speed;
+										Time = 15;
+									})
+								end
 							end
 						end
 					end
@@ -5986,11 +6002,13 @@ return function(Vargs, env)
 					freecam.ResetOnSpawn = false
 					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
-					Remote.MakeGui(v, "Notification", {
-						Title = "Notification";
-						Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
-						Time = 15;
-					})
+					if Settings.PlayerCommandFeedback then
+						Remote.MakeGui(v, "Notification", {
+							Title = "Notification";
+							Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
+							Time = 15;
+						})
+					end
 				end
 			end
 		};
@@ -6017,11 +6035,13 @@ return function(Vargs, env)
 						Remote.Send(v, "Function", "SetView", "reset")
 						service.Debris:AddItem(freecam, 2)
 
-						Remote.MakeGui(v, "Notification", {
-							Title = "Notification";
-							Message = "Freecam has been disabled.";
-							Time = 15;
-						})
+						if Settings.PlayerCommandFeedback then
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = "Freecam has been disabled.";
+								Time = 15;
+							})
+						end
 					end
 				end
 			end

@@ -810,13 +810,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notification = function(title,message,players,tim,icon) -- note that icon is the AssetId without "rbxassetid://" at the start
+		Notification = function(title,message,players,tim,icon)
 			for i,v in pairs(players) do
 				Remote.MakeGui(v,"Notification",{
 					Title = title;
 					Message = message;
 					Time = tim;
-					Icon = string.format("rbxassetid://%d", icon or "7510999669") -- use default 'i' icon if icon argument is missing
+					Icon = server.MatIcons[icon or "Info"]  -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
