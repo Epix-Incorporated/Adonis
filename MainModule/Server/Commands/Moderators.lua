@@ -4410,6 +4410,64 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		MassBring = {
+			Prefix = Settings.Prefix;
+			Commands = {"massbring", "bringrows", "bringlines"};
+			Args = {"player(s)", "lines (default: 3)"};
+			Description = "Brings the target players and positions them evenly in specified lines";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(plr.Character, "Your character is missing.")
+				local players = service.GetPlayers(plr, args[1])
+				local lines = tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, #players) or 3
+				for l = 1, lines do
+					local offsetX = 0
+					if l == 1 then
+						offsetX = 0
+					elseif l % 2 == 1 then
+						offsetX = -(math.ceil((l - 2)/2)*4)
+					else
+						offsetX = (math.ceil(l / 2))*4
+					end
+					for i = (l-1)*math.floor(#players/lines)+1, l*math.floor(#players/lines) do
+						local player = players[i]
+						if not player.Character then continue end
+						player.Character:FindFirstChildOfClass("Humanoid").Jump = true
+						task.wait()
+						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+							local offsetZ = ((i-1) - (l-1)*math.floor(#players/lines))*2
+							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+						end
+					end
+				end
+				if #players%lines ~= 0 then
+					for i = lines*math.floor(#players/lines)+1, lines*math.floor(#players/lines) + #players%lines do
+						local player = players[i]
+						if not player.Character then continue end
+						local r = i % (lines*math.floor(#players/lines))
+						local offsetX = 0
+						if r == 1 then
+							offsetX = 0
+						elseif r % 2 == 1 then
+							offsetX = -(math.ceil((r - 2)/2)*4)
+						else
+							offsetX = (math.ceil(r / 2))*4
+						end
+						--[[if n.Character.Humanoid.Sit then
+							n.Character.Humanoid.Sit = false
+							wait(0.5)
+						end]]
+						player.Character:FindFirstChildOfClass("Humanoid").Jump = true
+						task.wait()
+						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
+							local offsetZ = (math.floor(#players/lines))*2
+							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+						end
+					end
+				end
+			end
+		};
 
 		Change = {
 			Prefix = Settings.Prefix;
