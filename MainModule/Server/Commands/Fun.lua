@@ -3734,7 +3734,7 @@ return function(Vargs, env)
 
 		Resize = {
 			Prefix = Settings.Prefix;
-			Commands = {"resize", "size"};
+			Commands = {"resize", "size", "scale"};
 			Args = {"player", "mult"};
 			Hidden = false;
 			Description = "Resize the target player(s)'s character by <mult>";
@@ -3751,12 +3751,12 @@ return function(Vargs, env)
 					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
 				end
 
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!", {plr})
+						Functions.Hint("Cannot resize "..v.Name.."'s character: humanoid and/or character doesn't exist!", {plr})
 						continue
 					end
 
@@ -3765,45 +3765,40 @@ return function(Vargs, env)
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.", {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", v.Name, num*100), {plr})
 						continue
 					end
 
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						for k, val in pairs(human:GetChildren()) do
+						for _, val in pairs(human:GetChildren()) do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
-								val.Value = val.Value * num;
+								val.Value += num
 							end
 						end
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
-						local CFrame_new = CFrame.new
-
-						local Motors = {}
-						local Percent = num
-
-						table.insert(Motors, char.HumanoidRootPart.RootJoint)
-						for _, motor in ipairs(char.Torso:GetChildren()) do
-							if motor:IsA("Motor6D") then table.insert(Motors, motor) end
+						local motors = {}
+						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
+						for _, motor in pairs(char.Torso:GetChildren()) do
+							if motor:IsA("Motor6D") then table.insert(motors, motor) end
 						end
-						for _, Motor in pairs(Motors) do
-							Motor.C0 = CFrame_new((Motor.C0.Position * Percent)) * (Motor.C0 - Motor.C0.Position)
-							Motor.C1 = CFrame_new((Motor.C1.Position * Percent)) * (Motor.C1 - Motor.C1.Position)
+						for _, motor in pairs(motors) do
+							motor.C0 = CFrame.new((motor.C0.Position * num)) * (motor.C0 - motor.C0.Position)
+							motor.C1 = CFrame.new((motor.C1.Position * num)) * (motor.C1 - motor.C1.Position)
 						end
 
-
-						for _, part in ipairs(char:GetChildren()) do
-							if part:IsA("BasePart") then part.Size *= Percent end
-						end
-
-						for _, Accessory in pairs(char:GetChildren()) do
-							if Accessory:IsA("Accessory") and Accessory:FindFirstChild("Handle") then
-								local Handle = Accessory:FindFirstChild("Handle")
-								Handle.AccessoryWeld.C0 = CFrame_new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
-								Handle.AccessoryWeld.C1 = CFrame_new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
-
-								if Handle:FindFirstChildOfClass("SpecialMesh") then
-									Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
+						for _, v in ipairs(char:GetDescendants()) do
+							if v:IsA("BasePart") then
+								v.Size *= num
+							elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
+								local handle = v.Handle
+								handle.AccessoryWeld.C0 = CFrame.new((handle.AccessoryWeld.C0.Position * num)) * (handle.AccessoryWeld.C0 - handle.AccessoryWeld.C0.Position)
+								handle.AccessoryWeld.C1 = CFrame.new((handle.AccessoryWeld.C1.Position * num)) * (handle.AccessoryWeld.C1 - handle.AccessoryWeld.C1.Position)
+								local mesh = handle:FindFirstChildOfClass("SpecialMesh")
+								if mesh then
+									mesh.Scale *= num
 								end
+							elseif v:IsA("SpecialMesh") and v.Parent.Name ~= "Handle" then
+								v.Scale *= num
 							end
 						end
 					end
