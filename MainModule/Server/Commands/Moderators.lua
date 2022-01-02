@@ -4295,6 +4295,9 @@ return function(Vargs, env)
 								continue
 							end
 							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
+							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 							if Humanoid then
 								if Humanoid.SeatPart~=nil then
 									Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4304,11 +4307,18 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
+							if FlightPos and FlightGyro then  
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
 
 							wait()
-							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
 							if root then
 								root.CFrame = CFrame.new(point)
+								if FlightPos and FlightGyro then  
+									FlightPos.Position = root.Position
+									FlightGyro.CFrame = root.CFrame
+								end
 							end
 						end
 					end
@@ -4320,6 +4330,9 @@ return function(Vargs, env)
 						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
 
 						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						local root = v.Character:FindFirstChild('HumanoidRootPart')
+						local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 						if Humanoid then
 							if Humanoid.SeatPart~=nil then
 								Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4329,8 +4342,16 @@ return function(Vargs, env)
 								Humanoid.Jump = true
 							end
 						end
+						if FlightPos and FlightGyro then  
+							FlightPos.Position = root.Position
+							FlightGyro.CFrame = root.CFrame
+						end
 						wait()
-						v.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
+						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
+						if FlightPos and FlightGyro then
+							FlightPos.Position = root.Position
+							FlightGyro.CFrame = root.CFrame
+						end
 					end
 				else
 					local target = service.GetPlayers(plr, args[2])[1]
@@ -4339,6 +4360,9 @@ return function(Vargs, env)
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
+							local root = n.Character:FindFirstChild('HumanoidRootPart')
+							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 							if Humanoid then
 								if Humanoid.SeatPart~=nil then
 									Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4348,8 +4372,16 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
+							if FlightPos and FlightGyro then  
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
 							wait()
-							n.Character.HumanoidRootPart.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+							if FlightPos and FlightGyro then
+								FlightPos.Position = root.Position
+								FlightGyro.CFrame = root.CFrame
+							end
 						end
 					else
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
@@ -4360,6 +4392,9 @@ return function(Vargs, env)
 									if not Character then continue end
 
 									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+									local root = Character:FindFirstChild('HumanoidRootPart')
+									local FlightPos = root:FindFirstChild("DELTAX3_FLIGHT_POSITION")
+									local FlightGyro = root:FindFirstChild("DELTAX3_FLIGHT_GYRO")
 									if Humanoid then
 										if Humanoid.SeatPart~=nil then
 											Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4369,9 +4404,17 @@ return function(Vargs, env)
 											Humanoid.Jump = true
 										end
 									end
+									if FlightPos and FlightGyro then 
+										FlightPos.Position = root.Position
+										FlightGyro.CFrame = root.CFrame
+									end
 									wait()
-									if Character:FindFirstChild("HumanoidRootPart") and targ_root then
-										Character.HumanoidRootPart.CFrame = (targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+									if root and targ_root then
+										root.CFrame = (targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
+										if FlightPos and FlightGyro then
+											FlightPos.Position = root.Position
+											FlightGyro.CFrame = root.CFrame
+										end
 									end
 								end
 							end
