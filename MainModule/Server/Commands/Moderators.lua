@@ -3767,14 +3767,11 @@ return function(Vargs, env)
 				local victims = service.GetPlayers(plr, args[1])
 				local stealers = service.GetPlayers(plr, args[2])
 				for _, victim in pairs(victims) do
+					local backpack = victim:FindFirstChildOfClass("Backpack")
+					if not backpack then continue end
 					task.defer(function()
-						local backpack = victim:FindFirstChildOfClass("Backpack")
-						if not backpack then continue end
-						local character = victim.Character
-						if character then
-							local hum = character:FindFirstChildOfClass("Humanoid")
-							if hum then hum:UnequipTools() end
-						end
+						local hum = victim.Character and victim.Character:FindFirstChildOfClass("Humanoid")
+						if hum then hum:UnequipTools() end
 						for _, p in pairs(stealers) do
 							local destination = p:FindFirstChildOfClass("Backpack")
 							if not destination then continue end
@@ -3917,9 +3914,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-					if Humanoid then
-						Humanoid:TakeDamage(args[2])
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if hum then
+						hum:TakeDamage(args[2])
 					end
 				end
 			end
@@ -3936,10 +3933,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-					if Humanoid then
-						Humanoid.MaxHealth = args[2]
-						Humanoid.Health = Humanoid.MaxHealth
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if hum then
+						hum.MaxHealth = args[2]
+						hum.Health = Humanoid.MaxHealth
 					end
 				end
 			end
@@ -3956,11 +3953,11 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
-					if Humanoid then
-						Humanoid.JumpPower = args[2] or 50
-						Humanoid.JumpHeight = (args[2] or 50) / (50/7.2)
+					if hum then
+						hum.JumpPower = args[2] or 50
+						hum.JumpHeight = (args[2] or 50) / (50/7.2)
 					end
 				end
 			end
@@ -3977,11 +3974,11 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
-					if Humanoid then
-						Humanoid.JumpHeight = args[2] or 7.2
-						Humanoid.JumpPower = (args[2] or 7.2) * (50/7.2)
+					if hum then
+						hum.JumpHeight = args[2] or 7.2
+						hum.JumpPower = (args[2] or 7.2) * (50/7.2)
 					end
 				end
 			end
@@ -3998,10 +3995,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 
-					if Humanoid then
-						Humanoid.WalkSpeed = args[2] or 16
+					if hum then
+						hum.WalkSpeed = args[2] or 16
 						if Settings.PlayerCommandFeedback then
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification";
@@ -4729,7 +4726,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"taudio", "localsound", "localaudio", "lsound", "laudio"};
 			Args = {"player", "audioId", "noLoop", "pitch", "volume"};
-			Description = "Lets you play an audio on the player's client";
+			Description = "Plays an audio on the specified player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 
@@ -4784,7 +4781,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"untaudio", "unlocalsound", "unlocalaudio", "unlsound", "unlaudio"};
 			Args = {"player"};
-			Description = "Lets you stop audio playing on the player's client";
+			Description = "Stops audio playing on the specified player's client";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -4798,7 +4795,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"charaudio", "charactermusic", "charmusic"};
 			Args = {"player", "audioId", "volume", "loop(true/false)", "pitch"};
-			Description = "Lets you place an audio in the target's character";
+			Description = "Plays an audio from the target player's character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -4808,7 +4805,7 @@ return function(Vargs, env)
 				local looped = args[4]
 				local pitch = tonumber(args[5]) or 1
 
-				if (looped) then
+				if looped then
 					if looped == "true" or looped == "1" then
 						looped = true
 					else
@@ -4849,7 +4846,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"uncharaudio", "uncharactermusic", "uncharmusic"};
 			Args = {"player"};
-			Description = "Removes audio placed into character via :charaudio command";
+			Description = "Removes audio placed into character via "..Settings.Prefix.."charaudio command";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
