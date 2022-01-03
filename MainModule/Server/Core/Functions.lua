@@ -62,7 +62,7 @@ return function(Vargs, GetEnv)
 
 						for i,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if sub(lower(p.Name), 1, #msg)==lower(msg) then
+							if p and sub(lower(p.Name), 1, #msg)==lower(msg) then
 								everyone = false
 								table.insert(players,p)
 								plus()
@@ -98,7 +98,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if p ~= plr then
+						if p and p ~= plr then
 							table.insert(players,p)
 							plus()
 						end
@@ -134,7 +134,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if Admin.CheckAdmin(p,false) then
+						if p and Admin.CheckAdmin(p,false) then
 							table.insert(players, p)
 							plus()
 						end
@@ -149,7 +149,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if not Admin.CheckAdmin(p,false) then
+						if p and not Admin.CheckAdmin(p,false) then
 							table.insert(players,p)
 							plus()
 						end
@@ -164,7 +164,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if p:IsFriendsWith(plr.userId) then
+						if p and p:IsFriendsWith(plr.userId) then
 							table.insert(players,p)
 							plus()
 						end
@@ -205,7 +205,7 @@ return function(Vargs, GetEnv)
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for k, m in ipairs(parent:GetChildren()) do
 									local p = getplr(m)
-									if p.TeamColor == v.TeamColor then
+									if p and p.TeamColor == v.TeamColor then
 										table.insert(players,p)
 										plus()
 									end
@@ -223,7 +223,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if p:IsInGroup(tonumber(matched)) then
+							if p and p:IsInGroup(tonumber(matched)) then
 								table.insert(players,p)
 								plus()
 							end
@@ -297,7 +297,7 @@ return function(Vargs, GetEnv)
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for k,m in ipairs(parent:GetChildren()) do
 									local p = getplr(m)
-									if p.TeamColor == v.TeamColor then
+									if p and p.TeamColor == v.TeamColor then
 										table.insert(players, p)
 										plus()
 									end
@@ -317,7 +317,7 @@ return function(Vargs, GetEnv)
 					if matched then
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if p:IsInGroup(matched) then
+							if p and p:IsInGroup(matched) then
 								table.insert(players,p)
 								plus()
 							end
@@ -337,7 +337,7 @@ return function(Vargs, GetEnv)
 
 						for i,v in pairs(players) do
 							for k,p in pairs(removes) do
-								if v.Name == p.Name then
+								if p and v.Name == p.Name then
 									table.remove(players,i)
 									plus()
 								end
@@ -378,7 +378,7 @@ return function(Vargs, GetEnv)
 
 						for i,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if p ~= plr and plr:DistanceFromCharacter(p.Character.Head.Position) <= num then
+							if p and p ~= plr and plr:DistanceFromCharacter(p.Character.Head.Position) <= num then
 								table.insert(players,p)
 								plus()
 							end
