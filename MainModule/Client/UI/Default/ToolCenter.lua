@@ -216,9 +216,7 @@ return function(data)
 				end
 				if plr.Character then
 					for _, v in ipairs(plr.Character:GetChildren()) do
-						if v:IsA("BackpackItem") then
-							c += 1
-						end
+						if v:IsA("BackpackItem") then c += 1 end
 					end
 				end
 				toolCount.Text = c
@@ -234,7 +232,10 @@ return function(data)
 		service.Players.PlayerAdded:Connect(addPlr)
 		for _, p: Player in ipairs(service.Players:GetPlayers()) do addPlr(p) end
 		service.Players.PlayerRemoving:Connect(function(plr: Player)
-			if selected == plr then selected = nil inv:ClearAllChildren() end
+			if selected == plr then
+				selected = nil
+				inv:ClearAllChildren()
+			end
 			if plrs:FindFirstChild(plr.Name) then inv[plr.Name]:Destroy() end
 		end)
 	end)
