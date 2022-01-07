@@ -268,6 +268,12 @@ return function(Vargs, GetEnv)
 					return Logs.Joins
 				end
 			end;
+			
+			LeaveLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					return Logs.Leaves
+				end
+			end;
 
 			PlayerList = function(p)
 				if not p or Admin.CheckAdmin(p) then
