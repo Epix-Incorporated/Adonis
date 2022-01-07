@@ -5833,6 +5833,29 @@ return function(Vargs, env)
 				})
 			end
 		};
+		
+		LeaveLogs = {
+			Prefix = Settings.Prefix;
+			Commands = {"leavelogs", "leaves", "leavehistory"};
+			Args = {"autoupdate"};
+			Hidden = false;
+			Description = "Displays the current leave logs for the server";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local auto
+				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
+					auto = 1
+				end
+				Remote.MakeGui(plr, "List", {
+					Title = "Leave Logs";
+					Tab = Logs.Leaves;
+					Dots = true;
+					Update = "LeaveLogs";
+					AutoUpdate = auto;
+				})
+			end
+		};
 
 		ChatLogs = {
 			Prefix = Settings.Prefix;
