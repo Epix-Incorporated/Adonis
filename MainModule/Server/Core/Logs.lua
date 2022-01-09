@@ -40,6 +40,7 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		Chats = {};
 		Joins = {};
+                Leaves = {};
 		Script = {};
 		RemoteFires = {};
 		Commands = {};
@@ -54,6 +55,7 @@ return function(Vargs, GetEnv)
 			local indToName = {
 				Chats = "Chat";
 				Joins = "Join";
+                                Leaves = "Leave"
 				Script = "Script";
 				RemoteFires = "RemoteFire";
 				Commands = "Command";
@@ -266,6 +268,12 @@ return function(Vargs, GetEnv)
 			JoinLogs = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
 					return Logs.Joins
+				end
+			end;
+			
+			LeaveLogs = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					return Logs.Leaves
 				end
 			end;
 
