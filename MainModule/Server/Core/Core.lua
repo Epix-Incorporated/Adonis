@@ -168,6 +168,13 @@ return function(Vargs, GetEnv)
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 		};
+		
+		--// Prevent certain keys from loading from the DataStore
+		PlayerDataKeyBlacklist = {
+			AdminRank = true;
+			AdminLevel = true;
+			LastLevelUpdate = true;
+		};
 
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
@@ -616,8 +623,12 @@ return function(Vargs, GetEnv)
 						data.AdminNotes = (data.AdminNotes and Functions.DSKeyNormalize(data.AdminNotes, true)) or {}
 						data.Warnings = (data.Warnings and Functions.DSKeyNormalize(data.Warnings, true)) or {}
 
+						local BLOCKED_SETTINGS = server.Core.PlayerDataKeyBlacklist
+						
 						for i,v in pairs(data) do
-							PlayerData[i] = v
+							if not BLOCKED_SETTINGS[i] then
+								PlayerData[i] = v
+							end
 						end
 					end
 				end
