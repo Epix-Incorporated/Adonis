@@ -131,11 +131,13 @@ return function(Vargs, GetEnv)
 						end
 
 						-- Reasons will be filtered inside Admin.CheckBan
-						for i, cardData in ipairs(banList.cards or trello.getCards(banList.id)) do
-							table.insert(bans, {
-								Name = cardData.name,
-								Reason = cardData.desc,
-							})
+						if banList then
+							for i, cardData in ipairs(banList.cards or trello.getCards(banList.id)) do
+								table.insert(bans, {
+									Name = cardData.name,
+									Reason = cardData.desc,
+								})
+							end
 						end
 
 						getNames(creatorList , creators);
