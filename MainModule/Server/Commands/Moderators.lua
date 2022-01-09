@@ -1448,6 +1448,7 @@ return function(Vargs, env)
 				for k, p in pairs(service.GetPlayers(plr, args[1])) do
 					for i, v in pairs(service.GetPlayers(plr, args[2])) do
 						if v and v.Character:FindFirstChild("Humanoid") then
+							plr.ReplicationFocus = v.Character.PrimaryPart
 							Remote.Send(p, "Function", "SetView", v.Character.Humanoid)
 						end
 					end
@@ -1464,6 +1465,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v and v.Character:FindFirstChild("Humanoid") then
+						plr.ReplicationFocus = v.Character.PrimaryPart
 						Remote.Send(plr, "Function", "SetView", v.Character.Humanoid)
 					end
 				end
@@ -1494,6 +1496,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if args[1] then
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
+						plr.ReplicationFocus = nil
 						Remote.Send(v, "Function", "SetView", "reset")
 					end
 				else
@@ -4291,6 +4294,9 @@ return function(Vargs, env)
 							if not v.Character then
 								continue
 							end
+							if workspace.StreamingEnabled == true then
+								v:RequestStreamAroundAsync(point)
+							end
 							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 							if Humanoid then
 								if Humanoid.SeatPart~=nil then
@@ -4315,7 +4321,10 @@ return function(Vargs, env)
 					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
-
+						
+						if workspace.StreamingEnabled == true then
+							v:RequestStreamAroundAsync(Vector3.new(x,y,z))
+						end
 						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						if Humanoid then
 							if Humanoid.SeatPart~=nil then
@@ -4336,6 +4345,9 @@ return function(Vargs, env)
 						local n = players[1]
 						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
 							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
+							if workspace.StreamingEnabled == true then
+								v:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+							end
 							if Humanoid then
 								if Humanoid.SeatPart~=nil then
 									Functions.RemoveSeatWelds(Humanoid.SeatPart)
@@ -4355,6 +4367,9 @@ return function(Vargs, env)
 								if n~=target then
 									local Character = n.Character
 									if not Character then continue end
+									if workspace.StreamingEnabled == true then
+										v:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+									end
 
 									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
 									if Humanoid then
