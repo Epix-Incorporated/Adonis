@@ -53,6 +53,8 @@ return {
 		{Text = "@GitHub spaggos",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub jun022222222",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub sea4h",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub Tj33rd",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub L8X",		Desc = "GitHub Contributor"};
 	};
 	Misc = {
 		{Text = "Stravant/JustAPerson/Jason Priest (?)",	Desc = "Wrote LBI (no longer used)"};
