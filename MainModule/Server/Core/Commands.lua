@@ -12,8 +12,8 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	local server = Vargs.Server
+	local service = Vargs.Service
 
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
@@ -43,9 +43,9 @@ return function(Vargs, GetEnv)
 			__newindex = function(self, ind, val)
 				rawset(Commands, ind, val)
 				if val and type(val) == "table" and val.Commands and val.Prefix then
-					for i,cmd in pairs(val.Commands) do
-						Admin.PrefixCache[val.Prefix] = true;
-						Admin.CommandCache[string.lower((val.Prefix..cmd))] = ind;
+					for i, cmd in pairs(val.Commands) do
+						Admin.PrefixCache[val.Prefix] = true
+						Admin.CommandCache[string.lower((val.Prefix..cmd))] = ind
 					end
 				end
 			end;
@@ -56,13 +56,13 @@ return function(Vargs, GetEnv)
 		--// Load command modules
 		if server.CommandModules then
 			local env = GetEnv()
-			for i,module in ipairs(server.CommandModules:GetChildren()) do
+			for i, module in ipairs(server.CommandModules:GetChildren()) do
 				local func = require(module)
-				local ran,tab = pcall(func, Vargs, env)
+				local ran, tab = pcall(func, Vargs, env)
 
 				if ran and tab and type(tab) == "table" then
-					for ind,cmd in pairs(tab) do
-						Commands[ind] = cmd;
+					for ind, cmd in pairs(tab) do
+						Commands[ind] = cmd
 					end
 
 					Logs:AddLog("Script", "Loaded Command Module: ".. module.Name)
@@ -75,25 +75,25 @@ return function(Vargs, GetEnv)
 		end
 
 		--// Cache commands
-		Admin.CacheCommands();
+		Admin.CacheCommands()
 
-		Commands.Init = nil;
+		Commands.Init = nil
 		Logs:AddLog("Script", "Commands Module Initialized")
 	end;
 
 	local function RunAfterPlugins()
-		--// Load custom user-supplied commands (settings.Commands)
-		for ind,cmd in pairs(Settings.Commands) do
+		--// Load custom user-supplied commands in settings.Commands
+		for ind, cmd in pairs(Settings.Commands or {}) do
 			if type(cmd) == "table" and cmd.Function then
-				setfenv(cmd.Function, getfenv());
-				Commands[ind] = cmd;
+				setfenv(cmd.Function, getfenv())
+				Commands[ind] = cmd
 			end
 		end
 
 		--// Change command permissions based on settings
 		local Trim = service.Trim
 		for ind, cmd in pairs(Settings.Permissions or {}) do
-			local com,level = string.match(cmd, "^(.*):(.*)")
+			local com, level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
 				if string.find(level, ",") then
 					local newLevels = {}
@@ -109,25 +109,25 @@ return function(Vargs, GetEnv)
 		end
 
 		--// Update existing permissions to new levels
-		for i,cmd in pairs(Commands) do
+		for i, cmd in pairs(Commands) do
 			if type(cmd) == "table" and cmd.AdminLevel then
-				local lvl = cmd.AdminLevel;
+				local lvl = cmd.AdminLevel
 				if type(lvl) == "string" then
-					cmd.AdminLevel = Admin.StringToComLevel(lvl);
+					cmd.AdminLevel = Admin.StringToComLevel(lvl)
 					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
 				elseif type(lvl) == "table" then
-					for b,v in pairs(lvl) do
-						lvl[b] = Admin.StringToComLevel(v);
+					for b, v in pairs(lvl) do
+						lvl[b] = Admin.StringToComLevel(v)
 					end
 				end
 
 				if not cmd.Prefix then
-					cmd.Prefix = Settings.Prefix;
+					cmd.Prefix = Settings.Prefix
 				end
 			end
 		end
 
-		Commands.RunAfterPlugins = nil;
+		Commands.RunAfterPlugins = nil
 	end;
 
 	server.Commands = {
