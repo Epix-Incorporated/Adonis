@@ -55,7 +55,7 @@ return function(Vargs, GetEnv)
 			local indToName = {
 				Chats = "Chat";
 				Joins = "Join";
-                                Leaves = "Leave"
+                                Leaves = "Leave";
 				Script = "Script";
 				RemoteFires = "RemoteFire";
 				Commands = "Command";
