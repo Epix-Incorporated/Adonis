@@ -4371,7 +4371,7 @@ return function(Vargs, env)
 							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 
 							if workspace.StreamingEnabled == true then
-								v:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+								n:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 							end
 
 							if Humanoid then
@@ -4402,7 +4402,7 @@ return function(Vargs, env)
 									local Character = n.Character
 									if not Character then continue end
 									if workspace.StreamingEnabled == true then
-										v:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
+										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
 									end
 
 									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
