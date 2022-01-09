@@ -678,6 +678,12 @@ return function(Vargs, GetEnv)
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
+			
+			AddLog("Leaves",{
+				Text = p.Name;
+				Desc = p.Name.." left the server";
+				Player = p;
+			})
 
 			Core.SavePlayerData(p, data)
 			return;
