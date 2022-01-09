@@ -1,21 +1,20 @@
-
-client = nil
-service = nil
+client, service = nil, nil
 
 return function(data)
 	local gTable
 	
 	local isMuted = false
 	
-	local alarm = service.New('Sound')
-	alarm.Volume = 1
-	alarm.Looped = true
-	alarm.SoundId = 'http://www.roblox.com/asset/?id=138081509'
+	local alarm = service.New("Sound", {
+		Volume = 1;
+		Looped = true;
+		SoundId = "rbxassetid://138081509";
+	})
 	
-	local window = client.UI.Make("Window",{
+	local window = client.UI.Make("Window", {
 		Name  = "Alert";
 		Title = "Alert";
-		Size  = {300,150};
+		Size  = {300, 150};
 		Icon = client.MatIcons["Priority high"];
 		AllowMultiple = false;
 		OnClose = function()
@@ -26,7 +25,7 @@ return function(data)
 	})
 	
 	if window then
-		local label = window:Add("TextLabel",{
+		local label = window:Add("TextLabel", {
 			Text = data.Message;
 			BackgroundTransparency = 1;
 			TextScaled = true;

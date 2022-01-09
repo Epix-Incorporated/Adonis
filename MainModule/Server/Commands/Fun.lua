@@ -740,7 +740,7 @@ return function(Vargs, env)
 				if not args[2] then
 					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
 
-					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
+					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"
 				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
 					for s in args[2]:gmatch("[%d]+") do
 						table.insert(color3, tonumber(s))
@@ -1287,7 +1287,7 @@ return function(Vargs, env)
 										if v:IsA("BasePart") then
 											v.Anchored = true
 											v.Transparency = 1
-											pcall(function() v:FindFirstChildOfClass("Decale"):Destroy() end)
+											pcall(function() v:FindFirstChildOfClass("Decal"):Destroy() end)
 										elseif v:IsA("Accoutrement") then
 											v:Destroy()
 										end
@@ -2020,7 +2020,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-						local human = v.Character:FindFirstChildOfClass("Human")
+						local human = v.Character:FindFirstChildOfClass("Humanoid")
 						local rigType = human and (human.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15") or nil
 						Functions.PlayAnimation(v, rigType == "R6" and 27789359 or 507771019)
 					end
@@ -3734,7 +3734,7 @@ return function(Vargs, env)
 
 		Resize = {
 			Prefix = Settings.Prefix;
-			Commands = {"resize", "size"};
+			Commands = {"resize", "size", "scale"};
 			Args = {"player", "mult"};
 			Hidden = false;
 			Description = "Resize the target player(s)'s character by <mult>";
@@ -3751,12 +3751,12 @@ return function(Vargs, env)
 					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
 				end
 
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..v.Name.."'s character. Humanoid doesn't exist!", {plr})
+						Functions.Hint("Cannot resize "..v.Name.."'s character: humanoid and/or character doesn't exist!", {plr})
 						continue
 					end
 
@@ -3765,45 +3765,40 @@ return function(Vargs, env)
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint("Cannot resize "..v.Name.."'s character by "..tostring(num*100).."%. Size limit exceeded.", {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", v.Name, num*100), {plr})
 						continue
 					end
 
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						for k, val in pairs(human:GetChildren()) do
+						for _, val in pairs(human:GetChildren()) do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
-								val.Value = val.Value * num;
+								val.Value += num
 							end
 						end
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
-						local CFrame_new = CFrame.new
-
-						local Motors = {}
-						local Percent = num
-
-						table.insert(Motors, char.HumanoidRootPart.RootJoint)
-						for _, motor in ipairs(char.Torso:GetChildren()) do
-							if motor:IsA("Motor6D") then table.insert(Motors, motor) end
+						local motors = {}
+						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
+						for _, motor in pairs(char.Torso:GetChildren()) do
+							if motor:IsA("Motor6D") then table.insert(motors, motor) end
 						end
-						for _, Motor in pairs(Motors) do
-							Motor.C0 = CFrame_new((Motor.C0.Position * Percent)) * (Motor.C0 - Motor.C0.Position)
-							Motor.C1 = CFrame_new((Motor.C1.Position * Percent)) * (Motor.C1 - Motor.C1.Position)
+						for _, motor in pairs(motors) do
+							motor.C0 = CFrame.new((motor.C0.Position * num)) * (motor.C0 - motor.C0.Position)
+							motor.C1 = CFrame.new((motor.C1.Position * num)) * (motor.C1 - motor.C1.Position)
 						end
 
-
-						for _, part in ipairs(char:GetChildren()) do
-							if part:IsA("BasePart") then part.Size *= Percent end
-						end
-
-						for _, Accessory in pairs(char:GetChildren()) do
-							if Accessory:IsA("Accessory") and Accessory:FindFirstChild("Handle") then
-								local Handle = Accessory:FindFirstChild("Handle")
-								Handle.AccessoryWeld.C0 = CFrame_new((Accessory.Handle.AccessoryWeld.C0.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C0 - Accessory.Handle.AccessoryWeld.C0.Position)
-								Handle.AccessoryWeld.C1 = CFrame_new((Accessory.Handle.AccessoryWeld.C1.Position * Percent)) * (Accessory.Handle.AccessoryWeld.C1 - Accessory.Handle.AccessoryWeld.C1.Position)
-
-								if Handle:FindFirstChildOfClass("SpecialMesh") then
-									Handle:FindFirstChildOfClass("SpecialMesh").Scale *= Percent
+						for _, v in ipairs(char:GetDescendants()) do
+							if v:IsA("BasePart") then
+								v.Size *= num
+							elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
+								local handle = v.Handle
+								handle.AccessoryWeld.C0 = CFrame.new((handle.AccessoryWeld.C0.Position * num)) * (handle.AccessoryWeld.C0 - handle.AccessoryWeld.C0.Position)
+								handle.AccessoryWeld.C1 = CFrame.new((handle.AccessoryWeld.C1.Position * num)) * (handle.AccessoryWeld.C1 - handle.AccessoryWeld.C1.Position)
+								local mesh = handle:FindFirstChildOfClass("SpecialMesh")
+								if mesh then
+									mesh.Scale *= num
 								end
+							elseif v:IsA("SpecialMesh") and v.Parent.Name ~= "Handle" then
+								v.Scale *= num
 							end
 						end
 					end
@@ -4008,7 +4003,7 @@ return function(Vargs, env)
 				end
 
 				local target = service.GetPlayers(plr, args[1])[1]
-				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")				
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
 
 				local descriptionClone = target_humanoid:GetAppliedDescription()
 				descriptionClone.Head = args[2]
@@ -4027,7 +4022,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StartLoop(v.userId.."LOOPFLING", 2, function()
+					service.StartLoop(v.UserId.."LOOPFLING", 2, function()
 						Admin.RunCommand(Settings.Prefix.."fling", v.Name)
 					end)
 				end
@@ -4044,7 +4039,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StopLoop(v.userId.."LOOPFLING")
+					service.StopLoop(v.UserId.."LOOPFLING")
 				end
 			end
 		};
@@ -4390,7 +4385,7 @@ return function(Vargs, env)
 							if not (args[2]) then
 								--assert(args[2], "No parts specified. See developer console for possible inputs.")
 								local tab = {}
-								for _,v in pairs(usageText) do 
+								for _,v in pairs(usageText) do
 									table.insert(tab, {
 										Text = v;
 										Desc = v;
@@ -4438,7 +4433,7 @@ return function(Vargs, env)
 
 											if not (found) then
 												assert(nil, "'"..v.."'".." is not a valid input. Run command with no arguments to see possible inputs.")
-											end	
+											end
 										end
 									end
 								else
@@ -4576,7 +4571,7 @@ return function(Vargs, env)
 
 								-- Make chosen parts transparent
 								for k,v in pairs(partInput) do
-									if (v ~= "limbs" or v ~= "face" or v ~= "accessories") then
+									if not (v == "limbs" or v == "face" or v == "accessories") then
 										local part = player.Character:FindFirstChild(v)
 										if (part ~= nil and part:IsA("BasePart")) then
 											part.Transparency = args[3]
@@ -4880,9 +4875,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-				
+
 				local animId
-				
+
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
@@ -4911,7 +4906,7 @@ return function(Vargs, env)
 									end
 								end
 							end
-							
+
 							if not (found) then
 								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
 							end

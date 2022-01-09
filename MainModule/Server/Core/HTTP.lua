@@ -82,6 +82,7 @@ return function(Vargs, GetEnv)
 				if not HTTP.CheckHttp() then
 					--HTPP.Trello.Bans = {'Http is not enabled! Cannot connect to Trello!'}
 					warn('Http is not enabled! Cannot connect to Trello!')
+					return;
 				else
 					local admins, mods, HeadAdmins, creators = {}, {}, {}, {}
 					local bans = {}
@@ -129,7 +130,14 @@ return function(Vargs, GetEnv)
 							end
 						end
 
-						getNames(banList, bans);
+						-- Reasons will be filtered inside Admin.CheckBan
+						for i, cardData in ipairs(banList.cards or trello.getCards(banList.id)) do
+							table.insert(bans, {
+								Name = cardData.name,
+								Reason = cardData.desc,
+							})
+						end
+
 						getNames(creatorList , creators);
 						getNames(modList, mods);
 						getNames(adminList, admins)
@@ -197,13 +205,13 @@ return function(Vargs, GetEnv)
 								end
 							end
 						end
-						
+
 						--// Load all custom ranks; see if they exist in ranks and see if they are on the trello
 						--// Due to multiple boards; going to set them to the internal ranks before setting them to the end one
 						--// This will let multiple boards combine one rank into one
-						for _,list in pairs(lists) do 
+						for _,list in pairs(lists) do
 							--// Make sure it exists as a custom rank & is not one of the four main ranks
-							if list and list.name and Settings.Ranks[list.name] and not table.find({"Moderators", "Admins", "HeadAdmins", "Creators"}, list.name) then 
+							if list and list.name and Settings.Ranks[list.name] and not table.find({"Moderators", "Admins", "HeadAdmins", "Creators"}, list.name) then
 								local Users = {}
 								local TrelloRankName = string.format("[Trello] %s", server.Functions.Trim(list.name))
 								if not customranks[TrelloRankName] then
@@ -212,11 +220,11 @@ return function(Vargs, GetEnv)
 										Users = Users
 									}
 								end
-								Users = customranks[TrelloRankName].Users 
+								Users = customranks[TrelloRankName].Users
 								getNames(list, Users)
 							end
 						end
-						
+
 					end
 
 					for i,v in pairs(Settings.Trello_Secondary) do table.insert(boards,v) end
@@ -258,17 +266,17 @@ return function(Vargs, GetEnv)
 						Level = Settings.Ranks.Moderators.Level;
 						Users = HTTP.Trello.Moderators or {};
 					}
-					
+
 					--// Load up and custom ranks that were fetched from Trello
-					for rank,info in pairs(customranks) do 
+					for rank,info in pairs(customranks) do
 						--// Don't set any of your hardcoded ranks to have the IsExternal value to true, it'll delete the rank if you're not careful!
-						info.IsExternal = true 
+						info.IsExternal = true
 						Settings.Ranks[rank] = info
 					end
-					
+
 					--// Clear any custom ranks that were not fetched from Trello
-					for name,rank in pairs(Settings.Ranks) do 
-						if rank.IsExternal and not customranks[name] then 
+					for name,rank in pairs(Settings.Ranks) do
+						if rank.IsExternal and not customranks[name] then
 							Settings.Ranks[name] = nil
 						end
 					end
@@ -277,8 +285,10 @@ return function(Vargs, GetEnv)
 					Variables.Whitelist.Lists.Trello = whitelist
 
 					for i, v in pairs(service.GetPlayers()) do
-						if Admin.CheckBan(v) then
-							v:Kick(Variables.BanMessage)
+						local isBanned, Reason = Admin.CheckBan(v)
+						if isBanned then
+							v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
+							continue
 						end
 
 						if v and v.Parent then

@@ -17,11 +17,17 @@ local descs = {};			--// Contains settings descriptions
 		This is only here to help you when editing settings so you understand how they work
 		and don't break something.
 
-		Anything that looks like setting = {} is known as a table.
-		Tables contain things; like the Lua version of a box.
-		An example of a table would be setting = {"John","Mary","Bill"}
-		You can have tables inside of tables, such in the case of setting = {{Group=1234,Rank=123,Type="Admin"}}
+		Incase you don't know what Lua is; Lua is the scripting language Roblox uses...
+		so every script you see (such as this one) and pretty much any code on Roblox is
+		written in Lua.
+
+		Anything that looks like {} is known as a table.
+		Tables contain things, like the Lua version of a box.
+		An example of a table would be setting = {"John", "Mary", "Bill"}
+		You can have tables inside of tables, such in the case of setting = {{Group = 1234, Rank = 123, Type = "Admin"}}
 		Just like real boxes, tables can contain pretty much anything including other tables.
+
+		Note: Commas (,) as well as semicolons (;) can both be used to separate things inside a table.
 
 		Anything that looks like "Bob" is what's known as a string. Strings
 		are basically plain text; setting = "Bob" would be correct however
@@ -32,12 +38,7 @@ local descs = {};			--// Contains settings descriptions
 
 		This green block of text you are reading is called a comment. It's like a message
 		from the programmer to anyone who reads their stuff. Anything in a comment will
-		not be seen by Lua.
-
-		Incase you don't know what Lua is; Lua is the scripting language Roblox uses...
-		so every script you see (such as this one) and pretty much any code on Roblox is
-		written in Lua.
-
+		not be seen by Lua when the script is run.
 
 
 
@@ -46,7 +47,7 @@ local descs = {};			--// Contains settings descriptions
 		If you see something like "Format: 'Username:UserId'" it means that anything you put
 		in that table must follow one of the formats next to Format:
 
-		For instance if I wanted to give admin to a player using their username, userid, a group they are in
+		For instance if I wanted to give admin to a player using their username, userId, a group they are in
 		or an item they own I would do the following with the settings.Admins table:
 
 		The format for the Admins' table's entries is "Username"; or "Username:UserId"; or UserId; or "Group:GroupId:GroupRank" or "Item:ItemID"
@@ -54,11 +55,11 @@ local descs = {};			--// Contains settings descriptions
 		group "BobFans" (group ID 7463213) under the rank number 234, or owns the item belonging to ID 1237465
 		I can do any of the following:
 
-		settings.Admins = {"Bobjenkins123","Bobjenkins123:1234567",1234567,"Group:BobFans:7463213:234","Item:1237465"}
+		settings.Admins = {"Bobjenkins123", "Bobjenkins123:1234567", 1234567, "Group:BobFans:7463213:234", "Item:1237465"}
 
 
 		If I wanted to make it so rank 134 in group 1029934 and BobJenkins123 had mod admin I would do
-		settings.Moderators = {"Group:1029943:134","BobJenkins123"}
+		settings.Moderators = {"Group:1029943:134", "BobJenkins123"}
 
 
 		I was going to change the admin rank stuff but I figured it would confuse people too much, so I left it as mods/admins/HeadAdmins ;p
@@ -66,7 +67,7 @@ local descs = {};			--// Contains settings descriptions
 
 		--// Admins
 
-			settings.Moderators = {"Sceleratis";"BobJenkins:1237123";1237666;"Group:181:255";"Item:1234567"}
+			settings.Moderators = {"Sceleratis"; "BobJenkins:1237123"; 1237666; "Group:181:255"; "Item:1234567"}
 				This will make the person with the username Sceleratis, or the name BobJenkins, or the ID 1237123 OR 123766,
 				   or is in group 181 in the rank 255, or owns the item belonging to the ID 1234567 a moderator
 
@@ -136,15 +137,16 @@ local descs = {};			--// Contains settings descriptions
 			Card format refers to how card names should look
 
 
-			MAKE SURE YOU SET settings.DataStoreKey TO SOMETHING ABSOLUTELY RANDOM;
+			MAKE SURE YOU SET settings.DataStoreKey TO SOMETHING ABSOLUTELY RANDOM.
 																																																																									--]]
 
-
-	settings.HideScript = true						 -- Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module
+	settings.HideScript = true						 -- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
+
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
+	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
 
 	settings.Theme = "Default"				-- UI theme;
 	settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
@@ -213,12 +215,13 @@ local descs = {};			--// Contains settings descriptions
 	};
 
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Muted = {};			-- List of people muted				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.Blacklist = {};		-- List of people banned from using admin 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Muted = {};			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+	settings.Blacklist = {};		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Whitelist = {};		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-	settings.MusicList = {}; 	-- List of songs to appear in the script	  Format: {{Name = "somesong",ID = 1234567},{Name = "anotherone",ID = 1243562}}
-	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape",Material = "Fabric",Color = "Bright yellow",ID = 12345567,Reflectance = 1},{etc more stuff here}}
-	settings.InsertList = {}; 	-- List of models to appear in the script	  Format: {{Name = "somemodel",ID = 1234567},{Name = "anotherone",ID = 1243562}}
+
+	settings.MusicList = {}; 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
+	settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
+	settings.InsertList = {}; 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
 
 	settings.OnStartup = {};	-- List of commands ran at server start								Format: {":notif TestNotif"}
 	settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
@@ -235,7 +238,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 	--// Easily add new custom commands below (without needing to create a plugin module)
-	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module)
+	--// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
 	settings.Commands = {
 		ExampleCommand1 = {								--// The index & table of the command
 			Prefix = Settings.Prefix;				--// The prefix the command will use, this is the ':' in ':ff me'
@@ -246,14 +249,15 @@ local descs = {};			--// Contains settings descriptions
 			-- Alternative option: AdminLevel = "Moderators"
 			Filter = true;									--// Should user supplied text passed to this command be filtered automatically? Use this if you plan to display a user-defined message to other players
 			Hidden = true;									--// Should this command be hidden from the command list?
-			Function = function(plr, args, data)	--// The command's function; This is the actual code of the command which runs when you run the command
+			Disabled = true;								--// If set to true this command won't be usable.
+			Function = function(plr: Player, args: {string}, data)	--// The command's function; This is the actual code of the command which runs when you run the command
 				--// "plr" is the player running the command
-				--// "args" is a table containing command arguments supplied by the user
-				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level)
-				print("This is 'arg1': ".. tostring(args[1]));
-				print("This is 'arg2': ".. tostring(args[2]));
-				print("This is 'etc'(arg 3): ".. tostring(args[3]));
-				error("this is an example error :o !")
+				--// "args" is an array of strings containing command arguments supplied by the user
+				--// "data" is a table containing information related to the command and the player running it, such as data.PlayerData.Level (the player's admin level) [Refer to API docs]
+				print("This is 'arg1':", tostring(args[1]))
+				print("This is 'arg2':", tostring(args[2]))
+				print("This is 'etc'(arg 3):", tostring(args[3]))
+				error("this is an example error :o !") --// Errors raised in the function during command execution will be displayed to the user.
 			end
 		};
 	}
@@ -288,14 +292,15 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.FunCommands = true			-- Are fun commands enabled?
 	settings.PlayerCommands = true 	-- Are players commands enabled?
+	settings.PlayerCommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
 	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
-	settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related and a few other commands require this
+	settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 
-	settings.BanMessage = "Banned"				-- Message shown to banned users
+	settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 	settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
-	settings.SystemTitle = "System Message"		-- Title to display in :sm
+	settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
@@ -346,6 +351,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
 	descs.Storage = [[ Where things like tools are stored ]]
+	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 	descs.Theme = [[ UI theme; ]]
 	descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
@@ -399,6 +405,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.FunCommands = [[ Are fun commands enabled? ]]
 	descs.PlayerCommands = [[ Are players commands enabled? ]]
+	descs.PlayerCommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 	descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 	descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 
@@ -495,6 +502,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"FunCommands";
 		"PlayerCommands";
+		"PlayerCommandFeedback";
 		"CrossServerCommands";
 		"ChatCommands";
 		"CreatorPowers";

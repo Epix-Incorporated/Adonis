@@ -12,8 +12,8 @@ return function(Vargs, env)
 		DirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
-			Args = {"player", "reason"};
-			Description = "DirectBans the player (Saves)";
+			Args = {"username", "reason"};
+			Description = "DirectBans the specified user (Saves)";
 			AdminLevel = "Creators";
 			Filter = true;
 			Hidden = false;
@@ -40,7 +40,7 @@ return function(Vargs, env)
 		UnDirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"undirectban"};
-			Args = {"player"};
+			Args = {"username"};
 			Description = "UnDirectBans the player (Saves)";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -64,7 +64,7 @@ return function(Vargs, env)
 		GlobalPlace = {
 			Prefix = Settings.Prefix;
 			Commands = {"globalplace", "gplace"};
-			Args = {"placeid"};
+			Args = {"placeId"};
 			Description = "Force all game-players to teleport to a desired place";
 			AdminLevel = "Creators";
 			CrossServerDenied = true;
@@ -89,7 +89,7 @@ return function(Vargs, env)
 		ForcePlace = {
 			Prefix = Settings.Prefix;
 			Commands = {"forceplace"};
-			Args = {"player", "placeid/serverName"};
+			Args = {"player", "placeId/serverName"};
 			Hidden = false;
 			Description = "Force the target player(s) to teleport to the desired place";
 			Fun = false;
@@ -128,17 +128,17 @@ return function(Vargs, env)
 			end
 		};
 
-		GivePlayerPoints = {
+		GivePlayerPoints = { --// obsolete since ROBLOX discontinued player points
 			Prefix = Settings.Prefix;
 			Commands = {"giveppoints", "giveplayerpoints", "sendplayerpoints"};
 			Args = {"player", "amount"};
-			Hidden = false;
+			Hidden = true;
 			Description = "Lets you give <player> <amount> player points";
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.userId, tonumber(args[2])) end)
+					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.UserId, tonumber(args[2])) end)
 					if ran and service.PointsService:GetAwardablePoints() >= tonumber(args[2]) then
 						Functions.Hint('Gave '..args[2]..' points to '..v.Name, {plr})
 					elseif service.PointsService:GetAwardablePoints() < tonumber(args[2]) then
@@ -156,7 +156,7 @@ return function(Vargs, env)
 			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "scriptsettings"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the settings manager";
+			Description = "Opens the Adonis settings manager";
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -245,8 +245,10 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local id = tonumber(args[1])
-				assert(id, "Must supply valid UserId")
-				local username = (service.Players:GetNameFromUserIdAsync(args[1]))
+				assert(id, "Must supply a valid UserId")
+				local username = select(2, xpcall(function()
+					return service.Players:GetNameFromUserIdAsync(args[1])
+				end, function() return "[Unknown User]" end))
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
 					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with " ..username.. " such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
 					Title = "Clear PlayerData for "..username.."?";
@@ -270,7 +272,7 @@ return function(Vargs, env)
 			Commands = {"terminal", "console"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the the terminal";
+			Description = "Opens the debug terminal";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Terminal")

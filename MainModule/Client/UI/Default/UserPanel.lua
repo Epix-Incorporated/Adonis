@@ -22,12 +22,12 @@ local canEditTables = {
 local function tabToString(tab)
 	if type(tab) == "table" then
 		local str = ""
-		for i,v in pairs(tab) do
+		for i, v in pairs(tab) do
 			if #str > 0 then
-				str = str.. "; "
+				str ..= "; "
 			end
 
-			str = str.. tostring(i) ..": ".. tostring(v)
+			str ..= tostring(i) ..": ".. tostring(v)
 		end
 		return str
 	else
@@ -41,7 +41,7 @@ return function(data)
 
 	local gTable
 	local Functions = client.Functions;
-	local window = client.UI.Make("Window",{
+	local window = client.UI.Make("Window", {
 		Name  = "UserPanel";
 		Title = "Adonis";
 		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
@@ -53,9 +53,9 @@ return function(data)
 	})
 
 	local function showTable(tab, setting)
-		local tabPath = type(setting) == "table" and setting;
-		local setting = tabPath and tabPath[#tabPath-1] or setting;
-		local name = tabPath and table.concat(tabPath, ".") or setting;
+		local tabPath = type(setting) == "table" and setting
+		local setting = tabPath and tabPath[#tabPath-1] or setting
+		local name = tabPath and table.concat(tabPath, ".") or setting
 
 		local tabWindow = client.UI.Make("Window",{
 			Name  = name .. "EditSettingsTable";
@@ -102,7 +102,7 @@ return function(data)
 							end
 						})
 
-						num = num + 1
+						num += 1
 					end
 
 					items:ResizeCanvas(false, true)
@@ -219,18 +219,18 @@ return function(data)
 		local chatMod 	   = client.Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
 		local settingsData = client.Remote.Get("AllSettings")
 
-		client.Variables.Aliases = playerData.Aliases or {};
+		client.Variables.Aliases = playerData.Aliases or {}
 
-		local tabFrame = window:Add("TabFrame",{
+		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
 		})
 
-		local infoTab = tabFrame:NewTab("Info",{
+		local infoTab = tabFrame:NewTab("Info", {
 			Text = "Info";
 		})
 
-		local donorTab = tabFrame:NewTab("Donate",{
+		local donorTab = tabFrame:NewTab("Donate", {
 			Text = "Donate";
 		})
 
@@ -242,29 +242,27 @@ return function(data)
 			Text = "Aliases";
 		})
 
-		local clientTab = tabFrame:NewTab("Client",{
+		local clientTab = tabFrame:NewTab("Client", {
 			Text = "Client";
 		})
 
-		local gameTab = tabFrame:NewTab("Game",{
+		local gameTab = tabFrame:NewTab("Game", {
 			Text = "Game";
 		})
 
 		if data.Tab then
-			if string.lower(data.Tab) == "info" then
-				infoTab:FocusTab();
-			elseif string.lower(data.Tab) == "donate" then
-				donorTab:FocusTab();
+			if string.lower(data.Tab) == "donate" then
+				donorTab:FocusTab()
 			elseif string.lower(data.Tab) == "keybinds" then
-				keyTab:FocusTab();
+				keyTab:FocusTab()
 			elseif string.lower(data.Tab) == "aliases" then
-				aliasTab:FocusTab();
+				aliasTab:FocusTab()
 			elseif string.lower(data.Tab) == "client" then
-				clientTab:FocusTab();
+				clientTab:FocusTab()
 			elseif string.lower(data.Tab) == "settings" then
-				gameTab:FocusTab();
+				gameTab:FocusTab()
 			else
-				infoTab:FocusTab();
+				infoTab:FocusTab()
 			end
 		end
 
@@ -285,7 +283,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						client.Remote.Send("ProcessCommand",chatMod.Prefix.."cmds")
+						client.Remote.Send("ProcessCommand", chatMod.Prefix.."cmds")
 					end
 				}
 			})
@@ -600,6 +598,8 @@ return function(data)
 				"Access to !light <BrickColor>";
 				"Access to !unlight";
 				"Access to !hat <ID>";
+				"Access to !myhats";
+				"Access to !removehat <name>";
 				"Access to !removehats";
 				"Access to !face <ID>";
 				"Access to !neon <BrickColor>";
@@ -611,7 +611,7 @@ return function(data)
 
 
 			if chatMod.DonorCapes then
-				for i,v in ipairs(capePerks) do
+				for _, v in ipairs(capePerks) do
 					table.insert(donorPerks, v)
 				end
 			else
@@ -619,7 +619,7 @@ return function(data)
 			end
 
 			if chatMod.DonorCommands then
-				for i,v in ipairs(cmdPerks) do
+				for _, v in ipairs(cmdPerks) do
 					table.insert(donorPerks, v)
 				end
 			else
@@ -771,7 +771,7 @@ return function(data)
 						end
 					})
 
-					num = num + 1
+					num += 1
 				end
 
 				binds:ResizeCanvas(false, true)
@@ -845,6 +845,7 @@ return function(data)
 			commandBox = binderBox:Add("TextBox", {
 				Position = UDim2.new(0, 10, 0, 35);
 				Size = UDim2.new(1, -20, 0, 20);
+				ClearTextOnFocus = false;
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
 				end
@@ -968,7 +969,7 @@ return function(data)
 				selected = nil
 				aliases:ClearAllChildren();
 
-				for i,v in pairs(client.Variables.Aliases) do
+				for i, v in pairs(client.Variables.Aliases) do
 					aliases:Add("TextButton", {
 						Text = "Alias: ".. i .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -1005,7 +1006,7 @@ return function(data)
 							end
 						end
 					})
-					num = num + 1
+					num += 1
 				end
 
 				aliases:ResizeCanvas(false, true)
@@ -1078,6 +1079,7 @@ return function(data)
 			commandBox = binderBox:Add("TextBox", {
 				Position = UDim2.new(0, 10, 0, 35);
 				Size = UDim2.new(1, -20, 0, 20);
+				ClearTextOnFocus = false;
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
 				end
@@ -1085,6 +1087,7 @@ return function(data)
 
 			aliasBox = binderBox:Add("TextBox", {
 				Text = "";
+				ClearTextOnFocus = false;
 				Position = UDim2.new(0, 10, 0, 90);
 				Size = UDim2.new(1, -20, 0, 20);
 			})
@@ -1168,7 +1171,7 @@ return function(data)
 						client.Variables.KeybindsEnabled = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","KeybindsEnabled",enabled)
+						client.Remote.Get("UpdateClient", "KeybindsEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1181,7 +1184,7 @@ return function(data)
 						client.Variables.UIKeepAlive = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","UIKeepAlive",enabled)
+						client.Remote.Get("UpdateClient", "UIKeepAlive", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1201,7 +1204,7 @@ return function(data)
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","ParticlesEnabled",enabled)
+						client.Remote.Get("UpdateClient", "ParticlesEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1227,7 +1230,7 @@ return function(data)
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","CapesEnabled",enabled)
+						client.Remote.Get("UpdateClient", "CapesEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1242,7 +1245,7 @@ return function(data)
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","HideChatCommands", enabled)
+						client.Remote.Get("UpdateClient", "HideChatCommands", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1282,7 +1285,7 @@ return function(data)
 							client.Variables.CustomConsoleKey = gotKey
 							event:Disconnect()
 							toggle.Text = "Saving.."
-							client.Remote.Get("UpdateClient","CustomConsoleKey",client.Variables.CustomConsoleKey)
+							client.Remote.Get("UpdateClient", "CustomConsoleKey", client.Variables.CustomConsoleKey)
 							toggle.Text = gotKey
 						end)
 					end
@@ -1297,10 +1300,10 @@ return function(data)
 					Function = function(selection)
 						if selection == "Game Theme" then
 							client.Variables.CustomTheme = nil
-							client.Remote.Get("UpdateClient","CustomTheme",nil)
+							client.Remote.Get("UpdateClient", "CustomTheme", nil)
 						else
 							client.Variables.CustomTheme = selection
-							client.Remote.Get("UpdateClient","CustomTheme",selection)
+							client.Remote.Get("UpdateClient", "CustomTheme", selection)
 						end
 						spawn(function()
 							window:Close()
@@ -1310,7 +1313,7 @@ return function(data)
 				}
 			}
 
-			local num = 0;
+			local num = 0
 			--[[local cliScroll = clientTab:Add("ScrollingFrame", {
 				BackgroundTransparency = 1;
 			});]]
@@ -1361,7 +1364,7 @@ return function(data)
 					Position = UDim2.new(0, 5, 0, (num+1)*30);
 				})--]]
 
-				num = num+1
+				num += 1
 			end
 
 			clientTab:ResizeCanvas(false, true)
@@ -1396,9 +1399,9 @@ return function(data)
 					}
 				})
 
-				local i = 1;
+				local i = 1
 				for truei, setting in pairs(order) do
-					i = i+1;
+					i += 1
 
 					local value = settings[setting]
 					local desc = descs[setting]
@@ -1411,7 +1414,7 @@ return function(data)
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 							TextXAlignment = "Left";
 							Children = {
 								TextLabel = {
@@ -1425,16 +1428,16 @@ return function(data)
 						})
 					elseif type(value) == "table" then
 						if setting == "Ranks" then
-							i = i-1;
-							for rank,data in pairs(value) do
-								i = i+1;
+							i -= 1
+							for rank, data in pairs(value) do
+								i += 1
 								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
 										Text = "  "..rank..": ";
 										ToolTip = "Permission Level: ".. data.Level;
 										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 										Size = UDim2.new(1, -10, 0, 30);
-										Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 										TextXAlignment = "Left";
 										Children = {
 											TextLabel = {
@@ -1452,7 +1455,7 @@ return function(data)
 										ToolTip = "Permission Level: ".. data.Level;
 										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 										Size = UDim2.new(1, -10, 0, 30);
-										Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 										TextXAlignment = "Left";
 										Children = {
 											TextButton = {
@@ -1474,7 +1477,7 @@ return function(data)
 								ToolTip = desc;
 								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 								Size = UDim2.new(1, -10, 0, 30);
-								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 								TextXAlignment = "Left";
 								Children = {
 									TextLabel = {
@@ -1492,7 +1495,7 @@ return function(data)
 								ToolTip = desc;
 								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 								Size = UDim2.new(1, -10, 0, 30);
-								Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+								Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 								TextXAlignment = "Left";
 								Children = {
 									TextButton = {
@@ -1513,7 +1516,7 @@ return function(data)
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 							TextXAlignment = "Left";
 							Children = {
 								Boolean = {
@@ -1534,7 +1537,7 @@ return function(data)
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 							TextXAlignment = "Left";
 							Children = {
 								TextBox = {
@@ -1557,7 +1560,7 @@ return function(data)
 							ToolTip = desc;
 							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
+							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
 							TextXAlignment = "Left";
 							Children = {
 								TextBox = {

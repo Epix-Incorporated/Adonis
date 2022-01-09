@@ -232,6 +232,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 
+
 				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
 					error("CrossServer Handler Not Ready");
 				end
@@ -388,6 +389,22 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.SocialService:PromptGameInvite(v)
+				end
+			end
+		};
+
+		ForceRejoin = {
+			Prefix = Settings.Prefix;
+			Commands = {"forcerejoin"};
+			Args = {"player"};
+			Description = "Forces target player(s) to rejoin the server, same as them running !rejoin";
+			Hidden = false;
+			Fun = false;
+			NoStudio = true;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, v)
 				end
 			end
 		};

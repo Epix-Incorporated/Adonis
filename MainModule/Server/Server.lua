@@ -46,7 +46,7 @@ next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
+Vector3int16, require, table, type, wait,
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task =
 	_G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
@@ -56,7 +56,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task =
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, elapsedTime, require, table, type, task.wait,
+	Vector3int16, require, table, type, task.wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task;
 
 local ServicesWeUse = {
@@ -442,7 +442,6 @@ for ind,loc in pairs({
 	PhysicalProperties = PhysicalProperties;
 	Region3int16 = Region3int16;
 	Vector3int16 = Vector3int16;
-	elapsedTime = elapsedTime;
 	require = require;
 	table = table;
 	type = type;
@@ -462,18 +461,22 @@ for ind,loc in pairs({
 --// Init
 return service.NewProxy({
 	__call = function(tab, data)
-		if type(rawget(_G, "__Adonis_MODULE_MUTEX"))=="string" then
+		if type(rawget(_G, "__Adonis_MODULE_MUTEX")) == "string" then
 			warn("\n-----------------------------------------------"
 				.."\nAdonis server-side is already running! Aborting..."
 				.."\n-----------------------------------------------")
 			script:Destroy()
 			return "FAILED"
 		else
-			rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
+			if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+				rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
+			else
+				warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+			end
 		end
 
 		--// Begin Script Loading
-		setfenv(1,setmetatable({}, {__metatable = unique}))
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
 		if not data or not data.Loader then

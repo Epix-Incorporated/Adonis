@@ -17,18 +17,18 @@ return function()
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
+		Vector3int16, require, table, type, wait,
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, elapsedTime, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+			_G, game, script, getfenv, setfenv, workspace,
+			getmetatable, setmetatable, loadstring, coroutine,
+			rawequal, typeof, print, math, warn, error,  pcall,
+			xpcall, select, rawset, rawget, ipairs, pairs,
+			next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+			newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+			NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+			NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+			Vector3int16, require, table, type, wait,
+			Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local Anti, Process, UI, Variables
 	local script = script
@@ -112,30 +112,32 @@ return function()
 	end
 
 	coroutine.wrap(function()
-		local connection
-		local idledEvent = service.UnWrap(Player).Idled
-		connection = idledEvent:Connect(function(time)
-			if type(time) ~= "number" or not (time > 0) then
-				idleTamper("Invalid time data")
-			elseif time > 30 * 60 then
-				Detected("kick", "Anti-idle detected")
+		while true do
+			local connection
+			local idledEvent = service.UnWrap(Player).Idled
+			connection = idledEvent:Connect(function(time)
+				if type(time) ~= "number" or not (time > 0) then
+					idleTamper("Invalid time data")
+				elseif time > 30 * 60 then
+					Detected("kick", "Anti-idle detected")
+				end
+			end)
+
+			if
+				type(connection) ~= "userdata" or
+				not rawequal(typeof(connection), "RBXScriptConnection") or
+				connection.Connected ~= true or
+				not rawequal(type(connection.Disconnect), "function") or
+				not rawequal(typeof(idledEvent), "RBXScriptSignal") or
+				not rawequal(type(idledEvent.Connect), "function") or
+				not rawequal(type(idledEvent.Wait), "function")
+			then
+				idleTamper("Userdata disrepencies detected")
 			end
-		end)
 
-		if
-			type(connection) ~= "userdata" or
-			not rawequal(typeof(connection), "RBXScriptConnection") or
-			connection.Connected ~= true or
-			not rawequal(type(connection.Disconnect), "function") or
-			not rawequal(typeof(idledEvent), "RBXScriptSignal") or
-			not rawequal(type(idledEvent.Connect), "function") or
-			not rawequal(type(idledEvent.Wait), "function")
-		then
-			idleTamper("Userdata disrepencies detected")
+			task.wait(200)
+			connection:Disconnect()
 		end
-
-		task.wait(200)
-		connection:Disconnect()
 	end)()
 
 	do

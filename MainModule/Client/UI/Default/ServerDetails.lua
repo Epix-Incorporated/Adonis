@@ -1,5 +1,4 @@
-client = nil
-service = nil
+client, service = nil, nil
 
 local function boolToStr(bool)
 	if bool then
@@ -7,10 +6,6 @@ local function boolToStr(bool)
 	else
 		return "No"
 	end
-end
-
-local function formatColor3(color)
-	return "RGB "..math.floor(color.r*255)..", "..math.floor(color.g*255)..", "..math.floor(color.b*255)
 end
 
 return function(data)
@@ -181,15 +176,13 @@ return function(data)
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);
 					TextXAlignment = "Left";
-				}):Add("TextBox", {
+				}):Add("TextLabel", {
 					Text = v[2];
 					BackgroundTransparency = 1;
 					AnchorPoint = Vector2.new(1, 0);
 					Size = UDim2.new(1, -150, 1, 0);
 					Position = UDim2.new(1, -5, 0, 0);
 					TextXAlignment = "Right";
-					TextEditable = false;
-					ClearTextOnFocus = false;
 				})
 				i += 1
 			end
@@ -259,8 +252,7 @@ return function(data)
 			Size = UDim2.new(1, -10, 1, -37);
 		})
 
-		local playerCount = 0
-		local adminCount = 0
+		local playerCount, adminCount = 0, 0
 		local function getList(filter: string)
 			playerCount, adminCount = 0, 0
 			local sortedPlayers = {}
@@ -293,7 +285,7 @@ return function(data)
 					adminCount += 1
 
 					if table.find(data.Donors, playerName) then
-						subEntryText = subEntryText.." | Donor"
+						subEntryText ..= " | Donor"
 					end
 
 					entry:Add("TextLabel", {
@@ -359,7 +351,7 @@ return function(data)
 					Text = "  "..v[1]..":";
 					ToolTip = v[3];
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-					Size = UDim2.new(1, -10, 0, 30);
+					Size = UDim2.new(1, -10, 0, 25);
 					Position = UDim2.new(0, 5, 0, currentPos+5);
 					TextXAlignment = "Left";
 				}):Add("TextLabel", {
@@ -370,7 +362,7 @@ return function(data)
 					Position = UDim2.new(1, -5, 0, 0);
 					TextXAlignment = "Right";
 				})
-				currentPos += 30
+				currentPos += 25
 			else
 				currentPos += 10
 			end

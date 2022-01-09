@@ -47,18 +47,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, elapsedTime, require, table, type, wait,
+	Vector3int16, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick =
 		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, elapsedTime, require, table, type, task.wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, require, table, type, task.wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
 
 	main = server or client
 	ErrorHandler = errorHandler
@@ -147,20 +147,19 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Properties = props;
 				LinkedTasks = {};
 				RunnerEvent = service.New("BindableEvent");
+				Trigger = function(self, ...)
+					self.Event:Fire(...)
+				end;
+
+				Delete = function(self)
+					if not props.Temporary then
+						TaskSchedulers[taskName] = nil;
+					end
+
+					self.Running = false;
+					self.Event:Disconnect();
+				end;
 			}
-
-			function new:Trigger(self, ...)
-				self.Event:Fire(...)
-			end;
-
-			function new:Delete(self)
-				if not props.Temporary then
-					TaskSchedulers[taskName] = nil;
-				end
-
-				new.Running = false;
-				new.Event:Disconnect();
-			end;
 
 			new.Event = new.RunnerEvent.Event:Connect(function(...)
 				for i,v in pairs(new.LinkedTasks) do
@@ -1119,6 +1118,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				elysianexecute = true;
 				decompile = true;
 				make_writable = true;
+				hookmetamethod = true;
+				hookfunction = true;
 			}
 
 			return service.NewProxy {

@@ -29,9 +29,19 @@ function onButton1Down(mouse)
   if not target.Character or not target.Character:FindFirstChild('Humanoid') then return end
   if mode=='Teleport' then
     local torso=target.Character:FindFirstChild('HumanoidRootPart')
-    if not torso then return end
-    local pos=mouse.Hit.p
-    torso.CFrame=CFrame.new(Vector3.new(pos.x, pos.y + 4, pos.z))
+	if not torso then return end
+	local FlightPos, FlightGyro = torso:FindFirstChild('ADONIS_FLIGHT_POSITION'), torso:FindFirstChild('ADONIS_FLIGHT_GYRO')
+	local pos=mouse.Hit.p
+	if FlightPos and FlightGyro then  
+		FlightPos.Position = torso.Position
+		FlightGyro.CFrame = torso.CFrame
+	end
+	wait()
+	torso.CFrame=CFrame.new(Vector3.new(pos.x, pos.y + 4, pos.z))
+	if FlightPos and FlightGyro then  
+		FlightPos.Position = torso.Position
+		FlightGyro.CFrame = torso.CFrame
+	end
   elseif mode=='Walk' then
     hum:MoveTo(mouse.Hit.p)
   end

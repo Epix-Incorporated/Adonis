@@ -255,18 +255,18 @@ return function(data)
 					nameb.TextScaled = true
 				end
 				
-				local custom = specialPeople[tostring(p.userId)]
+				local custom = specialPeople[tostring(p.UserId)]
 				if image then
 					if custom then
 						image.Image = 'http://www.roblox.com/asset/?id='..custom
 						image.Visible = true
-					elseif p.userId==game.CreatorId then
+					elseif p.UserId==game.CreatorId then
 						image.Image = 'rbxasset://textures/ui/icon_placeowner.png'
 						image.Visible = true
 					elseif p:IsInGroup(1200769) then
 						image.Image = 'http://www.roblox.com/asset/?id=99727663'
 						image.Visible = true
-					elseif localplayer:IsFriendsWith(p.userId) and p~=localplayer then
+					elseif localplayer:IsFriendsWith(p.UserId) and p~=localplayer then
 						image.Image = 'http://www.roblox.com/asset/?id=99749771'
 						image.Visible = true
 					elseif p.MembershipType==Enum.MembershipType.BuildersClub then

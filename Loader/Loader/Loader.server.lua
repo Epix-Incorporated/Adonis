@@ -16,23 +16,27 @@
 ----------------------------------------------------------------------------------------
 --                                  Adonis Loader                                     --
 ----------------------------------------------------------------------------------------
---		   	  Epix Incorporated. Not Everything is so Black and White.		   		 			  --
+--		   	  Epix Incorporated. Not Everything is so Black and White.    --
 ----------------------------------------------------------------------------------------
---	    Edit settings in-game or using the settings module in the Config folder	      --
+--	    Edit settings in-game or using the settings module in the Config folder   --
 ----------------------------------------------------------------------------------------
---	                  This is not designed to work in solo mode                       --
+--	                  This is not designed to work in solo mode                   --
 ----------------------------------------------------------------------------------------
 
 local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
-warn("Loading...");
+warn("Loading...")
 
-if _G["__Adonis_MUTEX"] and type(_G["__Adonis_MUTEX"])=="string" then
-	warn("Adonis is already running! Aborting...; Running Location:",_G["__Adonis_MUTEX"],"This Location:",script:GetFullName())
+if rawget(_G, "__Adonis_MUTEX") and type(rawget(_G, "__Adonis_MUTEX")) == "string" then
+	warn("Adonis is already running! Aborting...; Running Location:", rawget(_G, "__Adonis_MUTEX"), "This Location:", script:GetFullName())
 else
-	_G["__Adonis_MUTEX"] = script:GetFullName()
+	if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
+		rawset(_G, "__Adonis_MUTEX", script:GetFullName())
+	else
+		warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+	end
 
 	local model = script.Parent.Parent
 	local config = model.Config
@@ -80,17 +84,17 @@ else
 		moduleId = model.Parent.MainModule
 	end
 
-	local a,setTab = pcall(require, settings)
-	if not a then
-		warn('Settings module errored while loading; Using defaults; Error Message: ',setTab)
+	local success, setTab = pcall(require, settings)
+	if not success then
+		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		setTab = {}
 	end
 
-	data.Settings = setTab.Settings;
-	data.Descriptions = setTab.Description;
-	data.Order = setTab.Order;
+	data.Settings = setTab.Settings
+	data.Descriptions = setTab.Description
+	data.Order = setTab.Order
 
-	for _,Plugin in next,plugins:GetChildren() do
+	for _, Plugin in ipairs(plugins:GetChildren()) do
 		if Plugin:IsA("Folder") then
 			table.insert(data.Packages, Plugin)
 		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "client:" or string.sub(string.lower(Plugin.Name), 1, 7) == "client-" then
@@ -102,12 +106,16 @@ else
 		end
 	end
 
-	for _,Theme in next,themes:GetChildren() do
-		table.insert(data.Themes,Theme)
+	for _, Theme in ipairs(themes:GetChildren()) do
+		table.insert(data.Themes, Theme)
 	end
 
 	if tonumber(moduleId) then
-		warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+		if game:GetService("RunService"):IsStudio() then
+			warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
+		else
+			warn("Requiring Adonis MainModule. Model URL: ", "https://www.roblox.com/library/".. moduleId)
+		end
 	end
 
 	local module = require(moduleId)

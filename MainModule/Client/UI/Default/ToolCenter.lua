@@ -40,7 +40,8 @@ return function(data)
 						self.AutoButtonColor = false
 						self.Text = ". . ."
 						task.defer(function()
-							service.Players.LocalPlayer:FindFirstChildOfClass("Backpack").ChildAdded:Wait()
+							local backpack = service.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
+							if backpack then backpack.ChildAdded:Wait() end
 							self.Active = true
 							self.AutoButtonColor = true
 							self.Text = "Spawn"
@@ -74,14 +75,24 @@ return function(data)
 		local function displayInv()
 			if not selected then return end
 			local backpack = selected:FindFirstChildOfClass("Backpack")
-			for _, v in pairs(connections) do v:Disconnect() end
+			for _, v in pairs(connections) do if v then v:Disconnect() end end
+			inv:ClearAllChildren()
+			if not backpack then
+				inv:Add("TextLabel", {
+					Text = "This player has no backpack(!)";
+					Size = UDim2.new(1, -10, 0, 26);
+					Position = UDim2.new(0, 5, 0, 0);
+					BackgroundTransparency = 1;
+				})
+				inv:ResizeCanvas(false, true, false, false, 5, 0)
+				return
+			end
 			table.insert(connections, backpack.ChildAdded:Connect(displayInv))
 			table.insert(connections, backpack.ChildRemoved:Connect(displayInv))
 			table.insert(connections, selected.CharacterAdded:Connect(displayInv))
 			local char = selected.Character
 			local tools = backpack:GetChildren()
 			if char then for _, v in ipairs(char:GetChildren()) do table.insert(tools, v) end end
-			inv:ClearAllChildren()
 			local i = 0
 			for _, v: Tool in ipairs(tools) do
 				if v and v:IsA("BackpackItem") then
@@ -146,7 +157,7 @@ return function(data)
 		end
 
 		local function addPlr(plr: Player)
-			if plrs:FindFirstChild(plr.Name) then return end
+			if plrs:FindFirstChild(plr.Name) or not plr or not plr.Parent then return end
 			local backpack = plr:FindFirstChildOfClass("Backpack")
 			local entry = plrs:Add("TextButton", {
 				Size = UDim2.new(1, 0, 0, 35);
@@ -154,11 +165,12 @@ return function(data)
 				ToolTip = "("..plr.DisplayName..")";
 				TextXAlignment = "Left";
 				OnClick = function(self)
-					if self.AutoButtonColor then
+					if self.Active then
+						self.Active = false
 						self.AutoButtonColor = false
 						selected = plr
 						inv.Visible = true
-						for _, v in pairs(connections) do v:Disconnect() end
+						for _, v in pairs(connections) do if v then v:Disconnect() end end
 						displayInv()
 						self.TextColor3 = Color3.new(0.666667, 1, 1)
 						for _, v in ipairs(plrs:GetChildren()) do
@@ -170,8 +182,9 @@ return function(data)
 					else
 						selected = nil
 						inv.Visible = false
-						for _, v in pairs(connections) do v:Disconnect() end
+						for _, v in pairs(connections) do if v then v:Disconnect() end end
 						self.AutoButtonColor = true
+						self.Active = true
 						self.TextColor3 = Color3.new(1, 1, 1)
 					end
 				end,
@@ -193,20 +206,25 @@ return function(data)
 			})
 			local function countTools()
 				local backpack = plr:FindFirstChildOfClass("Backpack")
+				if not backpack then
+					toolCount.Text = "?"
+					return
+				end
 				local c = 0
-				local equipped = ""
 				for _, v in ipairs(backpack:GetChildren()) do
 					if v:IsA("BackpackItem") then c += 1 end
 				end
 				if plr.Character then
 					for _, v in ipairs(plr.Character:GetChildren()) do
-						if v:IsA("BackpackItem") then c += 1 equipped = v.Name end
+						if v:IsA("BackpackItem") then c += 1 end
 					end
 				end
 				toolCount.Text = c
 			end
-			backpack.ChildAdded:Connect(countTools)
-			backpack.ChildRemoved:Connect(countTools)
+			if backpack then
+				backpack.ChildAdded:Connect(countTools)
+				backpack.ChildRemoved:Connect(countTools)
+			end
 			plr.CharacterAdded:Connect(countTools)
 			countTools()
 			plrs:ResizeCanvas(false, true, false, false, 5, 0)
@@ -214,7 +232,10 @@ return function(data)
 		service.Players.PlayerAdded:Connect(addPlr)
 		for _, p: Player in ipairs(service.Players:GetPlayers()) do addPlr(p) end
 		service.Players.PlayerRemoving:Connect(function(plr: Player)
-			if selected == plr then selected = nil inv:ClearAllChildren() end
+			if selected == plr then
+				selected = nil
+				inv:ClearAllChildren()
+			end
 			if plrs:FindFirstChild(plr.Name) then inv[plr.Name]:Destroy() end
 		end)
 	end)

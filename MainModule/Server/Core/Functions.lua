@@ -164,7 +164,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if p and p:IsFriendsWith(plr.userId) then
+						if p and p:IsFriendsWith(plr.UserId) then
 							table.insert(players,p)
 							plus()
 						end
@@ -240,7 +240,7 @@ return function(Vargs, GetEnv)
 					if matched then
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if p and p.userId == matched then
+							if p and p.UserId == matched then
 								table.insert(players,p)
 								plus()
 								foundNum += 1
@@ -810,13 +810,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notification = function(title,message,players,tim,icon) -- note that icon is the AssetId without "rbxassetid://" at the start
+		Notification = function(title,message,players,tim,icon)
 			for i,v in pairs(players) do
 				Remote.MakeGui(v,"Notification",{
 					Title = title;
 					Message = message;
 					Time = tim;
-					Icon = string.format("rbxassetid://%d", icon or "7510999669") -- use default 'i' icon if icon argument is missing
+					Icon = server.MatIcons[icon or "Info"]  -- use default 'i' icon if icon argument is missing
 				})
 			end
 		end;
