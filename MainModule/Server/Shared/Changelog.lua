@@ -2,7 +2,8 @@ return {
 	"Version: 232";
 	"*Drag edges to expand*";
 	"";
-	"[v232 WIP]";
+	"[v232 1.9.2022 11:00 EST]";
+	"*First update of 2022!";
 	"*Various fixes/silencing warnings";
 	"(Git/Tj33rd) Feat: Added leave logs #655";
 	"(Git/moo1210) Better teleporting/view StreamingEnabled support #652";
@@ -29,6 +30,7 @@ return {
 	"(Git/Expertcoderz) Improved/edited :resize #649";
 	"(Git/L8X) Various Updates:";
 	"* Disabled unnecessary math.randomseed(os.time()) #642";
+	"* Misc changes";
 	"(Git/CommodoreGamer118) Enabled horizontal scrolling for buttons in TabFrame #614";
 	"(Git/CommodoreGamer118) Made :tp, :to, :bring and :clickteleport not bring you back when flying #651";
 	"";
