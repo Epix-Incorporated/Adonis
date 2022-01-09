@@ -11,8 +11,8 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	local server = Vargs.Server
+	local service = Vargs.Service
 
 	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
@@ -43,12 +43,12 @@ return function(Vargs, GetEnv)
 			service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
 		end
 
-		Process.Init = nil;
+		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
 
 	local function RunAfterPlugins(data)
-		local existingPlayers = service.Players:GetPlayers();
+		local existingPlayers = service.Players:GetPlayers()
 
 		--// Events
 		service.RbxEvent(service.Players.PlayerAdded, service.EventTask("PlayerAdded", Process.PlayerAdded))
@@ -56,34 +56,34 @@ return function(Vargs, GetEnv)
 
 		--// Load client onto existing players
 		if existingPlayers then
-			for i,p in ipairs(existingPlayers) do
-				Core.LoadExistingPlayer(p);
+			for i, p in ipairs(existingPlayers) do
+				Core.LoadExistingPlayer(p)
 			end
 		end
 
 		service.TrackTask("Thread: ChatCharacterLimit", function()
-			local ChatModules = service.Chat:WaitForChild("ClientChatModules",5)
+			local ChatModules = service.Chat:WaitForChild("ClientChatModules", 5)
 			if ChatModules then
-				local ChatSettings = ChatModules:WaitForChild("ChatSettings",5)
+				local ChatSettings = ChatModules:WaitForChild("ChatSettings", 5)
 				if ChatSettings then
 					local success, ChatSettingsModule = pcall(function()
 						return require(ChatSettings)
 					end)
 					if success then
 						local NewChatLimit = ChatSettingsModule.MaximumMessageLength
-						if NewChatLimit and type(NewChatLimit) == 'number' then
+						if NewChatLimit and type(NewChatLimit) == "number" then
 							Process.MaxChatCharacterLimit = NewChatLimit
-							AddLog("Script", "Chat Character Limit automatically set to " .. NewChatLimit);
+							AddLog("Script", "Chat Character Limit automatically set to " .. NewChatLimit)
 						end
 					else
-						AddLog("Script", "Failed to automatically get ChatSettings Character Limit, ignore if you use a custom chat system");
+						AddLog("Script", "Failed to automatically get ChatSettings Character Limit, ignore if you use a custom chat system")
 					end
 				end
 			end
 		end)
 
-		Process.RunAfterPlugins = nil;
-		AddLog("Script", "Process Module RunAfterPlugins Finished");
+		Process.RunAfterPlugins = nil
+		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
 
@@ -99,10 +99,10 @@ return function(Vargs, GetEnv)
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
 			local ready = (not RateLimiter[typ][p.UserId] or (RateLimiter[typ][p.UserId] and time() - RateLimiter[typ][p.UserId] >= server.Process.RateLimits[typ]));
-			RateLimiter[typ][p.UserId] = time();
-			return ready;
+			RateLimiter[typ][p.UserId] = time()
+			return ready
 		else
-			return true;
+			return true
 		end
 	end
 
@@ -137,7 +137,7 @@ return function(Vargs, GetEnv)
 
 					if keys then
 						keys.LastUpdate = os.time()
-						keys.Received = keys.Received + 1
+						keys.Received += 1
 
 						if type(com) == "string" then
 							if com == keys.Special.."GET_KEY" then
@@ -179,7 +179,7 @@ return function(Vargs, GetEnv)
 									if not rets[1] then
 										logError(p, tostring(comString) .. ": ".. tostring(rets[2]))
 									else
-										return {unpack(rets, 2)};
+										return {unpack(rets, 2)}
 									end
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
@@ -235,11 +235,11 @@ return function(Vargs, GetEnv)
 
 					if not command then
 						if opts.Check then
-							Remote.MakeGui(p, 'Output', {
-								Title = 'Output',
-								Message = msg .. ' is not a valid command.'
+							Remote.MakeGui(p, "Output", {
+								Title = "Output",
+								Message = msg .. " is not a valid command."
 							})
-							return;
+							return
 						end
 					else
 						local allowed = false
@@ -264,18 +264,18 @@ return function(Vargs, GetEnv)
 						end
 
 						if allowed and Variables.IsStudio and command.NoStudio then
-							Remote.MakeGui(p, 'Output', {
-								Title = '';
-								Message = 'This command cannot be used in Roblox Studio.';
-								Color = Color3.new(1,0,0)
+							Remote.MakeGui(p, "Output", {
+								Title = "";
+								Message = "This command cannot be used in Roblox Studio.";
+								Color = Color3.new(1, 0, 0)
 							})
 							return
 						end
 
 						if allowed and opts.Chat and command.Chattable == false then
-							Remote.MakeGui(p, 'Output', {
-								Title = '',
-								Color = Color3.new(1,0,0),
+							Remote.MakeGui(p, "Output", {
+								Title = "",
+								Color = Color3.new(1, 0, 0),
 								Message = "Specified command not permitted as chat message (Command not chattable)"
 							})
 
@@ -284,7 +284,7 @@ return function(Vargs, GetEnv)
 
 						if allowed then
 							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''
+								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ""
 
 								local cmdArgs = command.Args or command.Arguments
 								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
@@ -319,7 +319,7 @@ return function(Vargs, GetEnv)
 									})
 
 									if Settings.ConfirmCommands then
-										Functions.Hint('Executed Command: [ '..msg..' ]', {p})
+										Functions.Hint("Executed Command: [ "..msg.." ]", {p})
 									end
 								end
 
@@ -338,7 +338,7 @@ return function(Vargs, GetEnv)
 								)
 								if not opts.IgnoreErrors then
 									if error and type(error) == "string" then
-										AddLog("Errors", (command.Commands[1] or 'Unknown command?') .. " " .. error)
+										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. error)
 
 										error = (error and string.match(error, ":(.+)$")) or error or "Unknown error"
 
@@ -346,15 +346,15 @@ return function(Vargs, GetEnv)
 											Remote.MakeGui(p, 'Output', {
 												Title = '',
 												Message = error,
-												Color = Color3.new(1,0,0)
+												Color = Color3.new(1, 0, 0)
 											})
 										end
 									elseif error and type(error) ~= "string" then
 										if not isSystem then
-											Remote.MakeGui(p,'Output', {
-												Title = '';
+											Remote.MakeGui(p,"Output", {
+												Title = "";
 												Message = "There was an error but the error was not a string? "..tostring(error),
-												Color = Color3.new(1,0,0)
+												Color = Color3.new(1, 0, 0)
 											})
 										end
 									end
@@ -373,19 +373,19 @@ return function(Vargs, GetEnv)
 								})
 							else
 								if not isSystem and not opts.NoOutput then
-									Remote.MakeGui(p, 'Output', {
-										Title = '';
-										Message = 'This command has been disabled.';
-										Color = Color3.new(1,0,0)
+									Remote.MakeGui(p, "Output", {
+										Title = "";
+										Message = "This command has been disabled.";
+										Color = Color3.new(1, 0, 0)
 									})
 								end
 							end
 						else
 							if not isSystem and not opts.NoOutput then
-								Remote.MakeGui(p,'Output', {
-									Title = '',
-									Message = 'You are not allowed to run ' .. msg,
-									Color = Color3.new(1,0,0)
+								Remote.MakeGui(p, "Output", {
+									Title = "",
+									Message = "You are not allowed to run " .. msg,
+									Color = Color3.new(1, 0, 0)
 								})
 							end
 
@@ -436,18 +436,18 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for i,v in pairs(service.GetPlayers(p,target,{
+					for i,v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
 						})) do
 						--Routine(function()
 						local a = service.Filter(a,p,v)
-						if p.Name == v.Name and b ~= 'Private' and b ~= 'Ignore' and b ~= 'UnIgnore' then
+						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == "Global" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == 'Team' and p.TeamColor == v.TeamColor then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position)<80 then
+						elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position) < 80 then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == 'Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -466,8 +466,8 @@ return function(Vargs, GetEnv)
 
 				service.Events.CustomChat:Fire(p,a,b)
 			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
-				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
+				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
 			end
 		end;
 
@@ -477,7 +477,7 @@ return function(Vargs, GetEnv)
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					local msg = string.sub(msg, 1, Process.MsgStringLimit)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats,{
@@ -489,21 +489,21 @@ return function(Vargs, GetEnv)
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
-							Process.Command(p,msg,{Chat = true;})
-						elseif string.sub(msg,1,3)=="/e " then
-							service.Events.PlayerChatted:Fire(p,msg)
-							msg = string.sub(msg,4)
-							Process.Command(p,msg,{Chat = true;})
-						elseif string.sub(msg,1,8)=="/system " then
-							service.Events.PlayerChatted:Fire(p,msg)
-							msg = string.sub(msg,9)
-							Process.Command(p,msg,{Chat = true;})
+							Process.Command(p, msg, {Chat = true;})
+						elseif string.sub(msg, 1, 3)=="/e " then
+							service.Events.PlayerChatted:Fire(p, msg)
+							msg = string.sub(msg, 4)
+							Process.Command(p, msg, {Chat = true;})
+						elseif string.sub(msg, 1, 8)=="/system " then
+							service.Events.PlayerChatted:Fire(p, msg)
+							msg = string.sub(msg, 9)
+							Process.Command(p, msg, {Chat = true;})
 						else
-							service.Events.PlayerChatted:Fire(p,msg)
-							Process.Command(p,msg,{Chat = true;})
+							service.Events.PlayerChatted:Fire(p, msg)
+							Process.Command(p, msg, {Chat = true;})
 						end
 					else
-						service.Events.PlayerChatted:Fire(p,msg)
+						service.Events.PlayerChatted:Fire(p, msg)
 					end
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
@@ -515,8 +515,8 @@ return function(Vargs, GetEnv)
 					})
 				end
 			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat));
-				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat));
+				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
+				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
 			end
 		end;
 
