@@ -66,7 +66,7 @@ return function(Vargs, GetEnv)
 
 			pcall(function()service.UnWrap(p):Kick(":: Adonis ::\n".. tostring(info)) end)
 
-			wait(1)
+			task.wait(1)
 
 			pcall(p.Destroy, p)
 			pcall(service.Delete, p)
