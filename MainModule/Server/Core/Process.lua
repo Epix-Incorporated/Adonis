@@ -349,7 +349,7 @@ return function(Vargs, GetEnv)
 												Color = Color3.new(1, 0, 0)
 											})
 										end
-									elseif error and type(error) ~= "string" then
+									elseif error and type(error) ~= "string" and error ~= true then
 										if not isSystem then
 											Remote.MakeGui(p,"Output", {
 												Title = "";
@@ -398,9 +398,9 @@ return function(Vargs, GetEnv)
 
 		CrossServerChat = function(data)
 			if data then
-				for i,v in next,service.GetPlayers() do
+				for i,v in pairs(service.GetPlayers()) do
 					if Admin.GetLevel(v) > 0 then
-						Remote.Send(v,"handler", "ChatHandler", data.Player, data.Message, "Cross")
+						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
 				end
 			end
@@ -409,12 +409,12 @@ return function(Vargs, GetEnv)
 		CustomChat = function(p, a, b, canCross)
 			if RateLimit(p, "CustomChat") and not Admin.IsMuted(p) then
 				if type(a) == "string" then
-					a = string.sub(a, 1, Process.MsgStringLimit);
+					a = string.sub(a, 1, Process.MsgStringLimit)
 				end
 
 				if b == "Cross" then
 					if canCross and Admin.CheckAdmin(p) then
-						Core.CrossServer("ServerChat", {Player = p.Name, Message = a});
+						Core.CrossServer("ServerChat", {Player = p.Name, Message = a})
 						--Core.SetData("CrossServerChat",{Player = p.Name, Message = a})
 					end
 				else
@@ -619,12 +619,12 @@ return function(Vargs, GetEnv)
 			if Remote.Clients[key] then
 				Core.HookClient(p)
 
-				AddLog("Script",{
+				AddLog("Script", {
 					Text = p.Name .. " loading started";
 					Desc = p.Name .. " successfully joined the server";
 				})
 
-				AddLog("Joins",{
+				AddLog("Joins", {
 					Text = p.Name;
 					Desc = p.Name.." joined the server";
 					Player = p;
@@ -674,12 +674,12 @@ return function(Vargs, GetEnv)
 			end)
 
 			AddLog("Script", {
-				Text = string.format("Triggerd PlayerRemoving for %s", p.Name);
+				Text = string.format("Triggered PlayerRemoving for %s", p.Name);
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
 			
-			AddLog("Leaves",{
+			AddLog("Leaves", {
 				Text = p.Name;
 				Desc = p.Name.." left the server";
 				Player = p;
@@ -727,19 +727,19 @@ return function(Vargs, GetEnv)
 			Functions.LoadEffects(p)
 
 			--// Load admin or non-admin specific things
-			if level<1 then
+			if level < 1 then
 				if Settings.AntiSpeed then
-					Remote.Send(p,"LaunchAnti","Speed",{
+					Remote.Send(p, "LaunchAnti", "Speed", {
 						Speed = tostring(60.5+math.random(9e8)/9e8)
 					})
 				end
 
 				if Settings.Detection then
-					Remote.Send(p,"LaunchAnti","MainDetection")
+					Remote.Send(p, "LaunchAnti", "MainDetection")
 				end
 
 				if Settings.AntiBuildingTools then
-					Remote.Send(p,"LaunchAnti","AntiTools", {BTools = true})
+					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
 
@@ -748,20 +748,20 @@ return function(Vargs, GetEnv)
 				Remote.Clients[key].FinishedLoading = true
 				if p.Character and p.Character.Parent == workspace then
 					--service.Threads.TimeoutRunTask(p.Name..";CharacterAdded",Process.CharacterAdded,60,p)
-					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character);
+					local ran, err = TrackTask(p.Name .." CharacterAdded", Process.CharacterAdded, p, p.Character)
 					if not ran then
 						logError(err)
 					end
 				end
 
-				if level>0 then
-					local oldVer = Core.GetData("VersionNumber");
-					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"));
+				if level > 0 then
+					local oldVer = Core.GetData("VersionNumber")
+					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
 						wait(2)
 
-						Remote.MakeGui(p,"Notification",{
+						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
 							Message = "Click here for commands.";
 							Icon = server.MatIcons["Verified user"];
@@ -771,8 +771,8 @@ return function(Vargs, GetEnv)
 
 						wait(1)
 
-						if oldVer and newVer and newVer>oldVer and level > 300 then
-							Remote.MakeGui(p,"Notification",{
+						if oldVer and newVer and newVer > oldVer and level > 300 then
+							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
@@ -784,19 +784,19 @@ return function(Vargs, GetEnv)
 						wait(1)
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
-							Remote.MakeGui(p,"Notification",{
+							Remote.MakeGui(p, "Notification", {
 								Title = "Warning!";
 								Message = "Using default datastore key!";
 								Icon = server.MatIcons.Description;
 								Time = 10;
 								OnClick = Core.Bytecode([[
-									local window = client.UI.Make("Window",{
+									local window = client.UI.Make("Window", {
 										Title = "How to change the DataStore key";
 										Size = {700,300};
 										Icon = "rbxassetid://7510994359";
 									})
 
-									window:Add("ImageLabel",{
+									window:Add("ImageLabel", {
 										Image = "rbxassetid://1059543904";
 									})
 
@@ -807,7 +807,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if newVer then
-						Core.SetData("VersionNumber",newVer)
+						Core.SetData("VersionNumber", newVer)
 					end
 				end
 
@@ -823,13 +823,13 @@ return function(Vargs, GetEnv)
 
 		CharacterAdded = function(p, Character, ...)
 			local key = tostring(p.UserId)
-			local keyData = Remote.Clients[key];
+			local keyData = Remote.Clients[key]
 
 			if keyData then
-				keyData.PlayerLoaded = true;
+				keyData.PlayerLoaded = true
 			end
 
-			wait();
+			wait()
 			if Character and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
