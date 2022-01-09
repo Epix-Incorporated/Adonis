@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		Chats = {};
 		Joins = {};
-                Leaves = {};
+        Leaves = {};
 		Script = {};
 		RemoteFires = {};
 		Commands = {};
@@ -270,7 +270,7 @@ return function(Vargs, GetEnv)
 					return Logs.Joins
 				end
 			end;
-			
+
 			LeaveLogs = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
 					return Logs.Leaves
