@@ -3,6 +3,8 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v232 WIP]";
+	"(Git/Tj33rd) Feat: Added leave logs #655";
+	"(Git/moo1210) Better teleporting/view StreamingEnabled support #652";
 	"(Git/ccuser44) Fixed Anti-idle detector not working #640";
 	"(Git/ccuser44) Some _G stuff fixes (Also fixes some potential security issues) #639";
 	"(Git/fxeP1) Add TrelloBan reason support. #631";
@@ -20,10 +22,14 @@ return {
 	"(Git/Expertcoderz) \"RecursiveTools\" setting + :clone argument update to specify multiple clones + random code improvements #643";
 	"(Git/Expertcoderz) Update :clearplayerdata #644";
 	"(Git/Expertcoderz) Remove ':tban' alias from :trelloban #646";
+	"(Git/Expertcoderz) Slightly fixed/improved :tools UI module #654";
+	"(Git/Expertcoderz) Fix :stealtools + some minor improvements #653 ";
+	"(Git/Expertcoderz) Remove Topbar UI from Aero (fix) #650";
+	"(Git/Expertcoderz) Improved/edited :resize #649";
 	"(Git/L8X) Various Updates:";
 	"* Disabled unnecessary math.randomseed(os.time()) #642";
-
 	"(Git/CommodoreGamer118) Enabled horizontal scrolling for buttons in TabFrame #614";
+	"(Git/CommodoreGamer118) Made :tp, :to, :bring and :clickteleport not bring you back when flying #651";
 	"";
 	"[v231 12.18.2021 19:30 EST]";
 	"*Credits updated";
