@@ -2570,7 +2570,7 @@ return function(Vargs, env)
 
 						cHumanoidRootPart.CFrame = cf
 
-						local ind = tostring(v.userId)
+						local ind = tostring(v.UserId)
 						local jail = {
 							Player = v;
 							Name = v.Name;
@@ -2644,7 +2644,7 @@ return function(Vargs, env)
 				local found = false
 
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local ind = tostring(v.userId)
+					local ind = tostring(v.UserId)
 					local jail = Variables.Jails[ind]
 					if jail then
 						--service.StopLoop(ind.."JAIL")
@@ -5741,7 +5741,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StopLoop(v.userId.."LOOPHEAL")
+					service.StopLoop(v.UserId.."LOOPHEAL")
 				end
 			end
 		};
@@ -6075,7 +6075,7 @@ return function(Vargs, env)
 						end
 
 						if check then
-							table.insert(Settings.Muted, v.Name..":"..v.userId)
+							table.insert(Settings.Muted, v.Name..":"..v.UserId)
 						end
 					end
 				end

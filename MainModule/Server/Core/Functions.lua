@@ -164,7 +164,7 @@ return function(Vargs, GetEnv)
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
 					for i,v in ipairs(parent:GetChildren()) do
 						local p = getplr(v)
-						if p and p:IsFriendsWith(plr.userId) then
+						if p and p:IsFriendsWith(plr.UserId) then
 							table.insert(players,p)
 							plus()
 						end
@@ -240,7 +240,7 @@ return function(Vargs, GetEnv)
 					if matched then
 						for _,v in ipairs(parent:GetChildren()) do
 							local p = getplr(v)
-							if p and p.userId == matched then
+							if p and p.UserId == matched then
 								table.insert(players,p)
 								plus()
 								foundNum += 1

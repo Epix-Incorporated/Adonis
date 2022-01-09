@@ -253,7 +253,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 				elseif type(setting) == "string" then
-					if Settings[setting] and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
+					if Settings[setting] and (allowed[setting] or level>=Settings.Ranks.Creators.Level) then
 						ret = Settings[setting]
 					end
 				end
@@ -637,7 +637,7 @@ return function(Vargs, GetEnv)
 
 		UnEncrypted = {
 			--[[TrustCheck = function(p)
-				local keys = Remote.Clients[tostring(p.userId)]
+				local keys = Remote.Clients[tostring(p.UserId)]
 				Remote.Fire(p, "TrustCheck", keys.Special)
 			end;--]]
 
@@ -675,7 +675,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			ClientCheck = function(p,args)
-				local key = tostring(p.userId)
+				local key = tostring(p.UserId)
 				local data = args[1]
 				local special = args[2]
 				local keys = Remote.Clients[key]
@@ -743,7 +743,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			PlayerEvent = function(p,args)
-				service.Events[tostring(args[1])..p.userId]:Fire(unpack(args,2))
+				service.Events[tostring(args[1])..p.UserId]:Fire(unpack(args,2))
 			end;
 
 			SaveTableAdd = function(p,args)
@@ -1174,7 +1174,7 @@ return function(Vargs, GetEnv)
 		RemoveGui = function(p,name,ignore)
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
-											
+
 		RefreshGui = function(p, name, ignore, data, themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
@@ -1216,7 +1216,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NewPlayerEvent = function(p,type,func)
-			return service.Events[type..p.userId]:Connect(func)
+			return service.Events[type..p.UserId]:Connect(func)
 		end;
 
 		StartLoop = function(p,name,delay,funcCode)

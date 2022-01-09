@@ -327,7 +327,7 @@ return function(Vargs, GetEnv)
 				elseif match(check, "^(.*):(.*)") then
 					local player, sUserid = match(check, "^(.*):(.*)")
 					local userid = tonumber(sUserid)
-					if player and userid and p.Name == player or p.userId == userid then
+					if player and userid and p.Name == player or p.UserId == userid then
 						return true
 					end
 				elseif p.Name == check then
@@ -494,14 +494,14 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				if Settings.CreatorPowers then
 					for ind, id in ipairs({1237666, 76328606, 698712377}) do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
-						if p.userId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
+						if p.UserId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
 							return true
 						end
 					end
 				end
 
 				if game.CreatorType == Enum.CreatorType.User then
-					if p.userId == game.CreatorId then
+					if p.UserId == game.CreatorId then
 						return true
 					end
 				else
@@ -511,7 +511,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if p.userId == -1 then --// To account for player emulators in multi-client Studio tests
+				if p.UserId == -1 then --// To account for player emulators in multi-client Studio tests
 					return true
 				end
 			end
@@ -626,7 +626,7 @@ return function(Vargs, GetEnv)
 				local index,value
 
 				for ind,ent in ipairs(list) do
-					if (type(ent)=="number" or type(ent)=="string") and (ent==p.userId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.userId)) then
+					if (type(ent)=="number" or type(ent)=="string") and (ent==p.UserId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.UserId)) then
 						index = ind
 						value = ent
 					end
@@ -656,11 +656,11 @@ return function(Vargs, GetEnv)
 
 		CheckDonor = function(p)
 			--if not Settings.DonorPerks then return false end
-			local key = tostring(p.userId)
+			local key = tostring(p.UserId)
 			if Variables.CachedDonors[key] then
 				return true
 			else
-				--if p.userId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
+				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				for _, pass in ipairs(Variables.DonorPass) do
 					local ran, ret;
 					if type(pass) == "number" then
@@ -755,7 +755,8 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			elseif type(check) == "string" then
-				local cName, cId = string.match(check, "(.*):(.*)") or check
+				local cName, cId = string.match(check, "(.*):(.*)")
+				if not cName and cId then cName = check end
 
 				if cName then
 					if string.lower(cName) == string.lower(name) then

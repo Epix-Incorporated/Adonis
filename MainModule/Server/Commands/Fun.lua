@@ -740,7 +740,7 @@ return function(Vargs, env)
 				if not args[2] then
 					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
 
-					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
+					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"
 				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
 					for s in args[2]:gmatch("[%d]+") do
 						table.insert(color3, tonumber(s))
@@ -1287,7 +1287,7 @@ return function(Vargs, env)
 										if v:IsA("BasePart") then
 											v.Anchored = true
 											v.Transparency = 1
-											pcall(function() v:FindFirstChildOfClass("Decale"):Destroy() end)
+											pcall(function() v:FindFirstChildOfClass("Decal"):Destroy() end)
 										elseif v:IsA("Accoutrement") then
 											v:Destroy()
 										end
@@ -2020,7 +2020,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-						local human = v.Character:FindFirstChildOfClass("Human")
+						local human = v.Character:FindFirstChildOfClass("Humanoid")
 						local rigType = human and (human.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15") or nil
 						Functions.PlayAnimation(v, rigType == "R6" and 27789359 or 507771019)
 					end
@@ -4003,7 +4003,7 @@ return function(Vargs, env)
 				end
 
 				local target = service.GetPlayers(plr, args[1])[1]
-				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")				
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
 
 				local descriptionClone = target_humanoid:GetAppliedDescription()
 				descriptionClone.Head = args[2]
@@ -4022,7 +4022,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StartLoop(v.userId.."LOOPFLING", 2, function()
+					service.StartLoop(v.UserId.."LOOPFLING", 2, function()
 						Admin.RunCommand(Settings.Prefix.."fling", v.Name)
 					end)
 				end
@@ -4039,7 +4039,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StopLoop(v.userId.."LOOPFLING")
+					service.StopLoop(v.UserId.."LOOPFLING")
 				end
 			end
 		};
@@ -4385,7 +4385,7 @@ return function(Vargs, env)
 							if not (args[2]) then
 								--assert(args[2], "No parts specified. See developer console for possible inputs.")
 								local tab = {}
-								for _,v in pairs(usageText) do 
+								for _,v in pairs(usageText) do
 									table.insert(tab, {
 										Text = v;
 										Desc = v;
@@ -4433,7 +4433,7 @@ return function(Vargs, env)
 
 											if not (found) then
 												assert(nil, "'"..v.."'".." is not a valid input. Run command with no arguments to see possible inputs.")
-											end	
+											end
 										end
 									end
 								else
@@ -4875,9 +4875,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
 				if args[1] and not args[2] then args[2] = args[1] args[1] = nil end
-				
+
 				local animId
-				
+
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
@@ -4906,7 +4906,7 @@ return function(Vargs, env)
 									end
 								end
 							end
-							
+
 							if not (found) then
 								assert(nil, "Instance 'StringValue' named 'walk' was not found. Please note, this command is designed for the default animation system.")
 							end

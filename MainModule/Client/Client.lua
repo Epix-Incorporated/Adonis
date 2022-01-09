@@ -32,18 +32,18 @@ next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, wait,
+Vector3int16, require, table, type, wait,
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick =
 	_G, game, script, getfenv, setfenv, workspace,
-getmetatable, setmetatable, loadstring, coroutine,
-rawequal, typeof, print, math, warn, error,  pcall,
-xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, elapsedTime, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, task.wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -423,7 +423,6 @@ for ind,loc in pairs({
 	PhysicalProperties = PhysicalProperties;
 	Region3int16 = Region3int16;
 	Vector3int16 = Vector3int16;
-	elapsedTime = elapsedTime;
 	require = require;
 	table = table;
 	type = type;

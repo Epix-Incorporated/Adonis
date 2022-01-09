@@ -57,7 +57,7 @@ return function(data)
 			if filter == "" or string.find(name:lower(), filter:lower()) then
 				local entry = scroller:Add("TextLabel", {
 					Text = "         "..name;
-					ToolTip = "ID: "..userId;
+					ToolTip = "ID: "..UserId;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1)));

@@ -97,7 +97,7 @@ return function(Vargs, GetEnv)
 			if com and level then
 				if string.find(level, ",") then
 					local newLevels = {}
-					for lvl in string.gmatch(level, "[^%,]+") do
+					for lvl in string.gmatch(level, "[^%s,]+") do
 						table.insert(newLevels, Trim(lvl))
 					end
 

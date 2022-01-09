@@ -397,7 +397,7 @@ return function(Vargs, env)
 						})
 						if #plrs>0 then
 							for i, v in pairs(plrs) do
-								table.insert(Variables.Whitelist.Lists.Settings, v.Name..":"..v.userId)
+								table.insert(Variables.Whitelist.Lists.Settings, v.Name..":"..v.UserId)
 								Functions.Hint("Whitelisted "..v.Name, {plr})
 							end
 						else
@@ -759,14 +759,14 @@ return function(Vargs, env)
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				local sb = Variables.ScriptBuilder[tostring(plr.userId)]
+				local sb = Variables.ScriptBuilder[tostring(plr.UserId)]
 				if not sb then
 					sb = {
 						Script = {};
 						LocalScript = {};
 						Events = {};
 					}
-					Variables.ScriptBuilder[tostring(plr.userId)] = sb
+					Variables.ScriptBuilder[tostring(plr.UserId)] = sb
 				end
 
 				local action = string.lower(args[1])
@@ -1057,8 +1057,8 @@ return function(Vargs, env)
 				local num = tonumber(args[2]) or 9999
 
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StopLoop(v.userId.."LOOPKILL")
-					Routine(service.StartLoop, v.userId.."LOOPKILL",3,function()
+					service.StopLoop(v.UserId.."LOOPKILL")
+					Routine(service.StartLoop, v.UserId.."LOOPKILL",3,function()
 						v.Character:BreakJoints()
 					end)
 				end
@@ -1075,7 +1075,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.StopLoop(v.userId.."LOOPKILL")
+					service.StopLoop(v.UserId.."LOOPKILL")
 				end
 			end
 		};
@@ -1326,7 +1326,6 @@ return function(Vargs, env)
 							Title = "Notification";
 							Icon = server.MatIcons.Done;
 							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
-							Icon = "rbxassetid://7536784790";
 							Time = 5;
 						})
 					end

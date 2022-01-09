@@ -138,7 +138,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.userId, tonumber(args[2])) end)
+					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.UserId, tonumber(args[2])) end)
 					if ran and service.PointsService:GetAwardablePoints() >= tonumber(args[2]) then
 						Functions.Hint('Gave '..args[2]..' points to '..v.Name, {plr})
 					elseif service.PointsService:GetAwardablePoints() < tonumber(args[2]) then

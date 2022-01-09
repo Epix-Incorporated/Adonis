@@ -154,7 +154,7 @@ return function(Vargs, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
-			
+
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
@@ -164,11 +164,11 @@ return function(Vargs, GetEnv)
 
 			CustomRanks = true;
 			Ranks = true;
-			
+
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
 		};
-		
+
 		--// Prevent certain keys from loading from the DataStore
 		PlayerDataKeyBlacklist = {
 			AdminRank = true;
@@ -624,7 +624,7 @@ return function(Vargs, GetEnv)
 						data.Warnings = (data.Warnings and Functions.DSKeyNormalize(data.Warnings, true)) or {}
 
 						local BLOCKED_SETTINGS = server.Core.PlayerDataKeyBlacklist
-						
+
 						for i,v in pairs(data) do
 							if not BLOCKED_SETTINGS[i] then
 								PlayerData[i] = v
@@ -785,10 +785,8 @@ return function(Vargs, GetEnv)
 						local ran, ret = Core.DS_WriteLimiter("Write", DataStore.SetAsync, DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
-							return;
 						else
 							logError("DataStore SetAsync Failed: ".. tostring(ret));
-							return error(ret);
 						end
 
 						task.wait(6)
@@ -901,7 +899,7 @@ return function(Vargs, GetEnv)
 						return nil;
 					end
 				end
-				
+
 				if curName and type(curName) == 'string' and Blacklist[curName] then
 					return nil
 				end
@@ -1027,7 +1025,7 @@ return function(Vargs, GetEnv)
 
 		LoadData = function(key, data, serverId)
 			if serverId and serverId == game.JobId then return end;
-			
+
 			local Blacklist = Core.DS_BLACKLIST
 			local CheckMatch = Functions.CheckMatch;
 			if key == "TableUpdate" then
@@ -1047,8 +1045,8 @@ return function(Vargs, GetEnv)
 
 				local realTable,tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
-				
-				if displayName and type(displayName) == 'string' and Blacklist[displayName] then 
+
+				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
 					--// warn("Stopped " .. displayName .. " from being set!")
 					--// Debugging --Coasterteam
 					return
@@ -1188,6 +1186,7 @@ return function(Vargs, GetEnv)
 			local Routine = Routine
 			local cPcall = cPcall
 			local MetaFunc = service.MetaFunc
+			local StartLoop = service.StartLoop
 			local API_Special = {
 				AddAdmin = Settings.Allowed_API_Calls.DataStore;
 				RemoveAdmin = Settings.Allowed_API_Calls.DataStore;

@@ -35489,13 +35489,13 @@ function Security.IsAreaAuthorizedForPlayer(Area, Player)
 
 		-- Check player permissions
 		elseif Permission.Type == 'Player' then
-			if (Player.userId == Permission.PlayerId) or (Player.Name == Permission.PlayerName) then
+			if (Player.UserId == Permission.PlayerId) or (Player.Name == Permission.PlayerName) then
 				return true;
 			end;
 
 		-- Check owner permissions
 		elseif Permission.Type == 'Owner' then
-			if (Player.userId == Permission.PlayerId) or (Player.Name == Permission.PlayerName) then
+			if (Player.UserId == Permission.PlayerId) or (Player.Name == Permission.PlayerName) then
 				return true;
 			end;
 
