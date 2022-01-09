@@ -3,6 +3,7 @@ return {
 	"*Drag edges to expand*";
 	"";
 	"[v232 WIP]";
+	"*Various fixes/silencing warnings";
 	"(Git/Tj33rd) Feat: Added leave logs #655";
 	"(Git/moo1210) Better teleporting/view StreamingEnabled support #652";
 	"(Git/ccuser44) Fixed Anti-idle detector not working #640";
