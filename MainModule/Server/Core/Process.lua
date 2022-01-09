@@ -440,20 +440,20 @@ return function(Vargs, GetEnv)
 						DontError = true;
 						})) do
 						--Routine(function()
-						local a = service.Filter(a,p,v)
+						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == "Global" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Team' and p.TeamColor == v.TeamColor then
+						elseif b == "Team" and p.TeamColor == v.TeamColor then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Local' and p:DistanceFromCharacter(v.Character.Head.Position) < 80 then
+						elseif b == "Local" and p:DistanceFromCharacter(v.Character.Head.Position) < 80 then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Admins' and Admin.CheckAdmin(p) and Admin.CheckAdmin(p) then
+						elseif b == "Admins" and Admin.CheckAdmin(p) then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Private' and v.Name ~= p.Name then
+						elseif b == "Private" and v.Name ~= p.Name then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
-						elseif b == 'Nil' then
+						elseif b == "Nil" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 							--[[elseif b == 'Ignore' and v.Name ~= p.Name then
 								Remote.Send(v,'AddToTable','IgnoreList',v.Name)
@@ -480,7 +480,7 @@ return function(Vargs, GetEnv)
 					local msg = string.sub(msg, 1, Process.MsgStringLimit)
 					local filtered = service.LaxFilter(msg, p)
 
-					AddLog(Logs.Chats,{
+					AddLog(Logs.Chats, {
 						Text = p.Name..": " .. tostring(filtered);
 						Desc = tostring(filtered);
 						Player = p;
@@ -508,7 +508,7 @@ return function(Vargs, GetEnv)
 				elseif isMuted then
 					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local filtered = service.LaxFilter(msg, p)
-					AddLog(Logs.Chats,{
+					AddLog(Logs.Chats, {
 						Text = "[MUTED] ".. p.Name ..": "..tostring(filtered);
 						Desc = tostring(filtered);
 						Player = p;
@@ -612,7 +612,7 @@ return function(Vargs, GetEnv)
 
 			if not ran then
 				AddLog("Errors", p.Name .." PlayerAdded Failed: ".. tostring(err))
-				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:");
+				warn("~! :: Adonis :: SOMETHING FAILED DURING PLAYERADDED:")
 				warn(tostring(err))
 			end
 
@@ -632,7 +632,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					local ran,err = TrackTask(p.Name .. "Chatted", Process.Chat, p, msg);
+					local ran, err = TrackTask(p.Name .. "Chatted", Process.Chat, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -640,7 +640,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					local ran,err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p, ...);
+					local ran, err = TrackTask(p.Name .. "CharacterAdded", Process.CharacterAdded, p, ...)
 					if not ran then
 						logError(err);
 					end
@@ -656,7 +656,7 @@ return function(Vargs, GetEnv)
 						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				end)
-			elseif (ran and err ~= "REMOVED") then
+			elseif ran and err ~= "REMOVED" then
 				Anti.RemovePlayer(p, "\n:: Adonis ::\nLoading Error [Missing player, keys, or removed]")
 			end
 		end;
@@ -730,7 +730,7 @@ return function(Vargs, GetEnv)
 			if level < 1 then
 				if Settings.AntiSpeed then
 					Remote.Send(p, "LaunchAnti", "Speed", {
-						Speed = tostring(60.5+math.random(9e8)/9e8)
+						Speed = tostring(60.5 + math.random(9e8)/9e8)
 					})
 				end
 
@@ -834,7 +834,7 @@ return function(Vargs, GetEnv)
 				local level = Admin.GetLevel(p)
 
 				--// Wait for UI stuff to finish
-				wait(1);
+				wait(1)
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
 					p:WaitForChild("PlayerGui", 9e9);
 				end
@@ -880,8 +880,8 @@ return function(Vargs, GetEnv)
 
 				--// Check muted
 				--[=[for ind,admin in pairs(Settings.Muted) do
-					if Admin.DoCheck(p,admin) then
-						Remote.LoadCode(p,[[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
+					if Admin.DoCheck(p, admin) then
+						Remote.LoadCode(p, [[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 					end
 				end--]=]
 
@@ -907,7 +907,7 @@ return function(Vargs, GetEnv)
 			local p = cli:GetPlayer()
 
 			if p then
-				Core.Connections[cli] = p;
+				Core.Connections[cli] = p
 
 				AddLog("Script", {
 					Text = p.Name .. " connected";
