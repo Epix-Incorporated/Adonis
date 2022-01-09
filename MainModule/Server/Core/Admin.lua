@@ -436,7 +436,9 @@ return function(Vargs, GetEnv)
 			local clients = Remote.Clients
 			local key = tostring(p.UserId)
 
-			if (not level or not lastUpdate or os.time() - lastUpdate > Admin.AdminLevelCacheTimeout) then
+			local currentTime = os.time()
+			
+			if (not level or not lastUpdate or currentTime - lastUpdate > Admin.AdminLevelCacheTimeout) or lastUpdate > currentTime then
 				local newLevel, newRank = Admin.UpdateCachedLevel(p, data)
 
 				if clients[key] and level and newLevel and type(p) == "userdata" and p:IsA("Player") then
