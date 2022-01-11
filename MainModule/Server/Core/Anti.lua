@@ -331,6 +331,18 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
+		
+		CheackBackpack = function(p, obj)
+			local ran,err = pcall(function()
+				return p:WaitForChild("Backpack",60):FindFirstChild(obj)
+			end)
+
+			if ran then
+				return ran
+			end
+
+			return false
+		end;
 
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
