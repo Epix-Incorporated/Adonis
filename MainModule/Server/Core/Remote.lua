@@ -401,6 +401,10 @@ return function(Vargs, GetEnv)
 			SearchCommands = function(p,args)
 				return Admin.SearchCommands(p,args[1] or "all")
 			end;
+		
+			CheckBackpack = function(p,args)
+				return Anti.CheckBackpack(p,args[1])
+			end;
 
 			FormattedCommands = function(p,args)
 				local commands = Admin.SearchCommands(p,args[1] or "all")
