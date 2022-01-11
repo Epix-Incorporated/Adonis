@@ -259,6 +259,9 @@ return function()
 							t.Active = false
 							t:Destroy()
 							Detected('log','HopperBin Detected (BTools)')
+						elseif not Get("CheckBackpack",t) then
+							t:Destroy()
+							Detected('log','Client-Side Tool Detected')
 						end
 					end
 				end
