@@ -3939,7 +3939,7 @@ return function(Vargs, env)
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.MaxHealth = args[2]
-						hum.Health = Humanoid.MaxHealth
+						hum.Health = hum.MaxHealth
 					end
 				end
 			end
