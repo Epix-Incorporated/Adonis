@@ -65,7 +65,7 @@ return function(Vargs, GetEnv)
 				DateTime = "DateTime";
 			}
 
-			for ind,t in next,server.Logs do
+			for ind, t in pairs(server.Logs) do
 				if t == tab then
 					return indToName[ind] or ind
 				end
@@ -73,7 +73,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		AddLog = function(tab, log, misc)
-			if misc then tab = log log = misc end
+			if misc then
+				tab = log
+				log = misc
+			end
 			if type(tab) == "string" then
 				tab = Logs[tab]
 			end
@@ -91,7 +94,7 @@ return function(Vargs, GetEnv)
 
 			table.insert(tab, 1, log)
 			if #tab > tonumber(MaxLogs) then
-				table.remove(tab,#tab)
+				table.remove(tab, #tab)
 			end
 
 			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
@@ -100,8 +103,8 @@ return function(Vargs, GetEnv)
 		SaveCommandLogs = function()
 			warn("Saving command logs...")
 
-			local logsToSave = Logs.Commands --{};
-			local maxLogs = Logs.OldCommandLogsLimit;
+			local logsToSave = Logs.Commands --{}
+			local maxLogs = Logs.OldCommandLogsLimit
 			--local numLogsToSave = 200; --// Save the last X logs from this server
 
 			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
@@ -111,10 +114,10 @@ return function(Vargs, GetEnv)
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				local temp = {}
 
-				for i,m in ipairs(logsToSave) do
-					local newTab = (type(m) == "table" and service.CloneTable(m)) or m;
+				for _, m in ipairs(logsToSave) do
+					local newTab = type(m) == "table" and service.CloneTable(m) or m
 					if type(m) == "table" and newTab.Player then
-						local p = newTab.Player;
+						local p = newTab.Player
 						newTab.Player = {
 							Name = p.Name;
 							UserId = p.UserId;
@@ -124,22 +127,22 @@ return function(Vargs, GetEnv)
 				end
 
 				if oldLogs then
-					for i,m in ipairs(oldLogs) do
+					for _, m in ipairs(oldLogs) do
 						table.insert(temp, m)
 					end
 				end
 
 				table.sort(temp, function(a, b)
 					if a.Time and b.Time and type(a.Time) == "number" and type(b.Time) == "number" then
-						return a.Time > b.Time;
+						return a.Time > b.Time
 					else
-						return false;
+						return false
 					end
 				end)
 
 				--// Trim logs, starting from the oldest
 				if #temp > maxLogs then
-					local diff = #temp - maxLogs;
+					local diff = #temp - maxLogs
 
 					for i = 1, diff do
 						table.remove(temp, 1)
@@ -154,28 +157,28 @@ return function(Vargs, GetEnv)
 
 		ListUpdaters = {
 			TempUpdate = function(plr, data)
-				local updateKey = data.UpdateKey;
-				local updater = Logs.TempUpdaters[updateKey];
+				local updateKey = data.UpdateKey
+				local updater = Logs.TempUpdaters[updateKey]
 				if updater then
-					return updater(data);
+					return updater(data)
 				end
 			end;
 
-			ShowTasks = function(plr,arg)
+			ShowTasks = function(plr, arg)
 				if not plr or Admin.CheckAdmin(plr) then
 					if arg then
-						for i,v in next,Functions.GetPlayers(plr, arg) do
+						for _, v in pairs(Functions.GetPlayers(plr, arg)) do
 							local temp = {}
 							local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 
-							table.insert(temp,{
+							table.insert(temp, {
 								Text = "Client Tasks",
 								Desc = "Tasks their client is performing"})
 
-							for k,t in next,cTasks do
+							for _, t in pairs(cTasks) do
 								table.insert(temp, {
-									Text = tostring(v.Name or v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
-									Desc = tostring(v.Function);
+									Text = tostring(t.Name or t.Function).. "- Status: "..t.Status.." - Elapsed: ".. t.CurrentTime - t.Created;
+									Desc = tostring(t.Function);
 								})
 							end
 
@@ -186,24 +189,24 @@ return function(Vargs, GetEnv)
 						local temp = {}
 						local cTasks = Remote.Get(plr,"TaskManager","GetTasks") or {}
 
-						table.insert(temp,{Text = "Server Tasks",Desc = "Tasks the server is performing"})
+						table.insert(temp, {Text = "Server Tasks"; Desc = "Tasks the server is performing";})
 
-						for i,v in next,tasks do
-							table.insert(temp,{
-								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
+						for _, v in pairs(tasks) do
+							table.insert(temp, {
+								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created);
 								Desc = tostring(v.Function);
 							})
 						end
 
-						table.insert(temp," ")
-						table.insert(temp,{
+						table.insert(temp, " ")
+						table.insert(temp, {
 							Text = "Client Tasks",
 							Desc = "Tasks your client is performing"
 						})
 
-						for i,v in pairs(cTasks) do
-							table.insert(temp,{
-								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+						for _, v in pairs(cTasks) do
+							table.insert(temp, {
+								Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created);
 								Desc = tostring(v.Function);
 							})
 						end
@@ -219,8 +222,8 @@ return function(Vargs, GetEnv)
 					if Core.DataStore then
 						local data = Core.GetData("OldCommandLogs")
 						if data then
-							for i,m in pairs(data) do
-								table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+							for i, m in pairs(data) do
+								table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
 							end
 						end
 					end
@@ -231,9 +234,9 @@ return function(Vargs, GetEnv)
 
 			DonorList = function()
 				local temptable = {}
-				for i,v in pairs(service.GetPlayers()) do
+				for _, v in pairs(service.GetPlayers()) do
 					if Admin.CheckDonor(v) then
-						table.insert(temptable,v.Name)
+						table.insert(temptable, v.Name)
 					end
 				end
 				return temptable
@@ -255,8 +258,8 @@ return function(Vargs, GetEnv)
 			Errors = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
 					local tab = {}
-					for i,v in pairs(Logs.Errors) do
-						table.insert(tab,{Time=v.Time;Text=v.Text..": "..tostring(v.Desc),Desc = tostring(v.Desc)})
+					for _, v in pairs(Logs.Errors) do
+						table.insert(tab, {Time = v.Time; Text = v.Text..": "..tostring(v.Desc); Desc = tostring(v.Desc);})
 					end
 					return tab
 				end
@@ -306,7 +309,7 @@ return function(Vargs, GetEnv)
 									ping = Remote.Ping(v).."ms"
 								end)
 
-								for i = 0.1,5,0.1 do
+								for i = 0.1, 5, 0.1 do
 									if ping then break end
 									wait(0.1)
 								end
@@ -323,15 +326,15 @@ return function(Vargs, GetEnv)
 									})
 								else
 									table.insert(plrs, {
-										Text = "[LOADING] "..v.Name,
-										Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping
+										Text = "[LOADING] "..v.Name;
+										Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping;
 									})
 								end
 							end
 						end)
 					end
 
-					for i = 0.1,5,0.1 do
+					for i = 0.1, 5, 0.1 do
 						if Functions.CountTable(plrs) >= Functions.CountTable(playz) then break end
 						wait(0.1)
 					end
@@ -341,7 +344,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			DateTime = function()
-				-- NonAdmin ListUpdater, no level check
+				--// NonAdmin ListUpdater, no level check
 				local ostime = os.time()
 				local tab = {
 					{Text = "―――――――――――――――――――――――"},
@@ -396,8 +399,8 @@ return function(Vargs, GetEnv)
 				if not plr or Admin.CheckAdmin(plr) then
 					local temp = {}
 
-					for i,m in pairs(Logs.Commands) do
-						table.insert(temp,{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					for _, m in pairs(Logs.Commands) do
+						table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
 					end
 
 					return temp
@@ -420,13 +423,13 @@ return function(Vargs, GetEnv)
 				if not plr or Admin.CheckAdmin(plr) then
 					local temp = {}
 					local function toTab(str, desc, color)
-						for i,v in next,service.ExtractLines(str) do
-							table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+						for _, v in pairs(service.ExtractLines(str)) do
+							table.insert(temp, {Text = v; Desc = desc..v; Color = color})
 						end
 					end
-					for i,v in next,service.LogService:GetLogHistory() do
+					for _, v in pairs(service.LogService:GetLogHistory()) do
 						local mType = v.messageType
-						toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+						toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 					end
 					return temp
 				end
@@ -458,7 +461,7 @@ return function(Vargs, GetEnv)
 						local objects = service.GetAdonisObjects()
 						local temp = {}
 
-						for i,v in next,objects do
+						for _, v in pairs(objects) do
 							table.insert(temp, {
 								Text = v:GetFullName();
 								Desc = v.ClassName;
