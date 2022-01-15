@@ -455,7 +455,7 @@ return function(Vargs, GetEnv)
 		GetPlayers = function(plr, names, data)
 			if data and type(data) ~= "table" then data = {} end
 			
-			local noMultiple = data and data.NoMultiple
+			local noSelectors = data and data.NoSelectors
 			local dontError = data and data.DontError
 			local isServer = data and data.IsServer
 			local isKicking = data and data.IsKicking
@@ -522,7 +522,7 @@ return function(Vargs, GetEnv)
 						local function plus() plrs += 1 end
 
 						local matchFunc = checkMatch(s)
-						if matchFunc and not noMultiple then
+						if matchFunc and not noSelectors then
 							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
 						else
 							for _, v in ipairs(parent:GetChildren()) do
