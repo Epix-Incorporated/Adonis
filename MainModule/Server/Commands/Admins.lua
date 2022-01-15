@@ -601,23 +601,26 @@ return function(Vargs, env)
 					ManualActivationOnly = false,
 					ToolTip = "Building Tools by F3X",
 					Name = "Building Tools"
-				})
-				service.New("StringValue", {
-					Name = "__ADONIS_VARIABLES_" .. Variables.CodeName,
-					Parent = F3X
-				})
+				}, true)
+				do
+					service.New("StringValue", {
+						Name = "__ADONIS_VARIABLES_" .. Variables.CodeName,
+						Parent = F3X
+					})
 
-				local clonedDeps = Deps.Assets:FindFirstChild("F3X Deps"):Clone()
-				for _, SourceContainer in ipairs(clonedDeps:GetDescendants()) do
-					if SourceContainer.ClassName == "LocalScript" or SourceContainer.ClassName == "Script" then
-						SourceContainer.Disabled = false
+					local clonedDeps = Deps.Assets:FindFirstChild("F3X Deps"):Clone()
+					for _, BaseScript in ipairs(clonedDeps:GetDescendants()) do
+						if BaseScript:IsA("BaseScript") then
+							BaseScript.Disabled = false
+						end
 					end
-				end
-				for _, Child in ipairs(clonedDeps:GetChildren()) do
-					Child.Parent = F3X
+					for _, Child in ipairs(clonedDeps:GetChildren()) do
+						Child.Parent = F3X
+					end
+					clonedDeps:Destroy()
 				end
 
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local Backpack = v:FindFirstChildOfClass("Backpack")
 
 					if Backpack then
