@@ -830,7 +830,8 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
-				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+
+				for i, v: Player in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoMultiple = true;})) do
 					local gameData = nil
 					if elevated then
 						local level, rank = Admin.GetLevel(v)
