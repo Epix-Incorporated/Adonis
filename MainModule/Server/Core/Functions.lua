@@ -454,12 +454,13 @@ return function(Vargs, GetEnv)
 
 		GetPlayers = function(plr, names, data)
 			if data and type(data) ~= "table" then data = {} end
-
-			local dontError = data and data.DontError;
-			local isServer = data and data.IsServer;
-			local isKicking = data and data.IsKicking;
+			
+			local noMultiple = data and data.NoMultiple
+			local dontError = data and data.DontError
+			local isServer = data and data.IsServer
+			local isKicking = data and data.IsKicking
 			--local noID = data and data.NoID;
-			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true;
+			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true
 
 			local players = {}
 			--local prefix = (data and data.Prefix) or Settings.SpecialPrefix
@@ -484,7 +485,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local function checkMatch(msg)
-				local doReturn;
+				local doReturn
 				local PlrLevel = Admin.GetLevel(plr)
 
 				for ind, data in pairs(Functions.PlayerFinders) do
@@ -494,20 +495,20 @@ return function(Vargs, GetEnv)
 							if data.Absolute then
 								return data
 							else --// Prioritize absolute matches over non-absolute matches
-								doReturn = data;
+								doReturn = data
 							end
 						end
 					end
 				end
 
-				return doReturn;
+				return doReturn
 			end
 
 			if plr == nil then
 				for _, v in ipairs(parent:GetChildren()) do
 					local p = getplr(v)
 					if p then
-						table.insert(players,p)
+						table.insert(players, p)
 					end
 				end
 			elseif plr and not names then
@@ -521,29 +522,29 @@ return function(Vargs, GetEnv)
 						local function plus() plrs += 1 end
 
 						local matchFunc = checkMatch(s)
-						if matchFunc then
+						if matchFunc and not noMultiple then
 							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
 						else
-							for i,v in ipairs(parent:GetChildren()) do
+							for _, v in ipairs(parent:GetChildren()) do
 								local p = getplr(v)
 								if p and p.ClassName == "Player" and sub(lower(p.DisplayName), 1, #s) == lower(s) then
-									table.insert(players,p)
+									table.insert(players, p)
 									plus()
 								end
 							end
 
 							if plrs == 0 then
-								for i,v in ipairs(parent:GetChildren()) do
+								for _, v in ipairs(parent:GetChildren()) do
 									local p = getplr(v)
 									if p and p.ClassName == "Player" and sub(lower(p.Name), 1, #s) == lower(s) then
-										table.insert(players,p)
+										table.insert(players, p)
 										plus()
 									end
 								end
 							end
 
 							if plrs == 0 and useFakePlayer then
-								local ran,userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
+								local ran, userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
 								if ran and tonumber(userid) then
 									local fakePlayer = Functions.GetFakePlayer({
 										Name = s;
@@ -561,7 +562,9 @@ return function(Vargs, GetEnv)
 						end
 
 						if plrs == 0 and not dontError then
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = 'No players matching '..s..' were found!'})
+							Remote.MakeGui(plr, "Output", {
+								Message = "No players matching "..s.." were found!"
+							})
 						end
 					end
 				end
@@ -569,17 +572,17 @@ return function(Vargs, GetEnv)
 
 			--// The following is intended to prevent name spamming (eg. :re scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel...)
 			--// It will also prevent situations where a player falls within multiple player finders (eg. :re group-1928483,nonadmins,radius-50 (one player can match all 3 of these))
-			local filteredList = {};
-			local checkList = {};
+			local filteredList = {}
+			local checkList = {}
 
-			for i,v in pairs(players) do
+			for _, v in pairs(players) do
 				if not checkList[v] then
-					table.insert(filteredList, v);
-					checkList[v] = true;
+					table.insert(filteredList, v)
+					checkList[v] = true
 				end
 			end
 
-			return filteredList;
+			return filteredList
 		end;
 
 		GetRandom = function(pLen)
