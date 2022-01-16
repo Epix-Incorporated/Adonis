@@ -1890,11 +1890,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local tab = {}
+				local  bancount = 0
 				for i, v in pairs(Settings.Banned) do
 					local entry = type(v) == "string" and v;
 					local reason = "No reason provided";
 
 					if type(v) == "table" then
+					 bancount +=1
 						if v.Name and v.UserId then
 							entry = v.Name .. ":" .. v.UserId;
 						elseif v.UserId then
@@ -1911,7 +1913,7 @@ return function(Vargs, env)
 					table.insert(tab, {Text = tostring(entry), Desc = reason})
 				end
 
-				Remote.MakeGui(plr, "List", {Title = "Ban List"; Tab = tab;})
+				Remote.MakeGui(plr, "List", {Title = "Ban List ("..tonumber(bancount)..")"; Tab = tab;})
 			end
 		};
 
