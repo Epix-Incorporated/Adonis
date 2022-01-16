@@ -31,10 +31,16 @@ return function()
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local UIFolder = client.UIFolder
+
 	local script = script
+
 	local service = service
 	local client = client
+
+	local GetEnv = GetEnv
+
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
+	local CloneTable, TrackTask
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
@@ -44,6 +50,9 @@ return function()
 		Process = client.Process;
 		Remote = client.Remote;
 		Deps = client.Deps;
+
+		CloneTable = service.CloneTable;
+		TrackTask = service.TrackTask;
 
 		UI.Init = nil;
 	end
@@ -116,7 +125,7 @@ return function()
 				new.Active = true
 				new.Text = ""
 
-				for ind,child in next,gui:GetChildren()do
+				for ind,child in ipairs(gui:GetChildren()) do
 					child.Parent = new
 				end
 
@@ -133,32 +142,40 @@ return function()
 		end;
 
 		LoadModule = function(module, data, env)
-			local ran,func = pcall(require, module)
-			local newEnv = GetEnv(env)
-			local data = data or {}
+			data = data or {}
 
-			newEnv.script = module
-			newEnv.client = service.CloneTable(client)
-			newEnv.service = service.CloneTable(service)
-			newEnv.service.Threads = service.CloneTable(service.Threads)
+			local ran, func = pcall(require, module)
+			local newEnv = GetEnv(env, {
+				script = module,
+			})
 
-			for i,v in next,newEnv.client do
+			newEnv.client = CloneTable(client)
+			newEnv.service = CloneTable(service)
+			newEnv.service.Threads = CloneTable(service.Threads)
+
+			for i,v in pairs(newEnv.client) do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
-					newEnv.client[i] = service.CloneTable(v)
+					newEnv.client[i] = CloneTable(v)
 				end
 			end
 
 			if ran then
-				local rets = {service.TrackTask("UI: ".. module:GetFullName(), setfenv(func,newEnv), data)}
-				local ran = rets[1]
-				if ran then
-					return unpack(rets,2)
+				local rets = {
+					TrackTask("UI: ".. module:GetFullName(),
+						setfenv(func,newEnv),
+						data,
+						newEnv
+					)
+				}
+
+				if rets[1] then
+					return unpack(rets, 2)
 				else
-					warn("Error while running module "..module.Name,tostring(rets[2]))
-					client.LogError("Error loading "..tostring(module).." - "..tostring(rets[2]))
+					warn("Error while running module", module.Name, rets[2])
+					client.LogError("Error loading ".. module.Name .." - ".. tostring(rets[2]))
 				end
 			else
-				warn("Error while loading module "..module.Name,tostring(func))
+				warn("Error while loading module", module.Name, tostring(func))
 			end
 		end;
 
@@ -167,9 +184,8 @@ return function()
 			local endConfig = {}
 			local endConfValues = {}
 			local confFolder = Instance.new("Folder")
-			local func
 			local debounce = false
-			function func(theme, name, depth)
+			local function func(theme, name, depth)
 				local depth = (depth or 11) - 1
 				local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 				if folder then
@@ -192,7 +208,7 @@ return function()
 							baseValue = config:FindFirstChild("BaseTheme") or baseValue
 							baseTheme = baseValue and baseValue.Value
 						end
-					end 
+					end
 					if baseTheme and depth > 0 then
 						if UI.DefaultTheme and baseTheme == "Default" and theme ~= UI.DefaultTheme and not debounce then
 							func(UI.DefaultTheme, name, depth)
@@ -207,14 +223,14 @@ return function()
 			--// Find GUI and all default versions under it
 			func(theme, name)
 			confFolder.Name = "Config"
-			
+
 			--// Create the final config for the found GUI.
 
 			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for i,v in next,foundConfigs do
+				for i,v in pairs(foundConfigs) do
 					if v.Config then
-						for k,m in next,v.Config:GetChildren() do
+						for k,m in ipairs(v.Config:GetChildren()) do
 							if not endConfig[m.Name] then
 								endConfig[m.Name] = m
 							end
@@ -223,7 +239,7 @@ return function()
 				end
 
 				--// Load all config values into the new Config folder
-				for i,v in next,endConfig do
+				for i,v in pairs(endConfig) do
 					v:Clone().Parent = confFolder;
 				end
 
@@ -319,7 +335,7 @@ return function()
 					end
 				end
 			else
-				print("GUI "..tostring(name).." not found")
+				print("GUI", name, "not found")
 			end
 		end;
 
@@ -327,7 +343,7 @@ return function()
 			local found = {}
 			local num = 0
 			if obj then
-				for ind,g in next,client.GUIs do
+				for ind,g in pairs(client.GUIs) do
 					if g.Name ~= ignore and g.Object ~= ignore and g ~= ignore then
 						if type(obj) == "string" then
 							if g.Name == obj then
@@ -359,7 +375,7 @@ return function()
 		Remove = function(name, ignore)
 			local gui = UI.Get(name, ignore)
 			if gui then
-				for i,v in next,gui do
+				for i,v in pairs(gui) do
 					v.Destroy()
 				end
 			end
@@ -394,8 +410,9 @@ return function()
 					if ran then
 						gTable.Active = true
 					else
-						warn("Something happened while trying to set the parent of "..tostring(gTable.Name))
-						warn(tostring(err))
+						warn("Something happened while trying to set the parent of", gTable.Name)
+						warn(err)
+
 						gTable:Destroy()
 					end
 				end,
@@ -406,7 +423,7 @@ return function()
 					local Events = gTable.Events
 					local disc = function()
 						origDisc(signal)
-						for i,v in next, Events do
+						for i,v in pairs(Events) do
 							if v.Signal == signal then
 								table.remove(Events, i)
 							end
@@ -426,7 +443,7 @@ return function()
 				end,
 
 				ClearEvents = function()
-					for i,v in next,gTable.Events do
+					for i,v in pairs(gTable.Events) do
 						v:Remove()
 					end
 				end,
@@ -481,7 +498,7 @@ return function()
 			}
 
 			if data then
-				for i,v in next,data do
+				for i,v in pairs(data) do
 					gTable[i] = v
 				end
 			end

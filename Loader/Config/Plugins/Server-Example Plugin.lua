@@ -24,7 +24,9 @@
 
 --]]
 
-return function()
+return function(Vargs)
+	local server, service = Vargs.Server, Vargs.Service
+
 	server.Commands.ExampleCommand = {
 		Prefix = server.Settings.Prefix;	-- Prefix to use for command
 		Commands = {"example"};	-- Commands

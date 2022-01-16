@@ -5,7 +5,7 @@
 	<Item class="ScreenGui" referent="RBXC2BB6723FB63491CBFF9B1A0B1DE19FD">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
-			<bool name="AutoLocalize">true</bool>
+			<bool name="AutoLocalize">false</bool>
 			<int name="DisplayOrder">0</int>
 			<bool name="Enabled">true</bool>
 			<bool name="IgnoreGuiInset">false</bool>
@@ -102,7 +102,7 @@ end]]></ProtectedString>
 					<Y>0</Y>
 				</Vector2>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
+				<bool name="AutoLocalize">false</bool>
 				<token name="AutomaticCanvasSize">2</token>
 				<token name="AutomaticSize">0</token>
 				<Color3 name="BackgroundColor3">

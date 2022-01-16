@@ -19,7 +19,7 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Attempts to force Adonis to reload";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local rebootHandler = server.Deps.RebootHandler:Clone();
 
 				if server.Runner then
@@ -45,7 +45,7 @@ return function(Vargs, env)
 			Args = {"player", "rank"};
 			Description = "Sets the target player(s) admin rank; THIS SAVES!";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level;
 				local rankName = args[2];
 				local newRank = assert(Settings.Ranks[rankName], "Rank not found");
@@ -80,7 +80,7 @@ return function(Vargs, env)
 			Args = {"player", "rank"};
 			Description = "Identical to :setrank except doesn't save";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level;
 				local rankName = args[2];
 				local newRank = assert(Settings.Ranks[rankName], "Rank not found");
@@ -115,7 +115,7 @@ return function(Vargs, env)
 			Args = {"player", "level"};
 			Description = "Sets the target player(s) permission level for the current server; Does not save";
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local senderLevel = data.PlayerData.Level;
 				local newLevel = assert(tonumber(args[2]), "Level must be a number");
 
@@ -151,7 +151,7 @@ return function(Vargs, env)
 			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing player name")
 
 				local temp = args[2] ~= "true";
@@ -231,7 +231,7 @@ return function(Vargs, env)
 			Description = "Removes the target players' admin powers for this server; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing player name")
 
 				local sendLevel = data.PlayerData.Level
@@ -270,7 +270,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary moderator; Does not save";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -299,7 +299,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a moderator; Saves";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -881,7 +881,7 @@ return function(Vargs, env)
 					assert(args[1] and args[2] and args[3], "Missing arguments")
 					if sb[class][name] then
 						if class == "LocalScript" then
-							sb[class][name].Script.Parent = plr.Backpack
+							sb[class][name].Script.Parent = plr:FindFirstChildOfClass("Backpack")
 						else
 							sb[class][name].Script.Parent = service.ServerScriptService
 						end
@@ -954,7 +954,7 @@ return function(Vargs, env)
 				local cl = Core.NewScript('LocalScript', "script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
 				cl.Name = "[Adonis] LocalScript"
 				cl.Disabled = true
-				cl.Parent = plr.Backpack
+				cl.Parent = plr:FindFirstChildOfClass("Backpack")
 				wait()
 				cl.Disabled = false
 				Functions.Hint("Ran LocalScript", {plr})
@@ -1091,7 +1091,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s)'s FPS drop";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if data.PlayerData.Level>Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "SetFPS",5.6)
@@ -1123,7 +1123,7 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
@@ -1145,7 +1145,7 @@ return function(Vargs, env)
 			Description = "Hard crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
@@ -1167,7 +1167,7 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
@@ -1189,7 +1189,7 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
@@ -1248,7 +1248,7 @@ return function(Vargs, env)
 			Filter = true;
 			Hidden = false;
 			Fun = false;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
 				for i, v in pairs(service.GetPlayers(plr, args[1], {
@@ -1295,7 +1295,7 @@ return function(Vargs, env)
 			Filter = true;
 			CrossServerDenied = true;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local board = Settings.Trello_Primary
 				local appkey = Settings.Trello_AppKey
 				local token = Settings.Trello_Token
@@ -1319,7 +1319,7 @@ return function(Vargs, env)
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(
 							list.id,
-							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), tostring(v.UserId)),
+							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), v.UserId),
 							reason
 						)
 
