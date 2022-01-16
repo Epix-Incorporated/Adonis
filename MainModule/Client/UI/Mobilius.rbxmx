@@ -136,7 +136,7 @@ end]]></ProtectedString>
 						<Y>0</Y>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>0.227450997</R>
@@ -190,7 +190,7 @@ end]]></ProtectedString>
 							<Y>0</Y>
 						</Vector2>
 						<BinaryString name="AttributesSerialize"></BinaryString>
-						<bool name="AutoLocalize">true</bool>
+						<bool name="AutoLocalize">false</bool>
 						<token name="AutomaticSize">0</token>
 						<Color3 name="BackgroundColor3">
 							<R>0.0705882385</R>
@@ -244,7 +244,7 @@ end]]></ProtectedString>
 								<Y>0</Y>
 							</Vector2>
 							<BinaryString name="AttributesSerialize"></BinaryString>
-							<bool name="AutoLocalize">true</bool>
+							<bool name="AutoLocalize">false</bool>
 							<token name="AutomaticSize">0</token>
 							<Color3 name="BackgroundColor3">
 								<R>0.639215708</R>
@@ -339,7 +339,7 @@ end]]></ProtectedString>
 					</Vector2>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<bool name="AutoButtonColor">true</bool>
-					<bool name="AutoLocalize">true</bool>
+					<bool name="AutoLocalize">false</bool>
 					<token name="AutomaticSize">0</token>
 					<Color3 name="BackgroundColor3">
 						<R>1</R>

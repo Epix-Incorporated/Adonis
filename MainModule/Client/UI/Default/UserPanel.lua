@@ -2,11 +2,14 @@ local canEditTables = {
 	Admins = true;
 	HeadAdmins = true;
 	Moderators = true;
+
 	Banned = true;
 	Muted = true;
+
 	Blacklist = true;
 	Whitelist = true;
 	Permissions = true;
+
 	MusicList = false;
 	InsertList = false;
 	CapeList = false;
@@ -35,20 +38,26 @@ local function tabToString(tab)
 	end
 end
 
-return function(data)
-	local client = client
-	local service = service
+return function(data, Vargs)
+	local client: table = Vargs.client
+	local service: table = Vargs.service
+	local gui = Vargs.gui
+
+	local UI = client.UI
+	local Remote = client.Remote
+	local Variables = client.Variables
+	local Deps = client.Deps
+	local Functions = client.Functions;
 
 	local gTable
-	local Functions = client.Functions;
-	local window = client.UI.Make("Window", {
+	local window = UI.Make("Window", {
 		Name  = "UserPanel";
 		Title = "Adonis";
 		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
 		Size  = {465, 325};
 		AllowMultiple = false;
 		OnClose = function()
-			client.Variables.WaitingForBind = false
+			Variables.WaitingForBind = false
 		end
 	})
 
@@ -57,7 +66,7 @@ return function(data)
 		local setting = tabPath and tabPath[#tabPath-1] or setting
 		local name = tabPath and table.concat(tabPath, ".") or setting
 
-		local tabWindow = client.UI.Make("Window",{
+		local tabWindow = UI.Make("Window",{
 			Name  = name .. "EditSettingsTable";
 			Title = name;
 			Size  = {320, 300};
@@ -81,11 +90,14 @@ return function(data)
 					selected = nil
 					items:ClearAllChildren();
 
+					local fromOffset = UDim2.fromOffset
+					local listSize = UDim2.new(1, 0, 0, 25)
+
 					for i,v in ipairs(tab) do
 						items:Add("TextButton", {
 							Text = tabToString(v);
-							Size = UDim2.new(1, 0, 0, 25);
-							Position = UDim2.new(0, 0, 0, num*25);
+							Size = listSize;
+							Position = fromOffset(0, num*25);
 							Visible = true;
 							ZIndex = 100;
 							OnClicked = function(button)
@@ -134,7 +146,7 @@ return function(data)
 								if not inputBlock then
 									inputBlock = true
 									if #entryText.Text > 0 then
-										client.Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
+										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
 									wait(0.5)
@@ -179,7 +191,7 @@ return function(data)
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
-							client.Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
+							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
 							wait(0.5)
@@ -215,11 +227,11 @@ return function(data)
 	end
 
 	if window then
-		local playerData   = client.Remote.Get("PlayerData")
-		local chatMod 	   = client.Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
-		local settingsData = client.Remote.Get("AllSettings")
+		local playerData   = Remote.Get("PlayerData")
+		local chatMod 	   = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		local settingsData = Remote.Get("AllSettings")
 
-		client.Variables.Aliases = playerData.Aliases or {}
+		Variables.Aliases = playerData.Aliases or {}
 
 		local tabFrame = window:Add("TabFrame", {
 			Size = UDim2.new(1, -10, 1, -10);
@@ -283,7 +295,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						client.Remote.Send("ProcessCommand", chatMod.Prefix.."cmds")
+						Remote.Send("ProcessCommand", chatMod.Prefix.."cmds")
 					end
 				}
 			})
@@ -295,7 +307,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						client.UI.Make("List", {
+						UI.Make("List", {
 							Title = "Changelog";
 							Table = client.Changelog;
 						})
@@ -310,7 +322,7 @@ return function(data)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						client.UI.Make("Credits", {})
+						UI.Make("Credits", {})
 					end
 				}
 			})
@@ -383,7 +395,7 @@ return function(data)
 
 			local function updateStatus()
 				dStatus.Text = "Updating..."
-				dStatus.Text = client.Remote.Get("UpdateDonor", playerData.Donor)
+				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
 				wait(0.5)
 				dStatus.Text = "Donated"
 			end
@@ -432,7 +444,7 @@ return function(data)
 						BorderColor3 = Color3.fromRGB(100, 100, 100);
 						OnClick = playerData.isDonor and function(new)
 							service.Debounce("DonorStatusUpdate", function()
-								local newColor = client.UI.Make("ColorPicker", {
+								local newColor = UI.Make("ColorPicker", {
 									Color = currentColor;
 								})
 
@@ -519,7 +531,7 @@ return function(data)
 							service.Debounce("DonorStatusUpdate", function()
 								local lastValid = currentTexture
 								local donePreview = false
-								local pWindow = client.UI.Make("Window", {
+								local pWindow = UI.Make("Window", {
 									Name = "CapeTexture";
 									Title = "Texture Preview";
 									Size = {200, 250};
@@ -719,7 +731,7 @@ return function(data)
 			local inputBlock = false
 			local commandBox
 			local keyBox
-			local keyCodeToName = client.Functions.KeyCodeToName;
+			local keyCodeToName = Functions.KeyCodeToName;
 			local binds = keyTab:Add("ScrollingFrame", {
 				Size = UDim2.new(1, -10, 1, -35);
 				Position = UDim2.new(0, 5, 0, 5);
@@ -733,7 +745,7 @@ return function(data)
 				selected = nil
 				binds:ClearAllChildren();
 
-				for i,v in pairs(client.Variables.KeyBinds) do
+				for i,v in pairs(Variables.KeyBinds) do
 					binds:Add("TextButton", {
 						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -808,10 +820,10 @@ return function(data)
 							if currentKey then
 								keyBox.Text = "Saving..."
 								if editOldKeybind then
-									client.Functions.RemoveKeyBind(editOldKeybind)
+									Functions.RemoveKeyBind(editOldKeybind)
 									editOldKeybind = nil
 								end
-								client.Functions.AddKeyBind(currentKey.Value, commandBox.Text)
+								Functions.AddKeyBind(currentKey.Value, commandBox.Text)
 								currentKey = nil
 							end
 
@@ -832,7 +844,7 @@ return function(data)
 								currentKey = nil
 								inputBlock = false
 								binderBox.Visible = false
-								client.Variables.WaitingForBind = false
+								Variables.WaitingForBind = false
 								if keyInputHandler then
 									keyInputHandler:Disconnect()
 								end
@@ -858,14 +870,14 @@ return function(data)
 				OnClicked = function(button)
 					doneKey = false
 					button.Text = "Waiting..."
-					client.Variables.WaitingForBind = true
+					Variables.WaitingForBind = true
 					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject)
 						local textbox = service.UserInputService:GetFocusedTextBox()
 						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 							currentKey = InputObject.KeyCode
 							if currentKey then
 								button.Text = string.upper(keyCodeToName(currentKey.Value))
-								client.Variables.WaitingForBind = false
+								Variables.WaitingForBind = false
 								if keyInputHandler then
 									keyInputHandler:Disconnect()
 									keyInputHandler = nil
@@ -887,7 +899,7 @@ return function(data)
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						inputBlock = true
-						client.Functions.RemoveKeyBind(selected.Key)
+						Functions.RemoveKeyBind(selected.Key)
 						selected = nil
 						editButton.TextTransparency = 0.5
 						removeButton.TextTransparency = 0.5
@@ -969,7 +981,7 @@ return function(data)
 				selected = nil
 				aliases:ClearAllChildren();
 
-				for i, v in pairs(client.Variables.Aliases) do
+				for i, v in pairs(Variables.Aliases) do
 					aliases:Add("TextButton", {
 						Text = "Alias: ".. i .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -1044,11 +1056,11 @@ return function(data)
 								aliasBox.Text = "Saving..."
 
 								if editOldAlias then
-									client.Functions.RemoveAlias(editOldAlias)
+									Functions.RemoveAlias(editOldAlias)
 									editOldAlias = nil
 								end
 
-								client.Functions.AddAlias(alias, commandBox.Text)
+								Functions.AddAlias(alias, commandBox.Text)
 								currentAlias = nil
 							end
 
@@ -1103,7 +1115,7 @@ return function(data)
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						inputBlock = true
-						client.Functions.RemoveAlias(selected.Alias)
+						Functions.RemoveAlias(selected.Alias)
 						selected = nil
 						editButton.TextTransparency = 0.5
 						removeButton.TextTransparency = 0.5
@@ -1166,12 +1178,12 @@ return function(data)
 					Text = "Keybinds: ";
 					Desc = "- Enabled/Disables Keybinds";
 					Entry = "Boolean";
-					Value = client.Variables.KeybindsEnabled;
+					Value = Variables.KeybindsEnabled;
 					Function = function(enabled, toggle)
-						client.Variables.KeybindsEnabled = enabled
+						Variables.KeybindsEnabled = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient", "KeybindsEnabled", enabled)
+						Remote.Get("UpdateClient", "KeybindsEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1179,12 +1191,12 @@ return function(data)
 					Text = "UI Keep Alive: ";
 					Desc = "- Prevents Adonis UI deletion on death";
 					Entry = "Boolean";
-					Value = client.Variables.UIKeepAlive;
+					Value = Variables.UIKeepAlive;
 					Function = function(enabled, toggle)
-						client.Variables.UIKeepAlive = enabled
+						Variables.UIKeepAlive = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient", "UIKeepAlive", enabled)
+						Remote.Get("UpdateClient", "UIKeepAlive", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1192,19 +1204,19 @@ return function(data)
 					Text = "Particle Effects: ";
 					Desc = "- Enables/Disables Adonis made particles";
 					Entry = "Boolean";
-					Value = client.Variables.ParticlesEnabled;
+					Value = Variables.ParticlesEnabled;
 					Function = function(enabled, toggle)
-						client.Variables.ParticlesEnabled = enabled
+						Variables.ParticlesEnabled = enabled
 
 						if enabled then
-							client.Functions.EnableParticles(true)
+							Functions.EnableParticles(true)
 						else
-							client.Functions.EnableParticles(false)
+							Functions.EnableParticles(false)
 						end
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient", "ParticlesEnabled", enabled)
+						Remote.Get("UpdateClient", "ParticlesEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1212,25 +1224,25 @@ return function(data)
 					Text = "Capes: ";
 					Desc = "- Allows you to disable all player capes locally";
 					Entry = "Boolean";
-					Value = client.Variables.CapesEnabled;
+					Value = Variables.CapesEnabled;
 					Function = function(enabled, toggle)
-						client.Variables.CapesEnabled = enabled
+						Variables.CapesEnabled = enabled
 
 						if enabled then
-							client.Functions.HideCapes(false)
+							Functions.HideCapes(false)
 						else
-							client.Functions.HideCapes(true)
+							Functions.HideCapes(true)
 						end
 
 						if enabled then
-							client.Functions.MoveCapes()
+							Functions.MoveCapes()
 						else
 							service.StopLoop("CapeMover")
 						end
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient", "CapesEnabled", enabled)
+						Remote.Get("UpdateClient", "CapesEnabled", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1239,13 +1251,13 @@ return function(data)
 					Desc = "- Hide your commands run from the chat from others";
 					Entry = "Boolean";
 					Setting = "HideChatCommands";
-					Value = client.Variables.HideChatCommands or false;
+					Value = Variables.HideChatCommands or false;
 					Function = function(enabled, toggle)
-						client.Variables.HideChatCommands = enabled
+						Variables.HideChatCommands = enabled
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient", "HideChatCommands", enabled)
+						Remote.Get("UpdateClient", "HideChatCommands", enabled)
 						toggle.Text = text
 					end
 				};
@@ -1254,13 +1266,13 @@ return function(data)
 					Desc = "- Hide certain info from your profile";
 					Entry = "Boolean";
 					Setting = "PrivacyMode";
-					Value = client.Variables.PrivacyMode or false;
+					Value = Variables.PrivacyMode or false;
 					Function = function(enabled, toggle)
-						client.Variables.PrivacyMode = enabled
+						Variables.PrivacyMode = enabled
 
 						local text = toggle.Text
 						toggle.Text = "Saving.."
-						client.Remote.Get("UpdateClient","PrivacyMode", enabled)
+						Remote.Get("UpdateClient","PrivacyMode", enabled)
 						toggle.Text = text
 					end
 				};--]]
@@ -1268,7 +1280,7 @@ return function(data)
 					Text = "Console Key: ";
 					Desc = "- Key used to open the console";
 					Entry = "Keybind";
-					Value = client.Variables.CustomConsoleKey or client.Remote.Get("Setting","ConsoleKeyCode");
+					Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
 					Function = function(toggle)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey
@@ -1282,10 +1294,10 @@ return function(data)
 
 							repeat wait() until gotKey
 
-							client.Variables.CustomConsoleKey = gotKey
+							Variables.CustomConsoleKey = gotKey
 							event:Disconnect()
 							toggle.Text = "Saving.."
-							client.Remote.Get("UpdateClient", "CustomConsoleKey", client.Variables.CustomConsoleKey)
+							Remote.Get("UpdateClient", "CustomConsoleKey", Variables.CustomConsoleKey)
 							toggle.Text = gotKey
 						end)
 					end
@@ -1295,19 +1307,19 @@ return function(data)
 					Desc = "- Allows you to set the Adonis UI theme";
 					Entry = "DropDown";
 					Setting = "CustomTheme";
-					Value = client.Variables.CustomTheme or "Game Theme";
+					Value = Variables.CustomTheme or "Game Theme";
 					Options = (function() local themes = {"Game Theme"} for i,v in ipairs(client.UIFolder:GetChildren()) do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
 						if selection == "Game Theme" then
-							client.Variables.CustomTheme = nil
-							client.Remote.Get("UpdateClient", "CustomTheme", nil)
+							Variables.CustomTheme = nil
+							Remote.Get("UpdateClient", "CustomTheme", nil)
 						else
-							client.Variables.CustomTheme = selection
-							client.Remote.Get("UpdateClient", "CustomTheme", selection)
+							Variables.CustomTheme = selection
+							Remote.Get("UpdateClient", "CustomTheme", selection)
 						end
-						spawn(function()
+						task.delay(0.029, function()
 							window:Close()
-							client.UI.Make("UserPanel", {Tab = "Client"})
+							UI.Make("UserPanel", {Tab = "Client"})
 						end)
 					end
 				}
@@ -1393,7 +1405,7 @@ return function(data)
 							Position = UDim2.new(1, -100, 0, 0);
 							BackgroundTransparency = 1;
 							OnClick = function()
-								client.Remote.Send("ClearSavedSettings")
+								Remote.Send("ClearSavedSettings")
 							end
 						}
 					}
@@ -1526,7 +1538,7 @@ return function(data)
 									BackgroundTransparency = 1;
 									OnToggle = function(enabled, button)
 										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
-										client.Remote.Send("SaveSetSetting", setting, enabled)
+										Remote.Send("SaveSetSetting", setting, enabled)
 									end
 								}
 							}
@@ -1548,7 +1560,7 @@ return function(data)
 									TextChanged = function(text, enter, new)
 										if enter then
 											--warn("Setting "..tostring(setting)..": "..tostring(text))
-											client.Remote.Send("SaveSetSetting", setting, text)
+											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end
 								}
@@ -1571,7 +1583,7 @@ return function(data)
 									TextChanged = function(text, enter, new)
 										if enter then
 											--warn("Setting "..tostring(setting)..": "..tonumber(text))
-											client.Remote.Send("SaveSetSetting", setting, text)
+											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end
 								}

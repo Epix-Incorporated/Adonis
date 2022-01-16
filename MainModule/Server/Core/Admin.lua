@@ -16,6 +16,7 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local AddLog, TrackTask, Defaults
+	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -32,6 +33,12 @@ return function(Vargs, GetEnv)
 
 		TrackTask = service.TrackTask
 		AddLog = Logs.AddLog;
+
+		if not CreatorId then
+			TrackTask("Thread: GetGroupCreatorId", function()
+				CreatorId = service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
+			end)
+		end
 
 		TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
@@ -203,13 +210,16 @@ return function(Vargs, GetEnv)
 	server.Admin = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
+
+		SpecialLevels = {};
+		TempAdmins = {};
+
 		PrefixCache = {};
 		CommandCache = {};
-		SpecialLevels = {};
-		GroupRanks = {};
-		TempAdmins = {};
 		SlowCache = {};
 		UserIdCache = {};
+		GroupsCache = {};
+
 		BlankPrefix = false;
 
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
@@ -234,7 +244,27 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetPlayerGroup = function(p, group)
-			local groups = service.GroupService:GetGroupsAsync(p.UserId) or {}
+			local groups;
+			do
+				local key = tostring(p.UserId)
+
+				local groupTable = Admin.GroupsCache[key]
+				if not groupTable then
+					Admin.GroupsCache[key] = {}
+				end
+
+				local groupInfo = groupTable and groupTable[group] or {}
+				if not groupInfo[1] or os.time() - groupInfo[1] < 30 then
+					Admin.GroupsCache[key][group] = {
+						os.time(),
+						service.GroupService:GetGroupsAsync(p.UserId) or {}
+					}
+					groups = Admin.GroupsCache[key][group][2]
+				else
+					groups = groupInfo[2] or {}
+				end
+			end
+
 			local isID = type(group) == "number"
 			if groups then
 				for _, v in ipairs(groups) do
@@ -492,23 +522,18 @@ return function(Vargs, GetEnv)
 
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
+				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
+				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
 				if Settings.CreatorPowers then
-					for ind, id in ipairs({1237666, 76328606, 698712377}) do  --// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
-						if p.UserId == id then							--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
+					for _, userId in ipairs({1237666, 76328606, 698712377}) do
+						if p.UserId == userId then
 							return true
 						end
 					end
 				end
 
-				if game.CreatorType == Enum.CreatorType.User then
-					if p.UserId == game.CreatorId then
-						return true
-					end
-				else
-					local group = Admin.GetPlayerGroup(p, game.CreatorId)
-					if p and p.Parent == service.Players and group and group.Rank == 255 then-- p:GetRankInGroup(game.CreatorId) == 255 then
-						return true
-					end
+				if tonumber(CreatorId) and p.UserId == CreatorId then
+					return true
 				end
 
 				if p.UserId == -1 then --// To account for player emulators in multi-client Studio tests
