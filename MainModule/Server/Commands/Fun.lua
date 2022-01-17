@@ -3797,7 +3797,7 @@ return function(Vargs, env)
 								if mesh then
 									mesh.Scale *= num
 								end
-							elseif v:IsA("SpecialMesh") and v.Parent.Name ~= "Handle" then
+							elseif v:IsA("SpecialMesh") and v.Parent.Name ~= "Handle" and v.Parent.Name ~= "Head" then
 								v.Scale *= num
 							end
 						end
