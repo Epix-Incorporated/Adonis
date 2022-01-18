@@ -16,7 +16,7 @@ return function(Vargs, env)
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
 			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
-			Args = {"time"};
+			Args = {"player"};
 			Description = "Opens an audio player window";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
