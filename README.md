@@ -21,7 +21,7 @@ Adonis is a server moderation and management system created for use on the Roblo
 ## Installation
 
 📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw).**
-<br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/rdkgGc4).
+<br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/H5RvTP3).
 
 ### Method 1: Official Roblox Model
 
