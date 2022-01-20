@@ -10,7 +10,7 @@
     <a href="https://github.com/Sceleratis/Adonis/releases">
         <img src="https://img.shields.io/github/v/release/Sceleratis/Adonis?label=version"/>
     </a>
-    <a href="https://discord.gg/rdkgGc4">
+    <a href="https://discord.gg/H5RvTP3">
         <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
     </a>
 </div>
@@ -21,7 +21,7 @@ Adonis is a server moderation and management system created for use on the Roblo
 ## Installation
 
 📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw).**
-<br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/rdkgGc4).
+<br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/H5RvTP3).
 
 ### Method 1: Official Roblox Model
 
