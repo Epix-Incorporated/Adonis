@@ -1169,33 +1169,33 @@ return function(data)
 				data.ClassName = nil
 			end
 
-			if not data.BorderColor3 and checkProperty(new,"BorderColor3") then
+			if not data.BorderColor3 and checkProperty(new, "BorderColor3") then
 				new.BorderColor3 = dBorder
 			end
 
-			if not data.CanvasSize and checkProperty(new,"CanvasSize") then
+			if not data.CanvasSize and checkProperty(new, "CanvasSize") then
 				new.CanvasSize = dCanvasSize
 			end
 
-			if not data.BorderSizePixel and checkProperty(new,"BorderSizePixel") then
+			if not data.BorderSizePixel and checkProperty(new, "BorderSizePixel") then
 				new.BorderSizePixel = dPixelSize
 			end
 
-			if not data.BackgroundColor3 and checkProperty(new,"BackgroundColor3") then
+			if not data.BackgroundColor3 and checkProperty(new, "BackgroundColor3") then
 				new.BackgroundColor3 = dBackground
 			end
 
-			if not data.PlaceholderColor3 and checkProperty(new,"PlaceholderColor3") then
+			if not data.PlaceholderColor3 and checkProperty(new, "PlaceholderColor3") then
 				new.PlaceholderColor3 = dPlaceholderColor
 			end
 
-			if not data.Transparency and not data.BackgroundTransparency and checkProperty(new,"Transparency") then
+			if not data.Transparency and not data.BackgroundTransparency and checkProperty(new, "Transparency") and checkProperty(new, "BackgroundTransparency")  then
 				new.BackgroundTransparency = dTransparency
-			elseif data.Transparency then
+			elseif data.Transparency and checkProperty(new, "BackgroundTransparency") then
 				new.BackgroundTransparency = data.Transparency
 			end
 
-			if not data.TextColor3 and not data.TextColor and checkProperty(new,"TextColor3") then
+			if not data.TextColor3 and not data.TextColor and checkProperty(new, "TextColor3") then
 				new.TextColor3 = dTextColor
 			elseif data.TextColor then
 				new.TextColor3 = data.TextColor
@@ -1215,15 +1215,15 @@ return function(data)
 				new.TopImage = dScrollImage
 			end
 
-			if not data.Size and checkProperty(new,"Size") then
+			if not data.Size and checkProperty(new, "Size") then
 				new.Size = dSize
 			end
 
-			if not data.Position and checkProperty(new,"Position") then
+			if not data.Position and checkProperty(new, "Position") then
 				new.Position = dPosition
 			end
 
-			if not data.ZIndex and checkProperty(new,"ZIndex") then
+			if not data.ZIndex and checkProperty(new, "ZIndex") then
 				new.ZIndex = dZIndex
 				if parent and checkProperty(parent, "ZIndex") then
 					new.ZIndex = parent.ZIndex
@@ -1247,9 +1247,9 @@ return function(data)
 							debounce = true
 						end
 
-						onClick(new);
+						onClick(new)
 
-						debounce = false;
+						debounce = false
 					end
 				end)
 			end
