@@ -635,7 +635,7 @@ return function(Vargs, env)
 
 		ScriptInfo = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"info", "about", "userpanel"};
+			Commands = {"info", "about", "userpanel", "panel"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows info about the admin system (Adonis)";
