@@ -627,6 +627,7 @@ return function(Vargs, env)
 				Core.SavePlayer(plr, playerData)
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Theme Changed";
+					Icon = server.MatIcons.Palette;
 					Message = "Theme set to "..args[1].."!";
 					Time = 5;
 				})
