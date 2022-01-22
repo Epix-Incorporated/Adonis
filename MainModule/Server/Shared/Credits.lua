@@ -4,9 +4,10 @@ return {
 		{Text = "Kohltastrophe (Scripth)",	Desc = "For his help with various things and some code"};
 		{Text = "einsteinK",			Desc = "Helped me with some scripting problems early in development and put together the LoadstringParser; Best programmer I know"};
 		{Text = "Rerumu (Shining_Diamando)",	Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
-		{Text = "Cald_fan", 			Desc = "WebPanel Creator & Maintainer"};
-		{Text = "joritochip",			Desc = "WebPanel Developer"};
-		{Text = "Coasterteam",			Desc = "Development contributions (Kronos developer)"};
+		{Text = "Cald_fan", 			Desc = "Community Maintainer & WebPanel Creator & Maintainer"};
+		{Text = "joritochip",			Desc = "Community Maintainer & WebPanel Developer"};
+		{Text = "Coasterteam",		Desc = "Community Maintainer & Development contributions (Kronos developer)"};
+		{Text = "Expertcoderz",		Desc = "Community Maintainer & GitHub Contributor"};
 	};
 	GitHub = {
 		{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
@@ -36,7 +37,6 @@ return {
 		{Text = "@GitHub imskyyc",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub LolloDev5123",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub happyman090",		Desc = "GitHub Contributor"};
-		{Text = "@GitHub Expertcoderz",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub GalacticInspired",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub flgx16",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub DrewBokman",		Desc = "GitHub Contributor"};
@@ -55,6 +55,7 @@ return {
 		{Text = "@GitHub sea4h",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Tj33rd",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub L8X",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub Honzzzox",		Desc = "GitHub Contributor"};
 	};
 	Misc = {
 		{Text = "Stravant/JustAPerson/Jason Priest (?)",	Desc = "Wrote LBI (no longer used)"};

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      
+
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
@@ -24,11 +24,14 @@ jobs:
       - name: Build
         run: rojo build .github/build.project.json -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
 
+        name: Deploy Nightly MainModule
+        run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id "${{ secrets.NIGHTLY_MODULE_ID }}" .github/module.deploy.project.json
+
       - uses: actions/upload-artifact@v2
         with:
           name: Adonis_Nightly_${{ steps.date.outputs.date }}
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
-      
+
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
         if: github.event_name != 'pull_request'

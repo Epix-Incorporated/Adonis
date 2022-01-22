@@ -1,6 +1,15 @@
 return {
-	"Version: 232";
+	"Version: 233";
 	"*Drag edges to expand*";
+	"";
+	"[v233 WIP]";
+	"(Git/CommodoreGamer118) Fixed :bring and :tp bringing you back while flying #666";
+	"(Git/jun022222222) Add Anti Client Tool #657";
+	"(Git/Smaltin) Fix head size multiplying twice on R6 characters #664";
+	"(Git/Honzzzox) Changed AudioPlayer argument 1 from 'time' to 'player' because it has nothing to do with time (it's a getPlayers in the command function) #665";
+	"(Git/fxeP1) F3X, Dex changes, UI Changes + Admin group grab changes #661";
+	"(Git/Coasterteam) Numerous vulnerability fixes/hardening (already live)(fixed vulnerabilities required existing server-side access (as in, your game already needed to be backdoored to abuse them))";
+	"(Git/DaEnder) Added a \"for\" in the exploitlogs message. #659";
 	"";
 	"[v232 1.9.2022 11:00 EST]";
 	"*First update of 2022!";
