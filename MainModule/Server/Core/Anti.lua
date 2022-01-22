@@ -388,7 +388,7 @@ return function(Vargs, GetEnv)
 			})
 
 			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over full info)";
+				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over for full info)";
 				Desc = tostring(info);
 				Player = player;
 			})
