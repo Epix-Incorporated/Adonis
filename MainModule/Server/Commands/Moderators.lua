@@ -4398,7 +4398,7 @@ return function(Vargs, env)
 						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
 						if targ_root then
 							for k, n in pairs(players) do
-								if n~=target then
+								if n ~= target then
 									local Character = n.Character
 									if not Character then continue end
 									if workspace.StreamingEnabled == true then
@@ -4407,10 +4407,10 @@ return function(Vargs, env)
 
 									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
 									local root = Character:FindFirstChild('HumanoidRootPart')
-									local FlightPos = root:FindFirstChild("DELTAX3_FLIGHT_POSITION")
-									local FlightGyro = root:FindFirstChild("DELTAX3_FLIGHT_GYRO")
+									local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
+									local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
 									if Humanoid then
-										if Humanoid.SeatPart~=nil then
+										if Humanoid.SeatPart ~= nil then
 											Functions.RemoveSeatWelds(Humanoid.SeatPart)
 										end
 										if Humanoid.Sit then
