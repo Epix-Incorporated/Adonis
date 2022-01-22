@@ -2,27 +2,36 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, Vargs)
 	local gTable
-	
-	local window = client.UI.Make("Window",{
+
+	local client = Vargs.client
+	local service = Vargs.service
+	local gui = Vargs.gui
+
+	local UI = client.UI
+	local Remote = client.Remote
+	local Variables = client.Variables
+	local Deps = client.Deps
+
+	local window = UI.Make("Window",{
 		Name  = "Settings";
 		Title = "Settings";
 		Size  = {225, 200};
 		AllowMultiple = false;
 	})
-	
+
 	local cliSettings = {
 		{
 			Text = "Keybinds: ";
 			Desc = "- Enabled/Disables Keybinds";
 			Entry = "Boolean";
-			Value = client.Variables.KeybindsEnabled;
+			Value = Variables.KeybindsEnabled;
 			Function = function(enabled, toggle)
-				client.Variables.KeybindsEnabled = enabled
+				Variables.KeybindsEnabled = enabled
 				local text = toggle.Text
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","KeybindsEnabled",enabled)
+				Remote.Get("UpdateClient","KeybindsEnabled",enabled)
 				toggle.Text = text
 			end
 		};
@@ -30,12 +39,12 @@ return function(data)
 			Text = "UI Keep Alive: ";
 			Desc = "- Prevents Adonis UI deletion on death";
 			Entry = "Boolean";
-			Value = client.Variables.UIKeepAlive;
+			Value = Variables.UIKeepAlive;
 			Function = function(enabled, toggle)
-				client.Variables.UIKeepAlive = enabled
+				Variables.UIKeepAlive = enabled
 				local text = toggle.Text
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","UIKeepAlive",enabled)
+				Remote.Get("UpdateClient","UIKeepAlive",enabled)
 				toggle.Text = text
 			end
 		};
@@ -43,12 +52,12 @@ return function(data)
 			Text = "Particle Effects: ";
 			Desc = "- Enables/Disables certain Adonis made effects like sparkles";
 			Entry = "Boolean";
-			Value = client.Variables.ParticlesEnabled;
+			Value = Variables.ParticlesEnabled;
 			Function = function(enabled, toggle)
-				client.Variables.ParticlesEnabled = enabled
+				Variables.ParticlesEnabled = enabled
 				local text = toggle.Text
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","ParticlesEnabled",enabled)
+				Remote.Get("UpdateClient","ParticlesEnabled",enabled)
 				toggle.Text = text
 			end
 		};
@@ -56,12 +65,12 @@ return function(data)
 			Text = "Capes: ";
 			Desc = "- Allows you to disable all player capes locally";
 			Entry = "Boolean";
-			Value = client.Variables.CapesEnabled;
+			Value = Variables.CapesEnabled;
 			Function = function(enabled, toggle)
-				client.Variables.CapesEnabled = enabled
+				Variables.CapesEnabled = enabled
 				local text = toggle.Text
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","CapesEnabled",enabled)
+				Remote.Get("UpdateClient","CapesEnabled",enabled)
 				toggle.Text = text
 			end
 		};
@@ -70,13 +79,13 @@ return function(data)
 			Desc = "- Hide commands ran from the chat";
 			Entry = "Boolean";
 			Setting = "HideChatCommands";
-			Value = client.Variables.HideChatCommands or false;
+			Value = Variables.HideChatCommands or false;
 			Function = function(enabled, toggle)
-				client.Variables.HideChatCommands = enabled
+				Variables.HideChatCommands = enabled
 
 				local text = toggle.Text
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","HideChatCommands",enabled)
+				Remote.Get("UpdateClient","HideChatCommands",enabled)
 				toggle.Text = text
 			end
 		};
@@ -84,7 +93,7 @@ return function(data)
 			Text = "Console Key: ";
 			Desc = "Key used to open the console";
 			Entry = "Button";
-			Value = client.Variables.CustomConsoleKey or client.Remote.Get("Setting","ConsoleKeyCode");
+			Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
 			Function = function(toggle)
 				local gotKey
 				toggle.Text = "Waiting..."
@@ -94,13 +103,13 @@ return function(data)
 						gotKey = InputObject.KeyCode.Name
 					end
 				end)
-				
+
 				repeat wait() until gotKey
-				
-				client.Variables.CustomConsoleKey = gotKey
+
+				Variables.CustomConsoleKey = gotKey
 				event:Disconnect()
 				toggle.Text = "Saving.."
-				client.Remote.Get("UpdateClient","CustomConsoleKey",client.Variables.CustomConsoleKey)
+				Remote.Get("UpdateClient","CustomConsoleKey",Variables.CustomConsoleKey)
 				toggle.Text = gotKey
 			end
 		};
@@ -116,39 +125,40 @@ return function(data)
 				local themeEnt = themePicker.Entry
 				local function showThemes()
 					themeFrame:ClearAllChildren()
-					
-					local themes = {"Default"}
-					local num = 0
-					
-					for i,v in pairs(client.Deps.UI:GetChildren()) do
-						table.insert(themes,v.Name)
+
+					local fromOffset = UDim2.fromOffset
+
+					local Themes = {"Default"}
+					for i,v in ipairs(Deps.UI:GetChildren()) do
+						table.insert(Themes,v.Name)
 					end
-					
-					for i,v in pairs(themes) do
+
+					local num = 0
+					for i,v in pairs(Themes) do
 						local new = themeEnt:Clone()
 						new.Text = v
-						new.Position = UDim2.new(0,0,0,20*num)
-						new.Parent = themeFrame
+						new.Position = fromOffset(0, 20*num)
 						new.Visible = true
 						new.MouseButton1Click:Connect(function()
 							service.Debounce("ClientSelectingTheme",function()
 								themePicker.Visible = false
 								toggle.Text = v
-								client.Variables.CustomTheme = v
+								Variables.CustomTheme = v
 								if v == "Default" then
-									client.Remote.Get("UpdateClient","CustomTheme",nil)
+									Remote.Get("UpdateClient","CustomTheme",nil)
 								else
-									client.Remote.Get("UpdateClient","CustomTheme",v)
+									Remote.Get("UpdateClient","CustomTheme",v)
 								end
 							end)
 						end)
-						num = num+1
+						new.Parent = themeFrame
+						num += 1
 					end
-					
-					themePicker.Position = UDim2.new(0,toggle.AbsolutePosition.X, 0, toggle.AbsolutePosition.Y)
+
+					themePicker.Position = fromOffset(toggle.AbsolutePosition.X+15, toggle.AbsolutePosition.Y)
 					themePicker.Visible = true
 				end
-				
+
 				toggle.MouseButton1Click:Connect(function()
 					service.Debounce("ClientDisplayThemes",function()
 						if themePicker.Visible then
@@ -158,38 +168,38 @@ return function(data)
 						end
 					end)
 				end)
-				
-				if client.Variables.CustomTheme then
-					toggle.Text = client.Variables.CustomTheme
+
+				if Variables.CustomTheme then
+					toggle.Text = Variables.CustomTheme
 				else
 					toggle.Text = "Default"
 				end
 			end
 		}
 	}
-	
+
 	if window then
 		local tabFrame = window:Add("TabFrame",{
 			Size = UDim2.new(1, -10, 1, -10);
 			Position = UDim2.new(0, 5, 0, 5);
 		})
-		
+
 		local clientTab = tabFrame:NewTab("Client",{
 			Text = "Client";
 		})
-		
+
 		local gameTab = tabFrame:NewTab("Game",{
 			Text = "Game";
 		})
-		
+
 		--[[local clientList = clientTab:Add
 		})("ScrollingFrame",{
-			
-		
+
+
 		local gameList = gameTab:Add("ScrollingFrame",{
-			
+
 		})--]]
-		
+
 		for i,v in next,cliSettings do
 			if v.Entry == "Boolean" then
 				local new = clientTab:Add("TextLabel", {
@@ -200,7 +210,7 @@ return function(data)
 					Text = v.Text;
 					ToolTip = v.Desc;
 				})
-				
+
 				new:Add("Boolean", {
 					Size = UDim2.new(0, 100, 0, 20);
 					Position = UDim2.new(1, -100, 0, 0);
@@ -211,9 +221,9 @@ return function(data)
 				})
 			end
 		end
-		
+
 		clientTab:ResizeCanvas(false, true)
-		
+
 		gTable = window.gTable
 		window:Ready()
 	end

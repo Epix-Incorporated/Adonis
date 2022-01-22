@@ -18,7 +18,7 @@ return function(Vargs, env)
 			Filter = true;
 			Hidden = false;
 			Fun = false;
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
@@ -43,7 +43,7 @@ return function(Vargs, env)
 			Args = {"username"};
 			Description = "UnDirectBans the player (Saves)";
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(args[1], "[^,]+") do
 
 					local userid = service.Players:GetUserIdFromNameAsync(i)
@@ -172,7 +172,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
@@ -201,7 +201,7 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
 			Fun = false;
 			AdminLevel = "Creators";
-			Function = function(plr: Player, args: {string}, data: {})
+			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)

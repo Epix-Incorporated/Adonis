@@ -857,7 +857,6 @@ return function(Vargs, env)
 						IsDonor = Admin.CheckDonor(v);
 						GameData = gameData;
 						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-						Groups = service.GroupService:GetGroupsAsync(v.UserId);
 						CmdPrefix = Settings.Prefix;
 						CmdSplitKey = Settings.SplitKey;
 					})
