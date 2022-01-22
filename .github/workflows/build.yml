@@ -24,7 +24,7 @@ jobs:
       - name: Build
         run: rojo build .github/build.project.json -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
 
-        name: Deploy Nightly MainModule
+      - name: Deploy Nightly MainModule
         run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id "${{ secrets.NIGHTLY_MODULE_ID }}" .github/module.deploy.project.json
 
       - uses: actions/upload-artifact@v2
