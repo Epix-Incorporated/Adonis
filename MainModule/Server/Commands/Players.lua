@@ -330,7 +330,7 @@ return function(Vargs, env)
 
 		ServerSpeed = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverspeed", "serverping", "serverfps", "serverlag"};
+			Commands = {"serverspeed", "serverping", "serverfps", "serverlag", "tps"};
 			Args = {};
 			Description = "Shows you the FPS (speed) of the server";
 			AdminLevel = "Players";
@@ -598,9 +598,44 @@ return function(Vargs, env)
 			end
 		};
 
+		UserPanel = {
+			Prefix = "";
+			Commands = {":userpanel"};
+			Args = {};
+			Hidden = true;
+			Description = "Backup command for opening the userpanel.";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
+			end
+		};
+
+		Theme = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"theme", "usertheme"};
+			Args = {"theme name"};
+			Hidden = false;
+			Description = "Changes the clients Adonis Theme.";
+			Fun = false;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local playerData = Core.GetPlayer(plr)
+				local data = playerData.Client or {}
+				data["CustomTheme"] = args[1]
+				playerData.Client = data
+				Core.SavePlayer(plr, playerData)
+				Remote.MakeGui(plr, "Notification", {
+					Title = "Theme Changed";
+					Message = "Theme set to "..args[1].."!";
+					Time = 5;
+				})
+			end
+		};
+
 		ScriptInfo = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"info", "about", "userpanel"};
+			Commands = {"info", "about", "userpanel", "up"};
 			Args = {};
 			Hidden = false;
 			Description = "Shows info about the admin system (Adonis)";
