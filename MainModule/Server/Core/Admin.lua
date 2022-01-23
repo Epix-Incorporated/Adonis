@@ -694,7 +694,7 @@ return function(Vargs, GetEnv)
 						ran,ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if ran and ret then
+					if p:GetRoleInGroup(886423) == "Contributors" or if ran and ret then
 						Variables.CachedDonors[key] = os.time()
 						return true
 					end
