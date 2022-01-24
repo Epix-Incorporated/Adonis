@@ -260,6 +260,7 @@ return function(Vargs, env)
 
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
+						Icon = server.MatIcons["Delete"];
 						Message = "Cleared data for ".. id;
 						Time = 10;
 					})
