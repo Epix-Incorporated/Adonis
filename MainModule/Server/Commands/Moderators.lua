@@ -684,7 +684,7 @@ return function(Vargs, env)
 							local plate
 							if ice then
 								plate = service.New("Part", v.Character)
-								local mesh = service.New("CylinderMesh", {
+								service.New("CylinderMesh", {
 									Parent = plate;
 									Name = "Adonis_Water";
 									Anchored = true;
@@ -2643,13 +2643,13 @@ return function(Vargs, env)
 											if Backpack then
 												for _, k in ipairs(Backpack:GetChildren()) do
 													if k:IsA("BackpackItem") then
-														table.insert(jail.Tools,k)
+														table.insert(jail.Tools, k)
 														k.Parent = nil
 													end
 												end
 											end
 
-											if (torso.Position-origpos).Magnitude>3.3 then
+											if (torso.Position-origpos).Magnitude > 3.3 then
 												torso.CFrame = cf
 											end
 										end
@@ -2686,7 +2686,7 @@ return function(Vargs, env)
 					if jail then
 						--service.StopLoop(ind.."JAIL")
 						Pcall(function()
-							for i, tool in pairs(jail.Tools) do
+							for _, tool in pairs(jail.Tools) do
 								tool.Parent = v.Backpack
 							end
 						end)
@@ -3132,14 +3132,14 @@ return function(Vargs, env)
 						if pBackpack then
 							oTools = {};
 							ev = pBackpack.ChildAdded:Connect(function(c)
-								table.insert(oTools, c);
-								c.Parent = nil;
+								table.insert(oTools, c)
+								c.Parent = nil
 							end)
 
 							if oHumanoid then oHumanoid:UnequipTools() end
-							for _, Child in ipairs(pBackpack:GetChildren()) do
-								table.insert(oTools, Child);
-								Child.Parent = nil;
+							for _, child in ipairs(pBackpack:GetChildren()) do
+								table.insert(oTools, child)
+								child.Parent = nil
 							end
 						end
 
@@ -3158,13 +3158,13 @@ return function(Vargs, env)
 								newHumanoid = newChar:FindFirstChildOfClass("Humanoid");
 								newPrimary = newChar.PrimaryPart or (newHumanoid and newHumanoid.RootPart) or oChar:FindFirstChild("HumanoidRootPart");
 
-								local forcefield = newChar:FindFirstChildOfClass("ForceField");
+								local forcefield = newChar:FindFirstChildOfClass("ForceField")
 								if forcefield then
 									forcefield:Destroy()
 								end
 
 								if newPrimary then
-									newPrimary.CFrame = oPos;
+									newPrimary.CFrame = oPos
 								else
 									newChar:MoveTo(oPos.Position)
 								end
@@ -3175,8 +3175,8 @@ return function(Vargs, env)
 						local newBackpack = p:FindFirstChildOfClass("Backpack")
 						if newBackpack and oTools then
 							newBackpack:ClearAllChildren();
-							for i, t in ipairs(oTools) do
-								t.Parent = newBackpack;
+							for _, t in ipairs(oTools) do
+								t.Parent = newBackpack
 							end
 						end
 					end)
