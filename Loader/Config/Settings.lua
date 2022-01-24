@@ -350,6 +350,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
+
 	descs.Storage = [[ Where things like tools are stored ]]
 	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
 
@@ -457,7 +458,9 @@ local descs = {};			--// Contains settings descriptions
 		"DataStore";
 		"DataStoreKey";
 		"DataStoreEnabled";
+		" ";
 		"Storage";
+		"RecursiveTools";
 		" ";
 		"Theme";
 		"MobileTheme";
