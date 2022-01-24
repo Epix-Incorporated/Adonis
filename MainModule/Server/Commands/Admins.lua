@@ -1327,7 +1327,7 @@ return function(Vargs, env)
 						pcall(function() v:Kick(reason) end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = server.MatIcons.Done;
+							Icon = server.MatIcons.Gavel;
 							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
 							Time = 5;
 						})
