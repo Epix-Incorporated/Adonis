@@ -797,7 +797,7 @@ return function(Vargs, env)
 
 		UnGod = {
 			Prefix = Settings.Prefix;
-			Commands = {"ungod", "mortal","unfullgod","unfullimmortal"};
+			Commands = {"ungod", "mortal", "unfullgod", "unfullimmortal"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Makes the target player(s) mortal again";
@@ -3863,7 +3863,7 @@ return function(Vargs, env)
 
 		RemoveTools = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetools", "notools","rtools"};
+			Commands = {"removetools", "notools", "rtools"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Remove the target player(s)'s tools";
@@ -3890,7 +3890,7 @@ return function(Vargs, env)
 
 		RemoveTool = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetool","rtool"};
+			Commands = {"removetool", "rtool"};
 			Args = {"player", "tool name"};
 			Hidden = false;
 			Description = "Remove a specified tool from the target player(s)'s backpack";
