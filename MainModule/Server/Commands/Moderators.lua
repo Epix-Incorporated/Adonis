@@ -611,7 +611,7 @@ return function(Vargs, env)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character then
-							for z, cl in ipairs(v.Character:GetChildren()) do if cl:IsA("ForceField") then cl:Destroy() end end
+							for z, cl in ipairs(v.Character:GetChildren()) do if cl:IsA("ForceField") and cl.Name~="ADONIS_FULLGOD" then cl:Destroy() end end
 						end
 					end)
 				end
@@ -797,7 +797,7 @@ return function(Vargs, env)
 
 		UnGod = {
 			Prefix = Settings.Prefix;
-			Commands = {"ungod", "mortal"};
+			Commands = {"ungod", "mortal","unfullgod","unfullimmortal"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Makes the target player(s) mortal again";
@@ -810,6 +810,10 @@ return function(Vargs, env)
 					if Humanoid then
 						Humanoid.MaxHealth = 100
 						Humanoid.Health = Humanoid.MaxHealth
+						local fullGodFF = Humanoid.Parent:FindFirstChild("ADONIS_FULLGOD")
+						if fullGodFF and fullGodFF:IsA("ForceField") then
+							fullGodFF:Destroy()
+						end
 						if Settings.PlayerCommandFeedback then
 							Functions.Notification("God mode", "Character God mode has been disabled.", {v}, 15, "Info")
 						end
@@ -818,6 +822,33 @@ return function(Vargs, env)
 			end
 		};
 
+		FullGod = {
+			Prefix = Settings.Prefix;
+			Commands = {"fullgod", "fullimmortal"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Same as "..server.Settings.Prefix.."god, but also gives you blast protection";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local Humanoid = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+
+					if Humanoid then
+						Humanoid.MaxHealth = math.huge
+						Humanoid.Health = 9e9
+						local ff = service.New("ForceField")
+						ff.Name = "ADONIS_FULLGOD"
+						ff.Visible=false
+						ff.Parent = Humanoid.Parent
+						if Settings.PlayerCommandFeedback then
+							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from anything.", {v}, 15, "Info")
+						end
+					end
+				end
+			end
+		};
+		
 		RemoveHats = {
 			Prefix = Settings.Prefix;
 			Commands = {"removehats", "nohats", "clearhats"};
@@ -3344,7 +3375,7 @@ return function(Vargs, env)
 								end
 							elseif obj:IsA("Accoutrement") and obj:FindFirstChild("Handle") then
 								obj.Handle.Transparency = 0
-							elseif obj:IsA("ForceField") then
+							elseif obj:IsA("ForceField") and obj.Name ~="ADONIS_FULLGOD" then
 								obj.Visible = true
 							elseif obj.Name == "Head" then
 								local face = obj:FindFirstChildOfClass("Decal")
@@ -3834,7 +3865,7 @@ return function(Vargs, env)
 
 		RemoveTools = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetools", "notools"};
+			Commands = {"removetools", "notools","rtools"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Remove the target player(s)'s tools";
@@ -3861,7 +3892,7 @@ return function(Vargs, env)
 
 		RemoveTool = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetool"};
+			Commands = {"removetool","rtool"};
 			Args = {"player", "tool name"};
 			Hidden = false;
 			Description = "Remove a specified tool from the target player(s)'s backpack";
