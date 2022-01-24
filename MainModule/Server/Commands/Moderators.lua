@@ -432,7 +432,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = "Shield";
+							Icon = server.MatIcons["Shield"];
 							Message = "Warned ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -473,7 +473,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = "Shield";
+							Icon = server.MatIcons["Shield"];
 							Message = "Removed warning from ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -509,7 +509,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = "Shield";
+							Icon = server.MatIcons["Shield"];
 							Message = "Warned ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -563,7 +563,7 @@ return function(Vargs, env)
 					data.Warnings = {}
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
-						Icon = "Shield";
+						Icon = server.MatIcons["Shield"];
 						Message = "Cleared warnings for ".. v.Name;
 						Time = 5;
 						OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
