@@ -167,6 +167,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
+					Icon = server.MatIcons["Notifications"];
 					Message = args[2];
 					Time = tonumber(args[1]);
 				})
