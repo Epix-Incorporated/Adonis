@@ -737,6 +737,7 @@ return function(Vargs, GetEnv)
 								end) then
 								Remote.MakeGui(p ,"Notification", {
 									Title = "Error";
+									Icon = server.MatIcons["Error"]
 									Message = "Cannot delete object.";
 									Time = 2;
 								})
