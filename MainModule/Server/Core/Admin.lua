@@ -687,14 +687,14 @@ return function(Vargs, GetEnv)
 			else
 				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				for _, pass in ipairs(Variables.DonorPass) do
-					local ran, ret;
+					local ran, ret
 					if type(pass) == "number" then
-						ran,ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
+						ran, ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
 					elseif type(pass) == "string" and tonumber(pass) then
-						ran,ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
+						ran, ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if ran and ret then
+					if (ran and ret) or p:GetRankInGroup(886423) >= 10 then --// Complimentary donor access is given to Adonis contributors & developers.
 						Variables.CachedDonors[key] = os.time()
 						return true
 					end
@@ -713,7 +713,7 @@ return function(Vargs, GetEnv)
 			end
 
 			for ind, ban in pairs(Core.Variables.TimeBans) do
-				if (p.UserId == ban.UserId) then
+				if p.UserId == ban.UserId then
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
