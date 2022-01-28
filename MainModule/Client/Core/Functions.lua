@@ -273,7 +273,7 @@ return function()
 				task.defer(function()
 					UI.MakeGui("Notification",{
 						Time = 4;
-						Icon = server.MatIcons["Delete"];
+						Icon = server.MatIcons.Delete;
 						Title = "Notification";
 						Message = string.format('Alias "%s" removed', string.lower(alias));
 					})
@@ -282,7 +282,7 @@ return function()
 				task.defer(function()
 					UI.MakeGui("Notification",{
 						Time = 3;
-						Icon = server.MatIcons["Help"];
+						Icon = server.MatIcons.Help;
 						Title = "Error";
 						Message = string.format('Alias "%s" not found', string.lower(alias));
 					})
