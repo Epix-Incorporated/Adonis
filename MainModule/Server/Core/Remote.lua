@@ -845,7 +845,7 @@ return function(Vargs, GetEnv)
 
 			TrelloOperation = function(p,args)
 				if Admin.GetLevel(p) > Settings.Ranks.Admins.Level then
-					local data = args[1]M
+					local data = args[1]
 					if data.Action == "MakeCard" then
 						local list = data.List
 						local name = data.Name
