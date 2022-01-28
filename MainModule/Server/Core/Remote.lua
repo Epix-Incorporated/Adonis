@@ -733,6 +733,7 @@ return function(Vargs, GetEnv)
 								end) then
 								Remote.MakeGui(p ,"Notification", {
 									Title = "Error";
+									Icon = server.MatIcons.Error;
 									Message = "Cannot delete object.";
 									Time = 2;
 								})
@@ -788,7 +789,7 @@ return function(Vargs, GetEnv)
 
 					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
 						local orig = Settings[setting]
-						for i,v in pairs(Commands) do
+						for _, v in pairs(Commands) do
 							if v.Prefix == orig then
 								v.Prefix = value
 							end
@@ -810,7 +811,7 @@ return function(Vargs, GetEnv)
 			ClearSavedSettings = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					Core.DoSave({Type = "ClearSettings"})
-					Functions.Hint("Cleared saved settings",{p})
+					Functions.Hint("Cleared saved settings", {p})
 				end
 			end;
 
@@ -819,9 +820,9 @@ return function(Vargs, GetEnv)
 					local setting = args[1]
 					local value = args[2]
 
-					if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+					if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 						local orig = Settings[setting]
-						for i,v in pairs(Commands) do
+						for _, v in pairs(Commands) do
 							if v.Prefix == orig then
 								v.Prefix = value
 							end

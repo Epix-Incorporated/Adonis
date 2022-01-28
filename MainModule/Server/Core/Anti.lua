@@ -401,6 +401,7 @@ return function(Vargs, GetEnv)
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
+							Icon = server.MatIcons["Notification important"];
 							Message = string.format(
 								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,

@@ -810,13 +810,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notification = function(title,message,players,tim,icon)
-			for i,v in pairs(players) do
-				Remote.MakeGui(v,"Notification",{
+		Notification = function(title, message, players, tim, icon)
+			for _, v in pairs(players) do
+				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
 					Time = tim;
-					Icon = server.MatIcons[icon or "Info"]  -- use default 'i' icon if icon argument is missing
+					Icon = server.MatIcons[icon or "Info"];
 				})
 			end
 		end;
@@ -833,8 +833,8 @@ return function(Vargs, GetEnv)
 			if service.Lighting[prop]~=nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
-				for ind,p in pairs(service.GetPlayers()) do
-					Remote.SetLighting(p,prop,value)
+				for _, p in pairs(service.GetPlayers()) do
+					Remote.SetLighting(p, prop, value)
 				end
 			end
 		end;
