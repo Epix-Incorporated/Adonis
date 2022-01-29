@@ -678,7 +678,7 @@ return function(Vargs, GetEnv)
 				Desc = "Player left the game (PlayerRemoving)";
 				Player = p;
 			})
-			
+
 			AddLog("Leaves", {
 				Text = p.Name;
 				Desc = p.Name.." left the server";
@@ -686,7 +686,13 @@ return function(Vargs, GetEnv)
 			})
 
 			Core.SavePlayerData(p, data)
-			return;
+
+			if Commands.UnDisguise then
+				Commands.UnDisguise.Function(p, {"me"})
+			end
+			Variables.IncognitoPlayers[p] = nil
+
+			return
 		end;
 
 		FinishLoading = function(p)
@@ -818,6 +824,17 @@ return function(Vargs, GetEnv)
 				--// VALU -> c_BYTE ; CAT[STR,x,c_BYTE] -> STR ; OUT[STR]]]
 				--// [-150x261x247x316x246x243x238x248x302x316x261x247x316x246x234x247x247x302]
 				--// END_ReF - 100392_659
+
+				for v: Player in pairs(Variables.IncognitoPlayers) do
+					if v == p then continue end
+					server.Remote.LoadCode(p, [[
+						for _, p in pairs(service.Players:GetPlayers()) do
+							if p.UserId == ]]..v.UserId..[[ then
+								if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
+								p:Destroy()
+							end
+						end]])
+				end
 			end
 		end;
 
@@ -871,7 +888,7 @@ return function(Vargs, GetEnv)
 				if Settings.PlayerList then
 					MakeGui(p, "PlayerList")
 				end
-				
+
 				if level < 1 then
 					if Settings.AntiNoclip then
 						Remote.Send(p, "LaunchAnti", "HumanoidState")
