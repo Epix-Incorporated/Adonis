@@ -2,7 +2,7 @@ return {
 	"Version: 233";
 	"*Drag edges to expand*";
 	"";
-	"[v233 1.29.2022 01:43 EST]]";
+	"[v233 1.29.2022 01:43 EST]";
 	"Various misc code improvements around";
 	":vote no longer errors when another poll is in progress";
 	"!profile can no longer be used with player selectors/wildcards such as 'all' or '%team'";
