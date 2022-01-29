@@ -59,17 +59,10 @@ return function(Vargs, env)
 					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
 
 					if targetLevel < senderLevel then
-						Admin.AddAdmin(p, rankName)
-							local function FirstIsVowel(str) 
-								return str:match("^[AEIOUaeiou]") and true
-							end						
+						Admin.AddAdmin(p, rankName)				
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
-							if FirstIsAvowel(rankName) then
-								Message = "You are an "..rankName..". Click to view commands.";
-							else
-								Message = "You are a "..rankName..". Click to view commands.";
-							end
+							Message = string.format("You are %s%s. Click here to view commands.", if rankName:sub(1, 3):lower() == "the" then "" elseif rankName:match("^[AEIOUaeiou]") and rankName:sub(1, 3):lower() ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
