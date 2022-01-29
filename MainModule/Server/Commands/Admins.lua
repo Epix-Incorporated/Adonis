@@ -1348,7 +1348,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message title")
 				assert(args[2], "Missing message")
-				for i, v in pairs(service.Players:GetPlayers()) do
+				for _, v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
 						Title = args[1];
@@ -1369,7 +1369,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					v.Character = nil
 					v.Parent = nil
 				end
@@ -1385,7 +1385,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.MarketplaceService:PromptPremiumPurchase(v)
 				end
 			end
@@ -1401,13 +1401,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
 					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5))
 				end
 			end
 		};
-		
+
 		Disguise = {
 			Prefix = Settings.Prefix;
 			Commands = {"disguise", "masquerade"};
@@ -1509,7 +1509,7 @@ return function(Vargs, env)
 						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
 					})
 				end
-				server.Remote.MakeGui(plr, "List", {
+				Remote.MakeGui(plr, "List", {
 					Title = "Incognito Players";
 					Icon = server.MatIcons.People;
 					Tab = tab;
