@@ -60,9 +60,16 @@ return function(Vargs, env)
 
 					if targetLevel < senderLevel then
 						Admin.AddAdmin(p, rankName)
+							local function FirstIsVowel(str) 
+								return str:match("^[AEIOUaeiou]") and true
+							end						
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
-							Message = "You are a(n) "..rankName..". Click to view commands.";
+							if FirstIsAvowel(rankName) then
+								Message = "You are an "..rankName..". Click to view commands.";
+							else
+								Message = "You are a "..rankName..". Click to view commands.";
+							end
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
