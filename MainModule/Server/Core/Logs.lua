@@ -242,6 +242,19 @@ return function(Vargs, GetEnv)
 				return temptable
 			end;
 
+			IncognitoPlayers = function(plr)
+				if not plr or Admin.CheckAdmin(plr) then
+					local tab = {}
+					for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
+						table.insert(tab, {
+							Text = if p.DisplayName == p.Name then "@"..p.Name else string.format("%s (@%s)", p.Name, p.DisplayName);
+							Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+						})
+					end
+					return tab
+				end
+			end;
+
 			Errors = function(plr)
 				if not plr or Admin.CheckAdmin(plr) then
 					local tab = {}

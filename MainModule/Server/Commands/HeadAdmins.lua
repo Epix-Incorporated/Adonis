@@ -430,5 +430,46 @@ return function(Vargs, env)
 				end
 			end;
 		};
+
+		Incognito = {
+			Prefix = Settings.Prefix;
+			Commands = {"incognito"};
+			Args = {"player"};
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
+			AdminLevel = "HeadAdmins";
+			Hidden = true;
+			Function = function(plr: Player, args: {string})
+				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
+					if Variables.IncognitoPlayers[v] then
+						Functions.Hint(v.Name.." is already incognito.", {plr})
+						continue
+					end
+					Variables.IncognitoPlayers[v] = os.time()
+					local n = 0
+					for _, otherPlr: Player in ipairs(service.Players:GetPlayers()) do
+						if otherPlr == v then continue end
+						Remote.LoadCode(otherPlr, [[
+					for _, p in pairs(service.Players:GetPlayers()) do
+						if p.UserId == ]]..v.UserId..[[ then
+							if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
+							p:Destroy()
+						end
+					end]])
+						n += 1
+					end
+					if n == 0 then
+						Functions.Hint(string.format("Placed %s on the incognito list.", v.Name), {plr})
+					else
+						Functions.Hint(string.format("Hidden %s from %d other player%s.", v.Name, n, n == 1 and "" or "s"), {plr})
+					end
+					Remote.MakeGui(v, "Notification", {
+						Title = "Incognito Mode";
+						Icon = server.MatIcons["Privacy tip"];
+						Text = "You will cease to appear on the player list, on other players' screens.";
+						Time = 15;
+					})
+				end
+			end
+		};
 	}
 end
