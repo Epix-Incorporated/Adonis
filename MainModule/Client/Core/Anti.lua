@@ -260,8 +260,8 @@ return function()
 							t:Destroy()
 							Detected('log','HopperBin Detected (BTools)')
 						elseif not Get("CheckBackpack",t) then
-							t:Destroy()
-							Detected('log','Client-Side Tool Detected')
+							--t:Destroy() --// Temp disabled pending full fix
+							--Detected('log','Client-Side Tool Detected')
 						end
 					end
 				end
