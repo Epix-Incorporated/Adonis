@@ -350,7 +350,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local temptable = {}
 				for _, v in pairs(service.Players:GetPlayers()) do
-					if Admin.CheckDonor(v) then
+					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(temptable, v.Name)
 					end
 				end
@@ -874,24 +874,24 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
 				local adminDictionary = {}
-				for i, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v);
+				for _, v in pairs(service.GetPlayers()) do
+					local level, rank = Admin.GetLevel(v)
 					if level > 0 then
 						adminDictionary[v.Name] = rank or "Unknown"
 					end
 				end
 
 				local donorList = {}
-				for i, v in pairs(service.GetPlayers()) do
-					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
+				for _, v in pairs(service.GetPlayers()) do
+					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
 				end
 
 				local nilPlayers = 0
-				for i, v in pairs(service.NetworkServer:GetChildren()) do
+				for _, v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers = nilPlayers + 1
+						nilPlayers += 1
 					end
 				end
 
@@ -906,8 +906,8 @@ return function(Vargs, env)
 					region = r.region,
 					zipcode = r.zip,
 					timezone = r.timezone,
-					query = Admin.CheckAdmin(plr) and (r.query) or "[Redacted]",
-					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
+					query = Admin.CheckAdmin(plr) and r.query or "[Redacted]",
+					coords = Admin.CheckAdmin(plr) and string.format("LAT: %s, LON: %s", r.lat, r.lon) or "[Redacted]",
 				} or nil
 
 				Remote.MakeGui(plr, "ServerDetails", {
