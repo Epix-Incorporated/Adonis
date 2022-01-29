@@ -1407,5 +1407,115 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		Disguise = {
+			Prefix = Settings.Prefix;
+			Commands = {"disguise", "masquerade"};
+			Args = {"player", "username"};
+			Description = "Names the player, chars the player, and modifies the player's chat tag";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				assert(args[2], "Argument missing or nil")
+				local userId = select(2, xpcall(function()
+					return service.Players:GetUserIdFromNameAsync(args[2])
+				end, function() return nil end))
+				assert(userId, "Invalid username supplied/user not found")
+				local username = select(2, xpcall(function()
+					return service.Players:GetNameFromUserIdAsync(userId)
+				end, function() return args[2] end))
+
+				if service.Players:GetPlayerByUserId(userId) then
+					error("You cannot disguise as this player (currently in server)")
+				end
+
+				Commands.Char.Function(plr, args)
+				Commands.DisplayName.Function(plr, {args[1], username})
+
+				local ChatService = Functions.GetChatService()
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if Variables.DisguiseBindings[v.UserId] then
+						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
+						ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
+						ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+					end
+
+					Variables.DisguiseBindings[v.UserId] = {
+						TargetUsername = username;
+						Rename = v.CharacterAppearanceLoaded:Connect(function(char)
+							Commands.DisplayName.Function(v, {v.Name, username})
+						end);
+					}
+
+					local disguiseSpeaker = ChatService:AddSpeaker(username)
+					disguiseSpeaker:JoinChannel("All")
+					ChatService:RegisterProcessCommandsFunction("Disguise_"..v.Name, function(speaker, message, channelName)
+						if speaker == v.Name then
+							local filteredMessage = select(2, xpcall(function()
+								return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
+							end, function()
+								Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
+								return nil
+							end))
+							if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
+								disguiseSpeaker:SayMessage(filteredMessage, channelName)
+								if v.Character then
+									service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
+								end
+							end
+							return true
+						end
+						return false
+					end)
+				end
+			end
+		};
+
+		UnDisguise = {
+			Prefix = Settings.Prefix;
+			Commands = {"undisguise", "removedisguise", "cleardisguise", "nodisguise"};
+			Args = {"player"};
+			Description = "Removes the player's disguise";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				local ChatService = Functions.GetChatService()
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if Variables.DisguiseBindings[v.UserId] then
+						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
+						pcall(function()
+							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
+							ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+						end)
+					end
+					Variables.DisguiseBindings[v.UserId] = nil
+				end
+				Commands.UnChar.Function(plr, args)
+				Commands.UnDisplayName.Function(plr, args)
+			end
+		};
+
+		IncognitoList = {
+			Prefix = Settings.Prefix;
+			Commands = {"incognitolist", "incognitoplayers"};
+			Args = {"player"};
+			Description = "Displays a list of incognito players in the server";
+			AdminLevel = "Admins";
+			Hidden = true;
+			Function = function(plr: Player, args: {string})
+				local tab = {}
+				for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
+					table.insert(tab, {
+						Text = if p.DisplayName == p.Name then "@"..p.Name else string.format("%s (@%s)", p.Name, p.DisplayName);
+						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+					})
+				end
+				server.Remote.MakeGui(plr, "List", {
+					Title = "Incognito Players";
+					Icon = server.MatIcons.People;
+					Tab = tab;
+					Update = "IncognitoPlayers";
+				})
+			end
+		};
 	}
 end
