@@ -722,11 +722,11 @@ return function(Vargs, GetEnv)
 			--// Load some playerdata stuff
 			if PlayerData.Client and type(PlayerData.Client) == "table" then
 				if PlayerData.Client.CapesEnabled == true or PlayerData.Client.CapesEnabled == nil then
-					Remote.Send(p,"Function","MoveCapes")
+					Remote.Send(p, "Function", "MoveCapes")
 				end
-				Remote.Send(p,"SetVariables",PlayerData.Client)
+				Remote.Send(p, "SetVariables", PlayerData.Client)
 			else
-				Remote.Send(p,"Function","MoveCapes")
+				Remote.Send(p, "Function", "MoveCapes")
 			end
 
 			--// Load all particle effects that currently exist
@@ -908,11 +908,11 @@ return function(Vargs, GetEnv)
 				service.Events.CharacterAdded:Fire(p, Character, ...)
 
 				--// Run OnSpawn commands
-				for i,v in pairs(Settings.OnSpawn) do
+				for _, v in pairs(Settings.OnSpawn) do
 					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
-						Desc = "Executed OnSpawn command; "..tostring(v)
+						Desc = "Executed OnSpawn command; "..tostring(v);
 					})
 				end
 			end
