@@ -53,22 +53,22 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
 
-				for i,p in pairs(Functions.GetPlayers(plr, args[1], {UseFakePlayer = true;}))do
-					local targetLevel = Admin.GetLevel(p);
+				for _, p in pairs(Functions.GetPlayers(plr, args[1], {UseFakePlayer = true;})) do
+					local targetLevel = Admin.GetLevel(p)
 
-					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
+					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level")
 
 					if targetLevel < senderLevel then
-						Admin.AddAdmin(p, rankName)				
+						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
-							Message = string.format("You are %s%s. Click here to view commands.", if rankName:sub(1, 3):lower() == "the" then "" elseif rankName:match("^[AEIOUaeiou]") and rankName:sub(1, 3):lower() ~= "uni" then "an " else "a ", rankName);
+							Message = string.format("You are %s%s. Click to view commands.", if rankName:sub(1, 3):lower() == "the" then "" elseif rankName:match("^[AEIOUaeiou]") and rankName:sub(1, 3):lower() ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(p.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(p.Name.." is now rank ".. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
 					end
 				end
 			end;
