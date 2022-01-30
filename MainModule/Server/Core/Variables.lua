@@ -117,6 +117,8 @@ return function(Vargs, GetEnv)
 
 		BundleCache = {};
 
+		TrackingTable = {};
+
 		DisguiseBindings = {};
 
 		IncognitoPlayers = {};
