@@ -271,11 +271,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing or invalid time amount")
 				assert(args[2], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = messageRecipient;
+						Title = "Message from "..service.FormatPlayer(plr);
 						Message = args[2];
 						Time = tonumber(args[1]);
 					})
@@ -292,11 +291,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
-						Title = messageRecipient;
+						Title = "Message from "..service.FormatPlayer(plr);
 						Message = args[1]; --service.Filter(args[1], plr, v);
 						Time = (#tostring(args[1]) / 19) + 2.5;
 						Scroll = true;
@@ -315,9 +313,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message(messageRecipient, service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
+					Functions.Message("Message from "..service.FormatPlayer(plr), service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
 				end
 			end
 		};
@@ -331,11 +328,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = messageRecipient;
+						Title = "Message from "..service.FormatPlayer(plr);
 						Message = service.Filter(args[1], plr, v);
 					})
 				end
@@ -352,11 +348,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Notify")
 					Remote.MakeGui(v, "Notify", {
-						Title = messageRecipient;
+						Title = "Message from "..service.FormatPlayer(plr);
 						Message = service.Filter(args[2], plr, v);
 					})
 				end
@@ -372,10 +367,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[1])
+				local hintFormat = string.format("%s: %s", service.FormatPlayer(plr), args[1])
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
-						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Message = hintFormat; --service.Filter(args[1], plr, v)
 						Time = (#tostring(args[1]) / 19) + 2.5;
 					})
 				end
@@ -392,10 +387,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Missing message")
 				assert(args[1], "Missing time amount (in seconds)")
-				local HintFormat = string.format("%s (@%s): %s", plr.DisplayName, plr.Name, args[2])
+				local hintFormat = string.format("%s: %s", service.FormatPlayer(plr), args[1])
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Hint", {
-						Message = HintFormat; --service.Filter(args[1], plr, v)
+						Message = hintFormat; --service.Filter(args[1], plr, v)
 						Time = tonumber(args[1]);
 					})
 				end
@@ -432,7 +427,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = server.MatIcons["Shield"];
+							Icon = server.MatIcons.Shield;
 							Message = "Warned ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -473,7 +468,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = server.MatIcons["Shield"];
+							Icon = server.MatIcons.Shield;
 							Message = "Removed warning from ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -509,7 +504,7 @@ return function(Vargs, env)
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = server.MatIcons["Shield"];
+							Icon = server.MatIcons.Shield;
 							Message = "Warned ".. v.Name;
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -563,7 +558,7 @@ return function(Vargs, env)
 					data.Warnings = {}
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
-						Icon = server.MatIcons["Shield"];
+						Icon = server.MatIcons.Shield;
 						Message = "Cleared warnings for ".. v.Name;
 						Time = 5;
 						OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
@@ -581,7 +576,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v),Color3.new(1, 64/255, 77/255))
+					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.new(1, 64/255, 77/255))
 				end
 			end
 		};
@@ -1073,14 +1068,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
-				local messageRecipient = string.format("Message from %s (@%s)", plr.DisplayName, plr.Name)
-
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local replyTicket = Functions.GetRandom()
 					Variables.PMtickets[replyTicket] = plr
 
 					Remote.MakeGui(v, "PrivateMessage", {
-						Title = messageRecipient;
+						Title = "Message from "..service.FormatPlayer(plr);
 						Player = plr;
 						Message = service.Filter(args[2], plr, v);
 						replyTicket = replyTicket;
@@ -1095,9 +1088,10 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Opens the custom chat GUI";
 			AdminLevel = "Moderators";
+			Hidden = not Settings.CustomChat;
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.MakeGui(v, "Chat");
+					Remote.MakeGui(v, "Chat")
 				end
 			end
 		};
@@ -1108,6 +1102,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Closes the custom chat GUI";
 			AdminLevel = "Moderators";
+			Hidden = not Settings.CustomChat;
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveGui(v, "Chat")
@@ -1308,45 +1303,71 @@ return function(Vargs, env)
 
 		PlayerList = {
 			Prefix = Settings.Prefix;
-			Commands = {"players", "playerlist"};
-			Args = {"autoupdate"};
+			Commands = {"players", "playerlist", "listplayers"};
+			Args = {"autoupdate? (default: true)"};
 			Hidden = false;
 			Description = "Shows you all players currently in-game, including nil ones";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local plrs = {}
-				local update = (args[1] ~= "false")
-
-				Functions.Hint("Pinging players. Please wait. No ping = Ping > 5sec.", {plr})
-				for i, v in ipairs(Functions.GrabNilPlayers("all")) do
-					if type(v) == "string" and v == "NoPlayer" then
-						table.insert(plrs, {Text="PLAYERLESS CLIENT", Desc="PLAYERLESS SERVERREPLICATOR. COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!"})
-					else
-						local ping = "..."
-
-						if v and service.Players:FindFirstChild(v.Name) then
-							local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-							table.insert(plrs, {
-								Text = string.format("[%s] %s (@%s)", ping, v.Name, v.DisplayName);
-								Desc = string.format("Lower: %s - Health: %d - MaxHealth: %d - WalkSpeed: %d JumpPower: %d Humanoid Name: %s", v.Name, hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
+			ListUpdater = function(plr: Player)
+				local players = Functions.GrabNilPlayers("all")
+				local tab = {
+					"# Players: " .. #players,
+					"―――――――――――――――――――――――",
+				}
+				for _, v in pairs(players) do
+					cPcall(function()
+						if type(v) == "string" and v == "NoPlayer" then
+							table.insert(tab, {
+								Text = "PLAYERLESS CLIENT";
+								Desc = "PLAYERLESS SERVERREPLICATOR: COULD BE LOADING/LAG/EXPLOITER. CHECK AGAIN IN A MINUTE!";
 							})
 						else
-							table.insert(plrs, {
-								Text = "[LOADING] "..v.Name,
-								Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping
-							})
-						end
-					end
-				end
+							local ping
 
+							Routine(function()
+								ping = Remote.Ping(v).."ms"
+							end)
+
+							for i = 0.1, 5, 0.1 do
+								if ping then break end
+								wait(0.1)
+							end
+
+							if not ping then
+								ping = ">5000ms"
+							end
+
+							if v and service.Players:FindFirstChild(v.Name) then
+								local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+								table.insert(tab, {
+									Text = string.format("[%s] %s", ping, service.FormatPlayer(v, true));
+									Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
+								})
+							else
+								table.insert(tab, {
+									Text = "[LOADING] "..v.Name;
+									Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping;
+								})
+							end
+						end
+					end)
+				end
+				for i = 0.1, 5, 0.1 do
+					if Functions.CountTable(tab) - 2 >= Functions.CountTable(players) then break end
+					wait(0.1)
+				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Functions.Hint("Pinging players. Please wait. No ping = Ping > 5sec.", {plr})
 				Remote.MakeGui(plr, "List", {
 					Title = "Players",
 					Icon = server.MatIcons.People;
-					Tab = plrs,
-					AutoUpdate = update and 1;
+					Tab = Logs.ListUpdaters.PlayerList(plr);
+					Size = {300, 240};
+					AutoUpdate = if not args[1] or (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Update = "PlayerList";
-					UpdateArgs = {};
 				})
 			end
 		};
@@ -1359,7 +1380,7 @@ return function(Vargs, env)
 			Description = "Makes a new waypoint/sets an exiting one to your current position with the name <name> that you can teleport to using :tp me waypoint-<name>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local name=args[1] or tostring(#Variables.Waypoints+1)
+				local name = args[1] or tostring(#Variables.Waypoints + 1)
 				if plr.Character:FindFirstChild("HumanoidRootPart") then
 					Variables.Waypoints[name] = plr.Character.HumanoidRootPart.Position
 					Functions.Hint("Made waypoint "..name.." | "..tostring(Variables.Waypoints[name]), {plr})
@@ -1737,45 +1758,36 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Displays running tasks";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if args[1] then
-					for i, v in ipairs(service.GetPlayers(plr, args[1])) do
+			ListUpdater = function(plr: Player, target)
+				if target then
+					for _, v in pairs(Functions.GetPlayers(plr, target)) do
 						local temp = {}
 						local cTasks = Remote.Get(v, "TaskManager", "GetTasks") or {}
 
 						table.insert(temp, {
 							Text = "Client Tasks",
-							Desc = "Tasks their client is performing"
-						})
+							Desc = "Tasks their client is performing"})
 
-						for k, t in pairs(cTasks) do
+						for _, t in pairs(cTasks) do
 							table.insert(temp, {
-								Text = tostring(v.Name or v.Function).. "- Status: "..v.Status.." - Elapsed: ".. v.CurrentTime - v.Created,
-								Desc = tostring(v.Function);
+								Text = tostring(t.Name or t.Function).. "- Status: "..t.Status.." - Elapsed: ".. t.CurrentTime - t.Created;
+								Desc = tostring(t.Function);
 							})
 						end
 
-						Remote.MakeGui(plr, "List", {
-							Title = v.Name.."'s Tasks";
-							Table = temp;
-							Font = "Code";
-							Update = "ShowTasks";
-							UpdateArgs = {v};
-							AutoUpdate = 1;
-							Size = {500, 400};
-						})
+						return temp
 					end
 				else
-					local temp = {}
 					local tasks = service.GetTasks()
+					local temp = {}
 					local cTasks = Remote.Get(plr, "TaskManager", "GetTasks") or {}
 
-					table.insert(temp, {Text = "Server Tasks", Desc = "Tasks the server is performing"})
+					table.insert(temp, {Text = "Server Tasks"; Desc = "Tasks the server is performing";})
 
-					for i, v in pairs(tasks) do
+					for _, v in pairs(tasks) do
 						table.insert(temp, {
-							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created),
-							Desc = tostring(v.Function)
+							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(os.time()-v.Created);
+							Desc = tostring(v.Function);
 						})
 					end
 
@@ -1785,16 +1797,33 @@ return function(Vargs, env)
 						Desc = "Tasks your client is performing"
 					})
 
-					for i, v in pairs(cTasks) do
+					for _, v in pairs(cTasks) do
 						table.insert(temp, {
-							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created),
+							Text = tostring(v.Name or v.Function).." - Status: "..v.Status.." - Elapsed: "..(v.CurrentTime-v.Created);
 							Desc = tostring(v.Function);
 						})
 					end
 
+					return temp
+				end
+			end;
+			Function = function(plr: Player, args: {string})
+				if args[1] then
+					for i, v in ipairs(service.GetPlayers(plr, args[1])) do
+						Remote.MakeGui(plr, "List", {
+							Title = v.Name.."'s Tasks";
+							Table = Logs.ListUpdaters.ShowTasks(plr, v);
+							Font = "Code";
+							Update = "ShowTasks";
+							UpdateArgs = {v};
+							AutoUpdate = 1;
+							Size = {500, 400};
+						})
+					end
+				else
 					Remote.MakeGui(plr, "List", {
 						Title = "Tasks",
-						Table = temp,
+						Table = Logs.ListUpdaters.ShowTasks(plr),
 						Font = "Code",
 						Update = "ShowTasks",
 						AutoUpdate = 1,
@@ -1931,7 +1960,7 @@ return function(Vargs, env)
 					local reason = "No reason provided";
 
 					if type(v) == "table" then
-					 bancount +=1
+						bancount +=1
 						if v.Name and v.UserId then
 							entry = v.Name .. ":" .. v.UserId;
 						elseif v.UserId then
@@ -2213,22 +2242,23 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows all instances created server-side by Adonis";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player, updateArgs)
 				local objects = service.GetAdonisObjects()
-				local temp = {}
-
+				local tab = {}
 				for i, v in pairs(objects) do
-					table.insert(temp, {
+					table.insert(tab, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
 					})
 				end
-
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Adonis Instances";
-					Table = temp;
+					Table = Logs.ListUpdaters.ShowServerInstances(plr);
 					Stacking = false;
-					Update = "Instances";
+					Update = "ShowServerInstances";
 				})
 			end
 		};
@@ -2239,18 +2269,34 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Shows all instances created client-side by Adonis";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local instList = Remote.Get(v, "InstanceList")
-					if instList then
-						Remote.MakeGui(plr, "List", {
-							Title = v.Name .." Instances";
-							Table = instList;
-							Stacking = false;
-							Update = "Instances";
-							UpdateArg = v;
+			ListUpdater = function(plr: Player, target: Player)
+				if target then
+					local temp = {"Player is currently unreachable"}
+					if target then
+						temp = Remote.Get(target, "InstanceList") or temp
+					end
+					return temp
+				else
+					local objects = service.GetAdonisObjects()
+					local temp = {}
+					for _, v in pairs(objects) do
+						table.insert(temp, {
+							Text = v:GetFullName();
+							Desc = v.ClassName;
 						})
 					end
+					return temp
+				end
+			end;
+			Function = function(plr: Player, args: {string})
+				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Remote.MakeGui(plr, "List", {
+						Title = v.Name .." Instances";
+						Table = Logs.ListUpdaters.ShowClientInstances(plr, v);
+						Stacking = false;
+						Update = "ShowClientInstances";
+						UpdateArg = v;
+					})
 				end
 			end
 		};
@@ -2304,7 +2350,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				service.StopLoop("LightingTask")
 				for i, v in pairs(Variables.OriginalLightingSettings) do
-					if i~="Sky" and service.Lighting[i]~=nil then
+					if i ~= "Sky" and service.Lighting[i] ~= nil then
 						Functions.SetLighting(i, v)
 					end
 				end
@@ -2452,7 +2498,7 @@ return function(Vargs, env)
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
 					if Settings.PlayerCommandFeedback then
-						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -2495,7 +2541,7 @@ return function(Vargs, env)
 						old:Destroy()
 						if Settings.PlayerCommandFeedback then
 							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
-						end 
+						end
 					end
 				end
 			end
@@ -2577,8 +2623,8 @@ return function(Vargs, env)
 						local msh2 = msh:Clone()
 						local msh3 = msh:Clone()
 						msh3.Scale = Vector3.new(0, 1, 1)
-						local msh4 = msh3:Clone()
 
+						local msh4 = msh3:Clone()
 						msh2.Parent = back
 						msh3.Parent = right
 						msh4.Parent = left
@@ -4061,7 +4107,7 @@ return function(Vargs, env)
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
 							if Settings.PlayerCommandFeedback then
-								Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+								Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 							end
 						end
 					end
@@ -4143,7 +4189,7 @@ return function(Vargs, env)
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
 					if Settings.PlayerCommandFeedback then
-						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon) 
+						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
 			end
@@ -4341,7 +4387,7 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
-							if FlightPos and FlightGyro then  
+							if FlightPos and FlightGyro then
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
@@ -4349,7 +4395,7 @@ return function(Vargs, env)
 							wait()
 							if root then
 								root.CFrame = CFrame.new(point)
-								if FlightPos and FlightGyro then  
+								if FlightPos and FlightGyro then
 									FlightPos.Position = root.Position
 									FlightGyro.CFrame = root.CFrame
 								end
@@ -4379,7 +4425,7 @@ return function(Vargs, env)
 								Humanoid.Jump = true
 							end
 						end
-						if FlightPos and FlightGyro then  
+						if FlightPos and FlightGyro then
 							FlightPos.Position = root.Position
 							FlightGyro.CFrame = root.CFrame
 						end
@@ -4414,7 +4460,7 @@ return function(Vargs, env)
 									Humanoid.Jump = true
 								end
 							end
-							if FlightPos and FlightGyro then  
+							if FlightPos and FlightGyro then
 								FlightPos.Position = root.Position
 								FlightGyro.CFrame = root.CFrame
 							end
@@ -4449,7 +4495,7 @@ return function(Vargs, env)
 											Humanoid.Jump = true
 										end
 									end
-									if FlightPos and FlightGyro then 
+									if FlightPos and FlightGyro then
 										FlightPos.Position = root.Position
 										FlightGyro.CFrame = root.CFrame
 									end
@@ -5780,34 +5826,29 @@ return function(Vargs, env)
 		ServerLog = {
 			Prefix = ":";
 			Commands = {"serverlog", "serverlogs", "serveroutput"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "View server log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local temp = {}
-				local auto
-
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
-
 				local function toTab(str, desc, color)
-					for i, v in pairs(service.ExtractLines(str)) do
-						table.insert(temp, {Text = v, Desc = desc..v, Color = color})
+					for _, v in pairs(service.ExtractLines(str)) do
+						table.insert(temp, {Text = v; Desc = desc..v; Color = color})
 					end
 				end
-
-				for i, v in pairs(service.LogService:GetLogHistory()) do
+				for _, v in pairs(service.LogService:GetLogHistory()) do
 					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 				end
-
+				return temp
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
-					Title = "Server Log",
-					Table = temp,
-					Update = "ServerLog",
-					AutoUpdate = auto;
+					Title = "Server Log";
+					Table = Logs.ListUpdaters.ServerLog(plr);
+					Update = "ServerLog";
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Stacking = true;
 					Sanitize = true;
 					TextSelectable = true;
@@ -5818,24 +5859,25 @@ return function(Vargs, env)
 		LocalLog = {
 			Prefix = ":";
 			Commands = {"locallog", "clientlog", "locallogs", "localoutput", "clientlogs"};
-			Args = {"player", "autoupdate"};
+			Args = {"player", "autoupdate? (default: false)"};
 			Description = "View local log";
 			AdminLevel = "Moderators";
 			NoFilter = true;
-			Function = function(plr: Player, args: {string})
-				local auto
-				if args[2] and type(args[2]) == "string" and (string.lower(args[2]) == "yes" or string.lower(args[2]) == "true") then
-					auto = 1
+			ListUpdater = function(plr: Player, target: Player)
+				local temp = {"Player is currently unreachable"}
+				if target and target.Parent then
+					temp = Remote.Get(target, "ClientLog")
 				end
-
+				return temp
+			end;
+			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					local temp = Remote.Get(v, "ClientLog") or {}
 					Remote.MakeGui(plr, "List", {
 						Title = v.Name.." Local Log";
-						Table = temp;
-						Update = "ClientLog";
+						Table = Logs.ListUpdaters.LocalLog(plr, v);
+						Update = "LocalLog";
 						UpdateArg = v;
-						AutoUpdate = auto;
+						AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 						Stacking = true;
 						Sanitize = true;
 						TextSelectable = true;
@@ -5847,26 +5889,29 @@ return function(Vargs, env)
 		ErrorLogs = {
 			Prefix = ":";
 			Commands = {"errorlogs", "debuglogs", "errorlog", "errors", "debuglog", "scripterrors", "adminerrors"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
 			Description = "View script error log";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local tab = {}
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
+				for _, v in pairs(Logs.Errors) do
+					table.insert(tab, {
+						Time = v.Time;
+						Text = v.Text..": "..tostring(v.Desc);
+						Desc = tostring(v.Desc);
+					})
 				end
-				for i, v in pairs(Logs.Errors) do
-					table.insert(tab, {Time=v.Time;Text=v.Text..": "..tostring(v.Desc), Desc = tostring(v.Desc)})
-				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
-					Title = "Errors",
-					Table = tab,
-					Dots = true,
-					Update = "Errors",
-					AutoUpdate = auto,
+					Title = "Errors";
+					Table = Logs.ListUpdaters.ErrorLogs(plr);
+					Dots = true;
+					Update = "ErrorLogs";
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 					TextSelectable = true;
@@ -5876,23 +5921,20 @@ return function(Vargs, env)
 
 		ExploitLogs = {
 			Prefix = Settings.Prefix;
-			Commands = {"exploitlogs"};
-			Args = {"autoupdate"};
+			Commands = {"exploitlogs", "exploitlog"};
+			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
 			Description = "View the exploit logs for the server OR a specific player";
 			Fun = false;
 			AdminLevel = "Moderators";
+			ListUpdater = "Exploit";
 			Function = function(plr: Player, args: {string})
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
 				Remote.MakeGui(plr, "List", {
 					Title = "Exploit Logs";
 					Tab = Logs.Exploit;
 					Dots = true;
 					Update = "ExploitLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -5902,22 +5944,19 @@ return function(Vargs, env)
 		JoinLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"joinlogs", "joins", "joinhistory"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
 			Description = "Displays the current join logs for the server";
 			Fun = false;
 			AdminLevel = "Moderators";
+			ListUpdater = "Joins";
 			Function = function(plr: Player, args: {string})
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
 				Remote.MakeGui(plr, "List", {
 					Title = "Join Logs";
 					Tab = Logs.Joins;
 					Dots = true;
 					Update = "JoinLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
 		};
@@ -5925,22 +5964,19 @@ return function(Vargs, env)
 		LeaveLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"leavelogs", "leaves", "leavehistory"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
 			Description = "Displays the current leave logs for the server";
 			Fun = false;
 			AdminLevel = "Moderators";
+			ListUpdater = "LeaveLogs";
 			Function = function(plr: Player, args: {string})
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
 				Remote.MakeGui(plr, "List", {
 					Title = "Leave Logs";
 					Tab = Logs.Leaves;
 					Dots = true;
 					Update = "LeaveLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
 		};
@@ -5948,22 +5984,17 @@ return function(Vargs, env)
 		ChatLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"chatlogs", "chats", "chathistory"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "Displays the current chat logs for the server";
 			AdminLevel = "Moderators";
+			ListUpdater = "Chats";
 			Function = function(plr: Player, args: {string})
-				local auto
-
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
-
 				Remote.MakeGui(plr, "List", {
 					Title = "Chat Logs";
 					Tab = Logs.Chats;
 					Dots = true;
 					Update = "ChatLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -5973,20 +6004,17 @@ return function(Vargs, env)
 		RemoteLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"remotelogs", "rlogs", "remotefires", "remoterequests"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
+			ListUpdater = "RemoteFires";
 			Function = function(plr: Player, args: {string})
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
 				Remote.MakeGui(plr, "List", {
 					Title = "Remote Logs";
 					Table = Logs.RemoteFires;
 					Dots = true;
 					Update = "RemoteLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -5996,20 +6024,17 @@ return function(Vargs, env)
 		ScriptLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"scriptlogs", "scriptlog", "adminlogs", "adminlog", "scriptlogs"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "View the admin logs for the server";
 			AdminLevel = "Moderators";
+			ListUpdater = "Script";
 			Function = function(plr: Player, args: {string})
-				local auto
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
-				end
 				Remote.MakeGui(plr, "List", {
 					Title = "Script Logs";
 					Table = Logs.Script;
 					Dots = true;
 					Update = "ScriptLogs";
-					AutoUpdate = auto;
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -6019,27 +6044,23 @@ return function(Vargs, env)
 		Logs = {
 			Prefix = Settings.Prefix;
 			Commands = {"logs", "log", "commandlogs"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "View the command logs for the server";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local auto
+			ListUpdater = function(plr: Player)
 				local temp = {}
-
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
+				for _, m in pairs(Logs.Commands) do
+					table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
 				end
-
-				for i, m in pairs(Logs.Commands) do
-					table.insert(temp, {Time = m.Time;Text = m.Text..": "..m.Desc;Desc = m.Desc})
-				end
-
+				return temp
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Admin Logs";
-					Table = temp;
+					Table = Logs.ListUpdaters.Logs(plr);
 					Dots = true;
-					Update = "CommandLogs";
-					AutoUpdate = auto;
+					Update = "Logs";
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -6049,23 +6070,28 @@ return function(Vargs, env)
 		OldLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldlogs", "oldserverlogs", "oldcommandlogs"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: false)"};
 			Description = "View the command logs for previous servers ordered by time";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local auto
+			ListUpdater = function(plr: Player)
 				local temp = {}
-
-				if args[1] and type(args[1]) == "string" and (string.lower(args[1]) == "yes" or string.lower(args[1]) == "true") then
-					auto = 1
+				if Core.DataStore then
+					local data = Core.GetData("OldCommandLogs")
+					if data then
+						for i, m in pairs(data) do
+							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
+						end
+					end
 				end
-
+				return temp
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Old Server Logs";
-					Table = Logs.ListUpdaters.OldCommandLogs();
+					Table = Logs.ListUpdaters.OldLogs(plr);
 					Dots = true;
-					Update = "OldCommandLogs";
-					AutoUpdate = auto;
+					Update = "OldLogs";
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
 				})
@@ -6075,7 +6101,7 @@ return function(Vargs, env)
 		ShowLogs = {
 			Prefix = Settings.Prefix;
 			Commands = {"showlogs", "showcommandlogs"};
-			Args = {"player", "autoupdate"};
+			Args = {"player", "autoupdate? (default: false)"};
 			Description = "Shows the target player(s) the command logs.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -6095,8 +6121,8 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if data.PlayerData.Level > Admin.GetLevel(v) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
 						for k, m in pairs(Settings.Muted) do
@@ -6160,9 +6186,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 
-					if not plrgui or plrgui:FindFirstChild"Freecam" then
+					if not plrgui or plrgui:FindFirstChild("Freecam") then
 						continue
 					end
 
@@ -6192,13 +6218,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					local plrgui = v:FindFirstChildOfClass"PlayerGui"
+					local plrgui = v:FindFirstChildOfClass("PlayerGui")
 
-					if plrgui and plrgui:FindFirstChild"Freecam" then
-						local freecam = plrgui:FindFirstChild"Freecam"
+					if plrgui and plrgui:FindFirstChild("Freecam") then
+						local freecam = plrgui:FindFirstChild("Freecam")
 
-						if freecam:FindFirstChildOfClass"RemoteFunction" then
-							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "End")
+						if freecam:FindFirstChildOfClass("RemoteFunction") then
+							freecam:FindFirstChildOfClass("RemoteFunction"):InvokeClient(v, "End")
 						end
 
 						Remote.Send(v, "Function", "SetView", "reset")
@@ -6228,11 +6254,11 @@ return function(Vargs, env)
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local plrgui = v:FindFirstChildOfClass"PlayerGui"
 
-					if plrgui:FindFirstChild"Freecam" then
-						local freecam = plrgui:FindFirstChild"Freecam"
+					if plrgui:FindFirstChild("Freecam") then
+						local freecam = plrgui:FindFirstChild("Freecam")
 
-						if freecam:FindFirstChildOfClass"RemoteFunction" then
-							freecam:FindFirstChildOfClass"RemoteFunction":InvokeClient(v, "Toggle")
+						if freecam:FindFirstChildOfClass("RemoteFunction") then
+							freecam:FindFirstChildOfClass("RemoteFunction"):InvokeClient(v, "Toggle")
 						end
 					end
 				end
@@ -6376,7 +6402,7 @@ return function(Vargs, env)
 					for _, v in pairs(reverbs) do
 						table.insert(tab, {Text = v})
 					end
-					Remote.MakeGui(plr, "List", {Title = "Reverbs";Table = tab})
+					Remote.MakeGui(plr, "List", {Title = "Reverbs"; Table = tab;})
 
 					return
 				end
@@ -6399,8 +6425,6 @@ return function(Vargs, env)
 			Commands = {"resetbuttonenabled", "canreset"};
 			Args = {"player", "can reset? (true/false)"};
 			Description = "Sets whether the target player(s) can reset their character";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -6415,11 +6439,10 @@ return function(Vargs, env)
 		ServerPerfStats = {
 			Prefix = Settings.Prefix;
 			Commands = {"perfstats", "performancestats", "serverstats"};
-			Args = {"autoupdate"};
+			Args = {"autoupdate? (default: true)"};
 			Description = "Shows you technical server performance statistics";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {[number]:string})
-				local update = (args[1] ~= "false")
+			ListUpdater = function(plr: Player)
 				local tab = {}
 				local perfStats = {
 					{"ContactsCount"; "How many parts are currently in contact with one another"},
@@ -6436,13 +6459,50 @@ return function(Vargs, env)
 				for _, v in ipairs(perfStats) do
 					table.insert(tab, {Text = v[1]..": "..tostring(service.Stats[v[1]]):sub(1, 7); Desc = v[2];})
 				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {[number]:string})
+				Remote.RemoveGui(plr, "ServerPerfStats")
 				Remote.MakeGui(plr, "List", {
+					Name = "ServerPerfStats";
 					Title = "Server Stats";
 					Icon = server.MatIcons.Leaderboard;
-					Tab = tab;
-					AutoUpdate = update and 1;
+					Tab = Logs.ListUpdaters.ServerPerfStats(plr);
+					AutoUpdate = if not args[1] or args[1]:lower() == "true" or args[1]:lower() == "yes" then 1 else nil;
 					Update = "ServerPerfStats";
-					UpdateArgs = {};
+				})
+			end
+		};
+
+		SelectPlayers = {
+			Prefix = Settings.Prefix;
+			Commands = {"select", "selectplayers", "count",  "countplayers", "getplayers"};
+			Args = {"player(s)", "autoupdate? (default: false)"};
+			Description = "Shows you a list and count of players selected in the argument";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, selection: string?)
+				local players = service.GetPlayers(plr, selection, {DontError = true;})
+				local tab = {
+					"Specified: \""..(selection or (Settings.SpecialPrefix.."me")).."\"",
+					"# Players: "..#players,
+					"―――――――――――――――――――――――",
+				}
+				for _, v: Player in pairs(players) do
+					table.insert(tab, {
+						Text = service.FormatPlayer(v);
+						Desc = "ID: "..v.UserId;
+					})
+				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {[number]:string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Selected Players";
+					Icon = server.MatIcons.People;
+					Tab = Logs.ListUpdaters.SelectPlayers(plr, args[1]);
+					Update = "SelectPlayers";
+					UpdateArg = args[1];
+					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
 		};
