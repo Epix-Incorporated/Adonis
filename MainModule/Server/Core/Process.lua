@@ -236,8 +236,8 @@ return function(Vargs, GetEnv)
 					if not command then
 						if opts.Check then
 							Remote.MakeGui(p, "Output", {
-								Title = "Output",
-								Message = msg .. " is not a valid command."
+								Title = "Output";
+								Message = msg .. " is not a valid command.";
 							})
 							return
 						end
@@ -267,16 +267,16 @@ return function(Vargs, GetEnv)
 							Remote.MakeGui(p, "Output", {
 								Title = "";
 								Message = "This command cannot be used in Roblox Studio.";
-								Color = Color3.new(1, 0, 0)
+								Color = Color3.new(1, 0, 0);
 							})
 							return
 						end
 
 						if allowed and opts.Chat and command.Chattable == false then
 							Remote.MakeGui(p, "Output", {
-								Title = "",
-								Color = Color3.new(1, 0, 0),
-								Message = "Specified command not permitted as chat message (Command not chattable)"
+								Title = "";
+								Color = Color3.new(1, 0, 0);
+								Message = "Specified command not permitted as chat message (Command not chattable)";
 							})
 
 							return
@@ -312,9 +312,9 @@ return function(Vargs, GetEnv)
 								end
 
 								if opts.CrossServer or (not isSystem and not opts.DontLog) then
-									AddLog("Commands",{
-										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name,
-										Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey),
+									AddLog("Commands", {
+										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
+										Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
 										Player = p;
 									})
 
@@ -353,8 +353,8 @@ return function(Vargs, GetEnv)
 										if not isSystem then
 											Remote.MakeGui(p,"Output", {
 												Title = "";
-												Message = "There was an error but the error was not a string? "..tostring(error),
-												Color = Color3.new(1, 0, 0)
+												Message = "There was an error but the error was not a string? "..tostring(error);
+												Color = Color3.new(1, 0, 0);
 											})
 										end
 									end
@@ -376,16 +376,16 @@ return function(Vargs, GetEnv)
 									Remote.MakeGui(p, "Output", {
 										Title = "";
 										Message = "This command has been disabled.";
-										Color = Color3.new(1, 0, 0)
+										Color = Color3.new(1, 0, 0);
 									})
 								end
 							end
 						else
 							if not isSystem and not opts.NoOutput then
 								Remote.MakeGui(p, "Output", {
-									Title = "",
-									Message = "You are not allowed to run " .. msg,
-									Color = Color3.new(1, 0, 0)
+									Title = "";
+									Message = "You are not allowed to run " .. msg;
+									Color = Color3.new(1, 0, 0);
 								})
 							end
 
@@ -398,7 +398,7 @@ return function(Vargs, GetEnv)
 
 		CrossServerChat = function(data)
 			if data then
-				for i,v in pairs(service.GetPlayers()) do
+				for _, v in pairs(service.GetPlayers()) do
 					if Admin.GetLevel(v) > 0 then
 						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
@@ -436,7 +436,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for i,v in pairs(service.GetPlayers(p, target, {
+					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
 						})) do
 						--Routine(function()
@@ -687,9 +687,15 @@ return function(Vargs, GetEnv)
 
 			Core.SavePlayerData(p, data)
 
+			Variables.TrackingTable[p.Name] = nil
+			for otherPlrName in pairs(Variables.TrackingTable) do
+				Variables.TrackingTable[otherPlrName][p] = nil
+			end
+
 			if Commands.UnDisguise then
 				Commands.UnDisguise.Function(p, {"me"})
 			end
+
 			Variables.IncognitoPlayers[p] = nil
 
 			return
@@ -853,9 +859,9 @@ return function(Vargs, GetEnv)
 				--// Wait for UI stuff to finish
 				wait(1)
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
-					p:WaitForChild("PlayerGui", 9e9);
+					p:WaitForChild("PlayerGui", 9e9)
 				end
-				Remote.Get(p,"UIKeepAlive");
+				Remote.Get(p,"UIKeepAlive")
 
 				--//GUI loading
 				local MakeGui = Remote.MakeGui
@@ -914,6 +920,12 @@ return function(Vargs, GetEnv)
 						Text = "OnSpawn: Executed "..tostring(v);
 						Desc = "Executed OnSpawn command; "..tostring(v);
 					})
+				end
+				
+				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+					if trackTargets[p] and server.Commands.Track then
+						server.Commands.Track.Function(service.Players[otherPlrName], {p.Name, "true"})
+					end
 				end
 			end
 		end;
