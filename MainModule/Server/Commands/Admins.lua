@@ -342,14 +342,24 @@ return function(Vargs, env)
 			Description = "Shows who shutdown or restarted a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i, v in pairs(logs) do
 					if v.Restart then v.Time = v.Time.." [SOFT]" end
-					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
+					table.insert(tab, {
+						Text = v.Time..": "..v.User;
+						Desc = "Reason: "..v.Reason;
+					})
 				end
-				Remote.MakeGui(plr, "List", {Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Shutdown Logs";
+					Table = Logs.ListUpdaters.ShutdownLogs(plr);
+					Update = "ShutdownLogs";
+				})
 			end
 		};
 
@@ -700,10 +710,10 @@ return function(Vargs, env)
 			Description = "Restore the map to the the way it was the last time it was backed up";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local plr_name = plr and plr.Name
+				local plrName = plr and service.FormatPlayer(plr) or "<SERVER>"
 
 				if not Variables.MapBackup then
-					error("Cannot restore when there are no backup maps!",0)
+					error("Cannot restore when there are no backup maps!", 0)
 					return
 				end
 				if Variables.RestoringMap then
@@ -711,12 +721,12 @@ return function(Vargs, env)
 					return
 				end
 				if Variables.BackingupMap then
-					error("Cannot restore map while backing up map is in process!",0)
+					error("Cannot restore map while backing up map is in process!", 0)
 					return
 				end
 
 				Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
+				Functions.Hint("Restoring Map...", service.Players:GetPlayers())
 
 				for _, obj in ipairs(workspace:GetChildren()) do
 					if obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(obj) then
@@ -740,7 +750,7 @@ return function(Vargs, env)
 					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
 				end
 
-				wait();
+				wait()
 
 				Admin.RunCommand(Settings.Prefix .. "respawn", "all")
 				Variables.RestoringMap = false
@@ -748,7 +758,7 @@ return function(Vargs, env)
 
 				Logs:AddLog("Script", {
 					Text = "Map Restoration Complete",
-					Desc = (plr_name or "<SERVER>") .. " has restored the map.",
+					Desc = plrName .. " has restored the map.",
 				})
 			end
 		};
@@ -1307,7 +1317,7 @@ return function(Vargs, env)
 				local list = trello.getListObj(lists, {"Banlist", "Ban List", "Bans"})
 
 				local level = data.PlayerData.Level
-				local reason = string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+				local reason = string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
 
 				for _, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
@@ -1420,6 +1430,7 @@ return function(Vargs, env)
 					return service.Players:GetUserIdFromNameAsync(args[2])
 				end, function() return nil end))
 				assert(userId, "Invalid username supplied/user not found")
+				
 				local username = select(2, xpcall(function()
 					return service.Players:GetNameFromUserIdAsync(userId)
 				end, function() return args[2] end))
@@ -1494,26 +1505,32 @@ return function(Vargs, env)
 			end
 		};
 
-		IncognitoList = {
+		IncognitoPlayerList = {
 			Prefix = Settings.Prefix;
 			Commands = {"incognitolist", "incognitoplayers"};
-			Args = {"player"};
+			Args = {"autoupdate? (default: true)"};
 			Description = "Displays a list of incognito players in the server";
 			AdminLevel = "Admins";
 			Hidden = true;
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local tab = {}
 				for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
 					table.insert(tab, {
-						Text = if p.DisplayName == p.Name then "@"..p.Name else string.format("%s (@%s)", p.Name, p.DisplayName);
+						Text = service.FormatPlayer(p);
 						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
 					})
 				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.RemoveGui(plr, "IncognitoPlayerList")
 				Remote.MakeGui(plr, "List", {
+					Name = "IncognitoPlayerList";
 					Title = "Incognito Players";
-					Icon = server.MatIcons.People;
-					Tab = tab;
-					Update = "IncognitoPlayers";
+					Icon = server.MatIcons["Admin panel settings"];
+					Tab = Logs.ListUpdaters.IncognitoPlayerList(plr);
+					Update = "IncognitoPlayerList";
+					AutoUpdate = if not args[1] or (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 				})
 			end
 		};

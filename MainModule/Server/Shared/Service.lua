@@ -990,6 +990,12 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end
 			end
 		end;
+	
+		FormatPlayer = function(plr, withUserId)
+			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
+			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
+			return str
+		end;
 
 		OwnsAsset = function(p,id)
 			return service.MarketPlace:PlayerOwnsAsset(p,id)
