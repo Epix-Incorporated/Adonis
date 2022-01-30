@@ -1312,7 +1312,7 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local players = Functions.GrabNilPlayers("all")
 				local tab = {
-					"# Players: "..#players,
+					"# Players: " .. #players,
 					"―――――――――――――――――――――――",
 				}
 				for _, v in pairs(players) do
@@ -1341,7 +1341,7 @@ return function(Vargs, env)
 							if v and service.Players:FindFirstChild(v.Name) then
 								local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 								table.insert(tab, {
-									Text = string.format("[%s] %s (@%s)", ping, v.Name, v.DisplayName);
+									Text = string.format("[%s] %s", ping, service.FormatPlayer(v, true));
 									Desc = string.format("Lower: %s | Health: %d | MaxHealth: %d | WalkSpeed: %d | JumpPower: %d | Humanoid Name: %s", v.Name:lower(), hum and hum.Health or 0, hum and hum.MaxHealth or 0, hum and hum.WalkSpeed or 0, hum and hum.JumpPower or 0, hum and hum.Name or "?");
 								})
 							else
@@ -1364,7 +1364,8 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "List", {
 					Title = "Players",
 					Icon = server.MatIcons.People;
-					Tab = Logs.ListUpdaters.PlayerList(plr),
+					Tab = Logs.ListUpdaters.PlayerList(plr);
+					Size = {300, 240};
 					AutoUpdate = if not args[1] or (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Update = "PlayerList";
 				})
