@@ -2783,41 +2783,47 @@ return function(Vargs, env)
 		Track = {
 			Prefix = Settings.Prefix;
 			Commands = {"track", "trace", "find", "locate"};
-			Args = {"player"};
+			Args = {"player", "persistent? (default: false)"};
 			Hidden = false;
 			Description = "Shows you where the target player(s) is/are";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local New = service.New
+				local persistent = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
+				if persistent and not Variables.TrackingTable[plr.Name] then
+					Variables.TrackingTable[plr.Name] = {}
+				end
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and plr.Character then
+					if persistent then
+						Variables.TrackingTable[plr.Name][v] = true
+					end
+					local char = v.Character
+					if char and plr.Character then
 						task.defer(function()
-							local Humanoid = plr.Character:FindFirstChild("Humanoid")
-							local Part = v.Character:FindFirstChild("HumanoidRootPart")
-							local Head = v.Character:FindFirstChild("Head")
-
-							if Part and Head and Humanoid then
-								local bb = New("BillboardGui", {
+							local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+							local part = char:FindFirstChild("HumanoidRootPart")
+							local head = char:FindFirstChild("Head")
+							if part and head and humanoid then
+								local bb = service.New("BillboardGui", {
 									Name = v.Name .. "Tracker",
-									Adornee = Head,
+									Adornee = head,
 									AlwaysOnTop = true,
 									StudsOffset = Vector3.new(0, 2, 0),
 									Size = UDim2.new(0, 100, 0, 40)
 								})
-								New("SelectionPartLasso", {
-									Part = Part,
-									Humanoid = Humanoid,
+								service.New("SelectionPartLasso", {
+									Part = part,
+									Humanoid = humanoid,
 									Parent = bb,
 								})
-								local f = New("Frame", {
+								local f = service.New("Frame", {
+									Parent = bb;
 									BackgroundTransparency = 1;
 									Size = UDim2.new(1, 0, 1, 0);
-									Parent = bb;
 								})
-
-								local name = New("TextLabel", {
-									Text = v.DisplayName.."\n(@"..v.Name..")",
+								local name = service.New("TextLabel", {
+									Parent = f,
+									Text = if v.Name == v.DisplayName then "@"..v.Name else v.DisplayName.."\n(@"..v.Name..")",
 									BackgroundTransparency = 1,
 									Font = Enum.Font.Arial,
 									TextColor3 = Color3.new(1, 1, 1),
@@ -2826,8 +2832,6 @@ return function(Vargs, env)
 									Size = UDim2.new(1, 0, 0, 20),
 									TextScaled = true,
 									TextWrapped = true,
-
-									Parent = f,
 								})
 								local arrow = name:Clone()
 								arrow.Position = UDim2.new(0, 0, 0, 20)
@@ -2835,8 +2839,10 @@ return function(Vargs, env)
 								arrow.Parent = f
 
 								Remote.MakeLocal(plr, bb, false)
-								local event;event = v.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr, v.Name.."Tracker") event:Disconnect() end)
-								local event2;event2 = plr.CharacterRemoving:Connect(function() Remote.RemoveLocal(plr, v.Name.."Tracker") event2:Disconnect() end)
+								local event; event = v.CharacterRemoving:Connect(function()
+									Remote.RemoveLocal(plr, v.Name.."Tracker")
+									event:Disconnect()
+								end)
 							end
 						end)
 					end
@@ -2846,18 +2852,20 @@ return function(Vargs, env)
 
 		UnTrack = {
 			Prefix = Settings.Prefix;
-			Commands = {"untrack", "untrace", "unfind", "unlocate"};
+			Commands = {"untrack", "untrace", "unfind", "unlocate", "notrack"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Stops tracking the target player(s)";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if string.lower(args[1]) == Settings.SpecialPrefix.."all" then
+				if args[1] and args[1]:lower() == Settings.SpecialPrefix.."all" then
 					Remote.RemoveLocal(plr, "Tracker", false, true)
+					Variables.TrackingTable[plr.Name] = {}
 				else
 					for _, v in pairs(service.GetPlayers(plr, args[1])) do
 						Remote.RemoveLocal(plr, v.Name.."Tracker")
+						Variables.TrackingTable[plr.Name][v] = nil
 					end
 				end
 			end
