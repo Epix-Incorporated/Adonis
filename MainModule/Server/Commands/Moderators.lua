@@ -4673,43 +4673,87 @@ return function(Vargs, env)
 			end
 		};
 
-		TShirt = {
+		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"tshirt", "givetshirt"};
+			Commands = {"avataritem","accessory","hat","shirt","tshirt","givetshirt","shirt", "giveshirt","pants", "givepants"};
 			Args = {"player", "ID"};
 			Hidden = false;
-			Description = "Give the target player(s) the t-shirt that belongs to <ID>";
+			Description = "Give the target player(s) the avatar item that belongs to <ID>";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				local ClothingId = tonumber(args[2])
-				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
-
-				assert(Shirt, "Could not retrieve shirt asset for the supplied ID")
-
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("ShirtGraphic") then k:Destroy() end
+						local ItemId = tonumber(args[2])
+						local ProductInfo = service.MarketPlace:GetProductInfo(ItemId)
+						local PlrHumanoid: Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+						if PlrHumanoid then
+							local HumanoidDescription: HumanoidDescription = PlrHumanoid:GetAppliedDescription()
+							-- Roblox doesn't expose a good way to insert into a HumanoidDescription from the AssetType enum, so mapping it out instead.
+							local AssetTypeToSingleHumanoidDescription = {
+								[2] = "GraphicTShirt",
+								[11] = "Shirt",
+								[12] = "Pants",
+								[17] = "Head",
+								[18] = "Face",
+								[27] = "Torso",
+								[28] = "RightArm",
+								[29] = "LeftArm",
+								[30] = "LeftLeg",
+								[31] = "RightLeg",
+								[48] = "ClimbAnimation",
+								[49] = "DeathAnimation",
+								[50] = "FallAnimation",
+								[51] = "IdleAnimation",
+								[52] = "JumpAnimation",
+								[53] = "RunAnimation",
+								[54] = "SwimAnimation",
+								[55] = "WalkAnimation",
+							}
+							local AssetTypeToMutilHumanoidDescription = { -- AssetTypes that are comma seperated 
+								[8] = "HatAccessory",
+								[41] = "HairAccessory",
+								[42] = "FaceAccessory",
+								[43] = "NeckAccessory",
+								[44] = "ShouldersAccessory",
+								[45] = "FrontAccessory",
+								[46] = "BackAccessory",
+								[47] = "WaistAccessory"
+							}
+							local LayeredAccessorysHumanoidDescriptionEnum = {
+								[64] = Enum.AccessoryType.TShirt,
+								[65] = Enum.AccessoryType.Shirt,
+								[66] = Enum.AccessoryType.Pants,
+								[67] = Enum.AccessoryType.Jacket,
+								[68] = Enum.AccessoryType.Sweater,
+								[69] = Enum.AccessoryType.Shorts,
+								[70] = Enum.AccessoryType.LeftShoe,
+								[71] = Enum.AccessoryType.RightShoe,
+								[72] = Enum.AccessoryType.DressSkirt,
+							}
+							if AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId] then
+								HumanoidDescription[AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId]] = ItemId
+							elseif AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId] then
+								HumanoidDescription[AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId]] ..= ","..ItemId
+							elseif ProductInfo.AssetTypeId == 61 then
+								HumanoidDescription:AddEmote(ProductInfo.Name, ItemId)
+							elseif LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId] then
+								local Accessories = HumanoidDescription:GetAccessories(true)
+								table.insert(Accessories,{
+									Order = #Accessories,
+									AssetId = ItemId,
+									AccessoryType = LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId]
+								})
+								local Accessories = HumanoidDescription:SetAccessories(Accessories,true)
+							else
+								error("Item not supported")
+							end
+							PlrHumanoid:ApplyDescription(HumanoidDescription)
 						end
-
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
-						if humandescrip then
-							humandescrip.GraphicTShirt = ClothingId
-						end
-
-						if Shirt and Shirt.ClassName == "Model" then
-							Shirt = Shirt:FindFirstChildOfClass("ShirtGraphic") or Shirt
-						end
-
-						Shirt:Clone().Parent = v.Character
 					end
 				end
 			end
-		};
+		},
 
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
@@ -4735,137 +4779,29 @@ return function(Vargs, env)
 			end
 		};
 
-		Shirt = {
-			Prefix = Settings.Prefix;
-			Commands = {"shirt", "giveshirt"};
-			Args = {"player", "ID"};
-			Hidden = false;
-			Description = "Give the target player(s) the shirt that belongs to <ID>";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local ClothingId = tonumber(args[2])
-				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
-				assert(Shirt, "Unexpected error occured; clothing is missing")
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for _, shirt in pairs(v.Character:GetChildren()) do
-							if shirt.ClassName == "Shirt" then
-								shirt:Destroy()
-							end
-						end
-
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
-						if humandescrip then
-							humandescrip.Shirt = ClothingId
-						end
-						Shirt:Clone().Parent = v.Character
-					end
-				end
-			end
-		};
-
 		RemoveShirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeshirt", "noshirt"};
+			Commands = {"removeshirt", "unshirt", "noshirt"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Give the target player(s) the shirt that belongs to <ID>";
+			Description = "Remove any shirt(s) worn by the target player(s)";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for _, shirt in pairs(v.Character:GetChildren()) do
-							if shirt.ClassName == "Shirt" then
-								shirt:Destroy()
-							end
-						end
-					end
-				end
-			end
-		};
-
-		Pants = {
-			Prefix = Settings.Prefix;
-			Commands = {"pants", "givepants"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Give the target player(s) the pants that belongs to <id>";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local ClothingId = tonumber(args[2])
-				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
-				assert(Pants, "Unexpected error occured; clothing is missing")
+			Function = function(plr: Player, args: {[number]:string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("Pants") then k:Destroy() end
+							if k:IsA("ShirtGraphic") then k:Destroy() end
 						end
 						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
 						if humandescrip then
-							humandescrip.Pants = ClothingId
+							humandescrip.Shirt = 0
 						end
-						Pants:Clone().Parent = v.Character
 					end
 				end
 			end
 		};
-
-		Face = {
-			Prefix = Settings.Prefix;
-			Commands = {"face", "giveface"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Give the target player(s) the face that belongs to <id>";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
-				local faceAssetTypeId = service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId
-				local asset;
-
-				if faceAssetTypeId == 1 then
-					asset = service.New("Decal", {
-						Name = "face";
-						Face = "Front";
-						Texture = "rbxassetid://" .. args[2];
-					});
-				elseif faceAssetTypeId == 13 and Functions.GetTexture(faceId) ~= 6825455804 then -- just incase GetTexture actually works?
-					asset = service.New("Decal", {
-						Name = "face";
-						Face = "Front";
-						Texture = "rbxassetid://" .. tostring(Functions.GetTexture(faceId));
-					});
-				elseif faceAssetTypeId == 18 then
-					asset = service.Insert(faceId)
-				else
-					error("Invalid face(Image/robloxFace)", 0)
-				end
-
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					local Head = v.Character and v.Character:FindFirstChild("Head")
-					local face = Head and Head:FindFirstChild("face")
-
-					if Head then
-						if face then
-							face:Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
-						end
-
-						local clone = asset:Clone();
-						clone.Parent = v.Character:FindFirstChild("Head")
-					end
-				end
-			end
-		};
-
 
 		TargetAudio = {
 			Prefix = Settings.Prefix;

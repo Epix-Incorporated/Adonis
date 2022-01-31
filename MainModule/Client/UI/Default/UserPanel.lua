@@ -609,15 +609,11 @@ return function(data, Vargs)
 				"Access to !unfire";
 				"Access to !light <BrickColor>";
 				"Access to !unlight";
-				"Access to !hat <ID>";
+				"Access to !avataritem/!hat/!shirt/!pants <ID>";
 				"Access to !myhats";
 				"Access to !removehat <name>";
 				"Access to !removehats";
-				"Access to !face <ID>";
 				"Access to !neon <BrickColor>";
-				"Access to !shirt <ID>";
-				"Access to !pants <ID>";
-				"Access to !tshirt <ID>";
 				"Access to !removetshirt";
 			}
 
