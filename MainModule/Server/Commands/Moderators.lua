@@ -1255,29 +1255,46 @@ return function(Vargs, env)
 
 		ShowBackpack = {
 			Prefix = Settings.Prefix;
-			Commands = {"showtools", "viewtools", "seebackpack", "viewbackpack", "showbackpack", "displaybackpack", "displaytools"};
-			Args = {"player"};
+			Commands = {"showtools", "viewtools", "seebackpack", "viewbackpack", "showbackpack", "displaybackpack", "displaytools", "listtools"};
+			Args = {"player",  "autoupdate? (default: false)"};
 			Hidden = false;
 			Description = "Shows you a list of items currently in the target player(s) backpack";
 			Fun = false;
 			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, target: Player)
+				local tab = {}
+				local equippedTool = target.Character and target.Character:FindFirstChildWhichIsA("BackpackItem")
+				if equippedTool then
+					table.insert(tab, {
+						Text = "[EQUIPPED] "..equippedTool.Name;
+						Desc = string.format("Class: %s | %s", equippedTool.ClassName, if equippedTool:IsA("Tool") then "ToolTip: "..equippedTool.ToolTip else "BinType: "..equippedTool.BinType);
+					})
+				end
+				local backpack = target:FindFirstChildOfClass("Backpack")
+				if backpack then
+					for _, t in ipairs(backpack:GetChildren()) do
+						table.insert(tab, {
+							Text = t.Name;
+							Desc = if t:IsA("BackpackItem") then
+								string.format("Class: %s | %s", t.ClassName, if t:IsA("Tool") then "ToolTip: "..t.ToolTip else "BinType: "..t.BinType)
+								else "Class: "..t.ClassName;
+						})
+					end
+				else
+					table.insert(tab, "This player has no backpack present.")
+				end
+				return tab
+			end;
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
-						local tools = {}
-						for k, t in pairs(v.Backpack:GetChildren()) do
-							if t:IsA("Tool") then
-								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName.." | ToolTip: "..t.ToolTip})
-							elseif t:IsA("HopperBin") then
-								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName.." | BinType: "..tostring(t.BinType)})
-							else
-								table.insert(tools, {Text=t.Name; Desc="Class: "..t.ClassName})
-							end
-						end
 						Remote.MakeGui(plr, "List", {
-							Title = "@"..v.Name.."'s tools";
+							Title = v.Name.."'s tools";
 							Icon = server.MatIcons["Inventory 2"];
-							Table = tools;
+							Table = Logs.ListUpdaters.ShowBackpack(plr, v);
+							AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;
+							Update = "ShowBackpack";
+							UpdateArg = v;
 							Size = {280, 225};
 							TitleButtons = {
 								{
