@@ -216,7 +216,7 @@ return function()
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
-				for i,v in next,objects do
+				for i,v in pairs(objects) do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -229,7 +229,7 @@ return function()
 				local temp={}
 				local function toTab(str, desc, color)
 					for i,v in next,service.ExtractLines(str) do
-						table.insert(temp,{Text = v,Desc = desc..v, Color = color})
+						table.insert(temp, {Text = v; Desc = desc..v; Color = color;})
 					end
 				end
 
@@ -239,12 +239,16 @@ return function()
 				end
 
 				return temp
-			end
+			end;
+
+			LocallyFormattedTime = function(args)
+				return service.FormatTime(table.unpack(args))
+			end;
 		};
 
 		UnEncrypted = {
-			LightingChange = function(prop,val)
-				print(prop,"TICKLE ME!?")
+			LightingChange = function(prop, val)
+				print(prop, "TICKLE ME!?")
 				Variables.LightingChanged = true
 				service.Lighting[prop] = val
 				Anti.LastChanges.Lighting = prop
@@ -262,7 +266,7 @@ return function()
 				print("THE SERVER IS ASKING US FOR A RETURN");
 				local com = args[1]
 				local key = args[2]
-				local parms = {unpack(args,3)}
+				local parms = {unpack(args, 3)}
 				local retfunc = Remote.Returnables[com]
 				local retable = (retfunc and {pcall(retfunc,parms)}) or {}
 				if retable[1] ~= true then
@@ -279,20 +283,20 @@ return function()
 				if Remote.PendingReturns[args[1]] then
 					print("VALID PENDING RETURN")
 					Remote.PendingReturns[args[1]] = nil
-					service.Events[args[1]]:Fire(unpack(args,2))
+					service.Events[args[1]]:Fire(unpack(args, 2))
 				end
 			end;
 
 			SessionData = function(args)
 				local sessionKey = args[1];
 				if sessionKey then
-					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2));
+					service.Events.SessionData:Fire(sessionKey, table.unpack(args, 2))
 				end
 			end;
 
 			SetVariables = function(args)
 				local vars = args[1]
-				for var,val in next,vars do
+				for var, val in pairs(vars) do
 					Variables[var] = val
 				end
 			end;
