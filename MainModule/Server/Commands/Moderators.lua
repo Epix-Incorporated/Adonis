@@ -4692,7 +4692,7 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "anim"};
+			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim"};
 			Args = {"player", "ID"};
 			Hidden = false;
 			Description = "Give the target player(s) the avatar item that belongs to <ID>";
