@@ -203,7 +203,7 @@ return function()
 				end)()
 
 				coroutine.wrap(function()
-					wait(4)
+					task.wait(4)
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
 					end
