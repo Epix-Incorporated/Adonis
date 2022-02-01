@@ -846,6 +846,20 @@ return function(Vargs, env)
 			end
 		};
 
+		PersonalCountdown = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"countdown", "timer", "cd"};
+			Args = {"time (in seconds)"};
+			Description = "Makes a countdown on your screen";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
+				Remote.MakeGui(plr, "Countdown", {
+					Time = math.round(num);
+				})
+			end
+		};
+
 		ViewProfile = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
