@@ -35,42 +35,6 @@ return function(Vargs, env)
 			end
 		};
 
-		DonorTShirt = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"tshirt", "givetshirt", "donortshirt"};
-			Args = {"ID"};
-			Description = "Give you the t-shirt that belongs to <ID>";
-			Fun = false;
-			Donors = true;
-			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {[number]:string})
-				if plr.Character then
-					local ClothingId = tonumber(args[1])
-					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-					local tShirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
-
-					assert(tShirt, "Could not retrieve shirt asset for the supplied ID")
-
-					for _, v in pairs(plr.Character:GetChildren()) do
-						if v:IsA("ShirtGraphic") then v:Destroy() end
-					end
-
-					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
-					if humandescrip then
-						humandescrip.GraphicTShirt = ClothingId
-					end
-
-					if tShirt:IsA("Model") then
-						tShirt = tShirt:FindFirstChildOfClass("ShirtGraphic")
-					end
-
-					tShirt:Clone().Parent = plr.Character
-				end
-			end
-		};
-
 		DonorRemoveTShirt = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
@@ -89,98 +53,6 @@ return function(Vargs, env)
 
 					if humandescrip then
 						humandescrip.GraphicTShirt = 0
-					end
-				end
-			end
-		};
-
-		DonorShirt = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"shirt", "giveshirt", "donorshirt"};
-			Args = {"ID"};
-			Description = "Give you the shirt that belongs to <ID>";
-			Fun = false;
-			Donors = true;
-			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {string})
-				if plr.Character then
-					local ClothingId = tonumber(args[1])
-					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-					local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
-					assert(Shirt, "Unexpected error occured; clothing is missing")
-					for _, v in pairs(plr.Character:GetChildren()) do
-						if v:IsA("Shirt") then v:Destroy() end
-					end
-					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
-					if humandescrip then
-						humandescrip.Shirt = ClothingId
-					end
-					Shirt:Clone().Parent = plr.Character
-				end
-			end
-		};
-
-		DonorPants = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"pants", "givepants", "donorpants"};
-			Args = {"ID"};
-			Description = "Give you the pants that belongs to <ID>";
-			Fun = false;
-			Donors = true;
-			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {string})
-				if plr.Character then
-					local ClothingId = tonumber(args[1])
-					local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-					local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
-					assert(Pants, "Unexpected error occured; clothing is missing")
-					for _, v in pairs(plr.Character:GetChildren()) do
-						if v:IsA("Pants") then v:Destroy() end
-					end
-
-					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-					local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-
-					if humandescrip then
-						humandescrip.Pants = ClothingId
-					end
-
-					Pants:Clone().Parent = plr.Character
-				end
-			end
-		};
-
-		DonorFace = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"face", "giveface", "donorface"};
-			Args = {"ID"};
-			Description = "Gives you the face that belongs to <ID>";
-			Fun = false;
-			Donors = true;
-			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {string})
-				if plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("face") then
-					plr.Character.Head:FindFirstChild("face"):Destroy()
-				end
-
-				local id = tonumber(args[1])
-				local market = service.MarketPlace
-				local info = market:GetProductInfo(id)
-
-				local humanoid = plr.Character:FindFirstChildOfClass'Humanoid'
-				local humandescrip = humanoid and humanoid:FindFirstChildOfClass"HumanoidDescription"
-
-				if humandescrip then
-					humandescrip.Face = id
-				end
-
-				assert(info.AssetTypeId == 18, "Invalid face ID")
-				if plr.Character:FindFirstChild("Head") then
-					local face = service.Insert(args[1])
-					if face then
-						face.Parent = plr.Character:FindFirstChild("Head")
 					end
 				end
 			end
@@ -445,58 +317,16 @@ return function(Vargs, env)
 			end
 		};
 
-		DonorHat = {
+		DonorAvatarItem = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"hat", "gethat", "donorhat"};
+			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "face", "donorface", "animation", "anim"};
 			Args = {"ID"};
-			Description = "Gives you the hat specified by <ID>";
+			Hidden = false;
+			Description = "Gives yourself the avatar item that belongs to <ID>";
 			Fun = false;
 			Donors = true;
-			AdminLevel = "Donors";
-			Function = function(plr: Player, args: {string})
-				local id = tonumber(args[1])
-				local hats = 0
-				for i, v in pairs(plr.Character:GetChildren()) do if v:IsA("Accoutrement") then hats = hats+1 end end
-				if id and hats<15 then
-					local market = service.MarketPlace
-					local info = market:GetProductInfo(id)
-					if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
-						local hat = service.Insert(id)
-						assert(hat, "Invalid ID")
-						local banned = {
-							Script = true;
-							LocalScript = true;
-							Tool = true;
-							HopperBin = true;
-							ModuleScript = true;
-							RemoteFunction = true;
-							RemoteEvent = true;
-							BindableEvent = true;
-							Folder = true;
-							RocketPropulsion = true;
-							Explosion = true;
-						}
-
-						local removeScripts; removeScripts = function(obj)
-							for i, v in pairs(obj:GetChildren()) do
-								pcall(function()
-									removeScripts(v)
-									if banned[v.ClassName] then
-										v:Destroy()
-									end
-								end)
-							end
-						end
-
-						removeScripts(hat)
-						hat.Parent = plr.Character
-						hat.Changed:Connect(function()
-							if hat.Parent ~= plr.Character then
-								hat:Destroy()
-							end
-						end)
-					end
-				end
+			Function = function(plr: Player, args: {[number]:string}, data: {})
+				return Commands.AvatarItem.Function(plr, {"@"..plr.Name, args[1]}, data)
 			end
 		};
 
