@@ -43,7 +43,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, t
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) if not cond then error(errMsg or "assertion failed!", 2) end end;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
 local ServicesWeUse = {
 	"Workspace";
