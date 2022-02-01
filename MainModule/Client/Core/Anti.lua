@@ -142,14 +142,14 @@ return function()
 		local OldEnviroment = getfenv()
 		local OldSuccess, OldError = pcall(function() return game:________() end)
 		Routine(function()
-			while task.wait(5) do
+			while wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
 				if OldSuccess or not rawequal(OldSuccess, OldSuccess) or not rawequal(OldError, OldError) or rawequal(OldError, "new") or not OldError == OldError or OldError == "new" or rawequal(OldEnviroment, {1}) or OldEnviroment == {1} or not OldEnviroment == OldEnviroment then
 					Detected("crash", "Tamper Protection 658947")
-					task.wait(1)
+					wait(1)
 					pcall(Disconnect, "Adonis_658947")
 					pcall(Kill, "Adonis_658947")
 					pcall(Kick, Player, "Adonis_658947")
@@ -161,14 +161,14 @@ return function()
 						for i = 0, 2 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								--warn("detected????")
-								pcall(function() Detected("kick", "Metamethod tampering 5634345") end)
+								Detected("kick", "Metamethod tampering 5634345")
 							end
 						end --// Fixed? // This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
 					end)
 
 					if Success then
-						pcall(function() Detected("crash", "Tamper Protection 906287") end)
-						task.wait(1)
+						Detected("crash", "Tamper Protection 906287")
+						wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -177,7 +177,7 @@ return function()
 					local Success, Error = pcall(function() return game:________() end)
 
 					if not Success == OldSuccess or not OldError == Error then
-						pcall(function() Detected("kick", "Methamethod tampering 456456") end)
+						Detected("kick", "Methamethod tampering 456456")
 					end
 				end
 
@@ -203,7 +203,7 @@ return function()
 				end)()
 
 				coroutine.wrap(function()
-					task.wait(4)
+					wait(4)
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
 					end
@@ -270,7 +270,7 @@ return function()
 		end;
 
 		HumanoidState = function()
-			task.wait(1)
+			wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
@@ -376,7 +376,7 @@ return function()
 			local function checkTool(t)
 				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("kick","Building Tools detected; "..tostring(t.BinType))
+						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
 					end
 				end
 			end
@@ -395,18 +395,18 @@ return function()
 
 			service.ScriptContext.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non corescript Detected; "..tostring(child))
+					Detected("kick","Non-CoreScript Detected; "..tostring(child))
 				end
 			end)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
 					if soundIdCheck(child) then
-						Detected("crash","CMDx Detected; "..tostring(child))
+						Detected("crash", "CMDx Detected; "..tostring(child))
 					else
 						wait()
 						if soundIdCheck(child) then
-							Detected("crash","CMDx Detected; "..tostring(child))
+							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
 					end
 				end
@@ -414,31 +414,31 @@ return function()
 
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick","Localscript Detected; "..tostring(child))
+					Detected("kick", "Localscript Detected; "..tostring(child))
 				end
 			end)
 
 			service.LogService.MessageOut:Connect(function(Message)
 				if check(Message) then
-					Detected('crash','Exploit detected; '..Message)
+					Detected("crash", "Exploit detected; "..Message)
 				end
 			end)
 
 			service.Selection.SelectionChanged:Connect(function()
-				Detected('kick','Selection changed')
+				Detected("kick", "Selection changed")
 			end)
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
-				if Script and Script=='tpircsnaisyle'then
+				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
 					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
-				elseif not Script or ((not Trace or Trace == "")) then
+				elseif not Script or (not Trace or Trace == "") then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
 					if Script then
-						for i,v in next,tab do
+						for i, v in pairs(tab) do
 							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
 								continue = true
 							end
@@ -512,7 +512,7 @@ return function()
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
-					local func,err = loadstring("print('LolloDev5123 was here')")
+					local func, err = loadstring("print('LolloDev5123 was here')")
 				end)
 				if ran then
 					Detected("crash", "Exploit detected; Loadstring usable")
@@ -554,7 +554,7 @@ return function()
 				local _ = obj[testName]
 			end)
 			if err then
-				local class = string.match(err,testName.." is not a valid member of (.*)")
+				local class = string.match(err, testName.." is not a valid member of (.*)")
 				if class then
 					return class
 				end
@@ -576,9 +576,9 @@ return function()
 			if err and string.find(err, testName) and string.find(err, "GuiService:") then
 				return true
 			else
-				task.wait(0.5)
-				for _,v in next,service.LogService:GetLogHistory() do
-					if string.find(v.message,testName) and string.find(v.message,"GuiService:") then
+				wait(0.5)
+				for _,v in pairs(service.LogService:GetLogHistory()) do
+					if string.find(v.message, testName) and string.find(v.message, "GuiService:") then
 						return true
 					end
 				end
