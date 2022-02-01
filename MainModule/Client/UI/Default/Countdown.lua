@@ -39,6 +39,7 @@ return function(data)
 
 	local elapsed = window:Add("TextLabel", {
 		Text = "0";
+		TextXAlignment = Enum.TextXAlignment.Right;
 		BackgroundTransparency = 1;
 		Size = UDim2.fromOffset(25, 25);
 		Position = UDim2.new(1, -30, 1, -30);
