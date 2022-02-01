@@ -483,7 +483,7 @@ return function(Vargs, env)
 
 		ChangeLog = {
 			Prefix = Settings.Prefix;
-			Commands = {"changelog", "changes", "updates"};
+			Commands = {"changelog", "changes", "updates", "version"};
 			Args = {};
 			Description = "Shows you the script's changelog";
 			AdminLevel = "Players";
@@ -608,9 +608,9 @@ return function(Vargs, env)
 		Theme = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"theme", "usertheme"};
-			Args = {"theme name (omit to reset to default)"};
+			Args = {"theme name (leave blank to reset to default)"};
 			Hidden = true;
-			Description = "Changes the Adonis client theme";
+			Description = "Changes the Adonis client UI theme";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local playerData = Core.GetPlayer(plr)
@@ -621,9 +621,10 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Theme Changed";
 					Icon = server.MatIcons.Palette;
-					Message = "Theme set to "..args[1].."!";
+					Message = if args[1] then "UI theme set to '"..args[1].."'!" else "UI theme reset to default.";
 					Time = 5;
 				})
+				Remote.LoadCode(plr, "client.Variables.CustomTheme = "..if args[1] then "[["..args[1].."]]" else "nil")
 			end
 		};
 
