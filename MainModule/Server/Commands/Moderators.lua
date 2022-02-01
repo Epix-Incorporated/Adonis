@@ -6084,7 +6084,7 @@ return function(Vargs, env)
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
-						for k, m in pairs(Settings.Muted) do
+						for _, m in pairs(Settings.Muted) do
 							if Admin.DoCheck(v, m) then
 								check = false
 							end
@@ -6128,7 +6128,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local list = {}
-				for i, v in pairs(Settings.Muted) do
+				for _, v in pairs(Settings.Muted) do
 					table.insert(list, v)
 				end
 				Remote.MakeGui(plr, "List", {Title = "Mute List"; Table = list;})
@@ -6178,10 +6178,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local plrgui = v:FindFirstChildOfClass("PlayerGui")
-
-					if plrgui and plrgui:FindFirstChild("Freecam") then
-						local freecam = plrgui:FindFirstChild("Freecam")
-
+					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
+					if freecam then
 						if freecam:FindFirstChildOfClass("RemoteFunction") then
 							freecam:FindFirstChildOfClass("RemoteFunction"):InvokeClient(v, "End")
 						end
@@ -6211,11 +6209,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					local plrgui = v:FindFirstChildOfClass"PlayerGui"
-
-					if plrgui:FindFirstChild("Freecam") then
-						local freecam = plrgui:FindFirstChild("Freecam")
-
+					local plrgui = v:FindFirstChildOfClass("PlayerGui")
+					local freecam = plrgui and plrgui:FindFirstChild("Freecam")
+					if freecam then
 						if freecam:FindFirstChildOfClass("RemoteFunction") then
 							freecam:FindFirstChildOfClass("RemoteFunction"):InvokeClient(v, "Toggle")
 						end
@@ -6277,11 +6273,11 @@ return function(Vargs, env)
 						local event = brain.Event
 
 						local oldAnim = new:FindFirstChild("Animate")
-						local isR15 = (hum.RigType == "R15")
-						local anim = (isR15 and Deps.Assets.R15Animate:Clone()) or Deps.Assets.R6Animate:Clone()
+						local isR15 = hum.RigType == "R15"
+						local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
 
 						new.Name = player.Name
-						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0)*CFrame.new((num*0.2)+5, 0, 0)
+						new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0)
 
 						hum.WalkSpeed = speed
 						hum.MaxHealth = health
@@ -6332,7 +6328,7 @@ return function(Vargs, env)
 			Commands = {"tell", "tts", "texttospeech"};
 			Args = {"player", "message"};
 			Filter = true;
-			Description = "[WIP] Says the text you give it";
+			Description = "[Experimental] Says aloud the supplied text";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -6440,7 +6436,7 @@ return function(Vargs, env)
 			Description = "Shows you a list and count of players selected in the supplied argument, ex: '"..Settings.Prefix.."select %raiders true' to monitor people in the 'raiders' team";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
-				local players = service.GetPlayers(plr, selection, {DontError = true;})
+				local players = service.GetPlayers(plr, selection, {DontError = true; UseFakePlayer = false;})
 				local tab = {
 					"Specified: \""..(selection or (Settings.SpecialPrefix.."me")).."\"",
 					"# Players: "..#players,
@@ -6461,7 +6457,7 @@ return function(Vargs, env)
 					Tab = Logs.ListUpdaters.SelectPlayers(plr, args[1]);
 					Update = "SelectPlayers";
 					UpdateArg = args[1];
-					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
+					AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;
 				})
 			end
 		};
