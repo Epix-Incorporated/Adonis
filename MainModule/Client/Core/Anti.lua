@@ -104,7 +104,7 @@ return function()
 			end
 			hasActivated = true
 			Detected("crash", "Tamper Protection 790438; "..tostring(message).."; "..debug.traceback())
-			task.wait(1)
+			wait(1)
 			pcall(Disconnect, "Adonis_790438")
 			pcall(Kill, "Adonis_790438")
 			pcall(Kick, Player, "Adonis_790438")
@@ -286,7 +286,7 @@ return function()
 					end
 				end)
 
-				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and task.wait(0.1) do
+				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
 					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
 						Detected("kill", "NoClipping")
