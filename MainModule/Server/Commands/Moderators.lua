@@ -4675,85 +4675,83 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem","accessory","hat","shirt","tshirt","givetshirt","shirt", "giveshirt","pants", "givepants"};
+			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "anim"};
 			Args = {"player", "ID"};
 			Hidden = false;
 			Description = "Give the target player(s) the avatar item that belongs to <ID>";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						local ItemId = tonumber(args[2])
-						local ProductInfo = service.MarketPlace:GetProductInfo(ItemId)
-						local PlrHumanoid: Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						if PlrHumanoid then
-							local HumanoidDescription: HumanoidDescription = PlrHumanoid:GetAppliedDescription()
-							-- Roblox doesn't expose a good way to insert into a HumanoidDescription from the AssetType enum, so mapping it out instead.
-							local AssetTypeToSingleHumanoidDescription = {
-								[2] = "GraphicTShirt",
-								[11] = "Shirt",
-								[12] = "Pants",
-								[17] = "Head",
-								[18] = "Face",
-								[27] = "Torso",
-								[28] = "RightArm",
-								[29] = "LeftArm",
-								[30] = "LeftLeg",
-								[31] = "RightLeg",
-								[48] = "ClimbAnimation",
-								[49] = "DeathAnimation",
-								[50] = "FallAnimation",
-								[51] = "IdleAnimation",
-								[52] = "JumpAnimation",
-								[53] = "RunAnimation",
-								[54] = "SwimAnimation",
-								[55] = "WalkAnimation",
-							}
-							local AssetTypeToMutilHumanoidDescription = { -- AssetTypes that are comma seperated 
-								[8] = "HatAccessory",
-								[41] = "HairAccessory",
-								[42] = "FaceAccessory",
-								[43] = "NeckAccessory",
-								[44] = "ShouldersAccessory",
-								[45] = "FrontAccessory",
-								[46] = "BackAccessory",
-								[47] = "WaistAccessory"
-							}
-							local LayeredAccessorysHumanoidDescriptionEnum = {
-								[64] = Enum.AccessoryType.TShirt,
-								[65] = Enum.AccessoryType.Shirt,
-								[66] = Enum.AccessoryType.Pants,
-								[67] = Enum.AccessoryType.Jacket,
-								[68] = Enum.AccessoryType.Sweater,
-								[69] = Enum.AccessoryType.Shorts,
-								[70] = Enum.AccessoryType.LeftShoe,
-								[71] = Enum.AccessoryType.RightShoe,
-								[72] = Enum.AccessoryType.DressSkirt,
-							}
-							if AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId] then
-								HumanoidDescription[AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId]] = ItemId
-							elseif AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId] then
-								HumanoidDescription[AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId]] ..= ","..ItemId
-							elseif ProductInfo.AssetTypeId == 61 then
-								HumanoidDescription:AddEmote(ProductInfo.Name, ItemId)
-							elseif LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId] then
-								local Accessories = HumanoidDescription:GetAccessories(true)
-								table.insert(Accessories,{
-									Order = #Accessories,
-									AssetId = ItemId,
-									AccessoryType = LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId]
-								})
-								local Accessories = HumanoidDescription:SetAccessories(Accessories,true)
-							else
-								error("Item not supported")
-							end
-							PlrHumanoid:ApplyDescription(HumanoidDescription)
+				local itemId = assert(tonumber(args[2]), "Argument(s) missing, nil or invalid ID")
+				local productInfo = assert(select(2, xpcall(service.MarketplaceService.GetProductInfo, function() return nil end, service.MarketplaceService, itemId)), "Invalid asset ID")
+				--// Roblox doesn't expose a good way to insert into a HumanoidDescription from the Enum.AssetType, so we're mapping them out instead.
+				local AssetTypeToSingleHumanoidDescription = {
+					[2] = "GraphicTShirt",
+					[11] = "Shirt",
+					[12] = "Pants",
+					[17] = "Head",
+					[18] = "Face",
+					[27] = "Torso",
+					[28] = "RightArm",
+					[29] = "LeftArm",
+					[30] = "LeftLeg",
+					[31] = "RightLeg",
+					[48] = "ClimbAnimation",
+					[49] = "DeathAnimation",
+					[50] = "FallAnimation",
+					[51] = "IdleAnimation",
+					[52] = "JumpAnimation",
+					[53] = "RunAnimation",
+					[54] = "SwimAnimation",
+					[55] = "WalkAnimation",
+				}
+				local AssetTypeToMutilHumanoidDescription = { -- AssetTypes that are comma-seperated 
+					[8] = "HatAccessory",
+					[41] = "HairAccessory",
+					[42] = "FaceAccessory",
+					[43] = "NeckAccessory",
+					[44] = "ShouldersAccessory",
+					[45] = "FrontAccessory",
+					[46] = "BackAccessory",
+					[47] = "WaistAccessory",
+				}
+				local LayeredAccessorysHumanoidDescriptionEnum = {
+					[64] = Enum.AccessoryType.TShirt,
+					[65] = Enum.AccessoryType.Shirt,
+					[66] = Enum.AccessoryType.Pants,
+					[67] = Enum.AccessoryType.Jacket,
+					[68] = Enum.AccessoryType.Sweater,
+					[69] = Enum.AccessoryType.Shorts,
+					[70] = Enum.AccessoryType.LeftShoe,
+					[71] = Enum.AccessoryType.RightShoe,
+					[72] = Enum.AccessoryType.DressSkirt,
+				}
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						if AssetTypeToSingleHumanoidDescription[productInfo.AssetTypeId] then
+							humanoidDesc[AssetTypeToSingleHumanoidDescription[productInfo.AssetTypeId]] = itemId
+						elseif AssetTypeToMutilHumanoidDescription[productInfo.AssetTypeId] then
+							humanoidDesc[AssetTypeToMutilHumanoidDescription[productInfo.AssetTypeId]] ..= ","..itemId
+						elseif productInfo.AssetTypeId == 61 then
+							humanoidDesc:AddEmote(productInfo.Name, itemId)
+						elseif LayeredAccessorysHumanoidDescriptionEnum[productInfo.AssetTypeId] then
+							local accessories = humanoidDesc:GetAccessories(true)
+							table.insert(accessories, {
+								Order = #accessories,
+								AssetId = itemId,
+								AccessoryType = LayeredAccessorysHumanoidDescriptionEnum[productInfo.AssetTypeId]
+							})
+							humanoidDesc:SetAccessories(accessories, true)
+						else
+							error("Item not supported")
 						end
+						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
-		},
+		};
 
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
