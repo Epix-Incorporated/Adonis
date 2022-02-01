@@ -6437,7 +6437,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"select", "selectplayers", "count",  "countplayers", "getplayers"};
 			Args = {"player(s)", "autoupdate? (default: false)"};
-			Description = "Shows you a list and count of players selected in the argument";
+			Description = "Shows you a list and count of players selected in the supplied argument, ex: '"..Settings.Prefix.."select %raiders true' to monitor people in the 'raiders' team";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
 				local players = service.GetPlayers(plr, selection, {DontError = true;})
