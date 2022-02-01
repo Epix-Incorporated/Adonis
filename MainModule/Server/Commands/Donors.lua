@@ -319,83 +319,16 @@ return function(Vargs, env)
 
 		DonorAvatarItem = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"avataritem", "accessory", "hat", "gethat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants"};
+			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "animation", "anim"};
 			Args = {"ID"};
 			Hidden = false;
-			Description = "Give the target player(s) the avatar item that belongs to <ID>";
+			Description = "Gives yourself the avatar item that belongs to <ID>";
 			Fun = false;
 			Donors = true;
-			Function = function(plr: Player, args: {[number]:string})
-				if plr.Character then
-					local ItemId = tonumber(args[1])
-					local ProductInfo = service.MarketPlace:GetProductInfo(ItemId)
-					local PlrHumanoid: Humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-					if PlrHumanoid then
-						local HumanoidDescription: HumanoidDescription = PlrHumanoid:GetAppliedDescription()
-						-- Roblox doesn't expose a good way to insert into a HumanoidDescription from the AssetType enum, so mapping it out instead.
-						local AssetTypeToSingleHumanoidDescription = {
-							[2] = "GraphicTShirt",
-							[11] = "Shirt",
-							[12] = "Pants",
-							[17] = "Head",
-							[18] = "Face",
-							[27] = "Torso",
-							[28] = "RightArm",
-							[29] = "LeftArm",
-							[30] = "LeftLeg",
-							[31] = "RightLeg",
-							[48] = "ClimbAnimation",
-							[49] = "DeathAnimation",
-							[50] = "FallAnimation",
-							[51] = "IdleAnimation",
-							[52] = "JumpAnimation",
-							[53] = "RunAnimation",
-							[54] = "SwimAnimation",
-							[55] = "WalkAnimation",
-						}
-						local AssetTypeToMutilHumanoidDescription = { -- AssetTypes that are comma seperated 
-							[8] = "HatAccessory",
-							[41] = "HairAccessory",
-							[42] = "FaceAccessory",
-							[43] = "NeckAccessory",
-							[44] = "ShouldersAccessory",
-							[45] = "FrontAccessory",
-							[46] = "BackAccessory",
-							[47] = "WaistAccessory"
-						}
-						local LayeredAccessorysHumanoidDescriptionEnum = {
-							[64] = Enum.AccessoryType.TShirt,
-							[65] = Enum.AccessoryType.Shirt,
-							[66] = Enum.AccessoryType.Pants,
-							[67] = Enum.AccessoryType.Jacket,
-							[68] = Enum.AccessoryType.Sweater,
-							[69] = Enum.AccessoryType.Shorts,
-							[70] = Enum.AccessoryType.LeftShoe,
-							[71] = Enum.AccessoryType.RightShoe,
-							[72] = Enum.AccessoryType.DressSkirt,
-						}
-						if AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId] then
-							HumanoidDescription[AssetTypeToSingleHumanoidDescription[ProductInfo.AssetTypeId]] = ItemId
-						elseif AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId] then
-							HumanoidDescription[AssetTypeToMutilHumanoidDescription[ProductInfo.AssetTypeId]] ..= ","..ItemId
-						elseif ProductInfo.AssetTypeId == 61 then
-							HumanoidDescription:AddEmote(ProductInfo.Name, ItemId)
-						elseif LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId] then
-							local Accessories = HumanoidDescription:GetAccessories(true)
-							table.insert(Accessories,{
-								Order = #Accessories,
-								AssetId = ItemId,
-								AccessoryType = LayeredAccessorysHumanoidDescriptionEnum[ProductInfo.AssetTypeId]
-							})
-							local Accessories = HumanoidDescription:SetAccessories(Accessories,true)
-						else
-							error("Item not supported")
-						end
-						PlrHumanoid:ApplyDescription(HumanoidDescription)
-					end
-				end
+			Function = function(plr: Player, args: {[number]:string}, data: {})
+				return Commands.AvatarItem.Function(plr, {"@"..plr.Name, args[1]}, data)
 			end
-		},
+		};
 
 		DonorHatList = {
 			Prefix = Settings.PlayerPrefix;
