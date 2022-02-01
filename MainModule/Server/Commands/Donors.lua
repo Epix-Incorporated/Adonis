@@ -319,7 +319,7 @@ return function(Vargs, env)
 
 		DonorAvatarItem = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "animation", "anim"};
+			Commands = {"avataritem", "accessory", "hat", "donorhat", "shirt", "donorshirt", "tshirt", "donortshirt", "givetshirt", "shirt", "donorshirt", "giveshirt", "pants", "donorpants", "givepants", "face", "donorface", "animation", "anim"};
 			Args = {"ID"};
 			Hidden = false;
 			Description = "Gives yourself the avatar item that belongs to <ID>";
