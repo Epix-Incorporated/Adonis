@@ -1507,9 +1507,9 @@ return function(Vargs, env)
 
 		IncognitoPlayerList = {
 			Prefix = Settings.Prefix;
-			Commands = {"incognitolist", "incognitoplayers"};
+			Commands = {"incognitolist", "incognitoplayers", "vanishlist", "vanishedplayers"};
 			Args = {"autoupdate? (default: true)"};
-			Description = "Displays a list of incognito players in the server";
+			Description = "Displays a list of incognito/vanished players in the server";
 			AdminLevel = "Admins";
 			Hidden = true;
 			ListUpdater = function(plr: Player)
@@ -1517,7 +1517,7 @@ return function(Vargs, env)
 				for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
 					table.insert(tab, {
 						Text = service.FormatPlayer(p);
-						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+						Desc = string.format("ID: %d | Vanished at: %s", p.UserId, service.FormatTime(t));
 					})
 				end
 				return tab
