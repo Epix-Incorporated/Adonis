@@ -2821,20 +2821,21 @@ return function(Vargs, env)
 							local part = char:FindFirstChild("HumanoidRootPart")
 							local head = char:FindFirstChild("Head")
 							if part and head and humanoid then
-								local bb = service.New("BillboardGui", {
+								local gui = service.New("BillboardGui", {
 									Name = v.Name .. "Tracker",
 									Adornee = head,
 									AlwaysOnTop = true,
 									StudsOffset = Vector3.new(0, 2, 0),
 									Size = UDim2.new(0, 100, 0, 40)
 								})
-								service.New("SelectionPartLasso", {
+								local beam = service.New("SelectionPartLasso", {
+									Parent = gui,
 									Part = part,
 									Humanoid = humanoid,
-									Parent = bb,
+									Color3 = v.TeamColor.Color,
 								})
 								local f = service.New("Frame", {
-									Parent = bb;
+									Parent = gui;
 									BackgroundTransparency = 1;
 									Size = UDim2.new(1, 0, 1, 0);
 								})
@@ -2855,10 +2856,15 @@ return function(Vargs, env)
 								arrow.Text = "v"
 								arrow.Parent = f
 
-								Remote.MakeLocal(plr, bb, false)
+								Remote.MakeLocal(plr, gui, false)
+
+								local teamChangeConn = v:GetPropertyChangedSignal("TeamColor"):Connect(function()
+									if beam then beam.Color3 = v.TeamColor.Color end
+								end)
 								local event; event = v.CharacterRemoving:Connect(function()
 									Remote.RemoveLocal(plr, v.Name.."Tracker")
 									event:Disconnect()
+									if teamChangeConn then teamChangeConn:Disconnect() end
 								end)
 							end
 						end)
@@ -2878,11 +2884,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if args[1] and args[1]:lower() == Settings.SpecialPrefix.."all" then
 					Remote.RemoveLocal(plr, "Tracker", false, true)
-					Variables.TrackingTable[plr.Name] = {}
+					Variables.TrackingTable[plr.Name] = nil
 				else
 					for _, v in pairs(service.GetPlayers(plr, args[1])) do
 						Remote.RemoveLocal(plr, v.Name.."Tracker")
-						Variables.TrackingTable[plr.Name][v] = nil
+						if Variables.TrackingTable[plr.Name] then
+							Variables.TrackingTable[plr.Name][v] = nil
+						end
 					end
 				end
 			end
