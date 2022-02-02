@@ -160,12 +160,12 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						for i = 0, 2 do
+						--[[for i = 0, 2 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
 								--warn("detected????")
 								Detected("kick", "Metamethod tampering 5634345")
 							end
-						end --// Fixed? // This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
+						end]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
 					end)
 
 					if Success then
@@ -258,8 +258,8 @@ return function()
 						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 							t.Active = false
 							t:Destroy()
-							Detected('log','HopperBin Detected (BTools)')
-						elseif not Get("CheckBackpack",t) then
+							Detected("log", "HopperBin Detected (BTools)")
+						elseif not Get("CheckBackpack", t) then
 							--t:Destroy() --// Temp disabled pending full fix
 							--Detected('log','Client-Side Tool Detected')
 						end
