@@ -335,8 +335,8 @@ return function()
 			})
 
 			local lookFor = {
-				'current identity is 0';
-				'gui made by kujo';
+				"current identity is [0789]";
+				"gui made by kujo";
 				"tetanus reloaded hooked";
 				"hookmetamethod";
 				"hookfunction";
@@ -348,10 +348,7 @@ return function()
                                 "infinite yield is already loaded";
                                 "infinite yield is already";
                                 "iy_debug";
-                                "current identity is 7";
-                                "current identity is 8";
                                 "returning json";
-                                "current identity is 99999";
                                 "shattervast";
                                 "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
