@@ -1197,19 +1197,26 @@ return function(Vargs, env)
 			Description = "Shows Trello bans";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local banned = {}
-				for i, banData in ipairs(HTTP.Trello.Bans) do
-					table.insert(banned, {
+			ListUpdater = function(plr: Player)
+				local tab = {}
+				for _, banData in ipairs(HTTP.Trello.Bans) do
+					table.insert(tab, {
 						Text = banData.Name,
 						Desc = banData.Reason or "No reason specified",
 					})
 				end
-				Remote.MakeGui(plr ,"List", {
+				table.insert(tab, 1, "# Banned Users: "..#HTTP.Trello.Bans)
+				table.insert(tab, 2, "―――――――――――――――――――――――")
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
 					Title = "Synced Ban List";
-					Tab = banned;
+					Icon = server.MatIcons.Gavel;
+					Tab = Logs.ListUpdaters.ShowSBL(plr);
+					Update = "ShowSBL";
 				})
-			end
+			end;
 		};
 
 		HandTo = {
@@ -1882,7 +1889,7 @@ return function(Vargs, env)
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local RANK_DESCRIPTION_FORMAT = "Rank: %s; Level: %d"
 				local RANK_RICHTEXT = "<b><font color='rgb(77, 77, 255)'>%s (Level: %d)</font></b>"
 				local RANK_TEXT_FORMAT = "%s [%s]"
@@ -1953,12 +1960,16 @@ return function(Vargs, env)
 					end
 				end
 
+				return temptable
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Admin List";
-					Table = temptable;
+					Table = Logs.ListUpdaters.AdminList(plr);
+					Update = "AdminList";
 					RichText = true;
 				})
-			end
+			end;
 		};
 
 		BanList = {
@@ -1969,33 +1980,39 @@ return function(Vargs, env)
 			Description = "Shows you the normal ban list";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local tab = {}
-				local  bancount = 0
-				for i, v in pairs(Settings.Banned) do
-					local entry = type(v) == "string" and v;
-					local reason = "No reason provided";
-
+				local count = 0
+				for _, v in pairs(Settings.Banned) do
+					local entry = type(v) == "string" and v
+					local reason = "No reason provided"
+					count +=1
 					if type(v) == "table" then
-						bancount +=1
 						if v.Name and v.UserId then
-							entry = v.Name .. ":" .. v.UserId;
+							entry = v.Name .. ":" .. v.UserId
 						elseif v.UserId then
-							entry = "ID: ".. v.UserId;
+							entry = "ID: ".. v.UserId
 						elseif v.Name then
-							entry = v.Name;
+							entry = v.Name
 						end
-
 						if v.Reason then
-							reason = v.Reason;
+							reason = v.Reason
 						end
 					end
-
 					table.insert(tab, {Text = tostring(entry), Desc = reason})
 				end
-
-				Remote.MakeGui(plr, "List", {Title = "Ban List ("..tonumber(bancount)..")"; Tab = tab;})
-			end
+				table.insert(tab, 1, "# Banned Users: "..count)
+				table.insert(tab, 2, "―――――――――――――――――――――――")
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Ban List";
+					Icon = server.MatIcons.Gavel;
+					Tab = Logs.ListUpdaters.BanList(plr);
+					Update = "BanList";
+				})
+			end;
 		};
 
 		Vote = {
@@ -2822,7 +2839,7 @@ return function(Vargs, env)
 							local head = char:FindFirstChild("Head")
 							if part and head and humanoid then
 								local gui = service.New("BillboardGui", {
-									Name = v.Name .. "Tracker",
+									Name = v.Name.."Tracker",
 									Adornee = head,
 									AlwaysOnTop = true,
 									StudsOffset = Vector3.new(0, 2, 0),
