@@ -667,6 +667,44 @@ return function(Vargs, env)
 			end
 		};
 
+		SaveTool = {
+			Prefix = Settings.Prefix;
+			Commands = {"savetool", "addtool"};
+			Args = {"optional player"};
+			Description = "Saves the equipped tool to the storage so that it can be inserted using "..Settings.Prefix.."give";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local tool = v.Character and v.Character:FindFirstChildWhichIsA("BackpackItem")
+					if tool then
+						tool = tool:Clone()
+						tool.Parent = service.UnWrap(Settings.Storage)
+						table.insert(Variables.SavedTools, tool)
+						Functions.Hint("Added tool: "..tool.Name, {plr})
+					elseif not args[1] then
+						error("You must have an equipped tool to add to the storage.")
+					end
+				end
+			end
+		};
+
+		ClearSavedTools = {
+			Prefix = Settings.Prefix;
+			Commands = {"clearsavedtools", "clrsavedtools", "clraddedtools", "clearaddedtools"};
+			Args = {};
+			Description = "Removes any tools in the storage added using "..Settings.Prefix.."savetool";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				local count = 0
+				for _, tool in pairs(Variables.SavedTools) do
+					count += 1
+					tool:Destroy()
+				end
+				table.clear(Variables.SavedTools)
+				Functions.Hint(string.format("Cleared %d saved tool%s.", count, count == 1 and "" or "s"), {plr})
+			end
+		};
+
 		NewTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"newteam", "createteam", "maketeam"};
@@ -1507,9 +1545,9 @@ return function(Vargs, env)
 
 		IncognitoPlayerList = {
 			Prefix = Settings.Prefix;
-			Commands = {"incognitolist", "incognitoplayers"};
+			Commands = {"incognitolist", "incognitoplayers", "vanishlist", "vanishedplayers"};
 			Args = {"autoupdate? (default: true)"};
-			Description = "Displays a list of incognito players in the server";
+			Description = "Displays a list of incognito/vanished players in the server";
 			AdminLevel = "Admins";
 			Hidden = true;
 			ListUpdater = function(plr: Player)
@@ -1517,7 +1555,7 @@ return function(Vargs, env)
 				for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
 					table.insert(tab, {
 						Text = service.FormatPlayer(p);
-						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+						Desc = string.format("ID: %d | Vanished at: %s", p.UserId, service.FormatTime(t));
 					})
 				end
 				return tab

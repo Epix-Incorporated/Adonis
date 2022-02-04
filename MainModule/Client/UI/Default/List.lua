@@ -110,7 +110,7 @@ return function(data)
 
 	function doSearch(tab, text)
 		local found = {}
-		text = string.lower(tostring(text))
+		text = string.lower(tostring(text)):gsub("%%", "%%%%"):gsub("%[", "%%["):gsub("%]", "%%]")
 		for i,v in pairs(tab) do
 			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)

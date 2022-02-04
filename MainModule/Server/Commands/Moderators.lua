@@ -1197,19 +1197,26 @@ return function(Vargs, env)
 			Description = "Shows Trello bans";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local banned = {}
-				for i, banData in ipairs(HTTP.Trello.Bans) do
-					table.insert(banned, {
+			ListUpdater = function(plr: Player)
+				local tab = {}
+				for _, banData in ipairs(HTTP.Trello.Bans) do
+					table.insert(tab, {
 						Text = banData.Name,
 						Desc = banData.Reason or "No reason specified",
 					})
 				end
-				Remote.MakeGui(plr ,"List", {
+				table.insert(tab, 1, "# Banned Users: "..#HTTP.Trello.Bans)
+				table.insert(tab, 2, "―――――――――――――――――――――――")
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
 					Title = "Synced Ban List";
-					Tab = banned;
+					Icon = server.MatIcons.Gavel;
+					Tab = Logs.ListUpdaters.ShowSBL(plr);
+					Update = "ShowSBL";
 				})
-			end
+			end;
 		};
 
 		HandTo = {
@@ -1882,7 +1889,7 @@ return function(Vargs, env)
 			Description = "Shows you the list of admins, also shows admins that are currently in the server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local RANK_DESCRIPTION_FORMAT = "Rank: %s; Level: %d"
 				local RANK_RICHTEXT = "<b><font color='rgb(77, 77, 255)'>%s (Level: %d)</font></b>"
 				local RANK_TEXT_FORMAT = "%s [%s]"
@@ -1953,12 +1960,16 @@ return function(Vargs, env)
 					end
 				end
 
+				return temptable
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Admin List";
-					Table = temptable;
+					Table = Logs.ListUpdaters.AdminList(plr);
+					Update = "AdminList";
 					RichText = true;
 				})
-			end
+			end;
 		};
 
 		BanList = {
@@ -1969,33 +1980,39 @@ return function(Vargs, env)
 			Description = "Shows you the normal ban list";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local tab = {}
-				local  bancount = 0
-				for i, v in pairs(Settings.Banned) do
-					local entry = type(v) == "string" and v;
-					local reason = "No reason provided";
-
+				local count = 0
+				for _, v in pairs(Settings.Banned) do
+					local entry = type(v) == "string" and v
+					local reason = "No reason provided"
+					count +=1
 					if type(v) == "table" then
-						bancount +=1
 						if v.Name and v.UserId then
-							entry = v.Name .. ":" .. v.UserId;
+							entry = v.Name .. ":" .. v.UserId
 						elseif v.UserId then
-							entry = "ID: ".. v.UserId;
+							entry = "ID: ".. v.UserId
 						elseif v.Name then
-							entry = v.Name;
+							entry = v.Name
 						end
-
 						if v.Reason then
-							reason = v.Reason;
+							reason = v.Reason
 						end
 					end
-
 					table.insert(tab, {Text = tostring(entry), Desc = reason})
 				end
-
-				Remote.MakeGui(plr, "List", {Title = "Ban List ("..tonumber(bancount)..")"; Tab = tab;})
-			end
+				table.insert(tab, 1, "# Banned Users: "..count)
+				table.insert(tab, 2, "―――――――――――――――――――――――")
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Ban List";
+					Icon = server.MatIcons.Gavel;
+					Tab = Logs.ListUpdaters.BanList(plr);
+					Update = "BanList";
+				})
+			end;
 		};
 
 		Vote = {
@@ -2146,6 +2163,34 @@ return function(Vargs, env)
 				end
 				Remote.MakeGui(plr, "ToolCenter", {
 					Tools = tools; Prefix = Settings.Prefix; SplitKey = Settings.SplitKey; SpecialPrefix = Settings.SpecialPrefix;
+				})
+			end
+		};
+
+		SavedToolList = {
+			Prefix = Settings.Prefix;
+			Commands = {"savedtools", "listsavedtools", "addedtools", "listaddedtools", "savedtoollist", "addedtoollist"};
+			Args = {};
+			Description = "Shows you a list of tools in the storage added using "..Settings.Prefix.."savetool";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player)
+				local tab = {}
+				local count = 0
+				for _, tool in pairs(Variables.SavedTools) do
+					count += 1
+					table.insert(tab, {
+						Text = tool.Name;
+						Desc = if tool:IsA("HopperBin") then "BinType: "..tool.BinType.Name else "ToolTip: "..tool.ToolTip;
+					})
+				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Saved Tools";
+					Icon = server.MatIcons.Build;
+					Tab = Logs.ListUpdaters.SavedToolList(plr);
+					Update = "SavedToolList";
 				})
 			end
 		};
@@ -2821,20 +2866,21 @@ return function(Vargs, env)
 							local part = char:FindFirstChild("HumanoidRootPart")
 							local head = char:FindFirstChild("Head")
 							if part and head and humanoid then
-								local bb = service.New("BillboardGui", {
-									Name = v.Name .. "Tracker",
+								local gui = service.New("BillboardGui", {
+									Name = v.Name.."Tracker",
 									Adornee = head,
 									AlwaysOnTop = true,
 									StudsOffset = Vector3.new(0, 2, 0),
 									Size = UDim2.new(0, 100, 0, 40)
 								})
-								service.New("SelectionPartLasso", {
+								local beam = service.New("SelectionPartLasso", {
+									Parent = gui,
 									Part = part,
 									Humanoid = humanoid,
-									Parent = bb,
+									Color3 = v.TeamColor.Color,
 								})
 								local f = service.New("Frame", {
-									Parent = bb;
+									Parent = gui;
 									BackgroundTransparency = 1;
 									Size = UDim2.new(1, 0, 1, 0);
 								})
@@ -2855,10 +2901,15 @@ return function(Vargs, env)
 								arrow.Text = "v"
 								arrow.Parent = f
 
-								Remote.MakeLocal(plr, bb, false)
+								Remote.MakeLocal(plr, gui, false)
+
+								local teamChangeConn = v:GetPropertyChangedSignal("TeamColor"):Connect(function()
+									if beam then beam.Color3 = v.TeamColor.Color end
+								end)
 								local event; event = v.CharacterRemoving:Connect(function()
 									Remote.RemoveLocal(plr, v.Name.."Tracker")
 									event:Disconnect()
+									if teamChangeConn then teamChangeConn:Disconnect() end
 								end)
 							end
 						end)
@@ -2878,11 +2929,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if args[1] and args[1]:lower() == Settings.SpecialPrefix.."all" then
 					Remote.RemoveLocal(plr, "Tracker", false, true)
-					Variables.TrackingTable[plr.Name] = {}
+					Variables.TrackingTable[plr.Name] = nil
 				else
 					for _, v in pairs(service.GetPlayers(plr, args[1])) do
 						Remote.RemoveLocal(plr, v.Name.."Tracker")
-						Variables.TrackingTable[plr.Name][v] = nil
+						if Variables.TrackingTable[plr.Name] then
+							Variables.TrackingTable[plr.Name][v] = nil
+						end
 					end
 				end
 			end

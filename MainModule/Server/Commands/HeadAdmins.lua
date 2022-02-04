@@ -115,7 +115,7 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
 
-				for i, v in pairs(service.GetPlayers(plr, args[1], {
+				for _, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
@@ -433,15 +433,15 @@ return function(Vargs, env)
 
 		Incognito = {
 			Prefix = Settings.Prefix;
-			Commands = {"incognito"};
+			Commands = {"incognito", "vanish", "incognitomode"};
 			Args = {"player"};
-			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin, see a list of vanished players using "..Settings.Prefix.."incognitolist)";
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
 					if Variables.IncognitoPlayers[v] then
-						Functions.Hint(v.Name.." is already incognito.", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already incognito.", {plr})
 						continue
 					end
 					Variables.IncognitoPlayers[v] = os.time()
@@ -458,9 +458,9 @@ return function(Vargs, env)
 						n += 1
 					end
 					if n == 0 then
-						Functions.Hint(string.format("Placed %s on the incognito list.", v.Name), {plr})
+						Functions.Hint(string.format("Placed %s on the incognito list.", service.FormatPlayer(v)), {plr})
 					else
-						Functions.Hint(string.format("Hidden %s from %d other player%s.", v.Name, n, n == 1 and "" or "s"), {plr})
+						Functions.Hint(string.format("Hidden %s from %d other player%s.", service.FormatPlayer(v), n, n == 1 and "" or "s"), {plr})
 					end
 					Remote.MakeGui(v, "Notification", {
 						Title = "Incognito Mode";

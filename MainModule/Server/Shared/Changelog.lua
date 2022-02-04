@@ -1,5 +1,5 @@
 return {
-	"Version: 233";
+	"Version: 234";
 	"*Drag edges to expand*";
 	"";
 	"[v234 2.1.2022 17:20 EST]";
