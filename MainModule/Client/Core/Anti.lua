@@ -112,6 +112,16 @@ return function()
 	end
 
 	coroutine.wrap(function()
+		local RunService = service.RunService
+		if
+			RunService:IsStudio() == true and
+			RunService:IsClient() == true and
+			RunService:IsRunning() == true and
+			RunService:IsServer() == false
+		then
+			return
+		end
+
 		while true do
 			local connection
 			local idledEvent = service.UnWrap(Player).Idled
