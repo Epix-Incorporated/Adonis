@@ -61,7 +61,7 @@ return function()
 				wait(5)
 				Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
-				Anti.Detected("kick","Player is Roblox Locked")
+				Anti.Detected("kick", "Player is Roblox Locked")
 			end
 		end)
 
@@ -225,8 +225,6 @@ return function()
 					end
 				end)()
 
-				--[==[
-				--// Potential for false positives is too high ~ Scel
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
@@ -234,7 +232,6 @@ return function()
 						Detected("log", "Malicious Object?: " .. v)
 					end
 				end
-				--]==]
 			end
 		end)
 	end
