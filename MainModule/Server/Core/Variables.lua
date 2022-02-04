@@ -105,6 +105,8 @@ return function(Vargs, GetEnv)
 
 		CommandLoops = {};
 
+		SavedTools = {};
+
 		Waypoints = {};
 
 		Cameras = {};
