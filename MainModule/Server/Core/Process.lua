@@ -924,7 +924,7 @@ return function(Vargs, GetEnv)
 				
 				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
 					if trackTargets[p] and server.Commands.Track then
-						server.Commands.Track.Function(service.Players[otherPlrName], {p.Name, "true"})
+						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
 					end
 				end
 			end
