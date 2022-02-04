@@ -2167,6 +2167,34 @@ return function(Vargs, env)
 			end
 		};
 
+		SavedToolList = {
+			Prefix = Settings.Prefix;
+			Commands = {"savedtools", "listsavedtools", "addedtools", "listaddedtools", "savedtoollist", "addedtoollist"};
+			Args = {};
+			Description = "Shows you a list of tools in the storage added using "..Settings.Prefix.."savetool";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player)
+				local tab = {}
+				local count = 0
+				for _, tool in pairs(Variables.SavedTools) do
+					count += 1
+					table.insert(tab, {
+						Text = tool.Name;
+						Desc = if tool:IsA("HopperBin") then "BinType: "..tool.BinType.Name else "ToolTip: "..tool.ToolTip;
+					})
+				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Saved Tools";
+					Icon = server.MatIcons.Build;
+					Tab = Logs.ListUpdaters.SavedToolList(plr);
+					Update = "SavedToolList";
+				})
+			end
+		};
+
 		Piano = {
 			Prefix = Settings.Prefix;
 			Commands = {"piano"};
