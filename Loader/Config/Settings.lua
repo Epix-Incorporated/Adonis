@@ -311,9 +311,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
-	settings.CustomChat = false 	-- Custom chat
-	settings.PlayerList = false		-- Custom playerlist
-
 	settings.Console = true							-- Command console
 	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
