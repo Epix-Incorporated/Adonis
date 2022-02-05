@@ -5999,7 +5999,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"remotelogs", "rlogs", "remotefires", "remoterequests"};
 			Args = {"autoupdate? (default: false)"};
-			Description = "View the admin logs for the server";
+			Description = "View the remote logs for the server";
 			AdminLevel = "Moderators";
 			ListUpdater = "RemoteFires";
 			Function = function(plr: Player, args: {string})
