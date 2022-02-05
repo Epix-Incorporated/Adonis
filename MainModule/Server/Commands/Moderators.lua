@@ -2148,50 +2148,32 @@ return function(Vargs, env)
 
 		ToolList = {
 			Prefix = Settings.Prefix;
-			Commands = {"tools", "toollist", "toolcenter"};
+			Commands = {"tools", "toollist", "toolcenter", "savedtools", "addedtools"};
 			Args = {};
 			Hidden = false;
-			Description = "Shows you a list of tools that can be obtained via the give command";
+			Description = "Shows you a list of tools that can be obtained via the "..Settings.Prefix.."give command";
 			Fun = false;
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local tools = {}
+			ListUpdater = function(plr: Player)
+				local data = {
+					Tools = {};
+					SavedTools = {};
+					Prefix = Settings.Prefix;
+					SplitKey = Settings.SplitKey;
+					SpecialPrefix = Settings.SpecialPrefix;
+				}
 				for _, tool in ipairs(if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren()) do
-					if tool:IsA("BackpackItem") then
-						table.insert(tools, tool.Name)
+					if tool:IsA("BackpackItem") and not Variables.SavedTools[tool] then
+						table.insert(data.Tools, tool.Name)
 					end
 				end
-				Remote.MakeGui(plr, "ToolCenter", {
-					Tools = tools; Prefix = Settings.Prefix; SplitKey = Settings.SplitKey; SpecialPrefix = Settings.SpecialPrefix;
-				})
-			end
-		};
-
-		SavedToolList = {
-			Prefix = Settings.Prefix;
-			Commands = {"savedtools", "listsavedtools", "addedtools", "listaddedtools", "savedtoollist", "addedtoollist"};
-			Args = {};
-			Description = "Shows you a list of tools in the storage added using "..Settings.Prefix.."savetool";
-			AdminLevel = "Moderators";
-			ListUpdater = function(plr: Player)
-				local tab = {}
-				local count = 0
-				for _, tool in pairs(Variables.SavedTools) do
-					count += 1
-					table.insert(tab, {
-						Text = tool.Name;
-						Desc = if tool:IsA("HopperBin") then "BinType: "..tool.BinType.Name else "ToolTip: "..tool.ToolTip;
-					})
+				for tool, pName in pairs(Variables.SavedTools) do
+					table.insert(data.SavedTools, {ToolName = tool.Name, AddedBy = pName})
 				end
-				return tab
+				return data
 			end;
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "List", {
-					Title = "Saved Tools";
-					Icon = server.MatIcons.Build;
-					Tab = Logs.ListUpdaters.SavedToolList(plr);
-					Update = "SavedToolList";
-				})
+				Remote.MakeGui(plr, "ToolCenter", Logs.ListUpdaters.ToolList(plr))
 			end
 		};
 
@@ -2260,7 +2242,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				service.StopLoop("ChickenSpam")
-				for i, v in pairs(Variables.Objects) do
+				for _, v in pairs(Variables.Objects) do
 					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
 					end
@@ -2274,7 +2256,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in pairs(Variables.Jails) do
+				for _, v in pairs(Variables.Jails) do
 					if not v.Player or not v.Player.Parent then
 						local ind = v.Index
 						service.StopLoop(ind.."JAIL")
@@ -2283,7 +2265,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in ipairs(workspace:GetChildren()) do
+				for _, v in ipairs(workspace:GetChildren()) do
 					if v.ClassName == "Message" or v.ClassName == "Hint" then
 						v:Destroy()
 					end
@@ -2307,10 +2289,10 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, updateArgs)
 				local objects = service.GetAdonisObjects()
 				local tab = {}
-				for i, v in pairs(objects) do
+				for _, v in pairs(objects) do
 					table.insert(tab, {
 						Text = v:GetFullName();
-						Desc = v.ClassName;
+						Desc = "Class: "..v.ClassName;
 					})
 				end
 				return tab
