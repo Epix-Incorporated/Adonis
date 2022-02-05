@@ -691,13 +691,13 @@ return function(Vargs, env)
 
 		ClearSavedTools = {
 			Prefix = Settings.Prefix;
-			Commands = {"clearsavedtools", "clrsavedtools", "clraddedtools", "clearaddedtools"};
+			Commands = {"clraddedtools", "clearaddedtools", "clearsavedtools", "clrsavedtools"};
 			Args = {};
 			Description = "Removes any tools in the storage added using "..Settings.Prefix.."savetool";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local count = 0
-				for _, tool in pairs(Variables.SavedTools) do
+				for tool in pairs(Variables.SavedTools) do
 					count += 1
 					tool:Destroy()
 				end
