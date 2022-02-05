@@ -669,8 +669,8 @@ return function(Vargs, env)
 
 		SaveTool = {
 			Prefix = Settings.Prefix;
-			Commands = {"savetool", "addtool"};
-			Args = {"optional player"};
+			Commands = {"addtool", "savetool", "maketool"};
+			Args = {"optional player", "optional new tool name"};
 			Description = "Saves the equipped tool to the storage so that it can be inserted using "..Settings.Prefix.."give";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
@@ -678,8 +678,9 @@ return function(Vargs, env)
 					local tool = v.Character and v.Character:FindFirstChildWhichIsA("BackpackItem")
 					if tool then
 						tool = tool:Clone()
+						if args[2] then tool.Name = args[2] end
 						tool.Parent = service.UnWrap(Settings.Storage)
-						table.insert(Variables.SavedTools, tool)
+						Variables.SavedTools[tool] = service.FormatPlayer(plr)
 						Functions.Hint("Added tool: "..tool.Name, {plr})
 					elseif not args[1] then
 						error("You must have an equipped tool to add to the storage.")
