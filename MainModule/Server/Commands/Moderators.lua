@@ -189,15 +189,16 @@ return function(Vargs, env)
 		Countdown = {
 			Prefix = Settings.Prefix;
 			Commands = {"countdown", "timer", "cd"};
-			Args = {"time"};
+			Args = {"time (in seconds)"};
 			Description = "Countdown";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
-
+				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
+				assert(num >= 0, "Countdown cannot be negative.")
 				for _, v in ipairs(service.GetPlayers()) do
 					Remote.MakeGui(v, "Countdown", {
-						Time = num;
+						Time = math.round(num);
 					})
 				end
 				--for i = num, 1, -1 do
@@ -211,17 +212,17 @@ return function(Vargs, env)
 		CountdownPM = {
 			Prefix = Settings.Prefix;
 			Commands = {"countdownpm", "timerpm", "cdpm"};
-			Args = {"player", "time"};
+			Args = {"player", "time (in seconds)"};
 			Description = "Countdown on a target player(s) screen.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing time amount")
-				local num = assert(tonumber(args[2]), "Time value must be a number")
-
+				assert(args[1], "Missing target player and time value!")
+				local num = assert(tonumber(args[2]), "Missing or invalid time value (must be a number)")
+				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
+				assert(num >= 0, "Countdown cannot be negative.")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Countdown", {
-						Time = num;
+						Time = math.round(num);
 					})
 				end
 			end
