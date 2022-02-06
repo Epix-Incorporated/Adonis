@@ -64,6 +64,7 @@ return function(Vargs)
 				PlayerScripts = Instance.new("Folder");
 				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
 				IsA = function(ignore, arg) if arg == "Player" then return true end end;
+				GetRankInGroup = function() return 0 end;
 			}
 
 			for i,v in next,data do fakePlayer:SetSpecial(i, v) end
