@@ -4633,6 +4633,123 @@ return function(Vargs, env)
 			end
 		};
 
+		TransparencyLerp = {
+			Prefix = Settings.Prefix;
+			Commands = {"transparencylerp"};
+			Args = {"player", "value", "length", "EasingStyle", "EasingDirection"};
+			Hidden = false;
+			Description = "Lerps the current transparency or a given start value to another value. Optional value usage (start, end value)";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						
+						local startValue, endValue = nil
+						local valueInput = string.split(args[2], ",")
+						
+						if (args[3] == nil) then
+							assert(args[3], "Tween length argument is missing.")
+						end
+						
+						if (args[2] == nil) then
+							assert(args[2], "Transparency argument is missing.")
+						end
+						
+						local length = tonumber(args[3])
+						
+						if not (#valueInput >= 2) then
+							endValue = tonumber(valueInput[1])
+							
+							if (typeof(endValue) ~= "number") then
+								assert(nil, "Given transparency value, is not a number.")
+							end
+						elseif (#valueInput == 2) then
+							startValue = tonumber(valueInput[1])
+							endValue = tonumber(valueInput[2])
+							
+							if (typeof(endValue) ~= "number") or (typeof(startValue) ~= "number") then
+								assert(nil, "Given transparency value, is not a number.")
+							end
+						end
+						
+						local foundInstances = {}
+						
+						for k, p in pairs(v.Character:GetChildren()) do
+							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+								table.insert(foundInstances, p)
+								if (p.Name == "Head") then
+									for _, v2 in pairs(p:GetChildren()) do
+										if v2:IsA("Decal") then
+											table.insert(foundInstances, v2)
+										end
+									end
+								end
+							elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+								for _, v2 in pairs(p:GetChildren()) do
+									if v2:IsA("BasePart") then
+										table.insert(foundInstances, v2)
+									end
+								end
+							end
+						end
+						
+						-- If there's a startValue, change the transparency.
+						if (startValue) then
+							for _,v in pairs(foundInstances) do
+								v.Transparency = startValue
+							end
+						end
+						
+						local easingStyle = Enum.EasingStyle.Linear
+						local easingDirection = Enum.EasingDirection.InOut
+						
+						if (args[4]) then
+							for _,v in pairs(Enum.EasingStyle:GetEnumItems()) do
+								if (string.lower(args[4]) == string.lower(v.Name)) then
+									easingStyle = v
+								end
+							end
+						end
+						
+						if (args[5]) then
+							for _,v in pairs(Enum.EasingDirection:GetEnumItems()) do
+								if (string.lower(args[5]) == string.lower(v.Name)) then
+									easingDirection = v
+								end
+							end
+						end
+						
+						-- Create the animations
+						local tweenAnimations = {}
+						
+						local tweenInfo = TweenInfo.new(length, easingStyle, easingDirection)
+						
+						for _,v in pairs(foundInstances) do
+							local tween = service.TweenService:Create(v, tweenInfo, {
+								Transparency = endValue
+							})
+							tween.Name = "ADONIS_TWEEN_TRANSPARENCY"
+							
+							local connection
+							connection = tween.Completed:Connect(function()
+								tween:Destroy()
+								connection:Disconnect()
+							end)
+
+							tween.Parent = v
+							table.insert(tweenAnimations, tween)
+						end
+
+						-- Play all animations.
+						for _,v in pairs(tweenAnimations) do
+							v:Play()
+						end
+					end
+				end
+			end
+		};
+
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk", "maketalk"};
