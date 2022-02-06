@@ -899,15 +899,14 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 
-				local sessionName = Functions.GetRandom(); --// Used by the private chat windows
-				local newSession = Remote.NewSession("PrivateChat");
-				local history = {};
+				local sessionName = Functions.GetRandom() --// Used by the private chat windows
+				local newSession = Remote.NewSession("PrivateChat")
+				local history = {}
 
-				newSession.Data.History = history;
+				newSession.Data.History = history
 
 				local function getPeerList()
-					local peers = {};
-
+					local peers = {}
 					for peer in pairs(newSession.Users) do
 						table.insert(peers, {
 							Name = peer.Name;
@@ -916,73 +915,77 @@ return function(Vargs, env)
 							--Instance = service.UnWrap(peer);
 						})
 					end
-
-					return peers;
+					return peers
 				end
 
 				local function systemMessage(msg)
-					local data
-					data = {
+					local data = {
 						Name = "* SYSTEM *";
 						UserId = 0;
 						Icon = 0;
 					};
-
 					table.insert(history, {
 						Sender = data;
 						Message = msg;
 					});
-
-					newSession:SendToUsers("PlayerSentMessage", data, msg);
+					newSession:SendToUsers("PlayerSentMessage", data, msg)
 				end;
 
 				newSession:ConnectEvent(function(p, cmd, ...)
-					local args = {...};
+					local args = {...}
 
 					if not p then -- System event(s)
 						if cmd == "LastUserRemoved" then
-							newSession:End();
+							newSession:End()
 						end
 					else	-- Player event(s)
 						if cmd == "SendMessage" then
-							local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
-							local data, msg = {
-								Name = p.Name;
-								DisplayName = p.DisplayName;
-								UserId = p.UserId;
-								Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
-							}, service.LaxFilter(string.sub(args[1], 1, 140), p);
+							local message = string.sub(tostring(args[1]), 1, 140)
+							local filtered = service.BroadcastFilter(message, p)
+							if filtered ~= message then
+								Remote.MakeGui(p, "Output", {
+									Message = "A message filtering error occurred; please try again."
+								})
+							else
+								local gotIcon, status = service.Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
+								local data, msg = {
+									Name = p.Name;
+									DisplayName = p.DisplayName;
+									UserId = p.UserId;
+									Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+								}, filtered
 
-							table.insert(history, {
-								Sender = data;
-								Message = msg;
-							})
+								table.insert(history, {
+									Sender = data;
+									Message = msg;
+								})
 
-							if #history > 200 then
-								table.remove(history, 1)
+								if #history > 200 then
+									table.remove(history, 1)
+								end
+
+								newSession:SendToUsers("PlayerSentMessage", data, msg)
 							end
-
-							newSession:SendToUsers("PlayerSentMessage", data, msg);
 						elseif cmd == "LeaveSession" or cmd == "RemovedFromSession" then
-							newSession:RemoveUser(p);
+							newSession:RemoveUser(p)
 
 							systemMessage(string.format("<i>%s has left the session</i>", p.Name))
-							newSession:SendToUsers("UpdatePeerList", getPeerList());
+							newSession:SendToUsers("UpdatePeerList", getPeerList())
 
 							if p == plr then
-								systemMessage("<i>Session ended: Session owner left</i>");
-								newSession:End();
+								systemMessage("<i>Session ended: Session owner left</i>")
+								newSession:End()
 							end
 						elseif cmd == "EndSession" and p == plr then
-							systemMessage("<i>Session ended</i>");
-
-							newSession:End();
+							systemMessage("<i>Session ended</i>")
+							
+							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
-							local player = args[1];
+							local player = args[1]
 
 							if player then
-								newSession:AddUser(player);
-								newSession:SendToUser(player, "AddedToSession");
+								newSession:AddUser(player)
+								newSession:SendToUser(player, "AddedToSession")
 
 								systemMessage(string.format("<i>%s added %s to the session</i>", p.Name, player.Name))
 								Remote.MakeGui(player, "PrivateChat", {
@@ -1001,16 +1004,16 @@ return function(Vargs, env)
 							if peer then
 								for pr in pairs(newSession.Users) do
 									if peer.UserId and peer.UserId == pr.UserId then
-										newSession:SendToUser(pr, "RemovedFromSession");
+										newSession:SendToUser(pr, "RemovedFromSession")
 										newSession:RemoveUser(pr)
 										systemMessage(string.format("<i>%s removed %s from the session</i>", p.Name, pr.Name))
 									end
 								end
 							end
 
-							newSession:SendToUsers("UpdatePeerList", getPeerList());
+							newSession:SendToUsers("UpdatePeerList", getPeerList())
 						elseif cmd == "GetPeerList" then
-							newSession:SendToUser(p, "UpdatePeerList", getPeerList());
+							newSession:SendToUser(p, "UpdatePeerList", getPeerList())
 						end
 					end
 				end)
@@ -1024,7 +1027,7 @@ return function(Vargs, env)
 						Name = plr.Name;
 						DisplayName = plr.DisplayName;
 						UserId = plr.UserId;
-						Icon = (status and gotIcon) or "rbxasset://textures/ui/GuiImagePlaceholder.png";
+						Icon = status and gotIcon or "rbxasset://textures/ui/GuiImagePlaceholder.png";
 					};
 
 					table.insert(history, {
@@ -1044,7 +1047,7 @@ return function(Vargs, env)
 
 				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v ~= plr then
-						newSession:AddUser(v);
+						newSession:AddUser(v)
 
 						Remote.MakeGui(v, "PrivateChat", {
 							Owner = plr;
@@ -1080,7 +1083,7 @@ return function(Vargs, env)
 					})
 				end
 			end
-		};--]]
+		};
 
 		ShowChat = {
 			Prefix = Settings.Prefix;
@@ -1180,11 +1183,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.RemoveLocal(v, "WINDOW_BLUR", "Camera")
-					Remote.RemoveLocal(v, "WINDOW_BLOOM", "Camera")
-					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
-					Remote.RemoveLocal(v, "WINDOW_SUNRAYS", "Camera")
-					Remote.RemoveLocal(v, "WINDOW_COLORCORRECTION", "Camera")
+					for _, e in ipairs({"BLUR", "BLOOM", "THERMAL", "SUNRAYS", "COLORCORRECTION"}) do
+						Remote.RemoveLocal(v, "WINDOW_"..e, "Camera")
+					end
 				end
 			end
 		};
