@@ -13,31 +13,36 @@ service = nil
 
 return function(data)
 	
+	-- Saving those microseconds from using the dot operator
+	
+	local Variables = client.Variables
+	local Functions = client.Functions
+	
 	-- Some pre-defined "global" variables
 	
 	local gTable
-	local tLimit = data.Time
+	local song = data.Song
 	local sImg
+	local gImg
 	local visualiserModule = nil
 	local visualiser = nil
 	local isMuted = false
+	local isGlobal = false
 	local activeSongList = nil
 	local availableSongLists = {}
 	local selected = nil
 	local shuffle = false
 	local soundInstanceEndedEvent = nil
+	local persistVolume = 0.25
+	local audioLib = nil
 	
-	-- Sound that's used for every song
-
-	local soundInstance = service.New('Sound')
-	soundInstance.Volume = 0.25
-	soundInstance.Looped = false
-	--soundInstance.SoundId = 'http://www.roblox.com/asset/?id=4881542521' -- Used to play a sound on window open.
-
 	
 	-- The audio visulaiser at the top of the menu.
 	
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
+	local localAudioLib = client.Shared.AudioLib
+	localAudioLib = require(localAudioLib).new(service.LocalContainer())
+	
 	
 	-- Function to run when we close the window
 	
@@ -50,10 +55,9 @@ return function(data)
 		if visualiserModule then
 			visualiserModule = nil
 		end
-		if soundInstance then
-			soundInstance:Stop()
-			soundInstance:Destroy()
-		end
+		audioLib:UpdateSound({
+			Playing = false;
+		})
 	end
 	
 	-- The when the who the when the window
@@ -80,14 +84,46 @@ return function(data)
 	local muteButton = window:AddTitleButton({
 		Text = "";
 		OnClick = function()
+			
 			if isMuted then
-				soundInstance.Volume = 0.25
+				audioLib:UpdateSound({
+					Volume = persistVolume;
+				})
 				sImg.Image = "rbxassetid://1638551696"
 				isMuted = false
 			else
-				soundInstance.Volume = 0
+				persistVolume = audioLib:GetSound().Volume
+				audioLib:UpdateSound({
+					Volume = 0;
+				})
 				sImg.Image = "rbxassetid://1638584675";
 				isMuted = true
+			end
+		end
+	})
+	
+	local globalButton = window:AddTitleButton({
+		Text = "";
+		OnClick = function()
+			if isGlobal then
+				--updateAudio({Global = false})
+				gImg.Image = "rbxassetid://8318256297"
+				isGlobal = false
+				client.UI.Make("Notification",{
+					Title = "Global Audio";
+					Message = "Only you can hear your music";
+					Time = 5;
+				})
+				
+			else
+				--updateAudio({Global = true})
+				gImg.Image = "rbxassetid://8318257291";
+				isGlobal = true
+				client.UI.Make("Notification",{
+					Title = "Global Audio";
+					Message = "Everyone can hear your music";
+					Time = 5;
+				})
 			end
 		end
 	})
@@ -99,14 +135,21 @@ return function(data)
 		BackgroundTransparency = 1;
 	})
 	
+	gImg = globalButton:Add("ImageLabel", {
+		Size = UDim2.new(0, 20, 0, 20);
+		Position = UDim2.new(0, 5, 0, 0);
+		Image = "rbxassetid://8318256297";
+		BackgroundTransparency = 1;
+	})
+	
 	-- Song title and Audio Visaliser Frame.
 	
 	local heading = window:Add("TextLabel", {
-		Text = "Audio Player";
+		Text = "Music Player";
 		Size = UDim2.new(1,0,0,20);
 		BackgroundTransparency = 1;
 		TextScaled = true;
-		ToolTip = "Audio Player";
+		ToolTip = "Music Player";
 	})
 
 	local visualiserFrame = window:Add("Frame", {
@@ -166,9 +209,11 @@ return function(data)
 							end
 							button.BackgroundTransparency = 0.5
 
-							soundInstance:Stop()
-							soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. v.ID;
-							soundInstance:Play()
+							audioLib:UpdateSound({
+								SoundId = "rbxassetid://"..v.ID;
+								Playing = true;
+								TimePosition = 0;
+							})
 
 							heading.Text = success and product_info.Name or v.Name
 							selected = {
@@ -183,47 +228,55 @@ return function(data)
 			end
 			num = num + 1
 		end
-		soundInstanceEndedEvent = soundInstance.Ended:Connect(function()
-			if activeSongList and selected then
-				if shuffle then
-					local rnum
-					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
-					local toPlay = activeSongList[(rnum)]
-					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
-						local success, product_info = pcall(function()
-							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
-						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
-						selected = {
-							ID = toPlay.ID,
-							Name = toPlay.Name,
-							Button = nil,
-							Index = rnum
-						}
+		
+		local sound = Variables.localSounds["AUDIO_PLAYER_SOUND"]
+		
+		if sound then
+			soundInstanceEndedEvent = sound.Ended:Connect(function()
+				if activeSongList and selected then
+					if shuffle then
+						local rnum
+						repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
+						local toPlay = activeSongList[(rnum)]
+						if toPlay then
+							audioLib:UpdateSound({
+								SoundId = "rbxassetid://"..toPlay.ID;
+								Playing = true;
+								TimePosition = 0;
+							})
+							local success, product_info = pcall(function()
+								return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+							end)
+							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+							selected = {
+								ID = toPlay.ID,
+								Name = toPlay.Name,
+								Button = nil,
+								Index = rnum
+							}
+						end
+					else
+						local toPlay = activeSongList[(selected.Index +1)]
+						if toPlay then
+							audioLib:UpdateSound({SoundId = "rbxassetid://"..toPlay.ID;
+								Playing = true;
+								TimePosition = 0;
+							})
+							local success, product_info = pcall(function()
+								return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+							end)
+							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+							selected = {
+								ID = toPlay.ID,
+								Name = toPlay.Name,
+								Button = nil,
+								Index = selected.Index +1
+							}
+						end
 					end
-				else
-					local toPlay = activeSongList[(selected.Index +1)]
-					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
-						local success, product_info = pcall(function()
-							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
-						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
-						selected = {
-							ID = toPlay.ID,
-							Name = toPlay.Name,
-							Button = nil,
-							Index = selected.Index +1
-						}
-					end
-			end
+				end
+			end)
 		end
-		end)
 		loading:Destroy()
 		frame:ResizeCanvas(false, true)
 	end
@@ -407,9 +460,11 @@ return function(data)
 				TextXAlignment = "Right";
 				TextChanged = function(text, enter, new)
 					if enter then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. text;
-						soundInstance:Play()
+						audioLib:UpdateSound({
+							SoundId = "rbxassetid://"..text;
+							Playing = true;
+							TimePosition = 0;
+						})
 					end
 				end
 			}
@@ -434,7 +489,9 @@ return function(data)
 				TextXAlignment = "Right";
 				TextChanged = function(text, enter, new)
 					if enter then
-						soundInstance.Volume = text;
+						audioLib:UpdateSound({
+							Volume = text
+						})
 					end
 				end
 			}
@@ -459,9 +516,9 @@ return function(data)
 				TextXAlignment = "Right";
 				TextChanged = function(text, enter, new)
 					if enter then
-						soundInstance:Stop()
-						soundInstance.TimePosition = text;
-						soundInstance:Play()
+						audioLib:UpdateSound({
+							TimePosition = text
+						})
 					end
 				end
 			}
@@ -484,9 +541,11 @@ return function(data)
 					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
 					local toPlay = activeSongList[(rnum)]
 					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
+						audioLib:UpdateSound({
+							SoundId = "rbxassetid://"..toPlay.ID;
+							Playing = true;
+							TimePosition = 0;
+						})
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
@@ -501,9 +560,10 @@ return function(data)
 				else
 					local toPlay = activeSongList[(selected.Index -1)]
 					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
+						audioLib:UpdateSound({
+							SoundId = "rbxassetid://"..toPlay.ID;
+							Playing = true;
+							TimePosition = 0;})
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
@@ -530,11 +590,9 @@ return function(data)
 		Position = UDim2.new(1, -105, 1, -35);
 		TextXAlignment = "Center";
 		OnClick = function()
-			if soundInstance.Playing then
-				soundInstance:Pause()
-			else
-				soundInstance:Resume()
-			end
+			audioLib:UpdateSound({
+				Playing = not audioLib:GetSound().Playing
+			})
 		end
 	})
 	
@@ -554,9 +612,10 @@ return function(data)
 					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
 					local toPlay = activeSongList[(rnum)]
 					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
+						audioLib:UpdateSound({SoundId = "rbxassetid://"..toPlay.ID;
+							Playing = true;
+							TimePosition = 0;
+						})
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
@@ -571,9 +630,10 @@ return function(data)
 				else
 					local toPlay = activeSongList[(selected.Index +1)]
 					if toPlay then
-						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
-						soundInstance:Play()
+						audioLib:UpdateSound({
+							SoundId = "rbxassetid://"..toPlay.ID;
+							Playing = true;
+							TimePosition = 0;})
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
@@ -621,10 +681,15 @@ return function(data)
 	
 	-- Create audio vislualiser
 	
-	soundInstance.Parent = visualiserFrame
 	local visualiser = visualiserModule.new(visualiserFrame, 400)
-	visualiser:LinkToSound(soundInstance)
-	--soundInstance:Play() -- Play a sound immediately after opening
+	print(service.LocalContainer())
+	visualiser:LinkToSound(audioLib:GetSound())
+	if song then audioLib:UpdateSound({
+		SoundId = "rbxassetid://"..song;
+		Playing = true;
+		TimePosition = 0;	
+		})
+	end;-- Used to play a sound on window open. 4881542521.
 	
 	-- Create OnClose event after everything has been initialised
 	
