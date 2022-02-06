@@ -730,7 +730,7 @@ return function(Vargs, env)
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptSendFriendRequest",service.Players["]=]..v.Name..[=["])]=])
+					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptSendFriendRequest",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
 				end
 			end
 		};
@@ -746,7 +746,7 @@ return function(Vargs, env)
 				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptUnfriend",service.Players["]=]..v.Name..[=["])]=])
+					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptUnfriend",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
 				end
 			end
 		};
@@ -854,6 +854,8 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
+				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
+				assert(num >= 0, "Countdown cannot be negative.")
 				Remote.MakeGui(plr, "Countdown", {
 					Time = math.round(num);
 				})
