@@ -124,6 +124,17 @@ return function(Vargs, GetEnv)
 				if not cmd.Prefix then
 					cmd.Prefix = Settings.Prefix
 				end
+
+				if cmd.ListUpdater then
+					Logs.ListUpdaters[i] = function(plr, ...)
+						if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
+							if type(cmd.ListUpdater) == "function" then
+								return cmd.ListUpdater(plr, ...)
+							end
+							return Logs[cmd.ListUpdater]
+						end
+					end
+				end
 			end
 		end
 

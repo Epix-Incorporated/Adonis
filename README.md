@@ -4,6 +4,9 @@
     <a href="https://www.roblox.com/library/7510622625/">
         <img src="https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white"/>
     </a>
+    <a href="https://www.roblox.com/library/8612978896/">
+        <img src="https://img.shields.io/badge/roblox-nightly-blueviolet?logo=roblox"/>
+    </a>
     <a href="https://github.com/Sceleratis/Adonis/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/Sceleratis/Adonis"/>
     </a>

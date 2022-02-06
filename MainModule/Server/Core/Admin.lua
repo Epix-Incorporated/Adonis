@@ -475,21 +475,17 @@ return function(Vargs, GetEnv)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
 
-			if Admin.IsPlaceOwner(p) then
-				return 1000, "Place Owner"
-			end
-
 			--[[if data and data.AdminLevelOverride then
 				return data.AdminLevelOverride
 			end--]]
 
-			for ind, admin in pairs(Admin.SpecialLevels) do
-				if doCheck(p,admin.Player) then
+			for _, admin in pairs(Admin.SpecialLevels) do
+				if doCheck(p, admin.Player) then
 					return admin.Level, admin.Rank
 				end
 			end
 
-			local sortedRanks = {};
+			local sortedRanks = {}
 			for rank, data in pairs(Settings.Ranks) do
 				table.insert(sortedRanks, {
 					Rank = rank;
@@ -502,22 +498,26 @@ return function(Vargs, GetEnv)
 				return t1.Level > t2.Level
 			end)
 
-			local highest = 0
+			local highestLevel = 0
 			local highestRank = nil
 
 			for _, data in pairs(sortedRanks) do
-				local level = data.Level;
-				if level > highest then
-					for i,v in ipairs(data.Users) do
+				local level = data.Level
+				if level > highestLevel then
+					for _, v in ipairs(data.Users) do
 						if doCheck(p, v) then
-							highest, highestRank = level, data.Rank
+							highestLevel, highestRank = level, data.Rank
 							break
 						end
 					end
 				end
 			end
 
-			return highest, highestRank
+			if Admin.IsPlaceOwner(p) and highestLevel < 1000 then
+				return 1000, "Place Owner"
+			end
+
+			return highestLevel, highestRank
 		end;
 
 		IsPlaceOwner = function(p)
@@ -687,14 +687,14 @@ return function(Vargs, GetEnv)
 			else
 				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				for _, pass in ipairs(Variables.DonorPass) do
-					local ran, ret;
+					local ran, ret
 					if type(pass) == "number" then
-						ran,ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
+						ran, ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
 					elseif type(pass) == "string" and tonumber(pass) then
-						ran,ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
+						ran, ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if ran and ret then
+					if (ran and ret) or p:GetRankInGroup(886423) >= 10 then --// Complimentary donor access is given to Adonis contributors & developers.
 						Variables.CachedDonors[key] = os.time()
 						return true
 					end
@@ -713,7 +713,7 @@ return function(Vargs, GetEnv)
 			end
 
 			for ind, ban in pairs(Core.Variables.TimeBans) do
-				if (p.UserId == ban.UserId) then
+				if p.UserId == ban.UserId then
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else

@@ -62,7 +62,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
-							Message = "You are a(n) "..rankName..". Click to view commands.";
+							Message = string.format("You are %s%s. Click to view commands.", if rankName:sub(1, 3):lower() == "the" then "" elseif rankName:match("^[AEIOUaeiou]") and rankName:sub(1, 3):lower() ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
@@ -342,14 +342,24 @@ return function(Vargs, env)
 			Description = "Shows who shutdown or restarted a server and when";
 			Fun = false;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
 				for i, v in pairs(logs) do
 					if v.Restart then v.Time = v.Time.." [SOFT]" end
-					table.insert(tab, {Text=v.Time..": "..v.User, Desc="Reason: "..v.Reason})
+					table.insert(tab, {
+						Text = v.Time..": "..v.User;
+						Desc = "Reason: "..v.Reason;
+					})
 				end
-				Remote.MakeGui(plr, "List", {Title = "Shutdown Logs",Table = tab,Update = "shutdownlogs"})
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "List", {
+					Title = "Shutdown Logs";
+					Table = Logs.ListUpdaters.ShutdownLogs(plr);
+					Update = "ShutdownLogs";
+				})
 			end
 		};
 
@@ -657,6 +667,45 @@ return function(Vargs, env)
 			end
 		};
 
+		SaveTool = {
+			Prefix = Settings.Prefix;
+			Commands = {"addtool", "savetool", "maketool"};
+			Args = {"optional player", "optional new tool name"};
+			Description = "Saves the equipped tool to the storage so that it can be inserted using "..Settings.Prefix.."give";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local tool = v.Character and v.Character:FindFirstChildWhichIsA("BackpackItem")
+					if tool then
+						tool = tool:Clone()
+						if args[2] then tool.Name = args[2] end
+						tool.Parent = service.UnWrap(Settings.Storage)
+						Variables.SavedTools[tool] = service.FormatPlayer(plr)
+						Functions.Hint("Added tool: "..tool.Name, {plr})
+					elseif not args[1] then
+						error("You must have an equipped tool to add to the storage.")
+					end
+				end
+			end
+		};
+
+		ClearSavedTools = {
+			Prefix = Settings.Prefix;
+			Commands = {"clraddedtools", "clearaddedtools", "clearsavedtools", "clrsavedtools"};
+			Args = {};
+			Description = "Removes any tools in the storage added using "..Settings.Prefix.."savetool";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				local count = 0
+				for tool in pairs(Variables.SavedTools) do
+					count += 1
+					tool:Destroy()
+				end
+				table.clear(Variables.SavedTools)
+				Functions.Hint(string.format("Cleared %d saved tool%s.", count, count == 1 and "" or "s"), {plr})
+			end
+		};
+
 		NewTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"newteam", "createteam", "maketeam"};
@@ -700,10 +749,10 @@ return function(Vargs, env)
 			Description = "Restore the map to the the way it was the last time it was backed up";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local plr_name = plr and plr.Name
+				local plrName = plr and service.FormatPlayer(plr) or "<SERVER>"
 
 				if not Variables.MapBackup then
-					error("Cannot restore when there are no backup maps!",0)
+					error("Cannot restore when there are no backup maps!", 0)
 					return
 				end
 				if Variables.RestoringMap then
@@ -711,12 +760,12 @@ return function(Vargs, env)
 					return
 				end
 				if Variables.BackingupMap then
-					error("Cannot restore map while backing up map is in process!",0)
+					error("Cannot restore map while backing up map is in process!", 0)
 					return
 				end
 
 				Variables.RestoringMap = true
-				Functions.Hint('Restoring Map...', service.Players:GetPlayers())
+				Functions.Hint("Restoring Map...", service.Players:GetPlayers())
 
 				for _, obj in ipairs(workspace:GetChildren()) do
 					if obj.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(obj) then
@@ -740,7 +789,7 @@ return function(Vargs, env)
 					Terrain:PasteRegion(Variables.TerrainMapBackup, Terrain.MaxExtents.Min, true)
 				end
 
-				wait();
+				wait()
 
 				Admin.RunCommand(Settings.Prefix .. "respawn", "all")
 				Variables.RestoringMap = false
@@ -748,7 +797,7 @@ return function(Vargs, env)
 
 				Logs:AddLog("Script", {
 					Text = "Map Restoration Complete",
-					Desc = (plr_name or "<SERVER>") .. " has restored the map.",
+					Desc = plrName .. " has restored the map.",
 				})
 			end
 		};
@@ -1307,7 +1356,7 @@ return function(Vargs, env)
 				local list = trello.getListObj(lists, {"Banlist", "Ban List", "Bans"})
 
 				local level = data.PlayerData.Level
-				local reason = string.format("Administrator: %s\nReason: %s", plr.Name, (args[2] or "N/A"))
+				local reason = string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
 
 				for _, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
@@ -1327,7 +1376,7 @@ return function(Vargs, env)
 						pcall(function() v:Kick(reason) end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
-							Icon = server.MatIcons.Done;
+							Icon = server.MatIcons.Gavel;
 							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
 							Time = 5;
 						})
@@ -1348,7 +1397,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message title")
 				assert(args[2], "Missing message")
-				for i, v in pairs(service.Players:GetPlayers()) do
+				for _, v in pairs(service.Players:GetPlayers()) do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
 						Title = args[1];
@@ -1369,7 +1418,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					v.Character = nil
 					v.Parent = nil
 				end
@@ -1385,7 +1434,7 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.MarketplaceService:PromptPremiumPurchase(v)
 				end
 			end
@@ -1401,10 +1450,127 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
 					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5))
 				end
+			end
+		};
+
+		Disguise = {
+			Prefix = Settings.Prefix;
+			Commands = {"disguise", "masquerade"};
+			Args = {"player", "username"};
+			Description = "Names the player, chars the player, and modifies the player's chat tag";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				assert(args[2], "Argument missing or nil")
+				local userId = select(2, xpcall(function()
+					return service.Players:GetUserIdFromNameAsync(args[2])
+				end, function() return nil end))
+				assert(userId, "Invalid username supplied/user not found")
+				
+				local username = select(2, xpcall(function()
+					return service.Players:GetNameFromUserIdAsync(userId)
+				end, function() return args[2] end))
+
+				if service.Players:GetPlayerByUserId(userId) then
+					error("You cannot disguise as this player (currently in server)")
+				end
+
+				Commands.Char.Function(plr, args)
+				Commands.DisplayName.Function(plr, {args[1], username})
+
+				local ChatService = Functions.GetChatService()
+
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if Variables.DisguiseBindings[v.UserId] then
+						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
+						ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
+						ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+					end
+
+					Variables.DisguiseBindings[v.UserId] = {
+						TargetUsername = username;
+						Rename = v.CharacterAppearanceLoaded:Connect(function(char)
+							Commands.DisplayName.Function(v, {v.Name, username})
+						end);
+					}
+
+					local disguiseSpeaker = ChatService:AddSpeaker(username)
+					disguiseSpeaker:JoinChannel("All")
+					ChatService:RegisterProcessCommandsFunction("Disguise_"..v.Name, function(speaker, message, channelName)
+						if speaker == v.Name then
+							local filteredMessage = select(2, xpcall(function()
+								return service.TextService:FilterStringAsync(message, v.UserId, Enum.TextFilterContext.PrivateChat):GetChatForUserAsync(v.UserId)
+							end, function()
+								Remote.Send(v, "Function", "ChatMessage", "A message filtering error occurred.", Color3.new(1, 64/255, 77/255))
+								return nil
+							end))
+							if filteredMessage and not server.Admin.DoHideChatCmd(v, message) then
+								disguiseSpeaker:SayMessage(filteredMessage, channelName)
+								if v.Character then
+									service.Chat:Chat(v.Character, filteredMessage, Enum.ChatColor.White)
+								end
+							end
+							return true
+						end
+						return false
+					end)
+				end
+			end
+		};
+
+		UnDisguise = {
+			Prefix = Settings.Prefix;
+			Commands = {"undisguise", "removedisguise", "cleardisguise", "nodisguise"};
+			Args = {"player"};
+			Description = "Removes the player's disguise";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				local ChatService = Functions.GetChatService()
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					if Variables.DisguiseBindings[v.UserId] then
+						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
+						pcall(function()
+							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
+							ChatService:UnregisterProcessCommandsFunction("Disguise_"..v.Name)
+						end)
+					end
+					Variables.DisguiseBindings[v.UserId] = nil
+				end
+				Commands.UnChar.Function(plr, args)
+				Commands.UnDisplayName.Function(plr, args)
+			end
+		};
+
+		IncognitoPlayerList = {
+			Prefix = Settings.Prefix;
+			Commands = {"incognitolist", "incognitoplayers", "vanishlist", "vanishedplayers"};
+			Args = {"autoupdate? (default: true)"};
+			Description = "Displays a list of incognito/vanished players in the server";
+			AdminLevel = "Admins";
+			Hidden = true;
+			ListUpdater = function(plr: Player)
+				local tab = {}
+				for p: Player, t: number in pairs(Variables.IncognitoPlayers) do
+					table.insert(tab, {
+						Text = service.FormatPlayer(p);
+						Desc = string.format("ID: %d | Vanished at: %s", p.UserId, service.FormatTime(t));
+					})
+				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.RemoveGui(plr, "IncognitoPlayerList")
+				Remote.MakeGui(plr, "List", {
+					Name = "IncognitoPlayerList";
+					Title = "Incognito Players";
+					Icon = server.MatIcons["Admin panel settings"];
+					Tab = Logs.ListUpdaters.IncognitoPlayerList(plr);
+					Update = "IncognitoPlayerList";
+					AutoUpdate = if not args[1] or (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
+				})
 			end
 		};
 	}

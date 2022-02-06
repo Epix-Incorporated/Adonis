@@ -1,8 +1,7 @@
-
-client = nil
-service = nil
+client, service = nil, nil
 
 return function(data)
+	local Name = data.Name
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
 	local Icon = data.Icon
@@ -111,7 +110,7 @@ return function(data)
 
 	function doSearch(tab, text)
 		local found = {}
-		text = string.lower(tostring(text))
+		text = string.lower(tostring(text)):gsub("%%", "%%%%"):gsub("%[", "%%["):gsub("%]", "%%]")
 		for i,v in pairs(tab) do
 			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)
@@ -172,11 +171,11 @@ return function(data)
 		end
 	end
 
-	window = client.UI.Make("Window",{
-		Name  = "List";
+	window = client.UI.Make("Window", {
+		Name = data.Name or "List";
 		Title = Title;
 		Icon = Icon;
-		Size  = Size or {240, 225};
+		Size = Size or {240, 225};
 		MinSize = {150, 100};
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
@@ -189,7 +188,7 @@ return function(data)
 		RichTextSupport = data.RichTextSupport or data.SupportRichText or false;
 	})
 
-	scroller = window:Add("ScrollingFrame",{
+	scroller = window:Add("ScrollingFrame", {
 		List = {};
 		ScrollBarThickness = 2;
 		BackgroundTransparency = 1;

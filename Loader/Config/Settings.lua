@@ -311,9 +311,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
-	settings.CustomChat = false 	-- Custom chat
-	settings.PlayerList = false		-- Custom playerlist
-
 	settings.Console = true							-- Command console
 	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
@@ -350,6 +347,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
+
 	descs.Storage = [[ Where things like tools are stored ]]
 	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
 
@@ -457,7 +455,9 @@ local descs = {};			--// Contains settings descriptions
 		"DataStore";
 		"DataStoreKey";
 		"DataStoreEnabled";
+		" ";
 		"Storage";
+		"RecursiveTools";
 		" ";
 		"Theme";
 		"MobileTheme";

@@ -96,7 +96,7 @@ return function(Vargs, env)
 					end
 				end
 				assert(cmd, "Command '"..args[1].."' not found")
-		
+
 				local function formatStrForRichText(str: string): string
 					return str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
 				end
@@ -167,19 +167,19 @@ return function(Vargs, env)
 				assert(args[2], "Missing message")
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Notification";
+					Icon = server.MatIcons["Notifications"];
 					Message = args[2];
 					Time = tonumber(args[1]);
 				})
 			end
 		};
-								
+
 		CommsCenter = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifications", "comms", "nc"};
 			Args = {};
 			Hidden = false;
 			Description = "Opens the communications Center, showing you all the adonis messages you have recieved in timeline order";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CommsCenter")
@@ -282,7 +282,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Opens the client settings panel";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Client"})
@@ -295,7 +294,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Opens the donation panel";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Donate"})
@@ -308,7 +306,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Prompts you to take a copy of the script";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.MarketPlace:PromptPurchase(plr, Core.LoaderID)
@@ -321,7 +318,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Shows you your current ping (latency)";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Ping")
@@ -342,23 +338,28 @@ return function(Vargs, env)
 		Donors = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors", "donorlist", "donatorlist", "donators"};
-			Args = {};
+			Args = {"autoupdate? (default: true)"};
 			Hidden = false;
 			Description = "Shows a list of Adonis donators who are currently in the server";
-			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
-				local temptable = {}
+			ListUpdater = function(plr: Player)
+				local tab = {}
 				for _, v in pairs(service.Players:GetPlayers()) do
-					if Admin.CheckDonor(v) then
-						table.insert(temptable, v.Name)
+					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
+						table.insert(tab, service.FormatPlayer(v))
 					end
 				end
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
+				Remote.RemoveGui(plr, "DonorList")
 				Remote.MakeGui(plr, "List", {
+					Name = "DonorList";
 					Title = "Donors In-Game";
 					Icon = server.MatIcons["People alt"];
-					Tab = temptable;
-					Update = "DonorList";
+					Tab = Logs.ListUpdaters.Donors(plr);
+					Update = "Donors";
+					AutoUpdate = if not args[1] or args[1]:lower() == "true" or args[1]:lower() == "yes" then 2 else nil;
 				})
 			end
 		};
@@ -369,7 +370,6 @@ return function(Vargs, env)
 			Args = {"reason"};
 			Hidden = false;
 			Description = "Calls admins for help";
-			Fun = false;
 			Filter = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -439,7 +439,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Makes you rejoin the server";
-			Fun = false;
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -453,7 +452,6 @@ return function(Vargs, env)
 			Args = {"username"};
 			Hidden = false;
 			Description = "Makes you follow the player you gave the username of to the server they are in";
-			Fun = false;
 			NoStudio = true; -- TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -477,7 +475,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Shows you Adonis development credits";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Credits")
@@ -486,7 +483,7 @@ return function(Vargs, env)
 
 		ChangeLog = {
 			Prefix = Settings.Prefix;
-			Commands = {"changelog", "changes", "updates"};
+			Commands = {"changelog", "changes", "updates", "version"};
 			Args = {};
 			Description = "Shows you the script's changelog";
 			AdminLevel = "Players";
@@ -518,7 +515,6 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Shows you how to use some syntax related things";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local usage = {
@@ -576,7 +572,6 @@ return function(Vargs, env)
 			Args = {"username"};
 			Hidden = false;
 			Description = "Joins your friend outside/inside of the game (must be online)";
-			Fun = false;
 			NoStudio = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
@@ -603,8 +598,7 @@ return function(Vargs, env)
 			Commands = {":userpanel"};
 			Args = {};
 			Hidden = true;
-			Description = "Backup command for opening the userpanel.";
-			Fun = false;
+			Description = "Backup command for opening the userpanel window";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
@@ -614,22 +608,23 @@ return function(Vargs, env)
 		Theme = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"theme", "usertheme"};
-			Args = {"theme name"};
-			Hidden = false;
-			Description = "Changes the clients Adonis Theme.";
-			Fun = false;
+			Args = {"theme name (leave blank to reset to default)"};
+			Hidden = true;
+			Description = "Changes the Adonis client UI theme";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local playerData = Core.GetPlayer(plr)
 				local data = playerData.Client or {}
-				data["CustomTheme"] = args[1]
+				data.CustomTheme = args[1]
 				playerData.Client = data
 				Core.SavePlayer(plr, playerData)
 				Remote.MakeGui(plr, "Notification", {
 					Title = "Theme Changed";
-					Message = "Theme set to "..args[1].."!";
+					Icon = server.MatIcons.Palette;
+					Message = if args[1] then "UI theme set to '"..args[1].."'!" else "UI theme reset to default.";
 					Time = 5;
 				})
+				Remote.LoadCode(plr, "client.Variables.CustomTheme = "..if args[1] then "[["..args[1].."]]" else "nil")
 			end
 		};
 
@@ -697,7 +692,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Friends")
 			end
 		};
-		
+
 		BlockedUsers = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"blockedusers", "blockedplayers", "blocklist"};
@@ -724,19 +719,18 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[AddFriend = {
+		AddFriend = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"addfriend", "friendrequest", "sendfriendrequest"};
 			Args = {"player"};
-			Description = "Sends a friend request to the specified player";
-			Hidden = false;
-			Fun = false;
+			Description = "Send a friend request to the specified player";
+			Hidden = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					assert(v~=plr, "Cannot friend yourself!")
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					assert(v ~= plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptSendFriendRequest",service.Players."..v.Name..")")
+					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptSendFriendRequest",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
 				end
 			end
 		};
@@ -745,18 +739,17 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"unfriend", "removefriend"};
 			Args = {"player"};
-			Description = "Unfriends the specified player";
-			Hidden = false;
-			Fun = false;
+			Description = "Prompts you to unfriend the specified player";
+			Hidden = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					assert(v~=plr, "Cannot unfriend yourself!")
+				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					assert(v ~= plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr, "service.StarterGui:SetCore("PromptUnfriend",service.Players."..v.Name..")")
+					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptUnfriend",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
 				end
 			end
-		};]]
+		};
 
 		InspectAvatar = {
 			Prefix = Settings.PlayerPrefix;
@@ -764,10 +757,9 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Opens the Roblox avatar inspect menu for the specified player";
 			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.LoadCode(plr, "service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
 				end
 			end
@@ -779,10 +771,9 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Opens the Roblox developer console";
 			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.LoadCode(plr,[[service.StarterGui:SetCore("DevConsoleVisible",true)]])
+				Remote.LoadCode(plr, [[service.StarterGui:SetCore("DevConsoleVisible",true)]])
 			end
 		};
 
@@ -816,9 +807,8 @@ return function(Vargs, env)
 			Args = {};
 			Hidden = false;
 			Description = "Shows you the current time and date.";
-			Fun = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string})
+			ListUpdater = function(plr: Player)
 				local ostime = os.time()
 				local tab = {
 					{Text = "―――――――――――――――――――――――"},
@@ -838,19 +828,36 @@ return function(Vargs, env)
 					{"Day of the month"; os.date("%d", ostime)},
 					{Text = "―――――――――――――――――――――――"},
 				}
-
 				for i, v in ipairs(tab) do
 					if not v[2] then continue end
 					tab[i] = {Text = "<b>"..v[1]..":</b> "..v[2]; Desc = v[2];}
 				end
-
+				return tab
+			end;
+			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Date";
-					Table = tab;
+					Table = Logs.ListUpdaters.TimeDate(plr);
 					RichText = true;
-					Update = "DateTime";
+					Update = "TimeDate";
 					AutoUpdate = 59;
 					Size = {288, 390};
+				})
+			end
+		};
+
+		PersonalCountdown = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"countdown", "timer", "cd"};
+			Args = {"time (in seconds)"};
+			Description = "Makes a countdown on your screen";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
+				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
+				assert(num >= 0, "Countdown cannot be negative.")
+				Remote.MakeGui(plr, "Countdown", {
+					Time = math.round(num);
 				})
 			end
 		};
@@ -861,40 +868,48 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
+				local players = service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = not elevated;})
 
-				for i, v: Player in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = true;})) do
-					local gameData = nil
-					if elevated then
-						local level, rank = Admin.GetLevel(v)
-						gameData = {
-							IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
-							AdminLevel = "[".. level .."] ".. (rank or "Unknown");
-							SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
-						}
-						for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
-							gameData[k] = d
+				if #players > 2 then
+					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
+				end
+
+				for i, v: Player in pairs(players) do
+					task.defer(function()
+						local gameData = nil
+
+						if elevated then
+							local level, rank = Admin.GetLevel(v)
+							gameData = {
+								IsMuted = table.find(Settings.Muted, v.Name..":"..v.UserId) and true or false;
+								AdminLevel = "[".. level .."] ".. (rank or "Unknown");
+								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
+							}
+							for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+								gameData[k] = d
+							end
 						end
-					end
-					local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-					local hasSafeChat = if elevated and policyResult then
-						(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
-						else "[Error/Redacted]"
 
-					Remote.RemoveGui(plr, "Profile_"..v.UserId)
-					Remote.MakeGui(plr, "Profile", {
-						Target = v;
-						SafeChat = hasSafeChat;
-						CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
-						IsDonor = Admin.CheckDonor(v);
-						GameData = gameData;
-						IsServerOwner = v.UserId == game.PrivateServerOwnerId;
-						CmdPrefix = Settings.Prefix;
-						CmdSplitKey = Settings.SplitKey;
-					})
+						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
+						local hasSafeChat = if elevated and policyResult then
+							(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
+							else "[Error/Redacted]"
+
+						Remote.RemoveGui(plr, "Profile_"..v.UserId)
+						Remote.MakeGui(plr, "Profile", {
+							Target = v;
+							SafeChat = hasSafeChat;
+							CanChatGet = table.pack(pcall(service.Chat.CanUserChatAsync, service.Chat, v.UserId));
+							IsDonor = Admin.CheckDonor(v);
+							GameData = gameData;
+							IsServerOwner = v.UserId == game.PrivateServerOwnerId;
+							CmdPrefix = Settings.Prefix;
+							CmdSplitKey = Settings.SplitKey;
+						})
+					end)
 				end
 			end
 		};
@@ -905,45 +920,42 @@ return function(Vargs, env)
 			Args = {};
 			Description = "Shows you details about the current server";
 			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {[number]:string})
 				local adminDictionary = {}
-				for i, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v);
+				for _, v in pairs(service.GetPlayers()) do
+					local level, rank = Admin.GetLevel(v)
 					if level > 0 then
 						adminDictionary[v.Name] = rank or "Unknown"
 					end
 				end
 
 				local donorList = {}
-				for i, v in pairs(service.GetPlayers()) do
-					if service.MarketPlace:UserOwnsGamePassAsync(v.UserId, Variables.DonorPass[1]) then
+				for _, v in pairs(service.GetPlayers()) do
+					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
 				end
 
 				local nilPlayers = 0
-				for i, v in pairs(service.NetworkServer:GetChildren()) do
+				for _, v in pairs(service.NetworkServer:GetChildren()) do
 					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers = nilPlayers + 1
+						nilPlayers += 1
 					end
 				end
 
-				local s, r = pcall(service.HttpService.GetAsync, service.HttpService, "http://ip-api.com/json")
-				if s then
-					r = service.HttpService:JSONDecode(r)
-				end
-
-				local serverInfo = s and {
-					country = r.country,
-					city = r.city,
-					region = r.region,
-					zipcode = r.zip,
-					timezone = r.timezone,
-					query = Admin.CheckAdmin(plr) and (r.query) or "[Redacted]",
-					coords = Admin.CheckAdmin(plr) and ("LAT: "..r.lat..", LON: "..r.lon) or "[Redacted]",
-				} or nil
+				local serverInfo = select(2, xpcall(function()
+					local res = service.HttpService:JSONDecode(service.HttpService:GetAsync("http://ip-api.com/json"))
+					return {
+						country = res.country,
+						city = res.city,
+						region = res.region,
+						zipcode = res.zip,
+						timezone = res.timezone,
+						query = Admin.CheckAdmin(plr) and res.query or "[Redacted]",
+						coords = Admin.CheckAdmin(plr) and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
+					}
+				end, function() return nil end))
 
 				Remote.MakeGui(plr, "ServerDetails", {
 					CreatorId = game.CreatorId;

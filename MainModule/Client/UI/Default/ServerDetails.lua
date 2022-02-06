@@ -164,14 +164,13 @@ return function(data)
 					{"Coordinates", serii.coords or "[Error]"},
 					}) do table.insert(entries, v) end
 			else
-				table.insert(entries, {"ERROR: Server internet info failed to load"})
+				table.insert(entries, {"Error: Unable to retrieve server location info", "HTTP requests may be disabled for this game."})
 			end
 
 			local i = 1
 			for _, v in ipairs(entries) do
 				locationtab:Add("TextLabel", {
 					Text = "  "..v[1]..":";
-					ToolTip = v[3];
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, (30*(i-1))+5);

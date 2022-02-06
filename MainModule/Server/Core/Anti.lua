@@ -332,16 +332,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 		
-		CheackBackpack = function(p, obj)
-			local ran,err = pcall(function()
-				return p:WaitForChild("Backpack",60):FindFirstChild(obj)
+		CheckBackpack = function(p, obj)
+			local ran, err = pcall(function()
+				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
 			end)
-
-			if ran then
-				return ran
-			end
-
-			return false
+			return if ran then ran else false
 		end;
 
 		Detected = function(player, action, info)
@@ -413,6 +408,7 @@ return function(Vargs, GetEnv)
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
+							Icon = server.MatIcons["Notification important"];
 							Message = string.format(
 								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,
