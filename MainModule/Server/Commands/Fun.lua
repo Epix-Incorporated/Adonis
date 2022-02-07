@@ -4705,18 +4705,28 @@ return function(Vargs, env)
 						local easingDirection = Enum.EasingDirection.InOut
 						
 						if (args[4]) then
+							local found = false
 							for _,v in pairs(Enum.EasingStyle:GetEnumItems()) do
 								if (string.lower(args[4]) == string.lower(v.Name)) then
 									easingStyle = v
+									found = true
 								end
 							end
+							if (found == false) then
+								assert(nil, "EasingStyle is invalid, please refer to the Roblox Documentation for possible values.")
+							end
 						end
-						
+
 						if (args[5]) then
+							local found = false
 							for _,v in pairs(Enum.EasingDirection:GetEnumItems()) do
 								if (string.lower(args[5]) == string.lower(v.Name)) then
 									easingDirection = v
+									found = true
 								end
+							end
+							if (found == false) then
+								assert(nil, "EasingDirection is invalid, please refer to the Roblox Documentation for possible values.")
 							end
 						end
 						
@@ -5051,19 +5061,29 @@ return function(Vargs, env)
 							local easingStyle = Enum.EasingStyle.Linear
 							local easingDirection = Enum.EasingDirection.InOut
 
-							if (args[4]) then
+							if (args[5]) then
+								local found = false
 								for _,v in pairs(Enum.EasingStyle:GetEnumItems()) do
 									if (string.lower(args[4]) == string.lower(v.Name)) then
 										easingStyle = v
+										found = true
 									end
+								end
+								if (found == false) then
+									assert(nil, "EasingStyle is invalid, please refer to the Roblox Documentation for possible values.")
 								end
 							end
 
-							if (args[5]) then
+							if (args[6]) then
+								local found = false
 								for _,v in pairs(Enum.EasingDirection:GetEnumItems()) do
 									if (string.lower(args[5]) == string.lower(v.Name)) then
 										easingDirection = v
+										found = true
 									end
+								end
+								if (found == false) then
+									assert(nil, "EasingDirection is invalid, please refer to the Roblox Documentation for possible values.")
 								end
 							end
 
