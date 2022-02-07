@@ -1,7 +1,7 @@
 --[[
 	════════════════════════════════════════════
 	Material Icons Collection for ROBLOX
-		Uploaded painstakingly by @Expertcoder2
+		Uploaded painstakingly by @Expertcoderz
 		Sourced from:
 			https://fonts.google.com/icons
 			('Sharp' style, white colored)
