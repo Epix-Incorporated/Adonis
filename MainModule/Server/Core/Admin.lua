@@ -717,7 +717,7 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, "\n Reason: "..(ban.Reason or "(No reason provided.)").."\n Banned until ".. service.FormatTime(ban.EndTime, true)
+						return true, "\n Reason: "..(ban.Reason or "(No reason provided.)").."\n Banned until ".. service.FormatTime(ban.EndTime, {WithWrittenDate = true})
 					end
 				end
 			end
