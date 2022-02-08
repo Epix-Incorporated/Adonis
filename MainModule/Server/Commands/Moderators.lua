@@ -1777,7 +1777,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		Tasks = {
+		ShowTasks = {
 			Hidden = false;
 			Prefix = ":";
 			Commands = {"tasks"};
@@ -4043,10 +4043,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if  v:IsInGroup(args[2]) then
-						Functions.Hint("[" .. v:GetRankInGroup(args[2]) .. "] " .. v:GetRoleInGroup(args[2]), {plr})
-					elseif not v:IsInGroup(args[2])then
-						Functions.Hint(v.Name .. " is not in the group " .. args[2], {plr})
+					local groupInfo = Admin.GetPlayerGroup(v, args[2])
+					if groupInfo then
+						Functions.Hint(service.FormatPlayer(v) .. " has rank [" .. groupInfo.Rank .. "] " .. groupInfo.Role .. " in " .. groupInfo.Name, {plr})
+					else
+						Functions.Hint(service.FormatPlayer(v) .. " is not in the group " .. args[2], {plr})
 					end
 				end
 			end

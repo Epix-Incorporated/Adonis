@@ -43,7 +43,7 @@ return function(Vargs, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and Core.DebugMode == true then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode == true then
 				Anti.CharacterCheck(player)
 			end
 		end

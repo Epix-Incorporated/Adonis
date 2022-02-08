@@ -119,7 +119,7 @@ return function(data)
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, currentPos+5);
 					TextXAlignment = "Left";
-				}):Add("TextBox", {
+				}):Add("TextLabel", {
 					Text = v[2];
 					BackgroundTransparency = 1;
 					AnchorPoint = Vector2.new(1, 0);

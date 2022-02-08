@@ -125,6 +125,11 @@ return function(data)
 			Position = UDim2.new(0, 5, 0, 55);
 			Size = UDim2.new(1, -10, 1, -60);
 		})
+		scroller:Add("UIListLayout", {
+			SortOrder = "LayoutOrder";
+			FillDirection = "Vertical";
+			VerticalAlignment = "Top";
+		})
 
 		search = window:Add("TextBox", {
 			Size = UDim2.new(1, -10, 0, 20);
