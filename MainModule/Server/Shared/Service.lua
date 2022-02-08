@@ -977,24 +977,22 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		FormatTime = function(optTime, options)
 			if not options then options = {} end
-					
+			
 			local formatString = options.FormatString 
 			if not formatString then 
-				formatString = options.WithWrittenDate and "LL LT" or (options.WithDate and "L LT" or "LT") 
+				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
 			end
-					
+			
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
 					
 			if service.RunService:IsServer() then
-				return tim:FormatUniversalTime(formatString, "en-gb") -- Always show UTC in 24 hour format
+				return tim:FormatUniversalTime(formatString, "en-us")
 			else
 				local locale = service.Players.LocalPlayer.LocaleId
-				local success = pcall(function()
+				local success, str = pcall(function()
 					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
 				end)
-				if not success then
-					return tim:FormatLocalTime(formatString, "en-gb") -- show UTC in 24 hour format because player's local timezone is not available in DateTimeLocaleConfigs
-				end
+				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
 			end
 		end;
 	
