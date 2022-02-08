@@ -60,7 +60,7 @@ return function(Vargs, env)
 						table.insert(timebans, data)
 
 						-- Please make a Admin.AddTimeBan function like Admin.AddBan
-						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, true))
+						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, {WithWrittenDate = true}))
 						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...", {plr})
 
 						Core.DoSave({
