@@ -729,7 +729,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot friend yourself!")
-					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
+					assert(not plr:IsFriendsWith(v.UserId), "You are already friends with "..v.Name)
 					Remote.Send(plr, "Function", "SetCore", "PromptSendFriendRequest", v)
 				end
 			end
@@ -745,7 +745,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot unfriend yourself!")
-					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
+					assert(plr:IsFriendsWith(v.UserId), "You are not currently friends with "..v.Name)
 					Remote.Send(plr, "Function", "SetCore", "PromptUnfriend", v)
 				end
 			end
