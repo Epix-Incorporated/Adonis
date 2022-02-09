@@ -981,8 +981,8 @@ return function(Vargs, env)
 		};
 		AudioPlayer = {
 			Prefix = "Settings.PlayerPrefix";
-			Commands = {"audioplayer", "ap"}; -- Please don't modify after this line, for a future pull request: {Settings.PlayerPrefix.."music", Settings.PlayerPrefix.."song", Settings.PlayerPrefix.."playsong", Settings.PlayerPrefix.."sound", Settings.PlayerPrefix.."ap", Settings.PlayerPrefix.."mp", Settings.Prefix.."music", Settings.Prefix.."song", Settings.Prefix.."playsong", Settings.Prefix.."sound", Settings.Prefix.."ap", Settings.Prefix.."mp"};
-			Args = {"optional sound id"};
+			Commands = {"audioplayer"}; -- Please don't modify after this line, for a future pull request: {Settings.PlayerPrefix.."music", Settings.PlayerPrefix.."song", Settings.PlayerPrefix.."playsong", Settings.PlayerPrefix.."sound", Settings.PlayerPrefix.."ap", Settings.PlayerPrefix.."mp", Settings.Prefix.."music", Settings.Prefix.."song", Settings.Prefix.."playsong", Settings.Prefix.."sound", Settings.Prefix.."ap", Settings.Prefix.."mp"};
+			Args = {"sound id?"};
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
