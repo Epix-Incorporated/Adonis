@@ -795,7 +795,7 @@ return function(Vargs, env)
 					if hum then
 						hum.MaxHealth = math.huge
 						hum.Health = 9e9
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Functions.Notification("God mode", "Character God mode has been enabled. You will not take damage from non-explosive weapons.", {v}, 15, "Info")
 						end
 					end
@@ -821,7 +821,7 @@ return function(Vargs, env)
 						if fullGodFF and fullGodFF:IsA("ForceField") then
 							fullGodFF:Destroy()
 						end
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Functions.Notification("God Mode", "Character god mode has been disabled.", {v}, 15, "Info")
 						end
 					end
@@ -848,7 +848,7 @@ return function(Vargs, env)
 							Name = "ADONIS_FULLGOD";
 							Visible = false;
 						})
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Functions.Notification("God Mode", "Character god mode has been enabled. You will not take any damage.", {v}, 15, "Info")
 						end
 					end
@@ -2550,7 +2550,7 @@ return function(Vargs, env)
 					local new = clipper:Clone()
 					new.Parent = p.Character.Humanoid
 					new.Disabled = false
-					if Settings.PlayerCommandFeedback then
+					if Settings.CommandFeedback then
 						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
@@ -2592,7 +2592,7 @@ return function(Vargs, env)
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Functions.Notification("Noclip", "Character noclip has been disabled. You will no longer be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 						end
 					end
@@ -4149,7 +4149,7 @@ return function(Vargs, env)
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
 						hum.WalkSpeed = args[2] or 16
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification";
 								Message = "Character walk speed has been set to ".. (args[2] or 16);
@@ -4176,7 +4176,7 @@ return function(Vargs, env)
 					for a, tm in ipairs(service.Teams:GetChildren()) do
 						if string.sub(string.lower(tm.Name), 1, #args[2]) == string.lower(args[2]) then
 							v.Team = tm
-							if Settings.PlayerCommandFeedback then
+							if Settings.CommandFeedback then
 								Functions.Notification("Team", "You are now on the '"..tm.Name.."' team.", {v}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 							end
 						end
@@ -4258,7 +4258,7 @@ return function(Vargs, env)
 					player.Neutral = true
 					player.Team = nil
 					player.TeamColor = BrickColor.new(194) -- Neutral Team
-					if Settings.PlayerCommandFeedback then
+					if Settings.CommandFeedback then
 						Functions.Notification("Team", "Your team has been reset and you are now on the Neutral team.", {player}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
 				end
@@ -5369,7 +5369,7 @@ return function(Vargs, env)
 							local sVal = scr:FindFirstChild("Speed")
 							if sVal then
 								sVal.Value = speed
-								if Settings.PlayerCommandFeedback then
+								if Settings.CommandFeedback then
 									Remote.MakeGui(v, "Notification", {
 										Title = "Notification";
 										Message = "Character fly speed has been set to "..speed;
@@ -6201,7 +6201,7 @@ return function(Vargs, env)
 					freecam.ResetOnSpawn = false
 					freecam.Freecam.Disabled = false
 					freecam.Parent = plrgui
-					if Settings.PlayerCommandFeedback then
+					if Settings.CommandFeedback then
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = "Freecam has been enabled. Press Shift+P to toggle freecam on or off.";
@@ -6232,7 +6232,7 @@ return function(Vargs, env)
 						Remote.Send(v, "Function", "SetView", "reset")
 						service.Debris:AddItem(freecam, 2)
 
-						if Settings.PlayerCommandFeedback then
+						if Settings.CommandFeedback then
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification";
 								Message = "Freecam has been disabled.";
