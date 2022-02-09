@@ -6431,7 +6431,7 @@ return function(Vargs, env)
 				assert(args[2], "Missing argument #2 (boolean expected)")
 				assert(string.lower(args[2]) == "true" or string.lower(args[2]) == "false", "Invalid argument #2 (boolean expected)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.LoadCode(v, "service.StarterGui:SetCore('ResetButtonCallback', "..string.lower(args[2])..")")
+					Remote.Send(v, "Function", "SetCore", "ResetButtonCallback", string.lower(args[2]))
 				end
 			end
 		};

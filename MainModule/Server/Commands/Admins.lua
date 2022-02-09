@@ -534,15 +534,15 @@ return function(Vargs, env)
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
 			Args = {"player", "element", "true/false"};
 			Hidden = false;
-			Description = "SetCoreGuiEnabled. Enables/Disables CoreGui elements. ";
+			Description = "Enables or disables CoreGui elements for the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if string.lower(args[3])=='on' or string.lower(args[3])=='true' then
-						Remote.Send(v,'Function','SetCoreGuiEnabled', args[2],true)
-					elseif string.lower(args[3])=='off' or string.lower(args[3])=='false' then
-						Remote.Send(v,'Function','SetCoreGuiEnabled', args[2],false)
+				for _,v in ipairs(service.GetPlayers(plr, args[1])) do
+					if string.lower(args[3]) == "on" or string.lower(args[3]) == "true" then
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], true)
+					elseif string.lower(args[3]) == 'off' or string.lower(args[3]) == "false" then
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], false)
 					end
 				end
 			end
@@ -1451,8 +1451,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
-					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5))
+					Remote.Send(v, "Function", "SetCore", "SendNotification", {
+						Title = "Notification";
+						Text = args[3] or "Hello, from Adonis!";
+						Duration = tonumber(args[2]) or 5;
+					})
 				end
 			end
 		};

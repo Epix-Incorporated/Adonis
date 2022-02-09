@@ -1186,6 +1186,10 @@ return function()
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
 		end;
 
+		SetCore = function(...)
+			service.StarterGui:SetCore(...)
+		end;
+
 		UnCape = function()
 			local cape = service.LocalContainer():FindFirstChild("::Adonis::Cape")
 			if cape then cape:Destroy() end

@@ -730,7 +730,7 @@ return function(Vargs, env)
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptSendFriendRequest",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
+					Remote.Send(plr, "Function", "SetCore", "PromptSendFriendRequest", v)
 				end
 			end
 		};
@@ -746,7 +746,7 @@ return function(Vargs, env)
 				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptUnfriend",service.UnWrap(service.Players["]=]..v.Name..[=["]))]=])
+					Remote.Send(plr, "Function", "SetCore", "PromptUnfriend", v)
 				end
 			end
 		};
@@ -773,7 +773,7 @@ return function(Vargs, env)
 			Hidden = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.LoadCode(plr, [[service.StarterGui:SetCore("DevConsoleVisible",true)]])
+				Remote.Send(plr, "Function", "SetCore", "DevConsoleVisible", true)
 			end
 		};
 
