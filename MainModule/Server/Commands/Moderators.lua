@@ -686,9 +686,8 @@ return function(Vargs, env)
 							local ice = v.Character:FindFirstChild("Adonis_Ice")
 							local plate
 							if ice then
-								plate = service.New("Part", v.Character)
-								service.New("CylinderMesh", {
-									Parent = plate;
+								plate = service.New("Part", {
+									Parent = v.Character;
 									Name = "Adonis_Water";
 									Anchored = true;
 									CanCollide = false;
@@ -700,6 +699,7 @@ return function(Vargs, env)
 									Transparency = ice.Transparency;
 									CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -3, 0);
 								})
+								service.New("CylinderMesh", plate)
 								for i = 0.2, 3, 0.2 do
 									ice.Size = Vector3.new(5, ice.Size.Y - i, 5)
 									ice.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, -i, 0)
