@@ -227,7 +227,10 @@ return function(Vargs, GetEnv)
 				animator.AnimationPlayed:Connect(function(animationTrack)
 					local animationId = animationTrack.Animation.AnimationId
 					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-						Detected(player, "kill", "Player played an inappropriate character animation")
+						task.defer(function()
+							animationTrack:Stop(1/60)
+						end)
+						Detected(player, "log", "Player played an inappropriate character animation")
 					end
 				end)
 

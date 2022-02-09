@@ -61,7 +61,7 @@ return function()
 				wait(5)
 				Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
-				Anti.Detected("kick","Player is Roblox Locked")
+				Anti.Detected("kick", "Player is Roblox Locked")
 			end
 		end)
 
@@ -112,6 +112,16 @@ return function()
 	end
 
 	coroutine.wrap(function()
+		local RunService = service.RunService
+		if
+			RunService:IsStudio() == true and
+			RunService:IsClient() == true and
+			RunService:IsRunning() == true and
+			RunService:IsServer() == false
+		then
+			return
+		end
+
 		while true do
 			local connection
 			local idledEvent = service.UnWrap(Player).Idled
@@ -215,8 +225,6 @@ return function()
 					end
 				end)()
 
-				--[==[
-				--// Potential for false positives is too high ~ Scel
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
@@ -224,7 +232,6 @@ return function()
 						Detected("log", "Malicious Object?: " .. v)
 					end
 				end
-				--]==]
 			end
 		end)
 	end
@@ -325,8 +332,8 @@ return function()
 			})
 
 			local lookFor = {
-				'current identity is 0';
-				'gui made by kujo';
+				"current identity is [0789]";
+				"gui made by kujo";
 				"tetanus reloaded hooked";
 				"hookmetamethod";
 				"hookfunction";
@@ -338,10 +345,7 @@ return function()
                                 "infinite yield is already loaded";
                                 "infinite yield is already";
                                 "iy_debug";
-                                "current identity is 7";
-                                "current identity is 8";
                                 "returning json";
-                                "current identity is 99999";
                                 "shattervast";
                                 "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
