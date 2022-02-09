@@ -976,6 +976,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		FormatTime = function(optTime, options)
+			if options == true then options = {WithDate = true} end
 			if not options then options = {} end
 			
 			local formatString = options.FormatString 

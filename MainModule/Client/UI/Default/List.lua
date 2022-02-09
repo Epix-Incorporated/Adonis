@@ -24,6 +24,7 @@ return function(data)
 	local PageCounter = PageNumber or 1;
 	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
 	local TextSelectable = data.TextSelectable
+	local TimeOptions = data.TimeOptions
 	local getListTab, getPage
 	local doSearch, genList
 	local window, scroller, search
@@ -101,7 +102,7 @@ return function(data)
 			end
 
 			if v.Time then
-				v.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..v.Text
+				v.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time).."] "..v.Text
 			end
 		end
 

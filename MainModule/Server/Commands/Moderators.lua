@@ -534,13 +534,20 @@ return function(Vargs, env)
 
 					if data.Warnings then
 						for k, m in pairs(data.Warnings) do
-							table.insert(tab, {Text = "["..k.."] "..m.Message, Desc = "[".. service.FormatTime(m.Time, {WithDate = true}) .."] Given by: "..m.From.."; "..m.Message})
+							table.insert(tab, {
+								Text = "["..k.."] "..m.Message;
+								Desc = "Given by: "..m.From.."; "..m.Message;
+								Time = m.Time;
+							})
 						end
 					end
 
 					Remote.MakeGui(plr, "List", {
 						Title = v.Name;
 						Table = tab;
+						TimeOptions = {
+							WithDate = true;
+						}
 					})
 				end
 			end
