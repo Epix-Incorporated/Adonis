@@ -391,7 +391,7 @@ return function(Vargs, GetEnv)
 				Player = player;
 			})
 
-			if Settings.AENotifs == true then
+			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
 				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}

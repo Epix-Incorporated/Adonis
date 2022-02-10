@@ -100,7 +100,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Old settings/plugins backwards compatability
+		--// Old settings/plugins backwards compatibility
 		for _, rank in ipairs({"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"}) do
 			if Settings[rank] then
 				Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
