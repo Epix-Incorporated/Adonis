@@ -269,7 +269,7 @@ return function(Vargs, env)
 		};
 
 		Terminal = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"terminal", "console"};
 			Args = {};
 			Hidden = false;
