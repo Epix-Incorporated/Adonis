@@ -1786,7 +1786,7 @@ return function(Vargs, env)
 		};
 		ShowTasks = {
 			Hidden = false;
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"tasks"};
 			Args = {"player"};
 			Description = "Displays running tasks";
@@ -5828,7 +5828,7 @@ return function(Vargs, env)
 		};
 
 		ServerLog = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"serverlog", "serverlogs", "serveroutput"};
 			Args = {"autoupdate? (default: false)"};
 			Description = "View server log";
@@ -5861,7 +5861,7 @@ return function(Vargs, env)
 		};
 
 		LocalLog = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"locallog", "clientlog", "locallogs", "localoutput", "clientlogs"};
 			Args = {"player", "autoupdate? (default: false)"};
 			Description = "View local log";
@@ -5891,7 +5891,7 @@ return function(Vargs, env)
 		};
 
 		ErrorLogs = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"errorlogs", "debuglogs", "errorlog", "errors", "debuglog", "scripterrors", "adminerrors"};
 			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
