@@ -1,4 +1,4 @@
-vreturn function(Vargs, env)
+return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
