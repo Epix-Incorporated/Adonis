@@ -342,8 +342,10 @@ return function(data)
 						TextXAlignment = "Left";
 						TextTruncate = "AtEnd";
 					})
-					if groupInfo.IsPrimary then
-						groupLabel.TextColor3 = Color3.new(0.666667, 1, 1)
+					if groupInfo.IsPrimary and groupInfo.Rank >= 255 then
+						groupLabel.TextColor3 = Color3.fromRGB(85, 255, 127)
+					elseif groupInfo.IsPrimary then
+						groupLabel.TextColor3 = Color3.fromRGB(170, 255, 255)
 					elseif groupInfo.Rank >= 255 then
 						groupLabel.TextColor3 = Color3.new(1, 1, 0.5)
 					end
