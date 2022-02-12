@@ -103,8 +103,8 @@ return function(data)
 
 		for i, v in ipairs({
 			{"Membership", player.MembershipType.Name, "The player's Roblox membership type (Premium)"},
-			{"Safe Chat Enabled", data.SafeChat, "Does the player have safe chat applied?"},
 			{"Can Chat", data.CanChatGet[1] and boolToStr(data.CanChatGet[2]) or "[Error]", "Does the player's account settings allow them to chat?"},
+			{"Safe Chat Enabled", data.SafeChat, "[Admins Only] Does the player have safe chat applied?"},
 			}) do
 			generaltab:Add("TextLabel", {
 				Text = "  "..v[1]..": ";
@@ -123,11 +123,11 @@ return function(data)
 		end
 		
 		local c = 0
-		for i, v in ipairs({
+		for _, v in ipairs({
 			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
 			{data.IsDonor, "Adonis Donor", "rbxassetid://6877822142", "User has purchased the Adonis donation pass/shirt"},
 			{player:GetRankInGroup(886423) == 10, "Adonis Contributor (GitHub)", "rbxassetid://6878433601", "User has contributed to the Adonis admin system (see credit list)"},
-			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system"},
+			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system (see credit list)"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
 			{player.UserId == 1237666 or player.UserId == 698712377, "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
 			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
@@ -167,7 +167,7 @@ return function(data)
 						break
 					end
 					pages:AdvanceToNextPageAsync()
-					pagenum = pagenum + 1
+					pagenum += 1
 				end
 			end)
 		end
@@ -183,9 +183,9 @@ return function(data)
 			for item, pageNo in iterPageItems(friendPages) do
 				table.insert(sortedFriends, item.Username)
 				friendInfoRef[item.Username] = {
-					id=item.Id;
-					displayName=item.DisplayName;
-					isOnline=item.IsOnline;
+					id = item.Id;
+					displayName = item.DisplayName;
+					isOnline = item.IsOnline;
 				}
 				if item.IsOnline then 
 					onlineCount += 1
@@ -391,9 +391,9 @@ return function(data)
 			local entry = gametab:Add("TextLabel", {
 				Text = "  "..v[1]..": ";
 				ToolTip = v[3];
-				BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+				BackgroundTransparency = i%2 == 0 and 0 or 0.2;
 				Size = UDim2.new(1, -10, 0, 25);
-				Position = UDim2.new(0, 5, 0, (25*(i-1))+5);
+				Position = UDim2.new(0, 5, 0, 25*(i-1) + 5);
 				TextXAlignment = "Left";
 			}):Add("TextLabel", {
 				Text = v[2];
@@ -410,7 +410,7 @@ return function(data)
 			ToolTip = string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name);
 			BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 			Size = UDim2.new(1, -10, 0, 30);
-			Position = UDim2.new(0, 5, 0, (25*(i-1))+10);
+			Position = UDim2.new(0, 5, 0, 25*(i-1) + 10);
 			OnClicked = function(self)
 				if self.Active then
 					self.Active = false
