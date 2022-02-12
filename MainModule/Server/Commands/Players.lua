@@ -1,4 +1,4 @@
-return function(Vargs, env)
+vreturn function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -869,7 +869,7 @@ return function(Vargs, env)
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
 				local players = service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = not elevated;})
 
@@ -877,7 +877,7 @@ return function(Vargs, env)
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
 				end
 
-				for i, v: Player in pairs(players) do
+				for _, v: Player in pairs(players) do
 					task.defer(function()
 						local gameData = nil
 
@@ -893,10 +893,10 @@ return function(Vargs, env)
 							end
 						end
 
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						local hasSafeChat = if elevated and policyResult then
-							(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
-							else "[Error/Redacted]"
+						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
+						local hasSafeChat = if policyInfo then
+							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
+							else "[Redacted]"
 
 						Remote.RemoveGui(plr, "Profile_"..v.UserId)
 						Remote.MakeGui(plr, "Profile", {
@@ -921,14 +921,9 @@ return function(Vargs, env)
 			Description = "Shows you details about the current server";
 			Hidden = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
-				local adminDictionary = {}
-				for _, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v)
-					if level > 0 then
-						adminDictionary[v.Name] = rank or "Unknown"
-					end
-				end
+			ListUpdater = function(plr: Player)
+				local elevated = Admin.CheckAdmin(plr)
+				local data = {}
 
 				local donorList = {}
 				for _, v in pairs(service.GetPlayers()) do
@@ -937,12 +932,34 @@ return function(Vargs, env)
 					end
 				end
 
-				local nilPlayers = 0
-				for _, v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers += 1
+				local adminDictionary, workspaceInfo = nil, nil
+				if elevated then
+					adminDictionary = {}
+					for _, v in pairs(service.GetPlayers()) do
+						local level, rank = Admin.GetLevel(v)
+						if level > 0 then
+							adminDictionary[v.Name] = rank or "Unknown"
+						end
 					end
+					local nilPlayers = 0
+					for _, v in pairs(service.NetworkServer:GetChildren()) do
+						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+							nilPlayers += 1
+						end
+					end
+					workspaceInfo = {
+						ObjectCount = #Variables.Objects;
+						CameraCount = #Variables.Cameras;
+						NilPlayerCount = nilPlayers;
+						HttpEnabled = HTTP.CheckHttp();
+						LoadstringEnabled = HTTP.LoadstringEnabled;
+					}
 				end
+
+				return {Admins = adminDictionary; Donors = donorList; WorkspaceInfo = workspaceInfo;}
+			end;
+			Function = function(plr: Player, args: {string})
+				local elevated = Admin.CheckAdmin(plr)
 
 				local serverInfo = select(2, xpcall(function()
 					local res = service.HttpService:JSONDecode(service.HttpService:GetAsync("http://ip-api.com/json"))
@@ -952,8 +969,8 @@ return function(Vargs, env)
 						region = res.region,
 						zipcode = res.zip,
 						timezone = res.timezone,
-						query = Admin.CheckAdmin(plr) and res.query or "[Redacted]",
-						coords = Admin.CheckAdmin(plr) and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
+						query = elevated and res.query or "[Redacted]",
+						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
 					}
 				end, function() return nil end))
 
@@ -962,17 +979,9 @@ return function(Vargs, env)
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = server.ServerStartTime;
-					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
+					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
-					WorkspaceInfo = (Admin.CheckAdmin(plr) and {
-						ObjectCount = #Variables.Objects;
-						CameraCount = #Variables.Cameras;
-						NilPlayerCount = nilPlayers;
-						HttpEnabled = HTTP.CheckHttp();
-						LoadstringEnabled = HTTP.LoadstringEnabled;
-					}) or nil;
-					Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
-					Donors = donorList;
+					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
 					CmdPrefix = Settings.Prefix;
 					CmdPlayerPrefix = Settings.PlayerPrefix;
 					SplitKey = Settings.SplitKey;
