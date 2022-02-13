@@ -4040,19 +4040,20 @@ return function(Vargs, env)
 			end
 		};
 
-		Rank = {
+		GetGroupRank = {
 			Prefix = Settings.Prefix;
-			Commands = {"rank", "getrank"};
-			Args = {"player", "groupID"};
+			Commands = {"rank", "getrank", "grouprank"};
+			Args = {"player", "group name"};
 			Hidden = false;
-			Description = "Shows you what rank the target player(s) are in the group specified by groupID";
+			Description = "Shows you what rank the target player(s) are in the specified group";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Argument #2 missing or nil")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local groupInfo = Admin.GetPlayerGroup(v, args[2])
 					if groupInfo then
-						Functions.Hint(service.FormatPlayer(v) .. " has rank [" .. groupInfo.Rank .. "] " .. groupInfo.Role .. " in " .. groupInfo.Name, {plr})
+						Functions.Hint(string.format("%s has rank [%d] %s in %s", service.FormatPlayer(v), groupInfo.Rank, groupInfo.Role, groupInfo.Name), {plr})
 					else
 						Functions.Hint(service.FormatPlayer(v) .. " is not in the group " .. args[2], {plr})
 					end
