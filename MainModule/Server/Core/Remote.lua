@@ -401,7 +401,7 @@ return function(Vargs, GetEnv)
 			SearchCommands = function(p,args)
 				return Admin.SearchCommands(p,args[1] or "all")
 			end;
-		
+
 			CheckBackpack = function(p,args)
 				return Anti.CheckBackpack(p,args[1])
 			end;
@@ -1179,7 +1179,7 @@ return function(Vargs, GetEnv)
 		RemoveGui = function(p,name,ignore)
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
-											
+
 		RefreshGui = function(p, name, ignore, data, themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
