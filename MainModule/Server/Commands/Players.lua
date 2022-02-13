@@ -989,5 +989,95 @@ return function(Vargs, env)
 			end
 		};
 
+		GetGroupInfo = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"getgroupinfo", "groupinfo", "viewgroupinfo"};
+			Args = {"group ID"};
+			Description = "Shows you information about the specified Roblox group";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local groupId = assert(args[1] and tonumber(args[1]), "Missing/invalid group ID")
+				local groupInfo = assert(select(2, xpcall(service.GroupService.GetGroupInfoAsync, function() return nil end, service.GroupService, groupId)), "Error fetching data")
+				local tab = {
+					"Name: "..groupInfo.Name,
+					"ID: "..groupInfo.Id,
+					if groupInfo.Owner then string.format("Owner: %s [%d]", groupInfo.Owner.Name or "???", groupInfo.Owner.Id) else "[No Owner]",
+					{Text = string.format("――― Roles (%d): ―――――――――――――――――", #groupInfo.Roles)},
+				}
+				for _, role in ipairs(groupInfo.Roles) do
+					table.insert(tab, string.format("[%d] %s", role.Rank, role.Name))
+				end
+
+				local function getPageItems(pages: StandardPages, res: {any})
+					res = res or {}
+					for _, item in ipairs(pages:GetCurrentPage()) do
+						table.insert(res, item)
+					end
+					if not pages.IsFinished then
+						pages:AdvanceToNextPageAsync()
+						getPageItems(pages, res)
+					end
+					return res
+				end
+
+				local done = false
+				local startTime = os.clock()
+				task.defer(function()
+					local allies = getPageItems(service.GroupService:GetAlliesAsync(groupId))
+					table.insert(tab, {Text = string.format("――― Allies (%d): ―――――――――――――――――", #allies)})
+					if #allies > 0 then
+						local names, refs = {}, {}
+						for _, grp in ipairs(allies) do
+							table.insert(names, grp.Name)
+							refs[grp.Name] = grp
+						end
+						table.sort(names)
+						for _, name in ipairs(names) do
+							local grp = refs[name]
+							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
+						end
+					else
+						table.insert(tab, {Text = "This group doesn't have any allies."})
+					end
+
+					local enemies = getPageItems(service.GroupService:GetEnemiesAsync(groupId))
+					table.insert(tab, {Text = string.format("――― Enemies (%d): ―――――――――――――――――", #enemies)})
+					if #enemies > 0 then
+						local names, refs = {}, {}
+						for _, grp in ipairs(enemies) do
+							table.insert(names, grp.Name)
+							refs[grp.Name] = grp
+						end
+						table.sort(names)
+						for _, name in ipairs(names) do
+							local grp = refs[name]
+							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
+						end
+					else
+						table.insert(tab, {Text = "This group doesn't have any enemies."})
+					end
+
+					table.insert(tab, {Text = "―――――――――――――――――――――――"})
+					Remote.MakeGui(plr, "List", {
+						Title = string.format("Group Information (%.2fs)", os.clock() - startTime);
+						Icon = server.MatIcons.Info;
+						Tab = tab;
+						Size = {300, 300};
+					})
+					done = true
+				end)
+				task.delay(5, function()
+					if not done then
+						Functions.Hint("Taking a while to load group information...", {plr})
+						task.delay(10, function()
+							if not done then
+								Functions.Hint("We're still loading group info...", {plr})
+							end
+						end)
+					end
+				end)
+			end
+		};
+
 	};
 end
