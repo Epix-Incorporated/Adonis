@@ -951,13 +951,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		ApplyBodyPart = function(character, model)
+			-- NOTE: Use HumanoidDescriptions to apply body parts where possible, unless applying custom parts
+
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
 				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
 				local part = model:FindFirstChild(rigType)
 
 				if not part and rigType == "R15" then
-					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
+					part = model:FindFirstChild("R15Fixed")
 				end
 
 				if part then
@@ -1249,6 +1251,44 @@ return function(Vargs, GetEnv)
 			Clothing.Name = clothingtype
 			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
 			return Clothing
+		end;
+
+		ParseColor3 = function(str: string)
+			-- Handles BrickColor and Color3
+			if not str then return end
+
+			local color = {}
+			for s in str:gmatch("[%d]+") do 
+				table.insert(color, tonumber(s))
+			end
+
+			if #color == 3 then 
+				color = Color3.fromRGB(color[1], color[2], color[3])
+			else 
+				local brickColor = BrickColor.new(str)
+				if str == tostring(brickColor) then 
+					color = brickColor.Color 
+				else 
+					return
+				end 
+			end
+
+			return color
+		end;
+
+		ParseBrickColor = function(str: string)
+			if not str then return end 
+
+			local brickColor = BrickColor.new(str)
+			if str == tostring(brickColor) then 
+				return brickColor 
+			else 
+				-- If provided a Color3, return closest BrickColor
+				local color = Functions.ParseColor3(str)
+				if color then 
+					return BrickColor.new(color)
+				end 
+			end 
 		end;
 	};
 end
