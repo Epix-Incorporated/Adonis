@@ -3519,18 +3519,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local str = BrickColor.new("Bright blue").Color
-
-				if args[2] then
-					local teststr = args[2]
-					if BrickColor.new(teststr) ~= nil then str = BrickColor.new(teststr).Color end
-				end
+				local color = Functions.ParseColor3(args[2]) or BrickColor.new("Bright blue").Color
 
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Functions.NewParticle(v.Character.HumanoidRootPart, "PointLight", {
 							Name = "ADONIS_LIGHT";
-							Color = str;
+							Color = color;
 							Brightness = 5;
 							Range = 15;
 						})
@@ -3565,18 +3560,17 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local r, g, b = 1, 1, 1
-				if args[1] and args[1]:match("(.*),(.*),(.*)") then
-					r, g, b = args[1]:match("(.*),(.*),(.*)")
-				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				assert(args[1], "Argument 1 missing")
+
+				local color = Functions.ParseColor3(args[1])
+				assert(color, "Invalid color provided")
+
 				if args[2] then
 					for _, v in pairs(service.GetPlayers(plr, args[2])) do
-						Remote.SetLighting(v, "Ambient",Color3.new(r, g, b))
+						Remote.SetLighting(v, "Ambient", color)
 					end
 				else
-					Functions.SetLighting("Ambient",Color3.new(r, g, b))
+					Functions.SetLighting("Ambient", color)
 				end
 			end
 		};
@@ -3590,18 +3584,17 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local r, g, b = 1, 1, 1
-				if args[1] and args[1]:match("(.*),(.*),(.*)") then
-					r, g, b = args[1]:match("(.*),(.*),(.*)")
-				end
-				r, g, b = tonumber(r), tonumber(g), tonumber(b)
-				if not r or not g or not b then error("Invalid Input") end
+				assert(args[1], "Argument 1 missing")
+				
+				local color = Functions.ParseColor3(args[1])
+				assert(color, "Invalid color provided")
+
 				if args[2] then
 					for _, v in pairs(service.GetPlayers(plr, args[2])) do
-						Remote.SetLighting(v, "OutdoorAmbient",Color3.new(r, g, g))
+						Remote.SetLighting(v, "OutdoorAmbient", color)
 					end
 				else
-					Functions.SetLighting("OutdoorAmbient",Color3.new(r, g, b))
+					Functions.SetLighting("OutdoorAmbient", color)
 				end
 			end
 		};
@@ -3654,35 +3647,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Outlines = {
-			Prefix = Settings.Prefix;
-			Commands = {"outlines"};
-			Args = {"on/off", "optional player"};
-			Hidden = false;
-			Description = "Determines if outlines are on or off";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if string.lower(args[1])=="on" or string.lower(args[1])=="true" then
-					if args[2] then
-						for _, v in pairs(service.GetPlayers(plr, args[2])) do
-							Remote.SetLighting(v, "Outlines", true)
-						end
-					else
-						Functions.SetLighting("Outlines", true)
-					end
-				elseif string.lower(args[1])=="off" or string.lower(args[1])=="false" then
-					if args[2] then
-						for _, v in pairs(service.GetPlayers(plr, args[2])) do
-							Remote.SetLighting(v, "Outlines", false)
-						end
-					else
-						Functions.SetLighting("Outlines", false)
-					end
-				end
-			end
-		};
-
 		Brightness = {
 			Prefix = Settings.Prefix;
 			Commands = {"brightness"};
@@ -3725,18 +3689,23 @@ return function(Vargs, env)
 		FogColor = {
 			Prefix = Settings.Prefix;
 			Commands = {"fogcolor"};
-			Args = {"num", "num", "num", "optional player"};
+			Args = {"num,num,num", "optional player"};
 			Hidden = false;
 			Description = "Fog Color";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if args[4] then
-					for _, v in pairs(service.GetPlayers(plr, args[4])) do
-						Remote.SetLighting(v, "FogColor",Color3.new(args[1], args[2], args[3]))
+				assert(args[1], "Argument 1 missing")
+
+				local color = Functions.ParseColor3(args[1])
+				assert(color, "Invalid color provided")
+
+				if args[2] then
+					for _, v in pairs(service.GetPlayers(plr, args[2])) do
+						Remote.SetLighting(v, "FogColor", color)
 					end
 				else
-					Functions.SetLighting("FogColor",Color3.new(args[1], args[2], args[3]))
+					Functions.SetLighting("FogColor", color)
 				end
 			end
 		};
@@ -4692,17 +4661,21 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim"};
+			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
+				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
-			Hidden = false;
-			Description = "Give the target player(s) the avatar item that belongs to <ID>";
-			Fun = false;
+			Description = "Give the target player(s) the avatar item matching <ID>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				local itemId = assert(tonumber(args[2]), "Argument(s) missing, nil or invalid ID")
-				local productInfo = assert(select(2, xpcall(service.MarketplaceService.GetProductInfo, function() return nil end, service.MarketplaceService, itemId)), "Invalid asset ID")
+				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
+
+				local success, productInfo = pcall(function() return service.MarketplaceService:GetProductInfo(itemId) end)
+				assert(success and productInfo, "Invalid item ID")
+
+				local typeId = productInfo.AssetTypeId
+
 				--// Roblox doesn't expose a good way to insert into a HumanoidDescription from the Enum.AssetType, so we're mapping them out instead.
-				local AssetTypeToSingleHumanoidDescription = {
+				local SingleAssetIds = {
 					[2] = "GraphicTShirt",
 					[11] = "Shirt",
 					[12] = "Pants",
@@ -4722,7 +4695,7 @@ return function(Vargs, env)
 					[54] = "SwimAnimation",
 					[55] = "WalkAnimation",
 				}
-				local AssetTypeToMutilHumanoidDescription = { -- AssetTypes that are comma-seperated 
+				local AccessoryAssetIds = { -- AssetTypes that are comma-seperated (accessories)
 					[8] = "HatAccessory",
 					[41] = "HairAccessory",
 					[42] = "FaceAccessory",
@@ -4732,7 +4705,7 @@ return function(Vargs, env)
 					[46] = "BackAccessory",
 					[47] = "WaistAccessory",
 				}
-				local LayeredAccessorysHumanoidDescriptionEnum = {
+				local LayeredAccessoryAssetIds = {
 					[64] = Enum.AccessoryType.TShirt,
 					[65] = Enum.AccessoryType.Shirt,
 					[66] = Enum.AccessoryType.Pants,
@@ -4743,28 +4716,32 @@ return function(Vargs, env)
 					[71] = Enum.AccessoryType.RightShoe,
 					[72] = Enum.AccessoryType.DressSkirt,
 				}
+				
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						if AssetTypeToSingleHumanoidDescription[productInfo.AssetTypeId] then
-							humanoidDesc[AssetTypeToSingleHumanoidDescription[productInfo.AssetTypeId]] = itemId
-						elseif AssetTypeToMutilHumanoidDescription[productInfo.AssetTypeId] then
-							humanoidDesc[AssetTypeToMutilHumanoidDescription[productInfo.AssetTypeId]] ..= ","..itemId
-						elseif productInfo.AssetTypeId == 61 then
-							humanoidDesc:AddEmote(productInfo.Name, itemId)
-						elseif LayeredAccessorysHumanoidDescriptionEnum[productInfo.AssetTypeId] then
+						
+						if SingleAssetIds[typeId] then
+							humanoidDesc[SingleAssetIds[typeId]] = itemId
+						elseif AccessoryAssetIds[typeId] then
+							if string.find(humanoidDesc[AccessoryAssetIds[typeId]], tostring(itemId)) then continue end
+							humanoidDesc[AccessoryAssetIds[typeId]] ..= ","..itemId
+						elseif LayeredAccessoryAssetIds[typeId] then
 							local accessories = humanoidDesc:GetAccessories(true)
 							table.insert(accessories, {
 								Order = #accessories,
 								AssetId = itemId,
-								AccessoryType = LayeredAccessorysHumanoidDescriptionEnum[productInfo.AssetTypeId]
+								AccessoryType = LayeredAccessoryAssetIds[typeId]
 							})
 							humanoidDesc:SetAccessories(accessories, true)
+						elseif typeId == 61 then
+							humanoidDesc:AddEmote(productInfo.Name, itemId)
 						else
 							error("Item not supported")
 						end
-						humanoid:ApplyDescription(humanoidDesc)
+						
+						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
 					end
 				end
 			end
@@ -4779,16 +4756,12 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("ShirtGraphic") then k:Destroy() end
-						end
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-						if humandescrip then
-							humandescrip.GraphicTShirt = 0
-						end
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						humanoidDesc.GraphicTShirt = 0
+						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
 					end
 				end
 			end
@@ -4803,16 +4776,12 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("ShirtGraphic") then k:Destroy() end
-						end
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
-						if humandescrip then
-							humandescrip.Shirt = 0
-						end
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						humanoidDesc.Shirt = 0
+						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
 					end
 				end
 			end
