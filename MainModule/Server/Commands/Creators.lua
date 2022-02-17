@@ -153,10 +153,10 @@ return function(Vargs, env)
 
 		Settings = {
 			Prefix = "";
-			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "scriptsettings"};
+			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "adonissettings"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the Adonis settings manager";
+			Description = "Opens the Adonis settings management interface";
 			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -269,8 +269,8 @@ return function(Vargs, env)
 		};
 
 		Terminal = {
-			Prefix = Settings.Prefix;
-			Commands = {"terminal", "console"};
+			Prefix = "";
+			Commands = {Settings.Prefix.."terminal", Settings.Prefix.."console", ":terminal", ":console"};
 			Args = {};
 			Hidden = false;
 			Description = "Opens the debug terminal";
