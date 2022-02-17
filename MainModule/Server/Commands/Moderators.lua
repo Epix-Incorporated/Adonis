@@ -1785,10 +1785,10 @@ return function(Vargs, env)
 			end
 		};
 		ShowTasks = {
-			Hidden = false;
-			Prefix = Settings.Prefix;
+			Prefix = "";
 			Commands = {":tasks", ":tasklist", Settings.Prefix.."tasks", Settings.Prefix.."tasklist"};
 			Args = {"player"};
+			Hidden = false;
 			Description = "Displays running tasks";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, target)
@@ -2100,7 +2100,7 @@ return function(Vargs, env)
 					AutoUpdate = 1;
 				})
 
-				delay(120, function() Logs.TempUpdaters[voteKey] = nil;end)
+				delay(120, function() Logs.TempUpdaters[voteKey] = nil end)
 				--[[
 				if not answers then
 					anstab = {"Yes", "No"}
