@@ -1785,10 +1785,10 @@ return function(Vargs, env)
 			end
 		};
 		ShowTasks = {
-			Hidden = false;
-			Prefix = ":";
-			Commands = {"tasks"};
+			Prefix = "";
+			Commands = {":tasks", ":tasklist", Settings.Prefix.."tasks", Settings.Prefix.."tasklist"};
 			Args = {"player"};
+			Hidden = false;
 			Description = "Displays running tasks";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, target)
@@ -2100,7 +2100,7 @@ return function(Vargs, env)
 					AutoUpdate = 1;
 				})
 
-				delay(120, function() Logs.TempUpdaters[voteKey] = nil;end)
+				delay(120, function() Logs.TempUpdaters[voteKey] = nil end)
 				--[[
 				if not answers then
 					anstab = {"Yes", "No"}
@@ -5798,7 +5798,7 @@ return function(Vargs, env)
 		};
 
 		ServerLog = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"serverlog", "serverlogs", "serveroutput"};
 			Args = {"autoupdate? (default: false)"};
 			Description = "View server log";
@@ -5831,7 +5831,7 @@ return function(Vargs, env)
 		};
 
 		LocalLog = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"locallog", "clientlog", "locallogs", "localoutput", "clientlogs"};
 			Args = {"player", "autoupdate? (default: false)"};
 			Description = "View local log";
@@ -5861,7 +5861,7 @@ return function(Vargs, env)
 		};
 
 		ErrorLogs = {
-			Prefix = ":";
+			Prefix = Settings.Prefix;
 			Commands = {"errorlogs", "debuglogs", "errorlog", "errors", "debuglog", "scripterrors", "adminerrors"};
 			Args = {"autoupdate? (default: false)"};
 			Hidden = false;
