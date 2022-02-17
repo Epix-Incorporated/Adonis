@@ -1787,7 +1787,7 @@ return function(Vargs, env)
 		ShowTasks = {
 			Hidden = false;
 			Prefix = Settings.Prefix;
-			Commands = {"tasks"};
+			Commands = {":tasks", ":tasklist", Settings.Prefix.."tasks", Settings.Prefix.."tasklist"};
 			Args = {"player"};
 			Description = "Displays running tasks";
 			AdminLevel = "Moderators";
