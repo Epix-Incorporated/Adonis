@@ -11,9 +11,26 @@ return function(Vargs)
 
 	warn("Requiring Alerts Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/8096250407/Adonis-Alerts-Module"})
 
-	local r, AlertTab = xpcall(require, function()
-		warn("Something went wrong while requiring the urgent messages module");
-	end, 8096250407)
+	local r, AlertTab
+	local LastUpdated = "2021-11-25T17:34:12.06Z"
+	local CurrentUpdated
+	local Success, _, ReturnedDate = xpcall(function()
+		CurrentUpdated = service.MarketplaceService:GetProductInfo(8096250407).Updated
+	end, function(err)
+		warn("An error occured while trying to get data of Adonis alerts module. Reason:", err)
+	end)
+
+	if LastUpdated ~= CurrentUpdated then
+		Logs:AddLog("Script", "A new version of the Adonis alerts was found, requiring cloud module. Last update:"..LastUpdated)
+		warn("A new version of the Adonis alerts was found, requiring cloud module. Last update:"..LastUpdated)
+		warn("Requiring Alerts Module by ID; URL > https://www.roblox.com/library/8096250407/Adonis-Alerts-Module")
+
+		r, AlertTab = xpcall(require, function(err)
+			warn("An error occured while requiring the urgent messages module. Reason:", err)
+		end, 8096250407)
+	else
+		Logs:AddLog("Script", "Adonis alerts module was required in offline mode because the version hasn't updated. Last update:"..LastUpdated)
+	end
 
 	local Alerts = (r and AlertTab) or require(Deps.__URGENT_MESSAGES)
 
