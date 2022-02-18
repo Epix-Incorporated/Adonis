@@ -473,13 +473,21 @@ return service.NewProxy({
 			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
 			local mutexBackup = mutex:Clone()
 			local function antiRemove(m)
-				local conn; conn = m:GetPropertyChangedSignal("Parent"):Connect(function()
-					if m.Parent ~= service.RunService then
-						conn:Disconnect()
+				local connection1, connection2
+				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
+					if not m or m.Parent ~= service.RunService then
+						connection1:Disconnect()
+						connection2:Disconnect()
 						warn("Adonis module mutex removed; Regenerating...")
 						antiRemove(mutexBackup)
 						mutexBackup.Parent = service.RunService
 						mutexBackup = mutexBackup:Clone()
+					end
+				end)
+
+				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
+					if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						m.Name = "__Adonis_MODULE_MUTEX"
 					end
 				end)
 			end
