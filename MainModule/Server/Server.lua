@@ -462,18 +462,29 @@ for ind,loc in pairs({
 --// Init
 return service.NewProxy({
 	__call = function(tab, data)
-		if type(rawget(_G, "__Adonis_MODULE_MUTEX")) == "string" then
+		local mutex = service.RunService:FindFirstChild("__Adonis_MODULE_MUTEX")
+		if mutex then
 			warn("\n-----------------------------------------------"
 				.."\nAdonis server-side is already running! Aborting..."
 				.."\n-----------------------------------------------")
 			script:Destroy()
 			return "FAILED"
 		else
-			if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-				rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
-			else
-				warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
+			local mutexBackup = mutex:Clone()
+			local function antiRemove(m)
+				local conn; conn = m:GetPropertyChangedSignal("Parent"):Connect(function()
+					if m.Parent ~= service.RunService then
+						conn:Disconnect()
+						warn("Adonis module mutex removed; Regenerating...")
+						antiRemove(mutexBackup)
+						mutexBackup.Parent = service.RunService
+						mutexBackup = mutexBackup:Clone()
+					end
+				end)
 			end
+			antiRemove(mutex)
+			mutex.Parent = service.RunService
 		end
 
 		--// Begin Script Loading
