@@ -472,18 +472,26 @@ return service.NewProxy({
 		else
 			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
 			local mutexBackup = mutex:Clone()
-			local function antiRemove(m)
-				local conn; conn = m:GetPropertyChangedSignal("Parent"):Connect(function()
-					if m.Parent ~= service.RunService then
-						conn:Disconnect()
+			local function makePersistent(m)
+				local connection1, connection2 = nil, nil
+				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
+					if not m or m.Parent ~= service.RunService then
+						connection1:Disconnect()
+						connection2:Disconnect()
 						warn("Adonis module mutex removed; Regenerating...")
-						antiRemove(mutexBackup)
+						makePersistent(mutexBackup)
 						mutexBackup.Parent = service.RunService
 						mutexBackup = mutexBackup:Clone()
 					end
 				end)
+				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
+					if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						warn("Adonis module mutex renamed; Refreshing...")
+						m.Name = "__Adonis_MODULE_MUTEX"
+					end
+				end)
 			end
-			antiRemove(mutex)
+			makePersistent(mutex)
 			mutex.Parent = service.RunService
 		end
 
