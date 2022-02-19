@@ -5122,36 +5122,38 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local HumanoidDescription = v.Character.Humanoid:GetAppliedDescription()
-					for i2, v2 in pairs(service.GetPlayers(plr, args[2])) do
-						local HumanoidDescription2 = v2.Character.Humanoid:GetAppliedDescription()
-						local temptools = service.New("Model")
-						local vpos = v.Character.HumanoidRootPart.CFrame
-						local v2pos = v2.Character.HumanoidRootPart.CFrame
-						for k, p in pairs(v.Character:GetChildren()) do
-							if p:IsA("Tool") then
-								p.Parent = temptools
+				for _, v1 in pairs(service.GetPlayers(plr, args[1])) do
+					if not v1.Character then continue end
+					local v1hum = v1.Character:FindFirstChildOfClass("Humanoid")
+					local v1desc = v1hum:GetAppliedDescription()
+		
+					for _, v2 in pairs(service.GetPlayers(plr, args[2])) do
+						if not v2.Character then continue end
+						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
+						local v2desc = v2hum:GetAppliedDescription()
+		
+						local v1pos, v2pos = v1.Character:GetPivot(), v2.Character:GetPivot()
+		
+						v1hum:UnequipTools()
+						v2hum:UnequipTools()
+						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
+		
+						for _, t in ipairs(v1tools:GetChildren()) do
+							if t:IsA("Tool") then
+								t.Parent = v2.Backpack
 							end
 						end
-						for k, p in pairs(v.Backpack:GetChildren()) do
-							p.Parent = temptools
-						end
-						for k, p in pairs(v2.Character:GetChildren()) do
-							if p:IsA("Tool") then
-								p.Parent = v.Backpack
+						for _, t in pairs(v2tools:GetChildren()) do
+							if t:IsA("Tool") then
+								t.Parent = v1.Backpack
 							end
 						end
-						for k, p in pairs(v2.Backpack:GetChildren()) do
-							p.Parent = v.Backpack
-						end
-						for k, p in pairs(temptools:GetChildren()) do
-							p.Parent = v2.Backpack
-						end
-						v.Character.Humanoid:ApplyDescription(HumanoidDescription2)
-						v.Character.Humanoid:ApplyDescription(HumanoidDescription)
-						v2.Character.HumanoidRootPart.CFrame = vpos
-						v.Character.HumanoidRootPart.CFrame = v2pos
+		
+						v1hum:ApplyDescription(v2desc)
+						v2hum:ApplyDescription(v1desc)
+		
+						v1.Character:PivotTo(v2pos)
+						v2.Character:PivotTo(v1pos)
 					end
 				end
 			end

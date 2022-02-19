@@ -870,8 +870,8 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
-						for descIndex,descName in ipairs(DescsToRemove) do
-							humanoidDesc[descName] = ""
+						for _, prop in ipairs(DescsToRemove) do
+							humanoidDesc[prop] = ""
 						end
 						humanoid:ApplyDescription(humanoidDesc)
 					end
