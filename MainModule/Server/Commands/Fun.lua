@@ -569,7 +569,7 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-698712377")
 				end
 			end
-		};--//Ender was here
+		};
 
 		Boombox = {
 			Prefix = Settings.Prefix;
@@ -700,6 +700,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				-- TODO: Switch to HumanoidDescriptions
 				local bodyColors = service.New("BodyColors", {
 					HeadColor = BrickColor.new("Bright yellow"),
 					LeftArmColor = BrickColor.new("Bright yellow"),
@@ -729,44 +730,32 @@ return function(Vargs, env)
 			Commands = {"color", "playercolor", "bodycolor"};
 			Args = {"player", "brickcolor or RGB"};
 			Hidden = false;
-			Description = "Makes the target player(s)'s BrickColor to the color you choose";
+			Description = "Recolors the target character(s) with the given color, or random if none is given";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-				local color3 = {}
-				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
+				local color
+
+				local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
 
 				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-
-					-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"
-				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
-					for s in args[2]:gmatch("[%d]+") do
-						table.insert(color3, tonumber(s))
-					end
-
-					-- Check if input was right
-					if (#color3 == 3) then
-						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
-					else
-						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
-						brickColor = BrickColor.new("Medium stone grey")
-					end
+					color = BrickColor.Random().Color
+					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
+				else 
+					color = Functions.ParseColor3(args[2])
+					assert(color, "Invalid color provided")
 				end
 
-				if (typeof(color3) == "Color3") then
-					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
-					brickColor = color3
-				end
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i, v in pairs(BodyColorGroups) do
-							bc[v] = brickColor
-						end
+						for _, property in ipairs(BodyColorProperties) do 
+							humanoidDesc[property] = color
+						end 
+						
+						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
 					end
 				end
 			end
@@ -970,8 +959,6 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-
 
 		Spook = {
 			Prefix = Settings.Prefix;
@@ -3865,150 +3852,6 @@ return function(Vargs, env)
 						end
 					end
 				end
-			end
-		};
-
-		RightLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"rleg", "rightleg", "rightlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 31, "ID is not a right leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"lleg", "leftleg", "leftlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 30, "ID is not a left leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		RightArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"rarm", "rightarm", "rightarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 28, "ID is not a right arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"larm", "leftarm", "leftarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 29, "ID is not a left arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		Torso = {
-			Prefix = Settings.Prefix;
-			Commands = {"torso", "torsopackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Torso package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 27, "ID is not a torso!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		HeadPackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"head", "headpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Head package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if (args[2] ~= "0") then
-					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-					assert(id == 17, "ID is not a head!")
-				end
-
-				local target = service.GetPlayers(plr, args[1])[1]
-				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
-
-				local descriptionClone = target_humanoid:GetAppliedDescription()
-				descriptionClone.Head = args[2]
-
-				target_humanoid:ApplyDescription(descriptionClone)
 			end
 		};
 
