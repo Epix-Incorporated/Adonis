@@ -5280,19 +5280,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local HumanoidDescription = v.Character.Humanoid:GetAppliedDescription()
 					for i2, v2 in pairs(service.GetPlayers(plr, args[2])) do
+						local HumanoidDescription2 = v2.Character.Humanoid:GetAppliedDescription()
 						local temptools = service.New("Model")
-						local tempcloths = service.New("Model")
 						local vpos = v.Character.HumanoidRootPart.CFrame
 						local v2pos = v2.Character.HumanoidRootPart.CFrame
-						local vface = v.Character.Head.face
-						local v2face = v2.Character.Head.face
-						vface.Parent = v2.Character.Head
-						v2face.Parent = v.Character.Head
 						for k, p in pairs(v.Character:GetChildren()) do
-							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
-								p.Parent = tempcloths
-							elseif p:IsA("Tool") then
+							if p:IsA("Tool") then
 								p.Parent = temptools
 							end
 						end
@@ -5300,14 +5295,9 @@ return function(Vargs, env)
 							p.Parent = temptools
 						end
 						for k, p in pairs(v2.Character:GetChildren()) do
-							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
-								p.Parent = v.Character
-							elseif p:IsA("Tool") then
+							if p:IsA("Tool") then
 								p.Parent = v.Backpack
 							end
-						end
-						for k, p in pairs(tempcloths:GetChildren()) do
-							p.Parent = v2.Character
 						end
 						for k, p in pairs(v2.Backpack:GetChildren()) do
 							p.Parent = v.Backpack
@@ -5315,6 +5305,8 @@ return function(Vargs, env)
 						for k, p in pairs(temptools:GetChildren()) do
 							p.Parent = v2.Backpack
 						end
+						v.Character.Humanoid:ApplyDescription(HumanoidDescription2)
+						v.Character.Humanoid:ApplyDescription(HumanoidDescription)
 						v2.Character.HumanoidRootPart.CFrame = vpos
 						v.Character.HumanoidRootPart.CFrame = v2pos
 					end

@@ -866,10 +866,14 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
-					for _, v in ipairs(p.Character:GetChildren()) do
-						if v:IsA("Accoutrement") then
-							v:Destroy()
+					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
+						for descIndex,descName in ipairs(DescsToRemove) do
+							humanoidDesc[descName] = ""
 						end
+						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
