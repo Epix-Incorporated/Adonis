@@ -5298,7 +5298,7 @@ return function(Vargs, env)
 			end
 		};
 		
-		--[[CharacterBodySwap = {
+		CharacterBodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"characterbodyswap", "charbodyswap"};
 			Args = {"player1", "player2"};
@@ -5348,7 +5348,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};]]
+		};
 
 		BodySwap = {
 			Prefix = Settings.Prefix;
