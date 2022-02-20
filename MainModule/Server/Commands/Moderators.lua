@@ -858,7 +858,7 @@ return function(Vargs, env)
 
 		RemoveHats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removehats", "nohats", "clearhats", "rhats"};
+			Commands = {"removehats", "nohats"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Removes any hats the target is currently wearing";
@@ -866,14 +866,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
-					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
-						for _, prop in ipairs(DescsToRemove) do
-							humanoidDesc[prop] = ""
+					for _, v in ipairs(p.Character:GetChildren()) do
+						if v:IsA("Accoutrement") then
+							v:Destroy()
 						end
-						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
@@ -895,6 +891,29 @@ return function(Vargs, env)
 						if v:IsA("Accessory") and v.Name:lower() == args[2]:lower() then
 							v:Destroy()
 						end
+					end
+				end
+			end
+		};
+
+		RemoveAvatarItems = {
+			Prefix = Settings.Prefix;
+			Commands = {"removeavataritems", "noavataritems", "removecatalogitems", "clearavataritems"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Removes any hats the target is currently wearing";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
+						for _, prop in ipairs(DescsToRemove) do
+							humanoidDesc[prop] = ""
+						end
+						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
