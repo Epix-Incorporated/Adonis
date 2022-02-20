@@ -4989,14 +4989,38 @@ return function(Vargs, env)
 			Commands = {"removeshirt", "unshirt", "noshirt"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Remove any shirt(s) worn by the target player(s) and removes it from their HumanoidDescription";
+			Description = "Remove any shirt(s) worn by the target player(s).";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						for g, k in pairs(v.Character:GetChildren()) do
-							if k:IsA("ShirtGraphic") then k:Destroy() end
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.Shirt = 0
+						end
+					end
+				end
+			end
+		};
+		
+		RemovePants = {
+			Prefix = Settings.Prefix;
+			Commands = {"removepant"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any pants) worn by the target player(s).";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
 						end
 						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
