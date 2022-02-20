@@ -901,7 +901,7 @@ return function(Vargs, env)
 			Commands = {"removeavataritems", "noavataritems", "removecatalogitems", "clearavataritems"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Removes any catalog items that the target currently has and from their HumanoidDescription.";
+			Description = "Removes any catalog items that the target currently has and from their HumanoidDescription, except the packages.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
