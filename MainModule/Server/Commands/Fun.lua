@@ -3855,6 +3855,150 @@ return function(Vargs, env)
 			end
 		};
 
+		RightLeg = {
+			Prefix = Settings.Prefix;
+			Commands = {"rleg", "rightleg", "rightlegpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Right Leg package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 31, "ID is not a right leg!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		LeftLeg = {
+			Prefix = Settings.Prefix;
+			Commands = {"lleg", "leftleg", "leftlegpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Left Leg package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 30, "ID is not a left leg!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		RightArm = {
+			Prefix = Settings.Prefix;
+			Commands = {"rarm", "rightarm", "rightarmpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Right Arm package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 28, "ID is not a right arm!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		LeftArm = {
+			Prefix = Settings.Prefix;
+			Commands = {"larm", "leftarm", "leftarmpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Left Arm package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 29, "ID is not a left arm!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		Torso = {
+			Prefix = Settings.Prefix;
+			Commands = {"torso", "torsopackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Torso package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 27, "ID is not a torso!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		HeadPackage = {
+			Prefix = Settings.Prefix;
+			Commands = {"head", "headpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Head package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if (args[2] ~= "0") then
+					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+					assert(id == 17, "ID is not a head!")
+				end
+
+				local target = service.GetPlayers(plr, args[1])[1]
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
+
+				local descriptionClone = target_humanoid:GetAppliedDescription()
+				descriptionClone.Head = args[2]
+
+				target_humanoid:ApplyDescription(descriptionClone)
+			end
+		};		
+
 		LoopFling = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopfling"};
