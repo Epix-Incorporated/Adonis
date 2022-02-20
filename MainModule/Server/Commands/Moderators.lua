@@ -4711,10 +4711,9 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
-				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
+			Commands = {"avataritem", "catalogitem", "givecatalogitem", "avatarpackage"};
 			Args = {"player", "ID"};
-			Description = "Give the target player(s) the avatar item matching <ID>";
+			Description = "Give the target player(s) the avatar catalog item matching catalog <ID>-";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
