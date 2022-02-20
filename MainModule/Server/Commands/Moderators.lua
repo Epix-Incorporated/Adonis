@@ -901,7 +901,7 @@ return function(Vargs, env)
 			Commands = {"removeavataritems", "noavataritems", "removecatalogitems", "clearavataritems"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Removes any hats the target is currently wearing";
+			Description = "Removes any catalog items that the target currently has and from their HumanoidDescription.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4732,7 +4732,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "catalogitem", "givecatalogitem", "avatarpackage"};
 			Args = {"player", "ID"};
-			Description = "Give the target player(s) the avatar catalog item matching catalog <ID>-";
+			Description = "Gives the target player(s) the avatar catalog item matching catalog <ID> and adds it to their HumanoidDescription.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
@@ -4814,13 +4814,61 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		RemoveTShirt = {
 			Prefix = Settings.Prefix;
 			Commands = {"removetshirt", "untshirt", "notshirt"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Remove any t-shirt(s) worn by the target player(s)";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.GraphicTShirt = 0
+						end
+					end
+				end
+			end
+		};
+		
+		RemoveShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removeshirt", "unshirt", "noshirt"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any shirt(s) worn by the target player(s) and removes it from their HumanoidDescription";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.Shirt = 0
+						end
+					end
+				end
+			end
+		};
+
+		RemoveCatalogTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removecatalogtshirt", "removeavatartshirt"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any t-shirt(s) worn by the target player(s) and removes it from their HumanoidDescription.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
@@ -4835,12 +4883,12 @@ return function(Vargs, env)
 			end
 		};
 
-		RemoveShirt = {
+		RemoveCatalogShirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeshirt", "unshirt", "noshirt"};
+			Commands = {"removecatalogshirt", "removeavatarshirt"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Remove any shirt(s) worn by the target player(s)";
+			Description = "Remove any shirt(s) worn by the target player(s) and removes it from their HumanoidDescription";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
