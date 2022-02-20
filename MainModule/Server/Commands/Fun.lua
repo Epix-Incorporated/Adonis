@@ -3855,6 +3855,150 @@ return function(Vargs, env)
 			end
 		};
 
+		RightLeg = {
+			Prefix = Settings.Prefix;
+			Commands = {"rleg", "rightleg", "rightlegpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Right Leg package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 31, "ID is not a right leg!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		LeftLeg = {
+			Prefix = Settings.Prefix;
+			Commands = {"lleg", "leftleg", "leftlegpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Left Leg package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 30, "ID is not a left leg!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		RightArm = {
+			Prefix = Settings.Prefix;
+			Commands = {"rarm", "rightarm", "rightarmpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Right Arm package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 28, "ID is not a right arm!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		LeftArm = {
+			Prefix = Settings.Prefix;
+			Commands = {"larm", "leftarm", "leftarmpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Left Arm package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 29, "ID is not a left arm!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		Torso = {
+			Prefix = Settings.Prefix;
+			Commands = {"torso", "torsopackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Torso package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+				assert(id == 27, "ID is not a torso!")
+
+				local model = service.Insert(args[2], true)
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						Functions.ApplyBodyPart(v.Character, model)
+					end
+				end
+
+				model:Destroy()
+			end
+		};
+
+		HeadPackage = {
+			Prefix = Settings.Prefix;
+			Commands = {"head", "headpackage"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Change the target player(s)'s Head package";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if (args[2] ~= "0") then
+					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
+					assert(id == 17, "ID is not a head!")
+				end
+
+				local target = service.GetPlayers(plr, args[1])[1]
+				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
+
+				local descriptionClone = target_humanoid:GetAppliedDescription()
+				descriptionClone.Head = args[2]
+
+				target_humanoid:ApplyDescription(descriptionClone)
+			end
+		};		
+
 		LoopFling = {
 			Prefix = Settings.Prefix;
 			Commands = {"loopfling"};
@@ -5063,6 +5207,47 @@ return function(Vargs, env)
 			end
 		};
 
+		Hat = {
+			Prefix = Settings.Prefix;
+			Commands = {"hat", "givehat"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Gives the target player(s) a hat based on the ID you supply";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if not args[2] then error("Need to supply hat ID") end
+
+				local id = args[2]
+
+				if not tonumber(id) then
+					local built = {
+						teapot = 1055299;
+					}
+
+					if built[string.lower(args[2])] then
+						id = built[string.lower(args[2])]
+					end
+				end
+
+				if not tonumber(id) then error("Invalid ID") end
+
+				local market = service.MarketPlace
+				local info = market:GetProductInfo(id)
+
+				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
+					local hat = service.Insert(id)
+					assert(hat, "Invalid ID")
+
+					for i, v in pairs(service.GetPlayers(plr, args[1])) do
+						if v.Character and hat then
+							hat:Clone().Parent = v.Character
+						end
+					end
+				end
+			end
+		};
+
 		Slippery = {
 			Prefix = Settings.Prefix;
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
@@ -5112,13 +5297,65 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		CharacterBodySwap = {
+			Prefix = Settings.Prefix;
+			Commands = {"characterbodyswap", "charbodyswap"};
+			Args = {"player1", "player2"};
+			Hidden = false;
+			Description = "Swaps player1's and player2's bodies and tools";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for i2, v2 in pairs(service.GetPlayers(plr, args[2])) do
+						local temptools = service.New("Model")
+						local tempcloths = service.New("Model")
+						local vpos = v.Character.HumanoidRootPart.CFrame
+						local v2pos = v2.Character.HumanoidRootPart.CFrame
+						local vface = v.Character.Head.face
+						local v2face = v2.Character.Head.face
+						vface.Parent = v2.Character.Head
+						v2face.Parent = v.Character.Head
+						for k, p in pairs(v.Character:GetChildren()) do
+							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
+								p.Parent = tempcloths
+							elseif p:IsA("Tool") then
+								p.Parent = temptools
+							end
+						end
+						for k, p in pairs(v.Backpack:GetChildren()) do
+							p.Parent = temptools
+						end
+						for k, p in pairs(v2.Character:GetChildren()) do
+							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
+								p.Parent = v.Character
+							elseif p:IsA("Tool") then
+								p.Parent = v.Backpack
+							end
+						end
+						for k, p in pairs(tempcloths:GetChildren()) do
+							p.Parent = v2.Character
+						end
+						for k, p in pairs(v2.Backpack:GetChildren()) do
+							p.Parent = v.Backpack
+						end
+						for k, p in pairs(temptools:GetChildren()) do
+							p.Parent = v2.Backpack
+						end
+						v2.Character.HumanoidRootPart.CFrame = vpos
+						v.Character.HumanoidRootPart.CFrame = v2pos
+					end
+				end
+			end
+		};
 
 		BodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"bodyswap", "bodysteal", "bswap"};
 			Args = {"player1", "player2"};
 			Hidden = false;
-			Description = "Swaps player1's and player2's bodies and tools";
+			Description = "Swaps player1's and player2's avatars, bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})

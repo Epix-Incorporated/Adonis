@@ -858,7 +858,7 @@ return function(Vargs, env)
 
 		RemoveHats = {
 			Prefix = Settings.Prefix;
-			Commands = {"removehats", "nohats", "clearhats", "rhats"};
+			Commands = {"removehats", "nohats"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Removes any hats the target is currently wearing";
@@ -866,14 +866,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
-					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
-						for _, prop in ipairs(DescsToRemove) do
-							humanoidDesc[prop] = ""
+					for _, v in ipairs(p.Character:GetChildren()) do
+						if v:IsA("Accoutrement") then
+							v:Destroy()
 						end
-						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
@@ -895,6 +891,29 @@ return function(Vargs, env)
 						if v:IsA("Accessory") and v.Name:lower() == args[2]:lower() then
 							v:Destroy()
 						end
+					end
+				end
+			end
+		};
+
+		RemoveAvatarItems = {
+			Prefix = Settings.Prefix;
+			Commands = {"removeavataritems", "noavataritems", "removecatalogitems", "clearavataritems"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Removes any catalog items that the target currently has and from their HumanoidDescription, except the packages.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						local DescsToRemove = {"HatAccessory","HairAccessory","FaceAccessory","NeckAccessory","ShouldersAccessory","FrontAccessory","BackAccessory","WaistAccessory"}
+						for _, prop in ipairs(DescsToRemove) do
+							humanoidDesc[prop] = ""
+						end
+						humanoid:ApplyDescription(humanoidDesc)
 					end
 				end
 			end
@@ -4709,12 +4728,180 @@ return function(Vargs, env)
 			end
 		};
 
+		TShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"tshirt", "givetshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the t-shirt that belongs to <ID>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+
+				assert(Shirt, "Could not retrieve shirt asset for the supplied ID")
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.GraphicTShirt = ClothingId
+						end
+
+						if Shirt:IsA("Model") then
+							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
+						end
+
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		RemoveTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removetshirt", "untshirt", "notshirt"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any t-shirt(s) worn by the target player(s)";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.GraphicTShirt = 0
+						end
+					end
+				end
+			end
+		};
+
+		Shirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"shirt", "giveshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the shirt that belongs to <ID>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		Pants = {
+			Prefix = Settings.Prefix;
+			Commands = {"pants", "givepants"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the pants that belongs to <id>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Pants, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end
+						Pants:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		Face = {
+			Prefix = Settings.Prefix;
+			Commands = {"face", "giveface"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the face that belongs to <id>";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
+				local faceAssetTypeId = service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId
+				local asset;
+
+				if faceAssetTypeId == 1 then
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. args[2];
+					});
+				elseif faceAssetTypeId == 13 and Functions.GetTexture(faceId) ~= 6825455804 then -- just incase GetTexture actually works?
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. tostring(Functions.GetTexture(faceId));
+					});
+				elseif faceAssetTypeId == 18 then
+					asset = service.Insert(faceId)
+				else
+					error("Invalid face(Image/robloxFace)", 0)
+				end
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local Head = v.Character and v.Character:FindFirstChild("Head")
+					local face = Head and Head:FindFirstChild("face")
+
+					if Head then
+						if face then
+							face:Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
+						end
+
+						local clone = asset:Clone();
+						clone.Parent = v.Character:FindFirstChild("Head")
+					end
+				end
+			end
+		};
+
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
-				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
+			Commands = {"avataritem", "accessory", "catalogitem", "giveavataritem", "givecatalogitem", "avatarpackage", "catalogemote", "cataloganim", "cataloganimation"};
 			Args = {"player", "ID"};
-			Description = "Give the target player(s) the avatar item matching <ID>";
+			Description = "Gives the target player(s) the avatar catalog item matching catalog <ID> and adds it to their HumanoidDescription.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
@@ -4796,13 +4983,37 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		RemoveTShirt = {
+		
+		RemoveShirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removetshirt", "untshirt", "notshirt"};
+			Commands = {"removeshirt", "unshirt", "noshirt"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Remove any t-shirt(s) worn by the target player(s)";
+			Description = "Remove any shirt(s) worn by the target player(s) and removes it from their HumanoidDescription";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						if humandescrip then
+							humandescrip.Shirt = 0
+						end
+					end
+				end
+			end
+		};
+
+		RemoveCatalogTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"removecatalogtshirt", "removeavatartshirt"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any t-shirt(s) worn by the target player(s) and removes it from their HumanoidDescription.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
@@ -4817,12 +5028,12 @@ return function(Vargs, env)
 			end
 		};
 
-		RemoveShirt = {
+		RemoveCatalogShirt = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeshirt", "unshirt", "noshirt"};
+			Commands = {"removecatalogshirt", "removeavatarshirt"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Remove any shirt(s) worn by the target player(s)";
+			Description = "Remove any shirt(s) worn by the target player(s) and removes it from their HumanoidDescription";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
