@@ -4899,7 +4899,8 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "catalogitem", "giveavataritem", "givecatalogitem", "avatarpackage", "catalogemote", "cataloganim", "cataloganimation"};
+			Commands = {"avataritem", "catalogaccessory", "catalogitem", "giveavataritem", "givecatalogitem", "avatarpackage", "catalogemote", "cataloganim", "cataloganimation
+				    "catalogshirt", "catalogpants"};
 			Args = {"player", "ID"};
 			Description = "Gives the target player(s) the avatar catalog item matching catalog <ID> and adds it to their HumanoidDescription.";
 			AdminLevel = "Moderators";
