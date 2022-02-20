@@ -5207,6 +5207,47 @@ return function(Vargs, env)
 			end
 		};
 
+		Hat = {
+			Prefix = Settings.Prefix;
+			Commands = {"hat", "givehat"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Gives the target player(s) a hat based on the ID you supply";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				if not args[2] then error("Need to supply hat ID") end
+
+				local id = args[2]
+
+				if not tonumber(id) then
+					local built = {
+						teapot = 1055299;
+					}
+
+					if built[string.lower(args[2])] then
+						id = built[string.lower(args[2])]
+					end
+				end
+
+				if not tonumber(id) then error("Invalid ID") end
+
+				local market = service.MarketPlace
+				local info = market:GetProductInfo(id)
+
+				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
+					local hat = service.Insert(id)
+					assert(hat, "Invalid ID")
+
+					for i, v in pairs(service.GetPlayers(plr, args[1])) do
+						if v.Character and hat then
+							hat:Clone().Parent = v.Character
+						end
+					end
+				end
+			end
+		};
+
 		Slippery = {
 			Prefix = Settings.Prefix;
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
