@@ -103,7 +103,7 @@ return function(data)
 	
 	local reCountries = {"GB", "CA", "AU", "IE", "NZ", "ZA", "GS"}
 		local success, isBritishSpelling = xpcall(function()
-			if table.find(reCountries, service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer)) => 0 then
+			if table.find(reCountries, service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer)) => 1 then
 				return true 
 			end
 	end, function() return false end)
