@@ -21,9 +21,7 @@ local realWarn = warn;
 local start = time();
 
 local function print(...)
-	if true then
-		--realPrint(...)
-	end
+	--realPrint(...)
 end
 
 local function warn(str)

@@ -827,8 +827,8 @@ return function(Vargs, env)
 
 				if string.lower(class) == "script" or string.lower(class) == "s" then
 					class = "Script"
-				elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
-					class = "LocalScript"
+				--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
+				--	class = "LocalScript"
 				else
 					class = "LocalScript"
 				end
@@ -866,9 +866,7 @@ return function(Vargs, env)
 						local tab = Core.GetScript(scr)
 						if scr and tab then
 							sb[class][name].Event = plr.Chatted:Connect(function(msg)
-								if string.sub(msg, 1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
-
-								else
+								if string.sub(msg, 1,#(Settings.Prefix.."sb")) ~= Settings.Prefix.."sb" then
 									tab.Source = tab.Source.."\n"..msg
 									Functions.Hint("Appended message to "..class.." "..name, {plr})
 								end

@@ -20,7 +20,8 @@ return function(data)
 	if mode == "Off" or not mode then
 		gTable:Destroy()
 	elseif mode == "Pixelize" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
+		frame.Parent = gui
 		local camera = workspace.CurrentCamera
 		local pixels = {}
 
@@ -32,7 +33,8 @@ return function(data)
 		local function renderScreen()
 			for i,pixel in pairs(pixels) do
 				local ray = camera:ScreenPointToRay(pixel.X,pixel.Y,depth)
-				local part, endPoint = workspace:FindPartOnRay(Ray.new(ray.Origin,ray.Direction*distance))
+				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
+				local part, endPoint = result.Instance, result.Position
 				if part and part.Transparency < 1 then
 					pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
 				else
@@ -96,13 +98,14 @@ return function(data)
 		bg.BackgroundTransparency = 0
 	elseif mode == "Trippy" then
 		local v = service.Player
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 
 		while gui and gui.Parent do
 			wait(1/44)
@@ -111,15 +114,17 @@ return function(data)
 
 		if gui then gui:Destroy() end
 	elseif mode == "Spooky" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3=Color3.new(0,0,0)
 		frame.Size=UDim2.new(1,0,1,50)
 		frame.Position=UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			299735022;
 			299735054;
@@ -140,9 +145,10 @@ return function(data)
 			299735379;
 		}
 
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://174270407"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
@@ -153,15 +159,17 @@ return function(data)
 		end
 		sound:Stop()
 	elseif mode == "lifeoftheparty" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3 = Color3.new(0,0,0)
 		frame.Size = UDim2.new(1,0,1,50)
 		frame.Position = UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			299733203;
 			299733248;
@@ -191,9 +199,10 @@ return function(data)
 			299733694;
 
 		}
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://172906410"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
@@ -205,15 +214,17 @@ return function(data)
 
 		sound:Stop()
 	elseif mode == "trolling" then
-		local frame = Instance.new("Frame",gui)
+		local frame = Instance.new("Frame")
 		frame.BackgroundColor3 = Color3.new(0,0,0)
 		frame.Size = UDim2.new(1,0,1,50)
 		frame.Position = UDim2.new(0,0,0,-50)
-		local img = Instance.new("ImageLabel",frame)
+		frame.Parent = gui
+		local img = Instance.new("ImageLabel")
 		img.Position = UDim2.new(0,0,0,0)
 		img.Size = UDim2.new(1,0,1,0)
 		img.BorderSizePixel = 0
 		img.BackgroundColor3 = Color3.new(0,0,0)
+		img.Parent = frame
 		local textures = {
 			"6172043688";
 			"6172044478";
@@ -243,9 +254,10 @@ return function(data)
 			"6172043688";
 
 		}
-		local sound = Instance.new("Sound",gui)
+		local sound = Instance.new("Sound")
 		sound.SoundId = "rbxassetid://229681899"
 		sound.Looped = true
+		sound.Parent = gui
 		sound:Play()
 
 		while gui and gui.Parent do
@@ -257,12 +269,13 @@ return function(data)
 
 		sound:Stop()
 	elseif mode == "Strobe" then
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 
 		while gui and gui.Parent do
 			wait(1/44)
@@ -272,28 +285,31 @@ return function(data)
 		end
 		if gui then gui:Destroy() end
 	elseif mode == "Blind" then
-		local bg = Instance.new("Frame", gui)
+		local bg = Instance.new("Frame")
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(10,0,10,0)
 		bg.Position = UDim2.new(-5,0,-5,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 	elseif mode == "ScreenImage" then
-		local bg = Instance.new("ImageLabel", gui)
+		local bg = Instance.new("ImageLabel")
 		bg.Image="rbxassetid://"..data.Image
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
 		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 	elseif mode == "ScreenVideo" then
-		local bg = Instance.new("VideoFrame", gui)
+		local bg = Instance.new("VideoFrame")
 		bg.Video="rbxassetid://"..data.Video
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
 		bg.Position = UDim2.new(0,0,0,0)
 		bg.ZIndex = 10
+		bg.Parent = gui
 		bg:Play()
 	end
 end

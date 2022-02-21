@@ -257,7 +257,7 @@ return function()
 
 		AntiTools = function()
 			if service.Player:WaitForChild("Backpack", 120) then
-				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
+				--local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
 				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
 				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
@@ -266,7 +266,7 @@ return function()
 							t.Active = false
 							t:Destroy()
 							Detected("log", "HopperBin Detected (BTools)")
-						elseif not Get("CheckBackpack", t) then
+						--elseif not Get("CheckBackpack", t) then
 							--t:Destroy() --// Temp disabled pending full fix
 							--Detected('log','Client-Side Tool Detected')
 						end

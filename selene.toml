@@ -1,0 +1,5 @@
+std = "roblox"
+
+[rules]
+if_same_then_else = "warn"
+global_usage = "allow"

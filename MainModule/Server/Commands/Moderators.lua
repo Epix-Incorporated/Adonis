@@ -2839,9 +2839,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local color = Enum.ChatColor.Red
-				if not args[2] then
-					color = Enum.ChatColor.Red
-				elseif string.lower(args[2])=="red" then
+				if string.lower(args[2])=="red" or not args[2] then
 					color = Enum.ChatColor.Red
 				elseif string.lower(args[2])=="green" then
 					color = Enum.ChatColor.Green
