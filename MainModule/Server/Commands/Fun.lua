@@ -733,7 +733,7 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[PlayerColor = {
+		PlayerColor = {
 			Prefix = Settings.Prefix;
 			Commands = {"color", "playercolor", "bodycolor"};
 			Args = {"player", "brickcolor or RGB"};
@@ -763,57 +763,7 @@ return function(Vargs, env)
 							humanoidDesc[property] = color
 						end 
 						
-						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
-					end
-				end
-			end
-		};]]
-
-		PlayerBrickColor = {
-			Prefix = Settings.Prefix;
-			Commands = {"playerbrickcolor", "brickcolor", "playercolor"};
-			Args = {"player", "brickcolor or RGB"};
-			Hidden = false;
-			Description = "Paints the target player(s)'s BrickColor";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-				local color3 = {}
-				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
-
-				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-					
-				-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
-				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
-					for s in args[2]:gmatch("[%d]+") do
-						table.insert(color3, tonumber(s))
-					end
-					
-					-- Check if input was right
-					if (#color3 == 3) then
-						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
-					else
-						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
-						brickColor = BrickColor.new("Medium stone grey")
-						--color = Functions.ParseColor3(args[2])
-						--assert(color, "Invalid color provided")
-					end
-				end
-				
-				if (typeof(color3) == "Color3") then
-					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
-					brickColor = color3
-				end
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i, v in pairs(BodyColorGroups) do
-							bc[v] = brickColor
-						end
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
 			end
@@ -3932,151 +3882,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
-
-		RightLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"rleg", "rightleg", "rightlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 31, "ID is not a right leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"lleg", "leftleg", "leftlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 30, "ID is not a left leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		RightArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"rarm", "rightarm", "rightarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 28, "ID is not a right arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"larm", "leftarm", "leftarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 29, "ID is not a left arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		Torso = {
-			Prefix = Settings.Prefix;
-			Commands = {"torso", "torsopackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Torso package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 27, "ID is not a torso!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		HeadPackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"head", "headpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Head package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if (args[2] ~= "0") then
-					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-					assert(id == 17, "ID is not a head!")
-				end
-
-				local target = service.GetPlayers(plr, args[1])[1]
-				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
-
-				local descriptionClone = target_humanoid:GetAppliedDescription()
-				descriptionClone.Head = args[2]
-
-				target_humanoid:ApplyDescription(descriptionClone)
-			end
-		};		
+		};	
 
 		LoopFling = {
 			Prefix = Settings.Prefix;
@@ -5286,47 +5092,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Hat = {
-			Prefix = Settings.Prefix;
-			Commands = {"hat", "givehat"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Gives the target player(s) a hat based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Need to supply hat ID") end
-
-				local id = args[2]
-
-				if not tonumber(id) then
-					local built = {
-						teapot = 1055299;
-					}
-
-					if built[string.lower(args[2])] then
-						id = built[string.lower(args[2])]
-					end
-				end
-
-				if not tonumber(id) then error("Invalid ID") end
-
-				local market = service.MarketPlace
-				local info = market:GetProductInfo(id)
-
-				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
-					local hat = service.Insert(id)
-					assert(hat, "Invalid ID")
-
-					for i, v in pairs(service.GetPlayers(plr, args[1])) do
-						if v.Character and hat then
-							hat:Clone().Parent = v.Character
-						end
-					end
-				end
-			end
-		};
-
 		Slippery = {
 			Prefix = Settings.Prefix;
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
@@ -5377,12 +5142,12 @@ return function(Vargs, env)
 			end
 		};
 		
-		CharacterBodySwap = {
+		OldBodySwap = {
 			Prefix = Settings.Prefix;
-			Commands = {"characterbodyswap", "charbodyswap"};
+			Commands = {"oldbodyswap", "oldbodysteal"};
 			Args = {"player1", "player2"};
 			Hidden = false;
-			Description = "Swaps player1's and player2's bodies and tools";
+			Description = "[Old] Swaps player1's and player2's bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
