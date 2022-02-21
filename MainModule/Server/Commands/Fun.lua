@@ -3223,13 +3223,11 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				assert(args[1], "Player argument missing")
 
-				local color = Functions.ParseColor(args[3])
-				local colorSequence = ColorSequence.new(Color3.new(1, 1, 1))
+				local color = Functions.ParseColor3(args[3])
+				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
 
-				if color then
-					color = ColorSequence.new(color)
-				elseif not color and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
-					color = ColorSequence.new{
+				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
+					colorSequence = ColorSequence.new{
 						ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
 						ColorSequenceKeypoint.new(1/7, Color3.fromRGB(255, 136, 0)),
 						ColorSequenceKeypoint.new(2/7, Color3.fromRGB(255, 228, 17)),
@@ -3246,17 +3244,17 @@ return function(Vargs, env)
 					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
-							local attachment0 = service.New("Attachment", {
+							local attachment0 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT0") or service.New("Attachment", {
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT0";
 							})
-							local attachment1 = service.New("Attachment", {
+							local attachment1 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT1") or service.New("Attachment", {
 								Position = Vector3.new(0,-0.05,0);
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT1";
 							})
 							Functions.NewParticle(p, "Trail", {
-								Color = color;
+								Color = colorSequence;
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
 								TextureLength = 2;
