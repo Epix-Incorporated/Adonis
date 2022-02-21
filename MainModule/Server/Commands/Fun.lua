@@ -5219,12 +5219,12 @@ return function(Vargs, env)
 						v2hum:UnequipTools()
 						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
 		
-						for _, t in ipairs(v1tools:GetChildren()) do
+						for _, t in ipairs(v1tools) do
 							if t:IsA("Tool") then
 								t.Parent = v2.Backpack
 							end
 						end
-						for _, t in pairs(v2tools:GetChildren()) do
+						for _, t in pairs(v2tools) do
 							if t:IsA("Tool") then
 								t.Parent = v1.Backpack
 							end
