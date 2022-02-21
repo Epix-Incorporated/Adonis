@@ -278,16 +278,18 @@ return function(Vargs, env)
 			Function = function (plr, args)
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local root = v.Character:FindFirstChild("HumanoidRootPart")
-					local sound = Instance.new("Sound", root)
+					local sound = Instance.new("Sound")
 					sound.SoundId = "rbxassetid://5816432987"
 					sound.Volume = 10
 					sound.PlayOnRemove = true
+					sound.Parent = root
 					sound:Destroy()
 					wait(1.4)
-					local vel = Instance.new("BodyVelocity", root)
+					local vel = Instance.new("BodyVelocity")
 					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 					vel.P = math.huge
+					vel.Parent = root
 					local smoke = Instance.new("ParticleEmitter")
 					smoke.Enabled = true
 					smoke.Lifetime = NumberRange.new(0, 3)
@@ -316,7 +318,7 @@ return function(Vargs, env)
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
 				local function generate(userId)
-					local tool = Instance.new("Tool", plr:FindFirstChildWhichIsA("Backpack"))
+					local tool = Instance.new("Tool")
 					local targetName = service.Players:GetNameFromUserIdAsync(userId)
 					if service.Players:GetPlayerByUserId(userId) then
 						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
@@ -324,10 +326,11 @@ return function(Vargs, env)
 						tool.ToolTip = "@"..targetName.." as a tool"
 					end
 					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
-					local handle = Instance.new("Part", tool)
+					local handle = Instance.new("Part")
 					handle.Name = "Handle"
 					handle.CanCollide = false
 					handle.Transparency = 1
+					handle.Parent = tool
 					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
 					model.Name = targetName
 					local hum = model:WaitForChild("Humanoid")
@@ -348,9 +351,11 @@ return function(Vargs, env)
 					end
 					model.Parent = tool
 					model:SetPrimaryPartCFrame(cfr)
-					local weld = Instance.new("WeldConstraint", tool)
+					local weld = Instance.new("WeldConstraint")
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot")
+					weld.Parent = tool
+					tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
 				end
 
 				if pcall(function() service.GetPlayers(plr, args[1]) end) then
@@ -379,12 +384,13 @@ return function(Vargs, env)
 			Function = function(runner, args)
 				for _, plr in pairs(service.GetPlayers(runner, args[1])) do
 					if plr.Character.Parent:IsA("Tool") ~= true then
-						local tool = Instance.new("Tool", workspace)
+						local tool = Instance.new("Tool")
 						tool.ToolTip = plr.DisplayName .. " as a tool, converted with Adonis."
 						tool.Name = plr.Name
-						local handle = Instance.new("Part", tool)
+						local handle = Instance.new("Part")
 						handle.Name = "Handle"
 						handle.Transparency = 1
+						handle.Parent = tool
 						local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
 						model.Name = plr.DisplayName
 						local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
@@ -408,9 +414,11 @@ return function(Vargs, env)
 						end
 						model.Parent = tool
 						model:SetPrimaryPartCFrame(cfr)
-						local weld = Instance.new("WeldConstraint", tool)
+						local weld = Instance.new("WeldConstraint")
 						weld.Part0 = handle
 						weld.Part1 = model:FindFirstChild("HumanoidRootPart")
+						weld.Parent = tool
+						tool.Parent = workspace
 					else
 						error("That user is already a doll!")
 					end
@@ -725,7 +733,7 @@ return function(Vargs, env)
 			end
 		};
 
-		--[[PlayerColor = {
+		PlayerColor = {
 			Prefix = Settings.Prefix;
 			Commands = {"color", "playercolor", "bodycolor"};
 			Args = {"player", "brickcolor or RGB"};
@@ -739,7 +747,7 @@ return function(Vargs, env)
 				local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
 
 				if not args[2] then
-					color = BrickColor.Random().Color
+					color = BrickColor.random().Color
 					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
 				else 
 					color = Functions.ParseColor3(args[2])
@@ -755,57 +763,7 @@ return function(Vargs, env)
 							humanoidDesc[property] = color
 						end 
 						
-						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
-					end
-				end
-			end
-		};]]
-
-		PlayerBrickColor = {
-			Prefix = Settings.Prefix;
-			Commands = {"playerbrickcolor", "brickcolor", "playercolor"};
-			Args = {"player", "brickcolor or RGB"};
-			Hidden = false;
-			Description = "Paints the target player(s)'s BrickColor";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local brickColor = (args[2] and BrickColor.new(args[2])) or BrickColor.Random()
-				local color3 = {}
-				local BodyColorGroups = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
-
-				if not args[2] then
-					Functions.Hint("Brickcolor wasn't supplied. Default was supplied: Random", {plr})
-					
-				-- Check if inputted BrickColor is valid, by default returns "Medium stone grey"	
-				elseif (args[2] ~= "Medium stone grey" and tostring(brickColor) == "Medium stone grey") then
-					for s in args[2]:gmatch("[%d]+") do
-						table.insert(color3, tonumber(s))
-					end
-					
-					-- Check if input was right
-					if (#color3 == 3) then
-						color3 = Color3.fromRGB(color3[1], color3[2], color3[3])
-					else
-						Functions.Hint("Brickcolor was invalid. Default was supplied: Medium stone grey", {plr})
-						brickColor = BrickColor.new("Medium stone grey")
-						--color = Functions.ParseColor3(args[2])
-						--assert(color, "Invalid color provided")
-					end
-				end
-				
-				if (typeof(color3) == "Color3") then
-					BodyColorGroups = {"HeadColor3", "LeftArmColor3", "RightArmColor3", "RightLegColor3", "LeftLegColor3", "TorsoColor3"}
-					brickColor = color3
-				end
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character and v.Character:FindFirstChildOfClass"BodyColors" then
-						local bc = v.Character:FindFirstChildOfClass"BodyColors"
-
-						for i, v in pairs(BodyColorGroups) do
-							bc[v] = brickColor
-						end
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
 			end
@@ -1120,9 +1078,15 @@ return function(Vargs, env)
 											em.Color = ColorSequence.new(Color3.fromRGB(199, 132, 65))
 											em.LightEmission = 0.5
 											em.LightInfluence = 0
-											em.Size = NumberSequence.new(2, 3, 1)
+											em.Size = NumberSequence.new{
+												NumberSequenceKeypoint.new(0, 2),
+												NumberSequenceKeypoint.new(1, 3)
+											}
 											em.Texture = "rbxassetid://173642823"
-											em.Transparency = NumberSequence.new(0, 1, 0, 0.051532, 0, 0, 0.927577, 0, 0, 1, 1, 0)
+											em.Transparency = NumberSequence.new{
+												NumberSequenceKeypoint.new(0, 0),
+												NumberSequenceKeypoint.new(1, 1)
+											}
 											em.Acceleration = Vector3.new(1, 0.1, 0)
 											em.VelocityInheritance = 0
 											em.EmissionDirection = "Top"
@@ -1347,12 +1311,14 @@ return function(Vargs, env)
 									if check() then
 										p.CameraMaxZoomDistance = 0.5
 
-										local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
-										local bg = Instance.new("Frame", gui)
+										local gui = Instance.new("ScreenGui")
+										gui.Parent = service.ReplicatedStorage
+										local bg = Instance.new("Frame")
 										bg.BackgroundTransparency = 0
 										bg.BackgroundColor3 = Color3.new(0, 0, 0)
 										bg.Size = UDim2.new(2, 0, 2, 0)
 										bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+										bg.Parent = gui
 										if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
 										wait(0.5)
 										pcall(function() gui:Destroy() end)
@@ -1531,15 +1497,17 @@ return function(Vargs, env)
 								local door = van.Door
 								local tPos = torso.CFrame
 
-								local sound = Instance.new("Sound", primary)
+								local sound = Instance.new("Sound")
 								sound.SoundId = "rbxassetid://258529216"
 								sound.Looped = true
+								sound.Parent = primary
 								sound:Play()
 
-								local chuckle = Instance.new("Sound", primary)
+								local chuckle = Instance.new("Sound")
 								chuckle.SoundId = "rbxassetid://164516281"
 								chuckle.Looped = true
 								chuckle.Volume = 0.25
+								chuckle.Parent = primary
 								chuckle:Play()
 
 								van.PrimaryPart = van.Primary
@@ -1599,12 +1567,14 @@ return function(Vargs, env)
 									end
 								end
 
-								local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
-								local bg = Instance.new("Frame", gui)
+								local gui = Instance.new("ScreenGui")
+								gui.Parent = service.ReplicatedStorage
+								local bg = Instance.new("Frame")
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
 								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Parent = gui
 								if p and p.Parent == service.Players then
 									if service.RunService:IsStudio() then
 										p:Kick("You were saved by the Studio environment.")
@@ -2202,12 +2172,10 @@ return function(Vargs, env)
 								p.CanCollide = false
 								local color = math.random(1, 3)
 								local bcolor
-								if color == 1 then
+								if color == 1 or color == 3 then
 									bcolor = BrickColor.new(21)
 								elseif color == 2 then
 									bcolor = BrickColor.new(1004)
-								elseif color == 3 then
-									bcolor = BrickColor.new(21)
 								end
 								p.BrickColor = bcolor
 								local m=service.New("BlockMesh", p)
@@ -3254,30 +3222,39 @@ return function(Vargs, env)
 			Fun = true;
 			Function = function(plr, args)
 				assert(args[1], "Player argument missing")
-				local newTrail = service.New("Trail", {
-					Texture = args[2] and "rbxassetid://"..args[2];
-					TextureMode = "Stretch";
-					TextureLength = 2;
-					Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
-					Name = "ADONIS_TRAIL";
-				})
 
-				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
+				local color = Functions.ParseColor3(args[3])
+				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
+
+				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
+					colorSequence = ColorSequence.new{
+						ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
+						ColorSequenceKeypoint.new(1/7, Color3.fromRGB(255, 136, 0)),
+						ColorSequenceKeypoint.new(2/7, Color3.fromRGB(255, 228, 17)),
+						ColorSequenceKeypoint.new(3/7, Color3.fromRGB(135, 255, 7)),
+						ColorSequenceKeypoint.new(4/7, Color3.fromRGB(11, 255, 207)),
+						ColorSequenceKeypoint.new(5/7, Color3.fromRGB(10, 46, 255)),
+						ColorSequenceKeypoint.new(6/7, Color3.fromRGB(255, 55, 255)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 0, 127))
+					}
+				end
+
+				for _, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
-					for k, p in pairs(char:GetChildren()) do
+					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
-							local attachment0 = service.New("Attachment", {
+							local attachment0 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT0") or service.New("Attachment", {
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT0";
 							})
-							local attachment1 = service.New("Attachment", {
+							local attachment1 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT1") or service.New("Attachment", {
 								Position = Vector3.new(0,-0.05,0);
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT1";
 							})
 							Functions.NewParticle(p, "Trail", {
-								Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
+								Color = colorSequence;
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
 								TextureLength = 2;
@@ -3903,151 +3880,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};
-
-		RightLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"rleg", "rightleg", "rightlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 31, "ID is not a right leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftLeg = {
-			Prefix = Settings.Prefix;
-			Commands = {"lleg", "leftleg", "leftlegpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Leg package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 30, "ID is not a left leg!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		RightArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"rarm", "rightarm", "rightarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Right Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 28, "ID is not a right arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		LeftArm = {
-			Prefix = Settings.Prefix;
-			Commands = {"larm", "leftarm", "leftarmpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Left Arm package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 29, "ID is not a left arm!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		Torso = {
-			Prefix = Settings.Prefix;
-			Commands = {"torso", "torsopackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Torso package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-				assert(id == 27, "ID is not a torso!")
-
-				local model = service.Insert(args[2], true)
-
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						Functions.ApplyBodyPart(v.Character, model)
-					end
-				end
-
-				model:Destroy()
-			end
-		};
-
-		HeadPackage = {
-			Prefix = Settings.Prefix;
-			Commands = {"head", "headpackage"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Change the target player(s)'s Head package";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if (args[2] ~= "0") then
-					local id = service.MarketPlace:GetProductInfo(args[2]).AssetTypeId
-					assert(id == 17, "ID is not a head!")
-				end
-
-				local target = service.GetPlayers(plr, args[1])[1]
-				local target_humanoid = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
-
-				local descriptionClone = target_humanoid:GetAppliedDescription()
-				descriptionClone.Head = args[2]
-
-				target_humanoid:ApplyDescription(descriptionClone)
-			end
-		};		
+		};	
 
 		LoopFling = {
 			Prefix = Settings.Prefix;
@@ -5257,47 +5090,6 @@ return function(Vargs, env)
 			end
 		};
 
-		Hat = {
-			Prefix = Settings.Prefix;
-			Commands = {"hat", "givehat"};
-			Args = {"player", "id"};
-			Hidden = false;
-			Description = "Gives the target player(s) a hat based on the ID you supply";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				if not args[2] then error("Need to supply hat ID") end
-
-				local id = args[2]
-
-				if not tonumber(id) then
-					local built = {
-						teapot = 1055299;
-					}
-
-					if built[string.lower(args[2])] then
-						id = built[string.lower(args[2])]
-					end
-				end
-
-				if not tonumber(id) then error("Invalid ID") end
-
-				local market = service.MarketPlace
-				local info = market:GetProductInfo(id)
-
-				if info.AssetTypeId == 8 or (info.AssetTypeId >= 41 and info.AssetTypeId <= 47) then
-					local hat = service.Insert(id)
-					assert(hat, "Invalid ID")
-
-					for i, v in pairs(service.GetPlayers(plr, args[1])) do
-						if v.Character and hat then
-							hat:Clone().Parent = v.Character
-						end
-					end
-				end
-			end
-		};
-
 		Slippery = {
 			Prefix = Settings.Prefix;
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
@@ -5348,12 +5140,12 @@ return function(Vargs, env)
 			end
 		};
 		
-		CharacterBodySwap = {
+		OldBodySwap = {
 			Prefix = Settings.Prefix;
-			Commands = {"characterbodyswap", "charbodyswap"};
+			Commands = {"oldbodyswap", "oldbodysteal"};
 			Args = {"player1", "player2"};
 			Hidden = false;
-			Description = "Swaps player1's and player2's bodies and tools";
+			Description = "[Old] Swaps player1's and player2's bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -5425,12 +5217,12 @@ return function(Vargs, env)
 						v2hum:UnequipTools()
 						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
 		
-						for _, t in ipairs(v1tools:GetChildren()) do
+						for _, t in ipairs(v1tools) do
 							if t:IsA("Tool") then
 								t.Parent = v2.Backpack
 							end
 						end
-						for _, t in pairs(v2tools:GetChildren()) do
+						for _, t in pairs(v2tools) do
 							if t:IsA("Tool") then
 								t.Parent = v1.Backpack
 							end

@@ -98,6 +98,7 @@ return function(data)
 		local entries = {
 			{"Game ID", game.GameId},
 			{"Game Creator", service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name.." (#"..data.CreatorId..")"},
+			-- selene: allow(incorrect_standard_library_use)
 			{"Creator Type", game.CreatorType.Name},
 			{"Place ID", game.PlaceId},
 			{"Place Name", service.MarketPlace:GetProductInfo(game.PlaceId).Name or "[Error]"},

@@ -51,9 +51,14 @@ return function(Vargs)
 		Backpack = Instance.new("Folder");
 		PlayerGui = Instance.new("Folder");
 		PlayerScripts = Instance.new("Folder");
-		Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-		IsA = function(ignore, arg) if arg == "Player" then return true end end;
-	}) do fakePlayer:SetSpecial(i, v) end
+		Kick = function() 
+			fakePlayer:Destroy() 
+			fakePlayer:SetSpecial("Parent", nil) 
+		end;
+		IsA = function(_, arg) if arg == "Player" then return true end end;
+	}) do 
+		fakePlayer:SetSpecial(i, v)
+	end
 
 	local function CopyCommand(tbl)
 		local ret = {}
@@ -96,7 +101,7 @@ return function(Vargs)
 	end
 
 	local delta, frames = 0, 0
-	service.RunService.Stepped:Connect(function(time, step)
+	service.RunService.Stepped:Connect(function(_, step)
 		delta += step
 		frames += 1
 		if delta > 1 then
@@ -203,10 +208,10 @@ return function(Vargs)
 			rawset(command, "AdminLevel", "WebPanel"..v.level)
 			setmetatable(command, {
 				WebPanel = true,
-				__index = function(tbl, index)
+				__index = function(_, ind)
 					local rawlevel = rawget(command, "AdminLevel")
 
-					if rawlevel and index == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
+					if rawlevel and ind == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
 						return {AdminLevel = string.sub(rawlevel, 9)}
 					end
 				end,
@@ -222,7 +227,9 @@ return function(Vargs)
 			didrun = true
 
 			local index, command = Admin.GetCommand(Settings.Prefix..i)
-			if not index or not command then index,command = Admin.GetCommand(Settings.PlayerPrefix..i) end
+			if not index or not command then 
+				index,command = Admin.GetCommand(Settings.PlayerPrefix..i)
+			end
 
 			if index and command then
 				UpdateCommand(index, command, v)
@@ -279,7 +286,7 @@ return function(Vargs)
 				end
 			end
 
-			for ind, music in pairs(data.Levels.Musiclist or {}) do
+			for _, music in pairs(data.Levels.Musiclist or {}) do
 				if string.match(music, '^(.*):(.*)') then
 					local a,b = string.match(music, '^(.*):(.*)')
 
@@ -333,7 +340,7 @@ return function(Vargs)
 				-- Handle panel overrides where no matching command was found
 				local command = Commands[ind]
 
-				for i,v in pairs(OverrideQueue) do
+				for _, v in pairs(OverrideQueue) do
 					if command.Commands and table.find(command.Commands, v.name) then
 						UpdateCommand(ind, val, v.data)
 						break
@@ -393,9 +400,13 @@ return function(Vargs)
 			end
 
 			--// Handle queue items
-			for i,v in pairs(data.Queue) do
-				if typeof(v.action) ~= "string" then v.action = tostring(v.action) end
-				if typeof(v.server) ~= "string" then v.server = tostring(v.server) end
+			for _, v in pairs(data.Queue) do
+				if typeof(v.action) ~= "string" then 
+					v.action = tostring(v.action)
+				end
+				if typeof(v.server) ~= "string" then 
+					v.server = tostring(v.server)
+				end
 
 				if v.action == "gameshutdown" then
 					Functions.Shutdown("[WebPanel] Server Shutdown")
@@ -444,12 +455,12 @@ return function(Vargs)
 			end
 		else
 			if res == "HttpError: Timedout" then
-				local success, aliveCheck = pcall(HttpService.RequestAsync, HttpService, {
+				local aliveSuccess, aliveCheck = pcall(HttpService.RequestAsync, HttpService, {
 					Url = "https://adonis.dev/",
 					Method = "GET"
 				})
 
-				if not success and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
+				if not aliveSuccess and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
 					wait(30)
 				end

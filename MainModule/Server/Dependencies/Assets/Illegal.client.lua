@@ -41,7 +41,8 @@ local head = script.Parent.Parent.Head
 local hum = script.Parent.Parent.Humanoid
 local torso = script.Parent
 local chat = game:GetService("Chat")
-local val = Instance.New('StringValue',head)
+local val = Instance.new('StringValue')
+val.Parent = head
 local old = math.random()
 local stop = false
 
@@ -86,11 +87,12 @@ end)()
 
 wait(10)
 
-local bg = Instance.New("BodyGyro", torso)
+local bg = Instance.new("BodyGyro")
 bg.Name = "SPINNER"
 bg.maxTorque = Vector3.new(0,math.huge,0)
 bg.P = 11111
 bg.cframe = torso.CFrame
+bg.Parent = torso
 
 coroutine.wrap(function()
 repeat wait(1/44)

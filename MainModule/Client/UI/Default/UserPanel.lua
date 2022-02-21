@@ -1415,7 +1415,7 @@ return function(data, Vargs)
 					local desc = descs[setting]
 
 					if setting == "" or setting == " " and value == nil then
-
+						continue
 					elseif value == nil then
 						gameTab:Add("TextLabel", {
 							Text = "  "..setting..": ";
@@ -1539,7 +1539,7 @@ return function(data, Vargs)
 								}
 							}
 						})
-					elseif type(value) == "string" then
+					elseif type(value) == "string" or type(value) == "number" then
 						gameTab:Add("TextLabel", {
 							Text = "  "..setting..": ";
 							ToolTip = desc;
@@ -1556,29 +1556,6 @@ return function(data, Vargs)
 									TextChanged = function(text, enter, new)
 										if enter then
 											--warn("Setting "..tostring(setting)..": "..tostring(text))
-											Remote.Send("SaveSetSetting", setting, text)
-										end
-									end
-								}
-							}
-						})
-					elseif type(value) == "number" then
-						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-							TextXAlignment = "Left";
-							Children = {
-								TextBox = {
-									Text = value;
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									BackgroundTransparency = 1;
-									TextChanged = function(text, enter, new)
-										if enter then
-											--warn("Setting "..tostring(setting)..": "..tonumber(text))
 											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end
