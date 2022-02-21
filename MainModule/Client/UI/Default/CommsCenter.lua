@@ -101,13 +101,16 @@ return function(data)
 		end
 	end
 	
-	local success, isAmerica = xpcall(function()
-		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
+	local reCountries = {"GB", "CA", "AU", "IE", "NZ", "ZA", "GS"}
+		local success, isBritishSpelling = xpcall(function()
+			if table.find(reCountries, service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer)) => 0 then
+				return true 
+			end
 	end, function() return false end)
 	
 	window = client.UI.Make("Window",{
 		Name  = "CommunicationsCenter";
-		Title =  if isAmerica then "Communications Center" else "Communications Center";
+		Title =  if isBritishSpelling then "Communications Centre" else "Communications Center";
 		Icon = client.MatIcons.Forum;
 		Size  = {500, 300};
 		OnClose = function()
