@@ -4202,14 +4202,14 @@ return function(Vargs, env)
 						for k, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 								p.Transparency = args[2]
-								if (p.Name == "Head") then
+								if p.Name == "Head" then
 									for _, v2 in pairs(p:GetChildren()) do
 										if v2:IsA("Decal") then
 											v2.Transparency = args[2]
 										end
 									end
 								end
-							elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+							elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
 								for _, v2 in pairs(p:GetChildren()) do
 									if v2:IsA("BasePart") then
 										v2.Transparency = args[2]
@@ -4272,19 +4272,19 @@ return function(Vargs, env)
 							local partInput = {}
 							local inputs = string.split(args[2], ",")
 
-							for k,v in pairs(inputs) do
-								if (v ~= "") then
-									if (v == "all") then
+							for _, v in pairs(inputs) do
+								if v ~= "" then
+									if v == "all" then
 										partInput = "all"
 										break -- break if "all" is found.
 									end
 
 									-- Validate inputs
-									if (v == "limbs" or v == "face" or v == "accessories") then
+									if v == "limbs" or v == "face" or v == "accessories" then
 										table.insert(partInput, v)
 									else
 										local found = false
-										while (found ~= true) do
+										while found ~= true do
 											for _,v2 in pairs(GroupPartInputs) do
 												if v == v2 then
 													table.insert(partInput, v)
@@ -4313,7 +4313,7 @@ return function(Vargs, env)
 
 
 							-- Check if partInput is a table
-							if (typeof(partInput) == "table") then
+							if typeof(partInput) == "table" then
 								local hash = {}
 
 								-- Check for duplicates
@@ -4328,18 +4328,18 @@ return function(Vargs, env)
 
 								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
 
-								if (rigType == Enum.HumanoidRigType.R15) then
-									for i=#partInput,1,-1 do
-										if (partInput[i] == "RightArm") then
+								if rigType == Enum.HumanoidRigType.R15 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightArm" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand" then
 													table.insert(foundKeys, k2)
 												end
 											end
 											-- If not all keys were found just remove all keys and add them manually
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "RightUpperArm")
@@ -4348,16 +4348,16 @@ return function(Vargs, env)
 											end
 											table.remove(partInput, i) -- Remove the group part input
 
-										elseif (partInput[i] == "LeftArm") then
+										elseif partInput[i] == "LeftArm" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand" then
 													table.insert(foundKeys, k2)
 												end
 											end
 
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "LeftUpperArm")
@@ -4366,16 +4366,16 @@ return function(Vargs, env)
 											end
 											table.remove(partInput, i)
 
-										elseif (partInput[i] == "RightLeg") then
+										elseif partInput[i] == "RightLeg" then
 											local foundKeys = {}
-											for i=#partInput,1,-1 do
-												if (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+											for i = #partInput, 1, -1 do
+												if partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
 													table.insert(foundKeys, partInput[i])
 												end
 											end
 
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "RightUpperLeg")
@@ -4384,16 +4384,16 @@ return function(Vargs, env)
 											end
 											table.remove(partInput, i)
 
-										elseif (partInput[i] == "LeftLeg") then
+										elseif partInput[i] == "LeftLeg" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot" then
 													table.insert(foundKeys, k2)
 												end
 											end
 
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "LeftUpperLeg")
@@ -4402,16 +4402,16 @@ return function(Vargs, env)
 											end
 											table.remove(partInput, i)
 
-										elseif (partInput[i] == "Torso") then
+										elseif partInput[i] == "Torso" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "UpperTorso" or v2 == "LowerTorso") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "UpperTorso" or v2 == "LowerTorso" then
 													table.insert(foundKeys, k2)
 												end
 											end
 
-											if (#foundKeys ~= 2) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 2 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "UpperTorso")
@@ -4422,17 +4422,17 @@ return function(Vargs, env)
 									end
 								end
 
-								if (rigType == Enum.HumanoidRigType.R6) then
-									for i=#partInput,1,-1 do
-										if (partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand") then
+								if rigType == Enum.HumanoidRigType.R6 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand") then
+										elseif partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+										elseif partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot") then
+										elseif partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso") then
+										elseif partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso" then
 											table.remove(partInput, i)
 										end
 									end
@@ -4440,21 +4440,21 @@ return function(Vargs, env)
 
 
 								-- Make chosen parts transparent
-								for k,v in pairs(partInput) do
+								for k, v in pairs(partInput) do
 									if not (v == "limbs" or v == "face" or v == "accessories") then
 										local part = player.Character:FindFirstChild(v)
-										if (part ~= nil and part:IsA("BasePart")) then
+										if part ~= nil and part:IsA("BasePart") then
 											part.Transparency = args[3]
 										end
 
-									elseif (v == "limbs") then
+									elseif v == "limbs" then
 										for key, part in pairs(player.Character:GetChildren()) do
 											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
 												part.Transparency = args[3]
 											end
 										end
 
-									elseif (v == "face") then
+									elseif v == "face" then
 										local headPart = player.Character:FindFirstChild("Head")
 										for _, v2 in pairs(headPart:GetChildren()) do
 											if v2:IsA("Decal") then
@@ -4462,7 +4462,7 @@ return function(Vargs, env)
 											end
 										end
 
-									elseif (v == "accessories") then
+									elseif v == "accessories" then
 										for key, part in pairs(player.Character:GetChildren()) do
 											if part:IsA("Accessory") then
 												for _, v2 in pairs(part:GetChildren()) do
@@ -4477,18 +4477,18 @@ return function(Vargs, env)
 
 
 								-- If "all" is specified
-							elseif (partInput == "all") then
+							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 										p.Transparency = args[3]
-										if (p.Name == "Head") then
+										if p.Name == "Head" then
 											for _, v2 in pairs(p:GetChildren()) do
 												if v2:IsA("Decal") then
 													v2.Transparency = args[3]
 												end
 											end
 										end
-									elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+									elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
 										for _, v2 in pairs(p:GetChildren()) do
 											if v2:IsA("BasePart") then
 												v2.Transparency = args[3]
@@ -4751,22 +4751,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507777826" -- Default R15 animation
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180426354"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
-							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "walk") then
+							for _, v2 in pairs(animateScript:GetDescendants()) do
+								if v2.Name == "walk" then
 									found = true
 									local walkAnimation = v2:FindFirstChildOfClass("Animation")
-									if (walkAnimation) then
+									if walkAnimation then
 										walkAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local walkAnimation = Instance.new("Animation")
@@ -4803,22 +4803,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507767714"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180426354"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
 							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "run") then
+								if v2.Name == "run" then
 									found = true
 									local runAnimation = v2:FindFirstChildOfClass("Animation")
-									if (runAnimation) then
+									if runAnimation then
 										runAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local runAnimation = Instance.new("Animation")
@@ -4855,22 +4855,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507765000"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "125750702"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
-							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "jump") then
+							for _, v2 in pairs(animateScript:GetDescendants()) do
+								if v2.Name == "jump" then
 									found = true
 									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
-									if (jumpAnimation) then
+									if jumpAnimation then
 										jumpAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local jumpAnimation = Instance.new("Animation")
@@ -4907,22 +4907,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507767968"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180436148"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
 							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "fall") then
+								if v2.Name == "fall" then
 									found = true
 									local fallAnimation = v2:FindFirstChildOfClass("Animation")
-									if (fallAnimation) then
+									if fallAnimation then
 										fallAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local fallAnimation = Instance.new("Animation")

@@ -4945,7 +4945,7 @@ return function(Vargs, env)
 					if rootPart then
 						local new = audio:Clone()
 
-						if (looped == false) then
+						if looped == false then
 							new.Ended:Connect(function()
 								new:Destroy() -- Destroy character audio after sound is finished if loop is off.
 							end)
