@@ -75,12 +75,12 @@
 						end
 
 						return true;
-					elseif Action == "SetProperty" and args[3] then
+					elseif Action == "SetProperty" and args[1] and args[2] then
 						local obj = args[1];
 						local prop = args[2];
 						local value = args[3];
-
-						if obj and prop then
+						
+						if value ~= nil then
 							obj[prop] = value;
 							return true;
 						end
