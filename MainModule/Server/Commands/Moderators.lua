@@ -4837,6 +4837,26 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		RemovePants = {
+			Prefix = Settings.Prefix;
+			Commands = {"removepants"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any pants(s) worn by the target player(s)";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						humanoidDesc.Pants = 0
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+					end
+				end
+			end
+		};
 
 		TargetAudio = {
 			Prefix = Settings.Prefix;
