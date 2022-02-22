@@ -4778,7 +4778,7 @@ return function(Vargs, env)
 
 		CustomPants = {
 			Prefix = Settings.Prefix;
-			Commands = {"CustomPants"};
+			Commands = {"custompants"};
 			Args = {"player", "id"};
 			Hidden = false;
 			Description = "Give the target player(s) the pants that belongs to <ID>. Supports images and catalog items.";
