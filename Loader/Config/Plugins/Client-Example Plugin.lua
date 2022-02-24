@@ -1,5 +1,6 @@
---!nolint UnknownGlobal
-return function()
+return function(Vargs)
+	local client, service = Vargs.Client, Vargs.Service
+
 	--Acts the same as a server plugin but with client functions instead of server.
 	--[[
 	local window = client.UI.Make("Window",{
