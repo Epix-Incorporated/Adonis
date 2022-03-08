@@ -439,6 +439,11 @@ return function(Vargs, GetEnv)
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
 						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							if p.Parent == nil then
+								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+							end
+						end)
 						event:Disconnect();
 					end
 				end)
