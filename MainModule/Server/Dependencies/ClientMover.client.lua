@@ -101,7 +101,7 @@ if module and module:IsA("ModuleScript") then
 	warn("LOOKED FOR : ".. tostring(folder.Name))
 	if found then
 		print("REMOVED!")
-		found:Destroy();
+		found.Parent = nil --found:Destroy();
 	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	warn("Changing child parent...")
@@ -135,7 +135,7 @@ if module and module:IsA("ModuleScript") then
 			warn("Client Loaded")
 
 			if container and container:IsA("ScreenGui") then
-				container:Destroy();
+				container.Parent = nil --container:Destroy();
 			end
 		end
 	end

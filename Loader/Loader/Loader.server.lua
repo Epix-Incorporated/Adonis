@@ -81,7 +81,7 @@ else
 	}
 
 	--// Init
-	script:Destroy()
+	script.Parent = nil --script:Destroy()
 	model.Name = math.random()
 
 	local moduleId = data.ModuleID
