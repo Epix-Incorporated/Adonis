@@ -29,7 +29,13 @@ return function(Vargs)
 
 	local WebPanel = HTTP.WebPanel
 
-	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
+	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
+	if not ownerId then
+		local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+		if success and type(creator) == "table" then
+			ownerId = creator.Owner.Id
+		end
+	end
 
 	local FoundCustomCommands = {}
 	local CachedAliases = {}
@@ -51,12 +57,12 @@ return function(Vargs)
 		Backpack = Instance.new("Folder");
 		PlayerGui = Instance.new("Folder");
 		PlayerScripts = Instance.new("Folder");
-		Kick = function() 
-			fakePlayer:Destroy() 
-			fakePlayer:SetSpecial("Parent", nil) 
+		Kick = function()
+			fakePlayer:Destroy()
+			fakePlayer:SetSpecial("Parent", nil)
 		end;
 		IsA = function(_, arg) if arg == "Player" then return true end end;
-	}) do 
+	}) do
 		fakePlayer:SetSpecial(i, v)
 	end
 
@@ -227,7 +233,7 @@ return function(Vargs)
 			didrun = true
 
 			local index, command = Admin.GetCommand(Settings.Prefix..i)
-			if not index or not command then 
+			if not index or not command then
 				index,command = Admin.GetCommand(Settings.PlayerPrefix..i)
 			end
 
@@ -401,10 +407,10 @@ return function(Vargs)
 
 			--// Handle queue items
 			for _, v in pairs(data.Queue) do
-				if typeof(v.action) ~= "string" then 
+				if typeof(v.action) ~= "string" then
 					v.action = tostring(v.action)
 				end
-				if typeof(v.server) ~= "string" then 
+				if typeof(v.server) ~= "string" then
 					v.server = tostring(v.server)
 				end
 
@@ -434,10 +440,10 @@ return function(Vargs)
 						if typeof(v.command) ~= "string" then
 							v.command = tostring(v.command)
 						end
-						
+
 						warn("WebPanel executed command from Web Panel: " .. tostring(v.command))
 						Logs:AddLog("Script", "WebPanel Executed command: " .. tostring(v.command))
-						
+
 						Process.Command(fakePlayer, v.command, {
 							AdminLevel = 900,
 							DontLog = true,
