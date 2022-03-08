@@ -431,7 +431,7 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container:Destroy();
+						container.Parent = nil --container:Destroy(); //Destroy replication update causes this to bug pretty sure
 						event:Disconnect();
 					end
 				end)
