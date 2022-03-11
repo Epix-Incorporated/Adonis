@@ -996,11 +996,34 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
 			end
 		end;
-	
+
 		FormatPlayer = function(plr, withUserId)
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
 			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
 			return str
+		end;
+
+		FormatNumber = function(num, separator)
+			num = tonumber(num)
+			if not num then return "NaN" end
+			if num >= 1e150 then return "Inf" end
+
+			local int, dec = unpack(tostring(num):split("."))
+
+			int = int:reverse()
+			local new = ""
+			local counter = 1
+			separator = separator or ","
+			for i = 1, #int do
+				if counter > 3 then
+					new ..= separator
+					counter = 1
+				end
+				new ..= int:sub(i, i)
+				counter += 1
+			end
+
+			return new:reverse() .. if dec then "."..dec else ""
 		end;
 
 		OwnsAsset = function(p,id)
