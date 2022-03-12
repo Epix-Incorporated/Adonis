@@ -112,6 +112,14 @@ return function()
 	end
 
 	coroutine.wrap(function()
+		if not game:IsLoaded() then
+			game.Loaded:Wait()
+		end
+
+		if not service.UnWrap(Player).Character and service.UnWrap(game):GetService("Players").CharacterAutoLoads then
+			service.UnWrap(Player).CharacterAdded:Wait()
+		end
+
 		local RunService = service.RunService
 		if
 			RunService:IsStudio() == true and
@@ -203,7 +211,9 @@ return function()
 
 					if #service.Players:GetPlayers() > 1 then
 						for _, v in ipairs(service.Players:GetPlayers()) do
-							if service.UnWrap(v) and service.UnWrap(v) ~= LocalPlayer then
+							local otherPlayer = service.UnWrap(v)
+
+							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
 								if success or err ~= "Cannot kick a non-local Player from a LocalScript" then
 									Detected("kick", "Anti kick found! Method 2")
