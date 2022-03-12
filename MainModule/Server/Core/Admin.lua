@@ -764,6 +764,8 @@ return function(Vargs, GetEnv)
 					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
 				end
 			end
+
+			service.Events.PlayerBanned:Fire(p, reason, doSave)
 		end;
 
 		DoBanCheck = function(name, check)
