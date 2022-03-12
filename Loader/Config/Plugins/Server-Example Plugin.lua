@@ -1,4 +1,3 @@
---!nolint UnknownGlobal
 --[[
 	SERVER PLUGINS' NAMES MUST START WITH "Server:" OR "Server-"
 	CLIENT PLUGINS' NAMES MUST START WITH "Client:" OR "Client-"

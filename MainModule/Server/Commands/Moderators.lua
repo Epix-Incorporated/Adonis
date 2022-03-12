@@ -633,8 +633,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						v.Character.Parent = service.UnWrap(Settings.Storage)
+					local char = v.Character
+					if char then
+						Remote.LoadCode(v, [[service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)]])
+						char.Parent = service.UnWrap(Settings.Storage)
 					end
 				end
 			end
@@ -647,9 +649,13 @@ return function(Vargs, env)
 			Description = "UnPunishes the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					v.Character.Parent = workspace
-					v.Character:MakeJoints()
+				for _, v in ipairs(service.GetPlayers(plr, args[1]))  do
+					local char = v.Character
+					if char then
+						char.Parent = workspace
+						char:MakeJoints()
+						Remote.LoadCode(v, [[service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)]])
+					end
 				end
 			end
 		};
@@ -861,7 +867,7 @@ return function(Vargs, env)
 			Commands = {"removehats", "nohats", "clearhats", "rhats"};
 			Args = {"player"};
 			Hidden = false;
-			Description = "Removes any hats the target is currently wearing";
+			Description = "Removes any hats the target is currently wearing and from their HumanoidDescription.";
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4710,10 +4716,10 @@ return function(Vargs, env)
 
 		AvatarItem = {
 			Prefix = Settings.Prefix;
-			Commands = {"avataritem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
+			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
 				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
-			Description = "Give the target player(s) the avatar item matching <ID>";
+			Description = "Give the target player(s) the avatar/catalog item matching <ID> and adds it to their HumanoidDescription.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
@@ -4832,6 +4838,26 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						humanoidDesc.Shirt = 0
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+					end
+				end
+			end
+		};
+		
+		RemovePants = {
+			Prefix = Settings.Prefix;
+			Commands = {"removepants"};
+			Args = {"player"};
+			Hidden = false;
+			Description = "Remove any pants(s) worn by the target player(s)";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						humanoidDesc.Pants = 0
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
@@ -6397,16 +6423,16 @@ return function(Vargs, env)
 
 		ResetButtonEnabled = {
 			Prefix = Settings.Prefix;
-			Commands = {"resetbuttonenabled", "canreset"};
+			Commands = {"resetbuttonenabled", "resetenabled", "canreset", "allowreset"};
 			Args = {"player", "can reset? (true/false)"};
 			Description = "Sets whether the target player(s) can reset their character";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing argument #2 (boolean expected)")
-				assert(string.lower(args[2]) == "true" or string.lower(args[2]) == "false", "Invalid argument #2 (boolean expected)")
+				assert(args[1], "Missing target player")
+				args[2] = string.lower(assert(args[2], "Missing argument #2 (boolean expected)"))
+				assert(args[2] == "true" or args[2] == "false", "Invalid argument #2 (boolean expected)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.Send(v, "Function", "SetCore", "ResetButtonCallback", string.lower(args[2]))
+					Remote.Send(v, "Function", "SetCore", "ResetButtonCallback", if args[2] == "true" then true else false)
 				end
 			end
 		};
