@@ -178,12 +178,12 @@ return function()
 				-- Detects all skidded exploits which do not have newcclosure
 				do
 					local Success = xpcall(function() return game:________() end, function()
-						--[[for i = 0, 2 do
+						for i = 0, 2 do
 							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
-								--warn("detected????")
+								warn("detected????")
 								Detected("kick", "Metamethod tampering 5634345")
 							end
-						end]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
+						end
 					end)
 
 					if Success then
@@ -235,11 +235,11 @@ return function()
 					end
 				end)()
 
-				-- this part you can choose whether or not you wanna use
+				
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
 					if object then
-						Detected("log", "Malicious Object?: " .. v)
+						Detected("kick", "Malicious Object?: " .. v)
 					end
 				end
 			end
@@ -342,7 +342,11 @@ return function()
 			})
 
 			local lookFor = {
-				"current identity is [0789]";
+				"current identity is 0";
+                                "current identity is 9";
+                                "current identity is 8";
+                                "current identity is 7";
+                                "current identity is 6";
 				"gui made by kujo";
 				"tetanus reloaded hooked";
 				"hookmetamethod";
@@ -357,6 +361,8 @@ return function()
                                 "iy_debug";
                                 "returning json";
                                 "shattervast";
+                                "getrawmetatable";
+                                "setfflag";
                                 "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
@@ -375,7 +381,7 @@ return function()
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
+					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game) or findService("VirtualUser", game) or findService("VirtualInputManager", game)) then
 						Detected("crash","Disallowed Services Detected")
 					end
 				end) then
