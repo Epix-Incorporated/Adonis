@@ -59,7 +59,7 @@ return function(Vargs, GetEnv)
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
+		ClientTimeoutLimit = 60; --// ... One minute without communication seems long enough right?
 		SpoofCheckCache = {};
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
@@ -234,7 +234,7 @@ return function(Vargs, GetEnv)
 						task.defer(function()
 							animationTrack:Stop(1/60)
 						end)
-						Detected(player, "log", "Player played an inappropriate character animation")
+						Detected(player, "kick", "Player played an inappropriate character animation")
 					end
 				end)
 
