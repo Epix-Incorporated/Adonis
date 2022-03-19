@@ -681,7 +681,15 @@ return function()
 				-- // Detects certain anti-dex bypasses
 				local tbl = setmetatable({}, mt)
 				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
-					Detected("crash", "Anti-dex bypass found")
+					Detected("crash", "Anti-dex bypass found. Method 1")
+				else
+					local success, value = pcall(function()
+						return setmetatable(tbl, mt)
+					end)
+
+					if not success or value ~= tbl or not rawequal(value, tbl) then
+						Detected("crash", "Anti-dex bypass found. Method 2")
+					end
 				end
 
 				-- // Checks for anti-coregui detetection bypasses 
