@@ -372,7 +372,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						promptPurchase(false, 2373505175)
+						promptPurchase(false, 7510622625)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -390,7 +390,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						promptPurchase(false, 2373501710)
+						promptPurchase(false, 7510592873)
 					end
 				}
 			}):Add("ImageLabel", {
