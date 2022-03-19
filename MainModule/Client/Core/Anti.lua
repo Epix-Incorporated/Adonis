@@ -226,7 +226,7 @@ return function()
 					end
 				end)
 
-				if callstackInvalid or success or success2 then
+				if callstackInvalid or success then
 					return true
 				elseif not errorMessages["namecallInstance"] then
 					errorMessages["namecallInstance"] = err
