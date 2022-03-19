@@ -629,12 +629,13 @@ return function()
 					end
 				end
 
-				-- // Apparently the .timestamp can be different because Roblox is weird
+				-- // Disabled the .timestamp because it's broken on live Roblox servers apparently.
+				-- // And it has a capital S letter on some older Roblox server software (private servers)
 				if
 					not rawequal(type(First), "table") or
 					not rawequal(type(First.message), "string") or
-					not rawequal(typeof(First.messageType), "EnumItem") or
-					--[[not ]]rawequal(type(First.timestamp), "number") --[[or]]and First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
+					not rawequal(typeof(First.messageType), "EnumItem")--[[ or
+					notrawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15]]
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
@@ -705,7 +706,7 @@ return function()
 
 				-- // Checks disallowed content URLs in the CoreGui
 				xpcall(function()
-					if service.RunService:IsStudio() then
+					if isStudio then
 						return
 					end
 
