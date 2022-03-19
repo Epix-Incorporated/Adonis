@@ -614,14 +614,17 @@ return function()
 				--// Check Log History
 				local Logs = service.LogService:GetLogHistory()
 				local First = Logs[1]
-				if not hasPrinted then
-					if not First then
-						client.OldPrint(" ")
-						client.OldPrint(" ")
-						Logs = service.LogService:GetLogHistory()
-						First = Logs[1]
-						hasPrinted = true
+
+				if not hasPrinted and not First then
+					client.OldPrint(" ")
+					client.OldPrint(" ")
+					for i = 1, 5 do
+						task.wait()
 					end
+
+					Logs = service.LogService:GetLogHistory()
+					First = Logs[1]
+					hasPrinted = true
 				else
 					if not First then
 						Detected("kick", "Suspicious log amount detected 5435345")
@@ -629,29 +632,18 @@ return function()
 					end
 				end
 
-				-- // Disabled the .timestamp because it's broken on live Roblox servers apparently.
-				-- // And it has a capital S letter on some older Roblox server software (private servers)
 				if
 					not rawequal(type(First), "table") or
 					not rawequal(type(First.message), "string") or
-					not rawequal(typeof(First.messageType), "EnumItem")--[[ or
-					notrawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15]]
+					not rawequal(typeof(First.messageType), "EnumItem") or
+					notrawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
-
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
-					end
-				end
-
-				-- // Just for debugging. Temporary and will be removed later.
-				if Core.DebugMode == true then
-					if not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15 then
-						warn("Roblox is being weird again.", type(First.timestamp), First.timestamp, tick(), elapsedTime(), First)
-						table.foreach(First, print)
 					end
 				end
 
