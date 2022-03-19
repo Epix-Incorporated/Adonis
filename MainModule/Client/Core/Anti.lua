@@ -705,6 +705,10 @@ return function()
 
 				-- // Checks disallowed content URLs in the CoreGui
 				xpcall(function()
+					if service.RunService:IsStudio() then
+						return
+					end
+
 					local hasDetected = false
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
 					service.UnWrap(service.ContentProvider):PreloadAsync({tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
