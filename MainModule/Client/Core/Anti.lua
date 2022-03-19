@@ -159,45 +159,130 @@ return function()
 	end)()
 
 	do
-		local OldEnviroment = getfenv()
-		local OldSuccess, OldError = pcall(function() return game:________() end)
+		local callStacks = {
+			indexInstance1 = {},
+			indexInstance2 = {},
+			namecallInstance = {},
+			indexEnum = {},
+			eqEnum = {},
+			--[[indexString = {},
+			namecallString = {},
+			eqString = {},]]
+		}
+		local errorMessages = {}
+		local rawGame = service.UnWrap(game)
+
+		local function checkStack(method)
+			local firstTime = #callStacks[method] <= 0
+
+			for i = 3, 4 do
+				local func = debug.info(i, "f")
+
+				if firstTime then
+					callStacks[method][i] = func
+				elseif callStacks[method][i] ~= func then
+					return true
+				end
+			end
+
+			return false
+		end
+
+		local detectors = {
+			indexInstance = {"kick", function()
+				local callstackInvalid = false
+
+				local success, err = xpcall(function()
+					local c = game.____________
+				end, function()
+					if callstackInvalid or checkStack("indexInstance1") then
+						callstackInvalid = true
+					end
+				end)
+				local success2, err2 = xpcall(function()
+					local c = game[nil]
+				end, function()
+					if callstackInvalid or checkStack("indexInstance2") then
+						callstackInvalid = true
+					end
+				end)
+
+				if callstackInvalid or success or success2 then
+					return true
+				elseif not errorMessages["indexInstance"] then
+					errorMessages["indexInstance"] = {err, err2}
+				end
+
+				return errorMessages["indexInstance"][1] ~= err or errorMessages["indexInstance"][2] ~= err2
+			end},
+			namecallInstance = {"kick", function()
+				local callstackInvalid = false
+
+				local success, err = xpcall(function()
+					local c = game:____________()
+				end, function()
+					if callstackInvalid or checkStack("namecallInstance") then
+						callstackInvalid = true
+					end
+				end)
+
+				if callstackInvalid or success or success2 then
+					return true
+				elseif not errorMessages["namecallInstance"] then
+					errorMessages["namecallInstance"] = err
+				end
+
+				return errorMessages["namecallInstance"] ~= err
+			end},
+			indexEnum = {"kick", function()
+				local callstackInvalid = false
+
+				local success, err = xpcall(function()
+					local c = Enum.HumanoidStateType.____________
+				end, function()
+					if callstackInvalid or checkStack("indexEnum1") then
+						callstackInvalid = true
+					end
+				end)
+				local success2, err2 = xpcall(function()
+					local c = Enum.HumanoidStateType[nil]
+				end, function()
+					if callstackInvalid or checkStack("indexEnum2") then
+						callstackInvalid = true
+					end
+				end)
+
+				if callstackInvalid or success or success2 then
+					return true
+				elseif not errorMessages["indexEnum"] then
+					errorMessages["indexEnum"] = {err, err2}
+				end
+
+				return errorMessages["indexEnum"][1] ~= err or errorMessages["indexEnum"][2] ~= err2
+			end},
+			eqEnum = {"kick", function()
+				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
+			end},
+		}
+
 		Routine(function()
 			while wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
-				if OldSuccess or not rawequal(OldSuccess, OldSuccess) or not rawequal(OldError, OldError) or rawequal(OldError, "new") or not OldError == OldError or OldError == "new" or rawequal(OldEnviroment, {1}) or OldEnviroment == {1} or not OldEnviroment == OldEnviroment then
-					Detected("crash", "Tamper Protection 658947")
-					wait(1)
-					pcall(Disconnect, "Adonis_658947")
-					pcall(Kill, "Adonis_658947")
-					pcall(Kick, Player, "Adonis_658947")
-				end
+				for method, detector in pairs(detectors) do
+					local action, callback = detector[1],  detector[2]
 
-				-- Detects all skidded exploits which do not have newcclosure
-				do
-					local Success = xpcall(function() return game:________() end, function()
-						--[[for i = 0, 2 do
-							if not rawequal(getfenv(i), OldEnviroment) or getfenv(i) ~= OldEnviroment then
-								--warn("detected????")
-								Detected("kick", "Metamethod tampering 5634345")
-							end
-						end]] --// This was triggering for me non-stop while testing an update to the point it clogged the remote event stuff. Dunno why.
-					end)
-
-					if Success then
+					local success, value = pcall(callback)
+					if not success or value ~= false and value ~= true then
 						Detected("crash", "Tamper Protection 906287")
 						wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
-					end
-
-					local Success, Error = pcall(function() return game:________() end)
-
-					if not Success == OldSuccess or not OldError == Error then
-						Detected("kick", "Methamethod tampering 456456")
+					elseif value then
+						Detected(action, method.." detector detected")
 					end
 				end
 
@@ -205,7 +290,16 @@ return function()
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
 					local success, err = pcall(LocalPlayer.Kick, service.UnWrap(workspace), "If this appears, you have a glitch. Method 1")
-					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
+					local success2, err2 = pcall(function()
+						workspace:Kick("If this appears, you have a glitch. Method 1")
+					end)
+
+					if
+						success or
+						not string.match(err, "Expected ':' not '.' calling member function Kick") or
+						success2 or
+						not string.match(err2, "Kick is not a valid member of Workspace \"Workspace\"")
+					then
 						Detected("kick", "Anti kick found! Method 1")
 					end
 
@@ -214,8 +308,17 @@ return function()
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
-								if success or err ~= "Cannot kick a non-local Player from a LocalScript" then
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this appears, you have a glitch. Method 2")
+								local success2, err2 = pcall(function()
+									otherPlayer:Kick("If this appears, you have a glitch. Method 2")
+								end)
+
+								if
+									success or
+									err ~= "Cannot kick a non-local Player from a LocalScript" or
+									success2 or
+									err2 ~= "Cannot kick a non-local Player from a LocalScript"
+								then
 									Detected("kick", "Anti kick found! Method 2")
 								end
 							end
@@ -229,7 +332,7 @@ return function()
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
 					end
-					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, service.UnWrap(game))
+					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
 					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
 						Detected("kick", "Anti FPS detection found!")
 					end
@@ -237,7 +340,7 @@ return function()
 
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
-					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
+					local object = Player and Player.Name ~= v and rawGame.FindFirstChild(rawGame, v, true)            -- ill update the list periodically
 					if object then
 						Detected("log", "Malicious Object?: " .. v)
 					end
@@ -309,7 +412,12 @@ return function()
 				end)
 
 				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
-					if rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
+					if
+						not (Enum.HumanoidStateType.StrafingNoPhysics == Enum.HumanoidStateType.StrafingNoPhysics) or
+						not rawequal(Enum.HumanoidStateType.StrafingNoPhysics, Enum.HumanoidStateType.StrafingNoPhysics)
+					then
+						Detected("crash", "Enum tampering detected")
+					elseif rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
 						doing = false
 						Detected("kill", "NoClipping")
 					end
@@ -484,6 +592,7 @@ return function()
 			end
 
 			--// Detection Loop
+			local hasPrinted = false
 			service.StartLoop("Detection", 10, function()
 				--// Prevent event stopping
 				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
@@ -493,7 +602,7 @@ return function()
 
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
-					Detected("crash", "Parent not players")
+					Detected("kick", "Parent not players")
 				end
 
 				--// Stuff
@@ -503,24 +612,32 @@ return function()
 				end
 
 				--// Check Log History
-				do
-					local Logs = service.LogService:GetLogHistory()
-					local First = Logs[1]
+				local Logs = service.LogService:GetLogHistory()
+				local First = Logs[1]
+				if not hasPrinted then
 					if not First then
 						client.OldPrint(" ")
 						client.OldPrint(" ")
 						Logs = service.LogService:GetLogHistory()
 						First = Logs[1]
+						hasPrinted = true
 					end
-
-					--// Ahem, re-disabled for false positives in private servers. ~ Scel
-					--[[if not rawequal(type(First), "table") or not rawequal(type(First.message), "string") or not rawequal(typeof(First.messageType), "EnumItem") or not rawequal(type(First.timestamp), "number") then
-						Detected("crash", "Bypass detected 5435345")
-					else--]]
-					--[[if #Logs <= 1 then
-						Detected("log", "Suspicious log amount detected 5435345")
+				else
+					if not First then
+						Detected("kick", "Suspicious log amount detected 5435345")
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
-					end--]]
+					end
+				end
+
+				-- // Apparently the .timestamp can be different because Roblox is weird
+				if
+					not rawequal(type(First), "table") or
+					not rawequal(type(First.message), "string") or
+					not rawequal(typeof(First.messageType), "EnumItem") or
+					--[[not ]]rawequal(type(First.timestamp), "number") --[[or]]and First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
+				then
+					Detected("kick", "Bypass detected 5435345")
+				else
 
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
@@ -545,8 +662,64 @@ return function()
 				if ran then
 					Detected("crash", "RobloxLocked usable")
 				end
+
+				local function getDictionaryLenght(dictionary)
+					local len = 0
+
+					for _, _ in pairs(dictionary) do
+						len += 1
+					end
+
+					return len
+				end
+
+				local mt = {
+					__mode = "v"
+				}
+
+				-- // Detects certain anti-dex bypasses
+				local tbl = setmetatable({}, mt)
+				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
+					Detected("crash", "Anti-dex bypass found")
+				end
+
+				-- // Checks for anti-coregui detetection bypasses 
+				xpcall(function()
+					local testDecal = service.UnWrap(Instance.new("Decal"))
+					testDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
+					local activated = false
+					service.UnWrap(service.ContentProvider):PreloadAsync({testDecal}, function(url, status)
+						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
+							activated = true
+						end
+					end)
+
+					testDecal:Destroy()
+					task.wait(0.1)
+					if not activated then
+						Detected("kick", "Coregui detection bypass found")
+					end
+				end, function()
+					Detected("kick", "Tamper Protection 568234")
+				end)
+
+				-- // Checks disallowed content URLs in the CoreGui
+				xpcall(function()
+					local hasDetected = false
+					local tempDecal = service.UnWrap(Instance.new("Decal"))
+					service.UnWrap(service.ContentProvider):PreloadAsync({tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
+							hasDetected = true
+							Detected("Kick", "Disallowed content URL detected in CoreGui")
+						end
+					end)
+
+					tempDecal:Destroy()
+				end, function()
+					Detected("kick", "Tamper Protection 456754")
+				end)
 			end)
-		end;
+		end
 	}, false, true)
 
 	local Launch = function(mode,data)
@@ -556,10 +729,6 @@ return function()
 	end;
 
 	Anti = service.ReadOnly({
-		LastChanges = {
-			Lighting = {};
-		};
-
 		Init = Init;
 		RunLast = RunLast;
 		RunAfterLoaded = RunAfterLoaded;
