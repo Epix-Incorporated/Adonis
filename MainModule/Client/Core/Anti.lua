@@ -647,6 +647,13 @@ return function()
 					end
 				end
 
+				-- // Just for debugging. Temporary and will be removed later.
+				if Core.DebugMode == true then
+					if not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15 then
+						warn("Roblox is being weird again.", type(First.timestamp), First.timestamp, tick(), elapsedTime(), First)
+					end
+				end
+
 				--// Check Loadstring
 				local ran, _ = pcall(function()
 					local func, err = loadstring("print('LolloDev5123 was here')")
