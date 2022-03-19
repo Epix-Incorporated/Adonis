@@ -61,6 +61,44 @@ return function(data, Vargs)
 		end
 	})
 
+	local function promptPurchase(isGamepass, id)
+		if isGamepass then
+			service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
+		else
+			service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
+		end
+
+		local purchaseWindow = UI.Make("Window", {
+			Name  = "Purchase window";
+			Title = "Purchase "..(isGamepass and "gamepass" or "asset");
+			Icon = client.MatIcons["Shopping cart"];
+			AllowMultiple = false;
+			Size  = {400, 199};
+		})
+
+		purchaseWindow:Add("TextBox", {
+			Size = UDim2.new(1, 0, 1, 0);
+			ZIndex = 2;
+			ClearTextOnFocus = false;
+			TextEditable = false;
+			TextScaled = true;
+			Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
+		})
+
+		purchaseWindow:Ready()
+
+		local purchaseEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]
+		while true do
+			local player, eventId = purchaseEvent:Wait()
+
+			if service.UnWrap(player) == service.UnWrap(service.Players.LocalPlayer) and eventId == id then
+				break
+			end
+		end
+
+		purchaseWindow:Close()
+	end
+
 	local function showTable(tab, setting)
 		local tabPath = type(setting) == "table" and setting
 		local setting = tabPath and tabPath[#tabPath-1] or setting
@@ -334,7 +372,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373505175)
+						promptPurchase(false, 2373505175)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -352,7 +390,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373501710)
+						promptPurchase(false, 2373501710)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -654,7 +692,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 1348327) --497917601)
+					promptPurchase(true, 1348327) --497917601)
 				end
 			})
 
@@ -673,7 +711,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212076)
+					promptPurchase(true, 5212076)
 				end
 			})
 
@@ -684,7 +722,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212077)
+					promptPurchase(true, 5212077)
 				end
 			})
 
@@ -695,7 +733,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.6);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212081)
+					promptPurchase(true, 5212081)
 				end
 			})
 
@@ -706,7 +744,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.9);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212082)
+					promptPurchase(true, 5212082)
 				end
 			})
 		end
