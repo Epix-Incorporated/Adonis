@@ -651,6 +651,7 @@ return function()
 				if Core.DebugMode == true then
 					if not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15 then
 						warn("Roblox is being weird again.", type(First.timestamp), First.timestamp, tick(), elapsedTime(), First)
+						table.foreach(First, print)
 					end
 				end
 
