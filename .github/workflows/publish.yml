@@ -20,10 +20,10 @@ jobs:
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
         
       - name: Build Loader
-        run: rojo build -o ${{ github.workspace }}/loader.rbxm .github/loader.deploy.project.json
+        run: rojo build -o loader.rbxm .github/loader.deploy.project.json
         
       - name: Build MainModule
-        run: rojo build -o ${{ github.workspace }}/module.rbxm .github/module.deploy.project.json
+        run: rojo build -o module.rbxm .github/module.deploy.project.json
         
       - name: Publish Loader
         uses: fjogeleit/http-request-action@v1
@@ -31,8 +31,9 @@ jobs:
           url: "${{ secrets.PUBLISH_URL }}/${{ secrets.LOADER_ID }}"
           method: "POST"
           contentType: "multipart/form-data"
-          files: '{ "file": "${{ github.workspace }}/loader.rbxm" }'
+          files: '{ "file": "loader.rbxm" }'
           customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
+          timeout: 10000
         
       - name: Publish MainModule
         uses: fjogeleit/http-request-action@v1
@@ -40,5 +41,6 @@ jobs:
           url: "${{ secrets.PUBLISH_URL }}/${{ secrets.MODULE_ID }}"
           method: "POST"
           contentType: "multipart/form-data"
-          files: '{ "file": "${{ github.workspace }}/module.rbxm" }'
+          files: '{ "file": "module.rbxm" }'
           customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
+          timeout: 10000
