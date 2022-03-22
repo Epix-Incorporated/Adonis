@@ -149,6 +149,7 @@ return function(Vargs, GetEnv)
 			{Name = "spanish", 	ID = 5982975}, -- TheBuzzer
 			{Name = "venom", 	ID = 1372262}, -- Star Fox Theme
 			{Name = "guitar", 	ID = 5986151}, -- 5986151
+			{Name = "hardstyle", ID = 1839246774}, -- Hardstyle
 			{Name = "crabrave", 	ID = 5410086218}, -- Noisestorm - Crab Rave
 		};
 
