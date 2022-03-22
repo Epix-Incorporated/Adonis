@@ -126,19 +126,10 @@ return function(Vargs, GetEnv)
 		IncognitoPlayers = {};
 
 		MusicList = {
-			{Name = "jericho",	ID = 292340735}, -- Jericho - Gordon Bok
-			{Name = "beam",		ID = 165065112}, -- Mako - Beam (Proximity)
-			{Name = "myswamp",	ID = 166325648}, -- WHAT ARE YOU DOING IN MY SWAMP
-			{Name = "russianmen",	ID = 173038059}, -- Russian Dancing Men
-			{Name = "freedom", 	ID = 130760592}, -- Freedom (Loop)
-			{Name = "seatbelt", ID = 135625718}, --Fasten Your Seatbelt - Loop
-			{Name = "focus", 	ID = 136786547}, -- Focus Loop
-			{Name = "azylio", 	ID = 137603138}, -- Azylio [LOOP]
 			{Name = "epic", 	ID = 27697743}, -- Zero Project - Gothic
 			{Name = "halo", 	ID = 1034065}, -- Halo Theme
 			{Name = "cursed", 	ID = 1372257}, -- Cursed Abbey
 			{Name = "extreme", 	ID = 11420933}, -- TOPW
-			{Name = "tacos", 	ID = 142295308}, -- Raining Tacos
 			{Name = "awaken", 	ID = 27697277}, -- Positively Dark - Awakening
 			{Name = "mario", 	ID = 1280470}, -- SM64 Theme
 			{Name = "chrono", 	ID = 1280463}, -- Chrono Trigger Theme
@@ -157,12 +148,7 @@ return function(Vargs, GetEnv)
 			{Name = "tunnel",	ID = 9650822}, -- S4Tunnel
 			{Name = "spanish", 	ID = 5982975}, -- TheBuzzer
 			{Name = "venom", 	ID = 1372262}, -- Star Fox Theme
-			{Name = "wind", 	ID = 6537631123}, -- Wind of Fjords Original HQ File
 			{Name = "guitar", 	ID = 5986151}, -- 5986151
-			{Name = "pianoremix",	ID = 142407859}, -- Piano remix
-			{Name = "tsunami", 		ID = 569900517}, -- Tsunami Hardstyle - Jay Cosmic
-			{Name = "minecraftorchestral", 	ID = 148900687}, -- Minecraft Piano 2 [Orchestral Cover]
-			{Name = "crabraveoof", 	ID = 2590490779}, -- CRAB RAVE OOF
 			{Name = "crabrave", 	ID = 5410086218}, -- Noisestorm - Crab Rave
 		};
 
