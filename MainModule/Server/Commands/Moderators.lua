@@ -1547,10 +1547,15 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for k, p in pairs(service.GetPlayers(plr, args[1])) do
 					for _, v in pairs(service.GetPlayers(plr, args[2])) do
-						if v and v.Character:FindFirstChild("Humanoid") then
-							plr.ReplicationFocus = v.Character.PrimaryPart
-							Remote.Send(p, "Function", "SetView", v.Character.Humanoid)
-						end
+						if not v then continue end
+						local char = v.Character
+						if not char then Functions.Hint(v.Name.." doesn't have a Character", {plr}) continue end
+						local vHuman = char:FindFirstChild("Humanoid")
+						if not vHuman then Functions.Hint(v.Name.." doesn't have a Humanoid", {plr}) continue end
+						local primaryP = char.PrimaryPart
+						if not primaryP then Functions.Hint(v.Name.." doesn't have a PrimaryPart", {plr}) continue end
+						p.ReplicationFocus = primaryP
+						Remote.Send(p, "Function", "SetView", vHuman)
 					end
 				end
 			end
@@ -1564,10 +1569,15 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
-						plr.ReplicationFocus = v.Character.PrimaryPart
-						Remote.Send(plr, "Function", "SetView", v.Character.Humanoid)
-					end
+					if not v then continue end
+					local char = v.Character
+					if not char then Functions.Hint(v.Name.." doesn't have a Character spawned", {plr}) continue end
+					local vHuman = char:FindFirstChild("Humanoid")
+					if not vHuman then Functions.Hint(v.Name.." doesn't have a Humanoid", {plr}) continue end
+					local primaryP = char.PrimaryPart
+					if not primaryP then Functions.Hint(v.Name.." doesn't have a PrimaryPart", {plr}) continue end
+					plr.ReplicationFocus = primaryP
+					Remote.Send(plr, "Function", "SetView", vHuman)
 				end
 			end
 		};
@@ -1596,10 +1606,24 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if args[1] then
 					for _, v in pairs(service.GetPlayers(plr, args[1])) do
-						plr.ReplicationFocus = nil
+						if not v then continue end
+						local char = v.Character
+						if not char then Functions.Hint(v.Name.." doesn't have a Character spawned", {plr}) continue end
+						local vHuman = char:FindFirstChild("Humanoid")
+						if not vHuman then Functions.Hint(v.Name.." doesn't have a Humanoid", {plr}) continue end
+						local primaryP = char.PrimaryPart
+						if not primaryP then Functions.Hint(v.Name.." doesn't have a PrimaryPart", {plr}) continue end
+						v.ReplicationFocus = primaryP
 						Remote.Send(v, "Function", "SetView", "reset")
 					end
 				else
+					local char = plr.Character
+					if not char then Functions.Hint("You don't have a character spawned in", {plr}) return end
+					local vHuman = char:FindFirstChild("Humanoid")
+					if not vHuman then Functions.Hint("Your character doesn't have a Humanoid", {plr}) return end
+					local primaryP = char.PrimaryPart
+					if not primaryP then Functions.Hint("Your character doesn't have a PrimaryPart", {plr}) return end
+					plr.ReplicationFocus = primaryP
 					Remote.Send(plr, "Function", "SetView", "reset")
 				end
 			end
