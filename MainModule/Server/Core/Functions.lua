@@ -454,7 +454,7 @@ return function(Vargs, GetEnv)
 
 		GetPlayers = function(plr, names, data)
 			if data and type(data) ~= "table" then data = {} end
-			
+
 			local noSelectors = data and data.NoSelectors
 			local dontError = data and data.DontError
 			local isServer = data and data.IsServer
@@ -553,6 +553,7 @@ return function(Vargs, GetEnv)
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
 										userId = tonumber(userid);
+										Parent = service.New("Folder");
 									})
 
 									table.insert(players, fakePlayer)
@@ -1258,37 +1259,37 @@ return function(Vargs, GetEnv)
 			if not str then return end
 
 			local color = {}
-			for s in str:gmatch("[%d]+") do 
+			for s in str:gmatch("[%d]+") do
 				table.insert(color, tonumber(s))
 			end
 
-			if #color == 3 then 
+			if #color == 3 then
 				color = Color3.fromRGB(color[1], color[2], color[3])
-			else 
+			else
 				local brickColor = BrickColor.new(str)
-				if str == tostring(brickColor) then 
-					color = brickColor.Color 
-				else 
+				if str == tostring(brickColor) then
+					color = brickColor.Color
+				else
 					return
-				end 
+				end
 			end
 
 			return color
 		end;
 
 		ParseBrickColor = function(str: string)
-			if not str then return end 
+			if not str then return end
 
 			local brickColor = BrickColor.new(str)
-			if str == tostring(brickColor) then 
-				return brickColor 
-			else 
+			if str == tostring(brickColor) then
+				return brickColor
+			else
 				-- If provided a Color3, return closest BrickColor
 				local color = Functions.ParseColor3(str)
-				if color then 
+				if color then
 					return BrickColor.new(color)
-				end 
-			end 
+				end
+			end
 		end;
 	};
 end
