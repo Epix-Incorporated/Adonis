@@ -262,7 +262,7 @@ return function(Vargs, GetEnv)
 
 				local groupInfo = groupTable and groupTable[group] or {}
 				if not groupInfo[1] or os.time() - groupInfo[1] < 30 then
-					local success, GroupInfo = pcall(service.GroupService, service.GroupService.GetGroupsAsync, p.UserId)
+					local success, GroupInfo = pcall(service.GroupService.GetGroupsAsync, service.GroupService, p.UserId)
 					Admin.GroupsCache[key][group] = {
 						os.time(),
 						success and GroupInfo or {}
