@@ -6390,12 +6390,12 @@ return function(Vargs, env)
 				local reverbs = ReverbType:GetEnumItems()
 				if not rev or not ReverbType[rev] then
 
-					Functions.Hint("reverbType not specified or is invalid. Opening Reverb List", {plr})
+					Functions.Hint("Reverb type was not specified or is invalid. Opening list of valid reverb types", {plr})
 
 					local tab = {}
 					table.insert(tab, {Text = "Note: Argument is CASE SENSITIVE"})
 					for _, v in pairs(reverbs) do
-						table.insert(tab, {Text = tostring(v):sub(17)})
+						table.insert(tab, {Text = v.Name})
 					end
 					Remote.MakeGui(plr, "List", {Title = "Reverbs"; Table = tab;})
 
