@@ -47,8 +47,8 @@ return function(Vargs, GetEnv)
 		--// Core variables
 		Core.Themes = data.Themes or {}
 		Core.Plugins = data.Plugins or {}
-		Core.ModuleID = data.ModuleID or 2373501710
-		Core.LoaderID = data.LoaderID or 2373505175
+		Core.ModuleID = data.ModuleID or 7510592873
+		Core.LoaderID = data.LoaderID or 7510622625
 		Core.DebugMode = data.DebugMode or false
 		Core.Name = server.Functions:GetRandom()
 		Core.LoadstringObj = Core.GetLoadstring()
@@ -167,13 +167,6 @@ return function(Vargs, GetEnv)
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
-		};
-
-		--// Prevent certain keys from loading from the DataStore
-		PlayerDataKeyBlacklist = {
-			AdminRank = true;
-			AdminLevel = true;
-			LastLevelUpdate = true;
 		};
 
 		--// Prevent certain keys from loading from the DataStore

@@ -4,10 +4,10 @@ return function(data)
 	local generate = nil
 
 	local window = client.UI.Make("Window", {
-		Name  = "OnlineFriends";
+		Name = "OnlineFriends";
 		Title = "Online Friends";
 		Icon = client.MatIcons.People;
-		Size  = {390, 320};
+		Size = {390, 320};
 		MinSize = {180, 120};
 		AllowMultiple = false;
 		OnRefresh = function()
@@ -25,8 +25,13 @@ return function(data)
 		List = {};
 		ScrollBarThickness = 3;
 		BackgroundTransparency = 1;
-		Position = UDim2.new(0, 0, 0, 35);
-		Size = UDim2.new(1, 0, 1, -40);
+		Position = UDim2.new(0, 5, 0, 35);
+		Size = UDim2.new(1, -10, 1, -40);
+	})
+	scroller:Add("UIListLayout", {
+		SortOrder = "LayoutOrder";
+		FillDirection = "Vertical";
+		VerticalAlignment = "Top";
 	})
 
 	local search = window:Add("TextBox", {
@@ -49,32 +54,30 @@ return function(data)
 
 	function generate()
 		local friendDictionary = service.Players.LocalPlayer:GetFriendsOnline()
-		local sortedFriends = {}
-		local friendInfo = {}
-
-		for _, item in pairs(friendDictionary) do
-			table.insert(sortedFriends, item.UserName)
-			friendInfo[item.UserName] = {id=item.VisitorId;displayName=item.DisplayName;lastLocation=item.LastLocation;locationType=item.LocationType;}
-		end
-
-		table.sort(sortedFriends)
+		table.sort(friendDictionary, function(a, b)
+			return a.UserName < b.UserName
+		end)
 
 		local filter = search.Text
-		scroller:ClearAllChildren()
-		local friendCount = 0
-		for i, friendName in ipairs(sortedFriends) do
-			friendCount += 1
-			if (friendName:sub(1, #filter):lower() == filter:lower()) or (friendInfo[friendName].displayName:sub(1, #filter):lower() == filter:lower()) then
+
+		for _, child in ipairs(scroller:GetChildren()) do 
+			if not child:IsA("UIListLayout") then
+				child:Destroy()
+			end
+		end
+		
+		for i, friend in ipairs(friendDictionary) do
+			if friend.UserName:sub(1, #filter):lower() == filter:lower() or friend.DisplayName:sub(1, #filter):lower() == filter:lower() then
 				local entry = scroller:Add("TextLabel", {
-					Text = "             "..(if friendName == friendInfo[friendName].displayName then friendName else friendInfo[friendName].displayName.." (@"..friendName..")");
-					ToolTip = "Location: "..friendInfo[friendName].lastLocation;
+					Text = "             "..(if friend.UserName == friend.DisplayName then friend.UserName else friend.DisplayName.." (@"..friend.UserName..")");
+					ToolTip = "Location: "..friend.LastLocation;
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, (30*(i-1)));
+					Size = UDim2.new(1, 0, 0, 30);
+					LayoutOrder = i;
 					TextXAlignment = "Left";
 				})
 				entry:Add("TextLabel", {
-					Text = " "..locationTypeToStr(friendInfo[friendName].locationType).."  ";
+					Text = " "..locationTypeToStr(friend.LocationType).."  ";
 					BackgroundTransparency = 1;
 					Size = UDim2.new(0, 120, 1, 0);
 					Position = UDim2.new(1, -120, 0, 0);
@@ -82,7 +85,7 @@ return function(data)
 				})
 				spawn(function()
 					entry:Add("ImageLabel", {
-						Image = service.Players:GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
+						Image = service.Players:GetUserThumbnailAsync(friend.VisitorId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 						BackgroundTransparency = 1;
 						Size = UDim2.new(0, 30, 0, 30);
 						Position = UDim2.new(0, 0, 0, 0);
@@ -90,8 +93,9 @@ return function(data)
 				end)
 			end
 		end
+		
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
-		window:SetTitle("Online Friends ("..friendCount..")")
+		window:SetTitle("Online Friends ("..#friendDictionary..")")
 	end
 
 	search:GetPropertyChangedSignal("Text"):Connect(generate)

@@ -36,7 +36,10 @@ return function(Vargs, GetEnv)
 
 		if not CreatorId then
 			TrackTask("Thread: GetGroupCreatorId", function()
-				CreatorId = service.GroupService:GetGroupInfoAsync(game.CreatorId).Owner.Id
+				local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+				if success and type(creator) == "table" then
+					CreatorId = creator.Owner.Id
+				end
 			end)
 		end
 
@@ -100,7 +103,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Old settings/plugins backwards compatability
+		--// Old settings/plugins backwards compatibility
 		for _, rank in ipairs({"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"}) do
 			if Settings[rank] then
 				Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
@@ -244,6 +247,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetPlayerGroup = function(p, group)
+			if not p or p.Parent ~= service.Players then
+				return
+			end
+
 			local groups;
 			do
 				local key = tostring(p.UserId)
@@ -255,9 +262,10 @@ return function(Vargs, GetEnv)
 
 				local groupInfo = groupTable and groupTable[group] or {}
 				if not groupInfo[1] or os.time() - groupInfo[1] < 30 then
+					local success, GroupInfo = pcall(service.GroupService, service.GroupService.GetGroupsAsync, p.UserId)
 					Admin.GroupsCache[key][group] = {
 						os.time(),
-						service.GroupService:GetGroupsAsync(p.UserId) or {}
+						success and GroupInfo or {}
 					}
 					groups = Admin.GroupsCache[key][group][2]
 				else
@@ -686,7 +694,12 @@ return function(Vargs, GetEnv)
 				return true
 			else
 				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
+				local pGroup = Admin.GetPlayerGroup(p, 886423)
 				for _, pass in ipairs(Variables.DonorPass) do
+					if p.Parent ~= service.Players then
+						return false
+					end
+
 					local ran, ret
 					if type(pass) == "number" then
 						ran, ret = pcall(service.MarketPlace.UserOwnsGamePassAsync, service.MarketPlace, p.UserId, pass)
@@ -694,7 +707,7 @@ return function(Vargs, GetEnv)
 						ran, ret = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, p, tonumber(pass))
 					end
 
-					if (ran and ret) or p:GetRankInGroup(886423) >= 10 then --// Complimentary donor access is given to Adonis contributors & developers.
+					if (ran and ret) or (pGroup and pGroup.Rank >= 10) then --// Complimentary donor access is given to Adonis contributors & developers.
 						Variables.CachedDonors[key] = os.time()
 						return true
 					end
@@ -717,14 +730,13 @@ return function(Vargs, GetEnv)
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						return true, "\n Reason: "..(ban.Reason or "(No reason provided.)").."\n Banned until ".. service.FormatTime(ban.EndTime, true)
+						return true, "\n Reason: "..(ban.Reason or "(No reason provided.)").."\n Banned until ".. service.FormatTime(ban.EndTime, {WithWrittenDate = true})
 					end
 				end
 			end
 
 			for ind, admin in pairs(HTTP.Trello.Bans) do
-				local name = if type(admin) == 'table' then admin.Name else admin
-				if doCheck(p, name) or banCheck(p, name) then
+				if doCheck(p, admin) or banCheck(p, admin) then
 					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
 				end
 			end

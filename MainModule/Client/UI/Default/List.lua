@@ -24,6 +24,7 @@ return function(data)
 	local PageCounter = PageNumber or 1;
 	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
 	local TextSelectable = data.TextSelectable
+	local TimeOptions = data.TimeOptions
 	local getListTab, getPage
 	local doSearch, genList
 	local window, scroller, search
@@ -101,7 +102,7 @@ return function(data)
 			end
 
 			if v.Time then
-				v.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..v.Text
+				v.Text = "["..(typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time).."] "..v.Text
 			end
 		end
 
@@ -110,7 +111,7 @@ return function(data)
 
 	function doSearch(tab, text)
 		local found = {}
-		text = string.lower(tostring(text))
+		text = string.lower(tostring(text)):gsub("%%", "%%%%"):gsub("%[", "%%["):gsub("%]", "%%]")
 		for i,v in pairs(tab) do
 			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)

@@ -278,16 +278,18 @@ return function(Vargs, env)
 			Function = function (plr, args)
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local root = v.Character:FindFirstChild("HumanoidRootPart")
-					local sound = Instance.new("Sound", root)
+					local sound = Instance.new("Sound")
 					sound.SoundId = "rbxassetid://5816432987"
 					sound.Volume = 10
 					sound.PlayOnRemove = true
+					sound.Parent = root
 					sound:Destroy()
 					wait(1.4)
-					local vel = Instance.new("BodyVelocity", root)
+					local vel = Instance.new("BodyVelocity")
 					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 					vel.P = math.huge
+					vel.Parent = root
 					local smoke = Instance.new("ParticleEmitter")
 					smoke.Enabled = true
 					smoke.Lifetime = NumberRange.new(0, 3)
@@ -316,7 +318,7 @@ return function(Vargs, env)
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
 				local function generate(userId)
-					local tool = Instance.new("Tool", plr:FindFirstChildWhichIsA("Backpack"))
+					local tool = Instance.new("Tool")
 					local targetName = service.Players:GetNameFromUserIdAsync(userId)
 					if service.Players:GetPlayerByUserId(userId) then
 						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
@@ -324,10 +326,11 @@ return function(Vargs, env)
 						tool.ToolTip = "@"..targetName.." as a tool"
 					end
 					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
-					local handle = Instance.new("Part", tool)
+					local handle = Instance.new("Part")
 					handle.Name = "Handle"
 					handle.CanCollide = false
 					handle.Transparency = 1
+					handle.Parent = tool
 					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
 					model.Name = targetName
 					local hum = model:WaitForChild("Humanoid")
@@ -348,9 +351,11 @@ return function(Vargs, env)
 					end
 					model.Parent = tool
 					model:SetPrimaryPartCFrame(cfr)
-					local weld = Instance.new("WeldConstraint", tool)
+					local weld = Instance.new("WeldConstraint")
 					weld.Part0 = handle
 					weld.Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot")
+					weld.Parent = tool
+					tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
 				end
 
 				if pcall(function() service.GetPlayers(plr, args[1]) end) then
@@ -379,12 +384,13 @@ return function(Vargs, env)
 			Function = function(runner, args)
 				for _, plr in pairs(service.GetPlayers(runner, args[1])) do
 					if plr.Character.Parent:IsA("Tool") ~= true then
-						local tool = Instance.new("Tool", workspace)
+						local tool = Instance.new("Tool")
 						tool.ToolTip = plr.DisplayName .. " as a tool, converted with Adonis."
 						tool.Name = plr.Name
-						local handle = Instance.new("Part", tool)
+						local handle = Instance.new("Part")
 						handle.Name = "Handle"
 						handle.Transparency = 1
+						handle.Parent = tool
 						local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
 						model.Name = plr.DisplayName
 						local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
@@ -408,9 +414,11 @@ return function(Vargs, env)
 						end
 						model.Parent = tool
 						model:SetPrimaryPartCFrame(cfr)
-						local weld = Instance.new("WeldConstraint", tool)
+						local weld = Instance.new("WeldConstraint")
 						weld.Part0 = handle
 						weld.Part1 = model:FindFirstChild("HumanoidRootPart")
+						weld.Parent = tool
+						tool.Parent = workspace
 					else
 						error("That user is already a doll!")
 					end
@@ -739,7 +747,7 @@ return function(Vargs, env)
 				local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
 
 				if not args[2] then
-					color = BrickColor.Random().Color
+					color = BrickColor.random().Color
 					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
 				else 
 					color = Functions.ParseColor3(args[2])
@@ -755,7 +763,7 @@ return function(Vargs, env)
 							humanoidDesc[property] = color
 						end 
 						
-						task.defer(function() humanoid:ApplyDescription(humanoidDesc) end)
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
 			end
@@ -1070,9 +1078,15 @@ return function(Vargs, env)
 											em.Color = ColorSequence.new(Color3.fromRGB(199, 132, 65))
 											em.LightEmission = 0.5
 											em.LightInfluence = 0
-											em.Size = NumberSequence.new(2, 3, 1)
+											em.Size = NumberSequence.new{
+												NumberSequenceKeypoint.new(0, 2),
+												NumberSequenceKeypoint.new(1, 3)
+											}
 											em.Texture = "rbxassetid://173642823"
-											em.Transparency = NumberSequence.new(0, 1, 0, 0.051532, 0, 0, 0.927577, 0, 0, 1, 1, 0)
+											em.Transparency = NumberSequence.new{
+												NumberSequenceKeypoint.new(0, 0),
+												NumberSequenceKeypoint.new(1, 1)
+											}
 											em.Acceleration = Vector3.new(1, 0.1, 0)
 											em.VelocityInheritance = 0
 											em.EmissionDirection = "Top"
@@ -1297,12 +1311,14 @@ return function(Vargs, env)
 									if check() then
 										p.CameraMaxZoomDistance = 0.5
 
-										local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
-										local bg = Instance.new("Frame", gui)
+										local gui = Instance.new("ScreenGui")
+										gui.Parent = service.ReplicatedStorage
+										local bg = Instance.new("Frame")
 										bg.BackgroundTransparency = 0
 										bg.BackgroundColor3 = Color3.new(0, 0, 0)
 										bg.Size = UDim2.new(2, 0, 2, 0)
 										bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+										bg.Parent = gui
 										if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
 										wait(0.5)
 										pcall(function() gui:Destroy() end)
@@ -1481,15 +1497,17 @@ return function(Vargs, env)
 								local door = van.Door
 								local tPos = torso.CFrame
 
-								local sound = Instance.new("Sound", primary)
+								local sound = Instance.new("Sound")
 								sound.SoundId = "rbxassetid://258529216"
 								sound.Looped = true
+								sound.Parent = primary
 								sound:Play()
 
-								local chuckle = Instance.new("Sound", primary)
+								local chuckle = Instance.new("Sound")
 								chuckle.SoundId = "rbxassetid://164516281"
 								chuckle.Looped = true
 								chuckle.Volume = 0.25
+								chuckle.Parent = primary
 								chuckle:Play()
 
 								van.PrimaryPart = van.Primary
@@ -1549,12 +1567,14 @@ return function(Vargs, env)
 									end
 								end
 
-								local gui = Instance.new("ScreenGui", service.ReplicatedStorage)
-								local bg = Instance.new("Frame", gui)
+								local gui = Instance.new("ScreenGui")
+								gui.Parent = service.ReplicatedStorage
+								local bg = Instance.new("Frame")
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
 								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Parent = gui
 								if p and p.Parent == service.Players then
 									if service.RunService:IsStudio() then
 										p:Kick("You were saved by the Studio environment.")
@@ -2152,12 +2172,10 @@ return function(Vargs, env)
 								p.CanCollide = false
 								local color = math.random(1, 3)
 								local bcolor
-								if color == 1 then
+								if color == 1 or color == 3 then
 									bcolor = BrickColor.new(21)
 								elseif color == 2 then
 									bcolor = BrickColor.new(1004)
-								elseif color == 3 then
-									bcolor = BrickColor.new(21)
 								end
 								p.BrickColor = bcolor
 								local m=service.New("BlockMesh", p)
@@ -3204,30 +3222,40 @@ return function(Vargs, env)
 			Fun = true;
 			Function = function(plr, args)
 				assert(args[1], "Player argument missing")
-				local newTrail = service.New("Trail", {
-					Texture = args[2] and "rbxassetid://"..args[2];
-					TextureMode = "Stretch";
-					TextureLength = 2;
-					Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
-					Name = "ADONIS_TRAIL";
-				})
 
-				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
+				local color = Functions.ParseColor3(args[3])
+				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
+
+				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
+					colorSequence = ColorSequence.new{
+						ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
+						ColorSequenceKeypoint.new(1/7, Color3.fromRGB(255, 136, 0)),
+						ColorSequenceKeypoint.new(2/7, Color3.fromRGB(255, 228, 17)),
+						ColorSequenceKeypoint.new(3/7, Color3.fromRGB(135, 255, 7)),
+						ColorSequenceKeypoint.new(4/7, Color3.fromRGB(11, 255, 207)),
+						ColorSequenceKeypoint.new(5/7, Color3.fromRGB(10, 46, 255)),
+						ColorSequenceKeypoint.new(6/7, Color3.fromRGB(255, 55, 255)),
+						ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 0, 127))
+					}
+				end
+
+				for _, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
-					for k, p in pairs(char:GetChildren()) do
+					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
-							local attachment0 = service.New("Attachment", {
+
+							local attachment0 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT0") or service.New("Attachment", {
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT0";
 							})
-							local attachment1 = service.New("Attachment", {
+							local attachment1 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT1") or service.New("Attachment", {
 								Position = Vector3.new(0,-0.05,0);
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT1";
 							})
 							Functions.NewParticle(p, "Trail", {
-								Color = (args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") and ColorSequence.new(Color3.new(1, 0, 0), Color3.fromRGB(255, 136, 0), Color3.fromRGB(255, 228, 17), Color3.fromRGB(135, 255, 7), Color3.fromRGB(11, 255, 207), Color3.fromRGB(10, 46, 255), Color3.fromRGB(255, 55, 255), Color3.fromRGB(170, 0, 127)));
+								Color = colorSequence;
 								Texture = tonumber(args[2]) and "rbxassetid://"..args[2];
 								TextureMode = "Stretch";
 								TextureLength = 2;
@@ -4175,14 +4203,14 @@ return function(Vargs, env)
 						for k, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 								p.Transparency = args[2]
-								if (p.Name == "Head") then
+								if p.Name == "Head" then
 									for _, v2 in pairs(p:GetChildren()) do
 										if v2:IsA("Decal") then
 											v2.Transparency = args[2]
 										end
 									end
 								end
-							elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+							elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
 								for _, v2 in pairs(p:GetChildren()) do
 									if v2:IsA("BasePart") then
 										v2.Transparency = args[2]
@@ -4245,19 +4273,19 @@ return function(Vargs, env)
 							local partInput = {}
 							local inputs = string.split(args[2], ",")
 
-							for k,v in pairs(inputs) do
-								if (v ~= "") then
-									if (v == "all") then
+							for _, v in pairs(inputs) do
+								if v ~= "" then
+									if v == "all" then
 										partInput = "all"
 										break -- break if "all" is found.
 									end
 
 									-- Validate inputs
-									if (v == "limbs" or v == "face" or v == "accessories") then
+									if v == "limbs" or v == "face" or v == "accessories" then
 										table.insert(partInput, v)
 									else
 										local found = false
-										while (found ~= true) do
+										while found ~= true do
 											for _,v2 in pairs(GroupPartInputs) do
 												if v == v2 then
 													table.insert(partInput, v)
@@ -4286,7 +4314,7 @@ return function(Vargs, env)
 
 
 							-- Check if partInput is a table
-							if (typeof(partInput) == "table") then
+							if typeof(partInput) == "table" then
 								local hash = {}
 
 								-- Check for duplicates
@@ -4301,18 +4329,18 @@ return function(Vargs, env)
 
 								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
 
-								if (rigType == Enum.HumanoidRigType.R15) then
-									for i=#partInput,1,-1 do
-										if (partInput[i] == "RightArm") then
+								if rigType == Enum.HumanoidRigType.R15 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightArm" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand" then
 													table.insert(foundKeys, k2)
 												end
 											end
 											-- If not all keys were found just remove all keys and add them manually
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "RightUpperArm")
@@ -4321,16 +4349,16 @@ return function(Vargs, env)
 											end
 											table.remove(partInput, i) -- Remove the group part input
 
-										elseif (partInput[i] == "LeftArm") then
+										elseif partInput[i] == "LeftArm" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand" then
 													table.insert(foundKeys, k2)
 												end
 											end
 
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "LeftUpperArm")
@@ -4338,17 +4366,15 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftHand")
 											end
 											table.remove(partInput, i)
-
-										elseif (partInput[i] == "RightLeg") then
+										elseif partInput[i] == "RightLeg" then
 											local foundKeys = {}
-											for i=#partInput,1,-1 do
-												if (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+											for i = #partInput, 1, -1 do
+												if partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
 													table.insert(foundKeys, partInput[i])
 												end
 											end
-
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "RightUpperLeg")
@@ -4356,17 +4382,16 @@ return function(Vargs, env)
 												table.insert(partInput, "RightFoot")
 											end
 											table.remove(partInput, i)
-
-										elseif (partInput[i] == "LeftLeg") then
+										elseif partInput[i] == "LeftLeg" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot" then
 													table.insert(foundKeys, k2)
 												end
 											end
-
-											if (#foundKeys ~= 3) then
-												for _,foundKey in pairs(foundKeys) do
+											
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "LeftUpperLeg")
@@ -4374,17 +4399,15 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftFoot")
 											end
 											table.remove(partInput, i)
-
-										elseif (partInput[i] == "Torso") then
+										elseif partInput[i] == "Torso" then
 											local foundKeys = {}
-											for k2,v2 in pairs(partInput) do
-												if (v2 == "UpperTorso" or v2 == "LowerTorso") then
+											for k2, v2 in pairs(partInput) do
+												if v2 == "UpperTorso" or v2 == "LowerTorso" then
 													table.insert(foundKeys, k2)
 												end
 											end
-
-											if (#foundKeys ~= 2) then
-												for _,foundKey in pairs(foundKeys) do
+											if #foundKeys ~= 2 then
+												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
 												end
 												table.insert(partInput, "UpperTorso")
@@ -4395,17 +4418,17 @@ return function(Vargs, env)
 									end
 								end
 
-								if (rigType == Enum.HumanoidRigType.R6) then
-									for i=#partInput,1,-1 do
-										if (partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand") then
+								if rigType == Enum.HumanoidRigType.R6 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand") then
+										elseif partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot") then
+										elseif partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot") then
+										elseif partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot" then
 											table.remove(partInput, i)
-										elseif (partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso") then
+										elseif partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso" then
 											table.remove(partInput, i)
 										end
 									end
@@ -4413,21 +4436,21 @@ return function(Vargs, env)
 
 
 								-- Make chosen parts transparent
-								for k,v in pairs(partInput) do
+								for k, v in pairs(partInput) do
 									if not (v == "limbs" or v == "face" or v == "accessories") then
 										local part = player.Character:FindFirstChild(v)
-										if (part ~= nil and part:IsA("BasePart")) then
+										if part ~= nil and part:IsA("BasePart") then
 											part.Transparency = args[3]
 										end
 
-									elseif (v == "limbs") then
+									elseif v == "limbs" then
 										for key, part in pairs(player.Character:GetChildren()) do
 											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
 												part.Transparency = args[3]
 											end
 										end
 
-									elseif (v == "face") then
+									elseif v == "face" then
 										local headPart = player.Character:FindFirstChild("Head")
 										for _, v2 in pairs(headPart:GetChildren()) do
 											if v2:IsA("Decal") then
@@ -4435,7 +4458,7 @@ return function(Vargs, env)
 											end
 										end
 
-									elseif (v == "accessories") then
+									elseif v == "accessories" then
 										for key, part in pairs(player.Character:GetChildren()) do
 											if part:IsA("Accessory") then
 												for _, v2 in pairs(part:GetChildren()) do
@@ -4449,19 +4472,19 @@ return function(Vargs, env)
 								end
 
 
-								-- If "all" is specified
-							elseif (partInput == "all") then
+							-- If "all" is specified
+							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
 										p.Transparency = args[3]
-										if (p.Name == "Head") then
+										if p.Name == "Head" then
 											for _, v2 in pairs(p:GetChildren()) do
 												if v2:IsA("Decal") then
 													v2.Transparency = args[3]
 												end
 											end
 										end
-									elseif (p:IsA("Accessory") and #p:GetChildren() ~= 0) then
+									elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
 										for _, v2 in pairs(p:GetChildren()) do
 											if v2:IsA("BasePart") then
 												v2.Transparency = args[3]
@@ -4724,22 +4747,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507777826" -- Default R15 animation
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180426354"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
-							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "walk") then
+							for _, v2 in pairs(animateScript:GetDescendants()) do
+								if v2.Name == "walk" then
 									found = true
 									local walkAnimation = v2:FindFirstChildOfClass("Animation")
-									if (walkAnimation) then
+									if walkAnimation then
 										walkAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local walkAnimation = Instance.new("Animation")
@@ -4776,22 +4799,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507767714"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180426354"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
 							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "run") then
+								if v2.Name == "run" then
 									found = true
 									local runAnimation = v2:FindFirstChildOfClass("Animation")
-									if (runAnimation) then
+									if runAnimation then
 										runAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local runAnimation = Instance.new("Animation")
@@ -4828,22 +4851,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507765000"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "125750702"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
-							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "jump") then
+							for _, v2 in pairs(animateScript:GetDescendants()) do
+								if v2.Name == "jump" then
 									found = true
 									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
-									if (jumpAnimation) then
+									if jumpAnimation then
 										jumpAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local jumpAnimation = Instance.new("Animation")
@@ -4880,22 +4903,22 @@ return function(Vargs, env)
 				if not (args[2] == "R15" or args[2] == "R6") then
 					assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 					animId = args[2]
-				elseif (args[2] == "R15") then
+				elseif args[2] == "R15" then
 					animId = "507767968"
-				elseif (args[2] == "R6") then
+				elseif args[2] == "R6" then
 					animId = "180436148"
 				end
 
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					if (v.Character) then
+					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
-						if (animateScript) then
+						if animateScript then
 							local found = false
 							for _,v2 in pairs(animateScript:GetDescendants()) do
-								if (v2.Name == "fall") then
+								if v2.Name == "fall" then
 									found = true
 									local fallAnimation = v2:FindFirstChildOfClass("Animation")
-									if (fallAnimation) then
+									if fallAnimation then
 										fallAnimation.AnimationId = "rbxassetid://" .. animId
 									else
 										local fallAnimation = Instance.new("Animation")
@@ -5034,6 +5057,35 @@ return function(Vargs, env)
 			end
 		};
 
+		StarterGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"startergear", "givestartergear"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Inserts the desired gear into the target player(s)'s starter gear";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
+						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
+							if v:FindFirstChild("StarterGear") then
+								gear:Clone().Parent = v.StarterGear
+							end
+						end
+					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.", 0)
+				end
+			end 
+		};
+
 		Gear = {
 			Prefix = Settings.Prefix;
 			Commands = {"gear", "givegear"};
@@ -5112,13 +5164,13 @@ return function(Vargs, env)
 				end
 			end
 		};
-
-		BodySwap = {
+		
+		OldBodySwap = {
 			Prefix = Settings.Prefix;
-			Commands = {"bodyswap", "bodysteal", "bswap"};
+			Commands = {"oldbodyswap", "oldbodysteal"};
 			Args = {"player1", "player2"};
 			Hidden = false;
-			Description = "Swaps player1's and player2's bodies and tools";
+			Description = "[Old] Swaps player1's and player2's bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -5160,6 +5212,52 @@ return function(Vargs, env)
 						end
 						v2.Character.HumanoidRootPart.CFrame = vpos
 						v.Character.HumanoidRootPart.CFrame = v2pos
+					end
+				end
+			end
+		};
+
+		BodySwap = {
+			Prefix = Settings.Prefix;
+			Commands = {"bodyswap", "bodysteal", "bswap"};
+			Args = {"player1", "player2"};
+			Hidden = false;
+			Description = "Swaps player1's and player2's avatars, bodies and tools";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v1 in pairs(service.GetPlayers(plr, args[1])) do
+					if not v1.Character then continue end
+					local v1hum = v1.Character:FindFirstChildOfClass("Humanoid")
+					local v1desc = v1hum:GetAppliedDescription()
+		
+					for _, v2 in pairs(service.GetPlayers(plr, args[2])) do
+						if not v2.Character then continue end
+						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
+						local v2desc = v2hum:GetAppliedDescription()
+		
+						local v1pos, v2pos = v1.Character:GetPivot(), v2.Character:GetPivot()
+		
+						v1hum:UnequipTools()
+						v2hum:UnequipTools()
+						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
+		
+						for _, t in ipairs(v1tools) do
+							if t:IsA("Tool") then
+								t.Parent = v2.Backpack
+							end
+						end
+						for _, t in pairs(v2tools) do
+							if t:IsA("Tool") then
+								t.Parent = v1.Backpack
+							end
+						end
+		
+						v1hum:ApplyDescription(v2desc)
+						v2hum:ApplyDescription(v1desc)
+		
+						v1.Character:PivotTo(v2pos)
+						v2.Character:PivotTo(v1pos)
 					end
 				end
 			end

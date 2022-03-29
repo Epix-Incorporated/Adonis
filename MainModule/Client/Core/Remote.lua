@@ -242,7 +242,14 @@ return function()
 			end;
 
 			LocallyFormattedTime = function(args)
-				return service.FormatTime(table.unpack(args))
+				if type(args[1]) == "table" then
+					local results = {}
+					for i, t in ipairs(args[1]) do
+						results[i] = service.FormatTime(t, select(2, unpack(args)))
+					end
+					return results
+				end
+				return service.FormatTime(unpack(args))
 			end;
 		};
 
@@ -385,15 +392,6 @@ return function()
 				if handler and type(handler) == "function" then
 					Pcall(handler, unpack(args, 2))
 				end
-			end;
-					
-			SendNotification = function(args)
-				local title, text, duration = args[1], args[2], args[3]
-				service.StarterGui:SetCore('SendNotification', {
-					Title = title or "Notification",
-					Text = text or 'Hello there!',
-					Duration = duration or 5
-				})
 			end;
 		};
 

@@ -281,7 +281,7 @@ return function(data)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCenter:Fire(log)
+	service.Events.CommsPanel:Fire(log)
 	
 	
 	local blur = service.New("BlurEffect")

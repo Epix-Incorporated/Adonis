@@ -21,7 +21,7 @@ return function(data)
 		Name = "Countdown";
 		Title = "Countdown";
 		Icon = client.MatIcons["Hourglass full"];
-		Size = {textSize.X + 30, textSize.Y + 20};
+		Size = {textSize.X + 40, textSize.Y + 20};
 		Position = UDim2.new(0, 10, 1, -(textSize.Y + 30));
 		OnClose = function()
 			tock:Stop()
@@ -42,7 +42,7 @@ return function(data)
 		TextXAlignment = Enum.TextXAlignment.Right;
 		BackgroundTransparency = 1;
 		Size = UDim2.fromOffset(25, 25);
-		Position = UDim2.new(1, -30, 1, -30);
+		Position = UDim2.new(1, -30, 1, -25);
 	})
 
 	local muteButton = window:AddTitleButton({

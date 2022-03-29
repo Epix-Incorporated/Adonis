@@ -40,13 +40,12 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		Chats = {};
 		Joins = {};
-        Leaves = {};
+		Leaves = {};
 		Script = {};
 		RemoteFires = {};
 		Commands = {};
 		Exploit = {};
 		Errors = {};
-		ServerDetails = {};
 		DateTime = {};
 		TempUpdaters = {};
 		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
@@ -55,13 +54,12 @@ return function(Vargs, GetEnv)
 			local indToName = {
 				Chats = "Chat";
 				Joins = "Join";
-                                Leaves = "Leave";
+				Leaves = "Leave";
 				Script = "Script";
 				RemoteFires = "RemoteFire";
 				Commands = "Command";
 				Exploit = "Exploit";
 				Errors = "Error";
-				ServerDetails = "ServerDetails";
 				DateTime = "DateTime";
 			}
 
@@ -149,7 +147,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-			 	return temp
+				return temp
 			end)
 
 			warn("Command logs saved!")

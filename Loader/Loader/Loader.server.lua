@@ -29,14 +29,19 @@ end
 
 warn("Loading...")
 
-if rawget(_G, "__Adonis_MUTEX") and type(rawget(_G, "__Adonis_MUTEX")) == "string" then
-	warn("Adonis is already running! Aborting...; Running Location:", rawget(_G, "__Adonis_MUTEX"), "This Location:", script:GetFullName())
-else
-	if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-		rawset(_G, "__Adonis_MUTEX", script:GetFullName())
+local RunService = game:GetService("RunService")
+local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
+if mutex then
+	if mutex:IsA("StringValue") then
+		warn("Adonis is already running! Aborting...; Running Location:", mutex.Value, "This Location:", script:GetFullName())
 	else
-		warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
 	end
+else
+	mutex = Instance.new("StringValue")
+	mutex.Name = "__Adonis_MUTEX"
+	mutex.Value = script:GetFullName()
+	mutex.Parent = RunService
 
 	local model = script.Parent.Parent
 	local config = model.Config
@@ -76,6 +81,8 @@ else
 	}
 
 	--// Init
+
+	-- selene: allow(incorrect_standard_library_use)
 	script.Parent = nil --script:Destroy()
 	model.Name = math.random()
 

@@ -73,26 +73,28 @@ return function(data)
 
 	function getList(obj)
 		local filter = search.Text
-		scroller:ClearAllChildren()
-		scroller:Add("UIListLayout", {SortOrder = "LayoutOrder"; FillDirection = "Vertical"; VerticalAlignment = "Top";})
+		
+		for _, child in ipairs(scroller:GetChildren()) do 
+			if not child:IsA("UIListLayout") then
+				child:Destroy()
+			end
+		end
+		
 		if obj == game then
 			navText.Text = game.Name
-			navText.Size = UDim2.new(0, 300, 0, 20)
 		else
-			nav.CanvasSize = UDim2.new(1, 0, 0, 20)
-			navText.Size = UDim2.new(1, 0, 0, 20)
 			navText.Text = game.Name.."."..obj:GetFullName()
 			newEntry(obj.Parent or lastObject or game, "Previous Parent (Go Up..)", true, true, Color3.new(0.666667, 1, 1))
-			navText.Size = UDim2.new(0, navText.TextBounds.X + 10, 0, 20)
 		end
-		nav.CanvasSize = navText.Size
+		
 		for i,v in ipairs(obj:GetChildren()) do
 			pcall(function()
-				if string.find(obj.Name:lower(), filter:lower()) or string.find(obj.ClassName:lower(), filter:lower()) then
+				if string.find(v.Name:lower(), filter:lower()) or string.find(v.ClassName:lower(), filter:lower()) then
 					newEntry(v, v.Name)
 				end
 			end)
 		end
+		
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
 	end
 
@@ -100,29 +102,38 @@ return function(data)
 		nav = window:Add("ScrollingFrame", {
 			ScrollBarThickness = 0;
 			ScrollingDirection = "X";
-			Size = UDim2.new(1, 0, 0, 20);
+			Size = UDim2.new(1, 0, 0, 30);
 			Position = UDim2.new(0, 0, 0, 0);
 			CanvasSize = UDim2.new(0, 0, 0, 20);
+			AutomaticCanvasSize = Enum.AutomaticSize.X;
 		})
 		navText = nav:Add("TextLabel", {
-			TextTruncate = "AtEnd";
 			TextXAlignment = "Left";
 			Text = game.Name;
 			Size = UDim2.new(0, 0, 0, 20);
+			AutomaticSize = Enum.AutomaticSize.X;
 		})
-		navText:Add("UIPadding", {PaddingLeft = UDim.new(0, 5);})
-
+		navText:Add("UIPadding", {
+			PaddingLeft = UDim.new(0, 5);
+			PaddingRight = UDim.new(0, 5);
+		})
+		
 		scroller = window:Add("ScrollingFrame", {
 			List = {};
 			ScrollBarThickness = 2;
 			BackgroundTransparency = 1;
-			Position = UDim2.new(0, 5, 0, 50);
-			Size = UDim2.new(1, -10, 1, -50);
+			Position = UDim2.new(0, 5, 0, 55);
+			Size = UDim2.new(1, -10, 1, -60);
+		})
+		scroller:Add("UIListLayout", {
+			SortOrder = "LayoutOrder";
+			FillDirection = "Vertical";
+			VerticalAlignment = "Top";
 		})
 
 		search = window:Add("TextBox", {
 			Size = UDim2.new(1, -10, 0, 20);
-			Position = UDim2.new(0, 5, 0, 25);
+			Position = UDim2.new(0, 5, 0, 30);
 			BackgroundTransparency = 0.5;
 			BorderSizePixel = 0;
 			TextColor3 = Color3.new(1, 1, 1);

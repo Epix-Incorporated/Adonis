@@ -206,13 +206,13 @@ return function()
 						local human = obj.ClassName == "Model" and service.Players:GetPlayerFromCharacter(obj)
 
 						if human then
-							spawn(Functions.ESPify, UnWrap(obj), color);
+							task.spawn(Functions.ESPify, UnWrap(obj), color);
 						end
 					end)
 
 					for i, Player in ipairs(service.Players:GetPlayers()) do
 						if Player.Character then
-							spawn(Functions.ESPify, UnWrap(Player.Character), color);
+							task.spawn(Functions.ESPify, UnWrap(Player.Character), color);
 						end
 					end
 				else
@@ -256,37 +256,31 @@ return function()
 		AddAlias = function(alias, command)
 			Variables.Aliases[string.lower(alias)] = command;
 			Remote.Get("UpdateAliases", Variables.Aliases)
-			task.defer(function()
-				UI.MakeGui("Notification",{
-					Time = 4;
-					Icon = server.MatIcons["Add circle"];
-					Title = "Notification";
-					Message = string.format('Alias "%s" added', string.lower(alias));
-				})
-			end)
+			task.defer(UI.MakeGui, "Notification", {
+				Time = 4;
+				Icon = client.MatIcons["Add circle"];
+				Title = "Notification";
+				Message = string.format('Alias "%s" added', string.lower(alias));
+			})
 		end;
 
 		RemoveAlias = function(alias)
 			if Variables.Aliases[string.lower(alias)] then
 				Variables.Aliases[string.lower(alias)] = nil;
 				Remote.Get("UpdateAliases", Variables.Aliases)
-				task.defer(function()
-					UI.MakeGui("Notification",{
-						Time = 4;
-						Icon = server.MatIcons.Delete;
-						Title = "Notification";
-						Message = string.format('Alias "%s" removed', string.lower(alias));
-					})
-				end)
+				task.defer(UI.MakeGui, "Notification", {
+					Time = 4;
+					Icon = client.MatIcons.Delete;
+					Title = "Notification";
+					Message = string.format('Alias "%s" removed', string.lower(alias));
+				})
 			else
-				task.defer(function()
-					UI.MakeGui("Notification",{
-						Time = 3;
-						Icon = server.MatIcons.Help;
-						Title = "Error";
-						Message = string.format('Alias "%s" not found', string.lower(alias));
-					})
-				end)
+				task.defer(UI.MakeGui, "Notification", {
+					Time = 3;
+					Icon = client.MatIcons.Help;
+					Title = "Error";
+					Message = string.format('Alias "%s" not found', string.lower(alias));
+				})
 			end
 		end;
 
@@ -311,10 +305,6 @@ return function()
 						rot = rot+math.rad(speed*dt)
 					else
 						rot = rot-math.rad(speed*dt)
-					end
-
-					if rot >= 2.5 or rot <= -2.5 then
-						--flip = not flip
 					end
 					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
@@ -1190,6 +1180,10 @@ return function()
 
 		SetCoreGuiEnabled = function(element,enabled)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
+		end;
+
+		SetCore = function(...)
+			service.StarterGui:SetCore(...)
 		end;
 
 		UnCape = function()

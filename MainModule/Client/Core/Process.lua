@@ -153,9 +153,9 @@ return function()
 				logError(tostring(Message).." - "..tostring(Trace))
 			end
 
-			if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
+			--if (Script == nil or (not Trace or Trace == "")) and not (Trace and string.find(Trace,"CoreGui.RobloxGui")) then
 				--Anti.Detected("log","Scriptless/Traceless error found. Script: "..tostring(Script).." - Trace: "..tostring(Trace))
-			end
+			--end
 		end;
 
 		Chat = function(msg)

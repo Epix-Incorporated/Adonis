@@ -147,7 +147,7 @@ return function(Vargs, GetEnv)
 									keys.RemoteReady = true
 
 									AddLog("Script", string.format("%s requested client keys", p.Name))
-								else
+								--else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
@@ -419,8 +419,12 @@ return function(Vargs, GetEnv)
 					end
 				else
 					local target = Settings.SpecialPrefix..'all'
-					if not b then b = 'Global' end
-					if not service.Players:FindFirstChild(p.Name) then b='Nil' end
+					if not b then 
+						b = 'Global'
+					end
+					if not service.Players:FindFirstChild(p.Name) then
+						b='Nil'
+					end
 					if string.sub(a,1,1)=='@' then
 						b='Private'
 						target,a=string.match(a,'@(.%S+) (.+)')
@@ -438,8 +442,7 @@ return function(Vargs, GetEnv)
 
 					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
-						})) do
-						--Routine(function()
+					})) do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -460,7 +463,6 @@ return function(Vargs, GetEnv)
 							elseif b == 'UnIgnore' and v.Name ~= p.Name then
 								Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
 						end
-						--end)
 					end
 				end
 
@@ -488,7 +490,7 @@ return function(Vargs, GetEnv)
 
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
-							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
+							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(1, 1, 1))
 							Process.Command(p, msg, {Chat = true;})
 						elseif string.sub(msg, 1, 3)=="/e " then
 							service.Events.PlayerChatted:Fire(p, msg)
@@ -908,7 +910,7 @@ return function(Vargs, GetEnv)
 					end
 				end--]=]
 
-				spawn(Functions.Donor, p)
+				task.spawn(Functions.Donor, p)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, Character, ...)
@@ -924,7 +926,7 @@ return function(Vargs, GetEnv)
 				
 				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
 					if trackTargets[p] and server.Commands.Track then
-						server.Commands.Track.Function(service.Players[otherPlrName], {p.Name, "true"})
+						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
 					end
 				end
 			end

@@ -1,0 +1,14 @@
+std = "roblox"
+
+[rules]
+if_same_then_else = "allow"
+
+# Because Adonis is a large and old codebase, there are too many warnings for anyone to 
+# realistically clear out, so lints that are not code-breaking and trigger often are set to be
+# allowed so that code-breaking errors can be shown properly in the CI.
+
+global_usage = "allow"
+multiple_statements = "allow"
+unused_variable = "allow"
+unscoped_variables = "allow"
+shadowing = "allow"

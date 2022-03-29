@@ -275,10 +275,10 @@ return function(Vargs, GetEnv)
 						info.IsExternal = true
 						Settings.Ranks[rank] = info
 					end
-
+					
 					--// Clear any custom ranks that were not fetched from Trello
-					for name,rank in pairs(Settings.Ranks) do
-						if rank.IsExternal and not customranks[name] then
+					for name,rank in pairs(Settings.Ranks) do 
+						if rank.IsExternal and not customranks[name] then 
 							Settings.Ranks[name] = nil
 						end
 					end

@@ -62,7 +62,7 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
-							Message = "You are a(n) "..rankName..". Click to view commands.";
+							Message = string.format("You are %s%s. Click to view commands.", if rankName:sub(1, 3):lower() == "the" then "" elseif rankName:match("^[AEIOUaeiou]") and rankName:sub(1, 3):lower() ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
@@ -534,15 +534,15 @@ return function(Vargs, env)
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
 			Args = {"player", "element", "true/false"};
 			Hidden = false;
-			Description = "SetCoreGuiEnabled. Enables/Disables CoreGui elements. ";
+			Description = "Enables or disables CoreGui elements for the target player(s)";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if string.lower(args[3])=='on' or string.lower(args[3])=='true' then
-						Remote.Send(v,'Function','SetCoreGuiEnabled', args[2],true)
-					elseif string.lower(args[3])=='off' or string.lower(args[3])=='false' then
-						Remote.Send(v,'Function','SetCoreGuiEnabled', args[2],false)
+				for _,v in ipairs(service.GetPlayers(plr, args[1])) do
+					if string.lower(args[3]) == "on" or string.lower(args[3]) == "true" then
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], true)
+					elseif string.lower(args[3]) == 'off' or string.lower(args[3]) == "false" then
+						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], false)
 					end
 				end
 			end
@@ -667,6 +667,45 @@ return function(Vargs, env)
 			end
 		};
 
+		SaveTool = {
+			Prefix = Settings.Prefix;
+			Commands = {"addtool", "savetool", "maketool"};
+			Args = {"optional player", "optional new tool name"};
+			Description = "Saves the equipped tool to the storage so that it can be inserted using "..Settings.Prefix.."give";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local tool = v.Character and v.Character:FindFirstChildWhichIsA("BackpackItem")
+					if tool then
+						tool = tool:Clone()
+						if args[2] then tool.Name = args[2] end
+						tool.Parent = service.UnWrap(Settings.Storage)
+						Variables.SavedTools[tool] = service.FormatPlayer(plr)
+						Functions.Hint("Added tool: "..tool.Name, {plr})
+					elseif not args[1] then
+						error("You must have an equipped tool to add to the storage.")
+					end
+				end
+			end
+		};
+
+		ClearSavedTools = {
+			Prefix = Settings.Prefix;
+			Commands = {"clraddedtools", "clearaddedtools", "clearsavedtools", "clrsavedtools"};
+			Args = {};
+			Description = "Removes any tools in the storage added using "..Settings.Prefix.."savetool";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				local count = 0
+				for tool in pairs(Variables.SavedTools) do
+					count += 1
+					tool:Destroy()
+				end
+				table.clear(Variables.SavedTools)
+				Functions.Hint(string.format("Cleared %d saved tool%s.", count, count == 1 and "" or "s"), {plr})
+			end
+		};
+
 		NewTeam = {
 			Prefix = Settings.Prefix;
 			Commands = {"newteam", "createteam", "maketeam"};
@@ -788,8 +827,8 @@ return function(Vargs, env)
 
 				if string.lower(class) == "script" or string.lower(class) == "s" then
 					class = "Script"
-				elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
-					class = "LocalScript"
+				--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
+				--	class = "LocalScript"
 				else
 					class = "LocalScript"
 				end
@@ -827,9 +866,7 @@ return function(Vargs, env)
 						local tab = Core.GetScript(scr)
 						if scr and tab then
 							sb[class][name].Event = plr.Chatted:Connect(function(msg)
-								if string.sub(msg, 1,#(Settings.Prefix.."sb")) == Settings.Prefix.."sb" then
-
-								else
+								if string.sub(msg, 1,#(Settings.Prefix.."sb")) ~= Settings.Prefix.."sb" then
 									tab.Source = tab.Source.."\n"..msg
 									Functions.Hint("Appended message to "..class.." "..name, {plr})
 								end
@@ -1412,8 +1449,11 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					--Remote.LoadCode(v, "service.StarterGui:SetCore('SendNotification', {Title='Notification',Text='"..args[3].."',Duration="..tostring(tonumber(args[2])).."})")
-					Remote.Send(v, "SendNotification", 'Notification', args[3] or 'Hello, from Adonis!', tonumber(args[2] or 5))
+					Remote.Send(v, "Function", "SetCore", "SendNotification", {
+						Title = "Notification";
+						Text = args[3] or "Hello, from Adonis!";
+						Duration = tonumber(args[2]) or 5;
+					})
 				end
 			end
 		};
