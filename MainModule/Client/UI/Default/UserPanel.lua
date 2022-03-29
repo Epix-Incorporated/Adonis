@@ -61,42 +61,67 @@ return function(data, Vargs)
 		end
 	})
 
-	local function promptPurchase(isGamepass, id)
-		if isGamepass then
-			service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
-		else
-			service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
-		end
-
+	local function createPurchaseWindow(isGamepass, id)
 		local purchaseWindow = UI.Make("Window", {
-			Name  = "Purchase window";
+			Name = "Purchase window";
 			Title = "Purchase "..(isGamepass and "gamepass" or "asset");
 			Icon = client.MatIcons["Shopping cart"];
 			AllowMultiple = false;
-			Size  = {400, 199};
+			Size = {380, 160};
+			SizeLocked = true;
 		})
+		
+		if purchaseWindow then
+			purchaseWindow:Add("TextLabel", {
+				Size = UDim2.new(1, -20, 1, -55);
+				Position = UDim2.new(0.5, 0, 0, 10);
+				AnchorPoint = Vector2.new(0.5, 0);
+				ZIndex = 2;
+				TextScaled = true;
+				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
+			})
 
-		purchaseWindow:Add("TextBox", {
-			Size = UDim2.new(1, 0, 1, 0);
-			ZIndex = 2;
-			ClearTextOnFocus = false;
-			TextEditable = false;
-			TextScaled = true;
-			Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
-		})
+			purchaseWindow:Add("TextBox", {
+				Size = UDim2.new(1, -20, 0, 30);
+				Position = UDim2.new(0.5, 0, 1, -10);
+				AnchorPoint = Vector2.new(0.5, 1);
+				ZIndex = 2;
+				ClearTextOnFocus = false;
+				TextEditable = false;
+				TextScaled = true;
+				Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
+			})
 
-		purchaseWindow:Ready()
+			purchaseWindow:Ready()
+		end
+	end
 
-		local purchaseEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]
-		while true do
-			local player, eventId = purchaseEvent:Wait()
+	local function promptPurchase(isGamepass, id)
+		if client.Variables.AllowThirdPartyPurchases == false then
+			createPurchaseWindow(isGamepass, id)
+		else
+			local logEvent, finishEvent
+			
+			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
+				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
+					client.Variables.AllowThirdPartyPurchases = false
 
-			if service.UnWrap(player) == service.UnWrap(service.Players.LocalPlayer) and eventId == id then
-				break
+					createPurchaseWindow(isGamepass, id)
+				end
+			end)
+			finishEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]:Connect(function(plr, aid)
+				if plr == service.Players.LocalPlayer and aid == id then
+					logEvent:Disconnect()
+					finishEvent:Disconnect()
+				end
+			end)
+
+			if isGamepass then
+				service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
+			else
+				service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
 			end
 		end
-
-		purchaseWindow:Close()
 	end
 
 	local function showTable(tab, setting)
