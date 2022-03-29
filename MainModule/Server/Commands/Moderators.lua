@@ -13,31 +13,6 @@ return function(Vargs, env)
 	local cPcall = env.cPcall
 
 	return {
-			StarterGear = {
-			Prefix = Settings.Prefix;
-			Commands = {"startergear"};
-			Args = {"player", "Gear ID"};
-			Hidden = false;
-			Description = "Inserts the desired gear into the target player(s)'s StarterPack";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
-				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
-				if AssetIdType == 19 then
-					local gear = service.Insert(gearID)
-					for i, v in pairs(service.GetPlayers(plr, args[1])) do
-						if v:FindFirstChild("StarterGear") and v:FindFirstChild("Backpack") then
-							gear:Clone().Parent = v.StarterGear
-							--//gear:Clone().Parent = v.Backpack --//idk i made it work like startergive for now. 
-						end
-					end
-				else
-					error("Invalid ID provided, Not AssetType Gear.", 0)
-
-				end
-			end 
-		};
 		AudioPlayer = {
 			Prefix = Settings.Prefix;
 			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
