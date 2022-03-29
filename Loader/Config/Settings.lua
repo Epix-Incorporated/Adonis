@@ -334,6 +334,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
+	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they've been idle for too long, or anti-idle.
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
 
