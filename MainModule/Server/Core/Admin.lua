@@ -36,7 +36,7 @@ return function(Vargs, GetEnv)
 
 		if not CreatorId then
 			TrackTask("Thread: GetGroupCreatorId", function()
-				local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+				local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
 				if success and type(creator) == "table" then
 					CreatorId = creator.Owner.Id
 				end
