@@ -20,7 +20,7 @@ return {
 	"(Git/Expertcoderz) UX update for !profile and !serverinfo (#696)";
 	"(Git/Expertcoderz) Add !getgroupinfo";
 	"(Git/joritochip) Avatar command fixes, better color parsing";
-	"(Git/GalacticInspired) Updated some commad prefixes that forced ":" (#695)";
+	"(Git/GalacticInspired) Updated some commad prefixes that forced \":\" (#695)";
 	"(Git/joritochip) Switch some commands to use HumanoidDescriptions";
 	"(Git/karl-police) Add :removepants (#709)";
 	"(Git/Expertcoderz) Add service.FormatNumber, fix :resetenabled, improve :punish";
