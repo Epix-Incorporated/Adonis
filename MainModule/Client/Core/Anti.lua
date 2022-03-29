@@ -593,7 +593,7 @@ return function()
 
 			--// Detection Loop
 			local hasPrinted = false
-			service.StartLoop("Detection", 10, function()
+			service.StartLoop("Detection", 11, function()
 				--// Prevent event stopping
 				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
 					--Detected("crash", "Events stopped")
@@ -704,7 +704,7 @@ return function()
 					end)
 
 					testDecal:Destroy()
-					task.wait(0.1)
+					task.wait(2.5)
 					if not activated then
 						Detected("kick", "Coregui detection bypass found")
 					end
