@@ -444,11 +444,11 @@ return function()
 					Detected("crash", "Exploit detected; "..Message)
 				end
 			end)
-			]]
 
 			service.Selection.SelectionChanged:Connect(function()
 				Detected("kick", "Selection changed")
 			end)
+			]]
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
 				Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
