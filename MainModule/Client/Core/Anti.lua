@@ -479,9 +479,12 @@ return function()
 				end
 			end)
 
+			--[[
+			--// Not used anymore
 			service.RunService.Stepped:Connect(function()
 				lastUpdate = time()
 			end)
+			]]
 
 			if service.Player:WaitForChild("Backpack", 120) then
 				service.Player.Backpack.ChildAdded:Connect(checkTool)
