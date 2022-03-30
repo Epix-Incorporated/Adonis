@@ -227,7 +227,7 @@ return function(data)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCenter:Fire(log)
+	service.Events.CommsPanel:Fire(log)
 	
 	--client.UI.Make("HintHolder")
 	local container = client.UI.Get("HintHolder",nil,true)

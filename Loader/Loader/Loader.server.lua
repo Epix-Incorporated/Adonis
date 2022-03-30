@@ -81,6 +81,8 @@ else
 	}
 
 	--// Init
+
+	-- selene: allow(incorrect_standard_library_use)
 	script.Parent = nil --script:Destroy()
 	model.Name = math.random()
 
