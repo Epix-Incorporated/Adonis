@@ -350,14 +350,14 @@ return function()
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
 				"syn%.";
-                                "reviz admin";
-                                "iy is already loaded";
-                                "infinite yield is already loaded";
-                                "infinite yield is already";
-                                "iy_debug";
-                                "returning json";
-                                "shattervast";
-                                "failed to parse json";
+				"reviz admin";
+				"iy is already loaded";
+				"infinite yield is already loaded";
+				"infinite yield is already";
+				"iy_debug";
+				"returning json";
+				"shattervast";
+				"failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
@@ -367,7 +367,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message),string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message),"failed to load") then
+					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
 						return true
 					end
 				end
@@ -412,12 +412,6 @@ return function()
 				end
 			end)
 
-			service.ScriptContext.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non-CoreScript Detected; "..tostring(child))
-				end
-			end)
-
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
 					if soundIdCheck(child) then
@@ -428,6 +422,14 @@ return function()
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
 					end
+				end
+			end)
+
+
+			--[[
+			service.ScriptContext.ChildAdded:Connect(function(child)
+				if Anti.GetClassName(child) ~= "CoreScript" then
+					Detected("kick","Non-CoreScript Detected; "..tostring(child))
 				end
 			end)
 
@@ -442,13 +444,15 @@ return function()
 					Detected("crash", "Exploit detected; "..Message)
 				end
 			end)
+			]]
 
 			service.Selection.SelectionChanged:Connect(function()
 				Detected("kick", "Selection changed")
 			end)
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
-				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+				Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+
 				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
@@ -499,9 +503,10 @@ return function()
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
-					Detected("log" ,"ScriptContext error?")
+					Detected("log", "ScriptContext error?")
 				end
 
+				--[==[
 				--// Check Log History
 				do
 					local Logs = service.LogService:GetLogHistory()
@@ -528,10 +533,11 @@ return function()
 						end
 					end
 				end
+				]==]
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
-					local func, err = loadstring("print('LolloDev5123 was here')")
+					local func, err = loadstring("")
 				end)
 				if ran then
 					Detected("crash", "Exploit detected; Loadstring usable")
