@@ -174,15 +174,15 @@ return function(Vargs, env)
 			end
 		};
 
-		CommsCenter = {
+		CommsPanel = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifications", "comms", "nc"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the communications Center, showing you all the adonis messages you have recieved in timeline order";
+			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "CommsCenter")
+				Remote.MakeGui(plr, "CommsPanel")
 			end
 		};						
 

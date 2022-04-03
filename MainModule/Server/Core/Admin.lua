@@ -36,7 +36,7 @@ return function(Vargs, GetEnv)
 
 		if not CreatorId then
 			TrackTask("Thread: GetGroupCreatorId", function()
-				local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+				local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
 				if success and type(creator) == "table" then
 					CreatorId = creator.Owner.Id
 				end
@@ -262,7 +262,7 @@ return function(Vargs, GetEnv)
 
 				local groupInfo = groupTable and groupTable[group] or {}
 				if not groupInfo[1] or os.time() - groupInfo[1] < 30 then
-					local success, GroupInfo = pcall(service.GroupService, service.GroupService.GetGroupsAsync, p.UserId)
+					local success, GroupInfo = pcall(service.GroupService.GetGroupsAsync, service.GroupService, p.UserId)
 					Admin.GroupsCache[key][group] = {
 						os.time(),
 						success and GroupInfo or {}
@@ -736,7 +736,8 @@ return function(Vargs, GetEnv)
 			end
 
 			for ind, admin in pairs(HTTP.Trello.Bans) do
-				if doCheck(p, admin) or banCheck(p, admin) then
+				local name = type(admin) == "table" and admin.Name or admin
+				if doCheck(p, name) or banCheck(p, name) then
 					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
 				end
 			end

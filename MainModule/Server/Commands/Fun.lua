@@ -5061,6 +5061,35 @@ return function(Vargs, env)
 			end
 		};
 
+		StarterGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"startergear", "givestartergear"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Inserts the desired gear into the target player(s)'s starter gear";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
+						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
+							if v:FindFirstChild("StarterGear") then
+								gear:Clone().Parent = v.StarterGear
+							end
+						end
+					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.", 0)
+				end
+			end 
+		};
+
 		Gear = {
 			Prefix = Settings.Prefix;
 			Commands = {"gear", "givegear"};

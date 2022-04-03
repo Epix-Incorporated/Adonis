@@ -126,24 +126,16 @@ return function(Vargs, GetEnv)
 		IncognitoPlayers = {};
 
 		MusicList = {
-			{Name = "jericho",	ID = 292340735}, -- Jericho - Gordon Bok
-			{Name = "beam",		ID = 165065112}, -- Mako - Beam (Proximity)
-			{Name = "myswamp",	ID = 166325648}, -- WHAT ARE YOU DOING IN MY SWAMP
-			{Name = "russianmen",	ID = 173038059}, -- Russian Dancing Men
-			{Name = "freedom", 	ID = 130760592}, -- Freedom (Loop)
-			{Name = "seatbelt", ID = 135625718}, --Fasten Your Seatbelt - Loop
-			{Name = "focus", 	ID = 136786547}, -- Focus Loop
-			{Name = "azylio", 	ID = 137603138}, -- Azylio [LOOP]
 			{Name = "epic", 	ID = 27697743}, -- Zero Project - Gothic
 			{Name = "halo", 	ID = 1034065}, -- Halo Theme
 			{Name = "cursed", 	ID = 1372257}, -- Cursed Abbey
 			{Name = "extreme", 	ID = 11420933}, -- TOPW
-			{Name = "tacos", 	ID = 142295308}, -- Raining Tacos
+			{Name = "tacos", 	ID = 142376088}, -- Parry Gripp - Raining Tacos
 			{Name = "awaken", 	ID = 27697277}, -- Positively Dark - Awakening
 			{Name = "mario", 	ID = 1280470}, -- SM64 Theme
 			{Name = "chrono", 	ID = 1280463}, -- Chrono Trigger Theme
 			{Name = "dotr", 	ID = 11420922}, -- DOTR | ▼ --- ▼ I do not speak tags
-			{Name = "entertain", ID = 27697267}, -- ##### ###### - Entertainer Rag
+			{Name = "entertain", 	ID = 27697267}, -- ##### ###### - Entertainer Rag
 			{Name = "fantasy", 	ID = 1280473}, -- FFVII Battle AC
 			{Name = "final", 	ID = 1280414}, -- Final Destination
 			{Name = "emblem", 	ID = 1372259}, -- Fire Emblem
@@ -157,42 +149,38 @@ return function(Vargs, GetEnv)
 			{Name = "tunnel",	ID = 9650822}, -- S4Tunnel
 			{Name = "spanish", 	ID = 5982975}, -- TheBuzzer
 			{Name = "venom", 	ID = 1372262}, -- Star Fox Theme
-			{Name = "wind", 	ID = 6537631123}, -- Wind of Fjords Original HQ File
 			{Name = "guitar", 	ID = 5986151}, -- 5986151
-			{Name = "pianoremix",	ID = 142407859}, -- Piano remix
-			{Name = "tsunami", 		ID = 569900517}, -- Tsunami Hardstyle - Jay Cosmic
-			{Name = "minecraftorchestral", 	ID = 148900687}, -- Minecraft Piano 2 [Orchestral Cover]
-			{Name = "crabraveoof", 	ID = 2590490779}, -- CRAB RAVE OOF
+			{Name = "hardstyle", 	ID = 1839246774}, -- Hardstyle
 			{Name = "crabrave", 	ID = 5410086218}, -- Noisestorm - Crab Rave
 		};
 
 		InsertList = {};
 
 		Capes = {
-			{Name = "crossota", 	Material = "Neon", 		Color = "Cyan", 				ID = 420260457},
-			{Name = "jamiejr99", 	Material = "Neon", 		Color = "Cashmere",				ID = 429297485},
+			{Name = "crossota", 	Material = "Neon", 	Color = "Cyan", 			ID = 420260457},
+			{Name = "jamiejr99", 	Material = "Neon", 	Color = "Cashmere",			ID = 429297485},
 			{Name = "new yeller", 	Material = "Fabric", 	Color = "New Yeller"},
 			{Name = "pastel blue", 	Material = "Fabric", 	Color = "Pastel Blue"},
 			{Name = "dusty rose", 	Material = "Fabric", 	Color = "Dusty Rose"},
 			{Name = "cga brown", 	Material = "Fabric", 	Color = "CGA brown"},
-			{Name = "random", 		Material = "Fabric", 	Color = (BrickColor.random()).Name},
-			{Name = "shiny", 		Material = "Plastic", 	Color = "Institutional white",	Reflectance = 1},
-			{Name = "gold",			Material = "Plastic", 	Color = "Bright yellow",		Reflectance = 0.4},
-			{Name = "kohl",			Material = "Fabric", 	Color = "Really black", 		ID = 108597653},
-			{Name = "script", 		Material = "Plastic", 	Color = "White", 				ID = 151359194},
-			{Name = "batman", 		Material = "Fabric", 	Color = "Institutional white", 	ID = 108597669},
-			{Name = "epix", 		Material = "Plastic", 	Color = "Really black", 		ID = 149442745},
+			{Name = "random", 	Material = "Fabric", 	Color = (BrickColor.random()).Name},
+			{Name = "shiny", 	Material = "Plastic", 	Color = "Institutional white",		Reflectance = 1},
+			{Name = "gold",		Material = "Plastic", 	Color = "Bright yellow",		Reflectance = 0.4},
+			{Name = "kohl",		Material = "Fabric", 	Color = "Really black", 		ID = 108597653},
+			{Name = "script", 	Material = "Plastic", 	Color = "White", 			ID = 151359194},
+			{Name = "batman", 	Material = "Fabric", 	Color = "Institutional white", 		ID = 108597669},
+			{Name = "epix", 	Material = "Plastic", 	Color = "Really black", 		ID = 149442745},
 			{Name = "superman", 	Material = "Fabric", 	Color = "Bright blue", 			ID = 108597677},
-			{Name = "swag", 		Material = "Fabric", 	Color = "Pink", 				ID = 109301474},
-			{Name = "donor", 		Material = "Plastic", 	Color = "White", 				ID = 149009184},
+			{Name = "swag", 	Material = "Fabric", 	Color = "Pink", 			ID = 109301474},
+			{Name = "donor", 	Material = "Plastic", 	Color = "White", 			ID = 149009184},
 			{Name = "gomodern", 	Material = "Plastic", 	Color = "Really black", 		ID = 149438175},
-			{Name = "admin", 		Material = "Plastic", 	Color = "White", 				ID = 149092195},
-			{Name = "giovannis", 	Material = "Plastic", 	Color = "White", 				ID = 149808729},
-			{Name = "godofdonuts", 	Material = "Plastic", 	Color = "Institutional white",	ID = 151034443},
-			{Name = "host", 		Material = "Plastic", 	Color = "Really black", 		ID = 152299000},
-			{Name = "cohost", 		Material = "Plastic", 	Color = "Really black", 		ID = 152298950},
-			{Name = "trainer",	 	Material = "Plastic", 	Color = "Really black", 		ID = 152298976},
-			{Name = "ba", 			Material = "Plastic", 	Color = "White", 				ID = 172528001}
+			{Name = "admin", 	Material = "Plastic", 	Color = "White", 			ID = 149092195},
+			{Name = "giovannis", 	Material = "Plastic", 	Color = "White", 			ID = 149808729},
+			{Name = "godofdonuts", 	Material = "Plastic", 	Color = "Institutional white",		ID = 151034443},
+			{Name = "host", 	Material = "Plastic", 	Color = "Really black", 		ID = 152299000},
+			{Name = "cohost", 	Material = "Plastic", 	Color = "Really black", 		ID = 152298950},
+			{Name = "trainer",	Material = "Plastic", 	Color = "Really black", 		ID = 152298976},
+			{Name = "ba", 		Material = "Plastic", 	Color = "White", 			ID = 172528001}
 		};
 
 		Blacklist = {
