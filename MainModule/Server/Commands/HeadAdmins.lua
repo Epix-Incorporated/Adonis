@@ -508,7 +508,7 @@ return function(Vargs, env)
 					end
 					if hasBadge then
 						Functions.Hint(string.format("%s already has the badge '%s'", service.FormatPlayer(v), badgeInfo.Name), {plr})
-					elseif service.BadgeService:AwardBadge(plr.UserId, badgeId) then
+					elseif service.BadgeService:AwardBadge(v.UserId, badgeId) then
 						Functions.Hint(string.format("Successfully awarded badge '%s' for %s", badgeInfo.Name, service.FormatPlayer(v)), {plr})
 					else
 						Functions.Hint(string.format("ERROR: Failed to award badge '%s' for %s due to an unexpected internal error", badgeInfo.Name, service.FormatPlayer(v)), {plr})
