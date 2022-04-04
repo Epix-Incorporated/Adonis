@@ -17,7 +17,7 @@
         <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
     </a>
 </div>
-<hr/>
+<hr/> 
 
 Adonis is a server moderation and management system created for use on the Roblox platform.
 

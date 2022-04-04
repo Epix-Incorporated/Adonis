@@ -483,7 +483,7 @@ return service.NewProxy({
 		--// Do this before we start hooking up events
 		log("Destroy script object")
 		--folder:Destroy()
-		script:Destroy()
+		script.Parent = nil --script:Destroy()
 
 		--// Intial setup
 		log("Initial services caching")
@@ -686,4 +686,3 @@ return service.NewProxy({
 	__metatable = "Adonis";
 	__tostring = function() return "Adonis" end;
 })
-

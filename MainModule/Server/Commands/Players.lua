@@ -174,15 +174,15 @@ return function(Vargs, env)
 			end
 		};
 
-		CommsCenter = {
+		CommsPanel = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifications", "comms", "nc"};
 			Args = {};
 			Hidden = false;
-			Description = "Opens the communications Center, showing you all the adonis messages you have recieved in timeline order";
+			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "CommsCenter")
+				Remote.MakeGui(plr, "CommsPanel")
 			end
 		};						
 
@@ -729,8 +729,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot friend yourself!")
-					assert(not plr:IsFriendsWith(v), "You are already friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptSendFriendRequest",service.Players["]=]..v.Name..[=["])]=])
+					assert(not plr:IsFriendsWith(v.UserId), "You are already friends with "..v.Name)
+					Remote.Send(plr, "Function", "SetCore", "PromptSendFriendRequest", v)
 				end
 			end
 		};
@@ -745,8 +745,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					assert(v ~= plr, "Cannot unfriend yourself!")
-					assert(plr:IsFriendsWith(v), "You are not currently friends with "..v.Name)
-					Remote.LoadCode(plr, [=[service.StarterGui:SetCore("PromptUnfriend",service.Players["]=]..v.Name..[=["])]=])
+					assert(plr:IsFriendsWith(v.UserId), "You are not currently friends with "..v.Name)
+					Remote.Send(plr, "Function", "SetCore", "PromptUnfriend", v)
 				end
 			end
 		};
@@ -773,7 +773,7 @@ return function(Vargs, env)
 			Hidden = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				Remote.LoadCode(plr, [[service.StarterGui:SetCore("DevConsoleVisible",true)]])
+				Remote.Send(plr, "Function", "SetCore", "DevConsoleVisible", true)
 			end
 		};
 
@@ -854,6 +854,8 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local num = assert(tonumber(args[1]), "Missing or invalid time value (must be a number)")
+				assert(num <= 1000, "Countdown cannot be longer than 1000 seconds.")
+				assert(num >= 0, "Countdown cannot be negative.")
 				Remote.MakeGui(plr, "Countdown", {
 					Time = math.round(num);
 				})
@@ -867,7 +869,7 @@ return function(Vargs, env)
 			Description = "Shows comphrehensive information about a player";
 			Hidden = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
+			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
 				local players = service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = not elevated;})
 
@@ -875,7 +877,7 @@ return function(Vargs, env)
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
 				end
 
-				for i, v: Player in pairs(players) do
+				for _, v: Player in pairs(players) do
 					task.defer(function()
 						local gameData = nil
 
@@ -891,10 +893,10 @@ return function(Vargs, env)
 							end
 						end
 
-						local policyResult, policyInfo = pcall(service.PolicyService.GetPolicyInfoForPlayerAsync, service.PolicyService, v)
-						local hasSafeChat = if elevated and policyResult then
-							(table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes")
-							else "[Error/Redacted]"
+						local policyInfo = elevated and select(2, xpcall(service.PolicyService.GetPolicyInfoForPlayerAsync, function() return "[Error]" end, service.PolicyService, v))
+						local hasSafeChat = if policyInfo then
+							type(policyInfo) == "string" and policyInfo or table.find(policyInfo.AllowedExternalLinkReferences, "Discord") and "No" or "Yes"
+							else "[Redacted]"
 
 						Remote.RemoveGui(plr, "Profile_"..v.UserId)
 						Remote.MakeGui(plr, "Profile", {
@@ -919,14 +921,9 @@ return function(Vargs, env)
 			Description = "Shows you details about the current server";
 			Hidden = false;
 			AdminLevel = "Players";
-			Function = function(plr: Player, args: {[number]:string})
-				local adminDictionary = {}
-				for _, v in pairs(service.GetPlayers()) do
-					local level, rank = Admin.GetLevel(v)
-					if level > 0 then
-						adminDictionary[v.Name] = rank or "Unknown"
-					end
-				end
+			ListUpdater = function(plr: Player)
+				local elevated = Admin.CheckAdmin(plr)
+				local data = {}
 
 				local donorList = {}
 				for _, v in pairs(service.GetPlayers()) do
@@ -935,12 +932,34 @@ return function(Vargs, env)
 					end
 				end
 
-				local nilPlayers = 0
-				for _, v in pairs(service.NetworkServer:GetChildren()) do
-					if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
-						nilPlayers += 1
+				local adminDictionary, workspaceInfo = nil, nil
+				if elevated then
+					adminDictionary = {}
+					for _, v in pairs(service.GetPlayers()) do
+						local level, rank = Admin.GetLevel(v)
+						if level > 0 then
+							adminDictionary[v.Name] = rank or "Unknown"
+						end
 					end
+					local nilPlayers = 0
+					for _, v in pairs(service.NetworkServer:GetChildren()) do
+						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
+							nilPlayers += 1
+						end
+					end
+					workspaceInfo = {
+						ObjectCount = #Variables.Objects;
+						CameraCount = #Variables.Cameras;
+						NilPlayerCount = nilPlayers;
+						HttpEnabled = HTTP.CheckHttp();
+						LoadstringEnabled = HTTP.LoadstringEnabled;
+					}
 				end
+
+				return {Admins = adminDictionary; Donors = donorList; WorkspaceInfo = workspaceInfo;}
+			end;
+			Function = function(plr: Player, args: {string})
+				local elevated = Admin.CheckAdmin(plr)
 
 				local serverInfo = select(2, xpcall(function()
 					local res = service.HttpService:JSONDecode(service.HttpService:GetAsync("http://ip-api.com/json"))
@@ -950,8 +969,8 @@ return function(Vargs, env)
 						region = res.region,
 						zipcode = res.zip,
 						timezone = res.timezone,
-						query = Admin.CheckAdmin(plr) and res.query or "[Redacted]",
-						coords = Admin.CheckAdmin(plr) and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
+						query = elevated and res.query or "[Redacted]",
+						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
 					}
 				end, function() return nil end))
 
@@ -960,21 +979,103 @@ return function(Vargs, env)
 					PrivateServerId = game.PrivateServerId;
 					PrivateServerOwnerId = game.PrivateServerOwnerId;
 					ServerStartTime = server.ServerStartTime;
-					ServerAge = service.FormatTime(os.time()-server.ServerStartTime);
+					ServerAge = service.FormatTime(os.time() - server.ServerStartTime);
 					ServerInternetInfo = serverInfo;
-					WorkspaceInfo = (Admin.CheckAdmin(plr) and {
-						ObjectCount = #Variables.Objects;
-						CameraCount = #Variables.Cameras;
-						NilPlayerCount = nilPlayers;
-						HttpEnabled = HTTP.CheckHttp();
-						LoadstringEnabled = HTTP.LoadstringEnabled;
-					}) or nil;
-					Admins = (Admin.CheckAdmin(plr) and adminDictionary) or nil;
-					Donors = donorList;
+					Refreshables = Logs.ListUpdaters.ServerDetails(plr);
 					CmdPrefix = Settings.Prefix;
 					CmdPlayerPrefix = Settings.PlayerPrefix;
 					SplitKey = Settings.SplitKey;
 				})
+			end
+		};
+
+		GetGroupInfo = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"getgroupinfo", "groupinfo", "viewgroupinfo"};
+			Args = {"group ID"};
+			Description = "Shows you information about the specified Roblox group";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local groupId = assert(args[1] and tonumber(args[1]), "Missing/invalid group ID")
+				local groupInfo = assert(select(2, xpcall(service.GroupService.GetGroupInfoAsync, function() return nil end, service.GroupService, groupId)), "Error fetching data")
+				local tab = {
+					"Name: "..groupInfo.Name,
+					"ID: "..groupInfo.Id,
+					if groupInfo.Owner then string.format("Owner: %s [%d]", groupInfo.Owner.Name or "???", groupInfo.Owner.Id) else "[No Owner]",
+					{Text = string.format("――― Roles (%d): ―――――――――――――――――", #groupInfo.Roles)},
+				}
+				for _, role in ipairs(groupInfo.Roles) do
+					table.insert(tab, string.format("[%d] %s", role.Rank, role.Name))
+				end
+
+				local function getPageItems(pages: StandardPages, res: {any})
+					res = res or {}
+					for _, item in ipairs(pages:GetCurrentPage()) do
+						table.insert(res, item)
+					end
+					if not pages.IsFinished then
+						pages:AdvanceToNextPageAsync()
+						getPageItems(pages, res)
+					end
+					return res
+				end
+
+				local done = false
+				local startTime = os.clock()
+				task.defer(function()
+					local allies = getPageItems(service.GroupService:GetAlliesAsync(groupId))
+					table.insert(tab, {Text = string.format("――― Allies (%d): ―――――――――――――――――", #allies)})
+					if #allies > 0 then
+						local names, refs = {}, {}
+						for _, grp in ipairs(allies) do
+							table.insert(names, grp.Name)
+							refs[grp.Name] = grp
+						end
+						table.sort(names)
+						for _, name in ipairs(names) do
+							local grp = refs[name]
+							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
+						end
+					else
+						table.insert(tab, {Text = "This group doesn't have any allies."})
+					end
+
+					local enemies = getPageItems(service.GroupService:GetEnemiesAsync(groupId))
+					table.insert(tab, {Text = string.format("――― Enemies (%d): ―――――――――――――――――", #enemies)})
+					if #enemies > 0 then
+						local names, refs = {}, {}
+						for _, grp in ipairs(enemies) do
+							table.insert(names, grp.Name)
+							refs[grp.Name] = grp
+						end
+						table.sort(names)
+						for _, name in ipairs(names) do
+							local grp = refs[name]
+							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
+						end
+					else
+						table.insert(tab, {Text = "This group doesn't have any enemies."})
+					end
+
+					table.insert(tab, {Text = "―――――――――――――――――――――――"})
+					Remote.MakeGui(plr, "List", {
+						Title = string.format("Group Information (%.2fs)", os.clock() - startTime);
+						Icon = server.MatIcons.Info;
+						Tab = tab;
+						Size = {300, 300};
+					})
+					done = true
+				end)
+				task.delay(5, function()
+					if not done then
+						Functions.Hint("Taking a while to load group information...", {plr})
+						task.delay(10, function()
+							if not done then
+								Functions.Hint("We're still loading group info...", {plr})
+							end
+						end)
+					end
+				end)
 			end
 		};
 

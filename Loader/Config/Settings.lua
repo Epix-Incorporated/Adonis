@@ -292,7 +292,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.FunCommands = true			-- Are fun commands enabled?
 	settings.PlayerCommands = true 	-- Are players commands enabled?
-	settings.PlayerCommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
+	settings.CommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
 	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
@@ -311,9 +311,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
-	settings.CustomChat = false 	-- Custom chat
-	settings.PlayerList = false		-- Custom playerlist
-
 	settings.Console = true							-- Command console
 	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
@@ -328,14 +325,14 @@ local descs = {};			--// Contains settings descriptions
 	settings.Detection = true			-- Attempts to detect certain known exploits
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+	settings.ExploitNotifications = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 	settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
 	settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 	settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
-	settings.AntiSpeed = false 			-- (Client-Sided) Attempts to detect speed exploits
+	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
@@ -406,7 +403,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.FunCommands = [[ Are fun commands enabled? ]]
 	descs.PlayerCommands = [[ Are players commands enabled? ]]
-	descs.PlayerCommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
+	descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 	descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 	descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 
@@ -441,7 +438,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
-	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
+	descs.ExploitNotifications = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
@@ -505,7 +502,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"FunCommands";
 		"PlayerCommands";
-		"PlayerCommandFeedback";
+		"CommandFeedback";
 		"CrossServerCommands";
 		"ChatCommands";
 		"CreatorPowers";
@@ -539,7 +536,7 @@ local descs = {};			--// Contains settings descriptions
 		"Detection";
 		"CheckClients";
 		" ";
-		"AENotifs";
+		"ExploitNotifications";
 		"CharacterCheckLogs";
 		"AntiNoclip";
 		"AntiRootJointDeletion";

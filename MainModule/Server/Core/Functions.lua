@@ -111,18 +111,18 @@ return function(Vargs, GetEnv)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					if #players>=#parent:GetChildren() then return end
+					if #players >= #parent:GetChildren() then return end
 					local rand = parent:GetChildren()[math.random(#parent:GetChildren())]
 					local p = getplr(rand)
 
-					for _,v in pairs(players) do
-						if(v.Name == p.Name)then
+					for _, v in pairs(players) do
+						if v.Name == p.Name then
 							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
 							return;
 						end
 					end
 
-					table.insert(players,p)
+					table.insert(players, p)
 					plus();
 				end;
 			};
@@ -454,7 +454,7 @@ return function(Vargs, GetEnv)
 
 		GetPlayers = function(plr, names, data)
 			if data and type(data) ~= "table" then data = {} end
-			
+
 			local noSelectors = data and data.NoSelectors
 			local dontError = data and data.DontError
 			local isServer = data and data.IsServer
@@ -553,6 +553,7 @@ return function(Vargs, GetEnv)
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
 										userId = tonumber(userid);
+										Parent = service.New("Folder");
 									})
 
 									table.insert(players, fakePlayer)
@@ -676,7 +677,7 @@ return function(Vargs, GetEnv)
 
 			data = gsub(data, '[^'..b..'=]', '')
 			return (gsub(gsub(data, '.', function(x)
-				if (x == '=') then
+				if x == '=' then
 					return ''
 				end
 				local r, f = '', (find(b, x) - 1)
@@ -685,7 +686,7 @@ return function(Vargs, GetEnv)
 				end
 				return r;
 			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then
+				if #x ~= 8 then
 					return ''
 				end
 				local c = 0
@@ -708,7 +709,7 @@ return function(Vargs, GetEnv)
 				end
 				return r;
 			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
-				if (#(x) < 6) then
+				if #(x) < 6 then
 					return ''
 				end
 				local c = 0
@@ -736,7 +737,7 @@ return function(Vargs, GetEnv)
 				end
 				return r;
 			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
-				if (#(x) < 6) then
+				if #(x) < 6 then
 					return ''
 				end
 				local c = 0
@@ -761,7 +762,7 @@ return function(Vargs, GetEnv)
 
 			data = gsub(data, '[^'..b..'=]', '')
 			return (gsub(gsub(data, '.', function(x)
-				if (x == '=') then
+				if x == '=' then
 					return ''
 				end
 				local r, f = '', (find(b, x) - 1)
@@ -770,7 +771,7 @@ return function(Vargs, GetEnv)
 				end
 				return r;
 			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
-				if (#x ~= 8) then
+				if #x ~= 8 then
 					return ''
 				end
 				local c = 0
@@ -912,7 +913,7 @@ return function(Vargs, GetEnv)
 					Decal = decal;
 				}
 
-				if (isdon and Settings.DonorCapes and Settings.LocalCapes) then
+				if isdon and Settings.DonorCapes and Settings.LocalCapes then
 					Remote.Send(player,"Function","NewCape",data)
 				else
 					local ind = Functions.GetRandom()
@@ -951,13 +952,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		ApplyBodyPart = function(character, model)
+			-- NOTE: Use HumanoidDescriptions to apply body parts where possible, unless applying custom parts
+
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
 				local rigType = humanoid.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15"
 				local part = model:FindFirstChild(rigType)
 
 				if not part and rigType == "R15" then
-					part = model:FindFirstChild("R15Fixed") -- some bundles dont have the normal R15 folder...
+					part = model:FindFirstChild("R15Fixed")
 				end
 
 				if part then
@@ -1123,7 +1126,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Donor = function(plr)
-			if (Admin.CheckDonor(plr) and Settings.DonorCapes) then
+			if Admin.CheckDonor(plr) and Settings.DonorCapes then
 				local PlayerData = Core.GetPlayer(plr) or {Donor = {}}
 				local donor = PlayerData.Donor or {}
 				if donor and donor.Enabled then
@@ -1249,6 +1252,44 @@ return function(Vargs, GetEnv)
 			Clothing.Name = clothingtype
 			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
 			return Clothing
+		end;
+
+		ParseColor3 = function(str: string)
+			-- Handles BrickColor and Color3
+			if not str then return end
+
+			local color = {}
+			for s in str:gmatch("[%d]+") do
+				table.insert(color, tonumber(s))
+			end
+
+			if #color == 3 then
+				color = Color3.fromRGB(color[1], color[2], color[3])
+			else
+				local brickColor = BrickColor.new(str)
+				if str == tostring(brickColor) then
+					color = brickColor.Color
+				else
+					return
+				end
+			end
+
+			return color
+		end;
+
+		ParseBrickColor = function(str: string)
+			if not str then return end
+
+			local brickColor = BrickColor.new(str)
+			if str == tostring(brickColor) then
+				return brickColor
+			else
+				-- If provided a Color3, return closest BrickColor
+				local color = Functions.ParseColor3(str)
+				if color then
+					return BrickColor.new(color)
+				end
+			end
 		end;
 	};
 end

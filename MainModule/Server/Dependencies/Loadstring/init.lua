@@ -19,7 +19,9 @@ local waitDeps = {
 	'LuaZ';
 }
 
-for i,v in pairs(waitDeps) do script:WaitForChild(v) end
+for _, v in ipairs(waitDeps) do 
+	script:WaitForChild(v)
+end
 
 local luaX = require(script.LuaX)
 local luaY = require(script.LuaY)
@@ -33,10 +35,10 @@ local LuaState = {}
 getfenv().script = nil
 
 return function(str,env)
-	local f,writer,buff,name
-	local env = env or getfenv(2)
+	local f, writer, buff
+	env = env or getfenv(2)
 	local name = (env.script and env.script:GetFullName())
-	local ran,error = pcall(function()
+	local ran, error = pcall(function()
 		local zio = luaZ:init(luaZ:make_getS(str), nil)
 		if not zio then return error() end
 		local func = luaY:parser(LuaState, zio, nil, name or "::Adonis::Loadstring::")
@@ -46,8 +48,8 @@ return function(str,env)
 	end)
 	
 	if ran then
-		return f,buff.data
+		return f, buff.data
 	else
-		return nil,error
+		return nil, error
 	end
 end

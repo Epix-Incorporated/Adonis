@@ -650,9 +650,9 @@ return function(Vargs, GetEnv)
 			end;
 
 			ExplorerAction = function(p, ...)
-				if Admin.CheckAdmin(p) then
+				--if Admin.CheckAdmin(p) then
 					--// Handle stuff like Dex calls(?)
-				end
+				--end
 			end;
 		};
 

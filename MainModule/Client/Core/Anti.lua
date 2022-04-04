@@ -61,7 +61,7 @@ return function()
 				wait(5)
 				Anti.Detected("kick", "Parent not players", true)
 			elseif Anti.RLocked(service.Player) then
-				Anti.Detected("kick","Player is Roblox Locked")
+				Anti.Detected("kick", "Player is Roblox Locked")
 			end
 		end)
 
@@ -112,6 +112,24 @@ return function()
 	end
 
 	coroutine.wrap(function()
+		if not game:IsLoaded() then
+			game.Loaded:Wait()
+		end
+
+		if not service.UnWrap(Player).Character and service.UnWrap(game):GetService("Players").CharacterAutoLoads then
+			service.UnWrap(Player).CharacterAdded:Wait()
+		end
+
+		local RunService = service.RunService
+		if
+			RunService:IsStudio() == true and
+			RunService:IsClient() == true and
+			RunService:IsRunning() == true and
+			RunService:IsServer() == false
+		then
+			return
+		end
+
 		while true do
 			local connection
 			local idledEvent = service.UnWrap(Player).Idled
@@ -193,7 +211,9 @@ return function()
 
 					if #service.Players:GetPlayers() > 1 then
 						for _, v in ipairs(service.Players:GetPlayers()) do
-							if service.UnWrap(v) and service.UnWrap(v) ~= LocalPlayer then
+							local otherPlayer = service.UnWrap(v)
+
+							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
 								if success or err ~= "Cannot kick a non-local Player from a LocalScript" then
 									Detected("kick", "Anti kick found! Method 2")
@@ -215,8 +235,6 @@ return function()
 					end
 				end)()
 
-				--[==[
-				--// Potential for false positives is too high ~ Scel
 				-- this part you can choose whether or not you wanna use
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and game.FindFirstChild(game, v, true)            -- ill update the list periodically
@@ -224,7 +242,6 @@ return function()
 						Detected("log", "Malicious Object?: " .. v)
 					end
 				end
-				--]==]
 			end
 		end)
 	end
@@ -250,7 +267,7 @@ return function()
 
 		AntiTools = function()
 			if service.Player:WaitForChild("Backpack", 120) then
-				local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
+				--local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
 				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
 				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
 				local function check(t)
@@ -259,7 +276,7 @@ return function()
 							t.Active = false
 							t:Destroy()
 							Detected("log", "HopperBin Detected (BTools)")
-						elseif not Get("CheckBackpack", t) then
+						--elseif not Get("CheckBackpack", t) then
 							--t:Destroy() --// Temp disabled pending full fix
 							--Detected('log','Client-Side Tool Detected')
 						end
@@ -325,8 +342,8 @@ return function()
 			})
 
 			local lookFor = {
-				'current identity is 0';
-				'gui made by kujo';
+				"current identity is [0789]";
+				"gui made by kujo";
 				"tetanus reloaded hooked";
 				"hookmetamethod";
 				"hookfunction";
@@ -338,10 +355,7 @@ return function()
                                 "infinite yield is already loaded";
                                 "infinite yield is already";
                                 "iy_debug";
-                                "current identity is 7";
-                                "current identity is 8";
                                 "returning json";
-                                "current identity is 99999";
                                 "shattervast";
                                 "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit

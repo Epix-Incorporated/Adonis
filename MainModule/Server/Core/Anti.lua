@@ -43,7 +43,7 @@ return function(Vargs, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and Core.DebugMode == true then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode == true then
 				Anti.CharacterCheck(player)
 			end
 		end
@@ -169,7 +169,11 @@ return function(Vargs, GetEnv)
 								if v:IsA("BackpackItem") then
 									count += 1
 									if count > 1 then
-										v.Parent = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack", player)
+										local backpack = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack")
+										if not backpack.Parent then
+											backpack.Parent = player 
+										end
+										v.Parent = backpack
 										Detected(player, "log", "Multiple tools equipped at the same time")
 									end
 								end
@@ -227,7 +231,10 @@ return function(Vargs, GetEnv)
 				animator.AnimationPlayed:Connect(function(animationTrack)
 					local animationId = animationTrack.Animation.AnimationId
 					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-						Detected(player, "kill", "Player played an inappropriate character animation")
+						task.defer(function()
+							animationTrack:Stop(1/60)
+						end)
+						Detected(player, "log", "Player played an inappropriate character animation")
 					end
 				end)
 
@@ -346,9 +353,7 @@ return function(Vargs, GetEnv)
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if string.lower(action) == "log" then
-						-- yay?
-					elseif string.lower(action) == "kick" then
+					if string.lower(action) == "kick" then
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -368,7 +373,7 @@ return function(Vargs, GetEnv)
 						end)
 
 						Anti.RemovePlayer(player, info)
-					else
+					elseif string.lower(action) ~= "log" then
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
 						return;
@@ -388,7 +393,7 @@ return function(Vargs, GetEnv)
 				Player = player;
 			})
 
-			if Settings.AENotifs == true then
+			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
 				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}

@@ -61,6 +61,69 @@ return function(data, Vargs)
 		end
 	})
 
+	local function createPurchaseWindow(isGamepass, id)
+		local purchaseWindow = UI.Make("Window", {
+			Name = "Purchase window";
+			Title = "Purchase "..(isGamepass and "gamepass" or "asset");
+			Icon = client.MatIcons["Shopping cart"];
+			AllowMultiple = false;
+			Size = {380, 160};
+			SizeLocked = true;
+		})
+		
+		if purchaseWindow then
+			purchaseWindow:Add("TextLabel", {
+				Size = UDim2.new(1, -20, 1, -55);
+				Position = UDim2.new(0.5, 0, 0, 10);
+				AnchorPoint = Vector2.new(0.5, 0);
+				ZIndex = 2;
+				TextScaled = true;
+				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
+			})
+
+			purchaseWindow:Add("TextBox", {
+				Size = UDim2.new(1, -20, 0, 30);
+				Position = UDim2.new(0.5, 0, 1, -10);
+				AnchorPoint = Vector2.new(0.5, 1);
+				ZIndex = 2;
+				ClearTextOnFocus = false;
+				TextEditable = false;
+				TextScaled = true;
+				Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
+			})
+
+			purchaseWindow:Ready()
+		end
+	end
+
+	local function promptPurchase(isGamepass, id)
+		if client.Variables.AllowThirdPartyPurchases == false then
+			createPurchaseWindow(isGamepass, id)
+		else
+			local logEvent, finishEvent
+			
+			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
+				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
+					client.Variables.AllowThirdPartyPurchases = false
+
+					createPurchaseWindow(isGamepass, id)
+				end
+			end)
+			finishEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]:Connect(function(plr, aid)
+				if plr == service.Players.LocalPlayer and aid == id then
+					logEvent:Disconnect()
+					finishEvent:Disconnect()
+				end
+			end)
+
+			if isGamepass then
+				service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
+			else
+				service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, id)
+			end
+		end
+	end
+
 	local function showTable(tab, setting)
 		local tabPath = type(setting) == "table" and setting
 		local setting = tabPath and tabPath[#tabPath-1] or setting
@@ -334,7 +397,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373505175)
+						promptPurchase(false, 7510622625)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -352,7 +415,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				Events = {
 					MouseButton1Down = function()
-						service.MarketPlace:PromptPurchase(service.Players.LocalPlayer, 2373501710)
+						promptPurchase(false, 7510592873)
 					end
 				}
 			}):Add("ImageLabel", {
@@ -654,7 +717,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 1348327) --497917601)
+					promptPurchase(true, 1348327) --497917601)
 				end
 			})
 
@@ -673,7 +736,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.7;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212076)
+					promptPurchase(true, 5212076)
 				end
 			})
 
@@ -684,7 +747,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212077)
+					promptPurchase(true, 5212077)
 				end
 			})
 
@@ -695,7 +758,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.6);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212081)
+					promptPurchase(true, 5212081)
 				end
 			})
 
@@ -706,7 +769,7 @@ return function(data, Vargs)
 				BackgroundTransparency = 0.5;
 				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.9);
 				OnClick = function()
-					service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, 5212082)
+					promptPurchase(true, 5212082)
 				end
 			})
 		end
@@ -1415,7 +1478,7 @@ return function(data, Vargs)
 					local desc = descs[setting]
 
 					if setting == "" or setting == " " and value == nil then
-
+						continue
 					elseif value == nil then
 						gameTab:Add("TextLabel", {
 							Text = "  "..setting..": ";
@@ -1539,7 +1602,7 @@ return function(data, Vargs)
 								}
 							}
 						})
-					elseif type(value) == "string" then
+					elseif type(value) == "string" or type(value) == "number" then
 						gameTab:Add("TextLabel", {
 							Text = "  "..setting..": ";
 							ToolTip = desc;
@@ -1556,29 +1619,6 @@ return function(data, Vargs)
 									TextChanged = function(text, enter, new)
 										if enter then
 											--warn("Setting "..tostring(setting)..": "..tostring(text))
-											Remote.Send("SaveSetSetting", setting, text)
-										end
-									end
-								}
-							}
-						})
-					elseif type(value) == "number" then
-						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-							TextXAlignment = "Left";
-							Children = {
-								TextBox = {
-									Text = value;
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									BackgroundTransparency = 1;
-									TextChanged = function(text, enter, new)
-										if enter then
-											--warn("Setting "..tostring(setting)..": "..tonumber(text))
 											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end

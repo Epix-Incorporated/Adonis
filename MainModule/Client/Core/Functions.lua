@@ -206,13 +206,13 @@ return function()
 						local human = obj.ClassName == "Model" and service.Players:GetPlayerFromCharacter(obj)
 
 						if human then
-							spawn(Functions.ESPify, UnWrap(obj), color);
+							task.spawn(Functions.ESPify, UnWrap(obj), color);
 						end
 					end)
 
 					for i, Player in ipairs(service.Players:GetPlayers()) do
 						if Player.Character then
-							spawn(Functions.ESPify, UnWrap(Player.Character), color);
+							task.spawn(Functions.ESPify, UnWrap(Player.Character), color);
 						end
 					end
 				else
@@ -305,10 +305,6 @@ return function()
 						rot = rot+math.rad(speed*dt)
 					else
 						rot = rot-math.rad(speed*dt)
-					end
-
-					if rot >= 2.5 or rot <= -2.5 then
-						--flip = not flip
 					end
 					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
@@ -1184,6 +1180,10 @@ return function()
 
 		SetCoreGuiEnabled = function(element,enabled)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
+		end;
+
+		SetCore = function(...)
+			service.StarterGui:SetCore(...)
 		end;
 
 		UnCape = function()

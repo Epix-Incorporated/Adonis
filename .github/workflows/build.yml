@@ -22,20 +22,27 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build .github/build.project.json -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
-
-      - name: Deploy Nightly MainModule
-        if: github.event_name == 'push'
-        run: rojo upload --cookie "${{ secrets.ROBLOSECURITY }}" --asset_id "${{ secrets.NIGHTLY_MODULE_ID }}" .github/module.deploy.project.json
+        run: rojo build -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm .github/build.project.json
 
       - uses: actions/upload-artifact@v2
         with:
           name: Adonis_Nightly_${{ steps.date.outputs.date }}
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
 
+      - name: Publish Nightly MainModule
+        uses: fjogeleit/http-request-action@v1
+        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
+        with:
+          url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm" }'
+          customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
+          timeout: 10000
+
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
-        if: github.event_name == 'push'
+        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
