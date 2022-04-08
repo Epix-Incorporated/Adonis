@@ -889,13 +889,13 @@ return function(Vargs, GetEnv)
 					MakeGui(p, "TopBar")
 				end
 
-				if Settings.CustomChat then
-					MakeGui(p, "Chat")
-				end
+				--if Settings.CustomChat then
+				--	MakeGui(p, "Chat")
+				--end
 
-				if Settings.PlayerList then
-					MakeGui(p, "PlayerList")
-				end
+				--if Settings.PlayerList then
+				--	MakeGui(p, "PlayerList")
+				--end
 
 				if level < 1 then
 					if Settings.AntiNoclip then
