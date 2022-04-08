@@ -9,7 +9,7 @@ local descs = {};			--// Contains settings descriptions
 
 			--------------
 			-- SETTINGS --
-		  --------------
+		  	--------------
 																																																																				--[[
 
 		--// Basic Lua Info
