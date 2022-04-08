@@ -471,5 +471,50 @@ return function(Vargs, env)
 				end
 			end
 		};
+
+		AwardBadge = {
+			Prefix = Settings.Prefix;
+			Commands = {"awardbadge", "badge", "givebadge"};
+			Args = {"player", "badgeId"};
+			Description = "Awards the badge of the specified ID to the target player(s)";
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string})
+				if not Variables.BadgeInfoCache then
+					Variables.BadgeInfoCache = {}
+				end
+
+				local badgeId = assert(tonumber(args[2]), "Invalid badge ID specified!")
+				local badgeInfo = Variables.BadgeInfoCache[tostring(badgeId)]
+				if not badgeInfo then
+					local success, badgeInfo = nil, nil
+					local tries = 0
+					repeat
+						tries += 1
+						success, badgeInfo = pcall(service.BadgeService.GetBadgeInfoAsync, service.BadgeService, badgeId)
+					until success or tries > 2
+					Variables.BadgeInfoCache[tostring(badgeId)] = assert(success and badgeInfo, "Unable to retrieve badge information; please try again")
+				end
+
+				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
+					local success, hasBadge = nil, nil
+					local tries = 0
+					repeat
+						tries += 1
+						success, hasBadge = pcall(service.BadgeService.UserHasBadgeAsync, service.BadgeService, v.UserId, badgeId)
+					until success or tries > 2
+					if not success then
+						Functions.Hint(string.format("ERROR: Unable to get badge ownership status for %s; skipped", service.FormatPlayer(v)))
+						continue
+					end
+					if hasBadge then
+						Functions.Hint(string.format("%s already has the badge '%s'", service.FormatPlayer(v), badgeInfo.Name), {plr})
+					elseif service.BadgeService:AwardBadge(v.UserId, badgeId) then
+						Functions.Hint(string.format("Successfully awarded badge '%s' for %s", badgeInfo.Name, service.FormatPlayer(v)), {plr})
+					else
+						Functions.Hint(string.format("ERROR: Failed to award badge '%s' for %s due to an unexpected internal error", badgeInfo.Name, service.FormatPlayer(v)), {plr})
+					end
+				end
+			end
+		};
 	}
 end
