@@ -13,24 +13,6 @@ return function(Vargs, env)
 	local cPcall = env.cPcall
 
 	return {
-		AudioPlayer = {
-			Prefix = Settings.Prefix;
-			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
-			Args = {"player"};
-			Description = "Opens an audio player window";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = true;
-					UseFakePlayer = true;
-					})) do
-					Remote.MakeGui(v, "Music")
-				end
-			end
-		};
-
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick"};
