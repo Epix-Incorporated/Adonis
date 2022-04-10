@@ -1081,7 +1081,7 @@ return function(Vargs, env)
 		
 		AudioPlayer = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"ap", "audioplayer", "mp", "musicplayer"}
+			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
 			Args = {"soundId?"};
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
