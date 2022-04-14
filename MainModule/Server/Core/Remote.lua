@@ -76,6 +76,7 @@ return function(Vargs, GetEnv)
 			DonorCapes = true;
 			ConsoleKeyCode = true;
 			SplitKey = true;
+			AntiClientIdle = true;
 		};
 
 		--// Settings that are never sent to the client
