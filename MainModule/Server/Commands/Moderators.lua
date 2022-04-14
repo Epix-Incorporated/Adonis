@@ -4696,6 +4696,151 @@ return function(Vargs, env)
 			end
 		};
 
+		CustomTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"customtshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the t-shirt that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+
+				assert(Shirt, "Could not retrieve shirt asset for the supplied ID")
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.GraphicTShirt = ClothingId
+						end
+
+						if Shirt:IsA("Model") then
+							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
+						end
+
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"customshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the shirt that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						--[[local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end]]
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomPants = {
+			Prefix = Settings.Prefix;
+			Commands = {"custompants"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the pants that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Pants, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
+						end
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						--[[local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end]]
+						Pants:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomFace = {
+			Prefix = Settings.Prefix;
+			Commands = {"customface"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the face that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
+				local faceAssetTypeId = service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId
+				local asset;
+
+				if faceAssetTypeId == 1 then
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. args[2];
+					});
+				elseif faceAssetTypeId == 13 and Functions.GetTexture(faceId) ~= 6825455804 then -- just incase GetTexture actually works?
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. tostring(Functions.GetTexture(faceId));
+					});
+				elseif faceAssetTypeId == 18 then
+					asset = service.Insert(faceId)
+				else
+					error("Invalid face(Image/robloxFace)", 0)
+				end
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local Head = v.Character and v.Character:FindFirstChild("Head")
+					local face = Head and Head:FindFirstChild("face")
+
+					if Head then
+						if face then
+							face:Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
+						end
+
+						local clone = asset:Clone();
+						clone.Parent = v.Character:FindFirstChild("Head")
+					end
+				end
+			end
+		};
+
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
