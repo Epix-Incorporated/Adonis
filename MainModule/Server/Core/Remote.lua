@@ -486,7 +486,7 @@ return function(Vargs, GetEnv)
 					task.spawn(Remote.MakeGui,p,"Notification",{
 						Title = "Global Audio";
 						Message = "Only Moderators or above may broadcast audio!";
-						Icon = "rbxassetid://7495451175";
+						Icon = server.Shared.MatIcons.Language;
 						Time = 3;
 					})
 				end
