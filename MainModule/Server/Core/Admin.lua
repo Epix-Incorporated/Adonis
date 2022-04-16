@@ -246,38 +246,53 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetPlayerGroup = function(p, group)
+		GetPlayerGroups = function(p)
 			if not p or p.Parent ~= service.Players then
 				return
 			end
-
-			local groups;
-			do
-				local key = tostring(p.UserId)
-
-				local groupTable = Admin.GroupsCache[key]
-				if not groupTable then
-					Admin.GroupsCache[key] = {}
-				end
-
-				local groupInfo = groupTable and groupTable[group] or {}
-				if not groupInfo[1] or os.time() - groupInfo[1] < 30 then
-					local success, GroupInfo = pcall(service.GroupService.GetGroupsAsync, service.GroupService, p.UserId)
-					Admin.GroupsCache[key][group] = {
-						os.time(),
-						success and GroupInfo or {}
+			
+			local key = tostring(p.UserId)
+			
+			local cache = Admin.GroupsCache[key]
+			if cache then
+				return cache
+			else 
+				local timestamp = os.time()
+				local success, groups = pcall(service.GroupService.GetGroupsAsync, service.GroupService, p.UserId)
+				if success then
+					local mapped = {}
+					for _, group in ipairs(groups) do
+						table.insert(mapped, {
+							Id = group.Id,
+							Name = group.Name,
+							Rank = group.Rank,
+							Role = group.Role
+						})
+					end
+					local result = {
+						CreatedAt = timestamp,
+						Groups = mapped
 					}
-					groups = Admin.GroupsCache[key][group][2]
-				else
-					groups = groupInfo[2] or {}
+					Admin.GroupsCache[key] = result
+					task.delay(30, function()
+						local cache = Admin.GroupsCache[key]
+						if cache and timestamp == cache.CreatedAt then
+							Admin.GroupsCache[key] = nil
+						end
+					end)
+					return result
 				end
 			end
+		end;
 
-			local isID = type(group) == "number"
-			if groups then
-				for _, v in ipairs(groups) do
-					if isID and group == v.Id or not isID and group == v.Name then
-						return v
+		GetPlayerGroup = function(p, group)
+			local groups = Admin.GetPlayerGroups(p)
+			local isId = type(group) == "number"
+			
+			if groups and groups.Groups then
+				for _, g in ipairs(groups.Groups) do 
+					if (isId and g.Id == group) or (not isId and g.Name == group) then
+						return g
 					end
 				end
 			end
