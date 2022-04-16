@@ -4725,7 +4725,7 @@ return function(Vargs, env)
 						end
 
 						if Shirt:IsA("Model") then
-							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
+							Shirt = shirt:FindFirstChildOfClass("ShirtGraphic")
 						end
 
 						Shirt:Clone().Parent = v.Character
