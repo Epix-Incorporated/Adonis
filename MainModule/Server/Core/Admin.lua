@@ -274,7 +274,7 @@ return function(Vargs, GetEnv)
 						Groups = mapped
 					}
 					Admin.GroupsCache[key] = result
-					task.delay(30, function()
+					task.delay(10 + (math.random() * 60), function()
 						local cache = Admin.GroupsCache[key]
 						if cache and timestamp == cache.CreatedAt then
 							Admin.GroupsCache[key] = nil
