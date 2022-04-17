@@ -30,21 +30,16 @@ Feel free to edit and learn from the script, I just ask that if you do you leave
 
 Do note, however, that just because you *can* learn from the script doesn't mean you *should*.
 I am by no means an amazing scripter at all and it's very rare that I leave any meaningful comments,
-so if you're new to Lua and intend to dive into this script to learn more, I would not recommend it.
-There are plenty of better sources for learning, such as the Roblox wiki (wiki.roblox.com) which
+so if you're new to Luau and intend to dive into this script to learn more, I would not recommend it.
+There are plenty of better sources for learning, such as the Roblox developer hub (developer.roblox.com) which
 contains many really good tutorials and examples. I reference it anytime I need to know more about a
 Roblox feature. It's probably the best place to start. This script is large and poorly documented,
-which may be overwhelming to someone who's new to the wonderful world of Lua.
+which may be overwhelming to someone who's new to the wonderful world of Luau.
 
 Overall, if you are interested in learning, or would like to make your own admin script, I'd recommend
 doing that instead of using this script or any other premade admin scripts.
 While this script, and scripts like it, provide a lot of functionality, most people will never need
-half of what it can do. If you have the time there's a nice beginner tutorial over on the wiki that
-teaches you the basics of how to make your own admin script:
-
-http://wiki.roblox.com/index.php?title=Creating_An_Admin_Command
-http://wiki.roblox.com/index.php?title=Admin_Command_Module
-
+half of what it can do.
 
 Anyway, Thanks for checking this out and reading my ramblings :)
 
