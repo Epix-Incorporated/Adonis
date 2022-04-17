@@ -96,11 +96,27 @@ return function(Vargs, GetEnv)
 		RateLog = {};
 	}
 
+	local limitViolations = {
+		Remote = {};
+		Command = {};
+		Chat = {};
+		CustomChat = {};
+		RateLog = {};
+	}
+
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
-			local ready = (not RateLimiter[typ][p.UserId] or (RateLimiter[typ][p.UserId] and time() - RateLimiter[typ][p.UserId] >= server.Process.RateLimits[typ]));
-			RateLimiter[typ][p.UserId] = time()
-			return ready
+			if not RateLimiter[typ][p.UserId] then
+				RateLimiter[typ][p.UserId] = os.clock()
+				limitViolations[typ][p.UserId] = 1
+			elseif RateLimiter[typ][p.UserId] < os.clock() + server.Process.RateLimits[typ] * server.Process.RatelimitSampleMultiplier then
+				RateLimiter[typ][p.UserId] = os.clock()
+				limitViolations[typ][p.UserId] = 0
+			else
+				limitViolations[typ][p.UserId] += 1
+			end
+
+			return limitViolations[typ][p.UserId] > server.Process.RatelimitSampleMultiplier
 		else
 			return true
 		end
@@ -112,6 +128,7 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
+		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired, but higher levels have issues too
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
