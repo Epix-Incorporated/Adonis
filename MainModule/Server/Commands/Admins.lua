@@ -391,13 +391,15 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if string.lower(args[1])=='on' or string.lower(args[1])=='enable' then
+				local sub = string.lower(args[1])
+				
+				if sub == "on" or sub == "enable" then
 					Variables.Whitelist.Enabled = true
-					Functions.Hint("Server Whitelisted", service.Players:GetPlayers())
-				elseif string.lower(args[1])=='off' or string.lower(args[1])=='disable' then
+					Functions.Hint("Enabled server whitelist", service.Players:GetPlayers())
+				elseif sub == "off" or sub == "disable" then
 					Variables.Whitelist.Enabled = false
-					Functions.Hint("Server Unwhitelisted", service.Players:GetPlayers())
-				elseif string.lower(args[1])=="add" then
+					Functions.Hint("Disabled server whitelist", service.Players:GetPlayers())
+				elseif sub == "add" then
 					if args[2] then
 						local plrs = service.GetPlayers(plr, args[2], {
 							DontError = true;
@@ -408,15 +410,15 @@ return function(Vargs, env)
 						if #plrs>0 then
 							for i, v in pairs(plrs) do
 								table.insert(Variables.Whitelist.Lists.Settings, v.Name..":"..v.UserId)
-								Functions.Hint("Whitelisted "..v.Name, {plr})
+								Functions.Hint("Added "..v.Name.." to the whitelist", {plr})
 							end
 						else
 							table.insert(Variables.Whitelist.Lists.Settings, args[2])
 						end
 					else
-						error('Missing name to whitelist')
+						error("Missing user argument")
 					end
-				elseif string.lower(args[1])=="remove" then
+				elseif sub == "remove" then
 					if args[2] then
 						for i, v in pairs(Variables.Whitelist.Lists.Settings) do
 							if string.sub(string.lower(v), 1,#args[2]) == string.lower(args[2])then
@@ -425,16 +427,19 @@ return function(Vargs, env)
 							end
 						end
 					else
-						error("Missing name to remove from whitelist")
+						error("Missing user argument")
 					end
-				elseif string.lower(args[1])=="list" then
+				elseif sub == "list" then
 					local Tab = {}
-					for WhitelistedUserIndex, WhitelistedUser in pairs(Variables.Whitelist.Lists.Settings) do
-						table.insert(Tab, {Text = WhitelistedUser, Desc = WhitelistedUser})
+					for Key, List in pairs(Variables.Whitelist.Lists) do 
+						local Prefix = Key == "Settings" and "" or "["..Key.."] "
+						for _, User in ipairs(List) do
+							table.insert(Tab, {Text = Prefix .. User, Desc = User})
+						end
 					end
 					Remote.MakeGui(plr, "List", {Title = "Whitelist List"; Tab = Tab;})
 				else
-					error("Invalid action; (on/off/add/remove/list)")
+					error("Invalid subcommand (on/off/add/remove/list)")
 				end
 			end
 		};
@@ -650,13 +655,21 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local id = string.lower(args[1])
+				
 				for i, v in pairs(Variables.InsertList) do
 					if id == string.lower(v.Name)then
 						id = v.ID
 						break
 					end
 				end
-
+				
+				for i, v in pairs(HTTP.Trello.InsertList) do
+					if id == string.lower(v.Name) then
+						id = v.ID
+						break
+					end
+				end
+				
 				local obj = service.Insert(tonumber(id), true)
 				if obj and plr.Character then
 					table.insert(Variables.InsertedObjects, obj)

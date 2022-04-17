@@ -6296,6 +6296,9 @@ return function(Vargs, env)
 				for _, v in pairs(Settings.Muted) do
 					table.insert(list, v)
 				end
+				for _, v in pairs(HTTP.Trello.Mutes) do
+					table.insert(list, "[Trello] "..v)
+				end
 				Remote.MakeGui(plr, "List", {Title = "Mute List"; Table = list;})
 			end
 		};
