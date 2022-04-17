@@ -430,7 +430,7 @@ return function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
-			local lastUpdate = time()
+			local lastUpdate = os.clock()
 			local coreNums = {}
 			local coreClears = service.ReadOnly({
 				FriendStatus = true;
@@ -587,7 +587,7 @@ return function()
 			end)
 
 			service.RunService.Stepped:Connect(function()
-				lastUpdate = time()
+				lastUpdate = os.clock()
 			end)
 
 			if service.Player:WaitForChild("Backpack", 120) then
@@ -598,7 +598,7 @@ return function()
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
 				--// Prevent event stopping
-				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
+				-- if os.clock() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
 					--Detected("crash", "Events stopped")
 					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
 				-- end
