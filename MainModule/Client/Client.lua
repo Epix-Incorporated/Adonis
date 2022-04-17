@@ -58,8 +58,12 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer";
+        "GroupService";
+        "MarketplaceService";
+        "HttpService";
 	"TestService";
+        "RunService";
 	"NetworkClient";
 };
 
