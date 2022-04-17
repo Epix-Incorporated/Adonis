@@ -128,6 +128,8 @@ return function()
 			RunService:IsServer() == false
 		then
 			return
+		--[[elseif Remote.Get("Setting", "AntiClientIdle") == false then
+			return]]
 		end
 
 		while true do
@@ -137,9 +139,14 @@ return function()
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
 				elseif time > 30 * 60 then
-					if Remote.Get("Setting","AntiClientIdle") then
+					if Remote.Get("Setting", "AntiClientIdle") then
 						Detected("kick", "Anti-idle detected")
-					end 
+					else
+						warn(
+							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
+							"\nto the anti-idle.\nPlease also tell all information that would help with debugging."
+						)
+					end
 				end
 			end)
 
@@ -339,14 +346,6 @@ return function()
 						Detected("kick", "Anti FPS detection found!")
 					end
 				end)()
-
-				-- this part you can choose whether or not you wanna use
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
-					local object = Player and Player.Name ~= v and rawGame.FindFirstChild(rawGame, v, true)            -- ill update the list periodically
-					if object then
-						Detected("log", "Malicious Object?: " .. v)
-					end
-				end
 			end
 		end)
 	end
@@ -469,6 +468,8 @@ return function()
                                 "shattervast";
                                 "failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
+                                "getrawmetatable";
+                                "setfflag";
 			}
 
 			local soundIds = {
@@ -477,7 +478,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message),string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message),"failed to load") then
+					if string.find(string.lower(Message), string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message), "failed to load") then
 						return true
 					end
 				end
@@ -485,11 +486,11 @@ return function()
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
-						Detected("crash","Disallowed Services Detected")
+					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)  or findService("VirtualUser", game) or findService("VirtualInputManager", game)) then
+						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
-					Detected("kick","Disallowed Services Finding Error")
+					Detected("kick", "Disallowed Services Finding Error")
 				end
 			end
 
@@ -595,7 +596,7 @@ return function()
 
 			--// Detection Loop
 			local hasPrinted = false
-			service.StartLoop("Detection", 11, function()
+			service.StartLoop("Detection", 15, function()
 				--// Prevent event stopping
 				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
 					--Detected("crash", "Events stopped")
@@ -618,7 +619,6 @@ return function()
 				local First = Logs[1]
 
 				if not hasPrinted and not First then
-					client.OldPrint(" ")
 					client.OldPrint(" ")
 					for i = 1, 5 do
 						task.wait()
@@ -666,6 +666,14 @@ return function()
 					Detected("crash", "RobloxLocked usable")
 				end
 
+				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
+				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+					local object = Player and Player.Name ~= v and rawGame.FindFirstChild(rawGame, v, true)            -- ill update the list periodically
+					if object then
+						Detected("kick", "Malicious Object?: " .. v)
+					end
+				end
+	
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
@@ -706,7 +714,7 @@ return function()
 					end)
 
 					testDecal:Destroy()
-					task.wait(2.5)
+					task.wait(6)
 					if not activated then
 						Detected("kick", "Coregui detection bypass found")
 					end
