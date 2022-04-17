@@ -220,7 +220,7 @@ return function(Vargs, GetEnv)
 						end
 
 						local lists: {List} = trello.getListsAndCards(board, true)
-						if #lists == 0 then error() end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
+						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 						for _, list in pairs(lists) do 
 							local foundOverride = false
