@@ -247,8 +247,9 @@ return function(AppKey, Token)
 				end
 			end;
 			
-			GetListsAndCards = function(BoardID)
-				local Response = HttpFunctions.Decode(HttpFunctions.Get(GetUrl("boards/"..tostring(BoardID).."/lists?cards=open&fields=id&fields=labels&fields=name&fields=desc")))
+			GetListsAndCards = function(BoardID, ExcludeLabels)
+				local CardFilter = "id,name,desc" .. (ExcludeLabels and "" or ",labels")
+				local Response = HttpFunctions.Decode(HttpFunctions.Get(GetUrl("boards/"..tostring(BoardID).."/lists?filter=open&fields=id,name,cards&cards=open&card_fields="..CardFilter)))
 				if type(Response)=="table" then
 					return Response
 				else

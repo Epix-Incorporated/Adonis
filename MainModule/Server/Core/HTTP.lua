@@ -27,9 +27,8 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Settings = server.Settings;
 
-		HTTP.Trello.API = require(server.Deps.TrelloAPI)
-
 		if Settings.Trello_Enabled then
+			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
 			service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
 		end
 
@@ -72,7 +71,7 @@ return function(Vargs, GetEnv)
 			PerformedCommands = {};
 
 			Update = function()
-				if not Settings.Trello_Enabled then
+				if not HTTP.Trello.API or not Settings.Trello_Enabled then
 					return;
 				end
 
@@ -80,8 +79,6 @@ return function(Vargs, GetEnv)
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
 					return;
 				else
-					local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
-
 					local bans = {}
 					local mutes = {}
 					local music = {}
@@ -132,7 +129,7 @@ return function(Vargs, GetEnv)
 									})
 
 									if Settings.Trello_Token ~= "" then
-										pcall(trello.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
+										pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
 									end
 								end
 							end
@@ -215,11 +212,7 @@ return function(Vargs, GetEnv)
 					}
 
 					local function grabData(board)
-						if not trello then 
-							return 
-						end
-
-						local lists: {List} = trello.getListsAndCards(board, true)
+						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
 						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 						for _, list in pairs(lists) do 
