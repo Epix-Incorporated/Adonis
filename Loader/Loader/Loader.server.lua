@@ -119,11 +119,7 @@ else
 	end
 
 	if tonumber(moduleId) then
-		if RunService:IsStudio() then
-			warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-		else
-			warn("Requiring Adonis MainModule. Model URL: ", "https://www.roblox.com/library/".. moduleId)
-		end
+		warn("Requiring Adonis MainModule. Model URL: https://www.roblox.com/library/".. moduleId)
 	end
 
 	local module = require(moduleId)
@@ -132,7 +128,10 @@ else
 	if response == "SUCCESS" then
 		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
-			game:BindToClose(function() model.Parent = ServerScriptService model.Name = "Adonis_Loader" end)
+			game:BindToClose(function()
+				model.Parent = ServerScriptService
+				model.Name = "Adonis_Loader"
+			end)
 		end
 
 		model.Name = "Adonis_Loader"
