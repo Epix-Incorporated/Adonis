@@ -139,7 +139,7 @@ return function()
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
 				elseif time > 30 * 60 then
-					if Remote.Get("Setting", "AntiClientIdle") then
+					if Remote.Get("Setting", "AntiClientIdle") ~= false then
 						Detected("kick", "Anti-idle detected")
 					else
 						warn(
