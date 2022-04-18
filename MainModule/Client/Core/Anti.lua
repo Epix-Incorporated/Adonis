@@ -128,9 +128,9 @@ return function()
 			RunService:IsServer() == false
 		then
 			return
-		--[[elseif Remote.Get("Setting", "AntiClientIdle") == false then
-			return]]
 		end
+
+		local isAntiAntiIdlecheck = Remote.Get("Setting", "AntiClientIdle")
 
 		while true do
 			local connection
@@ -139,7 +139,7 @@ return function()
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
 				elseif time > 30 * 60 then
-					if Remote.Get("Setting", "AntiClientIdle") ~= false then
+					if isAntiAntiIdlecheck ~= false then
 						Detected("kick", "Anti-idle detected")
 					else
 						warn(
