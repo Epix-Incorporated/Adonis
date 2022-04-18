@@ -144,7 +144,7 @@ return function()
 					else
 						warn(
 							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
-							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
+							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value"
 						)
 					end
 				end
