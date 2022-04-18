@@ -697,7 +697,7 @@ return function()
 						return setmetatable(tbl, mt)
 					end)
 
-					if not success or value ~= tbl or not rawequal(value, tbl) then
+					if not success or value ~= tbl or not service.OrigRawEqual(value, tbl) then
 						Detected("crash", "Anti-dex bypass found. Method 2")
 					end
 				end
