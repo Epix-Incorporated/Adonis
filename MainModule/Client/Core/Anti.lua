@@ -447,7 +447,7 @@ return function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
-			local lastUpdate = os.clock()
+			--local lastUpdate = os.clock()
 			local coreNums = {}
 			local coreClears = service.ReadOnly({
 				FriendStatus = true;
