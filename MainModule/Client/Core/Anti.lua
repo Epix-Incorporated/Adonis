@@ -376,31 +376,9 @@ return function()
 			end)
 		end;
 
-		AntiTools = function()
-			if service.Player:WaitForChild("Backpack", 120) then
-				--local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
-				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
-				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
-				local function check(t)
-					if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) then
-						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-							t.Active = false
-							t:Destroy()
-							Detected("log", "HopperBin Detected (BTools)")
-						--elseif not Get("CheckBackpack", t) then
-							--t:Destroy() --// Temp disabled pending full fix
-							--Detected('log','Client-Side Tool Detected')
-						end
-					end
-				end
-
-				for _,t in pairs(service.Player.Backpack:GetChildren()) do
-					check(t)
-				end
-
-				service.Player.Backpack.ChildAdded:Connect(check)
-			end
-		end;
+		--elseif not Get("CheckBackpack", t) then
+		--t:Destroy() --// Temp disabled pending full fix
+		--Detected('log','Client-Side Tool Detected')
 
 		HumanoidState = function()
 			wait(1)
@@ -493,7 +471,9 @@ return function()
 			end
 
 			local function checkTool(t)
-				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
+				task.wait()
+
+				if t and (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
 					end
