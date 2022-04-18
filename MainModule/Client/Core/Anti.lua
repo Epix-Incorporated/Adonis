@@ -554,9 +554,9 @@ return function()
 			end)
 
 			service.LogService.MessageOut:Connect(function(Message)
-				if message == " " then
+				if Message == " " then
 					lastLogOutput = os.clock()
-				elseif type(message) ~= "string" then
+				elseif type(Message) ~= "string" then
 					pcall(Detected, "crash", "Tamper Protection 24589")
 					task.wait(1)
 					pcall(Disconnect, "Adonis_24589")
