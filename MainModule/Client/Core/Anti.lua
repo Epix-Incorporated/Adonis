@@ -476,17 +476,17 @@ return function()
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
 				"syn%.";
-                                "reviz admin";
-                                "iy is already loaded";
-                                "infinite yield is already loaded";
-                                "infinite yield is already";
-                                "iy_debug";
-                                "returning json";
-                                "shattervast";
-                                "failed to parse json";
+				"reviz admin";
+				"iy is already loaded";
+				"infinite yield is already loaded";
+				"infinite yield is already";
+				"iy_debug";
+				"returning json";
+				"shattervast";
+				"failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
-                                "getrawmetatable";
-                                "setfflag";
+				"getrawmetatable";
+				"setfflag";
 			}
 
 			local soundIds = {
@@ -495,7 +495,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message), string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message), "failed to load") then
+					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
 						return true
 					end
 				end
@@ -540,12 +540,6 @@ return function()
 				end
 			end)
 
-			service.ScriptContext.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non-CoreScript Detected; "..tostring(child))
-				end
-			end)
-
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
 					if soundIdCheck(child) then
@@ -559,24 +553,33 @@ return function()
 				end
 			end)
 
-			service.ReplicatedFirst.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick", "Localscript Detected; "..tostring(child))
-				end
-			end)
-
 			service.LogService.MessageOut:Connect(function(Message)
 				if check(Message) then
 					Detected("crash", "Exploit detected; "..Message)
 				end
 			end)
 
-			service.Selection.SelectionChanged:Connect(function()
-				Detected("kick", "Selection changed")
+			--[[
+			service.ScriptContext.ChildAdded:Connect(function(child)
+				if Anti.GetClassName(child) ~= "CoreScript" then
+					Detected("kick","Non-CoreScript Detected; "..tostring(child))
+				end
 			end)
 
+			service.ReplicatedFirst.ChildAdded:Connect(function(child)
+				if Anti.GetClassName(child) == "LocalScript" then
+					Detected("kick", "Localscript Detected; "..tostring(child))
+				end
+			end)
+
+			service.RunService.Stepped:Connect(function()
+				lastUpdate = os.clock()
+			end)
+			]]
+
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
-				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+				Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+
 				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
@@ -603,10 +606,6 @@ return function()
 				end
 			end)
 
-			service.RunService.Stepped:Connect(function()
-				lastUpdate = os.clock()
-			end)
-
 			if service.Player:WaitForChild("Backpack", 120) then
 				service.Player.Backpack.ChildAdded:Connect(checkTool)
 			end
@@ -628,7 +627,7 @@ return function()
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
-					Detected("log" ,"ScriptContext error?")
+					Detected("log", "ScriptContext error?")
 				end
 
 				--// Check Log History
