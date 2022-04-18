@@ -376,16 +376,6 @@ return function()
 			end)
 		end;
 
-		AntiGui = function() --// Future
-			service.Player.DescendantAdded:Connect(function(c)
-				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
-					local d = c.Name
-					c:Destroy()
-					Detected("log", "Unknown GUI detected and destroyed: "..d)
-				end
-			end)
-		end;
-
 		AntiTools = function()
 			if service.Player:WaitForChild("Backpack", 120) then
 				--local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
@@ -448,24 +438,6 @@ return function()
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
-			local coreNums = {}
-			local coreClears = service.ReadOnly({
-				FriendStatus = true;
-				ImageButton = false;
-				ButtonHoverText = true;
-				HoverMid = true;
-				HoverLeft = true;
-				HoverRight = true;
-				ButtonHoverTextLabel = true;
-				Icon = true;
-				ImageLabel = true;
-				NameLabel = true;
-				Players = true;
-				ColumnValue = true;
-				ColumnName = true;
-				Frame = false;
-				StatText = false;
-			})
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -531,14 +503,6 @@ return function()
 			checkServ()
 
 			service.DataModel.ChildAdded:Connect(checkServ)
-
-			service.Events.CharacterRemoving:Connect(function()
-				for i, _ in next,coreNums do
-					if coreClears[i] then
-						coreNums[i] = 0
-					end
-				end
-			end)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
