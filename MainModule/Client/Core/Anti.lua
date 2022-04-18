@@ -641,8 +641,10 @@ return function()
 
 					Logs = service.LogService:GetLogHistory()
 					First = Logs[1]
+					hasPrinted = true
+
 					if (lastLogOutput + 3) > startTime then
-						hasPrinted = true
+						Detected("kick", "Log event not outputting to console")
 					end
 				else
 					if not First then
