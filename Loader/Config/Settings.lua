@@ -448,7 +448,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-	descs.AntiClientIdle = = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
+	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
