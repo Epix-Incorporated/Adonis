@@ -447,7 +447,7 @@ return function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
-			--local lastUpdate = os.clock()
+			local lastLogOutput = os.clock()
 			local coreNums = {}
 			local coreClears = service.ReadOnly({
 				FriendStatus = true;
@@ -554,7 +554,15 @@ return function()
 			end)
 
 			service.LogService.MessageOut:Connect(function(Message)
-				if check(Message) then
+				if message == " " then
+					lastLogOutput = os.clock()
+				elseif type(message) ~= "string" then
+					pcall(Detected, "crash", "Tamper Protection 24589")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_24589")
+					pcall(Kill, "Adonis_24589")
+					pcall(Kick, Player, "Adonis_24589")
+				elseif check(Message) then
 					Detected("crash", "Exploit detected; "..Message)
 				end
 			end)
@@ -570,10 +578,6 @@ return function()
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick", "Localscript Detected; "..tostring(child))
 				end
-			end)
-
-			service.RunService.Stepped:Connect(function()
-				lastUpdate = os.clock()
 			end)
 			]]
 
@@ -613,12 +617,6 @@ return function()
 			--// Detection Loop
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
-				--// Prevent event stopping
-				-- if os.clock() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
-					--Detected("crash", "Events stopped")
-					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
-				-- end
-
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
 					Detected("kick", "Parent not players")
@@ -635,6 +633,7 @@ return function()
 				local First = Logs[1]
 
 				if not hasPrinted and not First then
+					local startTime = os.clock()
 					client.OldPrint(" ")
 					for i = 1, 5 do
 						task.wait()
@@ -642,7 +641,9 @@ return function()
 
 					Logs = service.LogService:GetLogHistory()
 					First = Logs[1]
-					hasPrinted = true
+					if (lastLogOutput + 3) > startTime then
+						hasPrinted = true
+					end
 				else
 					if not First then
 						Detected("kick", "Suspicious log amount detected 5435345")
