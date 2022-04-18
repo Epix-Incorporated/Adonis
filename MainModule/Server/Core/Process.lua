@@ -128,7 +128,7 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
-		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired, but higher levels have issues too
+		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired, but higher levels have issues with not detecting at all, so its good to have between 2 and 10
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
