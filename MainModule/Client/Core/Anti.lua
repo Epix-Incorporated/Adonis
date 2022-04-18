@@ -140,11 +140,11 @@ return function()
 					idleTamper("Invalid time data")
 				elseif time > 30 * 60 then
 					if isAntiAntiIdlecheck ~= false then
-						Detected("kick", "Anti-idle detected")
+						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 					else
 						warn(
 							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
-							"\nto the anti-idle.\nPlease also tell all information that would help with debugging."
+							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 						)
 					end
 				end
