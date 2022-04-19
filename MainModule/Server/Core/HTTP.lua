@@ -6,7 +6,9 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
---// HTTP
+type Card = {id: string, name: string, desc: string, labels: {any}?}
+type List = {id: string, name: string, cards: {Card}}
+
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
@@ -57,18 +59,127 @@ return function(Vargs, GetEnv)
 		};
 
 		Trello = {
-			Helpers = {};
-			Moderators = {};
-			Admins = {};
-			HeadAdmins = {};
-			Creators = {};
+			PerformedCommands = {};
+
 			Mutes = {};
 			Bans = {};
 			Music = {};
 			InsertList = {};
-			Blacklist = {};
-			Whitelist = {};
-			PerformedCommands = {};
+
+			Overrides = {
+				{
+					Lists = {"Banlist", "Ban List", "Bans"},
+					Process = function(card, data)
+						table.insert(data.Bans, {
+							Name = card.name,
+							Reason = card.desc
+						})
+					end
+				},
+				{
+					Lists = {"Commands", "Command List"},
+					Process = function(card)
+						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
+							local cmd = card.name
+
+							if string.sub(cmd, 1, 1) == "$" then
+								local placeid = string.match(string.sub(cmd, 2), ".%d+")
+								cmd = string.sub(cmd, #placeid+2)
+								if tonumber(placeid) ~= game.PlaceId then 
+									return
+								end
+							end
+
+							Admin.RunCommand(cmd)
+							HTTP.Trello.PerformedCommands[tostring(card.id)] = true
+
+							Logs.AddLog(Logs.Script, {
+								Text = "Trello command executed";
+								Desc = cmd;
+							})
+
+							if Settings.Trello_Token ~= "" then
+								pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
+							end
+						end
+					end
+				},
+				{
+					Lists = {"Moderators", "Moderator List", "Moderatorlist", "Modlist", "Mod List", "Mods"},
+					Process = function(card, data)
+						table.insert(data.Ranks.Moderators, card.name)
+					end
+				},
+				{
+					Lists = {"Admins", "Admin List", "Adminlist"},
+					Process = function(card, data)
+						table.insert(data.Ranks.Admins, card.name)
+					end
+				},
+				{
+					Lists = {"Owners", "HeadAdmins", "HeadAdmin List", "Owner List", "Ownerlist"},
+					Process = function(card, data)
+						table.insert(data.Ranks.HeadAdmins, card.name)
+					end
+				},
+				{
+					Lists = {"Creators", "Creator List", "Creatorlist", "Place Owners"},
+					Process = function(card, data)
+						table.insert(data.Ranks.Creators, card.name)
+					end
+				},
+				{
+					Lists = {"Music", "Music List", "Musiclist", "Songs"},
+					Process = function(card, data)
+						if string.match(card.name, '^(.*):(.*)') then
+							local name, id = string.match(card.name, '^(.*):(.*)')
+							table.insert(data.Music, {
+								Name = name,
+								ID = tonumber(id)
+							})
+						end
+					end
+				},
+				{
+					Lists = {"InsertList", "Insert List", "Insertlist", "Inserts", "ModelList", "Model List", "Modellist", "Models"},
+					Process = function(card, data)
+						if string.match(card.name, '^(.*):(.*)') then
+							local name, id = string.match(card.name, '^(.*):(.*)')
+							table.insert(data.InsertList, {
+								Name = name,
+								ID = tonumber(id)
+							})
+						end
+					end
+				},
+				{
+					Lists = {"Permissions", "Permission List", "Permlist"},
+					Process = function(card)
+						local com, level = string.match(card.name, "^(.*):(.*)")
+						if com and level then
+							Admin.SetPermission(com, level)
+						end
+					end
+				},
+				{
+					Lists = {"Mutelist", "Mute List"},
+					Process = function(card, data)
+						table.insert(data.Mutes, card.name)
+					end
+				},
+				{
+					Lists = {"Blacklist"},
+					Process = function(card, data)
+						table.insert(data.Blacklist, card.name)
+					end,
+				},
+				{
+					Lists = {"Whitelist"},
+					Process = function(card, data)
+						table.insert(data.Whitelist, card.name)
+					end,
+				}
+			};
 
 			Update = function()
 				if not HTTP.Trello.API or not Settings.Trello_Enabled then
@@ -79,136 +190,19 @@ return function(Vargs, GetEnv)
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
 					return;
 				else
-					local bans = {}
-					local mutes = {}
-					local music = {}
-					local whitelist = {}
-					local blacklist = {}
-					local insertlist = {}
-					local boards = {}
-					local ranks = {
-						["Moderators"] = {},
-						["Admins"] = {},
-						["HeadAdmins"] = {},
-						["Creators"] = {}
-					}
-
-					type Card = {id: string, name: string, desc: string, labels: {any}?}
-					type List = {id: string, name: string, cards: {Card}}
-
-					local overrides = {
-						{
-							Lists = {"Banlist", "Ban List", "Bans"},
-							Process = function(card)
-								table.insert(bans, {
-									Name = card.name,
-									Reason = card.desc
-								})
-							end
-						},
-						{
-							Lists = {"Commands", "Command List"},
-							Process = function(card)
-								if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
-									local cmd = card.name
-
-									if string.sub(cmd, 1, 1) == "$" then
-										local placeid = string.match(string.sub(cmd, 2), ".%d+")
-										cmd = string.sub(cmd, #placeid+2)
-										if tonumber(placeid) ~= game.PlaceId then 
-											return
-										end
-									end
-
-									Admin.RunCommand(cmd)
-									HTTP.Trello.PerformedCommands[tostring(card.id)] = true
-
-									Logs.AddLog(Logs.Script, {
-										Text = "Trello command executed";
-										Desc = cmd;
-									})
-
-									if Settings.Trello_Token ~= "" then
-										pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
-									end
-								end
-							end
-						},
-						{
-							Lists = {"Admins", "Admin List", "Adminlist"},
-							Process = function(card)
-								table.insert(ranks.Admins, card.name)
-							end
-						},
-						{
-							Lists = {"Moderators", "Moderator List", "Moderatorlist", "Modlist", "Mod List", "Mods"},
-							Process = function(card)
-								table.insert(ranks.Moderators, card.name)
-							end
-						},
-						{
-							Lists = {"Owners", "HeadAdmins", "HeadAdmin List", "Owner List", "Ownerlist"},
-							Process = function(card)
-								table.insert(ranks.HeadAdmins, card.name)
-							end
-						},
-						{
-							Lists = {"Creators", "Creator List", "Creatorlist", "Place Owners"},
-							Process = function(card)
-								table.insert(ranks.Creators, card.name)
-							end
-						},
-						{
-							Lists = {"Music", "Music List", "Musiclist", "Songs"},
-							Process = function(card)
-								if string.match(card.name, '^(.*):(.*)') then
-									local name, id = string.match(card.name, '^(.*):(.*)')
-									table.insert(music, {
-										Name = name,
-										ID = tonumber(id)
-									})
-								end
-							end
-						},
-						{
-							Lists = {"InsertList", "Insert List", "Insertlist", "Inserts", "ModelList", "Model List", "Modellist", "Models"},
-							Process = function(card)
-								if string.match(card.name, '^(.*):(.*)') then
-									local name, id = string.match(card.name, '^(.*):(.*)')
-									table.insert(insertlist, {
-										Name = name,
-										ID = tonumber(id)
-									})
-								end
-							end
-						},
-						{
-							Lists = {"Permissions", "Permission List", "Permlist"},
-							Process = function(card)
-								local com, level = string.match(card.name, "^(.*):(.*)")
-								if com and level then
-									Admin.SetPermission(com, level)
-								end
-							end
-						},
-						{
-							Lists = {"Mutelist", "Mute List"},
-							Process = function(card)
-								table.insert(mutes, card.name)
-							end
-						},
-						{
-							Lists = {"Blacklist"},
-							Process = function(card)
-								table.insert(blacklist, card.name)
-							end,
-						},
-						{
-							Lists = {"Whitelist"},
-							Process = function(card)
-								table.insert(whitelist, card.name)
-							end,
-						}
+					local data = {
+						Bans = {};
+						Mutes = {};
+						Music = {};
+						Whitelist = {};
+						Blacklist = {};
+						InsertList = {};
+						Ranks = {
+							["Moderators"] = {},
+							["Admins"] = {},
+							["HeadAdmins"] = {},
+							["Creators"] = {}
+						};
 					}
 
 					local function grabData(board)
@@ -218,18 +212,18 @@ return function(Vargs, GetEnv)
 						for _, list in pairs(lists) do 
 							local foundOverride = false
 
-							for _, override in pairs(overrides) do 
+							for _, override in pairs(HTTP.Trello.Overrides) do 
 								if table.find(override.Lists, list.name) then
 									foundOverride = true
 									for _, card in ipairs(list.cards) do 
-										override.Process(card)
+										override.Process(card, data)
 									end
 									break
 								end
 							end
 
 							-- Allow lists for custom ranks
-							if not foundOverride and Settings.Ranks[list.name] and not ranks[list.name] then
+							if not foundOverride and Settings.Ranks[list.name] and not data.Ranks[list.name] then
 								local users = {}
 								for _, card in ipairs(list.cards) do
 									table.insert(users, card.name)
@@ -237,7 +231,7 @@ return function(Vargs, GetEnv)
 							end
 						end
 					end
-					
+
 					local success = true
 					local boards = {
 						Settings.Trello_Primary, 
@@ -257,24 +251,22 @@ return function(Vargs, GetEnv)
 
 					-- Only replace existing values if all data was fetched successfully
 					if success then
-						HTTP.Trello.Bans = bans
-						HTTP.Trello.Music = music
-						HTTP.Trello.InsertList = insertlist
-						HTTP.Trello.Mutes = mutes
-						HTTP.Trello.Blacklist = blacklist
-						HTTP.Trello.Whitelist = whitelist
-						
-						Variables.Blacklist.Lists.Trello = blacklist
-						Variables.Whitelist.Lists.Trello = whitelist
+						HTTP.Trello.Bans = data.Bans
+						HTTP.Trello.Music = data.Music
+						HTTP.Trello.InsertList = data.InsertList
+						HTTP.Trello.Mutes = data.Mutes
+
+						Variables.Blacklist.Lists.Trello = data.Blacklist
+						Variables.Whitelist.Lists.Trello = data.Whitelist
 
 						--// Clear any custom ranks that were not fetched from Trello
 						for rank, info in pairs(Settings.Ranks) do 
-							if rank.IsExternal and not ranks[rank] then
+							if rank.IsExternal and not data.Ranks[rank] then
 								Settings.Ranks[rank] = nil
 							end
 						end
 
-						for rank, users in pairs(ranks) do 
+						for rank, users in pairs(data.Ranks) do 
 							local name = string.format("[Trello] %s", server.Functions.Trim(rank))
 							Settings.Ranks[name] = {
 								Level = Settings.Ranks[rank].Level or 1;
@@ -299,6 +291,16 @@ return function(Vargs, GetEnv)
 						})
 					end
 				end
+			end;
+			
+			GetOverrideLists = function()
+				local lists = {}
+				for _, override in ipairs(HTTP.Trello.Overrides) do 
+					for _, list in ipairs(override.Lists) do 
+						table.insert(lists, list)
+					end
+				end
+				return lists
 			end;
 		};
 	};
