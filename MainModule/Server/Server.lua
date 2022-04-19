@@ -73,11 +73,15 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer"; 
+        "GroupService";
+        "MarketplaceService";
+        "MarketplaceService";
 	"TestService";
 	"HttpService";
+        "RunService";
 	"InsertService";
-	"NetworkServer"
+	"NetworkServer";
 }
 
 local unique = {}
