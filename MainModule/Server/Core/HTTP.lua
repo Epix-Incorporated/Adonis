@@ -223,10 +223,14 @@ return function(Vargs, GetEnv)
 							end
 
 							-- Allow lists for custom ranks
-							if not foundOverride and Settings.Ranks[list.name] and not data.Ranks[list.name] then
-								local users = {}
-								for _, card in ipairs(list.cards) do
-									table.insert(users, card.name)
+							if not foundOverride and not data.Ranks[list.name] then
+								local rank = Settings.Ranks[list.name]
+
+								if rank and not rank.IsExternal then
+									local users = {}
+									for _, card in ipairs(list.cards) do
+										table.insert(users, card.name)
+									end
 								end
 							end
 						end
@@ -298,6 +302,11 @@ return function(Vargs, GetEnv)
 				for _, override in ipairs(HTTP.Trello.Overrides) do 
 					for _, list in ipairs(override.Lists) do 
 						table.insert(lists, list)
+					end
+				end
+				for name, rank in pairs(Settings.Ranks) do 
+					if not rank.IsExternal and not table.find(lists, name) then
+						table.insert(lists, name)
 					end
 				end
 				return lists
