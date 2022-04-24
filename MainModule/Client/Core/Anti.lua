@@ -722,41 +722,10 @@ return function()
 		Detected = Detected;
 		Detectors = Detectors;
 
-		GetClassName = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local _,err = pcall(function()
-				local _ = obj[testName]
-			end)
-			if err then
-				local class = string.match(err, testName.." is not a valid member of (.*)")
-				if class then
-					return class
-				end
-			end
-		end;
-
 		RLocked = function(obj)
 			return not pcall(function()
 				return obj.GetFullName(obj)
 			end)
-		end;
-
-		CoreRLocked = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local _,err = pcall(function()
-				game:GetService("GuiService"):AddSelectionParent(testName, obj)
-				game:GetService("GuiService"):RemoveSelectionGroup(testName)
-			end)
-			if err and string.find(err, testName) and string.find(err, "GuiService:") then
-				return true
-			else
-				wait(0.5)
-				for _,v in pairs(service.LogService:GetLogHistory()) do
-					if string.find(v.message, testName) and string.find(v.message, "GuiService:") then
-						return true
-					end
-				end
-			end
 		end;
 	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
 
