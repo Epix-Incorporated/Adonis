@@ -130,6 +130,8 @@ return function()
 			return
 		end
 
+		local isAntiAntiIdlecheck = Remote.Get("Setting", "AntiClientIdle")
+
 		while true do
 			local connection
 			local idledEvent = service.UnWrap(Player).Idled
@@ -137,9 +139,14 @@ return function()
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
 				elseif time > 30 * 60 then
-					if Remote.Get("Setting","AntiClientIdle") then
-						Detected("kick", "Anti-idle detected")
-					end 
+					if isAntiAntiIdlecheck ~= false then
+						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
+					else
+						warn(
+							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
+							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value"
+						)
+					end
 				end
 			end)
 
@@ -295,6 +302,23 @@ return function()
 					local success2, err2 = pcall(function()
 						workspace:Kick("If this appears, you have a glitch. Method 1")
 					end)
+					local THE_WOK = [[
+...°°°*  °oO#@@@@@@Oo*°°*°°...
+....°°. .*oOOO@@@#OOo**°°°....
+....°*. ***O###@@##Oooo°°°....
+....°. .o##O#@@@@@@####o°°°°..
+...°°° °#@@@@@@@@@@@@@@o**°°°°
+.°°°**. o@@@@##@@#@@@@O*o**°°°
+.°°°**° .O#@@OoO#O@@@#*°*****°
+..°°**o° *OO##OOOOOO#o°*oo***°
+.°°***o. °*o*°.°*°°OO*.*oo***°
+.°°°**    .*OOO###@O°.   *****
+..°**       °oOOOO*.  .   *°°°
+..°°     .          .°°   .*°°
+. .      °°.      .°*°     *°°
+         °**°....°***°     ...
+         °ooo*°.°*o*..      . 
+]]
 
 					if
 						success or
@@ -310,7 +334,7 @@ return function()
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this appears, you have a glitch. Method 2")
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this appears, all I can say is 冰淇淋\n\nIt's about rice, it's about flour\n"..THE_WOK.."\nYou stay hungry, I devour")
 								local success2, err2 = pcall(function()
 									otherPlayer:Kick("If this appears, you have a glitch. Method 2")
 								end)
@@ -339,14 +363,6 @@ return function()
 						Detected("kick", "Anti FPS detection found!")
 					end
 				end)()
-
-				-- this part you can choose whether or not you wanna use
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
-					local object = Player and Player.Name ~= v and rawGame.FindFirstChild(rawGame, v, true)            -- ill update the list periodically
-					if object then
-						Detected("log", "Malicious Object?: " .. v)
-					end
-				end
 			end
 		end)
 	end
@@ -360,41 +376,9 @@ return function()
 			end)
 		end;
 
-		AntiGui = function() --// Future
-			service.Player.DescendantAdded:Connect(function(c)
-				if c:IsA("GuiMain") or c:IsA("PlayerGui") and rawequal(c.Parent, service.PlayerGui) and not UI.Get(c) then
-					local d = c.Name
-					c:Destroy()
-					Detected("log", "Unknown GUI detected and destroyed: "..d)
-				end
-			end)
-		end;
-
-		AntiTools = function()
-			if service.Player:WaitForChild("Backpack", 120) then
-				--local btools = data.BTools --Remote.Get("Setting","AntiBuildingTools")  used for??
-				--local tools = data.AntiTools --Remote.Get("Setting","AntiTools")				(must be recovered in order for it to be used again)
-				--local allowed = data.AllowedList --Remote.Get("Setting","AllowedToolsList")	(must be recovered in order for it to be used again)
-				local function check(t)
-					if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) then
-						if client.AntiBuildingTools and t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-							t.Active = false
-							t:Destroy()
-							Detected("log", "HopperBin Detected (BTools)")
-						--elseif not Get("CheckBackpack", t) then
-							--t:Destroy() --// Temp disabled pending full fix
-							--Detected('log','Client-Side Tool Detected')
-						end
-					end
-				end
-
-				for _,t in pairs(service.Player.Backpack:GetChildren()) do
-					check(t)
-				end
-
-				service.Player.Backpack.ChildAdded:Connect(check)
-			end
-		end;
+		--elseif not Get("CheckBackpack", t) then
+		--t:Destroy() --// Temp disabled pending full fix
+		--Detected('log','Client-Side Tool Detected')
 
 		HumanoidState = function()
 			wait(1)
@@ -431,25 +415,7 @@ return function()
 			local game = service.DataModel
 			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
-			local lastUpdate = time()
-			local coreNums = {}
-			local coreClears = service.ReadOnly({
-				FriendStatus = true;
-				ImageButton = false;
-				ButtonHoverText = true;
-				HoverMid = true;
-				HoverLeft = true;
-				HoverRight = true;
-				ButtonHoverTextLabel = true;
-				Icon = true;
-				ImageLabel = true;
-				NameLabel = true;
-				Players = true;
-				ColumnValue = true;
-				ColumnName = true;
-				Frame = false;
-				StatText = false;
-			})
+			local lastLogOutput = os.clock()
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -460,15 +426,17 @@ return function()
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
 				"syn%.";
-                                "reviz admin";
-                                "iy is already loaded";
-                                "infinite yield is already loaded";
-                                "infinite yield is already";
-                                "iy_debug";
-                                "returning json";
-                                "shattervast";
-                                "failed to parse json";
+				"reviz admin";
+				"iy is already loaded";
+				"infinite yield is already loaded";
+				"infinite yield is already";
+				"iy_debug";
+				"returning json";
+				"shattervast";
+				"failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
+				"getrawmetatable";
+				"setfflag";
 			}
 
 			local soundIds = {
@@ -477,7 +445,7 @@ return function()
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if string.find(string.lower(Message),string.lower(v)) or string.match(Message, v) and not string.find(string.lower(Message),"failed to load") then
+					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
 						return true
 					end
 				end
@@ -485,11 +453,11 @@ return function()
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService("ServerStorage", game) or findService("ServerScriptService", game)) then
-						Detected("crash","Disallowed Services Detected")
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")  or findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
-					Detected("kick","Disallowed Services Finding Error")
+					Detected("kick", "Disallowed Services Finding Error")
 				end
 			end
 
@@ -503,7 +471,9 @@ return function()
 			end
 
 			local function checkTool(t)
-				if (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
+				task.wait()
+
+				if t and (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
 						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
 					end
@@ -513,20 +483,6 @@ return function()
 			checkServ()
 
 			service.DataModel.ChildAdded:Connect(checkServ)
-
-			service.Events.CharacterRemoving:Connect(function()
-				for i, _ in next,coreNums do
-					if coreClears[i] then
-						coreNums[i] = 0
-					end
-				end
-			end)
-
-			service.ScriptContext.ChildAdded:Connect(function(child)
-				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non-CoreScript Detected; "..tostring(child))
-				end
-			end)
 
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
@@ -541,24 +497,37 @@ return function()
 				end
 			end)
 
+			service.LogService.MessageOut:Connect(function(Message)
+				if Message == " " then
+					lastLogOutput = os.clock()
+				elseif type(Message) ~= "string" then
+					pcall(Detected, "crash", "Tamper Protection 24589")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_24589")
+					pcall(Kill, "Adonis_24589")
+					pcall(Kick, Player, "Adonis_24589")
+				elseif check(Message) then
+					Detected("crash", "Exploit detected; "..Message)
+				end
+			end)
+
+			--[[
+			service.ScriptContext.ChildAdded:Connect(function(child)
+				if Anti.GetClassName(child) ~= "CoreScript" then
+					Detected("kick","Non-CoreScript Detected; "..tostring(child))
+				end
+			end)
+
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
 					Detected("kick", "Localscript Detected; "..tostring(child))
 				end
 			end)
-
-			service.LogService.MessageOut:Connect(function(Message)
-				if check(Message) then
-					Detected("crash", "Exploit detected; "..Message)
-				end
-			end)
-
-			service.Selection.SelectionChanged:Connect(function()
-				Detected("kick", "Selection changed")
-			end)
+			]]
 
 			service.ScriptContext.Error:Connect(function(Message, Trace, Script)
-				local Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+				Message, Trace, Script = tostring(Message), tostring(Trace), tostring(Script)
+
 				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
@@ -585,23 +554,13 @@ return function()
 				end
 			end)
 
-			service.RunService.Stepped:Connect(function()
-				lastUpdate = time()
-			end)
-
 			if service.Player:WaitForChild("Backpack", 120) then
 				service.Player.Backpack.ChildAdded:Connect(checkTool)
 			end
 
 			--// Detection Loop
 			local hasPrinted = false
-			service.StartLoop("Detection", 11, function()
-				--// Prevent event stopping
-				-- if time() - lastUpdate > 60 then -- commented to stop vscode from yelling at me
-					--Detected("crash", "Events stopped")
-					-- this apparently crashes you when minimizing the windows store app (?) (I assume it's because rendering was paused and so related events also stop)
-				-- end
-
+			service.StartLoop("Detection", 15, function()
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
 					Detected("kick", "Parent not players")
@@ -610,7 +569,7 @@ return function()
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
-					Detected("log" ,"ScriptContext error?")
+					Detected("log", "ScriptContext error?")
 				end
 
 				--// Check Log History
@@ -618,7 +577,7 @@ return function()
 				local First = Logs[1]
 
 				if not hasPrinted and not First then
-					client.OldPrint(" ")
+					local startTime = os.clock()
 					client.OldPrint(" ")
 					for i = 1, 5 do
 						task.wait()
@@ -627,6 +586,10 @@ return function()
 					Logs = service.LogService:GetLogHistory()
 					First = Logs[1]
 					hasPrinted = true
+
+					if (lastLogOutput + 3) > startTime then
+						Detected("kick", "Log event not outputting to console")
+					end
 				else
 					if not First then
 						Detected("kick", "Suspicious log amount detected 5435345")
@@ -666,6 +629,14 @@ return function()
 					Detected("crash", "RobloxLocked usable")
 				end
 
+				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
+				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
+					if object then
+						Detected("kick", "Malicious Object?: " .. v)
+					end
+				end
+	
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
@@ -689,7 +660,7 @@ return function()
 						return setmetatable(tbl, mt)
 					end)
 
-					if not success or value ~= tbl or not rawequal(value, tbl) then
+					if not success or value ~= tbl or not service.OrigRawEqual(value, tbl) then
 						Detected("crash", "Anti-dex bypass found. Method 2")
 					end
 				end
@@ -706,7 +677,7 @@ return function()
 					end)
 
 					testDecal:Destroy()
-					task.wait(2.5)
+					task.wait(6)
 					if not activated then
 						Detected("kick", "Coregui detection bypass found")
 					end
