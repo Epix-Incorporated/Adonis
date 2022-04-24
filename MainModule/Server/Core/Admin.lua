@@ -1107,24 +1107,33 @@ return function(Vargs, GetEnv)
 		CheckPermission = function(pDat, cmd)
 			local adminLevel = pDat.Level
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
+
 			local comLevel = cmd.AdminLevel
+
 			local funAllowed = Settings.FunCommands
 			local crossServerAllowed = Settings.CrossServerCommands
 
+			--// Creators rank will bypass any permissions set
 			if adminLevel >= Settings.Ranks.Creators.Level then
 				return true
+			elseif (comLevel == "Players" or comLevel == 0) and not Settings.PlayerCommands then
+				--// If PlayerCommands is set to false it will prevent users from using "Players" level commands
+				return false
 			elseif cmd.Fun and not funAllowed then
+				--// If FunCommands are disabled it will block any command Labeled "Fun"
 				return false
 			elseif cmd.IsCrossServer and not crossServerAllowed then
+				--// If CrossServerCommands is disabled it will block any command that is "CrossServer"
 				return false
 			elseif cmd.Donors and isDonor then
-				return true
-			elseif comLevel == 0 and Settings.PlayerCommands then
+				--// If a command is for "Donors" it will allow anyone with Donor to use it
 				return true
 			elseif Admin.CheckComLevel(adminLevel, comLevel) then
+				--// Check if user has permission to the command
 				return true
 			end
 
+			--// If none of the checks pass it will deny permissions
 			return false
 		end;
 

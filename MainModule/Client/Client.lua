@@ -198,14 +198,21 @@ GetEnv = function(env, repl)
 	return scriptEnv
 end
 
-local LoadModule = function(plugin, yield, envVars)
+local GetVargTable = function()
+	return {
+		Client = client;
+		Service = service;
+	}
+end
+
+local LoadModule = function(plugin, yield, envVars, noEnv)
 	local plugran, plug = pcall(require, plugin)
 
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
 
 				if not ran then
 					warn("Module encountered an error while loading: "..tostring(plugin))
@@ -213,7 +220,7 @@ local LoadModule = function(plugin, yield, envVars)
 				end
 			else
 				--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
+				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
 
 				if not ran then
 					warn("Module encountered an error while loading: "..tostring(plugin))
@@ -546,7 +553,7 @@ return service.NewProxy({
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
 				log("~! Loading Core Module: ".. tostring(load))
-				LoadModule(modu, true, {script = script})
+				LoadModule(modu, true, {script = script}, true)
 			end
 		end
 
