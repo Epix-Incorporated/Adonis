@@ -116,7 +116,7 @@ return function(Vargs, GetEnv)
 				limitViolations[typ][p.UserId] += 1
 			end
 
-			return limitViolations[typ][p.UserId] > server.Process.RatelimitSampleMultiplier
+			return limitViolations[typ][p.UserId] < server.Process.RatelimitSampleMultiplier
 		else
 			return true
 		end
