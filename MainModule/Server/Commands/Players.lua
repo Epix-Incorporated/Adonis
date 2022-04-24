@@ -412,6 +412,13 @@ return function(Vargs, env)
 										if not answered then
 											answered = true
 											Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
+										else
+											Remote.MakeGui(p, "Notification", {
+												Title = "Help Request";
+												Message = "Another admin has already responded to this request!";
+												Icon = "rbxassetid://7501175708";
+												Time = 5;
+											})
 										end
 									end
 								end
