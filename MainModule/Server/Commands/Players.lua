@@ -366,7 +366,7 @@ return function(Vargs, env)
 
 		RequestHelp = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
+			Commands = {"helpop", "help", "requesthelp", "gethelp", "lifealert", "sos", "sus"};
 			Args = {"reason"};
 			Hidden = false;
 			Description = "Calls admins for help";
