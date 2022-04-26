@@ -57,10 +57,7 @@ return function()
 
 	local function RunAfterLoaded()
 		service.Player.Changed:Connect(function()
-			if service.Player.Parent ~= service.Players then
-				wait(5)
-				Anti.Detected("kick", "Parent not players", true)
-			elseif Anti.RLocked(service.Player) then
+			if Anti.RLocked(service.Player) then
 				Anti.Detected("kick", "Player is Roblox Locked")
 			end
 		end)
@@ -561,10 +558,12 @@ return function()
 			--// Detection Loop
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
+				--[[
 				--// Check player parent
 				if service.Player.Parent ~= service.Players then
 					Detected("kick", "Parent not players")
 				end
+				]]
 
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
