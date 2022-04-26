@@ -139,8 +139,8 @@ return function()
 			local clientReplicator = networkClient
 
 			if
-				networkClient:GetChildren() == 1 and
-				networkClient:GetDescendants() == 1 and
+				#networkClient:GetChildren() == 1 and
+				#networkClient:GetDescendants() == 1 and
 				networkClient:GetChildren()[1] == clientReplicator and
 				networkClient:GetDescendants()[1] == clientReplicator and
 				networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
@@ -183,7 +183,9 @@ return function()
 				not rawequal(type(idledEvent.Connect), "function") or
 				not rawequal(type(idledEvent.Wait), "function")
 			then
-				idleTamper("Userdata disrepencies detected")
+				if isAntiAntiIdlecheck ~= false then
+					idleTamper("Userdata disrepencies detected")
+				end
 			end
 
 			task.wait(200)
