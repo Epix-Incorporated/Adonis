@@ -169,7 +169,7 @@ return function()
 			connection = idledEvent:Connect(function(time)
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
-				elseif time > 30 * 60 then
+				elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
 					Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 				end
 			end)
@@ -183,9 +183,7 @@ return function()
 				not rawequal(type(idledEvent.Connect), "function") or
 				not rawequal(type(idledEvent.Wait), "function")
 			then
-				if isAntiAntiIdlecheck ~= false then
-					idleTamper("Userdata disrepencies detected")
-				end
+				idleTamper("Userdata disrepencies detected")
 			end
 
 			task.wait(200)
