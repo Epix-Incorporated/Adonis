@@ -307,6 +307,30 @@ local descs = {};			--// Contains settings descriptions
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
 
+	settings.Messages = {			-- A list of notification messages to show HeadAdmins and above on join
+	--{ 
+	-- EXAMPLE MESSAGE
+	--
+	--	Title = "Title";
+	--	Message = "This is an example notification";
+	--	Icon = "rbxassetid://7510994359";
+	--	Time = 15;
+	--	OnClick = server.Core.Bytecode([[
+	--		local window = client.UI.Make("Window", {
+	--			Title = "Image of a cute cat displaed in a window when clicked";
+	--			Size = {700,300};
+	--			Icon = "rbxassetid://7510994359";
+	--		})
+
+	--		window:Add("ImageLabel", {
+	--			Image = "rbxassetid://1059543904";
+	--		})
+
+	--		window:Ready()
+	--	]]);
+	--}
+	}
+	
 	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
@@ -419,6 +443,8 @@ local descs = {};			--// Contains settings descriptions
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
+	descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
+	
 	descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
