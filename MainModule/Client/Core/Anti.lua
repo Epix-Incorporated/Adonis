@@ -136,7 +136,7 @@ return function()
 		task.spawn(function()
 			local connection
 			local networkClient = service.UnWrap(service.NetworkClient)
-			local clientReplicator = networkClient
+			local clientReplicator = networkClient.ClientReplicator
 
 			if
 				#networkClient:GetChildren() == 1 and
