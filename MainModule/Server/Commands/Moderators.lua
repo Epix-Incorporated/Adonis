@@ -4708,26 +4708,18 @@ return function(Vargs, env)
 				local ClothingId = tonumber(args[2])
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
-
-				assert(Shirt, "Could not retrieve shirt asset for the supplied ID")
-
+				assert(Shirt, "Could not retrieve t-shirt asset for the supplied ID")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						for g, k in pairs(v.Character:GetChildren()) do
 							if k:IsA("ShirtGraphic") then k:Destroy() end
 						end
-
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
 						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
 						if humandescrip then
 							humandescrip.GraphicTShirt = ClothingId
-						end
-
-						if Shirt:IsA("Model") then
-							Shirt = thirt:FindFirstChildOfClass("ShirtGraphic")
-						end
-
+						end]]
 						Shirt:Clone().Parent = v.Character
 					end
 				end
@@ -4752,8 +4744,8 @@ return function(Vargs, env)
 						for g, k in pairs(v.Character:GetChildren()) do
 							if k:IsA("Shirt") then k:Destroy() end
 						end
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						--[[local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
 						if humandescrip then
 							humandescrip.Shirt = ClothingId
@@ -4782,8 +4774,8 @@ return function(Vargs, env)
 						for g, k in pairs(v.Character:GetChildren()) do
 							if k:IsA("Pants") then k:Destroy() end
 						end
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						--[[local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
 
 						if humandescrip then
 							humandescrip.Pants = ClothingId
@@ -6303,6 +6295,9 @@ return function(Vargs, env)
 				local list = {}
 				for _, v in pairs(Settings.Muted) do
 					table.insert(list, v)
+				end
+				for _, v in pairs(HTTP.Trello.Mutes) do
+					table.insert(list, "[Trello] "..v)
 				end
 				Remote.MakeGui(plr, "List", {Title = "Mute List"; Table = list;})
 			end

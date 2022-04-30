@@ -2,11 +2,6 @@
 -- Adonis Client --
 -------------------
 
--- //
--- Luau sorta handles this now.
--- math.randomseed(os.time())
--- //
-
 --// Load Order List
 local LoadingOrder = {
 	--// Required by most modules
@@ -58,8 +53,12 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer";
+        "GroupService";
+        "MarketplaceService";
+        "HttpService";
 	"TestService";
+        "RunService";
 	"NetworkClient";
 };
 

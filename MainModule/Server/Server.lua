@@ -6,8 +6,7 @@ If you find bugs, typos, or ways to improve something please message me (Scelera
 what you found so the script can be better.
 
 Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
-																																																																																							]]
-math.randomseed(os.time())
+																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
 local LoadingOrder = {
@@ -74,11 +73,15 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer"; 
+        "GroupService";
+        "MarketplaceService";
+        "MarketplaceService";
 	"TestService";
 	"HttpService";
+        "RunService";
 	"InsertService";
-	"NetworkServer"
+	"NetworkServer";
 }
 
 local unique = {}

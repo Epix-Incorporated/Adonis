@@ -486,7 +486,7 @@ return function(Vargs, GetEnv)
 					task.spawn(Remote.MakeGui,p,"Notification",{
 						Title = "Global Audio";
 						Message = "Only Moderators or above may broadcast audio!";
-						Icon = "rbxassetid://7495451175";
+						Icon = server.Shared.MatIcons.Language;
 						Time = 3;
 					})
 				end
@@ -740,16 +740,9 @@ return function(Vargs, GetEnv)
 			end;
 
 			HandleExplore = function(p, args)
-				--// TODO
-				--// Make this a separate Admin method
-				local Command = Commands.Explore
-				if not Command then return end
-				local Level = Command.AdminLevel
-				if not Level then return end
-				local Rank = Settings.Ranks[Level]
-				if not Rank then return end
-				if not Rank.Level then return end
-				if Admin.GetLevel(p) >= Rank.Level then
+				local command = Commands.Explore
+				local adminLevel = Admin.GetLevel(p)
+				if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
@@ -867,24 +860,38 @@ return function(Vargs, GetEnv)
 				Anti.Detected(p, args[1], args[2])
 			end;
 
-			TrelloOperation = function(p,args)
-				if Admin.GetLevel(p) > Settings.Ranks.Admins.Level then
-					local data = args[1]
-					if data.Action == "MakeCard" then
-						local list = data.List
+			TrelloOperation = function(p, args)
+				local adminLevel = Admin.GetLevel(p)
+				
+				local trello = HTTP.Trello.API
+				
+				local data = args[1]
+				if data.Action == "MakeCard" then
+					local command = Commands.MakeCard
+					if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
+						local listName = data.List
 						local name = data.Name
 						local desc = data.Desc
-						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+						
+						for _, overrideList in ipairs(HTTP.Trello.GetOverrideLists()) do 
+							if service.Trim(overrideList:lower()) == service.Trim(listName:lower()) then
+								Functions.Hint("You cannot create a card in that list", {p})
+								return
+							end
+						end
+						
 						local lists = trello.getLists(Settings.Trello_Primary)
-						local list = trello.getListObj(lists,list)
+						local list = trello.getListObj(lists, listName)
 						if list then
-							local card = trello.makeCard(list.id,name,desc)
-							Functions.Hint("Made card \""..card.name.."\"",{p})
+							local card = trello.makeCard(list.id, name, desc)
+							Functions.Hint("Made card \""..card.name.."\" in list \""..list.name.."\"", {p})
 							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." performed Trello operation";
 								Desc = "Player created a Trello card";
 								Player = p;
 							})
+						else
+							Functions.Hint("\""..listName.."\" does not exist", {p})
 						end
 					end
 				end

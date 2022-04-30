@@ -706,7 +706,8 @@ return function(Vargs, GetEnv)
 			-- DataStore studio check.
 			if ran and store and service.RunService:IsStudio() then
 				local success, res = pcall(store.GetAsync, store, math.random())
-				if not success and string.find(res, "403", 1, true) then
+				if not success and string.find(res, "502", 1, true) then
+					warn("Unable to load data because Studio access to API services is disabled.")
 					return;
 				end
 			end

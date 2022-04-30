@@ -48,6 +48,14 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if
+			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
+			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
+		then
+			Logs:AddLog("Script", "Didn't run character AC checks because another anti-exploit which does the same is already loaded.")
+			return
+		end
+
 		for _, v in ipairs(service.Players:GetPlayers()) do
 			task.spawn(onPlayerAdded, v)
 		end

@@ -28,6 +28,10 @@ jobs:
         with:
           name: Adonis_Nightly_${{ steps.date.outputs.date }}
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+          
+      - name: Build Nightly MainModule
+        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
+        run: rojo build -o module.rbxm .github/module.deploy.project.json
 
       - name: Publish Nightly MainModule
         uses: fjogeleit/http-request-action@v1
@@ -36,7 +40,7 @@ jobs:
           url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
           method: "POST"
           contentType: "multipart/form-data"
-          files: '{ "file": "Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm" }'
+          files: '{ "file": "module.rbxm" }'
           customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
           timeout: 10000
 
