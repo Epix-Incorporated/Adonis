@@ -558,13 +558,6 @@ return function()
 			--// Detection Loop
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
-				--[[
-				--// Check player parent
-				if service.Player.Parent ~= service.Players then
-					Detected("kick", "Parent not players")
-				end
-				]]
-
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
