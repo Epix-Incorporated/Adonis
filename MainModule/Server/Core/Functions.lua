@@ -1113,7 +1113,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
-			Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
+			Functions.Message(Settings.SystemTitle, "The server is shutting down...", service.Players:GetPlayers(), false, 5)
 			wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
