@@ -173,7 +173,7 @@ return function(Vargs, GetEnv)
 									Desc = "Player requested key from server",
 									Player = p;
 								})
-							elseif UnEncrypted[com] then
+							elseif rateLimitCheck and UnEncrypted[com] then
 								AddLog("RemoteFires", {
 									Text = p.Name.." fired "..tostring(com),
 									Desc = "Player fired unencrypted remote command "..com,
@@ -206,7 +206,7 @@ return function(Vargs, GetEnv)
 								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
 							end
 						else
-							Anti.Detected(p, "Log", "Out of Sync (r10005)")
+							Anti.Detected(p, "Kick", "Invalid Remote Data (r10005)")
 						end
 					end
 				end
