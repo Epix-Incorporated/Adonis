@@ -131,6 +131,37 @@ return function()
 		end
 
 		local isAntiAntiIdlecheck = Remote.Get("Setting", "AntiClientIdle")
+		local clientHasClosed = false
+
+		task.spawn(function()
+			local connection
+			local networkClient = service.UnWrap(service.NetworkClient)
+			local clientReplicator = networkClient.ClientReplicator
+
+			if
+				#networkClient:GetChildren() == 1 and
+				#networkClient:GetDescendants() == 1 and
+				networkClient:GetChildren()[1] == clientReplicator and
+				networkClient:GetDescendants()[1] == clientReplicator and
+				networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
+				clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
+			then
+				connection = networkClient.DescendantRemoving:Connect(function(object)
+					if
+						object == clientReplicator and
+						object.Parent == networkClient and
+						object:IsA("NetworkReplicator") and
+						object:GetPlayer() == service.UnWrap(Player)
+					then
+						connection:Disconnect()
+						clientHasClosed = true
+					end
+				end)
+			end
+		end)
 
 		while true do
 			local connection
@@ -138,15 +169,8 @@ return function()
 			connection = idledEvent:Connect(function(time)
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
-				elseif time > 30 * 60 then
-					if isAntiAntiIdlecheck ~= false then
-						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
-					else
-						warn(
-							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
-							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value"
-						)
-					end
+				elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
+					Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 				end
 			end)
 
@@ -164,6 +188,10 @@ return function()
 
 			task.wait(200)
 			connection:Disconnect()
+	
+			if clientHasClosed then
+				return
+			end
 		end
 	end)()
 
