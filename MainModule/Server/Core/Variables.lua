@@ -30,7 +30,9 @@ return function(Vargs, GetEnv)
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
 
+		if Settings.DefaultMusic == true then
 		for _, v in ipairs(Settings.MusicList or {}) do table.insert(Variables.MusicList, v) end
+		end
 		for _, v in ipairs(Settings.InsertList or {}) do table.insert(Variables.InsertList, v) end
 		for _, v in ipairs(Settings.CapeList or {}) do table.insert(Variables.Capes, v) end
 
