@@ -88,7 +88,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in pairs(commands) do
 					for _, p in ipairs(v.Commands) do
-						if (v.Prefix or "")..p:lower() == args[1]:lower() then
+						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
 							cmd = v
 							ind = i
 							break
@@ -98,10 +98,10 @@ return function(Vargs, env)
 				assert(cmd, "Command '"..args[1].."' not found")
 
 				local function formatStrForRichText(str: string): string
-					return str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
+					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
 				end
 
-				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
+				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
 				if cmdArgs == "" then cmdArgs = "-" end
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
@@ -233,7 +233,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.R*255, bc.G*255, bc.B*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
