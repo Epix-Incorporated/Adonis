@@ -184,7 +184,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CommsPanel")
 			end
-		};						
+		};
 
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
@@ -359,7 +359,7 @@ return function(Vargs, env)
 					Icon = server.MatIcons["People alt"];
 					Tab = Logs.ListUpdaters.Donors(plr);
 					Update = "Donors";
-					AutoUpdate = if not args[1] or args[1]:lower() == "true" or args[1]:lower() == "yes" then 2 else nil;
+					AutoUpdate = if not args[1] or string.lower(args[1]) == "true" or string.lower(args[1]) == "yes" then 2 else nil;
 				})
 			end
 		};
@@ -395,11 +395,11 @@ return function(Vargs, env)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind, p in pairs(service.Players:GetPlayers()) do
+							for ind, p in ipairs(service.Players:GetPlayers()) do
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p, "Notification", {
 										Title = "Help Request";
-										Message = plr.Name.." needs help! Reason: "..pending.Reason;
+										Message = plr.Name.." needs help! Reason"..pending.Reason;
 										Icon = "rbxassetid://7501175708";
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
@@ -417,8 +417,8 @@ return function(Vargs, env)
 								end
 							end
 
-							local w = time()
-							repeat wait(0.5) until time()-w>30 or answered
+							local w = os.time()
+							repeat task.wait(0.5) until os.time()-w>30 or answered
 
 							pending.Pending = false;
 
@@ -926,7 +926,7 @@ return function(Vargs, env)
 				local data = {}
 
 				local donorList = {}
-				for _, v in pairs(service.GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
@@ -935,14 +935,14 @@ return function(Vargs, env)
 				local adminDictionary, workspaceInfo = nil, nil
 				if elevated then
 					adminDictionary = {}
-					for _, v in pairs(service.GetPlayers()) do
+					for _, v in ipairs(service.GetPlayers()) do
 						local level, rank = Admin.GetLevel(v)
 						if level > 0 then
 							adminDictionary[v.Name] = rank or "Unknown"
 						end
 					end
 					local nilPlayers = 0
-					for _, v in pairs(service.NetworkServer:GetChildren()) do
+					for _, v in ipairs(service.NetworkServer:GetChildren()) do
 						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 							nilPlayers += 1
 						end
@@ -1078,11 +1078,11 @@ return function(Vargs, env)
 				end)
 			end
 		};
-		
+
 		AudioPlayer = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
-			Args = {"soundId?"};
+			Args = {"sound ID"};
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
 			Hidden = false;
