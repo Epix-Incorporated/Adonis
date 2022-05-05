@@ -319,7 +319,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		DoCheck = function(p: string | number | Player, check: string | number | {[string]: any}, banCheck: boolean?)
-			local pType = typeof(p)
+			local pType = type(p)
 			local cType = type(check)
 
 			local lower = string.lower
@@ -338,7 +338,7 @@ return function(Vargs, GetEnv)
 				if p.UserId == check then
 					return true
 				end
-			elseif cType == "string" and pType == "Instance" and p:IsA("Player") then
+			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
 				local isGood = p and p.Parent == service.Players
 				if isGood and match(check, "^Group:(.*):(.*)") then
 					local sGroup, sRank = match(check, "^Group:(.*):(.*)")
@@ -399,7 +399,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 				end
-			elseif cType == "table" and pType == "Instance" and p and p:IsA("Player") then
+			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
 				if check.Group and check.Rank then
 					local rank = check.Rank
 					local pGroup = Admin.GetPlayerGroup(p, check.Group)
@@ -477,7 +477,7 @@ return function(Vargs, GetEnv)
 			if (not level or not lastUpdate or currentTime - lastUpdate > Admin.AdminLevelCacheTimeout) or lastUpdate > currentTime then
 				local newLevel, newRank = Admin.UpdateCachedLevel(p, data)
 
-				if clients[key] and level and newLevel and typeof(p) == "Instance" and p:IsA("Player") then
+				if clients[key] and level and newLevel and type(p) == "userdata" and p:IsA("Player") then
 					if newLevel < level then
 						Functions.Hint("Your admin level has been reduced to ".. newLevel.." [".. (newRank or "Unknown") .."]", {p})
 					elseif newLevel > level then
@@ -537,7 +537,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		IsPlaceOwner = function(p: Player)
-			if typeof(p) == "Instance" and p:IsA("Player") then
+			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
 				if Settings.CreatorPowers then
@@ -786,7 +786,7 @@ return function(Vargs, GetEnv)
 		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
 			local id = type(name) == "number" and name
 
-			if typeof(name) == "Instance" and name:IsA("Player") then
+			if type(name) == "userdata" and name:IsA("Player") then
 				id = name.UserId
 				name = name.Name
 			end
@@ -1016,7 +1016,7 @@ return function(Vargs, GetEnv)
 
 		GetArgs = function(msg: string, num: number, ...)
 			local args = Functions.Split((string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
-			for _,v in pairs({...}) do table.insert(args, v) end
+			for _,v in ipairs({...}) do table.insert(args, v) end
 			return args
 		end;
 
