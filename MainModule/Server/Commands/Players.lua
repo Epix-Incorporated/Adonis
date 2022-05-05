@@ -344,7 +344,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local tab = {}
-				for _, v in pairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.Players:GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(tab, service.FormatPlayer(v))
 					end
@@ -399,7 +399,7 @@ return function(Vargs, env)
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p, "Notification", {
 										Title = "Help Request";
-										Message = plr.Name.." needs help! Reason"..pending.Reason;
+										Message = plr.Name.." needs help! Reason: "..pending.Reason;
 										Icon = "rbxassetid://7501175708";
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
@@ -879,7 +879,7 @@ return function(Vargs, env)
 
 				for _, v: Player in pairs(players) do
 					task.defer(function()
-						local gameData = nil
+						local gameData
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
@@ -932,7 +932,7 @@ return function(Vargs, env)
 					end
 				end
 
-				local adminDictionary, workspaceInfo = nil, nil
+				local adminDictionary, workspaceInfo
 				if elevated then
 					adminDictionary = {}
 					for _, v in ipairs(service.GetPlayers()) do
@@ -972,7 +972,7 @@ return function(Vargs, env)
 						query = elevated and res.query or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
 					}
-				end, function() return nil end))
+				end, function() return end))
 
 				Remote.MakeGui(plr, "ServerDetails", {
 					CreatorId = game.CreatorId;
@@ -1082,7 +1082,7 @@ return function(Vargs, env)
 		AudioPlayer = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
-			Args = {"sound ID"};
+			Args = {"soundId?"};
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
 			Hidden = false;
