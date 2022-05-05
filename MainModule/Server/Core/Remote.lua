@@ -76,6 +76,7 @@ return function(Vargs, GetEnv)
 			DonorCapes = true;
 			ConsoleKeyCode = true;
 			SplitKey = true;
+			AntiClientIdle = true;
 		};
 
 		--// Settings that are never sent to the client
@@ -371,7 +372,7 @@ return function(Vargs, GetEnv)
 					local data = Core.GetPlayer(p)
 
 					--// check for stupid stuff
-					for i,v in next,aliases do
+					for i,v in next, aliases do
 						if type(i) ~= "string" or type(v) ~= "string" then
 							aliases[i] = nil
 						end
@@ -404,7 +405,7 @@ return function(Vargs, GetEnv)
 				local tab = {}
 				for _,v in pairs(commands) do
 					if not v.Hidden and not v.Disabled then
-						for a,b in pairs(v.Commands) do
+						for a in pairs(v.Commands) do
 							table.insert(tab,Admin.FormatCommand(v,a))
 						end
 					end
@@ -490,8 +491,8 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Sends a message in the Roblox chat";
 					Function = function(p, args, data)
-						for i,v in next,service.GetPlayers() do
-							Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))
+						for _,v in ipairs(service.GetPlayers()) do
+							Remote.Send(v,"Function","ChatMessage",args[1],Color3.fromRGB(255,64,77))
 						end
 					end
 				};
@@ -975,8 +976,8 @@ return function(Vargs, GetEnv)
 
 						self:SendToUsers("SessionEnded");
 
+						table.clear(self.Users);
 						self.NumUsers = 0;
-						self.Users = {};
 						self.SessionEvent:Destroy();
 
 						self.Ended = true;
