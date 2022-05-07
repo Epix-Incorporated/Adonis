@@ -389,7 +389,7 @@ return function()
 					return
 				end
 			end
-		end
+		end;
 
 		--elseif not Get("CheckBackpack", t) then
 		--t:Destroy() --// Temp disabled pending full fix
