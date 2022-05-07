@@ -327,7 +327,7 @@ return function()
 				end
 			end
 
-			local isAntiAntiIdlecheck, clientHasClosed = data.IsCheckEnabled, false
+			local isAntiAntiIdlecheck, clientHasClosed = data.Enabled, false
 
 			task.spawn(pcall, function()
 				local connection
