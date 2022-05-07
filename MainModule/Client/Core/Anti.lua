@@ -315,22 +315,16 @@ return function()
 				pcall(Kick, Player, "Adonis_790438")
 			end
 
-			if not game:IsLoaded() then
-				game.Loaded:Wait()
-			end
-
-			if not Player.Character and service.Players.CharacterAutoLoads then
-				Player.CharacterAdded:Wait()
-			end
-
-			local RunService = service.RunService
-			if
-				RunService:IsStudio() == true and
-				RunService:IsClient() == true and
-				RunService:IsRunning() == true and
-				RunService:IsServer() == false
-			then
+			if service.RunService:IsStudio() == true then
 				return
+			else
+				if not game:IsLoaded() then
+					game.Loaded:Wait()
+				end
+
+				if not Player.Character and service.Players.CharacterAutoLoads then
+					Player.CharacterAdded:Wait()
+				end
 			end
 
 			local isAntiAntiIdlecheck, clientHasClosed = data.IsCheckEnabled, false
