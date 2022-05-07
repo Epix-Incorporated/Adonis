@@ -43,6 +43,7 @@ return function()
 	local NetworkClient = service.NetworkClient
 	local Kill = client.Kill
 	local Player = service.Players.LocalPlayer
+	local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 	local Kick = Player.Kick
 	local toget = tostring(getfenv)
 
@@ -78,7 +79,7 @@ return function()
 			pcall(Send, "Detected", action, info)
 			wait(0.5)
 			if action == "kick" then
-				if not service.RunService:IsStudio() then
+				if not isStudio then
 					if nocrash then
 						Player:Kick(info); -- service.Players.LocalPlayer
 					else
@@ -315,7 +316,7 @@ return function()
 				pcall(Kick, Player, "Adonis_790438")
 			end
 
-			if service.RunService:IsStudio() == true then
+			if isStudio then
 				return
 			else
 				if not game:IsLoaded() then
@@ -428,7 +429,6 @@ return function()
 
 		MainDetection = function()
 			local game = service.DataModel
-			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 
