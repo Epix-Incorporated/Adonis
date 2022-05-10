@@ -26,5 +26,11 @@ return function(Vargs)
 		ancsafe.Disabled = false
 	end
 
+	-- // Remove legacy trello board
+	if table.find(server.settings.Trello_Secondary, "9HH6BEX2") then
+		table.remove(table.find(server.settings.Trello_Secondary, "9HH6BEX2"))
+		Logs:AddLog("Script", "Removed legacy trello board");
+	end
+
 	Logs:AddLog("Script", "Misc Features Module Loaded");
 end;
