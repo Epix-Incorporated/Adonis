@@ -72,7 +72,7 @@ return function(Vargs)
 			Process.Command(fakePlayer, comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		Loadstring = function(jobId, source)
+		Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
 		end;
 		
