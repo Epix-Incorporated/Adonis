@@ -1159,7 +1159,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			return service.NewProxy {
 				__index = function(tab, ind)
-					local ind = type(ind) ~= "table" and typeof(ind) ~= "newproxy" or "Potentially dangerous index"
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
 
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
@@ -1175,7 +1175,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end;
 
 				__newindex = function(tab,ind,new)
-					local ind = type(ind) ~= "table" and typeof(ind) ~= "newproxy" or "Potentially dangerous index"
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
 
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
