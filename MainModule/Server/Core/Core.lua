@@ -1223,13 +1223,13 @@ return function(Vargs, GetEnv)
 					local ind = args[2]
 					local targ
 
-					if API_Specific[ind] then
-						targ = API_Specific[ind]
-					elseif server[ind] and Settings.Allowed_API_Calls[ind] then
-						targ = server[ind]
-					end
-
 					if Settings.G_Access and key == Settings.G_Access_Key and targ and Settings.Allowed_API_Calls[ind] == true then
+						if API_Specific[ind] then
+							targ = API_Specific[ind]
+						elseif server[ind] and Settings.Allowed_API_Calls[ind] then
+							targ = server[ind]
+						end
+
 						if type(targ) == "table" then
 							return service.NewProxy {
 								__index = function(tab,inde)
