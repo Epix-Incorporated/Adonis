@@ -76,7 +76,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 				},
-				{
+				{ -- // Was this really a good idea?
 					Lists = {"Commands", "Command List"},
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
