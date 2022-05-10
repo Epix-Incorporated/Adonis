@@ -72,9 +72,10 @@ return function(Vargs)
 			Process.Command(fakePlayer, comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
+		-- // Unused, unnecessary, at the very least it should use GetEnv, and yes even if GetEnv has an empty table you can still do GetEnv({}).GetEnv().server
+		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
-		end;
+		end;]]
 		
 		Message = function(jobId, fromPlayer, message, time)
 			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
