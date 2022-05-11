@@ -99,7 +99,7 @@ else
 		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
 			Title = "Warning!";
-			Message = "Your settings script is misconfigured and cannot load!";
+			Message = "Settings module error detected. Using default settings.";
 			Time = 15;
 		})
 		setTab = {}
