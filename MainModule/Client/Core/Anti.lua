@@ -46,6 +46,7 @@ return function(Vargs, GetEnv)
 	local NetworkClient = service.NetworkClient
 	local Kill = client.Kill
 	local Player = service.Players.LocalPlayer
+	local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 	local Kick = Player.Kick
 	local toget = tostring(getfenv)
 
@@ -81,7 +82,7 @@ return function(Vargs, GetEnv)
 			pcall(Send, "Detected", action, info)
 			wait(0.5)
 			if action == "kick" then
-				if not service.RunService:IsStudio() then
+				if not isStudio then
 					if nocrash then
 						Player:Kick(info); -- service.Players.LocalPlayer
 					else
@@ -94,106 +95,6 @@ return function(Vargs, GetEnv)
 		end
 		return true
 	end;
-
-	local idleTamper
-	do
-		local hasActivated = false
-		idleTamper = function(message)
-			if hasActivated then
-				return
-			end
-			hasActivated = true
-			Detected("crash", "Tamper Protection 790438; "..tostring(message).."; "..debug.traceback())
-			wait(1)
-			pcall(Disconnect, "Adonis_790438")
-			pcall(Kill, "Adonis_790438")
-			pcall(Kick, Player, "Adonis_790438")
-		end
-	end
-
-	coroutine.wrap(function()
-		if not game:IsLoaded() then
-			game.Loaded:Wait()
-		end
-
-		if not service.UnWrap(Player).Character and service.UnWrap(game):GetService("Players").CharacterAutoLoads then
-			service.UnWrap(Player).CharacterAdded:Wait()
-		end
-
-		local RunService = service.RunService
-		if
-			RunService:IsStudio() == true and
-			RunService:IsClient() == true and
-			RunService:IsRunning() == true and
-			RunService:IsServer() == false
-		then
-			return
-		end
-
-		local isAntiAntiIdlecheck = Remote.Get("Setting", "AntiClientIdle")
-		local clientHasClosed = false
-
-		task.spawn(function()
-			local connection
-			local networkClient = service.UnWrap(service.NetworkClient)
-			local clientReplicator = networkClient.ClientReplicator
-
-			if
-				#networkClient:GetChildren() == 1 and
-				#networkClient:GetDescendants() == 1 and
-				networkClient:GetChildren()[1] == clientReplicator and
-				networkClient:GetDescendants()[1] == clientReplicator and
-				networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
-				networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
-				networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
-				networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
-				clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
-			then
-				connection = networkClient.DescendantRemoving:Connect(function(object)
-					if
-						object == clientReplicator and
-						object.Parent == networkClient and
-						object:IsA("NetworkReplicator") and
-						object:GetPlayer() == service.UnWrap(Player)
-					then
-						connection:Disconnect()
-						clientHasClosed = true
-					end
-				end)
-			end
-		end)
-
-		while true do
-			local connection
-			local idledEvent = service.UnWrap(Player).Idled
-			connection = idledEvent:Connect(function(time)
-				if type(time) ~= "number" or not (time > 0) then
-					idleTamper("Invalid time data")
-				elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
-					Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
-				end
-			end)
-
-			if
-				type(connection) ~= "userdata" or
-				not rawequal(typeof(connection), "RBXScriptConnection") or
-				connection.Connected ~= true or
-				not rawequal(type(connection.Disconnect), "function") or
-				not rawequal(typeof(idledEvent), "RBXScriptSignal") or
-				not rawequal(type(idledEvent.Connect), "function") or
-				not rawequal(type(idledEvent.Wait), "function")
-			then
-				idleTamper("Userdata disrepencies detected")
-			end
-
-			task.wait(200)
-			connection:Disconnect()
-	
-			if clientHasClosed then
-				return
-			end
-		end
-	end)()
 
 	do
 		local callStacks = {
@@ -404,6 +305,96 @@ return function(Vargs, GetEnv)
 			end)
 		end;
 
+		AntiAntiIdle = function(data)
+			local hasActivated = false
+			local function idleTamper(message)
+				if hasActivated then
+					return
+				end
+				hasActivated = true
+				Detected("crash", "Tamper Protection 790438; "..tostring(message).."; ")
+				wait(1)
+				pcall(Disconnect, "Adonis_790438")
+				pcall(Kill, "Adonis_790438")
+				pcall(Kick, Player, "Adonis_790438")
+			end
+
+			if isStudio then
+				return
+			else
+				if not game:IsLoaded() then
+					game.Loaded:Wait()
+				end
+
+				if not Player.Character and service.Players.CharacterAutoLoads then
+					Player.CharacterAdded:Wait()
+				end
+			end
+
+			local isAntiAntiIdlecheck, clientHasClosed = data.Enabled, false
+
+			task.spawn(pcall, function()
+				local connection
+				local networkClient = service.UnWrap(service.NetworkClient)
+				local clientReplicator = networkClient.ClientReplicator
+
+				if
+					#networkClient:GetChildren() == 1 and
+					#networkClient:GetDescendants() == 1 and
+					networkClient:GetChildren()[1] == clientReplicator and
+					networkClient:GetDescendants()[1] == clientReplicator and
+					networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
+					networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
+					networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
+					networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
+					clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
+				then
+					connection = networkClient.DescendantRemoving:Connect(function(object)
+						if
+							object == clientReplicator and
+							object.Parent == networkClient and
+							object:IsA("NetworkReplicator") and
+							object:GetPlayer() == service.UnWrap(Player)
+						then
+							connection:Disconnect()
+							clientHasClosed = true
+						end
+					end)
+				end
+			end)
+
+			while true do
+				local connection
+				local idledEvent = service.UnWrap(Player).Idled
+				connection = idledEvent:Connect(function(time)
+					if type(time) ~= "number" or not (time > 0) then
+						idleTamper("Invalid time data")
+					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
+						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
+					end
+				end)
+
+				if
+					type(connection) ~= "userdata" or
+					not rawequal(typeof(connection), "RBXScriptConnection") or
+					connection.Connected ~= true or
+					not rawequal(type(connection.Disconnect), "function") or
+					not rawequal(typeof(idledEvent), "RBXScriptSignal") or
+					not rawequal(type(idledEvent.Connect), "function") or
+					not rawequal(type(idledEvent.Wait), "function")
+				then
+					idleTamper("Userdata disrepencies detected")
+				end
+
+				task.wait(200)
+				connection:Disconnect()
+
+				if clientHasClosed then
+					return
+				end
+			end
+		end;
+
 		--elseif not Get("CheckBackpack", t) then
 		--t:Destroy() --// Temp disabled pending full fix
 		--Detected('log','Client-Side Tool Detected')
@@ -441,7 +432,6 @@ return function(Vargs, GetEnv)
 
 		MainDetection = function()
 			local game = service.DataModel
-			local isStudio = select(2, pcall(service.RunService.IsStudio, service.RunService))
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 
