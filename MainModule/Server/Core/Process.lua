@@ -88,15 +88,13 @@ return function(Vargs, GetEnv)
 
 
 
-	local RateLimiter = {
+	local RateLimiter, limitViolations = {
 		Remote = {};
 		Command = {};
 		Chat = {};
 		CustomChat = {};
 		RateLog = {};
-	}
-
-	local limitViolations = {
+	}, {
 		Remote = {};
 		Command = {};
 		Chat = {};
@@ -106,17 +104,22 @@ return function(Vargs, GetEnv)
 
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
-			if not RateLimiter[typ][p.UserId] then
-				RateLimiter[typ][p.UserId] = os.clock()
-				limitViolations[typ][p.UserId] = 1
-			elseif RateLimiter[typ][p.UserId] < os.clock() + server.Process.RateLimits[typ] * server.Process.RatelimitSampleMultiplier then
-				RateLimiter[typ][p.UserId] = os.clock()
-				limitViolations[typ][p.UserId] = 0
+			local RateLimit_Type = RateLimiter[typ]
+			local LimitViolation_Type = limitViolations[typ]
+
+			if not RateLimit_Type[p.UserId] then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 1
+			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 0
 			else
-				limitViolations[typ][p.UserId] += 1
+				LimitViolation_Type[p.UserId] += 1
 			end
 
-			return limitViolations[typ][p.UserId] > server.Process.RatelimitSampleMultiplier
+			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
 		else
 			return true
 		end
@@ -767,6 +770,10 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
+
+					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
+						Enabled = (Settings.AntiClientIdle ~= false)
+					})
 				end
 			end
 
@@ -786,7 +793,6 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -795,41 +801,22 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-
-						wait(1)
-
-						if oldVer and newVer and newVer > oldVer and level > 300 then
+						
+						if oldVer and newVer and newVer > oldVer and level > 100 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 10;
+								Time = 15;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						wait(1)
-
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Warning!";
-								Message = "Using default datastore key!";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode([[
-									local window = client.UI.Make("Window", {
-										Title = "How to change the DataStore key";
-										Size = {700,300};
-										Icon = "rbxassetid://7510994359";
-									})
-
-									window:Add("ImageLabel", {
-										Image = "rbxassetid://1059543904";
-									})
-
-									window:Ready()
-								]]);
-							})
+						if level > 300 then
+							for i,v in pairs(server.Messages) do
+								v.Icon = v.Icon or server.MatIcons.Description;
+								Remote.MakeGui(p, "Notification", v)
+							end
 						end
 					end
 

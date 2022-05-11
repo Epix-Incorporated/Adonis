@@ -1080,7 +1080,7 @@ return function(Vargs, GetEnv)
 
 		CleanWorkspace = function()
 			for _, v in ipairs(workspace:GetChildren()) do
-				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Accoutrement") or v.ClassName == "Hat" then
+				if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
 					v:Destroy()
 				end
 			end
@@ -1113,7 +1113,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Shutdown = function(reason)
-			Functions.Message("Server Shutdown", "The server is shutting down...", service.Players:GetPlayers(), false, 5)
+			Functions.Message(Settings.SystemTitle, "The server is shutting down...", service.Players:GetPlayers(), false, 5)
 			wait(1)
 
 			service.Players.PlayerAdded:Connect(function(player)
