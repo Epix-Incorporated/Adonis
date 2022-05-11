@@ -88,15 +88,13 @@ return function(Vargs, GetEnv)
 
 
 
-	local RateLimiter = {
+	local RateLimiter, limitViolations = {
 		Remote = {};
 		Command = {};
 		Chat = {};
 		CustomChat = {};
 		RateLog = {};
-	}
-
-	local limitViolations = {
+	}, {
 		Remote = {};
 		Command = {};
 		Chat = {};
@@ -106,17 +104,22 @@ return function(Vargs, GetEnv)
 
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
-			if not RateLimiter[typ][p.UserId] then
-				RateLimiter[typ][p.UserId] = os.clock()
-				limitViolations[typ][p.UserId] = 1
-			elseif RateLimiter[typ][p.UserId] < os.clock() + server.Process.RateLimits[typ] * server.Process.RatelimitSampleMultiplier then
-				RateLimiter[typ][p.UserId] = os.clock()
-				limitViolations[typ][p.UserId] = 0
+			local RateLimit_Type = RateLimiter[typ]
+			local LimitViolation_Type = limitViolations[typ]
+
+			if not RateLimit_Type[p.UserId] then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 1
+			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 0
 			else
-				limitViolations[typ][p.UserId] += 1
+				LimitViolation_Type[p.UserId] += 1
 			end
 
-			return limitViolations[typ][p.UserId] > server.Process.RatelimitSampleMultiplier
+			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
 		else
 			return true
 		end
