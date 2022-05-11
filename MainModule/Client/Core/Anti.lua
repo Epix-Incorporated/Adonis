@@ -60,10 +60,7 @@ return function(Vargs, GetEnv)
 
 	local function RunAfterLoaded()
 		service.Player.Changed:Connect(function()
-			if service.Player.Parent ~= service.Players then
-				wait(5)
-				Anti.Detected("kick", "Parent not players", true)
-			elseif Anti.RLocked(service.Player) then
+			if Anti.RLocked(service.Player) then
 				Anti.Detected("kick", "Player is Roblox Locked")
 			end
 		end)
@@ -134,6 +131,37 @@ return function(Vargs, GetEnv)
 		end
 
 		local isAntiAntiIdlecheck = Remote.Get("Setting", "AntiClientIdle")
+		local clientHasClosed = false
+
+		task.spawn(function()
+			local connection
+			local networkClient = service.UnWrap(service.NetworkClient)
+			local clientReplicator = networkClient.ClientReplicator
+
+			if
+				#networkClient:GetChildren() == 1 and
+				#networkClient:GetDescendants() == 1 and
+				networkClient:GetChildren()[1] == clientReplicator and
+				networkClient:GetDescendants()[1] == clientReplicator and
+				networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
+				networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
+				clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
+			then
+				connection = networkClient.DescendantRemoving:Connect(function(object)
+					if
+						object == clientReplicator and
+						object.Parent == networkClient and
+						object:IsA("NetworkReplicator") and
+						object:GetPlayer() == service.UnWrap(Player)
+					then
+						connection:Disconnect()
+						clientHasClosed = true
+					end
+				end)
+			end
+		end)
 
 		while true do
 			local connection
@@ -141,15 +169,8 @@ return function(Vargs, GetEnv)
 			connection = idledEvent:Connect(function(time)
 				if type(time) ~= "number" or not (time > 0) then
 					idleTamper("Invalid time data")
-				elseif time > 30 * 60 then
-					if isAntiAntiIdlecheck ~= false then
-						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
-					else
-						warn(
-							"The anti-idle detected!!!\nIf this is a false detection please report this so we can fix potential issues related"..
-							"\nto the anti-idle.\nPlease also tell all information that would help with debugging. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value"
-						)
-					end
+				elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
+					Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 				end
 			end)
 
@@ -167,6 +188,10 @@ return function(Vargs, GetEnv)
 
 			task.wait(200)
 			connection:Disconnect()
+	
+			if clientHasClosed then
+				return
+			end
 		end
 	end)()
 
@@ -564,11 +589,6 @@ return function(Vargs, GetEnv)
 			--// Detection Loop
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
-				--// Check player parent
-				if service.Player.Parent ~= service.Players then
-					Detected("kick", "Parent not players")
-				end
-
 				--// Stuff
 				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
 				if not ran then
@@ -725,41 +745,10 @@ return function(Vargs, GetEnv)
 		Detected = Detected;
 		Detectors = Detectors;
 
-		GetClassName = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local _,err = pcall(function()
-				local _ = obj[testName]
-			end)
-			if err then
-				local class = string.match(err, testName.." is not a valid member of (.*)")
-				if class then
-					return class
-				end
-			end
-		end;
-
 		RLocked = function(obj)
 			return not pcall(function()
 				return obj.GetFullName(obj)
 			end)
-		end;
-
-		CoreRLocked = function(obj)
-			local testName = tostring(math.random()..math.random())
-			local _,err = pcall(function()
-				game:GetService("GuiService"):AddSelectionParent(testName, obj)
-				game:GetService("GuiService"):RemoveSelectionGroup(testName)
-			end)
-			if err and string.find(err, testName) and string.find(err, "GuiService:") then
-				return true
-			else
-				wait(0.5)
-				for _,v in pairs(service.LogService:GetLogHistory()) do
-					if string.find(v.message, testName) and string.find(v.message, "GuiService:") then
-						return true
-					end
-				end
-			end
 		end;
 	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
 

@@ -256,20 +256,7 @@ return function(Vargs, GetEnv)
 			end;
 		};
 
-		UnEncrypted = {
-			LightingChange = function(prop, val)
-				print(prop, "TICKLE ME!?")
-				Variables.LightingChanged = true
-				service.Lighting[prop] = val
-				Anti.LastChanges.Lighting = prop
-				wait(.1)
-				Variables.LightingChanged = false
-				print("TICKLED :)",Variables.LightingChanged)
-				if Anti.LastChanges.Lighting == prop then
-					Anti.LastChanges.Lighting = nil
-				end
-			end
-		};
+		UnEncrypted = {};
 
 		Commands = {
 			GetReturn = function(args)
