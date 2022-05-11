@@ -360,7 +360,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
-	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
+	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
 	---------------------
 	-- END OF SETTINGS --
@@ -441,7 +441,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
+	descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
 	descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 	
@@ -461,6 +461,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 	descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
+	descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
@@ -489,17 +490,22 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"Theme";
 		"MobileTheme";
+		"DefaultTheme";
 		" ";
 		"Ranks";
 		" ";
 		"Permissions";
+		"Aliases";
 		" ";
+		"Commands";
 		"Banned";
 		"Muted";
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
 		"CapeList";
+		"InsertList";
+		"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";
@@ -547,6 +553,7 @@ local descs = {};			--// Contains settings descriptions
 		"";
 		"AutoClean";
 		"AutoCleanDelay";
+		"AutoBackup";
 		" ";
 		"CustomChat";
 		"PlayerList";
@@ -556,6 +563,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"HelpSystem";
 		"HelpButton";
+		"HelpButtonImage";
 		" ";
 		"DonorCommands";
 		"DonorCapes";
@@ -573,6 +581,7 @@ local descs = {};			--// Contains settings descriptions
 		"AntiGod";
 		"AntiSpeed";
 		"AntiBuildingTools";
+		"AntiClientIdle";
 		"AntiLeak";
 		"ProtectHats";
 	}

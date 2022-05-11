@@ -300,7 +300,7 @@ return function()
 							local ret = rets[2]
 
 							if ret ~= nil then
-								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
+								if type(ret) == "userdata" and ret:IsA("ScreenGui") then
 									code = (ret:FindFirstChild("Config") and ret.Config:FindFirstChild("Code")) or code
 								else
 									return ret

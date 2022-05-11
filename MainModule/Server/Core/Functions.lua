@@ -1080,7 +1080,7 @@ return function(Vargs, GetEnv)
 
 		CleanWorkspace = function()
 			for _, v in ipairs(workspace:GetChildren()) do
-				if v.ClassName == "Tool" or v.ClassName == "HopperBin" or v:IsA("Accessory") or v:IsA("Accoutrement") or v.ClassName == "Hat" then
+				if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
 					v:Destroy()
 				end
 			end
