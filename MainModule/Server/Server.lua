@@ -506,16 +506,12 @@ return service.NewProxy({
 			warn("WARNING: MainModule loaded without using the loader;")
 		end
 
-		--// Warn if possibly malicious
-		if data.PremiumID or data.PremiumId then
-			warn("\n ⚠ You might be using a malicious version of the Adonis loader ⚠\n -- If you are teleported to a 'Loading...' game, your game could be identified by the backdoor creators! 👁️‍🗨️--\n -- 🔰 Remember, there's no such thing as Adonis Premium or Gold! -- \n -- 💠 Grab the genuine Adonis Loader from the toolbox! ✔️-- \n ")
-		end
-
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
+		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
 		server.Data = data or {}
 		server.Model = data.Model or service.New("Model")

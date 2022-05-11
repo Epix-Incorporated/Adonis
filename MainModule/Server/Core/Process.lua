@@ -786,7 +786,6 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -795,41 +794,22 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-
-						wait(1)
-
-						if oldVer and newVer and newVer > oldVer and level > 300 then
+						
+						if oldVer and newVer and newVer > oldVer and level > 100 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 10;
+								Time = 15;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						wait(1)
-
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Warning!";
-								Message = "Using default datastore key!";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode([[
-									local window = client.UI.Make("Window", {
-										Title = "How to change the DataStore key";
-										Size = {700,300};
-										Icon = "rbxassetid://7510994359";
-									})
-
-									window:Add("ImageLabel", {
-										Image = "rbxassetid://1059543904";
-									})
-
-									window:Ready()
-								]]);
-							})
+						if level > 300 then
+							for i,v in pairs(server.Messages) do
+								v.Icon = v.Icon or server.MatIcons.Description;
+								Remote.MakeGui(p, "Notification", v)
+							end
 						end
 					end
 

@@ -61,6 +61,7 @@ else
 	local data = {
 		Settings = {};
 		Descriptions = {};
+		Messages = {};
 		ServerPlugins = {};
 		ClientPlugins = {};
 		Packages = {};
@@ -91,10 +92,16 @@ else
 	if data.DebugMode then
 		moduleId = model.Parent.MainModule
 	end
-
 	local success, setTab = pcall(require, settings)
-	if not success then
+	if success then
+		data.Messages = setTab.Settings.Messages
+	else
 		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Message = "Settings module error detected. Using default settings.";
+			Time = 15;
+		})
 		setTab = {}
 	end
 
