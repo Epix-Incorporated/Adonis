@@ -286,11 +286,10 @@ log("Create service metatable");
 
 service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 	local extra = {...}
-	if eType == "MethodError" then
-		--Kill()("Shananigans denied")
+	if eType == "MethodError" and service.Detected then
+		Kill()("Shananigans denied")
 		--player:Kick("Method error")
 		--service.Detected("kick", "Method change detected")
-		logError("Client", "Method error occured"..tostring(msg))
 	elseif eType == "ServerError" then
 		logError("Client", tostring(msg))
 	elseif eType == "ReadError" then
