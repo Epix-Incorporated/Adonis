@@ -20,7 +20,7 @@ local methods = setmetatable({},{
 					RealMethods[class][index] = obj[index]
 				end
 
-				if RealMethods[class][index] ~= obj[index] or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] then --or pcall(function() return coroutine.create(obj[index]) end) then
 					if ErrorHandler then
 						ErrorHandler("MethodError", debug.traceback() .. " || Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
