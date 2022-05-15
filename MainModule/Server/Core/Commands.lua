@@ -119,6 +119,8 @@ return function(Vargs, GetEnv)
 					for b, v in pairs(lvl) do
 						lvl[b] = Admin.StringToComLevel(v)
 					end
+				elseif type(lvl) == "nil" then
+					cmd.AdminLevel = 0
 				end
 
 				if not cmd.Prefix then
