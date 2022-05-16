@@ -718,20 +718,26 @@ return function(Vargs, GetEnv)
 			end;
 
 			HandleExplore = function(p, args)
-				local obj = args[1];
-				local com = args[2];
-				local data = args[3];
-
 				local command = Commands.Explore
 				local adminLevel = Admin.GetLevel(p)
-				if ((obj and type(com) == "string") and command and (type(data) == "table" or Admin.CheckComLevel(adminLevel, command.AdminLevel))) then
-					if com == "Delete" and not pcall(function() obj:Destroy() end) then
-						Remote.MakeGui(p ,"Notification", {
-							Title = "Error";
-							Icon = server.MatIcons.Error;
-							Message = "Cannot delete object.";
-							Time = 2;
-						})
+				if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
+					local obj = args[1];
+					local com = args[2];
+					local data = args[3];
+
+					if obj then
+						if com == "Delete" then
+							if not pcall(function()
+									obj:Destroy()
+								end) then
+								Remote.MakeGui(p ,"Notification", {
+									Title = "Error";
+									Icon = server.MatIcons.Error;
+									Message = "Cannot delete object.";
+									Time = 2;
+								})
+							end
+						end
 					end
 				end
 			end;
