@@ -88,7 +88,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in pairs(commands) do
 					for _, p in ipairs(v.Commands) do
-						if (v.Prefix or "")..p:lower() == args[1]:lower() then
+						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
 							cmd = v
 							ind = i
 							break
@@ -98,10 +98,10 @@ return function(Vargs, env)
 				assert(cmd, "Command '"..args[1].."' not found")
 
 				local function formatStrForRichText(str: string): string
-					return str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
+					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
 				end
 
-				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
+				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
 				if cmdArgs == "" then cmdArgs = "-" end
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
@@ -184,7 +184,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CommsPanel")
 			end
-		};						
+		};
 
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
@@ -233,7 +233,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.R*255, bc.G*255, bc.B*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
@@ -344,7 +344,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local tab = {}
-				for _, v in pairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.Players:GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(tab, service.FormatPlayer(v))
 					end
@@ -359,7 +359,7 @@ return function(Vargs, env)
 					Icon = server.MatIcons["People alt"];
 					Tab = Logs.ListUpdaters.Donors(plr);
 					Update = "Donors";
-					AutoUpdate = if not args[1] or args[1]:lower() == "true" or args[1]:lower() == "yes" then 2 else nil;
+					AutoUpdate = if not args[1] or string.lower(args[1]) == "true" or string.lower(args[1]) == "yes" then 2 else nil;
 				})
 			end
 		};
@@ -395,7 +395,7 @@ return function(Vargs, env)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind, p in pairs(service.Players:GetPlayers()) do
+							for ind, p in ipairs(service.Players:GetPlayers()) do
 								if Admin.CheckAdmin(p) then
 									local ret = Remote.MakeGuiGet(p, "Notification", {
 										Title = "Help Request";
@@ -424,8 +424,8 @@ return function(Vargs, env)
 								end
 							end
 
-							local w = time()
-							repeat wait(0.5) until time()-w>30 or answered
+							local w = os.time()
+							repeat task.wait(0.5) until os.time()-w>30 or answered
 
 							pending.Pending = false;
 
@@ -886,7 +886,7 @@ return function(Vargs, env)
 
 				for _, v: Player in pairs(players) do
 					task.defer(function()
-						local gameData = nil
+						local gameData
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
@@ -933,23 +933,23 @@ return function(Vargs, env)
 				local data = {}
 
 				local donorList = {}
-				for _, v in pairs(service.GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
 				end
 
-				local adminDictionary, workspaceInfo = nil, nil
+				local adminDictionary, workspaceInfo
 				if elevated then
 					adminDictionary = {}
-					for _, v in pairs(service.GetPlayers()) do
+					for _, v in ipairs(service.GetPlayers()) do
 						local level, rank = Admin.GetLevel(v)
 						if level > 0 then
 							adminDictionary[v.Name] = rank or "Unknown"
 						end
 					end
 					local nilPlayers = 0
-					for _, v in pairs(service.NetworkServer:GetChildren()) do
+					for _, v in ipairs(service.NetworkServer:GetChildren()) do
 						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 							nilPlayers += 1
 						end
@@ -979,7 +979,7 @@ return function(Vargs, env)
 						query = elevated and res.query or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
 					}
-				end, function() return nil end))
+				end, function() return end))
 
 				Remote.MakeGui(plr, "ServerDetails", {
 					CreatorId = game.CreatorId;
