@@ -400,7 +400,7 @@ return function(Vargs, env)
 									local ret = Remote.MakeGuiGet(p, "Notification", {
 										Title = "Help Request";
 										Message = plr.Name.." needs help! Reason: "..pending.Reason;
-										Icon = "rbxassetid://7501175708";
+										Icon = server.MatIcons.Mail;
 										Time = 30;
 										OnClick = Core.Bytecode("return true");
 										OnClose = Core.Bytecode("return false");
@@ -416,7 +416,7 @@ return function(Vargs, env)
 											Remote.MakeGui(p, "Notification", {
 												Title = "Help Request";
 												Message = "Another admin has already responded to this request!";
-												Icon = "rbxassetid://7501175708";
+												Icon = server.MatIcons.Mail;
 												Time = 5;
 											})
 										end
