@@ -1078,7 +1078,7 @@ return function(Vargs, env)
 				end)
 			end
 		};
-		
+
 		AudioPlayer = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
@@ -1089,6 +1089,27 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Music", {
 					Song = args[1]
+				})
+			end
+		};
+
+		CountryList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"countries", "countrylist", "countrycodes"},
+			Args = {},
+			Description = "Shows you a list of countries and their respective codes",
+			AdminLevel = "Players";
+			Hidden = true;
+			Function = function(plr: Player, args: {string})
+				local list = {}
+				for code, name in pairs(require(server.Shared.CountryRegionCodes)) do
+					table.insert(list, code.." - "..name)
+				end
+				table.sort(list)
+				Remote.MakeGui(plr, "List", {
+					Title = "Countries";
+					Icon = server.MatIcons.Language;
+					Table = list;
 				})
 			end
 		};
