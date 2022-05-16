@@ -459,30 +459,30 @@ return function(Vargs, GetEnv)
 						}
 					end
 				end
-			end
-		end;
+			end;
 
-		AudioLib = function(p,args)
-			if Admin.GetLevel(p) >= Settings.Ranks.Moderators.Level then
-				if not server.Functions.AudioLib then
-					local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
-					if not audioLibFolder then
-						audioLibFolder = service.New("Folder")
-						audioLibFolder.Name = "ADONIS_AUDIOLIB"
-						audioLibFolder.Parent = workspace
+			AudioLib = function(p,args)
+				if Admin.GetLevel(p) >= Settings.Ranks.Moderators.Level then
+					if not server.Functions.AudioLib then
+						local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
+						if not audioLibFolder then
+							audioLibFolder = service.New("Folder")
+							audioLibFolder.Name = "ADONIS_AUDIOLIB"
+							audioLibFolder.Parent = workspace
+						end
+						server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
 					end
-					server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
-				end
 
-				return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])
-			else
-				task.spawn(Remote.MakeGui,p,"Notification",{
-					Title = "Global Audio";
-					Message = "Only Moderators or above may broadcast audio!";
-					Icon = server.Shared.MatIcons.Language;
-					Time = 3;
-				})
-			end
+					return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])
+				else
+					task.spawn(Remote.MakeGui,p,"Notification",{
+						Title = "Global Audio";
+						Message = "Only Moderators or above may broadcast audio!";
+						Icon = server.Shared.MatIcons.Language;
+						Time = 3;
+					})
+				end
+			end;
 		};
 
 		Terminal = {
