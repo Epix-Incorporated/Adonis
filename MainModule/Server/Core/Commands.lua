@@ -127,6 +127,16 @@ return function(Vargs, GetEnv)
 					cmd.Prefix = Settings.Prefix
 				end
 
+				if not cmd.Args then
+					cmd.Args = {}
+				end
+				
+				if not cmd.Function then
+					cmd.Function = function(plr)
+						Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
+					end
+				end
+
 				if cmd.ListUpdater then
 					Logs.ListUpdaters[i] = function(plr, ...)
 						if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
