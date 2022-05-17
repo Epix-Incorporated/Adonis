@@ -15,7 +15,14 @@
 
 				"Adonis_Loader": {
 					"$className": "Model",
-					"$path": "Loader"
+					"$path": "Loader",
+
+					"Core": {
+						"$path": "MainModule",
+						"$properties": {
+							"Source": "-----------------------\n-- Adonis MainModule --\n-----------------------\n\n--[[\n\t⚠️ THIS MODULE IS USED AS A FALLBACK IN CASE THE REGULAR MODULE FAILS TO LOAD ⚠️\n\tEdits made to this copy of the module will not appear in-game unless you\n\tconfigure Adonis to use this module instead.\n\n\tFollow development on our GitHub: https://github.com/Sceleratis/Adonis/\n\tDistributed under the MIT license.\n\n\tPlease do not redistribute without proper credits.\n--]]\n\n--// Load server\nreturn require(script.Server.Server)"
+						}
+					}
 				}
 			}
 		}
