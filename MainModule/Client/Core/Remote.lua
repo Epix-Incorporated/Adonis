@@ -9,7 +9,10 @@ logError = nil
 log = nil
 
 --// Remote
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
@@ -32,8 +35,8 @@ return function()
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -242,24 +245,18 @@ return function()
 			end;
 
 			LocallyFormattedTime = function(args)
-				return service.FormatTime(table.unpack(args))
+				if type(args[1]) == "table" then
+					local results = {}
+					for i, t in ipairs(args[1]) do
+						results[i] = service.FormatTime(t, select(2, unpack(args)))
+					end
+					return results
+				end
+				return service.FormatTime(unpack(args))
 			end;
 		};
 
-		UnEncrypted = {
-			LightingChange = function(prop, val)
-				print(prop, "TICKLE ME!?")
-				Variables.LightingChanged = true
-				service.Lighting[prop] = val
-				Anti.LastChanges.Lighting = prop
-				wait(.1)
-				Variables.LightingChanged = false
-				print("TICKLED :)",Variables.LightingChanged)
-				if Anti.LastChanges.Lighting == prop then
-					Anti.LastChanges.Lighting = nil
-				end
-			end
-		};
+		UnEncrypted = {};
 
 		Commands = {
 			GetReturn = function(args)
@@ -385,15 +382,6 @@ return function()
 				if handler and type(handler) == "function" then
 					Pcall(handler, unpack(args, 2))
 				end
-			end;
-					
-			SendNotification = function(args)
-				local title, text, duration = args[1], args[2], args[3]
-				service.StarterGui:SetCore('SendNotification', {
-					Title = title or "Notification",
-					Text = text or 'Hello there!',
-					Duration = duration or 5
-				})
 			end;
 		};
 

@@ -9,7 +9,8 @@ local function boolToStr(bool)
 end
 
 return function(data)
-
+	local genPlayerList = nil
+	local genWorkspaceInfo = nil
 	local window = client.UI.Make("Window", {
 		Name  = "ServerDetails";
 		Title = "Server Details";
@@ -17,6 +18,16 @@ return function(data)
 		Size  = {420, 360};
 		MinSize = {374, 155};
 		AllowMultiple = false;
+		OnRefresh = function()
+			local newData = client.Remote.Get("UpdateList", "ServerDetails")
+			if newData then
+				data.Refreshables = newData
+				genPlayerList()
+				genWorkspaceInfo()
+			else
+				client.UI.Make("Output", {Message = "Error fetching data; try again later";})
+			end
+		end;
 	})
 
 	local tabFrame = window:Add("TabFrame", {
@@ -39,8 +50,8 @@ return function(data)
 	local workspacetab = tabFrame:NewTab("Workspace", {
 		Text = "Workspace"
 	})
-	
-	if data.WorkspaceInfo then
+
+	if data.Refreshables.WorkspaceInfo then
 		window:AddTitleButton({
 			Text = "";
 			ToolTip = "Advanced stats";
@@ -87,6 +98,7 @@ return function(data)
 		local entries = {
 			{"Game ID", game.GameId},
 			{"Game Creator", service.MarketPlace:GetProductInfo(game.PlaceId).Creator.Name.." (#"..data.CreatorId..")"},
+			-- selene: allow(incorrect_standard_library_use)
 			{"Creator Type", game.CreatorType.Name},
 			{"Place ID", game.PlaceId},
 			{"Place Name", service.MarketPlace:GetProductInfo(game.PlaceId).Name or "[Error]"},
@@ -95,9 +107,9 @@ return function(data)
 			{"Server Job ID", game.JobId or "[Error]"},
 			{"Server Type", serverType},
 			"",
-			{"Server Speed", math.round(service.Workspace:GetRealPhysicsFPS())},
-			{"Server Age", data.ServerAge},
-			{"Server Start Time", service.FormatTime(data.ServerStartTime)}
+			{"Server Speed", "Loading..."},
+			{"Server Age", "Loading..."},
+			{"Server Start Time", service.FormatTime(data.ServerStartTime, true)}
 		}
 
 		if serverType == "Reserved" then
@@ -108,18 +120,18 @@ return function(data)
 		end
 
 		local i, currentPos = 0, 0
+		local displays = {}
 		for _, v in ipairs(entries) do
 			if type(v) == "table" then
 				i += 1
-				overviewtab:Add("TextLabel", {
-					Name = v[1]; -- for autoupdating info later
+				displays[v[1]] = overviewtab:Add("TextLabel", {
 					Text = "  "..v[1]..":";
 					ToolTip = v[3];
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, -10, 0, 30);
 					Position = UDim2.new(0, 5, 0, currentPos+5);
 					TextXAlignment = "Left";
-				}):Add("TextBox", {
+				}):Add("TextLabel", {
 					Text = v[2];
 					BackgroundTransparency = 1;
 					AnchorPoint = Vector2.new(1, 0);
@@ -139,10 +151,10 @@ return function(data)
 
 		spawn(function()
 			while wait(0.5) do
-				pcall(function()
-					overviewtab["Server Speed"].TextLabel.Text = math.round(service.Workspace:GetRealPhysicsFPS())
-					overviewtab["Server Age"].TextLabel.Text = service.FormatTime(os.time()-data.ServerStartTime)
-				end)
+				local timeNow = os.time()
+				if not displays["Server Speed"] or not displays["Server Age"] then break end
+				displays["Server Speed"].Text = math.round(service.Workspace:GetRealPhysicsFPS())
+				displays["Server Age"].Text = string.format("%ds (%d min)", string.format(timeNow - data.ServerStartTime, "%.1f"), math.round((timeNow - data.ServerStartTime)/60))
 			end
 		end)
 
@@ -185,6 +197,15 @@ return function(data)
 				})
 				i += 1
 			end
+
+			locationtab:Add("TextLabel", {
+				Text = "Server IP and coordinates are only shown to admins.";
+				TextWrapped = true;
+				TextYAlignment = "Top";
+				BackgroundTransparency = 1;
+				Size = UDim2.new(1, -10, 0, 40);
+				Position = UDim2.new(0, 5, 0, i*30);
+			})
 
 			locationtab:ResizeCanvas(false, true, false, false, 5, 5)
 		end
@@ -252,7 +273,9 @@ return function(data)
 		})
 
 		local playerCount, adminCount = 0, 0
-		local function getList(filter: string)
+		function genPlayerList()
+			local filter = search.Text
+
 			playerCount, adminCount = 0, 0
 			local sortedPlayers = {}
 			for _, player in ipairs(service.Players:GetPlayers()) do
@@ -267,7 +290,7 @@ return function(data)
 				if not player then continue end
 				if not (playerName:sub(1, #filter):lower() == filter:lower() or (player.DisplayName:sub(1, #filter):lower() == filter:lower())) then continue end
 				local entry = scroller:Add("TextButton", {
-					Text = "             "..(playerName == player.DisplayName and "@"..playerName or (player.DisplayName.." (@"..playerName..")"));
+					Text = "           "..service.FormatPlayer(player);
 					ToolTip = "User ID: "..service.Players[playerName].UserId.." [Click to open profile]";
 					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 					Size = UDim2.new(1, 0, 0, 30);
@@ -279,11 +302,11 @@ return function(data)
 					end;
 				})
 
-				local subEntryText = data.Admins and data.Admins[playerName]
+				local subEntryText = data.Refreshables.Admins and data.Refreshables.Admins[playerName]
 				if subEntryText and subEntryText ~= "Player" then
 					adminCount += 1
 
-					if table.find(data.Donors, playerName) then
+					if table.find(data.Refreshables.Donors, playerName) then
 						subEntryText ..= " | Donor"
 					end
 
@@ -294,7 +317,7 @@ return function(data)
 						Position = UDim2.new(1, -120, 0, 0);
 						TextXAlignment = "Right";
 					})
-				elseif table.find(data.Donors, playerName) then
+				elseif table.find(data.Refreshables.Donors, playerName) then
 					playerCount += 1
 					entry:Add("TextLabel", {
 						Text = " Donor  ";
@@ -317,69 +340,83 @@ return function(data)
 				end)
 				i += 1
 			end
+			if data.Refreshables.Admins then
+				scroller:Add("TextLabel", {
+					Text = "Note: Only admins can see other admins' permission level.";
+					TextWrapped = true;
+					TextYAlignment = "Top";
+					BackgroundTransparency = 1;
+					Size = UDim2.new(1, -10, 0, 40);
+					Position = UDim2.new(0, 5, 0, i*30);
+				})
+			end
 			scroller:ResizeCanvas(false, true, false, false, 5, 5)
-			search.PlaceholderText = "Players: "..playerCount..(data.Admins and " | Admins: "..adminCount or "").." | Donors: "..#data.Donors
+			search.PlaceholderText = "Players: "..playerCount..(data.Refreshables.Admins and " | Admins: "..adminCount or "").." | Donors: "..#data.Refreshables.Donors
 		end
 
 		search:GetPropertyChangedSignal("Text"):Connect(function()
-			getList(search.Text)
+			genPlayerList()
 		end)
 
-		getList("")
+		genPlayerList()
 	end
 
-	if data.WorkspaceInfo then
-		local i, currentPos = 0, 0
-		for _, v in ipairs({
-			{"Streaming Enabled", boolToStr(service.Workspace.StreamingEnabled)},
-			{"Interpolation Throttling", service.Workspace.InterpolationThrottling.Name},
-			{"Gravity", service.Workspace.Gravity},
-			{"Fallen Parts Destroy Height", service.Workspace.FallenPartsDestroyHeight},
-			{"Objects", data.WorkspaceInfo.ObjectCount},
-			{"Cameras", data.WorkspaceInfo.CameraCount},
-			{"Nil Players", data.WorkspaceInfo.NilPlayerCount},
-			"",
-			{"HTTP Service Enabled", boolToStr(data.WorkspaceInfo.HttpEnabled)},
-			{"Loadstring Enabled", boolToStr(data.WorkspaceInfo.LoadstringEnabled)},
-			"",
-			}) do
-			if type(v) == "table" then
-				i += 1
-				workspacetab:Add("TextLabel", {
-					Name = v[1]; -- for autoupdating info later
-					Text = "  "..v[1]..":";
-					ToolTip = v[3];
-					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-					Size = UDim2.new(1, -10, 0, 25);
-					Position = UDim2.new(0, 5, 0, currentPos+5);
-					TextXAlignment = "Left";
-				}):Add("TextLabel", {
-					Text = v[2];
-					BackgroundTransparency = 1;
-					AnchorPoint = Vector2.new(1, 0);
-					Size = UDim2.new(1, -150, 1, 0);
-					Position = UDim2.new(1, -5, 0, 0);
-					TextXAlignment = "Right";
-				})
-				currentPos += 25
-			else
-				currentPos += 10
+	function genWorkspaceInfo()
+		workspacetab:ClearAllChildren()
+		local workspaceInfo = data.Refreshables.WorkspaceInfo
+		if workspaceInfo then
+			local i, currentPos = 0, 0
+			for _, v in ipairs({
+				{"Streaming Enabled", boolToStr(service.Workspace.StreamingEnabled)},
+				{"Interpolation Throttling", service.Workspace.InterpolationThrottling.Name},
+				{"Gravity", service.Workspace.Gravity},
+				{"Fallen Parts Destroy Height", service.Workspace.FallenPartsDestroyHeight},
+				{"Adonis Objects", workspaceInfo.ObjectCount},
+				{"Adonis Cameras", workspaceInfo.CameraCount},
+				{"Nil Players", workspaceInfo.NilPlayerCount},
+				"",
+				{"HTTP Service Enabled", boolToStr(workspaceInfo.HttpEnabled)},
+				{"Loadstring Enabled", boolToStr(workspaceInfo.LoadstringEnabled)},
+				"",
+				}) do
+				if type(v) == "table" then
+					i += 1
+					workspacetab:Add("TextLabel", {
+						Text = "  "..v[1]..":";
+						ToolTip = v[3];
+						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+						Size = UDim2.new(1, -10, 0, 25);
+						Position = UDim2.new(0, 5, 0, currentPos+5);
+						TextXAlignment = "Left";
+					}):Add("TextLabel", {
+						Text = v[2];
+						BackgroundTransparency = 1;
+						AnchorPoint = Vector2.new(1, 0);
+						Size = UDim2.new(1, -150, 1, 0);
+						Position = UDim2.new(1, -5, 0, 0);
+						TextXAlignment = "Right";
+					})
+					currentPos += 25
+				else
+					currentPos += 10
+				end
 			end
+
+			workspacetab:Add("TextLabel", {
+				Text = "Click on the title bar buttons to view technical performance statistics or to open the game hierarchy explorer. (Permission-locked)";
+				TextWrapped = true;
+				TextYAlignment = "Top";
+				BackgroundTransparency = 1;
+				Size = UDim2.new(1, -10, 0, 40);
+				Position = UDim2.new(0, 5, 0, currentPos+10);
+			})
+
+			workspacetab:ResizeCanvas(false, true, false, false, 5, 5)
+		else
+			workspacetab:Disable()
 		end
-
-		workspacetab:Add("TextLabel", {
-			Text = "Click on the title bar buttons to view technical performance statistics or to open the game hierarchy explorer.";
-			TextWrapped = true;
-			TextYAlignment = "Top";
-			BackgroundTransparency = 1;
-			Size = UDim2.new(1, -10, 0, 40);
-			Position = UDim2.new(0, 5, 0, currentPos+10);
-		})
-
-		workspacetab:ResizeCanvas(false, true, false, false, 5, 5)
-	else
-		workspacetab:Disable()
 	end
+	genWorkspaceInfo()
 
 	window:Ready()
 end

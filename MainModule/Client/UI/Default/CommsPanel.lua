@@ -1,4 +1,3 @@
-
 client = nil
 service = nil
 
@@ -101,17 +100,13 @@ return function(data)
 		end
 	end
 	
-	local success, isAmerica = xpcall(function()
-		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
-	end, function() return false end)
-	
 	window = client.UI.Make("Window",{
-		Name  = "CommunicationsCenter";
-		Title =  if isAmerica then "Communications Center" else "Communications Center";
+		Name  = "CommunicationsPanel";
+		Title = "Communications Panel";
 		Icon = client.MatIcons.Forum;
 		Size  = {500, 300};
 		OnClose = function()
-			client.Variables.CommsCenterBindableEvent = nil
+			client.Variables.CommsPanelBindableEvent = nil
 		end;
 	})
 
@@ -141,7 +136,7 @@ return function(data)
 		end
 	end
 	
-	service.HookEvent("CommsCenter", function(v)
+	service.HookEvent("CommsPanel", function(v)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 

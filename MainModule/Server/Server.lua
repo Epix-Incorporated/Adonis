@@ -6,8 +6,7 @@ If you find bugs, typos, or ways to improve something please message me (Scelera
 what you found so the script can be better.
 
 Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
-																																																																																							]]
-math.randomseed(os.time())
+																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
 local LoadingOrder = {
@@ -74,11 +73,15 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer"; 
+        "GroupService";
+        "MarketplaceService";
+        "MarketplaceService";
 	"TestService";
 	"HttpService";
+        "RunService";
 	"InsertService";
-	"NetworkServer"
+	"NetworkServer";
 }
 
 local unique = {}
@@ -301,7 +304,6 @@ server = {
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
-	FilteringEnabled = workspace.FilteringEnabled;
 	ServerStartTime = os.time();
 	CommandCache = {};
 };
@@ -462,18 +464,37 @@ for ind,loc in pairs({
 --// Init
 return service.NewProxy({
 	__call = function(tab, data)
-		if type(rawget(_G, "__Adonis_MODULE_MUTEX")) == "string" then
+		local mutex = service.RunService:FindFirstChild("__Adonis_MODULE_MUTEX")
+		if mutex then
 			warn("\n-----------------------------------------------"
 				.."\nAdonis server-side is already running! Aborting..."
 				.."\n-----------------------------------------------")
 			script:Destroy()
 			return "FAILED"
 		else
-			if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-				rawset(_G, "__Adonis_MODULE_MUTEX", "Running")
-			else
-				warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
+			local mutexBackup = mutex:Clone()
+			local function makePersistent(m)
+				local connection1, connection2 = nil, nil
+				connection1 = m:GetPropertyChangedSignal("Parent"):Connect(function()
+					if not m or m.Parent ~= service.RunService then
+						connection1:Disconnect()
+						connection2:Disconnect()
+						warn("Adonis module mutex removed; Regenerating...")
+						makePersistent(mutexBackup)
+						mutexBackup.Parent = service.RunService
+						mutexBackup = mutexBackup:Clone()
+					end
+				end)
+				connection2 = m:GetPropertyChangedSignal("Name"):Connect(function()
+					if m and m.Name ~= "__Adonis_MODULE_MUTEX" then
+						warn("Adonis module mutex renamed; Refreshing...")
+						m.Name = "__Adonis_MODULE_MUTEX"
+					end
+				end)
 			end
+			makePersistent(mutex)
+			mutex.Parent = service.RunService
 		end
 
 		--// Begin Script Loading
@@ -484,16 +505,12 @@ return service.NewProxy({
 			warn("WARNING: MainModule loaded without using the loader;")
 		end
 
-		--// Warn if possibly malicious
-		if data.PremiumID or data.PremiumId then
-			warn("\n ⚠ You might be using a malicious version of the Adonis loader ⚠\n -- If you are teleported to a 'Loading...' game, your game could be identified by the backdoor creators! 👁️‍🗨️--\n -- 🔰 Remember, there's no such thing as Adonis Premium or Gold! -- \n -- 💠 Grab the genuine Adonis Loader from the toolbox! ✔️-- \n ")
-		end
-
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
+		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
 		server.Data = data or {}
 		server.Model = data.Model or service.New("Model")

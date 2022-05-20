@@ -8,7 +8,10 @@ origEnv = nil
 logError = nil
 
 --// Special Variables
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
@@ -31,8 +34,8 @@ return function()
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -206,13 +209,13 @@ return function()
 						local human = obj.ClassName == "Model" and service.Players:GetPlayerFromCharacter(obj)
 
 						if human then
-							spawn(Functions.ESPify, UnWrap(obj), color);
+							task.spawn(Functions.ESPify, UnWrap(obj), color);
 						end
 					end)
 
 					for i, Player in ipairs(service.Players:GetPlayers()) do
 						if Player.Character then
-							spawn(Functions.ESPify, UnWrap(Player.Character), color);
+							task.spawn(Functions.ESPify, UnWrap(Player.Character), color);
 						end
 					end
 				else
@@ -305,10 +308,6 @@ return function()
 						rot = rot+math.rad(speed*dt)
 					else
 						rot = rot-math.rad(speed*dt)
-					end
-
-					if rot >= 2.5 or rot <= -2.5 then
-						--flip = not flip
 					end
 					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
@@ -1184,6 +1183,10 @@ return function()
 
 		SetCoreGuiEnabled = function(element,enabled)
 			service.StarterGui:SetCoreGuiEnabled(element,enabled)
+		end;
+
+		SetCore = function(...)
+			service.StarterGui:SetCore(...)
 		end;
 
 		UnCape = function()

@@ -88,7 +88,13 @@ return function(Vargs, GetEnv)
 
 
 
-	local RateLimiter = {
+	local RateLimiter, limitViolations = {
+		Remote = {};
+		Command = {};
+		Chat = {};
+		CustomChat = {};
+		RateLog = {};
+	}, {
 		Remote = {};
 		Command = {};
 		Chat = {};
@@ -98,9 +104,22 @@ return function(Vargs, GetEnv)
 
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
-			local ready = (not RateLimiter[typ][p.UserId] or (RateLimiter[typ][p.UserId] and time() - RateLimiter[typ][p.UserId] >= server.Process.RateLimits[typ]));
-			RateLimiter[typ][p.UserId] = time()
-			return ready
+			local RateLimit_Type = RateLimiter[typ]
+			local LimitViolation_Type = limitViolations[typ]
+
+			if not RateLimit_Type[p.UserId] then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 1
+			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
+				RateLimit_Type[p.UserId] = os.clock()
+
+				LimitViolation_Type[p.UserId] = 0
+			else
+				LimitViolation_Type[p.UserId] += 1
+			end
+
+			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
 		else
 			return true
 		end
@@ -112,6 +131,7 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
+		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired (like it currently does), but higher levels have issues with not detecting at all, so its good to have between 2 and 10
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -147,7 +167,7 @@ return function(Vargs, GetEnv)
 									keys.RemoteReady = true
 
 									AddLog("Script", string.format("%s requested client keys", p.Name))
-								else
+								--else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
@@ -419,8 +439,12 @@ return function(Vargs, GetEnv)
 					end
 				else
 					local target = Settings.SpecialPrefix..'all'
-					if not b then b = 'Global' end
-					if not service.Players:FindFirstChild(p.Name) then b='Nil' end
+					if not b then 
+						b = 'Global'
+					end
+					if not service.Players:FindFirstChild(p.Name) then
+						b='Nil'
+					end
 					if string.sub(a,1,1)=='@' then
 						b='Private'
 						target,a=string.match(a,'@(.%S+) (.+)')
@@ -438,8 +462,7 @@ return function(Vargs, GetEnv)
 
 					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
-						})) do
-						--Routine(function()
+					})) do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -460,7 +483,6 @@ return function(Vargs, GetEnv)
 							elseif b == 'UnIgnore' and v.Name ~= p.Name then
 								Remote.Send(v,'RemoveFromTable','IgnoreList',v.Name)--]]
 						end
-						--end)
 					end
 				end
 
@@ -488,7 +510,7 @@ return function(Vargs, GetEnv)
 
 					if Settings.ChatCommands then
 						if Admin.DoHideChatCmd(p, msg) then
-							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(255, 255, 255))
+							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(1, 1, 1))
 							Process.Command(p, msg, {Chat = true;})
 						elseif string.sub(msg, 1, 3)=="/e " then
 							service.Events.PlayerChatted:Fire(p, msg)
@@ -748,10 +770,10 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
-				end
 
-				if Settings.AntiBuildingTools then
-					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
+					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
+						Enabled = (Settings.AntiClientIdle ~= false)
+					})
 				end
 			end
 
@@ -771,7 +793,6 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -780,41 +801,22 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-
-						wait(1)
-
-						if oldVer and newVer and newVer > oldVer and level > 300 then
+						
+						if oldVer and newVer and newVer > oldVer and level > 100 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 10;
+								Time = 15;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						wait(1)
-
-						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
-							Remote.MakeGui(p, "Notification", {
-								Title = "Warning!";
-								Message = "Using default datastore key!";
-								Icon = server.MatIcons.Description;
-								Time = 10;
-								OnClick = Core.Bytecode([[
-									local window = client.UI.Make("Window", {
-										Title = "How to change the DataStore key";
-										Size = {700,300};
-										Icon = "rbxassetid://7510994359";
-									})
-
-									window:Add("ImageLabel", {
-										Image = "rbxassetid://1059543904";
-									})
-
-									window:Ready()
-								]]);
-							})
+						if level > 300 then
+							for i,v in pairs(server.Messages) do
+								v.Icon = v.Icon or server.MatIcons.Description;
+								Remote.MakeGui(p, "Notification", v)
+							end
 						end
 					end
 
@@ -887,13 +889,13 @@ return function(Vargs, GetEnv)
 					MakeGui(p, "TopBar")
 				end
 
-				if Settings.CustomChat then
-					MakeGui(p, "Chat")
-				end
+				--if Settings.CustomChat then
+				--	MakeGui(p, "Chat")
+				--end
 
-				if Settings.PlayerList then
-					MakeGui(p, "PlayerList")
-				end
+				--if Settings.PlayerList then
+				--	MakeGui(p, "PlayerList")
+				--end
 
 				if level < 1 then
 					if Settings.AntiNoclip then
@@ -908,7 +910,7 @@ return function(Vargs, GetEnv)
 					end
 				end--]=]
 
-				spawn(Functions.Donor, p)
+				task.spawn(Functions.Donor, p)
 
 				--// Fire added event
 				service.Events.CharacterAdded:Fire(p, Character, ...)

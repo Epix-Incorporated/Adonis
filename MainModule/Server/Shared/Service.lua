@@ -20,7 +20,7 @@ local methods = setmetatable({},{
 					RealMethods[class][index] = obj[index]
 				end
 
-				if RealMethods[class][index] ~= obj[index] or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] then --or pcall(function() return coroutine.create(obj[index]) end) then
 					if ErrorHandler then
 						ErrorHandler("MethodError", debug.traceback() .. " || Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
@@ -635,8 +635,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new
 		end;
 
-		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
-
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
@@ -975,26 +973,55 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return os.time();
 		end;
 
-		FormatTime = function(optTime, withDate)
-			local formatString = withDate and "L LT" or "LT"
+		FormatTime = function(optTime, options)
+			if options == true then options = {WithDate = true} end
+			if not options then options = {} end
+			
+			local formatString = options.FormatString 
+			if not formatString then 
+				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
+			end
+			
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
+					
 			if service.RunService:IsServer() then
-				return tim:FormatUniversalTime(formatString, "en-gb") -- Always show UTC in 24 hour format
+				return tim:FormatUniversalTime(formatString, "en-us")
 			else
 				local locale = service.Players.LocalPlayer.LocaleId
-				local succes,err = pcall(function()
+				local success, str = pcall(function()
 					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
 				end)
-				if err then
-					return tim:FormatLocalTime(formatString, "en-gb") -- show UTC in 24 hour format because player's local timezone is not available in DateTimeLocaleConfigs
-				end
+				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
 			end
 		end;
-	
+
 		FormatPlayer = function(plr, withUserId)
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
 			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
 			return str
+		end;
+
+		FormatNumber = function(num, separator)
+			num = tonumber(num)
+			if not num then return "NaN" end
+			if num >= 1e150 then return "Inf" end
+
+			local int, dec = unpack(tostring(num):split("."))
+
+			int = int:reverse()
+			local new = ""
+			local counter = 1
+			separator = separator or ","
+			for i = 1, #int do
+				if counter > 3 then
+					new ..= separator
+					counter = 1
+				end
+				new ..= int:sub(i, i)
+				counter += 1
+			end
+
+			return new:reverse() .. if dec then "."..dec else ""
 		end;
 
 		OwnsAsset = function(p,id)

@@ -47,8 +47,8 @@ return function(Vargs, GetEnv)
 		--// Core variables
 		Core.Themes = data.Themes or {}
 		Core.Plugins = data.Plugins or {}
-		Core.ModuleID = data.ModuleID or 2373501710
-		Core.LoaderID = data.LoaderID or 2373505175
+		Core.ModuleID = data.ModuleID or 7510592873
+		Core.LoaderID = data.LoaderID or 7510622625
 		Core.DebugMode = data.DebugMode or false
 		Core.Name = server.Functions:GetRandom()
 		Core.LoadstringObj = Core.GetLoadstring()
@@ -431,7 +431,12 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container:Destroy();
+						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							if p.Parent == nil then
+								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+							end
+						end)
 						event:Disconnect();
 					end
 				end)
@@ -701,7 +706,8 @@ return function(Vargs, GetEnv)
 			-- DataStore studio check.
 			if ran and store and service.RunService:IsStudio() then
 				local success, res = pcall(store.GetAsync, store, math.random())
-				if not success and string.find(res, "403", 1, true) then
+				if not success and string.find(res, "502", 1, true) then
+					warn("Unable to load data because Studio access to API services is disabled.")
 					return;
 				end
 			end
@@ -1081,6 +1087,27 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey or true then
+						table.insert(server.Messages, {
+							Title = "Warning!";
+							Message = "Using default datastore key!";
+							Icon = server.MatIcons.Description;
+							Time = 15;
+							OnClick = server.Core.Bytecode([[
+								local window = client.UI.Make("Window", {
+									Title = "How to change the DataStore key";
+									Size = {700,300};
+									Icon = "rbxassetid://7510994359";
+								})
+
+								window:Add("ImageLabel", {
+									Image = "rbxassetid://1059543904";
+								})
+
+								window:Ready()
+							]]);
+						})
+					end
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
 					if not key then

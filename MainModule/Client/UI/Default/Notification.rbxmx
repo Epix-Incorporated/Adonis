@@ -136,12 +136,12 @@ return function(data)
 	}
 	
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCenter:Fire(log)
+	service.Events.CommsPanel:Fire(log)
 	
 	main.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if clickfunc then
-				clickfunc()
+				returner = clickfunc()
 			end
 			frame:Destroy()
 		end
@@ -150,7 +150,7 @@ return function(data)
 	close.MouseButton1Click:Connect(function()
 		if frame and frame.Parent then
 			if closefunc then
-				closefunc()
+				returner = closefunc()
 			end
 			gTable:Destroy()
 		end
@@ -178,7 +178,7 @@ return function(data)
 		if frame and frame.Parent then
 			if frame then frame:Destroy() end
 			if ignorefunc then
-				ignorefunc()
+				returner = ignorefunc()
 			end
 		end
 	end

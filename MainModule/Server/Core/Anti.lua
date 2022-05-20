@@ -43,9 +43,17 @@ return function(Vargs, GetEnv)
 				player.CharacterAdded:Wait()
 			end
 
-			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level and Core.DebugMode == true then
+			if Admin.GetLevel(player) < Settings.Ranks.Moderators.Level or Core.DebugMode == true then
 				Anti.CharacterCheck(player)
 			end
+		end
+
+		if
+			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
+			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
+		then
+			Logs:AddLog("Script", "Didn't run character AC checks because another anti-exploit which does the same is already loaded.")
+			return
 		end
 
 		for _, v in ipairs(service.Players:GetPlayers()) do
@@ -169,7 +177,11 @@ return function(Vargs, GetEnv)
 								if v:IsA("BackpackItem") then
 									count += 1
 									if count > 1 then
-										v.Parent = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack", player)
+										local backpack = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack")
+										if not backpack.Parent then
+											backpack.Parent = player 
+										end
+										v.Parent = backpack
 										Detected(player, "log", "Multiple tools equipped at the same time")
 									end
 								end
@@ -227,7 +239,10 @@ return function(Vargs, GetEnv)
 				animator.AnimationPlayed:Connect(function(animationTrack)
 					local animationId = animationTrack.Animation.AnimationId
 					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
-						Detected(player, "kill", "Player played an inappropriate character animation")
+						task.defer(function()
+							animationTrack:Stop(1/60)
+						end)
+						Detected(player, "log", "Player played an inappropriate character animation")
 					end
 				end)
 
@@ -262,7 +277,7 @@ return function(Vargs, GetEnv)
 				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
 
-				if Settings.AntiRootJointDeletion then
+				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
 					makeConnection(rootJoint.AncestryChanged)
 
 					if humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -346,9 +361,7 @@ return function(Vargs, GetEnv)
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
-					if string.lower(action) == "log" then
-						-- yay?
-					elseif string.lower(action) == "kick" then
+					if string.lower(action) == "kick" then
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -368,7 +381,7 @@ return function(Vargs, GetEnv)
 						end)
 
 						Anti.RemovePlayer(player, info)
-					else
+					elseif string.lower(action) ~= "log" then
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
 						return;
@@ -388,7 +401,7 @@ return function(Vargs, GetEnv)
 				Player = player;
 			})
 
-			if Settings.AENotifs == true then
+			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
 				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}

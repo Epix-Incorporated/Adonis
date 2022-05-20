@@ -8,7 +8,10 @@ origEnv = nil
 logError = nil
 
 --// Special Variables
-return function()
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
@@ -31,8 +34,9 @@ return function()
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = service
-	local client = client
+	local service = Vargs.Service
+	local client = Vargs.Client
+
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;

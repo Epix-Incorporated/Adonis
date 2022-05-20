@@ -29,14 +29,20 @@ end
 
 warn("Loading...")
 
-if rawget(_G, "__Adonis_MUTEX") and type(rawget(_G, "__Adonis_MUTEX")) == "string" then
-	warn("Adonis is already running! Aborting...; Running Location:", rawget(_G, "__Adonis_MUTEX"), "This Location:", script:GetFullName())
-else
-	if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
-		rawset(_G, "__Adonis_MUTEX", script:GetFullName())
+local ServerScriptService = game:GetService("ServerScriptService")
+local RunService = game:GetService("RunService")
+local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
+if mutex then
+	if mutex:IsA("StringValue") then
+		warn("Adonis is already running! Aborting...; Running Location:", mutex.Value, "This Location:", script:GetFullName())
 	else
-		warn("The _G table is locked, Adonis can't detect if there are other loaders already running!; If you are seeing issues with multiple Adonis instances please unlock the _G table!")
+		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
 	end
+else
+	mutex = Instance.new("StringValue")
+	mutex.Name = "__Adonis_MUTEX"
+	mutex.Value = script:GetFullName()
+	mutex.Parent = RunService
 
 	local model = script.Parent.Parent
 	local config = model.Config
@@ -55,6 +61,7 @@ else
 	local data = {
 		Settings = {};
 		Descriptions = {};
+		Messages = {};
 		ServerPlugins = {};
 		ClientPlugins = {};
 		Packages = {};
@@ -76,17 +83,25 @@ else
 	}
 
 	--// Init
-	script:Destroy()
+
+	-- selene: allow(incorrect_standard_library_use)
+	script.Parent = nil --script:Destroy()
 	model.Name = math.random()
 
 	local moduleId = data.ModuleID
 	if data.DebugMode then
 		moduleId = model.Parent.MainModule
 	end
-
 	local success, setTab = pcall(require, settings)
-	if not success then
+	if success then
+		data.Messages = setTab.Settings.Messages
+	else
 		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Message = "Settings module error detected. Using default settings.";
+			Time = 15;
+		})
 		setTab = {}
 	end
 
@@ -111,20 +126,19 @@ else
 	end
 
 	if tonumber(moduleId) then
-		if game:GetService("RunService"):IsStudio() then
-			warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-		else
-			warn("Requiring Adonis MainModule. Model URL: ", "https://www.roblox.com/library/".. moduleId)
-		end
+		warn("Requiring Adonis MainModule. Model URL: https://www.roblox.com/library/".. moduleId)
 	end
 
 	local module = require(moduleId)
 	local response = module(data)
 
 	if response == "SUCCESS" then
-		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not game:GetService("RunService"):IsStudio() then
+		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
-			game:BindToClose(function() model.Parent = game:GetService("ServerScriptService") model.Name = "Adonis_Loader" end)
+			game:BindToClose(function()
+				model.Parent = ServerScriptService
+				model.Name = "Adonis_Loader"
+			end)
 		end
 
 		model.Name = "Adonis_Loader"

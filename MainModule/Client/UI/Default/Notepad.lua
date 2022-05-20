@@ -42,7 +42,7 @@ return function(data)
 		TextScaled = false;
 		ClearTextOnFocus = false;
 		MultiLine = true;
-		Text = "";
+		Text = data.Text or "";
 	})
 	
 	local fonts = {}

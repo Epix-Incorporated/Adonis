@@ -39,7 +39,7 @@ return function(data)
 		if not debounce then
 			debounce = true
 			if enter then
-				if (reply:IsFocused()) then
+				if reply:IsFocused() then
 					reply:ReleaseFocus() -- Prevents box text from being checked before it is populated on mobile devices
 				end
 

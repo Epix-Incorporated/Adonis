@@ -9,7 +9,7 @@ local descs = {};			--// Contains settings descriptions
 
 			--------------
 			-- SETTINGS --
-		  --------------
+		  	--------------
 																																																																				--[[
 
 		--// Basic Lua Info
@@ -292,7 +292,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.FunCommands = true			-- Are fun commands enabled?
 	settings.PlayerCommands = true 	-- Are players commands enabled?
-	settings.PlayerCommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
+	settings.CommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
 	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 	settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
@@ -306,13 +306,10 @@ local descs = {};			--// Contains settings descriptions
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
-
+	settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
 	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
-
-	settings.CustomChat = false 	-- Custom chat
-	settings.PlayerList = false		-- Custom playerlist
 
 	settings.Console = true							-- Command console
 	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
@@ -328,17 +325,18 @@ local descs = {};			--// Contains settings descriptions
 	settings.Detection = true			-- Attempts to detect certain known exploits
 	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-	settings.AENotifs = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+	settings.ExploitNotifications = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 	settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
 	settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
 	settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 	settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 	settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
-	settings.AntiSpeed = false 			-- (Client-Sided) Attempts to detect speed exploits
+	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
+	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
-	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
+	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
 	---------------------
 	-- END OF SETTINGS --
@@ -406,7 +404,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.FunCommands = [[ Are fun commands enabled? ]]
 	descs.PlayerCommands = [[ Are players commands enabled? ]]
-	descs.PlayerCommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
+	descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 	descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 	descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 
@@ -419,8 +417,10 @@ local descs = {};			--// Contains settings descriptions
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
+	descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
+	descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
+	
 	descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
@@ -437,11 +437,12 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 	descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
+	descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
 
-	descs.AENotifs = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
+	descs.ExploitNotifications = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
 	descs.AntiNoclip = [[ Attempts to detect noclipping and kills the player if found ]]
 	descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the player if found ]]
@@ -450,6 +451,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
+	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
@@ -464,17 +466,22 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"Theme";
 		"MobileTheme";
+		"DefaultTheme";
 		" ";
 		"Ranks";
 		" ";
 		"Permissions";
+		"Aliases";
 		" ";
+		"Commands";
 		"Banned";
 		"Muted";
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
 		"CapeList";
+		"InsertList";
+		"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";
@@ -505,7 +512,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"FunCommands";
 		"PlayerCommands";
-		"PlayerCommandFeedback";
+		"CommandFeedback";
 		"CrossServerCommands";
 		"ChatCommands";
 		"CreatorPowers";
@@ -522,6 +529,7 @@ local descs = {};			--// Contains settings descriptions
 		"";
 		"AutoClean";
 		"AutoCleanDelay";
+		"AutoBackup";
 		" ";
 		"CustomChat";
 		"PlayerList";
@@ -531,6 +539,7 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"HelpSystem";
 		"HelpButton";
+		"HelpButtonImage";
 		" ";
 		"DonorCommands";
 		"DonorCapes";
@@ -539,7 +548,7 @@ local descs = {};			--// Contains settings descriptions
 		"Detection";
 		"CheckClients";
 		" ";
-		"AENotifs";
+		"ExploitNotifications";
 		"CharacterCheckLogs";
 		"AntiNoclip";
 		"AntiRootJointDeletion";
@@ -548,6 +557,7 @@ local descs = {};			--// Contains settings descriptions
 		"AntiGod";
 		"AntiSpeed";
 		"AntiBuildingTools";
+		"AntiClientIdle";
 		"AntiLeak";
 		"ProtectHats";
 	}
