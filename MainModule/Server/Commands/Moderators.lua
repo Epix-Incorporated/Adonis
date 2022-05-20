@@ -2212,7 +2212,7 @@ return function(Vargs, env)
 				for _, v in pairs(Variables.InsertList) do table.insert(tab, v) end
 				for _, v in pairs(HTTP.Trello.InsertList) do table.insert(tab, v) end
 				for i, v in pairs(tab) do
-					tab[i] = {Text = v.Name; Desc = v.ID;}
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
 				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab;})
 			end
