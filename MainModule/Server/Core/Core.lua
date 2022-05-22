@@ -1087,6 +1087,27 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey or true then
+						table.insert(server.Messages, {
+							Title = "Warning!";
+							Message = "Using default datastore key!";
+							Icon = server.MatIcons.Description;
+							Time = 15;
+							OnClick = server.Core.Bytecode([[
+								local window = client.UI.Make("Window", {
+									Title = "How to change the DataStore key";
+									Size = {700,300};
+									Icon = "rbxassetid://7510994359";
+								})
+
+								window:Add("ImageLabel", {
+									Image = "rbxassetid://1059543904";
+								})
+
+								window:Ready()
+							]]);
+						})
+					end
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
 					if not key then

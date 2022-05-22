@@ -6,8 +6,8 @@ return {
 		{Text = "Rerumu (Shining_Diamando)",	Desc = "Numerous contributions (Endless stairs, FiOne, Parser, Steampunk theme)"};
 		{Text = "Cald_fan", 			Desc = "Community Maintainer & WebPanel Creator & Maintainer"};
 		{Text = "joritochip",			Desc = "Community Maintainer & WebPanel Developer"};
-		{Text = "Coasterteam",		Desc = "Community Maintainer & Development contributions (Kronos developer)"};
-		{Text = "Expertcoderz",		Desc = "Community Maintainer & GitHub Contributor"};
+		{Text = "Coasterteam",			Desc = "Community Maintainer & Development contributions (Kronos developer)"};
+		{Text = "Expertcoderz",			Desc = "Community Maintainer & GitHub Contributor"};
 	};
 	GitHub = {
 		{Text = "@GitHub MudockYatho", 		Desc = "GitHub Contributor"};
@@ -21,7 +21,7 @@ return {
 		{Text = "@GitHub kent911t", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub crywink", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub jaydensar", 		Desc = "GitHub Contributor"};
-		{Text = "ALE111_boiPNG/@GitHub ccuser44",		Desc = "GitHub Contributor & FE++ Anti-Cheat"};
+		{Text = "@GitHub ccuser44",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Awesomewebm", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub TheLegendarySpark",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub DaEnder",		Desc = "GitHub Contributor"};
@@ -49,17 +49,18 @@ return {
 		{Text = "@GitHub SlipperySpelunky",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub c6lvnss",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub karl-police",		Desc = "GitHub Contributor"};
-		{Text = "@GitHub CommodoreGamer118",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub CommodoreGamer118",	Desc = "GitHub Contributor"};
 		{Text = "@GitHub spaggos",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub jun022222222",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub sea4h",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Tj33rd",		Desc = "GitHub Contributor"};
-		{Text = "@GitHub L8X",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub L8X",			Desc = "GitHub Contributor"};
 		{Text = "@GitHub Honzzzox",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Smaltin", 		Desc = "GitHub Contributor"};
+		{Text = "@GitHub xvarmkorv2",		Desc = "GitHub Contributor"};
 	};
 	Misc = {
-		{Text = "Stravant/JustAPerson/Jason Priest (?)",	Desc = "Wrote LBI (no longer used)"};
+		{Text = "Stravant/JustAPerson",				Desc = "Wrote LBI (no longer used)"};
 		{Text = "darkelementallord",				Desc = "Updated some guis"};
 		{Text = "TheFurryFish",					Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
 		{Text = "Moistality",					Desc = "Helped with finding and patching vulns"};
