@@ -227,16 +227,18 @@ return function(Vargs, GetEnv)
 				local hasCompleted = false
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
-					local success, err = pcall(LocalPlayer.Kick, service.UnWrap(workspace), "If this appears, you have a glitch. Method 1")
+					local workspace = service.UnWrap(workspace)
+
+					local success, err = pcall(function()
+						LocalPlayer.Kick(workspace, "If this appears, you have a glitch. Method 1")
+					end)
 					local success2, err2 = pcall(function()
 						workspace:Kick("If this message appears, report it to Adonis maintainers. #1")
 					end)
 
 					if
-						success or
-						not string.match(err, "Expected ':' not '.' calling member function Kick") or
-						success2 or
-						not string.match(err2, "Kick is not a valid member of Workspace \"Workspace\"")
+						success or err ~= "Expected ':' not '.' calling member function Kick" or
+						success2 or string.match(err2, "Kick is not a valid member of Workspace \"(.+)\"") ~= workspace.Name
 					then
 						Detected("kick", "Anti kick found! Method 1")
 					end
