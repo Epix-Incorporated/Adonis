@@ -205,7 +205,17 @@ return function()
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
 					local success, err = pcall(LocalPlayer.Kick, service.UnWrap(workspace), "If this appears, you have a glitch. Method 1")
-					if success or not string.match(err, "Expected ':' not '.' calling member function Kick") then
+
+					local success2, err2 = pcall(function()
+						workspace:Kick("If this message appears, report it to Adonis maintainers. #1")
+					end)
+
+					if
+						success or
+						not string.match(err, "Expected ':' not '.' calling member function Kick") or
+						success2 or
+						not string.match(err2, "Kick is not a valid member of Workspace \"Workspace\"")
+					then
 						Detected("kick", "Anti kick found! Method 1")
 					end
 
@@ -214,8 +224,18 @@ return function()
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, service.UnWrap(v), "If this appears, you have a glitch. Method 2")
-								if success or err ~= "Cannot kick a non-local Player from a LocalScript" then
+
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
+								local success2, err2 = pcall(function()
+									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")
+								end)
+
+								if
+									success or
+									err ~= "Cannot kick a non-local Player from a LocalScript" or
+									success2 or
+									err2 ~= "Cannot kick a non-local Player from a LocalScript"
+								then
 									Detected("kick", "Anti kick found! Method 2")
 								end
 							end
@@ -349,15 +369,14 @@ return function()
 				"hookfunction";
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
-				"syn%.";
-                                "reviz admin";
-                                "iy is already loaded";
-                                "infinite yield is already loaded";
-                                "infinite yield is already";
-                                "iy_debug";
-                                "returning json";
-                                "shattervast";
-                                "failed to parse json";
+				"reviz admin";
+				"iy is already loaded";
+				"infinite yield is already loaded";
+				"infinite yield is already";
+				"iy_debug";
+				"returning json";
+				"shattervast";
+				"failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 			}
 
