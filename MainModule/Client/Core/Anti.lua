@@ -238,7 +238,7 @@ return function(Vargs, GetEnv)
 
 					if
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
-						success2 or string.match(err2, "Kick is not a valid member of Workspace \"(.+)\"") ~= workspace.Name
+						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace.Name
 					then
 						Detected("kick", "Anti kick found! Method 1")
 					end
