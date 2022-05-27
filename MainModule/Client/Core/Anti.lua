@@ -229,25 +229,8 @@ return function(Vargs, GetEnv)
 					local LocalPlayer = service.UnWrap(Player)
 					local success, err = pcall(LocalPlayer.Kick, service.UnWrap(workspace), "If this appears, you have a glitch. Method 1")
 					local success2, err2 = pcall(function()
-						workspace:Kick("If this appears, you have a glitch. Method 1")
+						workspace:Kick("If this message appears, report it to Adonis maintainers. #1")
 					end)
-					local THE_WOK = [[
-...°°°*  °oO#@@@@@@Oo*°°*°°...
-....°°. .*oOOO@@@#OOo**°°°....
-....°*. ***O###@@##Oooo°°°....
-....°. .o##O#@@@@@@####o°°°°..
-...°°° °#@@@@@@@@@@@@@@o**°°°°
-.°°°**. o@@@@##@@#@@@@O*o**°°°
-.°°°**° .O#@@OoO#O@@@#*°*****°
-..°°**o° *OO##OOOOOO#o°*oo***°
-.°°***o. °*o*°.°*°°OO*.*oo***°
-.°°°**    .*OOO###@O°.   *****
-..°**       °oOOOO*.  .   *°°°
-..°°     .          .°°   .*°°
-. .      °°.      .°*°     *°°
-         °**°....°***°     ...
-         °ooo*°.°*o*..      . 
-]]
 
 					if
 						success or
@@ -263,9 +246,9 @@ return function(Vargs, GetEnv)
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this appears, all I can say is 冰淇淋\n\nIt's about rice, it's about flour\n"..THE_WOK.."\nYou stay hungry, I devour")
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
 								local success2, err2 = pcall(function()
-									otherPlayer:Kick("If this appears, you have a glitch. Method 2")
+									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")
 								end)
 
 								if
@@ -443,7 +426,6 @@ return function(Vargs, GetEnv)
 				"hookfunction";
 				"HttpGet";
 				"^Chunk %w+, at Line %d+";
-				"syn%.";
 				"reviz admin";
 				"iy is already loaded";
 				"infinite yield is already loaded";
