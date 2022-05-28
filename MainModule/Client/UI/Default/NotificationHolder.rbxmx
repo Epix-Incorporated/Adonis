@@ -41,7 +41,11 @@ Routine = nil
 service = nil
 gTable = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = script.Parent.Parent
 	local ScrollingFrame = gui.ScrollingFrame
 	local UIListLayout = ScrollingFrame.UIListLayout

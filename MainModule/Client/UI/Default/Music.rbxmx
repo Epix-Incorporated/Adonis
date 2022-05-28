@@ -11,7 +11,11 @@
 			<ProtectedString name="Source"><![CDATA[client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	
 	-- Saving those microseconds from using the dot operator
 	

@@ -1,6 +1,11 @@
 return {
-	"Version: 235";
+	"Version: 236";
 	"*Drag edges to expand*";
+	"";
+	"[v236 5.28.2022 17:11 EST] [WIP - FEATURE FRRRREEEZZZEEE]";
+	"*(GitHub) Auto-generated change/commit list:";
+	"<changes here>";
+	"*Refer to GitHub commit history for full changes. (https://github.com/Sceleratis/Adonis)";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
