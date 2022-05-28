@@ -1276,9 +1276,9 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				if Core.DataStore then
 					Core.UpdateData("ShutdownLogs", function(logs)
-						table.insert(logs,1, {
+						table.insert(logs, 1, {
 							User = plr and plr.Name or "[Server]",
-							Time = service.GetTime(),
+							Time = os.time(),
 							Reason = args[1] or "N/A"
 						})
 
