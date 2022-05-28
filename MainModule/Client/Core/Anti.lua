@@ -217,6 +217,7 @@ return function()
 						not string.match(err2, "Kick is not a valid member of Workspace \"Workspace\"")
 					then
 						Detected("kick", "Anti kick found! Method 1")
+						warn(success, err, "|", success2, err2)
 					end
 
 					if #service.Players:GetPlayers() > 1 then
@@ -237,6 +238,7 @@ return function()
 									err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
 									Detected("kick", "Anti kick found! Method 2")
+									warn(success, err, "|", success2, err2)
 								end
 							end
 						end
