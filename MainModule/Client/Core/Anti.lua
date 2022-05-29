@@ -244,7 +244,7 @@ return function(Vargs, GetEnv)
 					errorMessages["newindexInstance"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+				return not compareTables(errorMessages["newindexInstance"], {err, err2, err3})
 			end},
 			namecallInstance = {"kick", function()
 				local callstackInvalid = false
@@ -274,7 +274,7 @@ return function(Vargs, GetEnv)
 					errorMessages["namecallInstance"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+				return not compareTables(errorMessages["namecallInstance"], {err, err2, err3})
 			end},
 			indexEnum = {"kick", function()
 				local callstackInvalid = false
@@ -305,7 +305,7 @@ return function(Vargs, GetEnv)
 					errorMessages["indexEnum"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+				return not compareTables(errorMessages["indexEnum"], {err, err2, err3})
 			end},
 			namecallEnum = {"kick", function()
 				local callstackInvalid = false
@@ -335,7 +335,7 @@ return function(Vargs, GetEnv)
 					errorMessages["namecallEnum"] = {err, err2, err3}
 				end
 
-				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+				return not compareTables(errorMessages["namecallEnum"], {err, err2, err3})
 			end},
 			eqEnum = {"kick", function()
 				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
@@ -406,14 +406,13 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for _, v in ipairs(invalidNamecalls) do -- // Detects Kaids antikick
-						local success, err = pcall(function()
-							LocalPlayer:KicK("If this message appears, report it to Adonis maintainers. 0x5")
-						end)
+					 -- // Detects Kaids antikick
+					local success, err = pcall(function()
+						LocalPlayer:KicK("If this message appears, report it to Adonis maintainers. 0x5")
+					end)
 
-						if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
-							Detected("kick", "Anti kick found! Method 4")
-						end
+					if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
+						Detected("kick", "Anti kick found! Method 4")
 					end
 
 					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
@@ -844,7 +843,7 @@ return function(Vargs, GetEnv)
 
 					local hasDetected = false
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
-					service.UnWrap(service.ContentProvider).PreloadAsync(ContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+					service.UnWrap(service.ContentProvider).PreloadAsync(service.UnWrap(service.ContentProvider), {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
 							hasDetected = true
 							Detected("Kick", "Disallowed content URL detected in CoreGui")
@@ -858,8 +857,12 @@ return function(Vargs, GetEnv)
 
 				-- // GetFocusedTextBox detection
 				xpcall(function()
+					if isStudio then
+						return
+					end
+
 					local textbox = service.UserInputService:GetFocusedTextBox()
-					local success, value = pcall(game.StarterGui.GetCore, StarterGui, "DeveloperConsoleVisible")
+					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
 
 					if textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen then
 						Detected("Kick", "Invalid CoreGui Textbox has been selected")
@@ -870,6 +873,10 @@ return function(Vargs, GetEnv)
 
 				-- // Anti RAKNET based DoS detection
 				xpcall(function()
+					if isStudio then
+						return
+					end
+
 					if service.Stats.DataSendKbps >= 600 then -- // Roblox shouldn't allow this much data if im wrong though it should be made higher
 						Detected("kick", "RAKNET based volumetric DoS attack detected, or other data send unlocked DoS")
 					end
@@ -879,17 +886,17 @@ return function(Vargs, GetEnv)
 
 				-- // Anti humanoid data spoof
 				xpcall(function()
-					local eventCound = 0
+					local eventCount = 0
 					local newWalkSpeed, newJumpPower = math.random(1, 100), math.random(1, 100)
 					local connection1, connection2, connection3
 
 					connection1 = spoofedHumanoidCheck.Changed:Connect(function()
 						eventCount += 1
 					end)
-					connection2 = spoofedHumanoidCheck:GetPropertyChangedSignal:Connect(function()
+					connection2 = spoofedHumanoidCheck:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
 						eventCount += 1
 					end)
-					connection3 = spoofedHumanoidCheck:GetPropertyChangedSignal:Connect(function()
+					connection3 = spoofedHumanoidCheck:GetPropertyChangedSignal("JumpPower"):Connect(function()
 						eventCount += 1
 					end)
 
