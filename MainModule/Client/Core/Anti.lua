@@ -98,10 +98,11 @@ return function(Vargs, GetEnv)
 
 	do
 		local callStacks = {
-			indexInstance1 = {},
-			indexInstance2 = {},
+			indexInstance = {},
+			newindexInstance = {},
 			namecallInstance = {},
 			indexEnum = {},
+			namecallEnum = {},
 			eqEnum = {},
 			--[[indexString = {},
 			namecallString = {},
@@ -109,6 +110,32 @@ return function(Vargs, GetEnv)
 		}
 		local errorMessages = {}
 		local rawGame = service.UnWrap(game)
+
+		local proxyDetector = newproxy(true)
+		
+		do
+			local proxyMt = getmetatable(proxyDetector)
+
+			proxyMt.__index = function()
+				Detected("kick", "Proxy methamethod 8543")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__newindex = function()
+				Detected("kick", "Proxy methamethod 34545")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__tostring = function()
+				Detected("kick", "Proxy methamethod 789456")
+
+				return task.wait(2e2)
+			end
+
+			proxyMt.__metatable = "The metatable is locked"
+		end
 
 		local function checkStack(method)
 			local firstTime = #callStacks[method] <= 0
@@ -126,77 +153,189 @@ return function(Vargs, GetEnv)
 			return false
 		end
 
+		local function compareTables(t1, t2)
+			if service.CountTable(t1) ~= service.CountTable(t2) then
+				return false
+			end
+
+			for k, _ in pairs(t1) do
+				if not rawequal(t1[k], t2[k]) then
+					return false
+				end
+			end
+
+			return true
+		end
+		
+		local function isMethamethodValid(metamethod)
+			if
+				not metamethod or
+				type(metamethod) ~= "function" or
+				debug.info(metamethod, "s") ~= "[C]" or
+				debug.info(metamethod, "l") ~= -1 or
+				debug.info(metamethod, "n") ~= "" or
+				debug.info(metamethod, "a") ~= 0
+			then
+				return false
+			else
+				return true
+			end
+		end
+
 		local detectors = {
 			indexInstance = {"kick", function()
 				local callstackInvalid = false
+				local metamethod
 
 				local success, err = xpcall(function()
 					local c = game.____________
 				end, function()
-					if callstackInvalid or checkStack("indexInstance1") then
-						callstackInvalid = true
-					end
-				end)
-				local success2, err2 = xpcall(function()
-					local c = game[nil]
-				end, function()
-					if callstackInvalid or checkStack("indexInstance2") then
+					metamethod = debug.info(2, "f")
+					if callstackInvalid or checkStack("indexInstance") then
 						callstackInvalid = true
 					end
 				end)
 
-				if callstackInvalid or success or success2 then
+				if not isMethamethodValid(metamethod) then
 					return true
-				elseif not errorMessages["indexInstance"] then
-					errorMessages["indexInstance"] = {err, err2}
 				end
 
-				return errorMessages["indexInstance"][1] ~= err or errorMessages["indexInstance"][2] ~= err2
+				local success3, err3 = pcall(metamethod, game)
+				local success2, err2 = pcall(metamethod)
+				pcall(metamethod, proxyDetector, "GetChildren")
+				pcall(metamethod, proxyDetector)
+				pcall(metamethod, game, proxyDetector)
+
+				if callstackInvalid or success or success2 or success3 then
+					return true
+				elseif not errorMessages["indexInstance"] then
+					errorMessages["indexInstance"] = {err, err2, err3}
+				end
+
+				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+			end},
+			newindexInstance = {"kick", function()
+				local callstackInvalid = false
+				local metamethod
+
+				local success, err = xpcall(function()
+					game.____________ = 5
+				end, function()
+					metamethod = debug.info(2, "f")
+					if callstackInvalid or checkStack("newindexInstance") then
+						callstackInvalid = true
+					end
+				end)
+
+				if not isMethamethodValid(metamethod) then
+					return true
+				end
+
+				local success3, err3 = pcall(metamethod, game)
+				local success2, err2 = pcall(metamethod)
+				pcall(metamethod, proxyDetector, "GetChildren")
+				pcall(metamethod, proxyDetector)
+				pcall(metamethod, game, proxyDetector)
+				pcall(metamethod, game, "AllowThirdPartySales", proxyDetector)
+
+				if callstackInvalid or success or success2 or success3 then
+					return true
+				elseif not errorMessages["newindexInstance"] then
+					errorMessages["newindexInstance"] = {err, err2, err3}
+				end
+
+				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
 			end},
 			namecallInstance = {"kick", function()
 				local callstackInvalid = false
+				local metamethod
 
 				local success, err = xpcall(function()
 					local c = game:____________()
 				end, function()
+					metamethod = debug.info(2, "f")
 					if callstackInvalid or checkStack("namecallInstance") then
 						callstackInvalid = true
 					end
 				end)
 
-				if callstackInvalid or success then
+				if not isMethamethodValid(metamethod) then
 					return true
-				elseif not errorMessages["namecallInstance"] then
-					errorMessages["namecallInstance"] = err
 				end
 
-				return errorMessages["namecallInstance"] ~= err
+				local success3, err3 = pcall(metamethod, game)
+				local success2, err2 = pcall(metamethod)
+				pcall(metamethod, proxyDetector)
+				pcall(metamethod, game, proxyDetector)
+
+				if callstackInvalid or success or success2 or success3 then
+					return true
+				elseif not errorMessages["namecallInstance"] then
+					errorMessages["namecallInstance"] = {err, err2, err3}
+				end
+
+				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
 			end},
 			indexEnum = {"kick", function()
 				local callstackInvalid = false
+				local metamethod
 
 				local success, err = xpcall(function()
 					local c = Enum.HumanoidStateType.____________
 				end, function()
-					if callstackInvalid or checkStack("indexEnum1") then
-						callstackInvalid = true
-					end
-				end)
-				local success2, err2 = xpcall(function()
-					local c = Enum.HumanoidStateType[nil]
-				end, function()
-					if callstackInvalid or checkStack("indexEnum2") then
+					metamethod = debug.info(2, "f")
+					if callstackInvalid or checkStack("indexEnum") then
 						callstackInvalid = true
 					end
 				end)
 
-				if callstackInvalid or success or success2 then
+				if not isMethamethodValid(metamethod) then
 					return true
-				elseif not errorMessages["indexEnum"] then
-					errorMessages["indexEnum"] = {err, err2}
 				end
 
-				return errorMessages["indexEnum"][1] ~= err or errorMessages["indexEnum"][2] ~= err2
+				local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
+				local success2, err2 = pcall(metamethod)
+				pcall(metamethod, proxyDetector, "Name")
+				pcall(metamethod, proxyDetector)
+				pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
+
+				if callstackInvalid or success or success2 or success3 then
+					return true
+				elseif not errorMessages["indexEnum"] then
+					errorMessages["indexEnum"] = {err, err2, err3}
+				end
+
+				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
+			end},
+			namecallEnum = {"kick", function()
+				local callstackInvalid = false
+				local metamethod
+
+				local success, err = xpcall(function()
+					local c = Enum.HumanoidStateType:____________()
+				end, function()
+					metamethod = debug.info(2, "f")
+					if callstackInvalid or checkStack("namecallEnum") then
+						callstackInvalid = true
+					end
+				end)
+
+				if not isMethamethodValid(metamethod) then
+					return true
+				end
+
+				local success3, err3 = pcall(metamethod, Enum.HumanoidStateType)
+				local success2, err2 = pcall(metamethod)
+				pcall(metamethod, proxyDetector)
+				pcall(metamethod, Enum.HumanoidStateType, proxyDetector)
+
+				if callstackInvalid or success or success2 or success3 then
+					return true
+				elseif not errorMessages["namecallEnum"] then
+					errorMessages["namecallEnum"] = {err, err2, err3}
+				end
+
+				return not compareTables(errorMessages["indexInstance"], {err, err2, err3})
 			end},
 			eqEnum = {"kick", function()
 				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
@@ -230,10 +369,10 @@ return function(Vargs, GetEnv)
 					local workspace = service.UnWrap(workspace)
 
 					local success, err = pcall(function()
-						LocalPlayer.Kick(workspace, "If this appears, you have a glitch. Method 1")
+						LocalPlayer.Kick(workspace, "If this message appears, report it to Adonis maintainers. 0x1")
 					end)
 					local success2, err2 = pcall(function()
-						workspace:Kick("If this message appears, report it to Adonis maintainers. #1")
+						workspace:Kick("If this message appears, report it to Adonis maintainers. 0x2")
 					end)
 
 					if
@@ -249,9 +388,9 @@ return function(Vargs, GetEnv)
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. 0x3")
 								local success2, err2 = pcall(function()
-									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")
+									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. 0x4")
 								end)
 
 								if
@@ -266,6 +405,22 @@ return function(Vargs, GetEnv)
 							end
 						end
 					end
+
+					for _, v in ipairs(invalidNamecalls) do -- // Detects Kaids antikick
+						local success, err = pcall(function()
+							LocalPlayer:KicK("If this message appears, report it to Adonis maintainers. 0x5")
+						end)
+
+						if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
+							Detected("kick", "Anti kick found! Method 4")
+						end
+					end
+
+					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
+					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+						Detected("kick", "Anti FPS detection found!")
+					end
+
 					hasCompleted = true
 				end)()
 
@@ -273,10 +428,6 @@ return function(Vargs, GetEnv)
 					task.wait(4)
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
-					end
-					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
-					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
-						Detected("kick", "Anti FPS detection found!")
 					end
 				end)()
 			end
@@ -421,6 +572,7 @@ return function(Vargs, GetEnv)
 			local game = service.DataModel
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
+			local spoofedHumanoidCheck = Instance.new("Humanoid")
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -600,7 +752,7 @@ return function(Vargs, GetEnv)
 					not rawequal(type(First), "table") or
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
-					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - os.clock() - 60 * 60 * 15
+					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
@@ -692,7 +844,7 @@ return function(Vargs, GetEnv)
 
 					local hasDetected = false
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
-					service.UnWrap(service.ContentProvider):PreloadAsync({tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+					service.UnWrap(service.ContentProvider).PreloadAsync(ContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
 							hasDetected = true
 							Detected("Kick", "Disallowed content URL detected in CoreGui")
@@ -702,6 +854,67 @@ return function(Vargs, GetEnv)
 					tempDecal:Destroy()
 				end, function()
 					Detected("kick", "Tamper Protection 456754")
+				end)
+
+				-- // GetFocusedTextBox detection
+				xpcall(function()
+					local textbox = service.UserInputService:GetFocusedTextBox()
+					local success, value = pcall(game.StarterGui.GetCore, StarterGui, "DeveloperConsoleVisible")
+
+					if textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen then
+						Detected("Kick", "Invalid CoreGui Textbox has been selected")
+					end
+				end, function()
+					Detected("kick", "Tamper Protection 356745234")
+				end)
+
+				-- // Anti RAKNET based DoS detection
+				xpcall(function()
+					if service.Stats.DataSendKbps >= 600 then -- // Roblox shouldn't allow this much data if im wrong though it should be made higher
+						Detected("kick", "RAKNET based volumetric DoS attack detected, or other data send unlocked DoS")
+					end
+				end, function()
+					Detected("kick", "Tamper Protection 879676")
+				end)
+
+				-- // Anti humanoid data spoof
+				xpcall(function()
+					local eventCound = 0
+					local newWalkSpeed, newJumpPower = math.random(1, 100), math.random(1, 100)
+					local connection1, connection2, connection3
+
+					connection1 = spoofedHumanoidCheck.Changed:Connect(function()
+						eventCount += 1
+					end)
+					connection2 = spoofedHumanoidCheck:GetPropertyChangedSignal:Connect(function()
+						eventCount += 1
+					end)
+					connection3 = spoofedHumanoidCheck:GetPropertyChangedSignal:Connect(function()
+						eventCount += 1
+					end)
+
+					spoofedHumanoidCheck.WalkSpeed = newWalkSpeed
+					spoofedHumanoidCheck.JumpPower = newJumpPower
+
+					if
+						spoofedHumanoidCheck.WalkSpeed ~= newWalkSpeed or
+						spoofedHumanoidCheck.JumpPower ~= newJumpPower
+					then
+						Detected("kick", "Humanoid tampering detected. Method 1")
+					end
+					
+					task.spawn(function()
+						task.wait(5)
+						connection1:Disconnect()
+						connection2:Disconnect()
+						connection3:Disconnect()
+
+						if eventCount < 4 then
+							Detected("kick", "Humanoid tampering detected. Method 2")
+						end
+					end)
+				end, function()
+					Detected("kick", "Tamper Protection 879676")
 				end)
 			end)
 		end
