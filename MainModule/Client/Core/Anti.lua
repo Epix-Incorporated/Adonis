@@ -815,26 +815,6 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				-- // Checks for anti-coregui detetection bypasses 
-				xpcall(function()
-					local testDecal = service.UnWrap(Instance.new("Decal"))
-					testDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
-					local activated = false
-					service.UnWrap(service.ContentProvider):PreloadAsync({testDecal}, function(url, status)
-						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
-							activated = true
-						end
-					end)
-
-					testDecal:Destroy()
-					task.wait(6)
-					if not activated then
-						Detected("kick", "Coregui detection bypass found")
-					end
-				end, function()
-					Detected("kick", "Tamper Protection 568234")
-				end)
-
 				-- // Checks disallowed content URLs in the CoreGui
 				xpcall(function()
 					if isStudio then
@@ -842,15 +822,23 @@ return function(Vargs, GetEnv)
 					end
 
 					local hasDetected = false
+					local activated = false
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
+					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					service.UnWrap(service.ContentProvider).PreloadAsync(service.UnWrap(service.ContentProvider), {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
-						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
+						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
+							activated = true
+						elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
 							hasDetected = true
 							Detected("Kick", "Disallowed content URL detected in CoreGui")
 						end
 					end)
 
 					tempDecal:Destroy()
+					task.wait(6)
+					if not activated then -- // Checks for anti-coregui detetection bypasses
+						Detected("kick", "Coregui detection bypass found")
+					end
 				end, function()
 					Detected("kick", "Tamper Protection 456754")
 				end)
