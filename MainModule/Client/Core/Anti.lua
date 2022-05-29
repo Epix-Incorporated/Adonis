@@ -923,6 +923,10 @@ return function(Vargs, GetEnv)
 				end, function()
 					Detected("kick", "Tamper Protection 879676")
 				end)
+	
+				if gcinfo() ~= collectgarbage("count") then
+					Detected("kick", "GC spoofing detected")
+				end
 			end)
 		end
 	}, false, true)
