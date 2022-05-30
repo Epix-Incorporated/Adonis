@@ -991,7 +991,25 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					table.insert(sets, data)
+					--// Check that the real table actually has the item to remove, do not create if it does not have it
+					--// Prevents snowballing
+					local continueOperation = false
+					if indList[1] == "Settings" then
+						local indClone = table.clone(indList)
+						indClone[1] = "OriginalSettings"
+						local realTable,tableName = Core.IndexPathToTable(indClone)
+						for i,v in pairs(realTable) do
+							if CheckMatch(v, tab.Value) then
+								continueOperation = true
+							end
+						end
+					else
+						continueOperation = true
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
+					end
 
 					return sets
 				end)
@@ -1015,7 +1033,23 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					table.insert(sets, data)
+					--// Check that the real table does not have the item to add, do not create if it has it
+					--// Prevents snowballing
+					local continueOperation = true
+					if indList[1] == "Settings" then
+						local indClone = table.clone(indList)
+						indClone[1] = "OriginalSettings"
+						local realTable,tableName = Core.IndexPathToTable(indClone)
+						for i,v in pairs(realTable) do
+							if CheckMatch(v, tab.Value) then
+								continueOperation = false
+							end
+						end
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
+					end
 
 					return sets
 				end)
