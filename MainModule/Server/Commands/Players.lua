@@ -464,8 +464,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 				if player then
-					local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(player)
-					if succeeded then
+					local succeeded, errorMsg, _, placeId, instanceId = pcall(function() return service.TeleportService:GetPlayerPlaceInstanceAsync(player) end)
+					if succeeded and placeId and instanceId then
 						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 					else
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg, {plr})
