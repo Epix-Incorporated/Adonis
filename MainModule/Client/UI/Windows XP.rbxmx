@@ -449,7 +449,11 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed codeName..gui.Name
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local player = service.Players.LocalPlayer
 	local playergui = player.PlayerGui
 	local gui = script.Parent.Parent
@@ -462,6 +466,7 @@ return function(data)
 	
 	local opened = false
 	local scrolling = false
+	local scrollOpen = false
 	local debounce = false
 	local settings = client.Remote.Get("Setting",{"SplitKey","ConsoleKeyCode","BatchKey","Prefix"})
 	local splitKey = settings.SplitKey
@@ -683,7 +688,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local gui = service.New("ScreenGui")
@@ -1798,7 +1807,11 @@ local function isGui(child)
 end
 
 --// All global vars will be wiped/replaced except script
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	--local client = service.GarbleTable(client)
 	local Player = service.Players.LocalPlayer
 	local Mouse = Player:GetMouse()
@@ -1843,6 +1856,7 @@ return function(data)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
+	local functionify
 	
 	local Drag = GUI.Drag
 	local Close = Drag.Close
@@ -3303,7 +3317,11 @@ local function propChange(child, target, list)
 	target.ZIndex = child.ZIndex-1;
 end
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = script.Parent.Parent;--data.GUI;
 	
 	local function apply(child)
@@ -8223,7 +8241,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
@@ -8320,7 +8342,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = client.UI.Prepare(script.Parent.Parent) -- Change it to a TextLabel to avoid chat clearing
 	local playergui = service.PlayerGui
 	local frame = gui.Frame
@@ -8783,7 +8809,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = script.Parent.Parent--client.UI.Prepare(script.Parent.Parent)
 	local frame = gui.Frame
 	local frame2 = frame.Frame
@@ -9243,7 +9273,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	
@@ -10081,7 +10115,11 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = script.Parent.Parent
 	local playergui = service.PlayerGui
 	local str = data.Message

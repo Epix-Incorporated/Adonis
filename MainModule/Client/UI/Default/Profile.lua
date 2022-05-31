@@ -4,7 +4,11 @@ local function boolToStr(bool)
 	return bool and "Yes" or "No"
 end
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local client = client
 	local service = client.Service
 
