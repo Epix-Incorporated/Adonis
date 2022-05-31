@@ -997,7 +997,7 @@ return function(Vargs, GetEnv)
 					--// Check that the real table actually has the item to remove, do not create if it does not have it
 					--// Prevents snowballing
 					local continueOperation = false
-					if (tab[1] == "Settings" or tab[2] == "Settings") then
+					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 
@@ -1044,7 +1044,7 @@ return function(Vargs, GetEnv)
 					--// Check that the real table does not have the item to add, do not create if it has it
 					--// Prevents snowballing
 					local continueOperation = true
-					if (tab[1] == "Settings" or tab[2] == "Settings") then
+					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
