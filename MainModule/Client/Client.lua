@@ -373,8 +373,8 @@ Instance = {
 		return service_Wrap(nobj, true)
 	end
 }
-require = function(obj)
-	return service_Wrap(oldReq(service_UnWrap(obj)), true)
+require = function(obj, noWrap: boolean?)
+	return if noWrap == true then oldReq(service_UnWrap(obj)) else service_Wrap(oldReq(service_UnWrap(obj)), true)
 end
 
 client.Service = service
@@ -461,7 +461,14 @@ return service.NewProxy({
 		setfenv(1,setmetatable({}, {__metatable = unique}))
 		client.Folder = Folder;
 		client.UIFolder = Folder:WaitForChild("UI",9e9);
-		client.Shared = Folder:WaitForChild("Shared",9e9);
+
+		do
+			local Shared = Folder:WaitForChild("Shared",9e9)
+			client.Shared = Shared:Clone()
+			Shared:Destroy()
+			Shared = nil
+		end
+
 		client.Loader = data.Loader
 		client.Module = data.Module
 		client.DepsName = depsName

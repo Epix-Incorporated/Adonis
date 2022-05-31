@@ -99,6 +99,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		SaveCommandLogs = function()
+			--// Disable saving command logs in Studio; not required.
+			if (service.RunService:IsStudio() or service.RunService:IsRunMode()) then
+				return
+			end
+
 			warn("Saving command logs...")
 
 			local logsToSave = Logs.Commands --{}

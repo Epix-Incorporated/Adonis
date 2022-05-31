@@ -226,6 +226,8 @@ return function(Vargs, env)
 
 				for i, bc in ipairs(brickColorNames) do
 					bc = BrickColor.new(bc)
+					local Color = bc.Color
+
 					table.insert(children, {
 						Class = "TextLabel";
 						Size = UDim2.new(1, -10, 0, 30);
@@ -233,7 +235,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.R*255, bc.G*255, bc.B*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", Color.R*255, Color.G*255, Color.B*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
@@ -1109,7 +1111,7 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
 				local list = {}
-				for code, name in pairs(require(server.Shared.CountryRegionCodes)) do
+				for code, name in pairs(require(Deps.CountryRegionCodes)) do
 					table.insert(list, code.." - "..name)
 				end
 				table.sort(list)
