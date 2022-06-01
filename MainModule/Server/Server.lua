@@ -51,7 +51,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, a
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -141,6 +141,20 @@ local require = function(mod, ...)
 	return require(mod, ...)
 end
 --]]
+
+function CloneTable(tab, recursive)
+	local clone = table.clone(tab)
+
+	if recursive then
+		for i,v in pairs(clone) do
+			if type(v) == "table" then
+				clone[i] = CloneTable(v, recursive)
+			end
+		end
+	end
+
+	return clone
+end
 
 local function Pcall(func, ...)
 	local pSuccess, pError = pcall(func, ...)
@@ -509,6 +523,7 @@ return service.NewProxy({
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
+		server.OriginalSettings = TableClone(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}

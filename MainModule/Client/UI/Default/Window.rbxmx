@@ -1001,6 +1001,7 @@ return function(data, env)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
+	local functionify
 
 	local Drag = GUI.Drag
 	local Close = Drag.Close

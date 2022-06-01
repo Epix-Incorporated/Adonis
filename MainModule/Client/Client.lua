@@ -33,12 +33,12 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, t
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -151,7 +151,7 @@ local Immutable = function(...)
 end
 
 local player = game:GetService("Players").LocalPlayer
-local Fire, Detected
+local Fire, Detected = nil,nil
 local wrap = coroutine.wrap
 local Kill; Kill = Immutable(function(info)
 	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end

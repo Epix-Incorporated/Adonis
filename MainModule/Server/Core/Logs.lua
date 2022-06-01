@@ -87,7 +87,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if not log.Time and not log.NoTime then
-				log.Time = service.GetTime()
+				log.Time = os.time()
 			end
 
 			table.insert(tab, 1, log)

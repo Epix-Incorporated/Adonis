@@ -1,6 +1,10 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local mouse = service.Players.LocalPlayer:GetMouse()
 	local hold = false
 
