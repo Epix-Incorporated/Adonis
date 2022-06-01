@@ -72,3 +72,7 @@ Read the contributing guide to get a better understanding of our development pro
 ### License
 
 Adonis is available under the terms of the MIT license. Read more details about the license [here](https://github.com/Sceleratis/Adonis/blob/master/LICENSE).
+
+### Thank you to our contributors!
+
+[![contributors](https://contributors-img.web.app/image?repo=sceleratis/adonis)](https://github.com/sceleratis/adonis/graphs/contributors)
