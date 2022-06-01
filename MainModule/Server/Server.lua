@@ -48,7 +48,7 @@ NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, wait,
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert =
 	_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
+	setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
 	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
