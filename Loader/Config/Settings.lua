@@ -103,7 +103,11 @@ local descs = {};			--// Contains settings descriptions
 
 
 		--// Trello
-
+			
+			IMPORTANT MESSAGE:
+			Please be aware that Trello has recently blocked Roblox from being able to access its services.
+			This means your Trello boards may not work.
+			
 			The Trello abilities of the script allow you to manage lists and permissions via
 			a Trello board; The following will guide you through the process of setting up a board;
 
@@ -262,6 +266,10 @@ local descs = {};			--// Contains settings descriptions
 		};
 	}
 
+	--[[ IMPORTANT MESSAGE:
+	Please be aware that Trello has recently blocked Roblox from being able to access its services.
+	This means your Trello boards may not work.
+	--]]
 	settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
 	settings.Trello_Enabled = false;		  -- Are the Trello features enabled?
 	settings.Trello_Primary = ""; 		      -- Primary Trello board
