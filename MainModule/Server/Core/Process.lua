@@ -596,9 +596,6 @@ return function(Vargs, GetEnv)
 						Anti.Detected(p, "kick", "Username Spoofing");
 					end
 				end)
-					
-				-- Update cached admin lists from trello before checking for whitelist or ban status
-				HTTP.Trello.Update();
 
 				local PlayerData = Core.GetPlayer(p)
 				local level = Admin.GetLevel(p)
@@ -727,7 +724,11 @@ return function(Vargs, GetEnv)
 		end;
 
 		FinishLoading = function(p)
-			local PlayerData = Core.GetPlayer(p)
+			local PlayerData = Core.GetPlayer(p);
+			
+			--// Update trello cache
+			HTTP.Trello.Update();
+			
 			local level = Admin.GetLevel(p)
 			local key = tostring(p.UserId)
 
