@@ -37,14 +37,6 @@ local RateLimit = function()
 end
 
 local HttpFunctions; HttpFunctions = {
-	CheckHttp = function()
-		local enabled, err = pcall(function()
-			HttpService:GetAsync("https://trello.com/")
-		end)
-
-		return enabled
-	end;
-
 	--// Same as the GetRandom() function
 	GenerateRequestID = function()
 		local format = string.format
@@ -177,15 +169,10 @@ local HttpFunctions; HttpFunctions = {
 }
 
 return function(AppKey, Token)
-	if not HttpFunctions.CheckHttp() then
-		error("Could not connect to Trello! Make sure HTTP is enabled")
-		return
-	end
-
 	AppKey = AppKey or ""
 	Token = Token or ""
 
-	local Base = "https://api.trello.com/1/"
+	local Base = "https://trello.com/1/"
 	local Arguments = "key="..tostring(AppKey).."&token="..tostring(Token)
 
 	local GetUrl = function(str)
@@ -196,6 +183,19 @@ return function(AppKey, Token)
 			Token="?"..Arguments
 		end
 		return Base..str..Token
+	end;
+	
+	local CheckHttp = function()
+		local enabled, err = pcall(function()
+			HttpService:GetAsync(GetUrl("members/me?fields=id"))
+		end)
+
+		return enabled
+	end;
+
+	if not CheckHttp() then
+		error("Could not connect to Trello! Make sure HTTP is enabled")
+		return
 	end;
 
 	local API; API = {
@@ -247,8 +247,9 @@ return function(AppKey, Token)
 				end
 			end;
 			
-			GetListsAndCards = function(BoardID)
-				local Response = HttpFunctions.Decode(HttpFunctions.Get(GetUrl("boards/"..tostring(BoardID).."/lists?cards=open&fields=id&fields=labels&fields=name&fields=desc")))
+			GetListsAndCards = function(BoardID, ExcludeLabels)
+				local CardFilter = "id,name,desc" .. (ExcludeLabels and "" or ",labels")
+				local Response = HttpFunctions.Decode(HttpFunctions.Get(GetUrl("boards/"..tostring(BoardID).."/lists?filter=open&fields=id,name,cards&cards=open&card_fields="..CardFilter)))
 				if type(Response)=="table" then
 					return Response
 				else
@@ -376,7 +377,8 @@ return function(AppKey, Token)
 
 	API.http = HttpService
 	API.getListObj = API.GetListObject
-	API.checkHttp = API.CheckHttp
+	API.checkHttp = CheckHttp
+	API.CheckHttp = CheckHttp
 	API.urlEncode = API.UrlEncode
 	API.encode = API.Encode
 	API.decode = API.Decode
