@@ -12,7 +12,7 @@ return function(data, env)
 	local alarm = service.New("Sound", {
 		Volume = 1;
 		Looped = true;
-		SoundId = "rbxassetid://138081509";
+		SoundId = "rbxassetid://143969658";
 	})
 	
 	local window = client.UI.Make("Window", {

@@ -523,7 +523,7 @@ return service.NewProxy({
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
-		server.OriginalSettings = TableClone(server.Settings, true)
+		server.OriginalSettings = CloneTable(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
 		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
