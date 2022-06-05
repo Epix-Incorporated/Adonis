@@ -1029,7 +1029,7 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					for i,v in pairs(sets) do
-						if CheckMatch(indList, v.Table) and CheckMatch(v.Value, value) then
+						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
 							table.remove(sets, i)
 						end
 					end
