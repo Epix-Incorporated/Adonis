@@ -589,9 +589,9 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			--if Admin.IsPlaceOwner(p) and highestLevel < 1000 then
-			--	return 1000, "Place Owner"
-			--end
+			if Admin.IsPlaceOwner(p) and highestLevel < 1000 then
+				return 1000, "Place Owner"
+			end
 
 			return highestLevel, highestRank
 		end;
