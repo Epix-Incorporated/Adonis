@@ -17,7 +17,7 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local AddLog, TrackTask, Defaults
-	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
+	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GetGroupCreatorId(game.CreatorId)
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -34,15 +34,6 @@ return function(Vargs, GetEnv)
 
 		TrackTask = service.TrackTask
 		AddLog = Logs.AddLog;
-
-		if not CreatorId then
-			TrackTask("Thread: GetGroupCreatorId", function()
-				local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
-				if success and type(creator) == "table" then
-					CreatorId = creator.Owner.Id
-				end
-			end)
-		end
 
 		TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
@@ -1146,7 +1137,9 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckPermission = function(pDat, cmd)
+		CheckPermission = function(pDat, cmd, ignoreCooldown, opts)
+			opts = (type(opts)=="table" and opts) or {}
+			
 			local adminLevel = pDat.Level
 			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
 
@@ -1154,29 +1147,178 @@ return function(Vargs, GetEnv)
 
 			local funAllowed = Settings.FunCommands
 			local crossServerAllowed = Settings.CrossServerCommands
-
+			
+			local permAllowed,denyType = false,nil
+			
+			--// Check disabled command
+			if cmd.Disabled then
+				return false
+			end
+			
+			local isCreator = Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level
+			
 			--// Creators rank will bypass any permissions set
-			if adminLevel >= Settings.Ranks.Creators.Level then
-				return true
+			if isCreator then
+				permAllowed = true
 			elseif (comLevel == "Players" or comLevel == 0) and not Settings.PlayerCommands then
 				--// If PlayerCommands is set to false it will prevent users from using "Players" level commands
-				return false
+				permAllowed = false
+				denyType = "PlayerCmdsDisabled"
 			elseif cmd.Fun and not funAllowed then
 				--// If FunCommands are disabled it will block any command Labeled "Fun"
-				return false
+				permAllowed = false
+				denyType = "Fun"
+			elseif opts.Chat and cmd.Chattable == false then
+				permAllowed = false
+				denyType = "Chat"
+			elseif Variables.IsStudio and cmd.NoStudio then
+				permAllowed = false
+				denyType = "Studio"
+			elseif opts.CrossServer and cmd.CrossServerDenied then
+				permAllowed = false
+				denyType = "CrossServerBlacklist"
 			elseif cmd.IsCrossServer and not crossServerAllowed then
 				--// If CrossServerCommands is disabled it will block any command that is "CrossServer"
-				return false
+				permAllowed = false
+				denyType = "CrossServerDisabled"
 			elseif cmd.Donors and isDonor then
 				--// If a command is for "Donors" it will allow anyone with Donor to use it
-				return true
+				permAllowed = true
 			elseif Admin.CheckComLevel(adminLevel, comLevel) then
 				--// Check if user has permission to the command
-				return true
+				permAllowed = true
+			end
+			
+			if permAllowed and not ignoreCooldown and not isCreator and type(pDat.Player) == "userdata" then
+				local playerCooldown 			= tonumber(cmd.PlayerCooldown)
+				local serverCooldown 			= tonumber(cmd.ServerCooldown)
+				local crossCooldown 			= tonumber(cmd.CrossCooldown)
+				
+				local cmdFullName = cmd._fullName or (function()
+					local aliases = cmd.Aliases or cmd.Commands or {}
+					cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+					return cmd._fullName
+				end)()
+				
+				local pCooldown_Cache = cmd._playerCooldownCache or (function()
+					local tab = {}
+					cmd._playerCooldownCache = tab
+					return tab
+				end)()
+
+				local sCooldown_Cache = cmd._serverCooldownCache or (function()
+					local tab = {}
+					cmd._serverCooldownCache = tab
+					return tab
+				end)()
+
+				local crossCooldown_Cache = cmd._crossCooldownCache or (function()
+					local tab = {}
+					cmd._crossCooldownCache = tab
+					return tab
+				end)()
+				
+				local cooldownIndex = tostring(pDat.Player.UserId)
+				local pCooldown_playerCache = pCooldown_Cache[cooldownIndex]
+				local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
+				
+				if playerCooldown and pCooldown_playerCache then
+					local secsTillPass = os.clock()-pCooldown_playerCache
+					local passCooldown = secsTillPass >= playerCooldown
+
+					if not passCooldown then
+						return false,"PlayerCooldown",math.floor(playerCooldown-secsTillPass)
+					end
+				end
+
+				if serverCooldown and sCooldown_playerCache then
+					local secsTillPass = os.clock()-sCooldown_playerCache
+					local passCooldown = secsTillPass >= serverCooldown
+
+					if not passCooldown then
+						return false,"ServerCooldown",math.floor(serverCooldown-secsTillPass)
+					end
+				end
+
+				if crossCooldown and pDat.Player then
+					local playerData = Core.GetPlayer(pDat.Player) or {}
+					local crossCooldown_Cache = playerData._crossCooldownCache or (function()
+						local tab = {}
+						playerData._crossCooldownCache = tab
+						return tab
+					end)()
+					local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
+
+					if crossCooldown_playerCache then
+						local secsTillPass = os.clock()-crossCooldown_playerCache
+						local passCooldown = secsTillPass >= crossCooldown
+
+						if not passCooldown then
+							return false,"CrossCooldown",math.floor(crossCooldown-secsTillPass)
+						end
+					end
+				end
 			end
 
 			--// If none of the checks pass it will deny permissions
-			return false
+			return permAllowed,denyType
+		end;
+		
+		UpdateCooldown = function(pDat, cmd)
+			if pDat.Player == "SYSTEM" then return end
+			local playerCooldown 			= tonumber(cmd.PlayerCooldown)
+			local serverCooldown 			= tonumber(cmd.ServerCooldown)
+			local crossCooldown 			= tonumber(cmd.CrossCooldown)
+			
+			local cmdFullName = cmd._fullName or (function()
+				local aliases = cmd.Aliases or cmd.Commands or {}
+				cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+				return cmd._fullName
+			end)()
+
+			local pCooldown_Cache = cmd._playerCooldownCache or (function()
+				local tab = {}
+				cmd._playerCooldownCache = tab
+				return tab
+			end)()
+
+			local sCooldown_Cache = cmd._serverCooldownCache or (function()
+				local tab = {}
+				cmd._serverCooldownCache = tab
+				return tab
+			end)()
+
+			local crossCooldown_Cache = cmd._crossCooldownCache or (function()
+				local tab = {}
+				cmd._crossCooldownCache = tab
+				return tab
+			end)()
+
+			local cooldownIndex = tostring(pDat.Player.UserId)
+			local pCooldown_playerCache = pCooldown_Cache[cooldownIndex]
+			local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
+			local lastUsed = os.clock()
+
+			if playerCooldown then
+				pCooldown_Cache[cooldownIndex] = lastUsed
+			end
+
+			if serverCooldown then
+				sCooldown_Cache[cooldownIndex] = lastUsed
+			end
+			
+			--// Cross cooldown
+			do
+				local playerData = Core.GetPlayer(pDat.Player)
+				local crossCooldown_Cache = playerData._crossCooldownCache or {}
+				local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
+
+				if not crossCooldown and crossCooldown_playerCache then
+					crossCooldown_playerCache[cmdFullName] = nil
+				elseif crossCooldown then
+					crossCooldown_Cache[cmdFullName] = lastUsed
+				end
+			end
 		end;
 
 		SearchCommands = function(p, search)
@@ -1189,7 +1331,7 @@ return function(Vargs, GetEnv)
 			}
 
 			for index, command in pairs(Commands) do
-				if checkPerm(pDat, command) then
+				if checkPerm(pDat, command, true) then
 					tab[index] = command
 				end
 			end
