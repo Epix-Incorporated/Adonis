@@ -86,40 +86,157 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
+	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
+		-- Ratelimit: table
+		-- Ratekey: string or number
 
+		local rateData = (type(rateLimit)=="table" and rateLimit) or nil
 
-	local RateLimiter, limitViolations = {
-		Remote = {};
-		Command = {};
-		Chat = {};
-		CustomChat = {};
-		RateLog = {};
-	}, {
-		Remote = {};
-		Command = {};
-		Chat = {};
-		CustomChat = {};
-		RateLog = {};
-	}
+		if not rateData then
+			error("Rate data doesn't exist (unable to check)")
+		else
+			-- RATELIMIT TABLE
+		--[[
+			
+			Table:
+				{
+					Rates = 100; 	-- Max requests per traffic
+					Reset = 1; 		-- Interval seconds since the cache last updated to reset
+					
+					ThrottleEnabled = false/true; -- Whether throttle can be enabled
+					ThrottleReset = 10; -- Interval seconds since the cache last throttled to reset
+					ThrottleMax = 10; -- Max interval count of throttles
+					
+					Caches = {}; -- DO NOT ADD THIS. IT WILL AUTOMATICALLY BE CREATED ONCE RATELIMIT TABLE IS CHECKING-
+					--... FOR RATE PASS AND THROTTLE CHECK.
+				}
+			
+		]]
 
-	local function RateLimit(p, typ)
-		if p and type(p) == "userdata" and p:IsA("Player") then
-			local RateLimit_Type = RateLimiter[typ]
-			local LimitViolation_Type = limitViolations[typ]
+			-- RATECACHE TABLE
+		--[[
+			
+			Table:
+				{
+					Rate = 0;
+					Throttle = 0; 		-- Interval seconds since the cache last updated to reset
+					
+					LastUpdated = 0; -- Last checked for rate limit
+					LastThrottled = nil or 0; -- Last checked for throttle (only changes if rate limit failed)
+				}
+			
+		]]
+			local maxRate: number = math.abs(rateData.Rates) -- Max requests per traffic
+			local resetInterval: number = math.floor(math.abs(rateData.Reset or 1)) -- Interval seconds since the cache last updated to reset
 
-			if not RateLimit_Type[p.UserId] then
-				RateLimit_Type[p.UserId] = os.clock()
+			local rateExceeded: boolean? = rateLimit.Exceeded or rateLimit.exceeded
+			local ratePassed: boolean? = rateLimit.Passed or rateLimit.passed
 
-				LimitViolation_Type[p.UserId] = 1
-			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
-				RateLimit_Type[p.UserId] = os.clock()
+			local canThrottle: boolean? = rateLimit.ThrottleEnabled
+			local throttleReset: number? = rateLimit.ThrottleReset
+			local throttleMax: number? = math.floor(math.abs(rateData.ThrottleMax or 1))
 
-				LimitViolation_Type[p.UserId] = 0
-			else
-				LimitViolation_Type[p.UserId] += 1
+			-- Ensure minimum requirement is followed
+			maxRate = (maxRate>1 and maxRate) or 1
+			-- Max rate must have at least one rate else anything below 1 returns false for all rate checks
+
+			local cacheLib = rateData.Caches
+
+			if not cacheLib then
+				cacheLib = {}
+				rateData.Caches = cacheLib
 			end
 
-			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
+			-- Check cache
+			local rateCache: table = cacheLib[rateKey]
+			local throttleCache
+			if not rateCache then
+				rateCache = {
+					Rate = 0;
+					Throttle = 0;
+					LastUpdated = tick();
+					LastThrottled = nil;
+				}
+
+				cacheLib[rateKey] = rateCache
+			end
+
+			local nowOs = tick()
+
+			if nowOs-rateCache.LastUpdated > resetInterval then
+				rateCache.LastUpdated = nowOs
+				rateCache.Rate = 0
+			end
+
+			local ratePass: boolean = rateCache.Rate+1<=maxRate
+
+			local didThrottle: boolean = canThrottle and rateCache.Throttle+1<=throttleMax
+			local throttleResetOs: number? = rateCache.ThrottleReset
+			local canResetThrottle: boolean = throttleResetOs and nowOs-throttleResetOs <= 0
+
+			rateCache.Rate += 1
+
+			-- Check can throttle and whether throttle could be reset
+			if canThrottle and canResetThrottle then
+				rateCache.Throttle = 0
+			end
+
+			-- If rate failed and can also throttle, count tick
+			if canThrottle and (not ratePass and didThrottle) then
+				rateCache.Throttle += 1
+				rateCache.LastThrottled = nowOs
+
+				-- Check whether cache time expired and replace it with a new one or set a new one			
+				if not throttleResetOs or canResetThrottle then				
+					rateCache.ThrottleReset = nowOs
+				end
+			elseif canThrottle and ratePass then
+				rateCache.Throttle = 0
+			end
+
+			if rateExceeded and not ratePass then
+				rateExceeded:fire(rateKey, rateCache.Rate, maxRate)
+			end
+
+			if ratePassed and ratePass then
+				ratePassed:fire(rateKey, rateCache.Rate, maxRate)
+			end
+
+			return ratePass, didThrottle, canThrottle, rateCache.Rate, maxRate, throttleResetOs
+		end
+	end
+
+	local RateLimiter = {
+		Remote = {
+			Rates = 120;
+			Reset = 60;
+		};
+		Command = {
+			Rates = 20;
+			Reset = 40;	
+		};
+		Chat = {
+			Rates = 10;
+			Reset = 1;
+		};
+		CustomChat = {
+			Rates = 10;
+			Reset = 1;	
+		};
+		RateLog = {
+			Rates = 10;
+			Reset = 2;	
+		};
+	}
+	
+	local unWrap = service.unWrap
+	local function RateLimit(p, typ)
+		local isPlayer = type(p)=="userdata" and p:IsA"Player"
+		if isPlayer then
+			local rateData = RateLimiter[typ]
+			assert(rateData, "No rate limit data available for the given type "..typ)
+			local ratePass, didThrottle, canThrottle, curRate, maxRate = newRateLimit(rateData, p.UserId)
+			return ratePass, didThrottle, canThrottle, curRate, maxRate
 		else
 			return true
 		end
@@ -129,9 +246,9 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
 		RateLimit = RateLimit;
+		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
-		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired (like it currently does), but higher levels have issues with not detecting at all, so its good to have between 2 and 10
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -153,7 +270,7 @@ return function(Vargs, GetEnv)
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
 					local args = {...}
-					local rateLimitCheck = RateLimit(p, "Remote")
+					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
 
 					if keys then
 						keys.LastUpdate = os.time()
@@ -205,8 +322,8 @@ return function(Vargs, GetEnv)
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							elseif rateLimitCheck and RateLimit(p, "RateLog") then
-								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
-								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate));
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
@@ -427,7 +544,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		CustomChat = function(p, a, b, canCross)
-			if RateLimit(p, "CustomChat") and not Admin.IsMuted(p) then
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
+			
+			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit)
 				end
@@ -487,14 +606,15 @@ return function(Vargs, GetEnv)
 				end
 
 				service.Events.CustomChat:Fire(p,a,b)
-			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
-				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
+			elseif not didPassRate and RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", curRate))
+				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
 
 		Chat = function(p, msg)
-			if RateLimit(p, "Chat") then
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
+			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
@@ -536,9 +656,9 @@ return function(Vargs, GetEnv)
 						Player = p;
 					})
 				end
-			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
-				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
+			elseif not didPassRate and RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
+				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
 
@@ -770,10 +890,10 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
+				end
 
-					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiClientIdle ~= false)
-					})
+				if Settings.AntiBuildingTools then
+					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
 
@@ -793,6 +913,7 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
+						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -801,22 +922,41 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						
-						if oldVer and newVer and newVer > oldVer and level > 100 then
+
+						wait(1)
+
+						if oldVer and newVer and newVer > oldVer and level > 300 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 15;
+								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						if level > 300 then
-							for i,v in pairs(server.Messages) do
-								v.Icon = v.Icon or server.MatIcons.Description;
-								Remote.MakeGui(p, "Notification", v)
-							end
+						wait(1)
+
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
+							Remote.MakeGui(p, "Notification", {
+								Title = "Warning!";
+								Message = "Using default datastore key!";
+								Icon = server.MatIcons.Description;
+								Time = 10;
+								OnClick = Core.Bytecode([[
+									local window = client.UI.Make("Window", {
+										Title = "How to change the DataStore key";
+										Size = {700,300};
+										Icon = "rbxassetid://7510994359";
+									})
+
+									window:Add("ImageLabel", {
+										Image = "rbxassetid://1059543904";
+									})
+
+									window:Ready()
+								]]);
+							})
 						end
 					end
 
