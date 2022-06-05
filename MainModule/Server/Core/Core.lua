@@ -993,13 +993,14 @@ return function(Vargs, GetEnv)
 
 					--// Check that the real table actually has the item to remove, do not create if it does not have it
 					--// Prevents snowballing
+					local indList = tab
 					local continueOperation = false
 					if indList[1] == "Settings" then
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
 						for i,v in pairs(realTable) do
-							if CheckMatch(v, tab.Value) then
+							if CheckMatch(v, value) then
 								continueOperation = true
 							end
 						end
@@ -1028,20 +1029,21 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					for i,v in pairs(sets) do
-						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
+						if CheckMatch(indList, v.Table) and CheckMatch(v.Value, value) then
 							table.remove(sets, i)
 						end
 					end
 
 					--// Check that the real table does not have the item to add, do not create if it has it
 					--// Prevents snowballing
+					local indList = tab
 					local continueOperation = true
 					if indList[1] == "Settings" then
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
 						for i,v in pairs(realTable) do
-							if CheckMatch(v, tab.Value) then
+							if CheckMatch(v, value) then
 								continueOperation = false
 							end
 						end
