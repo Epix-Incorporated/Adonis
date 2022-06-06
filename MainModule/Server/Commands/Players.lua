@@ -233,7 +233,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.R*255, bc.G*255, bc.B*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.r*255, bc.g*255, bc.b*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
