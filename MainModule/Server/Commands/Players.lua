@@ -7,6 +7,10 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
+	
+	local Routine = env.Routine
+	local Pcall = env.Pcall
+	local cPcall = env.cPcall
 
 	return {
 		ViewCommands = {
@@ -396,32 +400,34 @@ return function(Vargs, env)
 							Variables.HelpRequests[plr.Name] = pending;
 
 							for ind, p in ipairs(service.Players:GetPlayers()) do
-								if Admin.CheckAdmin(p) then
-									local ret = Remote.MakeGuiGet(p, "Notification", {
-										Title = "Help Request";
-										Message = plr.Name.." needs help! Reason: "..pending.Reason;
-										Icon = server.MatIcons.Mail;
-										Time = 30;
-										OnClick = Core.Bytecode("return true");
-										OnClose = Core.Bytecode("return false");
-										OnIgnore = Core.Bytecode("return false");
-									})
+								Coutine(function()
+									if Admin.CheckAdmin(p) then
+										local ret = Remote.MakeGuiGet(p, "Notification", {
+											Title = "Help Request";
+											Message = plr.Name.." needs help! Reason: "..pending.Reason;
+											Icon = server.MatIcons.Mail;
+											Time = 30;
+											OnClick = Core.Bytecode("return true");
+											OnClose = Core.Bytecode("return false");
+											OnIgnore = Core.Bytecode("return false");
+										})
 
-									num += 1
-									if ret then
-										if not answered then
-											answered = true
-											Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
-										else
-											Remote.MakeGui(p, "Notification", {
-												Title = "Help Request";
-												Message = "Another admin has already responded to this request!";
-												Icon = server.MatIcons.Mail;
-												Time = 5;
-											})
+										num += 1
+										if ret then
+											if not answered then
+												answered = true
+												Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
+											else
+												Remote.MakeGui(p, "Notification", {
+													Title = "Help Request";
+													Message = "Another admin has already responded to this request!";
+													Icon = server.MatIcons.Mail;
+													Time = 5;
+												})
+											end
 										end
 									end
-								end
+								end)
 							end
 
 							local w = os.time()
