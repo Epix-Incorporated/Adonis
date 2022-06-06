@@ -402,7 +402,7 @@ return function(Vargs, env)
 							Variables.HelpRequests[plr.Name] = pending;
 
 							for ind, p in ipairs(service.Players:GetPlayers()) do
-								Coutine(function()
+								Routine(function()
 									if Admin.CheckAdmin(p) then
 										local ret = Remote.MakeGuiGet(p, "Notification", {
 											Title = "Help Request";
