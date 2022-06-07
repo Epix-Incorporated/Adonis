@@ -689,17 +689,17 @@ return function(Vargs, GetEnv)
 					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
 				elseif not Script or (not Trace or Trace == "") then
 					local tab = service.LogService:GetLogHistory()
-					local continue = false
+					local found = false
 					if Script then
 						for i, v in pairs(tab) do
 							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
-								continue = true
+								found = true
 							end
 						end
 					else
-						continue = true
+						found = true
 					end
-					if continue then
+					if found then
 						if string.match(Trace, "CoreGui") or string.match(Trace, "PlayerScripts") or string.match(Trace, "Animation_Scripts") or string.match(Trace, "^(%S*)%.(%S*)") then
 							return
 						else
