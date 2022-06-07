@@ -334,7 +334,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
-	settings.AntiClientIdle = true 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
+	settings.AntiAntiIdle = true 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
@@ -451,7 +451,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
+	descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
@@ -557,7 +557,7 @@ local descs = {};			--// Contains settings descriptions
 		"AntiGod";
 		"AntiSpeed";
 		"AntiBuildingTools";
-		"AntiClientIdle";
+		"AntiAntiIdle";
 		"AntiLeak";
 		"ProtectHats";
 	}
