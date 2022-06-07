@@ -68,7 +68,7 @@ return function(data)
 		yes.BackgroundColor3 = Color3.fromRGB(38, 100, 28)
 
 		repeat
-			yes.Text = string.format("%s seconds left before\nclicking allowed", math.ceil(startTick + data.Delay - os.clock()))
+			yes.Text = string.format("%s", math.ceil(startTick + data.Delay - os.clock()))
 			task.wait(1)
 		until os.clock() > startTick + data.Delay
 
