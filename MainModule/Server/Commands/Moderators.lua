@@ -4311,9 +4311,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local place = tonumber(args[2]) or game.PlaceId
-				local code = service.TeleportService:ReserveServer(place)
+				local code, serverId = service.TeleportService:ReserveServer(place)
 				local servers = Core.GetData("PrivateServers") or {}
-				servers[args[1]] = {Code = code, ID = place}
+				servers[args[1]] = {Code = code, ID = place, PrivateServerID = serverId}
 				Core.SetData("PrivateServers", servers)
 				Functions.Hint("Made server "..args[1].." | Place: "..place, {plr})
 			end
