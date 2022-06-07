@@ -188,7 +188,7 @@ return function(Vargs, GetEnv)
 				local metamethod
 
 				local success, err = xpcall(function()
-					local c = game.____________
+					local c = rawGame.____________
 				end, function()
 					metamethod = debug.info(2, "f")
 					if callstackInvalid or checkStack("indexInstance") then
@@ -200,11 +200,11 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				local success3, err3 = pcall(metamethod, game)
+				local success3, err3 = pcall(metamethod, rawGame)
 				local success2, err2 = pcall(metamethod)
 				pcall(metamethod, proxyDetector, "GetChildren")
 				pcall(metamethod, proxyDetector)
-				pcall(metamethod, game, proxyDetector)
+				pcall(metamethod, rawGame, proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
 					return true
@@ -219,7 +219,7 @@ return function(Vargs, GetEnv)
 				local metamethod
 
 				local success, err = xpcall(function()
-					game.____________ = 5
+					rawGame.____________ = 5
 				end, function()
 					metamethod = debug.info(2, "f")
 					if callstackInvalid or checkStack("newindexInstance") then
@@ -231,12 +231,12 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				local success3, err3 = pcall(metamethod, game)
+				local success3, err3 = pcall(metamethod, rawGame)
 				local success2, err2 = pcall(metamethod)
 				pcall(metamethod, proxyDetector, "GetChildren")
 				pcall(metamethod, proxyDetector)
-				pcall(metamethod, game, proxyDetector)
-				pcall(metamethod, game, "AllowThirdPartySales", proxyDetector)
+				pcall(metamethod, rawGame, proxyDetector)
+				pcall(metamethod, rawGame, "AllowThirdPartySales", proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
 					return true
@@ -251,7 +251,7 @@ return function(Vargs, GetEnv)
 				local metamethod
 
 				local success, err = xpcall(function()
-					local c = game:____________()
+					local c = rawGame:____________()
 				end, function()
 					metamethod = debug.info(2, "f")
 					if callstackInvalid or checkStack("namecallInstance") then
@@ -263,10 +263,10 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				local success3, err3 = pcall(metamethod, game)
+				local success3, err3 = pcall(metamethod, rawGame)
 				local success2, err2 = pcall(metamethod)
 				pcall(metamethod, proxyDetector)
-				pcall(metamethod, game, proxyDetector)
+				pcall(metamethod, rawGame, proxyDetector)
 
 				if callstackInvalid or success or success2 or success3 then
 					return true
