@@ -842,10 +842,9 @@ return function(Vargs, GetEnv)
 					if not activated then -- // Checks for anti-coregui detetection bypasses
 						Detected("kick", "Coregui detection bypass found")
 					end
-			
-					-- // Detects Kaids antikick
+
 					local success, err = pcall(function()
-						LocalPlayer:preloadasync("If this message appears, report it to Adonis maintainers. 0x5")
+						rawContentProvider:preloadasync({tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal})
 					end)
 
 					if
