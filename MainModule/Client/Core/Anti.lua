@@ -826,6 +826,7 @@ return function(Vargs, GetEnv)
 					local hasDetected = false
 					local activated = false
 					local rawContentProvider = service.UnWrap(service.ContentProvider)
+					local workspace = service.UnWrap(workspace)
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
