@@ -111,6 +111,33 @@ return function(Vargs, GetEnv)
 		return true
 	end
 
+	local proxyDetector = newproxy(true)
+
+	do
+		local proxyMt = getmetatable(proxyDetector)
+
+		proxyMt.__index = function()
+			Detected("kick", "Proxy methamethod 8543")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__newindex = function()
+			Detected("kick", "Proxy methamethod 34545")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__tostring = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__metatable = "The metatable is locked"
+	end
+
+
 	do
 		local callStacks = {
 			indexInstance = {},
@@ -125,32 +152,6 @@ return function(Vargs, GetEnv)
 		}
 		local errorMessages = {}
 		local rawGame = service.UnWrap(game)
-
-		local proxyDetector = newproxy(true)
-		
-		do
-			local proxyMt = getmetatable(proxyDetector)
-
-			proxyMt.__index = function()
-				Detected("kick", "Proxy methamethod 8543")
-
-				return task.wait(2e2)
-			end
-
-			proxyMt.__newindex = function()
-				Detected("kick", "Proxy methamethod 34545")
-
-				return task.wait(2e2)
-			end
-
-			proxyMt.__tostring = function()
-				Detected("kick", "Proxy methamethod 789456")
-
-				return task.wait(2e2)
-			end
-
-			proxyMt.__metatable = "The metatable is locked"
-		end
 
 		local function checkStack(method)
 			local firstTime = #callStacks[method] <= 0
@@ -573,6 +574,8 @@ return function(Vargs, GetEnv)
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
+			local remoEventCheck = Instance.new("RemoteEvent")
+			local remFuncCheck = Instance.new("RemoteFunction")
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -788,6 +791,50 @@ return function(Vargs, GetEnv)
 						Detected("kick", "GetLogHistory function hooks detected")
 					end
 				end
+
+				-- // RemoteEvent hook detection
+				do
+					local success, err = pcall(function()
+						remEventCheck:fireserver())
+					end)
+					local success2, err2 = pcall(function()
+						remEventCheck.FireServer(workspace)
+					end)
+					local success3, err3 = pcall(function()
+						workspace:FireServer()
+					end)
+
+					if
+						success or string.match(err, "^%a+ is not a valid member of RemoteEvent \"(.+)\"$") ~= remEventCheck:GetFullName() or
+						success2 or err2 ~= "Expected ':' not '.' calling member function FireServer" or
+						success3 or string.match(err3, "^FireServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+					then
+						Detected("kick", "FireServer function hooks detected")
+					end
+				end
+				pcall(remEventCheck.FireServer, remEventCheck, proxyDetector)
+
+				-- // RemoteFunction hook detection
+				do
+					local success, err = pcall(function()
+						remFuncCheck:invokeserver())
+					end)
+					local success2, err2 = pcall(function()
+						remFuncCheck.InvokeServer(workspace)
+					end)
+					local success3, err3 = pcall(function()
+						workspace:InvokeServer()
+					end)
+
+					if
+						success or string.match(err, "^%a+ is not a valid member of RemoteFunction \"(.+)\"$") ~= remFuncCheck:GetFullName() or
+						success2 or err2 ~= "Expected ':' not '.' calling member function InvokeServer" or
+						success3 or string.match(err3, "^InvokeServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+					then
+						Detected("kick", "InvokeServer function hooks detected")
+					end
+				end
+				pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
