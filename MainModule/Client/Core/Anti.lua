@@ -844,13 +844,19 @@ return function(Vargs, GetEnv)
 					end
 
 					local success, err = pcall(function()
-						rawContentProvider:preloadasync({tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal})
+						rawContentProvider:preloadasync({tempDecal})
+					end)
+					local success2, err2 = pcall(function()
+						rawContentProvider.PreloadAsync(workspace, {tempDecal})
+					end)
+					local success3, err3 = pcall(function()
+						workspace:PreloadAsync({tempDecal})
 					end)
 
 					if
-						success or
-						string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
-						typeof(rawContentProvider) ~= "Instance"
+						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
+						success2 or err2 ~= "Expected ':' not '.' calling member function PreloadAsync" or
+						success3 or string.match(err3, "^PreloadAsync is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
 					then
 						Detected("kick", "Content provider spoofing detected")
 					end
