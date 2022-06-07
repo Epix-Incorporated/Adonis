@@ -772,7 +772,7 @@ return function(Vargs, GetEnv)
 					Remote.Send(p, "LaunchAnti", "MainDetection")
 
 					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiClientIdle ~= false)
+						Enabled = (Settings.AntiAntiIdle ~= false or Settings.AntiClientIdle ~= false)
 					})
 				end
 			end
