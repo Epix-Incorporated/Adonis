@@ -377,7 +377,7 @@ return function(Vargs, GetEnv)
 
 					if
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
-						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace.Name
+						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
 					then
 						Detected("kick", "Anti kick found! Method 1")
 						warn(success, err, "|", success2, err2)
@@ -751,7 +751,9 @@ return function(Vargs, GetEnv)
 					not rawequal(type(First), "table") or
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
-					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
+					not rawequal(type(First.timestamp), "number") or
+					First.timestamp < tick() - os.clock() - 60 * 60 * 5 or
+					First.timestamp > tick() + 60 * 60 * 24 * 7 * 4 * 5 or -- If the timestamp is five months in the future, it's safe to say its invalid
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
@@ -823,9 +825,10 @@ return function(Vargs, GetEnv)
 
 					local hasDetected = false
 					local activated = false
+					local rawContentProvider = service.UnWrap(service.ContentProvider)
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
-					service.UnWrap(service.ContentProvider).PreloadAsync(service.UnWrap(service.ContentProvider), {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+					rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
 							activated = true
 						elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
@@ -838,6 +841,19 @@ return function(Vargs, GetEnv)
 					task.wait(6)
 					if not activated then -- // Checks for anti-coregui detetection bypasses
 						Detected("kick", "Coregui detection bypass found")
+					end
+			
+					-- // Detects Kaids antikick
+					local success, err = pcall(function()
+						LocalPlayer:preloadasync("If this message appears, report it to Adonis maintainers. 0x5")
+					end)
+
+					if
+						success or
+						string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
+						typeof(rawContentProvider) ~= "Instance"
+					then
+						Detected("kick", "Content provider spoofing detected")
 					end
 				end, function()
 					Detected("kick", "Tamper Protection 456754")
