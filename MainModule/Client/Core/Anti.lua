@@ -96,6 +96,21 @@ return function(Vargs, GetEnv)
 		return true
 	end;
 
+
+	local function compareTables(t1, t2)
+		if service.CountTable(t1) ~= service.CountTable(t2) then
+			return false
+		end
+
+		for k, _ in pairs(t1) do
+			if not rawequal(t1[k], t2[k]) then
+				return false
+			end
+		end
+
+		return true
+	end
+
 	do
 		local callStacks = {
 			indexInstance = {},
@@ -151,20 +166,6 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end
-
-		local function compareTables(t1, t2)
-			if service.CountTable(t1) ~= service.CountTable(t2) then
-				return false
-			end
-
-			for k, _ in pairs(t1) do
-				if not rawequal(t1[k], t2[k]) then
-					return false
-				end
-			end
-
-			return true
 		end
 		
 		local function isMethamethodValid(metamethod)
@@ -723,10 +724,13 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Check Log History
-				local Logs = service.LogService:GetLogHistory()
+				local Logs = service.LogService.GetLogHistory(service.LogService)
+				local rawLogService = service.UnWrap(service.LogService)
 				local First = Logs[1]
 
-				if not hasPrinted and not First then
+				if not compareTables(Logs, rawLogService:GetLogHistory()) then
+					Detected("kick", "Log spoofing found")
+				elseif not hasPrinted and not First then
 					local startTime = os.clock()
 					client.OldPrint(" ")
 					for i = 1, 5 do
@@ -761,6 +765,27 @@ return function(Vargs, GetEnv)
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
+					end
+				end
+
+				-- // GetLogHistory hook detection
+				do
+					local success, err = pcall(function()
+						rawLogService:getlogHistory())
+					end)
+					local success2, err2 = pcall(function()
+						rawLogService.GetLogHistory(workspace)
+					end)
+					local success3, err3 = pcall(function()
+						workspace:GetLogHistory()
+					end)
+
+					if
+						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawLogService:GetFullName() or
+						success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
+						success3 or string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+					then
+						Detected("kick", "GetLogHistory function hooks detected")
 					end
 				end
 
