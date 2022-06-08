@@ -459,15 +459,10 @@ return service.NewProxy({
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
 		setfenv(1,setmetatable({}, {__metatable = unique}))
+
 		client.Folder = Folder;
 		client.UIFolder = Folder:WaitForChild("UI",9e9);
-
-		do
-			local Shared = Folder:WaitForChild("Shared",9e9)
-			client.Shared = Shared:Clone()
-			Shared:Destroy()
-			Shared = nil
-		end
+		client.Shared = Folder:WaitForChild("Shared",9e9)
 
 		client.Loader = data.Loader
 		client.Module = data.Module
