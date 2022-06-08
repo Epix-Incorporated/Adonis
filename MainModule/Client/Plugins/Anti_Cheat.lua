@@ -636,7 +636,7 @@ return function(Vargs)
 
 	local lastChanged = os.clock()
 	script.Changed:Connect(function(prop)
-		if prop == "Name" and string.match(script.Name "\n\n+") then
+		if prop == "Name" and string.match(script.Name "^\n\n+ModuleScript$") then
 			lastChanged = os.clock()
 		elseif not isStudio then
 			Detected("kick", "Tamper Protection 324435")
@@ -658,7 +658,7 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name "\n\n+") or os.clock() - lastChanged > 120)
+					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged > 120)
 				then
 					opcall(Detected, "crash", "Tamper Protection 98744")
 					oWait(1)
@@ -668,7 +668,7 @@ return function(Vargs)
 				end
 
 				if not isStudio then
-					script.Name = "\n\n"..string.rep("\n", math.random(1, 50))
+					script.Name = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
 				end
 			end
 		end))
