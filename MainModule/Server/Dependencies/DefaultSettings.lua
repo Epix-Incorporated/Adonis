@@ -306,31 +306,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
-
-	settings.Messages = {			-- A list of notification messages to show HeadAdmins and above on join
-	--{ 
-	-- EXAMPLE MESSAGE
-	--
-	--	Title = "Title";
-	--	Message = "This is an example notification";
-	--	Icon = "rbxassetid://7510994359";
-	--	Time = 15;
-	--	OnClick = server.Core.Bytecode([[
-	--		local window = client.UI.Make("Window", {
-	--			Title = "Image of a cute cat displaed in a window when clicked";
-	--			Size = {700,300};
-	--			Icon = "rbxassetid://7510994359";
-	--		})
-
-	--		window:Add("ImageLabel", {
-	--			Image = "rbxassetid://1059543904";
-	--		})
-
-	--		window:Ready()
-	--	]]);
-	--}
-	}
-	
+	settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
 	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
@@ -346,8 +322,8 @@ local descs = {};			--// Contains settings descriptions
 	settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
 	settings.LocalCapes = false	 	-- Makes Donor capes local so only the donors see their cape [All players can still disable capes locally]
 
-	settings.Detection = true			-- Attempts to detect certain known exploits
-	settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
+	settings.Detection = true			-- (Extremely important, makes all protection systems work) A global toggle for all the other protection settings
+	settings.CheckClients = true		-- (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active
 
 	settings.ExploitNotifications = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
 	settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
@@ -356,11 +332,11 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 	settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
+	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiAntiIdle = true 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
-	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
 	---------------------
 	-- END OF SETTINGS --
@@ -473,11 +449,11 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
 	descs.AntiMultiTool = [[ Prevents multitooling and because of that many other exploits ]]
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
+	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 	descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
-	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
 	order = {
 		"HideScript";
@@ -579,11 +555,11 @@ local descs = {};			--// Contains settings descriptions
 		"AntiHumanoidDeletion";
 		"AntiMultiTool";
 		"AntiGod";
+		"ProtectHats";
 		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiAntiIdle";
 		"AntiLeak";
-		"ProtectHats";
 	}
 
 return {Settings = settings, Descriptions = descs, Order = order}
