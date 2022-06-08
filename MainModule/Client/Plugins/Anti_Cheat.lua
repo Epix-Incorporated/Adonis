@@ -53,6 +53,45 @@ return function(Vargs)
 	getfenv().service = nil
 	getfenv().script = nil
 	script.Parent = nil
+	local function compareTables(t1, t2)
+		if service.CountTable(t1) ~= service.CountTable(t2) then
+			return false
+		end
+
+		for k, _ in pairs(t1) do
+			if not rawequal(t1[k], t2[k]) then
+				return false
+			end
+		end
+
+		return true
+	end
+
+	local proxyDetector = newproxy(true)
+
+	do
+		local proxyMt = getmetatable(proxyDetector)
+
+		proxyMt.__index = function()
+			Detected("kick", "Proxy methamethod 8543")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__newindex = function()
+			Detected("kick", "Proxy methamethod 34545")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__tostring = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__metatable = "The metatable is locked"
+	end
 
 	local Detectors = service.ReadOnly({
 		Speed = function(data)
@@ -634,10 +673,11 @@ return function(Vargs)
 
 	Anti.Detectors = Detectors
 
-	local lastChanged = os.clock()
+	-- // The tamper checks below are quite bad but they are sufficient for now
+	local lastChanged1, lastChanged2, lastChanged3 = os.clock(), os.clock(), os.clock()
 	script.Changed:Connect(function(prop)
 		if prop == "Name" and string.match(script.Name "^\n\n+ModuleScript$") then
-			lastChanged = os.clock()
+			lastChanged1 = os.clock()
 		elseif not isStudio then
 			Detected("kick", "Tamper Protection 324435")
 		end
@@ -658,7 +698,8 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged > 120)
+					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
+					os.clock() - lastChanged3 > 60
 				then
 					opcall(Detected, "crash", "Tamper Protection 98744")
 					oWait(1)
@@ -670,7 +711,33 @@ return function(Vargs)
 				if not isStudio then
 					script.Name = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
 				end
+				lastChanged2 = os.clock()
 			end
 		end))
+
+		task.spawn(xpcall, function()
+			while true do
+				if
+					not isStudio and math.abs(os.clock() - lastChanged1) > 60 or
+					math.abs(os.clock() - lastChanged2) > 60 or
+					math.abs(os.clock() - lastChanged3) > 60 or
+				then
+					opcall(Detected, "crash", "Tamper Protection 178945")
+					oWait(1)
+					opcall(Disconnect, "Adonis_178945")
+					opcall(Kill, "Adonis_178945")
+					opcall(Kick, Player, "Adonis_178945")
+				end
+
+				task.wait(1)
+				lastChanged3 = os.clock()
+			end
+		end, function()
+			opcall(Detected, "crash", "Tamper Protection 1543")
+			oWait(1)
+			opcall(Disconnect, "Adonis_1543")
+			opcall(Kill, "Adonis_1543")
+			opcall(Kick, Player, "Adonis_1543")
+		end)
 	end
 end
