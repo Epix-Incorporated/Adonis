@@ -90,6 +90,54 @@ return function(Vargs)
 			return task.wait(2e2)
 		end
 
+		proxyMt.__unm = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__add = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__sub = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__mul = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__div = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__mod = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__pow = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
+		proxyMt.__len = function()
+			Detected("kick", "Proxy methamethod 789456")
+
+			return task.wait(2e2)
+		end
+
 		proxyMt.__metatable = "The metatable is locked"
 	end
 
