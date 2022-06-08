@@ -48,6 +48,11 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if settings.Detection == false then
+			Logs:AddLog("Script", "Didn't load Adonis protection systems due to settings.Detection being set to false.")
+			return
+		end
+
 		if
 			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
 			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
