@@ -439,8 +439,8 @@ local descs = {};			--// Contains settings descriptions
 	descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 	descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
-	descs.Detection = [[ Attempts to detect certain known exploits ]]
-	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
+	descs.Detection = [[ (Extremely important, makes all protection systems work) A global toggle for all the other protection settings ]]
+	descs.CheckClients = [[ (Important, makes sure Adonis clients are connected to the server) Checks clients every minute or two to make sure they are still active ]]
 
 	descs.ExploitNotifications = [[ Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit ]]
 	descs.CharacterCheckLogs = [[If the character checks appear in exploit logs and exploit notifications]]
