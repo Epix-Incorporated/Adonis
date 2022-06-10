@@ -1373,7 +1373,7 @@ function luaY:continuestat(ls)
   if upval then
     luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
   end
-  bl.breaklist = luaK:concat(fs, bl.breaklist, luaK:jump(fs))
+  luaK:codeAsBx(fs, "OP_JMP", ITGOESHERE, 0, 0)
 end
 
 ------------------------------------------------------------------------
