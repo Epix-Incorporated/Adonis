@@ -413,7 +413,7 @@ return function(Vargs, GetEnv)
 				end
 
 				local hasCompleted = false
-				coroutine.wrap(function()
+				task.spawn(xpcall, function()
 					local LocalPlayer = service.UnWrap(Player)
 					local workspace = service.UnWrap(workspace)
 
@@ -470,14 +470,26 @@ return function(Vargs, GetEnv)
 					end
 
 					hasCompleted = true
-				end)()
+				end, function()
+					Detected("crash", "Tamper Protection 234654")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_234654")
+					pcall(Kill, "Adonis_234654")
+					pcall(Kick, Player, "Adonis_234654")
+				end)
 
-				coroutine.wrap(function()
+				task.spawn(xpcall, function()
 					task.wait(4)
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
 					end
-				end)()
+				end, function()
+					Detected("crash", "Tamper Protection 1897")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_1897")
+					pcall(Kill, "Adonis_1897")
+					pcall(Kick, Player, "Adonis_1897")
+				end)
 			end
 		end)
 	end
