@@ -1355,6 +1355,28 @@ function luaY:breakstat(ls)
 end
 
 ------------------------------------------------------------------------
+-- parse a continue statement
+-- * used in statements()
+------------------------------------------------------------------------
+function luaY:continuestat(ls)
+  -- stat -> CONTINUE
+  local fs = ls.fs
+  local bl = fs.bl
+  local upval = false
+  while bl and not bl.isbreakable do
+    if bl.upval then upval = true end
+    bl = bl.previous
+  end
+  if not bl then
+    luaX:syntaxerror(ls, "no loop to continue")
+  end
+  if upval then
+    luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
+  end
+  bl.breaklist = luaK:concat(fs, bl.breaklist, luaK:jump(fs)) -- // What is the first instruction of the loop? I don't know, but I'll probably figure it out soon.
+end
+
+------------------------------------------------------------------------
 -- parse a while-do control structure, body processed by block()
 -- * with dynamic array sizes, MAXEXPWHILE + EXTRAEXP limits imposed by
 --   the function's implementation can be removed
@@ -1724,6 +1746,10 @@ function luaY:statement(ls)
   elseif c == "TK_BREAK" then  -- stat -> breakstat
     luaX:next(ls)  -- skip BREAK
     self:breakstat(ls)
+    return true  -- must be last statement
+  elseif c == "TK_CONTINUE" then  -- stat -> continuestat
+    luaX:next(ls)  -- skip CONTINUE
+    self:continuestat(ls)
     return true  -- must be last statement
   else
     self:exprstat(ls)
