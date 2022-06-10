@@ -390,8 +390,9 @@ end
 ------------------------------------------------------------------------
 function luaX:str2d(s)
 	-- Support for Luau decimal seperators for integer literals
-	assert(not string.match(string.lower(s), "[^b%da-f_]_"), "Invalid decimal seperator for integer literals detected! At "..tostring(string.match(string.lower(s), "[^b%da-f]_")))
-	assert(not string.match(string.lower(s), "_[^%da-f_]"), "Invalid decimal seperator for integer literals detected! At "..tostring(string.match(string.lower(s), "_[^%da-f]")))
+	if string.match(string.lower(s), "[^b%da-f_]_") or string.match(string.lower(s), "_[^%da-f_]") then
+		return nil
+	end
 	s = string.gsub(s, "_", "")
 
 	local result = tonumber(s)
