@@ -1373,7 +1373,7 @@ function luaY:continuestat(ls)
   if upval then
     luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
   end
-  bl.breaklist = luaK:concat(fs, bl.breaklist, luaK:jump(fs)) -- // What is the first instruction of the loop? I don't know, but I'll probably figure it out soon.
+  bl.breaklist = luaK:concat(fs, bl.breaklist, luaK:jump(fs))
 end
 
 ------------------------------------------------------------------------
