@@ -101,7 +101,7 @@ return function(Vargs, GetEnv)
 		SaveCommandLogs = function()
 			warn("Saving command logs...")
 			
-			if settings.SaveCommandLogs ~= true then
+			if settings.SaveCommandLogs ~= true or settings.DataStoreEnabled ~= true then
 				warn("Skipped saving command logs.")
 				return
 			end
