@@ -1,0 +1,2072 @@
+<roblox version="4">
+  <Item class="ModuleScript" referent="0">
+    <Properties>
+      <string name="Name">DataStoreService</string>
+      <string name="Source"><![CDATA[--[[
+	DataStoreService.lua
+	This module decides whether to use actual datastores or mock datastores depending on the environment.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockDataStoreServiceModule = script.MockDataStoreService
+
+local shouldUseMock = false
+if game.GameId == 0 then -- Local place file
+	shouldUseMock = true
+elseif game:GetService("RunService"):IsStudio() then -- Published file in Studio
+	local status, message = pcall(function()
+		-- This will error if current instance has no Studio API access:
+		game:GetService("DataStoreService"):GetDataStore("__TEST"):SetAsync("__TEST", "__TEST_" .. os.time())
+	end)
+	if not status and message:find("403", 1, true) then -- HACK
+		-- Can connect to datastores, but no API access
+		shouldUseMock = true
+	end
+end
+
+-- Return the mock or actual service depending on environment:
+if shouldUseMock then
+	warn("Using MockDataStoreService instead of DataStoreService")
+	return require(MockDataStoreServiceModule)
+else
+	return game:GetService("DataStoreService")
+end
+]]></string>
+    </Properties>
+    <Item class="ModuleScript" referent="1">
+      <Properties>
+        <string name="Name">MockDataStoreService</string>
+        <string name="Source"><![CDATA[--[[
+	MockDataStoreService.lua
+	This module implements the API and functionality of Roblox's DataStoreService class.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockDataStoreService = {}
+
+local MockDataStoreManager = require(script.MockDataStoreManager)
+local MockGlobalDataStore = require(script.MockGlobalDataStore)
+local MockOrderedDataStore = require(script.MockOrderedDataStore)
+local Utils = require(script.MockDataStoreUtils)
+local Constants = require(script.MockDataStoreConstants)
+local HttpService = game:GetService("HttpService") -- for json encode/decode
+
+local function makeGetWrapper(methodName, getObject, isGlobal) -- Helper function to reduce amount of redundant code
+	return function(_, name, scope)
+		if not game:GetService("RunService"):IsServer() then
+			error("DataStore can't be accessed from client", 2)
+		end
+
+		if isGlobal then
+			return getObject()
+		else
+			if type(name) ~= "string" then
+				error(("bad argument #1 to '%s' (string expected, got %s)")
+					:format(methodName, typeof(name)), 2)
+			elseif scope ~= nil and type(scope) ~= "string" then
+				error(("bad argument #2 to '%s' (string expected, got %s)")
+					:format(methodName, typeof(scope)), 2)
+			elseif #name == 0 then
+				error(("bad argument #1 to '%s' (name can't be empty string)")
+					:format(methodName), 2)
+			elseif #name > Constants.MAX_LENGTH_NAME then
+				error(("bad argument #1 to '%s' (name exceeds %d character limit)")
+					:format(methodName, Constants.MAX_LENGTH_NAME), 2)
+			elseif scope and #scope == 0 then
+				error(("bad argument #2 to '%s' (scope can't be empty string)")
+					:format(methodName), 2)
+			elseif scope and #scope > Constants.MAX_LENGTH_SCOPE then
+				error(("bad argument #2 to '%s' (scope exceeds %d character limit)")
+					:format(methodName, Constants.MAX_LENGTH_SCOPE), 2)
+			end
+			return getObject(name, scope or "global")
+		end
+
+	end
+end
+
+MockDataStoreService.GetGlobalDataStore = makeGetWrapper(
+	"GetGlobalDataStore",
+    function()
+        local data = MockDataStoreManager.GetGlobalData()
+
+        local interface = MockDataStoreManager.GetDataInterface(data)
+        if interface then
+            return interface
+        end
+
+        local value = {
+			__type = "GlobalDataStore";
+            __data = data; -- Mapping from <key> to <value>
+            __event = Instance.new("BindableEvent"); -- For OnUpdate
+			__writeCache = {};
+			__writeLock = {};
+			__getCache = {};
+        }
+        interface = setmetatable(value, MockGlobalDataStore)
+		MockDataStoreManager.SetDataInterface(data, interface)
+
+		return interface
+	end,
+	true -- This is the global datastore, no name/scope needed
+)
+
+MockDataStoreService.GetDataStore = makeGetWrapper(
+	"GetDataStore",
+	function(name, scope)
+        local data = MockDataStoreManager.GetData(name, scope)
+
+        local interface = MockDataStoreManager.GetDataInterface(data)
+        if interface then
+            return interface
+        end
+
+        local value = {
+			__type = "GlobalDataStore";
+            __name = name;
+            __scope = scope;
+            __data = data; -- Mapping from <key> to <value>
+            __event = Instance.new("BindableEvent"); -- For OnUpdate
+			__writeCache = {};
+			__writeLock = {};
+			__getCache = {};
+        }
+        interface = setmetatable(value, MockGlobalDataStore)
+		MockDataStoreManager.SetDataInterface(data, interface)
+
+        return interface
+	end
+)
+
+MockDataStoreService.GetOrderedDataStore = makeGetWrapper(
+	"GetOrderedDataStore",
+	function(name, scope)
+        local data = MockDataStoreManager.GetOrderedData(name, scope)
+
+        local interface = MockDataStoreManager.GetDataInterface(data)
+        if interface then
+            return interface
+        end
+
+        local value = {
+			__type = "OrderedDataStore";
+            __name = name;
+            __scope = scope;
+            __data = data; -- Mapping from <key> to <value>
+            __sorted = {}; -- List of {Key = <key>, Value = <value>} pairs
+            __ref = {}; -- Mapping from <key> to corresponding {Key = <key>, Value = <value>} entry in __sorted
+            __changed = false; -- Whether __sorted is guaranteed sorted at the moment
+            __event = Instance.new("BindableEvent"); -- For OnUpdate
+			__writeCache = {};
+			__writeLock = {};
+			__getCache = {};
+        }
+        interface = setmetatable(value, MockOrderedDataStore)
+		MockDataStoreManager.SetDataInterface(data, interface)
+
+		return interface
+	end
+)
+
+local DataStoreRequestTypes = {}
+
+for _, Enumerator in ipairs(Enum.DataStoreRequestType:GetEnumItems()) do
+	DataStoreRequestTypes[Enumerator] = Enumerator
+	DataStoreRequestTypes[Enumerator.Name] = Enumerator
+	DataStoreRequestTypes[Enumerator.Value] = Enumerator
+end
+
+function MockDataStoreService:GetRequestBudgetForRequestType(requestType) -- luacheck: ignore self
+	if not DataStoreRequestTypes[requestType] then
+		error(("bad argument #1 to 'GetRequestBudgetForRequestType' (unable to cast '%s' of type %s to DataStoreRequestType)")
+			:format(tostring(requestType), typeof(requestType)), 2)
+	end
+
+	return MockDataStoreManager.GetBudget(DataStoreRequestTypes[requestType])
+end
+
+function MockDataStoreService:ImportFromJSON(json, verbose) -- luacheck: ignore self
+	local content
+	if type(json) == "string" then
+		local parsed, value = pcall(function() return HttpService:JSONDecode(json) end)
+		if not parsed then
+			error("bad argument #1 to 'ImportFromJSON' (string is not valid json)", 2)
+		end
+		content = value
+	elseif type(json) == "table" then
+		content = Utils.deepcopy(json)
+	else
+		error(("bad argument #1 to 'ImportFromJSON' (string or table expected, got %s)"):format(typeof(json)), 2)
+	end
+	if verbose ~= nil and type(verbose) ~= "boolean" then
+		error(("bad argument #2 to 'ImportFromJSON' (boolean expected, got %s)"):format(typeof(verbose)), 2)
+	end
+
+	return MockDataStoreManager.ImportFromJSON(content, verbose)
+end
+
+function MockDataStoreService:ExportToJSON() -- luacheck: ignore self
+	return MockDataStoreManager.ExportToJSON()
+end
+
+return MockDataStoreService
+]]></string>
+      </Properties>
+      <Item class="ModuleScript" referent="2">
+        <Properties>
+          <string name="Name">MockDataStoreConstants</string>
+          <string name="Source"><![CDATA[--[[
+    MockDataStoreConstants.lua
+    Contains all constants used by the entirety of MockDataStoreService and its sub-classes.
+
+    This module is licensed under APLv2, refer to the LICENSE file or:
+    https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+return {
+
+    LOGGING_ENABLED = false;        -- Verbose logging of transactions to output
+    LOGGING_FUNCTION = warn;        -- Function for logging messages
+
+    MAX_LENGTH_KEY = 50;            -- Max number of chars in key string
+    MAX_LENGTH_NAME = 50;           -- Max number of chars in name string
+    MAX_LENGTH_SCOPE = 50;          -- Max number of chars in scope string
+    MAX_LENGTH_DATA = 4194301;      -- Max number of chars in (encoded) data strings
+
+    MAX_PAGE_SIZE = 100;            -- Max page size for GetSortedAsync
+
+    YIELD_TIME_MIN = 0.2;           -- Random yield time values for set/get/update/remove/getsorted
+    YIELD_TIME_MAX = 0.5;
+
+    YIELD_TIME_UPDATE_MIN = 0.2;    -- Random yield times from events from OnUpdate
+    YIELD_TIME_UPDATE_MAX = 0.5;
+
+    WRITE_COOLDOWN = 6.0;           -- Amount of cooldown time between writes on the same key in a particular datastore
+
+    GET_COOLDOWN = 5.0;             -- Amount of cooldown time that a recent interaction with a key is considered fresh
+
+    THROTTLE_QUEUE_SIZE = 30;       -- Amount of requests that can be throttled at once (additional requests will error)
+
+    SIMULATE_ERROR_RATE = 0;        -- Rate at which requests will throw errors for testing (0 = never, 1 = always)
+
+    BUDGETING_ENABLED = true;       -- Whether budgets are enforced and calculated
+
+    BUDGET_GETASYNC = {             -- Budget constant storing structure
+        START = 100;                    -- Starting budget
+        RATE = 60;                      -- Added budget per minute
+        RATE_PLR = 10;                  -- Additional added budget per minute per player
+        MAX_FACTOR = 3;                 -- The maximum budget as a factor of (rate + rate_plr * #players)
+    };
+
+    BUDGET_GETSORTEDASYNC = {
+        START = 10;
+        RATE = 5;
+        RATE_PLR = 2;
+        MAX_FACTOR = 3;
+    };
+
+    BUDGET_ONUPDATE = {
+        START = 30;
+        RATE = 30;
+        RATE_PLR = 5;
+        MAX_FACTOR = 1;
+    };
+
+    BUDGET_SETINCREMENTASYNC = {
+        START = 100;
+        RATE = 60;
+        RATE_PLR = 10;
+        MAX_FACTOR = 3;
+    };
+
+    BUDGET_SETINCREMENTSORTEDASYNC = {
+        START = 50;
+        RATE = 30;
+        RATE_PLR = 5;
+        MAX_FACTOR = 3;
+    };
+
+    BUDGET_BASE = 60;               -- Modifiers used for budget increases on OnClose
+    BUDGET_ONCLOSE_BASE = 150;
+
+    BUDGET_UPDATE_INTERVAL = 1.0;   -- Time interval in seconds at which budgets are updated (do not put too low)
+
+}
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">MockDataStoreManager</string>
+          <string name="Source"><![CDATA[--[[
+	MockDataStoreManager.lua
+	This module does bookkeeping of data, interfaces and request limits used by MockDataStoreService and its sub-classes.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockDataStoreManager = {}
+
+local Utils = require(script.Parent.MockDataStoreUtils)
+local Constants = require(script.Parent.MockDataStoreConstants)
+local HttpService = game:GetService("HttpService") -- for json encode/decode
+local Players = game:GetService("Players") -- for restoring budgets
+local RunService = game:GetService("RunService") -- for checking if running context is on server
+
+local ConstantsMapping = {
+	[Enum.DataStoreRequestType.GetAsync] = Constants.BUDGET_GETASYNC;
+	[Enum.DataStoreRequestType.GetSortedAsync] = Constants.BUDGET_GETSORTEDASYNC;
+	[Enum.DataStoreRequestType.OnUpdate] = Constants.BUDGET_ONUPDATE;
+	[Enum.DataStoreRequestType.SetIncrementAsync] = Constants.BUDGET_SETINCREMENTASYNC;
+	[Enum.DataStoreRequestType.SetIncrementSortedAsync] = Constants.BUDGET_SETINCREMENTSORTEDASYNC;
+}
+
+-- Bookkeeping of all data:
+local Data = {
+	GlobalDataStore = {};
+	DataStore = {};
+	OrderedDataStore = {};
+}
+
+-- Bookkeeping of all active GlobalDataStore/OrderedDataStore interfaces indexed by data table:
+local Interfaces = {}
+
+-- Request limit bookkeeping:
+local Budgets = {}
+
+local budgetRequestQueues = {
+	[Enum.DataStoreRequestType.GetAsync] = {};
+	[Enum.DataStoreRequestType.GetSortedAsync] = {};
+	[Enum.DataStoreRequestType.OnUpdate] = {};
+	[Enum.DataStoreRequestType.SetIncrementAsync] = {};
+	[Enum.DataStoreRequestType.SetIncrementSortedAsync] = {};
+}
+
+local function initBudget()
+	for requestType, const in pairs(ConstantsMapping) do
+		Budgets[requestType] = const.START
+	end
+	Budgets[Enum.DataStoreRequestType.UpdateAsync] = math.min(
+		Budgets[Enum.DataStoreRequestType.GetAsync],
+		Budgets[Enum.DataStoreRequestType.SetIncrementAsync]
+	)
+end
+
+local function updateBudget(req, const, dt, n)
+	if not Constants.BUDGETING_ENABLED then
+		return
+	end
+	local rate = const.RATE + n * const.RATE_PLR
+	Budgets[req] = math.min(
+		Budgets[req] + dt * rate,
+		const.MAX_FACTOR * rate
+	)
+end
+
+local function stealBudget(budget)
+	if not Constants.BUDGETING_ENABLED then
+		return
+	end
+	for _, requestType in pairs(budget) do
+		if Budgets[requestType] then
+			Budgets[requestType] = math.max(0, Budgets[requestType] - 1)
+		end
+	end
+	Budgets[Enum.DataStoreRequestType.UpdateAsync] = math.min(
+		Budgets[Enum.DataStoreRequestType.GetAsync],
+		Budgets[Enum.DataStoreRequestType.SetIncrementAsync]
+	)
+end
+
+local function checkBudget(budget)
+	if not Constants.BUDGETING_ENABLED then
+		return true
+	end
+	for _, requestType in pairs(budget) do
+		if Budgets[requestType] and Budgets[requestType] < 1 then
+			return false
+		end
+	end
+	return true
+end
+
+local isFrozen = false
+
+if RunService:IsServer() then
+	-- Only do budget/throttle updating on server (in case package required on client)
+
+	initBudget()
+
+	task.spawn(function() -- Thread that increases budgets and de-throttles requests periodically
+		local lastCheck = tick()
+		while task.wait(Constants.BUDGET_UPDATE_INTERVAL) do
+			local now = tick()
+			local dt = (now - lastCheck) / 60
+			lastCheck = now
+			local n = #Players:GetPlayers()
+
+			if not isFrozen then
+				for requestType, const in pairs(ConstantsMapping) do
+					updateBudget(requestType, const, dt, n)
+				end
+				Budgets[Enum.DataStoreRequestType.UpdateAsync] = math.min(
+					Budgets[Enum.DataStoreRequestType.GetAsync],
+					Budgets[Enum.DataStoreRequestType.SetIncrementAsync]
+				)
+			end
+
+			for _, budgetRequestQueue in pairs(budgetRequestQueues) do
+				for i = #budgetRequestQueue, 1, -1 do
+					local request = budgetRequestQueue[i]
+
+					local thread = request.Thread
+					local budget = request.Budget
+					local key = request.Key
+					local lock = request.Lock
+					local cache = request.Cache
+
+					if not (lock and (lock[key] or tick() - (cache[key] or 0) < Constants.WRITE_COOLDOWN)) and checkBudget(budget) then
+						table.remove(budgetRequestQueue, i)
+						stealBudget(budget)
+						coroutine.resume(thread)
+					end
+				end
+			end
+		end
+	end)
+
+	game:BindToClose(function()
+		for requestType, const in pairs(ConstantsMapping) do
+			Budgets[requestType] = math.max(
+				Budgets[requestType],
+				Constants.BUDGET_ONCLOSE_BASE * (const.RATE / Constants.BUDGET_BASE)
+			)
+		end
+		Budgets[Enum.DataStoreRequestType.UpdateAsync] = math.min(
+			Budgets[Enum.DataStoreRequestType.GetAsync],
+			Budgets[Enum.DataStoreRequestType.SetIncrementAsync]
+		)
+	end)
+
+end
+
+function MockDataStoreManager.GetGlobalData()
+	return Data.GlobalDataStore
+end
+
+function MockDataStoreManager.GetData(name, scope)
+	assert(type(name) == "string")
+	assert(type(scope) == "string")
+
+	if not Data.DataStore[name] then
+		Data.DataStore[name] = {}
+	end
+	if not Data.DataStore[name][scope] then
+		Data.DataStore[name][scope] = {}
+	end
+
+	return Data.DataStore[name][scope]
+end
+
+function MockDataStoreManager.GetOrderedData(name, scope)
+	assert(type(name) == "string")
+	assert(type(scope) == "string")
+
+	if not Data.OrderedDataStore[name] then
+		Data.OrderedDataStore[name] = {}
+	end
+	if not Data.OrderedDataStore[name][scope] then
+		Data.OrderedDataStore[name][scope] = {}
+	end
+
+	return Data.OrderedDataStore[name][scope]
+end
+
+function MockDataStoreManager.GetDataInterface(data)
+	return Interfaces[data]
+end
+
+function MockDataStoreManager.SetDataInterface(data, interface)
+	assert(type(data) == "table")
+	assert(type(interface) == "table")
+
+	Interfaces[data] = interface
+end
+
+function MockDataStoreManager.GetBudget(requestType)
+	if Constants.BUDGETING_ENABLED then
+		return math.floor(Budgets[requestType] or 0)
+	else
+		return math.huge
+	end
+end
+
+function MockDataStoreManager.SetBudget(requestType, budget)
+	assert(type(budget) == "number")
+	budget = math.max(budget, 0)
+
+	if requestType == Enum.DataStoreRequestType.UpdateAsync then
+		Budgets[Enum.DataStoreRequestType.SetIncrementAsync] = budget
+		Budgets[Enum.DataStoreRequestType.GetAsync] = budget
+	end
+
+	if Budgets[requestType] then
+		Budgets[requestType] = budget
+	end
+end
+
+function MockDataStoreManager.ResetBudget()
+	initBudget()
+end
+
+function MockDataStoreManager.FreezeBudgetUpdates()
+	isFrozen = true
+end
+
+function MockDataStoreManager.ThawBudgetUpdates()
+	isFrozen = false
+end
+
+function MockDataStoreManager.YieldForWriteLockAndBudget(callback, key, writeLock, writeCache, budget)
+	assert(type(callback) == "function")
+	assert(type(key) == "string")
+	assert(type(writeLock) == "table")
+	assert(type(writeCache) == "table")
+	assert(#budget > 0)
+
+	local mainRequestType = budget[1]
+
+	if #budgetRequestQueues[mainRequestType] >= Constants.THROTTLE_QUEUE_SIZE then
+		return false -- no room in throttle queue
+	end
+
+	callback() -- would i.e. trigger a warning in output
+
+	table.insert(budgetRequestQueues[mainRequestType], 1, {
+		Key = key;
+		Lock = writeLock;
+		Cache = writeCache;
+		Thread = coroutine.running();
+		Budget = budget;
+	})
+	coroutine.yield()
+
+	return true
+end
+
+function MockDataStoreManager.YieldForBudget(callback, budget)
+	assert(type(callback) == "function")
+	assert(#budget > 0)
+
+	local mainRequestType = budget[1]
+
+	if checkBudget(budget) then
+		stealBudget(budget)
+	elseif #budgetRequestQueues[mainRequestType] >= Constants.THROTTLE_QUEUE_SIZE then
+		return false -- no room in throttle queue
+	else
+		callback() -- would i.e. trigger a warning in output
+
+		table.insert(budgetRequestQueues[mainRequestType], 1, {
+			After = 0; -- no write lock
+			Thread = coroutine.running();
+			Budget = budget;
+		})
+		coroutine.yield()
+	end
+
+	return true
+end
+
+function MockDataStoreManager.ExportToJSON()
+	local export = {}
+
+	if next(Data.GlobalDataStore) ~= nil then -- GlobalDataStore not empty
+		export.GlobalDataStore = Data.GlobalDataStore
+	end
+	export.DataStore = Utils.prepareDataStoresForExport(Data.DataStore) -- can be nil
+	export.OrderedDataStore = Utils.prepareDataStoresForExport(Data.OrderedDataStore) -- can be nil
+
+	return HttpService:JSONEncode(export)
+end
+
+-- Import into an entire datastore type:
+local function importDataStoresFromTable(origin, destination, warnFunc, methodName, prefix, isOrdered)
+	for name, scopes in pairs(origin) do
+		if type(name) ~= "string" then
+			warnFunc(("%s: ignored %s > %q (name is not a string, but a %s)")
+				:format(methodName, prefix, tostring(name), typeof(name)))
+		elseif type(scopes) ~= "table" then
+			warnFunc(("%s: ignored %s > %q (scope list is not a table, but a %s)")
+				:format(methodName, prefix, name, typeof(scopes)))
+		elseif #name == 0 then
+			warnFunc(("%s: ignored %s > %q (name is an empty string)")
+				:format(methodName, prefix, name))
+		elseif #name > Constants.MAX_LENGTH_NAME then
+			warnFunc(("%s: ignored %s > %q (name exceeds %d character limit)")
+				:format(methodName, prefix, name, Constants.MAX_LENGTH_NAME))
+		else
+			for scope, data in pairs(scopes) do
+				if type(scope) ~= "string" then
+					warnFunc(("%s: ignored %s > %q > %q (scope is not a string, but a %s)")
+						:format(methodName, prefix, name, tostring(scope), typeof(scope)))
+				elseif type(data) ~= "table" then
+					warnFunc(("%s: ignored %s > %q > %q (data list is not a table, but a %s)")
+						:format(methodName, prefix, name, scope, typeof(data)))
+				elseif #scope == 0 then
+					warnFunc(("%s: ignored %s > %q > %q (scope is an empty string)")
+						:format(methodName, prefix, name, scope))
+				elseif #scope > Constants.MAX_LENGTH_SCOPE then
+					warnFunc(("%s: ignored %s > %q > %q (scope exceeds %d character limit)")
+						:format(methodName, prefix, name, scope, Constants.MAX_LENGTH_SCOPE))
+				else
+					if not destination[name] then
+						destination[name] = {}
+					end
+					if not destination[name][scope] then
+						destination[name][scope] = {}
+					end
+					Utils.importPairsFromTable(
+						data,
+						destination[name][scope],
+						Interfaces[destination[name][scope]],
+						warnFunc,
+						methodName,
+						("%s > %q > %q"):format(prefix, name, scope),
+						isOrdered
+					)
+				end
+			end
+		end
+	end
+end
+
+function MockDataStoreManager.ImportFromJSON(content, verbose)
+	assert(type(content) == "table")
+	assert(verbose == nil or type(verbose) == "boolean")
+
+	local warnFunc = warn -- assume verbose as default
+	if verbose == false then -- intentional formatting
+		warnFunc = function() end
+	end
+
+	if type(content.GlobalDataStore) == "table" then
+		Utils.importPairsFromTable(
+			content.GlobalDataStore,
+			Data.GlobalDataStore,
+			Interfaces[Data.GlobalDataStore],
+			warnFunc,
+			"ImportFromJSON",
+			"GlobalDataStore",
+			false
+		)
+	end
+	if type(content.DataStore) == "table" then
+		importDataStoresFromTable(
+			content.DataStore,
+			Data.DataStore,
+			warnFunc,
+			"ImportFromJSON",
+			"DataStore",
+			false
+		)
+	end
+	if type(content.OrderedDataStore) == "table" then
+		importDataStoresFromTable(
+			content.OrderedDataStore,
+			Data.OrderedDataStore,
+			warnFunc,
+			"ImportFromJSON",
+			"OrderedDataStore",
+			true
+		)
+	end
+end
+
+local function clearTable(t)
+	for i,_ in pairs(t) do
+		t[i] = nil
+	end
+end
+
+function MockDataStoreManager.ResetData()
+	for _, interface in pairs(Interfaces) do
+		for key, _ in pairs(interface.__data) do
+			interface.__data[key] = nil
+			interface.__event:Fire(key, nil)
+		end
+		interface.__getCache = {}
+		interface.__writeCache = {}
+		interface.__writeLock = {}
+		if interface.__sorted then
+			interface.__sorted = {};
+            interface.__ref = {};
+            interface.__changed = false;
+		end
+	end
+
+	clearTable(Data.GlobalDataStore)
+
+	for _, scopes in pairs(Data.DataStore) do
+		for _, data in pairs(scopes) do
+			clearTable(data)
+		end
+	end
+
+	for _, scopes in pairs(Data.OrderedDataStore) do
+		for _, data in pairs(scopes) do
+			clearTable(data)
+		end
+	end
+end
+
+return MockDataStoreManager
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">MockDataStorePages</string>
+          <string name="Source"><![CDATA[--[[
+	MockDataStorePages.lua
+	This module implements the API and functionality of Roblox's DataStorePages class.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockDataStorePages = {}
+MockDataStorePages.__index = MockDataStorePages
+
+local MockDataStoreManager = require(script.Parent.MockDataStoreManager)
+local Utils = require(script.Parent.MockDataStoreUtils)
+
+function MockDataStorePages:GetCurrentPage()
+	local retValue = {}
+
+	local minimumIndex = math.max(1, (self.__currentPage - 1) * self.__pageSize + 1)
+	local maximumIndex = math.min(self.__currentPage * self.__pageSize, #self.__results)
+	for i = minimumIndex, maximumIndex do
+		table.insert(retValue, {key = self.__results[i].key, value = self.__results[i].value})
+	end
+
+	return retValue
+end
+
+function MockDataStorePages:AdvanceToNextPageAsync()
+	if self.IsFinished then
+		error("AdvanceToNextPageAsync rejected with error (no pages to advance to)", 2)
+	end
+
+	Utils.simulateErrorCheck("AdvanceToNextPageAsync")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn("AdvanceToNextPageAsync request was throttled due to lack of budget. Try sending fewer requests.")
+		end,
+		{Enum.DataStoreRequestType.GetAsync}
+	)
+
+	if not success then
+		error("AdvanceToNextPageAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	Utils.simulateYield()
+
+	if #self.__results > self.__currentPage * self.__pageSize then
+		self.__currentPage = self.__currentPage + 1
+	end
+	self.IsFinished = #self.__results <= self.__currentPage * self.__pageSize
+
+	Utils.logMethod(self.__datastore, "AdvanceToNextPageAsync")
+
+end
+
+return MockDataStorePages
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">MockDataStoreUtils</string>
+          <string name="Source"><![CDATA[--[[
+	MockDataStoreUtils.lua
+	Contains helper and utility functions used by other classes.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockDataStoreUtils = {}
+
+local Constants = require(script.Parent.MockDataStoreConstants)
+local HttpService = game:GetService("HttpService") -- for json encode/decode
+local RunService = game:GetService("RunService")
+
+local rand = Random.new()
+
+local function shorten(s, num)
+	if #s > num then
+		return s:sub(1,num-2) .. ".."
+	end
+	return s
+end
+
+--[[
+	[DataStore] [Name/Scope] [GetAsync] KEY
+	[DataStore] [Name/Scope] [UpdateAsync] KEY => VALUE
+	[DataStore] [Name/Scope] [SetAsync] KEY => VALUE
+	[DataStore] [Name/Scope] [IncrementAsync] KEY by INCR => VALUE
+	[DataStore] [Name/Scope] [RemoveAsync] KEY =/> VALUE
+	[DataStore] [Name/Scope] [OnUpdate] KEY
+	[DataStore] [Name/Scope] [GetSortedAsync]
+
+	[OrderedDataStore] [Name/Scope] [GetAsync] KEY
+	[OrderedDataStore] [Name/Scope] [UpdateAsync] KEY => VALUE
+	[OrderedDataStore] [Name/Scope] [SetAsync] KEY => VALUE
+	[OrderedDataStore] [Name/Scope] [IncrementAsync] KEY + INCR => VALUE
+	[OrderedDataStore] [Name/Scope] [RemoveAsync] KEY =/> VALUE
+	[OrderedDataStore] [Name/Scope] [OnUpdate] KEY
+	[OrderedDataStore] [Name/Scope] [GetSortedAsync]
+
+	[OrderedDataStore] [Name/Scope] [AdvanceToNextPageAsync]
+]]
+
+local function logMethod(self, method, key, value, increment)
+	if not Constants.LOGGING_ENABLED or type(Constants.LOGGING_FUNCTION) ~= "function" then
+		return
+	end
+
+	local name = self.__name
+	local scope = self.__scope
+
+	local prefix
+	if not name then
+		prefix = ("[GlobalDataStore] [%s]"):format(method)
+	elseif not scope then
+		prefix = ("[%s] [%s] [%s]"):format(self.__type, shorten(name, 20), method)
+	else
+		prefix = ("[%s] [%s/%s] [%s]"):format(self.__type, shorten(name, 15), shorten(scope, 15), method)
+	end
+
+	local message
+	if value and increment then
+		message = key .. " + " .. tostring(increment) .. " => " .. tostring(value)
+	elseif increment then
+		message = key .. " + " .. tostring(increment)
+	elseif value then
+		if method == "RemoveAsync" then
+			message = key .. " =/> " .. tostring(value)
+		else
+			message = key .. " => " .. tostring(value)
+		end
+	else
+		message = "key"
+	end
+
+	Constants.LOGGING_FUNCTION(prefix .. " " .. message)
+
+end
+
+local function deepcopy(t)
+	if type(t) == "table" then
+		local n = {}
+		for i,v in pairs(t) do
+			n[i] = deepcopy(v)
+		end
+		return n
+	else
+		return t
+	end
+end
+
+local function scanValidity(tbl, passed, path) -- Credit to Corecii (edited)
+	if type(tbl) ~= "table" then
+		return scanValidity({input = tbl}, {}, {})
+	end
+	passed, path = passed or {}, path or {"root"}
+	passed[tbl] = true
+	local tblType
+	do
+		local key = next(tbl)
+		if type(key) == "number" then
+			tblType = "Array"
+		else
+			tblType = "Dictionary"
+		end
+	end
+	local last = 0
+	for key, value in next, tbl do
+		path[#path + 1] = tostring(key)
+		if type(key) == "number" then
+			if tblType == "Dictionary" then
+				return false, path, "cannot store mixed tables"
+			elseif key % 1 ~= 0 then
+				return false, path, "cannot store tables with non-integer indices"
+			elseif key == math.huge or key == -math.huge then
+				return false, path, "cannot store tables with (-)infinity indices"
+			end
+		elseif type(key) ~= "string" then
+			return false, path, "dictionaries cannot have keys of type " .. typeof(key)
+		elseif tblType == "Array" then
+			return false, path, "cannot store mixed tables"
+		elseif not utf8.len(key) then
+			return false, path, "dictionary has key that is invalid UTF-8"
+		end
+		if tblType == "Array" then
+			if last ~= key - 1 then
+				return false, path, "array has non-sequential indices"
+			end
+			last = key
+		end
+		if type(value) == "userdata" or type(value) == "function" or type(value) == "thread" then
+			return false, path, "cannot store value '" .. tostring(value) .. "' of type " .. typeof(value)
+		elseif type(value) == "string" and not utf8.len(value) then
+			return false, path, "cannot store strings that are invalid UTF-8"
+		end
+		if type(value) == "table" then
+			if passed[value] then
+				return false, path, "cannot store cyclic tables"
+			end
+			local isValid, keyPath, reason = scanValidity(value, passed, path)
+			if not isValid then
+				return isValid, keyPath, reason
+			end
+		end
+		path[#path] = nil
+	end
+	passed[tbl] = nil
+	return true
+end
+
+local function getStringPath(path)
+	return table.concat(path, '.')
+end
+
+-- Import into a single datastore:
+local function importPairsFromTable(origin, destination, interface, warnFunc, methodName, prefix, isOrdered)
+	for key, value in pairs(origin) do
+		if type(key) ~= "string" then
+			warnFunc(("%s: ignored %s > '%s' (key is not a string, but a %s)")
+				:format(methodName, prefix, tostring(key), typeof(key)))
+		elseif not utf8.len(key) then
+			warnFunc(("%s: ignored %s > '%s' (key is not valid UTF-8)")
+				:format(methodName, prefix, tostring(key)))
+		elseif #key > Constants.MAX_LENGTH_KEY then
+			warnFunc(("%s: ignored %s > '%s' (key exceeds %d character limit)")
+				:format(methodName, prefix, key, Constants.MAX_LENGTH_KEY))
+		elseif type(value) == "string" and #value > Constants.MAX_LENGTH_DATA then
+			warnFunc(("%s: ignored %s > '%s' (length of value exceeds %d character limit)")
+				:format(methodName, prefix, key, Constants.MAX_LENGTH_DATA))
+		elseif type(value) == "table" and #HttpService:JSONEncode(value) > Constants.MAX_LENGTH_DATA then
+			warnFunc(("%s: ignored %s > '%s' (length of encoded value exceeds %d character limit)")
+				:format(methodName, prefix, key, Constants.MAX_LENGTH_DATA))
+		elseif type(value) == "function" or type(value) == "userdata" or type(value) == "thread" then
+			warnFunc(("%s: ignored %s > '%s' (cannot store value '%s' of type %s)")
+				:format(methodName, prefix, key, tostring(value), type(value)))
+		elseif isOrdered and type(value) ~= "number" then
+			warnFunc(("%s: ignored %s > '%s' (cannot store value '%s' of type %s in OrderedDataStore)")
+				:format(methodName, prefix, key, tostring(value), type(value)))
+		elseif isOrdered and value % 1 ~= 0 then
+			warnFunc(("%s: ignored %s > '%s' (cannot store non-integer value '%s' in OrderedDataStore)")
+				:format(methodName, prefix, key, tostring(value)))
+		elseif type(value) == "string" and not utf8.len(value) then
+			warnFunc(("%s: ignored %s > '%s' (string value is not valid UTF-8)")
+				:format(methodName, prefix, key, tostring(value), type(value)))
+		else
+			local isValid = true
+			local keyPath, reason
+			if type(value) == "table" then
+				isValid, keyPath, reason = scanValidity(value)
+			end
+			if isOrdered then
+				value = math.floor(value + .5)
+			end
+			if isValid then
+				local old = destination[key]
+				destination[key] = value
+				if interface and old ~= value then -- hacky block to fire OnUpdate signals
+					if isOrdered and interface then -- hacky block to populate internal structures for OrderedDataStores
+						if interface.__ref[key] then
+							interface.__ref[key].Value = value
+							interface.__changed = true
+						else
+							interface.__ref[key] = {Key = key, Value = interface.__data[key]}
+							table.insert(interface.__sorted, interface.__ref[key])
+							interface.__changed = true
+						end
+					end
+					interface.__event:Fire(key, value)
+				end
+			else
+				warnFunc(("%s: ignored %s > '%s' (table has invalid entry at <%s>: %s)")
+					:format(methodName, prefix, key, getStringPath(keyPath), reason))
+			end
+		end
+	end
+end
+
+-- Trim empty datastores and scopes from an entire datastore type:
+local function prepareDataStoresForExport(origin)
+	local dataPrepared = {}
+
+	for name, scopes in pairs(origin) do
+		local exportScopes = {}
+		for scope, data in pairs(scopes) do
+			local exportData = {}
+			for key, value in pairs(data) do
+				exportData[key] = value
+			end
+			if next(exportData) ~= nil then -- Only export datastore when non-empty
+				exportScopes[scope] = exportData
+			end
+		end
+		if next(exportScopes) ~= nil then -- Only export scope list when non-empty
+			dataPrepared[name] = exportScopes
+		end
+	end
+
+	if next(dataPrepared) ~= nil then -- Only return datastore type when non-empty
+		return dataPrepared
+	end
+end
+
+local function preprocessKey(key)
+	if type(key) == "number" then
+		if key ~= key then
+			return "NAN"
+		elseif key >= math.huge then
+			return "INF"
+		elseif key <= -math.huge then
+			return "-INF"
+		end
+		return tostring(key)
+	end
+	return key
+end
+
+local function simulateYield()
+	if Constants.YIELD_TIME_MAX > 0 then
+		task.wait(rand:NextNumber(Constants.YIELD_TIME_MIN, Constants.YIELD_TIME_MAX))
+	end
+end
+
+local function simulateErrorCheck(method)
+	if Constants.SIMULATE_ERROR_RATE > 0 and rand:NextNumber() <= Constants.SIMULATE_ERROR_RATE then
+		simulateYield()
+		error(method .. " rejected with error (simulated error)", 3)
+	end
+end
+
+-- Setting these here so the functions above can self-reference just by name:
+MockDataStoreUtils.logMethod = logMethod
+MockDataStoreUtils.deepcopy = deepcopy
+MockDataStoreUtils.scanValidity = scanValidity
+MockDataStoreUtils.getStringPath = getStringPath
+MockDataStoreUtils.importPairsFromTable = importPairsFromTable
+MockDataStoreUtils.prepareDataStoresForExport = prepareDataStoresForExport
+MockDataStoreUtils.preprocessKey = preprocessKey
+MockDataStoreUtils.simulateYield = simulateYield
+MockDataStoreUtils.simulateErrorCheck = simulateErrorCheck
+
+return MockDataStoreUtils
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">MockGlobalDataStore</string>
+          <string name="Source"><![CDATA[--[[
+	MockGlobalDataStore.lua
+	This module implements the API and functionality of Roblox's GlobalDataStore class.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockGlobalDataStore = {}
+MockGlobalDataStore.__index = MockGlobalDataStore
+
+local MockDataStoreManager = require(script.Parent.MockDataStoreManager)
+local Utils = require(script.Parent.MockDataStoreUtils)
+local Constants = require(script.Parent.MockDataStoreConstants)
+local HttpService = game:GetService("HttpService") -- for json encode/decode
+
+local rand = Random.new()
+
+function MockGlobalDataStore:OnUpdate(key, callback)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'OnUpdate' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif type(callback) ~= "function" then
+		error(("bad argument #2 to 'OnUpdate' (function expected, got %s)"):format(typeof(callback)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'OnUpdate' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'OnUpdate' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("OnUpdate")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn(("OnUpdate request was throttled due to lack of budget. Try sending fewer requests. Key = %s"):format(key))
+		end,
+		{Enum.DataStoreRequestType.OnUpdate}
+	)
+
+	if not success then
+		error("OnUpdate rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	Utils.logMethod(self, "OnUpdate", key)
+
+	return self.__event.Event:Connect(function(k, v)
+		if k == key then
+			if Constants.YIELD_TIME_UPDATE_MAX > 0 then
+				task.wait(rand:NextNumber(Constants.YIELD_TIME_UPDATE_MIN, Constants.YIELD_TIME_UPDATE_MAX))
+			end
+			callback(v) -- v was implicitly deep-copied
+		end
+	end)
+end
+
+function MockGlobalDataStore:GetAsync(key)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'GetAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'GetAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'GetAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	if self.__getCache[key] and tick() - self.__getCache[key] < Constants.GET_COOLDOWN then
+		return Utils.deepcopy(self.__data[key])
+	end
+
+	Utils.simulateErrorCheck("GetAsync")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn(("GetAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s"):format(key))
+		end,
+		{Enum.DataStoreRequestType.GetAsync}
+	)
+
+	if not success then
+		error("GetAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	self.__getCache[key] = tick()
+
+	local retValue = Utils.deepcopy(self.__data[key])
+
+	Utils.simulateYield()
+
+	Utils.logMethod(self, "GetAsync", key)
+
+	return retValue
+end
+
+function MockGlobalDataStore:IncrementAsync(key, delta)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'IncrementAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif delta ~= nil and type(delta) ~= "number" then
+		error(("bad argument #2 to 'IncrementAsync' (number expected, got %s)"):format(typeof(delta)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'IncrementAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'IncrementAsync' (key name exceeds %d character limit)")
+			:format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("IncrementAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("IncrementAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("IncrementAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("IncrementAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	local old = self.__data[key]
+
+	if old ~= nil and (type(old) ~= "number" or old % 1 ~= 0) then
+		Utils.simulateYield()
+		error("IncrementAsync rejected with error (cannot increment non-integer value)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	delta = delta and math.floor(delta + .5) or 1
+
+	self.__data[key] = (old or 0) + delta
+
+	if old == nil or delta ~= 0 then
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	local retValue = self.__data[key]
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	self.__getCache[key] = tick()
+
+	Utils.logMethod(self, "IncrementAsync", key, retValue, delta)
+
+	return retValue
+end
+
+function MockGlobalDataStore:RemoveAsync(key)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'RemoveAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'RemoveAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'RemoveAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("RemoveAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("RemoveAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("RemoveAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("RemoveAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	local value = Utils.deepcopy(self.__data[key])
+	self.__data[key] = nil
+
+	if value ~= nil then
+		self.__event:Fire(key, nil)
+	end
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	Utils.logMethod(self, "RemoveAsync", key, value)
+
+	return value
+end
+
+function MockGlobalDataStore:SetAsync(key, value)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'SetAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'SetAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'SetAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	elseif value == nil or type(value) == "function" or type(value) == "userdata" or type(value) == "thread" then
+		error(("bad argument #2 to 'SetAsync' (cannot store value '%s' of type %s)")
+			:format(tostring(value), typeof(value)), 2)
+	end
+
+	if type(value) == "table" then
+		local isValid, keyPath, reason = Utils.scanValidity(value)
+		if not isValid then
+			error(("bad argument #2 to 'SetAsync' (table has invalid entry at <%s>: %s)")
+				:format(Utils.getStringPath(keyPath), reason), 2)
+		end
+		local pass, content = pcall(function() return HttpService:JSONEncode(value) end)
+		if not pass then
+			error("bad argument #2 to 'SetAsync' (table could not be encoded to json)", 2)
+		elseif #content > Constants.MAX_LENGTH_DATA then
+			error(("bad argument #2 to 'SetAsync' (encoded data length exceeds %d character limit)")
+				:format(Constants.MAX_LENGTH_DATA), 2)
+		end
+	elseif type(value) == "string" then
+		if #value > Constants.MAX_LENGTH_DATA then
+			error(("bad argument #2 to 'SetAsync' (data length exceeds %d character limit)")
+				:format(Constants.MAX_LENGTH_DATA), 2)
+		elseif not utf8.len(value) then
+			error("bad argument #2 to 'SetAsync' (string value is not valid UTF-8)", 2)
+		end
+	end
+
+	Utils.simulateErrorCheck("SetAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("SetAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("SetAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("SetAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	if type(value) == "table" or value ~= self.__data[key] then
+		self.__data[key] = Utils.deepcopy(value)
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	Utils.logMethod(self, "SetAsync", key, self.__data[key])
+
+end
+
+function MockGlobalDataStore:UpdateAsync(key, transformFunction)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'UpdateAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif type(transformFunction) ~= "function" then
+		error(("bad argument #2 to 'UpdateAsync' (function expected, got %s)"):format(typeof(transformFunction)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'UpdateAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'UpdateAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("UpdateAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("UpdateAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		local budget
+		if self.__getCache[key] and tick() - self.__getCache[key] < Constants.GET_COOLDOWN then
+			budget = {Enum.DataStoreRequestType.SetIncrementAsync}
+		else
+			budget = {Enum.DataStoreRequestType.GetAsync, Enum.DataStoreRequestType.SetIncrementAsync}
+		end
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("UpdateAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			budget
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("UpdateAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	local value = transformFunction(Utils.deepcopy(self.__data[key]))
+
+	if value == nil then -- cancel update after remote call
+		Utils.simulateYield()
+		return nil -- this is what datastores do even though it should be old value
+	end
+
+	if type(value) == "function" or type(value) == "userdata" or type(value) == "thread" then
+		error(("UpdateAsync rejected with error (resulting value '%s' is of type %s that cannot be stored)")
+			:format(tostring(value), typeof(value)), 2)
+	end
+
+	if type(value) == "table" then
+		local isValid, keyPath, reason = Utils.scanValidity(value)
+		if not isValid then
+			error(("UpdateAsync rejected with error (resulting table has invalid entry at <%s>: %s)")
+				:format(Utils.getStringPath(keyPath), reason), 2)
+		end
+		local pass, content = pcall(function() return HttpService:JSONEncode(value) end)
+		if not pass then
+			error("UpdateAsync rejected with error (resulting table could not be encoded to json)", 2)
+		elseif #content > Constants.MAX_LENGTH_DATA then
+			error(("UpdateAsync rejected with error (resulting encoded data length exceeds %d character limit)")
+				:format(Constants.MAX_LENGTH_DATA), 2)
+		end
+	elseif type(value) == "string" then
+		if #value > Constants.MAX_LENGTH_DATA then
+			error(("UpdateAsync rejected with error (resulting data length exceeds %d character limit)")
+				:format(Constants.MAX_LENGTH_DATA), 2)
+		elseif not utf8.len(value) then
+			error("UpdateAsync rejected with error (string value is not valid UTF-8)", 2)
+		end
+	end
+
+	self.__writeLock[key] = true
+
+	if type(value) == "table" or value ~= self.__data[key] then
+		self.__data[key] = Utils.deepcopy(value)
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	local retValue = Utils.deepcopy(value)
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	self.__getCache[key] = tick()
+
+	Utils.logMethod(self, "UpdateAsync", key, retValue)
+
+	return retValue
+end
+
+function MockGlobalDataStore:ExportToJSON()
+	return HttpService:JSONEncode(self.__data)
+end
+
+function MockGlobalDataStore:ImportFromJSON(json, verbose)
+	local content
+	if type(json) == "string" then
+		local parsed, value = pcall(function() return HttpService:JSONDecode(json) end)
+		if not parsed then
+			error("bad argument #1 to 'ImportFromJSON' (string is not valid json)", 2)
+		end
+		content = value
+	elseif type(json) == "table" then
+		content = Utils.deepcopy(json)
+	else
+		error(("bad argument #1 to 'ImportFromJSON' (string or table expected, got %s)"):format(typeof(json)), 2)
+	end
+
+	if verbose ~= nil and type(verbose) ~= "boolean" then
+		error(("bad argument #2 to 'ImportFromJSON' (boolean expected, got %s)"):format(typeof(verbose)), 2)
+	end
+
+	Utils.importPairsFromTable(
+		content,
+		self.__data,
+		MockDataStoreManager.GetDataInterface(self.__data),
+		(verbose == false and function() end or warn),
+		"ImportFromJSON",
+		((type(self.__name) == "string" and type(self.__scope) == "string")
+			and ("DataStore > %s > %s"):format(self.__name, self.__scope)
+			or "GlobalDataStore"),
+		false
+	)
+end
+
+return MockGlobalDataStore
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="7">
+        <Properties>
+          <string name="Name">MockOrderedDataStore</string>
+          <string name="Source"><![CDATA[--[[
+	MockOrderedDataStore.lua
+	This module implements the API and functionality of Roblox's OrderedDataStore class.
+
+	This module is licensed under APLv2, refer to the LICENSE file or:
+	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
+]]
+
+local MockOrderedDataStore = {}
+MockOrderedDataStore.__index = MockOrderedDataStore
+
+local MockDataStoreManager = require(script.Parent.MockDataStoreManager)
+local MockDataStorePages = require(script.Parent.MockDataStorePages)
+local Utils = require(script.Parent.MockDataStoreUtils)
+local Constants = require(script.Parent.MockDataStoreConstants)
+local HttpService = game:GetService("HttpService") -- for json encode/decode
+
+local rand = Random.new()
+
+function MockOrderedDataStore:OnUpdate(key, callback)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'OnUpdate' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif type(callback) ~= "function" then
+		error(("bad argument #2 to 'OnUpdate' (function expected, got %s)"):format(typeof(callback)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'OnUpdate' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'OnUpdate' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("OnUpdate")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn(("OnUpdate request was throttled due to lack of budget. Try sending fewer requests. Key = %s"):format(key))
+		end,
+		{Enum.DataStoreRequestType.OnUpdate}
+	)
+
+	if not success then
+		error("OnUpdate rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	Utils.logMethod(self, "OnUpdate", key)
+
+	return self.__event.Event:Connect(function(k, v)
+		if k == key then
+			if Constants.YIELD_TIME_UPDATE_MAX > 0 then
+				task.wait(rand:NextNumber(Constants.YIELD_TIME_UPDATE_MIN, Constants.YIELD_TIME_UPDATE_MAX))
+			end
+			callback(v) -- v was implicitly deep-copied
+		end
+	end)
+end
+
+function MockOrderedDataStore:GetAsync(key)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'GetAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'GetAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'GetAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	if self.__getCache[key] and tick() - self.__getCache[key] < Constants.GET_COOLDOWN then
+		return self.__data[key]
+	end
+
+	Utils.simulateErrorCheck("GetAsync")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn(("GetAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s"):format(key))
+		end,
+		{Enum.DataStoreRequestType.GetAsync}
+	)
+
+	if not success then
+		error("GetAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	local retValue = self.__data[key]
+
+	Utils.simulateYield()
+
+	self.__getCache[key] = tick()
+
+	Utils.logMethod(self, "GetAsync", key)
+
+	return retValue
+end
+
+function MockOrderedDataStore:IncrementAsync(key, delta)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'IncrementAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif delta ~= nil and type(delta) ~= "number" then
+		error(("bad argument #2 to 'IncrementAsync' (number expected, got %s)"):format(typeof(delta)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'IncrementAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'IncrementAsync' (key name exceeds %d character limit)")
+			:format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("IncrementAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("IncrementAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("IncrementAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("IncrementAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	local old = self.__data[key]
+
+	if old ~= nil and (type(old) ~= "number" or old % 1 ~= 0) then
+		Utils.simulateYield()
+		error("IncrementAsync rejected with error (cannot increment non-integer value)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	delta = delta and math.floor(delta + .5) or 1
+
+	if old == nil then
+		self.__data[key] = delta
+		self.__ref[key] = {Key = key, Value = self.__data[key]}
+		table.insert(self.__sorted, self.__ref[key])
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	elseif delta ~= 0 then
+		self.__data[key] = self.__data[key] + delta
+		self.__ref[key].Value = self.__data[key]
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	local retValue = self.__data[key]
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	self.__getCache[key] = tick()
+
+	Utils.logMethod(self, "IncrementAsync", key, retValue, delta)
+
+	return retValue
+end
+
+function MockOrderedDataStore:RemoveAsync(key)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'RemoveAsync' (string expected, got %s)"):format(type(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'RemoveAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'RemoveAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("RemoveAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("RemoveAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("RemoveAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("RemoveAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	local value = self.__data[key]
+
+	if value ~= nil then
+		self.__data[key] = nil
+		self.__ref[key] = nil
+		for i,v in pairs(self.__sorted) do
+			if v.Key == key then
+				table.remove(self.__sorted, i)
+				break
+			end
+		end
+		self.__event:Fire(key, nil)
+	end
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	Utils.logMethod(self, "RemoveAsync", key, value)
+
+	return value
+end
+
+function MockOrderedDataStore:SetAsync(key, value)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'SetAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'SetAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'SetAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	elseif type(value) ~= "number" then
+		error(("bad argument #2 to 'SetAsync' (number expected, got %s)"):format(typeof(value)), 2)
+	elseif value % 1 ~= 0 then
+		error("bad argument #2 to 'SetAsync' (cannot store non-integer values in OrderedDataStore)", 2)
+	end
+
+	Utils.simulateErrorCheck("SetAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("SetAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("SetAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("SetAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	local old = self.__data[key]
+
+	if old == nil then
+		self.__data[key] = value
+		self.__ref[key] = {Key = key, Value = value}
+		table.insert(self.__sorted, self.__ref[key])
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	elseif old ~= value then
+		self.__data[key] = value
+		self.__ref[key].Value = value
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	Utils.logMethod(self, "SetAsync", key, self.__data[key])
+
+	return value
+end
+
+function MockOrderedDataStore:UpdateAsync(key, transformFunction)
+	key = Utils.preprocessKey(key)
+	if type(key) ~= "string" then
+		error(("bad argument #1 to 'UpdateAsync' (string expected, got %s)"):format(typeof(key)), 2)
+	elseif type(transformFunction) ~= "function" then
+		error(("bad argument #2 to 'UpdateAsync' (function expected, got %s)"):format(typeof(transformFunction)), 2)
+	elseif #key == 0 then
+		error("bad argument #1 to 'UpdateAsync' (key name can't be empty)", 2)
+	elseif #key > Constants.MAX_LENGTH_KEY then
+		error(("bad argument #1 to 'UpdateAsync' (key name exceeds %d character limit)"):format(Constants.MAX_LENGTH_KEY), 2)
+	end
+
+	Utils.simulateErrorCheck("UpdateAsync")
+
+	local success
+
+	if self.__writeLock[key] or tick() - (self.__writeCache[key] or 0) < Constants.WRITE_COOLDOWN then
+		success = MockDataStoreManager.YieldForWriteLockAndBudget(
+			function()
+				warn(("UpdateAsync request was throttled, a key can only be written to once every %d seconds. Key = %s")
+					:format(Constants.WRITE_COOLDOWN, key))
+			end,
+			key,
+			self.__writeLock,
+			self.__writeCache,
+			{Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		)
+	else
+		self.__writeLock[key] = true
+		local budget
+		if self.__getCache[key] and tick() - self.__getCache[key] < Constants.GET_COOLDOWN then
+			budget = {Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		else
+			budget = {Enum.DataStoreRequestType.GetAsync, Enum.DataStoreRequestType.SetIncrementSortedAsync}
+		end
+		success = MockDataStoreManager.YieldForBudget(
+			function()
+				warn(("UpdateAsync request was throttled due to lack of budget. Try sending fewer requests. Key = %s")
+					:format(key))
+			end,
+			budget
+		)
+		self.__writeLock[key] = nil
+	end
+
+	if not success then
+		error("UpdateAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	local value = transformFunction(self.__data[key])
+
+	if value == nil then -- cancel update after remote call
+		Utils.simulateYield()
+		return nil -- this is what datastores do even though it should be old value
+	end
+
+	if type(value) ~= "number" or value % 1 ~= 0 then
+		error("UpdateAsync rejected with error (resulting non-integer value can't be stored in OrderedDataStore)", 2)
+	end
+
+	self.__writeLock[key] = true
+
+	local old = self.__data[key]
+
+	if old == nil then
+		self.__data[key] = value
+		self.__ref[key] = {Key = key, Value = value}
+		table.insert(self.__sorted, self.__ref[key])
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	elseif old ~= value then
+		self.__data[key] = value
+		self.__ref[key].Value = value
+		self.__changed = true
+		self.__event:Fire(key, self.__data[key])
+	end
+
+	Utils.simulateYield()
+
+	self.__writeLock[key] = nil
+	self.__writeCache[key] = tick()
+
+	self.__getCache[key] = tick()
+
+	Utils.logMethod(self, "UpdateAsync", key, value)
+
+	return value
+end
+
+function MockOrderedDataStore:GetSortedAsync(ascending, pageSize, minValue, maxValue)
+	if type(ascending) ~= "boolean" then
+		error(("bad argument #1 to 'GetSortedAsync' (boolean expected, got %s)"):format(typeof(ascending)), 2)
+	elseif type(pageSize) ~= "number" then
+		error(("bad argument #2 to 'GetSortedAsync' (number expected, got %s)"):format(typeof(pageSize)), 2)
+	end
+
+	pageSize = math.floor(pageSize + .5)
+	if pageSize <= 0 or pageSize > Constants.MAX_PAGE_SIZE then
+		error(("bad argument #2 to 'GetSortedAsync' (page size must be an integer above 0 and below or equal to %d)")
+			:format(Constants.MAX_PAGE_SIZE), 2)
+	end
+
+	if minValue ~= nil then
+		if type(minValue) ~= "number" then
+			error(("bad argument #3 to 'GetSortedAsync' (number expected, got %s)"):format(typeof(minValue)), 2)
+		elseif minValue % 1 ~= 0 then
+			error("bad argument #3 to 'GetSortedAsync' (minimum threshold must be an integer)", 2)
+		end
+	else
+		minValue = -math.huge
+	end
+
+	if maxValue ~= nil then
+		if type(maxValue) ~= "number" then
+			error(("bad argument #4 to 'GetSortedAsync' (number expected, got %s)"):format(typeof(maxValue)), 2)
+		elseif maxValue % 1 ~= 0 then
+			error("bad argument #4 to 'GetSortedAsync' (maximum threshold must be an integer)", 2)
+		end
+	else
+		maxValue = math.huge
+	end
+
+	Utils.simulateErrorCheck("GetSortedAsync")
+
+	local success = MockDataStoreManager.YieldForBudget(
+		function()
+			warn("GetSortedAsync request was throttled due to lack of budget. Try sending fewer requests.")
+		end,
+		{Enum.DataStoreRequestType.GetSortedAsync}
+	)
+
+	if not success then
+		error("GetSortedAsync rejected with error (request was throttled, but throttled queue was full)", 2)
+	end
+
+	if minValue > maxValue then
+		Utils.simulateYield()
+		error("GetSortedAsync rejected with error (minimum threshold is higher than maximum threshold)", 2)
+	end
+
+	if self.__changed then
+		table.sort(self.__sorted, function(a,b) return a.Value < b.Value end)
+		self.__changed = false
+	end
+
+	local results = {}
+
+	if ascending then
+		local i = 1
+		while self.__sorted[i] and self.__sorted[i].Value < minValue do
+			i = i + 1
+		end
+		while self.__sorted[i] and self.__sorted[i].Value <= maxValue do
+			table.insert(results, {key = self.__sorted[i].Key, value = self.__sorted[i].Value})
+			i = i + 1
+		end
+	else
+		local i = #self.__sorted
+		while i > 0 and self.__sorted[i].Value > maxValue do
+			i = i - 1
+		end
+		while i > 0 and self.__sorted[i].Value >= minValue do
+			table.insert(results, {key = self.__sorted[i].Key, value = self.__sorted[i].Value})
+			i = i - 1
+		end
+	end
+
+	Utils.simulateYield()
+
+	Utils.logMethod(self, "GetSortedAsync")
+
+	return setmetatable({
+		__datastore = self;
+		__currentPage = 1;
+		__pageSize = pageSize;
+		__results = results;
+		IsFinished = (#results <= pageSize);
+	}, MockDataStorePages)
+end
+
+function MockOrderedDataStore:ExportToJSON()
+	return HttpService:JSONEncode(self.__data)
+end
+
+function MockOrderedDataStore:ImportFromJSON(json, verbose)
+	local content
+	if type(json) == "string" then
+		local parsed, value = pcall(function() return HttpService:JSONDecode(json) end)
+		if not parsed then
+			error("bad argument #1 to 'ImportFromJSON' (string is not valid json)", 2)
+		end
+		content = value
+	elseif type(json) == "table" then
+		content = json -- No need to deepcopy, OrderedDataStore only contains numbers which are passed by value
+	else
+		error(("bad argument #1 to 'ImportFromJSON' (string or table expected, got %s)"):format(typeof(json)), 2)
+	end
+
+	if verbose ~= nil and type(verbose) ~= "boolean" then
+		error(("bad argument #2 to 'ImportFromJSON' (boolean expected, got %s)"):format(typeof(verbose)), 2)
+	end
+
+	Utils.importPairsFromTable(
+		content,
+		self.__data,
+		MockDataStoreManager.GetDataInterface(self.__data),
+		(verbose == false and function() end or warn),
+		"ImportFromJSON",
+		("OrderedDataStore > %s > %s"):format(self.__name, self.__scope),
+		true
+	)
+end
+
+return MockOrderedDataStore
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+</roblox>
