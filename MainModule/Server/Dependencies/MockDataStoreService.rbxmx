@@ -28,7 +28,7 @@ end
 
 -- Return the mock or actual service depending on environment:
 if shouldUseMock then
-	warn("Using MockDataStoreService instead of DataStoreService")
+	warn(":: Adonis :: Using MockDataStoreService instead of DataStoreService")
 	return require(MockDataStoreServiceModule)
 else
 	return game:GetService("DataStoreService")
