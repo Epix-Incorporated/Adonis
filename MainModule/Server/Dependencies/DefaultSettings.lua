@@ -303,6 +303,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
+	settings.SaveCommandLogs = true		-- If command logs are saved to the datastores
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
@@ -438,6 +439,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.CreatorPowers = [[ When true gives me place owner admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 	descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
+	descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
@@ -547,6 +549,7 @@ local descs = {};			--// Contains settings descriptions
 		"SystemTitle";
 		" ";
 		"MaxLogs";
+		"SaveCommandLogs";
 		"Notification";
 		"SongHint";
 		"TopBarShift";
