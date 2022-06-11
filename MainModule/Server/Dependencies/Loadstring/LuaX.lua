@@ -609,13 +609,21 @@ function luaX:read_string(ls, del, Token)
 					else
 						self:save(ls, utf8.char(tonumber(unicodeCharacter)))
 					end
-				elseif string.lower(c) == "x" then
+				elseif string.lower(c) == "x" then -- Hex numeral literal
 					local hexNum = self:nextc(ls)..self:nextc(ls)
 
 					if not string.match(string.upper(hexNum), "%x") then
-						self:lexerror(string.format("Invalid hex string literal. Expected valid string literal, god %s", unicodeCharacter), "TK_STRING")
+						self:lexerror(string.format("Invalid hex string literal. Expected valid string literal, got %s", hexNum), "TK_STRING")
 					else
 						self:save(ls, string.char(tonumber(hexNum, 16)))
+					end
+				elseif string.lower(c) == "z" then -- Support \z string literal. I'm not sure why you would want to use this
+					local c = luaX:nextc(ls)
+
+					if c == del then
+						break
+					else
+						self:save(ls, c)
 					end
 				elseif not string.find(c, "%d") then
 					self:save_and_next(ls)  -- handles \\, \", \', and \?
