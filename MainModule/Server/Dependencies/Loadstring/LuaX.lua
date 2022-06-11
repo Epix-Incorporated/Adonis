@@ -386,7 +386,8 @@ end
 -- * returns the number, nil if fails (originally returns a boolean)
 -- * conversion function originally lua_str2number(s,p), a macro which
 --   maps to the strtod() function by default (from luaconf.h)
---   ccuser was here to add support for binary intiger constants and intiger decimal seperators
+-- * ccuser44 was here to add support for binary intiger constants and
+--   intiger decimal seperators
 ------------------------------------------------------------------------
 function luaX:str2d(s)
 	-- Support for Luau decimal seperators for integer literals
@@ -561,7 +562,8 @@ end
 ------------------------------------------------------------------------
 -- reads a string
 -- * has been restructured significantly compared to the original C code
--- * ccuser44 was here to add support for UTF8 string literals and 
+-- * ccuser44 was here to add support for UTF8 string literals,
+-- hex numerical string literals and the \z string literal
 ------------------------------------------------------------------------
 
 function luaX:read_string(ls, del, Token)
