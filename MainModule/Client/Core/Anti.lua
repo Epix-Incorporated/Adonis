@@ -457,7 +457,7 @@ return function(Vargs, GetEnv)
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService") then
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
 						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
