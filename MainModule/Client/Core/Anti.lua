@@ -587,11 +587,11 @@ return function(Vargs, GetEnv)
 					hasPrinted = true
 
 					if (lastLogOutput + 3) > startTime then
-						Detected("kick", "Log event not outputting to console")
+						--Detected("kick", "Log event not outputting to console")
 					end
 				else
 					if not First then
-						Detected("kick", "Suspicious log amount detected 5435345")
+						--Detected("kick", "Suspicious log amount detected 5435345")
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 				end
