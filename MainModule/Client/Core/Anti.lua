@@ -457,7 +457,7 @@ return function(Vargs, GetEnv)
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService") then --or findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService") then
 						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
@@ -684,25 +684,6 @@ return function(Vargs, GetEnv)
 					Detected("kick", "Tamper Protection 568234")
 				end)
 
-				-- // Checks disallowed content URLs in the CoreGui
-				xpcall(function()
-					if isStudio then
-						return
-					end
-
-					--local hasDetected = false
-					--local tempDecal = service.UnWrap(Instance.new("Decal"))
--- 					service.UnWrap(service.ContentProvider):PreloadAsync({tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
--- 						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
--- 							hasDetected = true
--- 							Detected("Kick", "Disallowed content URL detected in CoreGui")
--- 						end
--- 					end)
-
-					--tempDecal:Destroy()
-				end, function()
-					Detected("kick", "Tamper Protection 456754")
-				end)
 			end)
 		end
 	}, false, true)
