@@ -694,3 +694,4 @@ return service.NewProxy({
 	__metatable = "Adonis";
 	__tostring = function() return "Adonis" end;
 })
+

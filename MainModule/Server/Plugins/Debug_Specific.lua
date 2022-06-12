@@ -135,6 +135,7 @@ return function(Vargs)
 		end;
 	};
 
+--[[
 	Commands.DebugLoadstring = {
 		Prefix = ":";
 		Commands = {"debugloadstring";};
@@ -163,6 +164,6 @@ return function(Vargs)
 			end
 		end
 	};
-
+--]]
 	Logs:AddLog("Script", "Debug Module Loaded");
 end;

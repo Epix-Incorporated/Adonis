@@ -46,7 +46,7 @@ return function(data, env)
 				if reply:IsFocused() then
 					reply:ReleaseFocus() -- Prevents box text from being checked before it is populated on mobile devices
 				end
-
+				
 				if service.Trim(reply.Text) == "" then
 					debounce = false
 					UI.Make("Hint", {
