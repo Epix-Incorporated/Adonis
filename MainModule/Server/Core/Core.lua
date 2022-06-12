@@ -54,6 +54,8 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
+		service.DataStoreService = require(Deps.MockDataStoreService)
+
 		disableAllGUIs(server.Client.UI);
 
 		Core.Init = nil;
@@ -697,9 +699,9 @@ return function(Vargs, GetEnv)
 				end
 			end--]]
 		end;
-
 		GetDataStore = function()
 			local ran,store = pcall(function()
+				
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
