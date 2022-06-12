@@ -73,7 +73,7 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayer"; 
+	"StarterPlayer";
         "GroupService";
         "MarketplaceService";
         "MarketplaceService";
@@ -142,7 +142,7 @@ local require = function(mod, ...)
 end
 --]]
 
-function CloneTable(tab, recursive)
+local function CloneTable(tab, recursive)
 	local clone = table.clone(tab)
 
 	if recursive then
