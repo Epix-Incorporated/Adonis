@@ -54,6 +54,8 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
+		service.DataStoreService = require(Deps.MockDataStoreService)
+
 		disableAllGUIs(server.Client.UI);
 
 		Core.Init = nil;
@@ -697,16 +699,17 @@ return function(Vargs, GetEnv)
 				end
 			end--]]
 		end;
-
 		GetDataStore = function()
 			local ran,store = pcall(function()
+				
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
 			-- DataStore studio check.
 			if ran and store and service.RunService:IsStudio() then
 				local success, res = pcall(store.GetAsync, store, math.random())
-				if not success and string.find(res, "403", 1, true) then
+				if not success and string.find(res, "502", 1, true) then
+					warn("Unable to load data because Studio access to API services is disabled.")
 					return;
 				end
 			end
@@ -990,7 +993,26 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					table.insert(sets, data)
+					--// Check that the real table actually has the item to remove, do not create if it does not have it
+					--// Prevents snowballing
+					local indList = tab
+					local continueOperation = false
+					if indList[1] == "Settings" then
+						local indClone = table.clone(indList)
+						indClone[1] = "OriginalSettings"
+						local realTable,tableName = Core.IndexPathToTable(indClone)
+						for i,v in pairs(realTable) do
+							if CheckMatch(v, value) then
+								continueOperation = true
+							end
+						end
+					else
+						continueOperation = true
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
+					end
 
 					return sets
 				end)
@@ -1014,7 +1036,24 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					table.insert(sets, data)
+					--// Check that the real table does not have the item to add, do not create if it has it
+					--// Prevents snowballing
+					local indList = tab
+					local continueOperation = true
+					if indList[1] == "Settings" then
+						local indClone = table.clone(indList)
+						indClone[1] = "OriginalSettings"
+						local realTable,tableName = Core.IndexPathToTable(indClone)
+						for i,v in pairs(realTable) do
+							if CheckMatch(v, value) then
+								continueOperation = false
+							end
+						end
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
+					end
 
 					return sets
 				end)
@@ -1086,6 +1125,27 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey or true then
+						table.insert(server.Messages, {
+							Title = "Warning!";
+							Message = "Using default datastore key!";
+							Icon = server.MatIcons.Description;
+							Time = 15;
+							OnClick = server.Core.Bytecode([[
+								local window = client.UI.Make("Window", {
+									Title = "How to change the DataStore key";
+									Size = {700,300};
+									Icon = "rbxassetid://7510994359";
+								})
+
+								window:Add("ImageLabel", {
+									Image = "rbxassetid://1059543904";
+								})
+
+								window:Ready()
+							]]);
+						})
+					end
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
 
 					if not key then

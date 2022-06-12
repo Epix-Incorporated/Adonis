@@ -53,7 +53,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	script.Parent.Parent:Destroy()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -95,7 +99,11 @@ Pcall = nil
 Routine = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local gTable = data.gTable
 	local gui = gTable.Object
 	local playergui = service.PlayerGui
@@ -444,7 +452,11 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local playergui = service.PlayerGui
 	local localplayer = service.Player
 	local toggle = script.Parent.Parent.Toggle

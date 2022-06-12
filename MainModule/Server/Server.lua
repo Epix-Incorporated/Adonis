@@ -6,8 +6,7 @@ If you find bugs, typos, or ways to improve something please message me (Scelera
 what you found so the script can be better.
 
 Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
-																																																																																							]]
-math.randomseed(os.time())
+																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
 local LoadingOrder = {
@@ -52,7 +51,7 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, a
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -74,11 +73,15 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayers";
+	"StarterPlayer"; 
+        "GroupService";
+        "MarketplaceService";
+        "MarketplaceService";
 	"TestService";
 	"HttpService";
+        "RunService";
 	"InsertService";
-	"NetworkServer"
+	"NetworkServer";
 }
 
 local unique = {}
@@ -138,6 +141,20 @@ local require = function(mod, ...)
 	return require(mod, ...)
 end
 --]]
+
+function CloneTable(tab, recursive)
+	local clone = table.clone(tab)
+
+	if recursive then
+		for i,v in pairs(clone) do
+			if type(v) == "table" then
+				clone[i] = CloneTable(v, recursive)
+			end
+		end
+	end
+
+	return clone
+end
 
 local function Pcall(func, ...)
 	local pSuccess, pError = pcall(func, ...)
@@ -301,7 +318,6 @@ server = {
 	Routine = Routine;
 	LogError = logError;
 	ErrorLogs = ErrorLogs;
-	FilteringEnabled = workspace.FilteringEnabled;
 	ServerStartTime = os.time();
 	CommandCache = {};
 };
@@ -503,16 +519,27 @@ return service.NewProxy({
 			warn("WARNING: MainModule loaded without using the loader;")
 		end
 
-		--// Warn if possibly malicious
-		if data.PremiumID or data.PremiumId then
-			warn("\n ⚠ You might be using a malicious version of the Adonis loader ⚠\n -- If you are teleported to a 'Loading...' game, your game could be identified by the backdoor creators! 👁️‍🗨️--\n -- 🔰 Remember, there's no such thing as Adonis Premium or Gold! -- \n -- 💠 Grab the genuine Adonis Loader from the toolbox! ✔️-- \n ")
-		end
-
 		--// Server Variables
 		local setTab = require(server.Deps.DefaultSettings)
 		server.Defaults = setTab
 		server.Settings = data.Settings or setTab.Settings or {}
+		-- For some reason line 540 errors because CloneTable is nil
+		local function CloneTable(tab, recursive)
+			local clone = table.clone(tab)
+		
+			if recursive then
+				for i,v in pairs(clone) do
+					if type(v) == "table" then
+						clone[i] = CloneTable(v, recursive)
+					end
+				end
+			end
+		
+			return clone
+		end
+		server.OriginalSettings = CloneTable(server.Settings, true)
 		server.Descriptions = data.Descriptions or setTab.Descriptions or {}
+		server.Messages = data.Messages or setTab.Settings.Messages or {}
 		server.Order = data.Order or setTab.Order or {}
 		server.Data = data or {}
 		server.Model = data.Model or service.New("Model")
