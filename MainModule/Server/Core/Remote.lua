@@ -58,6 +58,7 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
+		RemoteExecutionConfirmed = {};
 
 		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
 
@@ -539,6 +540,21 @@ return function(Vargs, GetEnv)
 							print = function(...) local nums = {...} for _,v in ipairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
 							warn = function(...) local nums = {...} for _,v in ipairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
 						})
+
+						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
+							local ans = Remote.GetGui(p, "YesNoPrompt", {
+								Icon = server.MatIcons.Warning;
+								Question = "Are you sure you want to load this script into the server env?";
+								Title = "Adonis DebugLoadstring";
+								Delay = 5;
+							})
+
+							if ans == "Yes" then
+								server.Remote.RemoteExecutionConfirmed[p.UserId] = true
+							else
+								return
+							end
+						end
 
 						local func,err = Core.Loadstring(args[1], newenv)
 						if func then

@@ -16,5 +16,11 @@ return function(Vargs)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
+	-- // Remove legacy trello board
+	if table.find(server.settings.Trello_Secondary, "9HH6BEX2") then
+		table.remove(table.find(server.settings.Trello_Secondary, "9HH6BEX2"))
+		Logs:AddLog("Script", "Removed legacy trello board");
+	end
+
 	Logs:AddLog("Script", "Misc Features Module Loaded");
 end;
