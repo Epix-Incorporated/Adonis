@@ -44,13 +44,15 @@ else
 	mutex.Value = script:GetFullName()
 	mutex.Parent = RunService
 
+	local runner = script
 	local model = script.Parent.Parent
 	local config = model.Config
-	local core = model.Loader
 
+	local fallback = model.Core
+
+	local core = model.Loader
 	local dropper = core.Dropper
 	local loader = core.Loader
-	local runner = script
 
 	local settings = config.Settings
 	local plugins = config.Plugins
@@ -129,9 +131,12 @@ else
 		warn("Requiring Adonis MainModule. Model URL: https://www.roblox.com/library/".. moduleId)
 	end
 
-	local module = require(moduleId)
-	local response = module(data)
+	local loadSuccess, module = pcall(require, moduleId)
+	if not loadSuccess then 
+		module = require(fallback)
+	end 
 
+	local response = module(data)
 	if response == "SUCCESS" then
 		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
