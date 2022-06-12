@@ -458,10 +458,10 @@ return function(Vargs, GetEnv)
 			local function checkServ()
 				if not pcall(function()
 					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
-						Detected("crash", "Disallowed Services Detected")
+						--Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
-					Detected("kick", "Disallowed Services Finding Error")
+					--Detected("kick", "Disallowed Services Finding Error")
 				end
 			end
 
@@ -632,7 +632,7 @@ return function(Vargs, GetEnv)
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
-						Detected("kick", "Malicious Object?: " .. v)
+						--Detected("kick", "Malicious Object?: " .. v)
 					end
 				end
 	
