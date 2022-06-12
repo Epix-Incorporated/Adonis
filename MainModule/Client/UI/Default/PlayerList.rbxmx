@@ -47,11 +47,7 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	
@@ -85,7 +81,7 @@ return function(data, env)
 	}
 	
 	local mouse=service.Players.LocalPlayer:GetMouse()
-	local nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
+	local nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
 	local defx,defy,defp=nx,ny,drag.Position.X.Offset
 	local dragging=false
 	local dontSize=false
@@ -385,7 +381,7 @@ return function(data, env)
 	
 	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
-		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
+		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y--350,300
 		defx,defy,defp=nx,ny,drag.Position.X.Offset
 		dragger.Position = UDim2.new(0,0,1,-20)
 		--populate()

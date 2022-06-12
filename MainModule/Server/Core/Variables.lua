@@ -126,32 +126,32 @@ return function(Vargs, GetEnv)
 		IncognitoPlayers = {};
 
 		MusicList = {
-			{Name = "crabrave", 				ID = 5410086218},
-			{Name = "shiawase", 				ID = 5409360995},
-			{Name = "unchartedwaters", 			ID = 7028907200},
-			{Name = "glow", 				ID = 7028856935},
-			{Name = "good4me", 				ID = 7029051434},
-			{Name = "bloom", 				ID = 7029024726},
-			{Name = "safe&sound", 				ID = 7024233823},
-			{Name = "shaku", 				ID = 7024332460},
-			{Name = "fromdust&ashes", 			ID = 7024254685},
-			{Name = "loveis", 				ID = 7029092469},
-			{Name = "playitcool", 				ID = 7029017448},
-			{Name = "still", 				ID = 7023771708},
-			{Name = "sleep", 				ID = 7023407320},
-			{Name = "whatareyouwaitingfor", 		ID = 7028977687},
-			{Name = "balace", 				ID = 7024183256},
-			{Name = "brokenglass", 				ID = 7028799370},
-			{Name = "thelanguageofangels", 			ID = 7029031068},
-			{Name = "imprints", 				ID = 7023704173},
-			{Name = "foundareason", 			ID = 7028919492},
-			{Name = "newhorizons", 				ID = 7028518546},
-			{Name = "whatsitlike", 				ID = 7028997537},
-			{Name = "destroyme",				ID = 7023617400},
-			{Name = "consellations", 			ID = 7023733671},
-			{Name = "wish", 				ID = 7023670701},
-			{Name = "samemistake", 				ID = 7024101188},
-			{Name = "whereibelong", 			ID = 7028527348},
+			{Name = "epic", 	ID = 27697743}, -- Zero Project - Gothic
+			{Name = "halo", 	ID = 1034065}, -- Halo Theme
+			{Name = "cursed", 	ID = 1372257}, -- Cursed Abbey
+			{Name = "extreme", 	ID = 11420933}, -- TOPW
+			{Name = "tacos", 	ID = 142376088}, -- Parry Gripp - Raining Tacos
+			{Name = "awaken", 	ID = 27697277}, -- Positively Dark - Awakening
+			{Name = "mario", 	ID = 1280470}, -- SM64 Theme
+			{Name = "chrono", 	ID = 1280463}, -- Chrono Trigger Theme
+			{Name = "dotr", 	ID = 11420922}, -- DOTR | ▼ --- ▼ I do not speak tags
+			{Name = "entertain", 	ID = 27697267}, -- ##### ###### - Entertainer Rag
+			{Name = "fantasy", 	ID = 1280473}, -- FFVII Battle AC
+			{Name = "final", 	ID = 1280414}, -- Final Destination
+			{Name = "emblem", 	ID = 1372259}, -- Fire Emblem
+			{Name = "flight", 	ID = 27697719}, -- Daniel Bautista - Flight of the Bumblebee
+			{Name = "gothic", 	ID = 27697743}, -- Zero Project - Gothic
+			{Name = "hiphop", 	ID = 27697735}, -- Jeff Syndicate - Hip Hop
+			{Name = "intro", 	ID = 27697707}, -- Daniel Bautista - Intro
+			{Name = "mule", 	ID = 1077604}, -- M.U.L.E
+			{Name = "film", 	ID = 27697713}, -- Daniel Bautista - Music for a Film
+			{Name = "schala", 	ID = 5985787}, -- Schala
+			{Name = "tunnel",	ID = 9650822}, -- S4Tunnel
+			{Name = "spanish", 	ID = 5982975}, -- TheBuzzer
+			{Name = "venom", 	ID = 1372262}, -- Star Fox Theme
+			{Name = "guitar", 	ID = 5986151}, -- 5986151
+			{Name = "hardstyle", 	ID = 1839246774}, -- Hardstyle
+			{Name = "crabrave", 	ID = 5410086218}, -- Noisestorm - Crab Rave
 		};
 
 		InsertList = {};

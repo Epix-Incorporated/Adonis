@@ -1,11 +1,7 @@
 client = nil
 service = nil
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local gTable
 	local window = client.UI.Make("Window", {
 		Name  = "CreateCard";

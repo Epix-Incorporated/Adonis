@@ -148,10 +148,8 @@ return function(Vargs)
 		Function = function(plr,args)
 			--error("Disabled", 0)
 			local ans = Remote.GetGui(plr, "YesNoPrompt", {
-				Icon = server.MatIcons.Warning;
 				Question = "Are you sure you want to load this script into the server env?";
 				Title = "Adonis DebugLoadstring";
-				Delay = 5;
 			})
 			if ans == "Yes" then
 				local func,err = Core.Loadstring(args[1],GetEnv())

@@ -16,10 +16,14 @@ return function(Vargs)
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
-	-- // Remove legacy trello board
-	if table.find(server.settings.Trello_Secondary, "9HH6BEX2") then
-		table.remove(table.find(server.settings.Trello_Secondary, "9HH6BEX2"))
-		Logs:AddLog("Script", "Removed legacy trello board");
+	--// Worksafe
+	if Settings.AntiLeak and not service.ServerScriptService:FindFirstChild("ADONIS_AntiLeak") then
+		local ancsafe = Deps.Assets.WorkSafe:Clone()
+		ancsafe.Mode.Value = "AntiLeak"
+		ancsafe.Name = "ADONIS_AntiLeak"
+		ancsafe.Archivable = false
+		ancsafe.Parent = service.ServerScriptService
+		ancsafe.Disabled = false
 	end
 
 	Logs:AddLog("Script", "Misc Features Module Loaded");

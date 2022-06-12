@@ -2,6 +2,11 @@
 -- Adonis Client --
 -------------------
 
+-- //
+-- Luau sorta handles this now.
+-- math.randomseed(os.time())
+-- //
+
 --// Load Order List
 local LoadingOrder = {
 	--// Required by most modules
@@ -33,12 +38,12 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, t
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, require, table, type, task.wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -53,12 +58,8 @@ local ServicesWeUse = {
 	"SoundService";
 	"StarterGui";
 	"StarterPack";
-	"StarterPlayer";
-        "GroupService";
-        "MarketplaceService";
-        "HttpService";
+	"StarterPlayers";
 	"TestService";
-        "RunService";
 	"NetworkClient";
 };
 
@@ -151,7 +152,7 @@ local Immutable = function(...)
 end
 
 local player = game:GetService("Players").LocalPlayer
-local Fire, Detected = nil,nil
+local Fire, Detected
 local wrap = coroutine.wrap
 local Kill; Kill = Immutable(function(info)
 	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
@@ -198,21 +199,14 @@ GetEnv = function(env, repl)
 	return scriptEnv
 end
 
-local GetVargTable = function()
-	return {
-		Client = client;
-		Service = service;
-	}
-end
-
-local LoadModule = function(plugin, yield, envVars, noEnv)
+local LoadModule = function(plugin, yield, envVars)
 	local plugran, plug = pcall(require, plugin)
 
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
+				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
 
 				if not ran then
 					warn("Module encountered an error while loading: "..tostring(plugin))
@@ -220,7 +214,7 @@ local LoadModule = function(plugin, yield, envVars, noEnv)
 				end
 			else
 				--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
+				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), setfenv(plug, GetEnv(getfenv(plug), envVars)))
 
 				if not ran then
 					warn("Module encountered an error while loading: "..tostring(plugin))
@@ -555,7 +549,7 @@ return service.NewProxy({
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
 				log("~! Loading Core Module: ".. tostring(load))
-				LoadModule(modu, true, {script = script}, true)
+				LoadModule(modu, true, {script = script})
 			end
 		end
 

@@ -9,10 +9,7 @@ logError = nil
 log = nil
 
 --// Remote
-return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
-
+return function()
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
@@ -35,8 +32,8 @@ return function(Vargs, GetEnv)
 		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
-	local service = Vargs.Service
-	local client = Vargs.Client
+	local service = service
+	local client = client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
@@ -256,7 +253,20 @@ return function(Vargs, GetEnv)
 			end;
 		};
 
-		UnEncrypted = {};
+		UnEncrypted = {
+			LightingChange = function(prop, val)
+				print(prop, "TICKLE ME!?")
+				Variables.LightingChanged = true
+				service.Lighting[prop] = val
+				Anti.LastChanges.Lighting = prop
+				wait(.1)
+				Variables.LightingChanged = false
+				print("TICKLED :)",Variables.LightingChanged)
+				if Anti.LastChanges.Lighting == prop then
+					Anti.LastChanges.Lighting = nil
+				end
+			end
+		};
 
 		Commands = {
 			GetReturn = function(args)

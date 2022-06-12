@@ -473,11 +473,7 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed codeName..gui.Name
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local player = service.Players.LocalPlayer
 	local playergui = player.PlayerGui
 	local gui = script.Parent.Parent
@@ -490,7 +486,6 @@ return function(data, env)
 
 	local opened = false
 	local scrolling = false
-	local scrollOpen = false
 	local debounce = false
 	local settings = client.Remote.Get("Setting",{"SplitKey","ConsoleKeyCode","BatchKey","Prefix"})
 	local splitKey = settings.SplitKey
@@ -1031,11 +1026,7 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
@@ -2057,11 +2048,7 @@ local function propChange(child, target, list)
 	target.ZIndex = child.ZIndex-1;
 end
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-
+return function(data)
 	local gui = script.Parent.Parent;--data.GUI;
 
 	local function apply(child)
@@ -5106,11 +5093,7 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local gui = script.Parent.Parent--client.UI.Prepare(script.Parent.Parent)
 	local frame = gui.Frame
 	local frame2 = frame.Frame

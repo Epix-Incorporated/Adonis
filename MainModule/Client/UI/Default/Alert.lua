@@ -1,10 +1,6 @@
 client, service = nil, nil
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local gTable
 	
 	local isMuted = false
@@ -12,7 +8,7 @@ return function(data, env)
 	local alarm = service.New("Sound", {
 		Volume = 1;
 		Looped = true;
-		SoundId = "rbxassetid://143969658";
+		SoundId = "rbxassetid://138081509";
 	})
 	
 	local window = client.UI.Make("Window", {

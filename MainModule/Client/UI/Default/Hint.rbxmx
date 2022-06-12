@@ -211,11 +211,7 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local gui = script.Parent.Parent
 	local playergui = service.PlayerGui
 	local str = data.Message

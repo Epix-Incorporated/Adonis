@@ -48,14 +48,6 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if
-			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
-			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
-		then
-			Logs:AddLog("Script", "Didn't run character AC checks because another anti-exploit which does the same is already loaded.")
-			return
-		end
-
 		for _, v in ipairs(service.Players:GetPlayers()) do
 			task.spawn(onPlayerAdded, v)
 		end
@@ -277,7 +269,7 @@ return function(Vargs, GetEnv)
 				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
 
-				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
+				if Settings.AntiRootJointDeletion then
 					makeConnection(rootJoint.AncestryChanged)
 
 					if humanoid.RigType == Enum.HumanoidRigType.R15 then

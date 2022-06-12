@@ -1,10 +1,6 @@
 client, service = nil, nil
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local generate = nil
 
 	local window = client.UI.Make("Window", {

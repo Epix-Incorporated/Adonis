@@ -87,7 +87,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if not log.Time and not log.NoTime then
-				log.Time = os.time()
+				log.Time = service.GetTime()
 			end
 
 			table.insert(tab, 1, log)
@@ -100,11 +100,6 @@ return function(Vargs, GetEnv)
 
 		SaveCommandLogs = function()
 			warn("Saving command logs...")
-			
-			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
-				warn("Skipped saving command logs.")
-				return
-			end
 
 			local logsToSave = Logs.Commands --{}
 			local maxLogs = Logs.OldCommandLogsLimit

@@ -589,7 +589,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local gear = service.Insert(tonumber(212641536))
-				if gear:IsA("BackpackItem") then
+				if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
 					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						if v:FindFirstChild("Backpack") then
@@ -5072,7 +5072,7 @@ return function(Vargs, env)
 				if AssetIdType == 19 then
 					local gear = service.Insert(gearID)
 
-					if gear:IsA("BackpackItem") then
+					if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
 						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
 						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							if v:FindFirstChild("StarterGear") then
@@ -5101,7 +5101,7 @@ return function(Vargs, env)
 				if AssetIdType == 19 then
 					local gear = service.Insert(gearID)
 
-					if gear:IsA("BackpackItem") then
+					if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
 						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
 						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							if v:FindFirstChild("Backpack") then

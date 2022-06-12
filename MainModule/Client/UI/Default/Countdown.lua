@@ -1,10 +1,6 @@
 client, service = nil, nil
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local gTable
 	local tLimit = data.Time
 	local sImg

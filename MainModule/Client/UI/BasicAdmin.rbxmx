@@ -56,11 +56,7 @@ gTable = nil
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 --// Be sure to update the console gui's code if you change stuff
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local Title,Message = data.Title,data.Message
 	if not Title or not Message then return end
 	
@@ -877,11 +873,7 @@ gTable = nil
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 --// Be sure to update the console gui's code if you change stuff
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	if not data.Message then return end
 	
 	local gTable = data.gTable
@@ -1475,11 +1467,7 @@ gTable = nil
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 --// Be sure to update the console gui's code if you change stuff
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	if not data.Question then return end
 	
 	local gTable = data.gTable

@@ -8,11 +8,7 @@ local function boolToStr(bool)
 	end
 end
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
+return function(data)
 	local genPlayerList = nil
 	local genWorkspaceInfo = nil
 	local window = client.UI.Make("Window", {

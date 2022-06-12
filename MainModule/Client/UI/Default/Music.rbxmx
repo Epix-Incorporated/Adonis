@@ -2,60 +2,42 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXCBB476487DB546BABCDF249F0A7C9BBE">
+	<Item class="ModuleScript" referent="RBX6BE4830978734A03AD112E2B05AC20CA">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Music</string>
-			<string name="ScriptGuid">{4A0C63B1-968D-4B8F-9BC8-B3ADFB4B65DC}</string>
+			<string name="ScriptGuid">{EAB7D1D7-546C-4DD9-99BC-BE3311E6F9D8}</string>
 			<ProtectedString name="Source"><![CDATA[client = nil
 service = nil
 
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-	
-	
-	-- Saving those microseconds from using the dot operator
-	
-	local Variables = client.Variables
-	local Functions = client.Functions
+return function(data)
 	
 	-- Some pre-defined "global" variables
 	
 	local gTable
-	local song = data.Song
+	local tLimit = data.Time
 	local sImg
-	local gImg
 	local visualiserModule = nil
 	local visualiser = nil
 	local isMuted = false
-	local isGlobal = false
 	local activeSongList = nil
 	local availableSongLists = {}
 	local selected = nil
 	local shuffle = false
-	local loop = false
 	local soundInstanceEndedEvent = nil
-	local persistVolume = 0.25
-	local audioLib = nil
-	local controlPositionSlider = nil
-	local progressupdatewait = 0.05
 	
+	-- Sound that's used for every song
+
+	local soundInstance = service.New('Sound')
+	soundInstance.Volume = 0.25
+	soundInstance.Looped = false
+	--soundInstance.SoundId = 'http://www.roblox.com/asset/?id=4881542521' -- Used to play a sound on window open.
+
 	
 	-- The audio visulaiser at the top of the menu.
 	
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
-	local sliderModule = require(script:FindFirstChild("Slider"))
-	local localAudioLib = client.Shared.AudioLib
-	localAudioLib = require(localAudioLib).new(service.LocalContainer())
-	
-	local localAudioLibFunction = function(func, args)
-		return localAudioLib[func](localAudioLib, args)
-	end 
-	audioLib = localAudioLibFunction
-	
 	
 	-- Function to run when we close the window
 	
@@ -68,9 +50,10 @@ return function(data, env)
 		if visualiserModule then
 			visualiserModule = nil
 		end
-		audioLib("UpdateSound", {
-			Playing = false;
-		})
+		if soundInstance then
+			soundInstance:Stop()
+			soundInstance:Destroy()
+		end
 	end
 	
 	-- The when the who the when the window
@@ -78,8 +61,8 @@ return function(data, env)
 	local window = client.UI.Make("Window", {
 		Name = "Audio Player";
 		Title = "Audio Player";
-		Size = {420, 400};
-		MinSize = {420, 245};
+		Size = {410, 400};
+		MinSize = {410, 245};
 		icon = "http://www.roblox.com/asset/?id=7032721624";
 		Position = UDim2.new(0, 10, 1, -410);
 		OnClose = function()
@@ -87,126 +70,43 @@ return function(data, env)
 		end
 	})
 	
-	-- The controls frame at the bottom of the window
-
-	local controls = window:Add("Frame", {
-		Size = UDim2.new(1, 0, 0, 75);
-		Position = UDim2.new(0, 0, 1, -75);
-		BackgroundColor3 = Color3.new(0.235294, 0.235294, 0.235294);
-		BackgroundTransparency = 0;
-	})
-	
-	-- Volume
-	local controlVolume = controls:Add("TextLabel", {
-		Text = "   ";
-		ToolTip = "Volume: How loud the audio will play (0 to 10).";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 120, 0, 30);
-		Position = UDim2.new(1, -125, 1, -35);
-		TextXAlignment = "Left";
-	})
-
-	controlVolume:Add("ImageLabel", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(0, 20, 0, 20);
-		Position = UDim2.new(0, 5, 0, 5);
-		BackgroundTransparency = 1;
-	})
-
-	local controlVolumeSliderContainer = controlVolume:Add("Frame", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(1, -45, 0, 2);
-		Position = UDim2.new(0, 30, 0, 14);
-		BackgroundColor3 = Color3.new(0.454902, 0.454902, 0.454902);
-		BackgroundTransparency = 0;
-	})
-
-	local controlVolumeSliderInstance = controlVolumeSliderContainer:Add("ImageButton", {
-		Name = "Slider";
-		--Text = "";
-		Size = UDim2.new(0, 10, 0, 10);
-		Position = UDim2.new(0, 0, 0, -4);
-		BackgroundColor3 = Color3.new(1,1,1);
-		BackgroundTransparency = 0;
-		TextXAlignment = "Right";
-		Children = {
-			UICorner = {
-				CornerRadius = UDim.new(1, 0);
-			}
-		}
-	})
-
-	local controlVolumeSlider = sliderModule.new(service.UnWrap(controlVolumeSliderContainer), {Start = 0, End = 1000, Increment = 1, DefaultValue = 0.5}, TweenInfo.new(0.1, Enum.EasingStyle.Quad), "X", 0)
-	controlVolumeSlider:Track()
-
-	controlVolumeSlider.Changed:Connect(function(value)
-		audioLib("UpdateSound", {
-			Volume = value / 100;
-		})
-	end)
-
-	-- Track position
-	local controlPosition = controls:Add("TextLabel", {
-		Text = "   ";
-		ToolTip = "Position: Control where the song is playing from.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(1, -135, 0, 30);
-		Position = UDim2.new(0, 5, 1, -35);
-		TextXAlignment = "Left";
-	})
-
-	local controlPositionSliderContainer = controlPosition:Add("Frame", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(1, -30, 0, 2);
-		Position = UDim2.new(0, 14, 0, 14);
-		BackgroundColor3 = Color3.new(0.454902, 0.454902, 0.454902);
-		BackgroundTransparency = 0;
-	})
-
-	local controlPositionSliderInstance = controlPositionSliderContainer:Add("ImageButton", {
-		Name = "Slider";
-		Size = UDim2.new(0, 10, 0, 10);
-		Position = UDim2.new(0, 0, 0, -4);
-		BackgroundColor3 = Color3.new(1,1,1);
-		BackgroundTransparency = 0;
-		TextXAlignment = "Right";
-		Children = {
-			UICorner = {
-				CornerRadius = UDim.new(1, 0);
-			}
-		}
-	})
-
-	local controlPositionSlider = sliderModule.new(service.UnWrap(controlPositionSliderContainer), {Start = 0, End = 10000, Increment = 1, DefaultValue = 0.5}, TweenInfo.new(0.1, Enum.EasingStyle.Quad), "X", 0)
-	controlPositionSlider:Track()
-
-	controlPositionSlider.Changed:Connect(function(value)
-		local length = audioLib("GetSound").TimeLength
-		audioLib("UpdateSound", {
-			TimePosition = value / 10000 * length;
-		})
-	end)	
-	
 	-- Make the window ready before completing any code - Used to allow for delays in loading caused by MarketplaceService.
 	
 	gTable = window.gTable
 	gTable:Ready()
 	
-	local function newTrackSelected(v)
-		local sound = audioLib("UpdateSound", {
-			SoundId = "rbxassetid://"..v.ID;
-			Playing = true;
-			TimePosition = 0;
-		})
-	end
+	-- Mute button
+	
+	local muteButton = window:AddTitleButton({
+		Text = "";
+		OnClick = function()
+			if isMuted then
+				soundInstance.Volume = 0.25
+				sImg.Image = "rbxassetid://1638551696"
+				isMuted = false
+			else
+				soundInstance.Volume = 0
+				sImg.Image = "rbxassetid://1638584675";
+				isMuted = true
+			end
+		end
+	})
+
+	sImg = muteButton:Add("ImageLabel", {
+		Size = UDim2.new(0, 20, 0, 20);
+		Position = UDim2.new(0, 5, 0, 0);
+		Image = "rbxassetid://1638551696";
+		BackgroundTransparency = 1;
+	})
+	
 	-- Song title and Audio Visaliser Frame.
 	
 	local heading = window:Add("TextLabel", {
-		Text = "Music Player";
+		Text = "Audio Player";
 		Size = UDim2.new(1,0,0,20);
 		BackgroundTransparency = 1;
 		TextScaled = true;
-		ToolTip = "Music Player";
+		ToolTip = "Audio Player";
 	})
 
 	local visualiserFrame = window:Add("Frame", {
@@ -214,102 +114,6 @@ return function(data, env)
 		Position = UDim2.new(0, 0, 0, 30);
 		BackgroundTransparency = 1;
 		TextScaled = true;
-	})
-	
-	-- Create audio vislualiser
-
-	local visualiser = visualiserModule.new(visualiserFrame, 400)
-	visualiser:LinkToSound(audioLib("GetSound"))
-	if song then audioLib("UpdateSound", {
-		SoundId = "rbxassetid://"..song;
-		Playing = true;
-		TimePosition = 0;	
-		})
-	end
-	
-	-- Mute button
-
-	local muteButton = window:AddTitleButton({
-		Text = "";
-		OnClick = function()
-
-			if isMuted then
-				audioLib("UpdateSound", {
-					Volume = persistVolume;
-				})
-				sImg.Image = "rbxassetid://1638551696"
-				isMuted = false
-			else
-				persistVolume = audioLib("GetSound").Volume
-				audioLib("UpdateSound", {
-					Volume = 0;
-				})
-				sImg.Image = "rbxassetid://1638584675";
-				isMuted = true
-			end
-		end
-	})
-
-	local globalButton = window:AddTitleButton({
-		Text = "";
-		OnClick = function()
-			audioLib("UpdateSound", {
-				Playing = false;
-				TimePosition = 0;
-			})
-			if isGlobal then
-				gImg.Image = "rbxassetid://8318256297"
-				isGlobal = false
-				task.spawn(client.UI.Make, "Notification",{
-					Title = "Global Audio";
-					Icon = "rbxassetid://7541916144";
-					Message = "Only you can hear your music";
-					Time = 3;
-				})
-
-				audioLib = localAudioLibFunction
-				audioLib("UpdateSound", {
-					Playing = false;
-					TimePosition = 0;
-				})
-				visualiser:LinkToSound(audioLib("GetSound"))
-				progressupdatewait = 0.05
-
-			else
-				--updateAudio({Global = true})
-				gImg.Image = "rbxassetid://8318257291";
-				isGlobal = true
-				task.spawn(client.UI.Make, "Notification",{
-					Title = "Global Audio";
-					Icon = "rbxassetid://7541916144";
-					Message = "Everyone can hear your music";
-					Time = 3;
-				})
-				audioLib = function(func, args)
-					return client.Remote.Get("AudioLib", {func, args})
-				end
-				audioLib("UpdateSound", {
-					Playing = false;
-					TimePosition = 0;
-				})
-				visualiser:LinkToSound(audioLib("GetSound"))
-				progressupdatewait = 2
-			end
-		end
-	})
-
-	sImg = muteButton:Add("ImageLabel", {
-		Size = UDim2.new(1, 0, 1 ,0);
-		Position = UDim2.new(0, 0, 0, 0);
-		Image = "rbxassetid://1638551696";
-		BackgroundTransparency = 1;
-	})
-
-	gImg = globalButton:Add("ImageLabel", {
-		Size = UDim2.new(1, 0, 1 ,0);
-		Position = UDim2.new(0, 0, 0, 0);
-		Image = "rbxassetid://8318256297";
-		BackgroundTransparency = 1;
 	})
 	
 	-- Function that makes the song list.
@@ -340,8 +144,8 @@ return function(data, env)
 		})
 		
 		availableSongLists[tab.Name] = {}
-		
-		local function loop(i,v)
+
+		for i,v in next,(list  or {}) do
 			if type(v) == "table" then
 				loading.Text = "Loading tracks ("..i.."/"..#list..")";
 				local success, product_info = pcall(function()
@@ -361,7 +165,11 @@ return function(data, env)
 								selected.Button.BackgroundTransparency = 0
 							end
 							button.BackgroundTransparency = 0.5
-							
+
+							soundInstance:Stop()
+							soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. v.ID;
+							soundInstance:Play()
+
 							heading.Text = success and product_info.Name or v.Name
 							selected = {
 								ID = v.ID,
@@ -369,84 +177,55 @@ return function(data, env)
 								Button = button,
 								Index = i
 							}
-							
-							newTrackSelected(v)
 						end
 					})
-					frame:ResizeCanvas(false, true)
 				end
 			end
 			num = num + 1
 		end
-
-		for i,v in next,(list  or {}) do
-			task.spawn(loop, i, v)
-		end
-		
-		local sound = Variables.localSounds["AUDIO_PLAYER_SOUND"]
-		
-		if sound then
-			soundInstanceEndedEvent = sound.Ended:Connect(function()
-				if activeSongList and selected then
-					if shuffle then
-						local rnum
-						repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
-						local toPlay = activeSongList[(rnum)]
-						if toPlay then
-							audioLib("UpdateSound", {
-								SoundId = "rbxassetid://"..toPlay.ID;
-								Playing = true;
-								TimePosition = 0;
-							})
-							local success, product_info = pcall(function()
-								return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
-							end)
-							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
-							selected = {
-								ID = toPlay.ID,
-								Name = toPlay.Name,
-								Button = nil,
-								Index = rnum
-							}
-						end
-					else
-						local toPlay = activeSongList[(selected.Index +1)]
-						if toPlay then
-							audioLib("UpdateSound", {SoundId = "rbxassetid://"..toPlay.ID;
-								Playing = true;
-								TimePosition = 0;
-							})
-							
-							local success, product_info
-							local count = 0 --1
-
-							while not success do --2
-								if count >= 1 then
-									wait(1) --4
-								end
-
-								success, product_info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, toPlay.ID, Enum.InfoType.Asset) --5
-								count = count + 1 --6
-							end
-							
-							--local success, product_info = nil, nil
-							--repeat pcall(function()
-							--	success, product_info = service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
-							--	return success, product_info	
-							--end) until success == true
-							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
-							selected = {
-								ID = toPlay.ID,
-								Name = toPlay.Name,
-								Button = nil,
-								Index = selected.Index +1
-							}
-						end
+		soundInstanceEndedEvent = soundInstance.Ended:Connect(function()
+			if activeSongList and selected then
+				if shuffle then
+					local rnum
+					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
+					local toPlay = activeSongList[(rnum)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = rnum
+						}
 					end
-				end
-			end)
+				else
+					local toPlay = activeSongList[(selected.Index +1)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = selected.Index +1
+						}
+					end
+			end
 		end
+		end)
 		loading:Destroy()
+		frame:ResizeCanvas(false, true)
 	end
 	
 	-- Tabs for different playlists
@@ -553,25 +332,28 @@ return function(data, env)
 	PlaylistBox.BackgroundColor3 = PlaylistBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
 	binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 	
-	--[[
+	--
 	
-	========================================================
-	|                                                      |
-	| Top control buttons (Save and load custom playlist)  |
-	|                                                      |
-	========================================================
-	
-	]]--
-	
-	-- Create playlist button
-	local playlistLoad = controls:Add("TextButton", {
-		Text = "⏫";
-		TextSize = 15;
-		ToolTip = "Create playlist: Create a new custom playlist from a string.";
+	-- The controls frame at the bottom of the window
+
+	local controls = window:Add("Frame", {
+		Size = UDim2.new(1, 0, 0, 75);
+		Position = UDim2.new(0, 0, 1, -75);
+		BackgroundColor3 = Color3.new(0.235294, 0.235294, 0.235294);
 		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 5, 0, 5);
-		TextXAlignment = "Center";
+	})
+	
+	-- Top control buttons (Save and load custom playlist)
+	
+	-- Load custom playlist
+
+	local playlistLoad = controls:Add("TextButton", {
+		Text = "Load playlist";
+		ToolTip = "Create a new custom playlist from a string.";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 100, 0, 30);
+		Position = UDim2.new(0, 5, 1, -70);
+		--TextXAlignment = "Left";
 		OnClicked = function()
 			PlaylistBox.Text = ""
 			binderBox.Visible = true
@@ -582,142 +364,27 @@ return function(data, env)
 	
 	-- Save cutom playlist
 	
-	local playlistSave = controls:Add("TextButton", {
-		Text = "⬆️";
-		TextSize = 15;
-		ToolTip = "Upload playlist: Saves your custom playlist to the games datastore.";
+	local playlistLoad = controls:Add("TextButton", {
+		Text = "Save playlist";
+		ToolTip = "Save your custom playlist to the games datastore.";
 		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 40, 0, 5);
-		TextXAlignment = "Center";
+		Size = UDim2.new(0, 100, 0, 30);
+		Position = UDim2.new(1, -105, 1, -70);
+		--TextXAlignment = "Right";
 		OnClicked = function()
 			personalTab:FocusTab();
 			if (client.Variables.Playlist.Playlist ~= nil) and (client.Variables.Playlist.Playlist ~= {}) then
 				client.Functions.UpdatePlaylist(client.Variables.Playlist)
 				getSongs(personalTab, ((client.Functions.Playlist()).Playlist or {}))
 			else
-				warn("[ERROR] Cannot update empty Playlist")
+				print("[ERROR] Cannot update empty Playlist")
 			end
 			activeSongList = availableSongLists["Personal"] or {}
 		end
 	})
 	
-	-- Stop button
-	local controlStop = controls:Add("TextButton", {
-		Text = "⏹";
-		TextSize = 15;
-		ToolTip = "Stop: Pauses the track and sets the position to 0.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 75, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-			audioLib("UpdateSound", {
-				Playing = false;
-				TimePosition = 0;	
-			})
-		end
-	})
-
-	-- Back button
-	local controlBack = controls:Add("TextButton", {
-		Text = "◀️";
-		TextSize = 15;
-		ToolTip = "Back: Go back to the last played track.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 110, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-
-		end
-	})
-
-	-- Pause/Play button
-	local controlPausePlay = controls:Add("TextButton", {
-		Text = "⏯️";
-		TextSize = 15;
-		ToolTip = "Pause/Play: Control the tracks playing state.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 145, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-			audioLib("UpdateSound", {
-				Playing = not audioLib("GetSound").Playing
-			})
-		end
-	})
-
-	-- Forward button
-	local controlForward = controls:Add("TextButton", {
-		Text = "▶️";
-		TextSize = 15;
-		ToolTip = "Forward: Skip to the next track.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 180, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-
-		end
-	})
 	
-	-- Forward button
 	
-	local controlShuffle = nil
-	local controlShuffleBackgroundColor3 = nil
-	local function changeShuffleColor()
-		if shuffle then
-			controlShuffle.BackgroundColor3 = Color3.new(0, 1, 0.6)
-		else
-			controlShuffle.BackgroundColor3 = controlShuffleBackgroundColor3
-		end
-	end
-	controlShuffle = controls:Add("TextButton", {
-		Text = "🔀";
-		TextSize = 15;
-		ToolTip = "Shuffle: Randomly pick between.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 215, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-			shuffle = not shuffle
-			changeShuffleColor()
-		end
-	})
-
-	controlShuffleBackgroundColor3 = controlShuffle.BackgroundColor3
-	
-	-- Loop button
-	
-	local controlLoop = nil
-	local controlLoopBackgroundColor3 = nil
-	local function changeLoopColor()
-		if loop then
-			controlLoop.BackgroundColor3 = Color3.new(0, 1, 0.6)
-		else
-			controlLoop.BackgroundColor3 = controlLoopBackgroundColor3
-		end
-	end
-	controlLoop = controls:Add("TextButton", {
-		Text = "🔁";
-		TextSize = 15;
-		ToolTip = "Loop: Loops the song continuously.";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(0, 250, 0, 5);
-		TextXAlignment = "Center";
-		OnClick = function()
-			loop = not loop
-			changeLoopColor()
-			audioLib("UpdateSound", {
-				Looped = loop;
-			})
-		end
-	})
-	controlLoopBackgroundColor3 = controlLoop.BackgroundColor3
 	
 	-- Bottom control buttons
 	
@@ -728,7 +395,7 @@ return function(data, env)
 		ToolTip = "ID: The Sound ID from the roblox catalogue.";
 		BackgroundTransparency = 0;
 		Size = UDim2.new(0, 120, 0, 30);
-		Position = UDim2.new(1, -125, 0, 5);
+		Position = UDim2.new(0, 5, 1, -35);
 		TextXAlignment = "Left";
 		Children = {
 			TextBox = {
@@ -740,11 +407,34 @@ return function(data, env)
 				TextXAlignment = "Right";
 				TextChanged = function(text, enter, new)
 					if enter then
-						audioLib("UpdateSound", {
-							SoundId = "rbxassetid://"..text;
-							Playing = true;
-							TimePosition = 0;
-						})
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. text;
+						soundInstance:Play()
+					end
+				end
+			}
+		}
+	})
+	
+	-- Volume
+	local controlVolume = controls:Add("TextLabel", {
+		Text = "  Vol: ";
+		ToolTip = "Volume: How loud the audio will play (0 to 10).";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 60, 0, 30);
+		Position = UDim2.new(0, 130, 1, -35);
+		TextXAlignment = "Left";
+		Children = {
+			TextBox = {
+				Text = "";
+				PlaceholderText = "1";
+				Size = UDim2.new(0, 40, 1, 0);
+				Position = UDim2.new(1, -50, 0, 0);
+				BackgroundTransparency = 1;
+				TextXAlignment = "Right";
+				TextChanged = function(text, enter, new)
+					if enter then
+						soundInstance.Volume = text;
 					end
 				end
 			}
@@ -752,134 +442,189 @@ return function(data, env)
 	})
 	
 	-- Position
-	--local controlPosition = controls:Add("TextLabel", {
-	--	Text = "  Pos: ";
-	--	ToolTip = "Position: Set the audio's position (In seconds).";
-	--	BackgroundTransparency = 0;
-	--	Size = UDim2.new(0, 60, 0, 30);
-	--	Position = UDim2.new(1, -205, 1, -35);
-	--	TextXAlignment = "Left";
-	--	Children = {
-	--		TextBox = {
-	--			Text = "";
-	--			PlaceholderText = "0";
-	--			Size = UDim2.new(0, 40, 1, 0);
-	--			Position = UDim2.new(1, -50, 0, 0);
-	--			BackgroundTransparency = 1;
-	--			TextXAlignment = "Right";
-	--			TextChanged = function(text, enter, new)
-	--				if enter then
-	--					audioLib("UpdateSound", {
-	--						TimePosition = text
-	--					})
-	--				end
-	--			end
-	--		}
-	--	}
-	--})
-	
-	--[[
-	
-	========================================================
-	|                                                      |
-	| Bottom control buttons (Position and volume slider)  |
-	|                                                      |
-	========================================================
-	
-	]]--
-	
-	-- Volume
-	local controlVolume = controls:Add("TextLabel", {
-		Text = "   ";
-		ToolTip = "Volume: How loud the audio will play (0 to 10).";
-		BackgroundTransparency = 0;
-		Size = UDim2.new(0, 120, 0, 30);
-		Position = UDim2.new(1, -125, 1, -35);
-		TextXAlignment = "Left";
-	})
-	
-	controlVolume:Add("ImageLabel", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(0, 20, 0, 20);
-		Position = UDim2.new(0, 5, 0, 5);
-		BackgroundTransparency = 1;
-	})
-	
-	local controlVolumeSliderContainer = controlVolume:Add("Frame", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(1, -45, 0, 2);
-		Position = UDim2.new(0, 30, 0, 14);
-		BackgroundColor3 = Color3.new(0.454902, 0.454902, 0.454902);
-		BackgroundTransparency = 0;
-	})
-	
-	local controlVolumeSliderInstance = controlVolumeSliderContainer:Add("ImageButton", {
-		Name = "Slider";
-		--Text = "";
-		Size = UDim2.new(0, 10, 0, 10);
-		Position = UDim2.new(0, 0, 0, -4);
-		BackgroundColor3 = Color3.new(1,1,1);
-		BackgroundTransparency = 0;
-		TextXAlignment = "Right";
-		Children = {
-			UICorner = {
-				CornerRadius = UDim.new(1, 0);
-			}
-		}
-	})
-	
-	local controlVolumeSlider = sliderModule.new(service.UnWrap(controlVolumeSliderContainer), {Start = 0, End = 1000, Increment = 1, DefaultValue = 0.5}, TweenInfo.new(0.1, Enum.EasingStyle.Quad), "X", 0)
-	controlVolumeSlider:Track()
-	
-	controlVolumeSlider.Changed:Connect(function(value)
-		audioLib("UpdateSound", {
-			Volume = value / 100;
-		})
-	end)
-	
-	-- Track position
 	local controlPosition = controls:Add("TextLabel", {
-		Text = "   ";
-		ToolTip = "Position: Control where the song is playing from.";
+		Text = "  Pos: ";
+		ToolTip = "Position: Set the audio's position (In seconds).";
 		BackgroundTransparency = 0;
-		Size = UDim2.new(1, -135, 0, 30);
-		Position = UDim2.new(0, 5, 1, -35);
+		Size = UDim2.new(0, 60, 0, 30);
+		Position = UDim2.new(1, -205, 1, -35);
 		TextXAlignment = "Left";
-	})
-
-	local controlPositionSliderContainer = controlPosition:Add("Frame", {
-		Image = "rbxassetid://7541896266";
-		Size = UDim2.new(1, -30, 0, 2);
-		Position = UDim2.new(0, 14, 0, 14);
-		BackgroundColor3 = Color3.new(0.454902, 0.454902, 0.454902);
-		BackgroundTransparency = 0;
-	})
-
-	local controlPositionSliderInstance = controlPositionSliderContainer:Add("ImageButton", {
-		Name = "Slider";
-		Size = UDim2.new(0, 10, 0, 10);
-		Position = UDim2.new(0, 0, 0, -4);
-		BackgroundColor3 = Color3.new(1,1,1);
-		BackgroundTransparency = 0;
-		TextXAlignment = "Right";
 		Children = {
-			UICorner = {
-				CornerRadius = UDim.new(1, 0);
+			TextBox = {
+				Text = "";
+				PlaceholderText = "0";
+				Size = UDim2.new(0, 40, 1, 0);
+				Position = UDim2.new(1, -50, 0, 0);
+				BackgroundTransparency = 1;
+				TextXAlignment = "Right";
+				TextChanged = function(text, enter, new)
+					if enter then
+						soundInstance:Stop()
+						soundInstance.TimePosition = text;
+						soundInstance:Play()
+					end
+				end
 			}
 		}
 	})
-
-	local controlPositionSlider = sliderModule.new(service.UnWrap(controlPositionSliderContainer), {Start = 0, End = 10000, Increment = 1, DefaultValue = 0.5}, TweenInfo.new(0.1, Enum.EasingStyle.Quad), "X", 0)
-	controlPositionSlider:Track()
-
-	controlPositionSlider.Changed:Connect(function(value)
-		local length = audioLib("GetSound").TimeLength
-		audioLib("UpdateSound", {
-			TimePosition = value / 10000 * length;
-		})
-	end)	
 	
-	-- Used to play a sound on window open. 4881542521.
+	-- Back button
+	local controlBack = controls:Add("TextButton", {
+		Text = "◀️";
+		TextSize = 15;
+		ToolTip = "Back: Go back to the last played track.";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 30, 0, 30);
+		Position = UDim2.new(1, -140, 1, -35);
+		TextXAlignment = "Center";
+		OnClick = function()
+			if activeSongList and selected then
+				if shuffle then
+					local rnum
+					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
+					local toPlay = activeSongList[(rnum)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = rnum
+						}
+					end
+				else
+					local toPlay = activeSongList[(selected.Index -1)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = selected.Index -1
+						}
+					end
+				end
+			end
+		end
+	})
+	
+	-- Pause/Play button
+	local controlPausePlay = controls:Add("TextButton", {
+		Text = "⏯️";
+		TextSize = 15;
+		ToolTip = "Pause/Play: Control the tracks playing state.";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 30, 0, 30);
+		Position = UDim2.new(1, -105, 1, -35);
+		TextXAlignment = "Center";
+		OnClick = function()
+			if soundInstance.Playing then
+				soundInstance:Pause()
+			else
+				soundInstance:Resume()
+			end
+		end
+	})
+	
+	-- Forward button
+	local controlForward = controls:Add("TextButton", {
+		Text = "▶️";
+		TextSize = 15;
+		ToolTip = "Forward: Skip to the next track.";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 30, 0, 30);
+		Position = UDim2.new(1, -70, 1, -35);
+		TextXAlignment = "Center";
+		OnClick = function()
+			if activeSongList and selected then
+				if shuffle then
+					local rnum
+					repeat rnum = math.random(#activeSongList) until (rnum ~= selected.Index or #activeSongList <= 1)
+					local toPlay = activeSongList[(rnum)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = rnum
+						}
+					end
+				else
+					local toPlay = activeSongList[(selected.Index +1)]
+					if toPlay then
+						soundInstance:Stop()
+						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance:Play()
+						local success, product_info = pcall(function()
+							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
+						end)
+						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						selected = {
+							ID = toPlay.ID,
+							Name = toPlay.Name,
+							Button = nil,
+							Index = selected.Index +1
+						}
+					end
+				end
+			end
+		end
+	})
+	
+	local controlShuffle = nil
+	local controlShuffleBackgroundColor3 = nil
+	
+	local function changeShuffleColor()
+		if shuffle then
+			controlShuffle.BackgroundColor3 = Color3.new(0, 1, 0.6)
+		else
+			controlShuffle.BackgroundColor3 = controlShuffleBackgroundColor3
+		end
+	end
+	
+	-- Forward button
+	controlShuffle = controls:Add("TextButton", {
+		Text = "🔀";
+		TextSize = 15;
+		ToolTip = "Shuffle: Randomly pick between.";
+		BackgroundTransparency = 0;
+		Size = UDim2.new(0, 30, 0, 30);
+		Position = UDim2.new(1, -35, 1, -35);
+		TextXAlignment = "Center";
+		OnClick = function()
+			shuffle = not shuffle
+			changeShuffleColor()
+		end
+	})
+	
+	controlShuffleBackgroundColor3 = controlShuffle.BackgroundColor3
+	
+	
+	-- Create audio vislualiser
+	
+	soundInstance.Parent = visualiserFrame
+	local visualiser = visualiserModule.new(visualiserFrame, 400)
+	visualiser:LinkToSound(soundInstance)
+	--soundInstance:Play() -- Play a sound immediately after opening
 	
 	-- Create OnClose event after everything has been initialised
 	
@@ -904,26 +649,16 @@ return function(data, env)
 	getSongs(gameTab, (client.Remote.Get("Variable", "MusicList") or {}))
 	getSongs(adonisTab, (client.Remote.Get("Variable", "MusicList") or {}))
 	activeSongList = availableSongLists["Personal"] or {}
-	
-	task.spawn(function()
-		local tempsound = audioLib("GetSound")
-		while task.wait(progressupdatewait) do
-			tempsound = audioLib("GetSound")
-			if tempsound and tempsound.TimeLength ~= 0 then
-				controlPositionSlider:OverrideVisualValue(tempsound.TimePosition / tempsound.TimeLength * 10000)
-			end
-		end	
-	end)
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ModuleScript" referent="RBX690B5AA866684E8680EA2CC8D93FA6AB">
+		<Item class="ModuleScript" referent="RBX535928E71C674D01BF29C6031F0B12B5">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Visualizer</string>
-				<string name="ScriptGuid">{2086DC00-4C8E-4B30-A4F1-D6C23B274B31}</string>
+				<string name="ScriptGuid">{658E6E95-8901-405F-AAEE-9E92313333CD}</string>
 				<ProtectedString name="Source"><![CDATA[local RunService = game:GetService("RunService")
 
 local module = {}
@@ -1125,547 +860,6 @@ return module
 ]]></ProtectedString>
 				<int64 name="SourceAssetId">6360148029</int64>
 				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX9680924CA7C74089BEDB674DB2D84285">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<Content name="LinkedSource"><null></null></Content>
-				<string name="Name">Slider</string>
-				<string name="ScriptGuid">{D8B061CE-A9A0-4A91-AD85-FE61F9B162CF}</string>
-				<ProtectedString name="Source"><![CDATA[--------------------------------------------------------------------------------------------
--------------------------------------- Slider Module ---------------------------------------
--- [Adonis Maintainer]: P3tray
--- [Author]: Krypt
--- [Description]: Creates a slider based on a start, end and incremental value. Allows ...
--- ... sliders to be moved, tracked/untracked, reset, and have specific properties such ...
--- ... as their current value and increment to be overriden.
-
--- [Created]: 22/12/2021
--- [Edited]: 18/01/2022
--- [Dev Forum Link]: https://devforum.roblox.com/t/1597785/
---------------------------------------------------------------------------------------------
-
---!nonstrict
-local Slider = {
-	Sliders = {}
-}
-
-local RunService = game:GetService("RunService")
-
-if not RunService:IsClient() then
-	error("Slider module can only be used on the Client!", 2)
-	return nil
-end
-
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-
-local Clamp = math.clamp
-local Floor = math.floor
-local Min = math.min
-local Max = math.max
-local Round = math.round
-
-local Lower = string.lower
-local Upper = string.upper
-local Sub = string.sub
-local Format = string.format
-
-local Signal = require(script.Parent.Signal)
-
-Slider.__index = function(object, indexed)
-	local deprecated = {
-		{".OnChange", ".Changed", object.Changed}
-	}
-
-	for _, tbl in ipairs(deprecated) do
-		local deprecatedStr = Sub(tbl[1], 2)
-
-		if deprecatedStr == indexed then
-			warn(Format("%s is deprecated, please use %s instead", tbl[1], tbl[2]))
-			return tbl[3]	
-		end
-	end
-
-	return Slider[indexed]
-end
-
-export type sliderConfigDictionary = {[string]: number}
-
-function snapToScale(val, step)
-	return Clamp(Floor(val / step) * step, 0, 1)
-end
-
-function lerp(start, finish, percent)
-	return (1 - percent) * start + percent * finish
-end
-
-function map(value, start, stop, newStart, newEnd, constrain)
-	local newVal = lerp(newStart, newEnd, getAlphaBetween(start, stop, value))
-	if not constrain then
-		return newVal
-	end
-	
-	if newStart < newEnd then
-		newStart, newEnd = newEnd, newStart
-	end
-	
-	return Max(Min(newVal, newStart), newEnd)
-end
-
-function getNewPosition(self, percent)
-	local absoluteSize = self._button.AbsoluteSize[self._axis]
-	local holderSize = self._holder.AbsoluteSize[self._axis]
-	
-	local anchorPoint = self._button.AnchorPoint[self._axis]
-	
-	local paddingScale = (self._padding / holderSize)
-	
-	local minScale = (
-		(anchorPoint * absoluteSize) / holderSize +
-		paddingScale
-	)
-	
-	local decrement = ((2 * absoluteSize) * anchorPoint) - absoluteSize
-	local maxScale = (1 - minScale) + (decrement / holderSize)
-
-	local newPercent = map(percent or self._percent, 0, 1, minScale, maxScale, true)
-	
-	if self._axis == "X" then
-		return UDim2.new(newPercent, self._button.Position.X.Offset, self._button.Position.Y.Scale, self._button.Position.Y.Offset)
-	elseif self._axis == "Y" then
-		return UDim2.fromScale(self._button.Position.X.Scale, newPercent)
-	end
-end
-
-function getScaleIncrement(self)
-	return 1 / ((self._config.End - self._config.Start) / self._config.Increment)
-end
-
-function getAlphaBetween(a, b, c)
-	return (c - a) / (b - a)
-end
-
-function getNewValue(self)
-	local newValue = lerp(self._config.Start, self._config.End, self._percent)
-	local incrementScale = (1 / self._config.Increment)
-	
-	newValue = Floor(newValue * incrementScale) / incrementScale
-	return newValue
-end
-
-function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTweenInfo: TweenInfo, axis: string, padding: number)
-	assert(pcall(function()
-		return holder.AbsoluteSize, holder.AbsolutePosition
-	end), "Holder argument does not have an AbsoluteSize/AbsolutePosition")
-
-	local sliderBtn = holder:FindFirstChild("Slider")
-	assert(sliderBtn ~= nil, "Failed to find slider button.")
-	assert(sliderBtn:IsA("GuiButton"), "Slider is not a GuiButton")
-
-	local duplicate = false
-	for _, slider in ipairs(Slider.Sliders) do
-		if slider._holder == holder then
-			duplicate = true
-			break
-		end
-	end
-	
-	assert(not duplicate, "Cannot set two sliders with same frame!")
-	assert(configuration.Increment ~= nil, "Failed to find Increment in configuration table")
-	assert(configuration.Start ~= nil, "Failed to find Start in configuration table")
-	assert(configuration.End ~= nil, "Failed to find End in configuration table")
-	assert(configuration.Increment > 0, "Increment must be greater than 0")
-	assert(configuration.End > configuration.Start, "Config.End must be greater than Config.Start (" .. configuration.End .. " <= " .. configuration.Start .. ")")
-	
-	axis = axis or "x"
-	axis = Lower(axis)
-	assert(axis == "x" or axis == "y", "Axis must be X or Y!")
-	
-	assert(typeof(moveTweenInfo) == "TweenInfo", "MoveTweenInfo must be a TweenInfo object!")
-	
-	padding = padding or 5
-	assert(typeof(padding) == "number", "Padding variable must be a number!")
-	
-	local self = setmetatable({}, Slider)
-	
-	self._holder = holder
-	self._button = sliderBtn
-	self._config = configuration
-	self._axis = Upper(axis)
-	self._padding = padding
-	
-	self.IsHeld = false
-	self._mainConnection = nil
-	self._buttonConnections = {}
-	self._inputPos = nil
-	
-	self._percent = 0
-	if configuration.DefaultValue then
-		configuration.DefaultValue = Clamp(configuration.DefaultValue, configuration.Start, configuration.End)
-		self._percent = getAlphaBetween(configuration.Start, configuration.End, configuration.DefaultValue) 
-	end
-	self._percent = Clamp(self._percent, 0, 1)
-	
-	self._value = getNewValue(self)
-	self._scaleIncrement = getScaleIncrement(self)
-
-	self._currentTween = nil
-	self._tweenInfo = moveTweenInfo or TweenInfo.new(1)
-
-	self.Changed = Signal.new()
-	self.Dragged = Signal.new()
-	self.Released = Signal.new()
-	
-	self:Move()
-	table.insert(Slider.Sliders, self)
-	
-	return self
-end
-
-function Slider:Track()
-	for _, connection in ipairs(self._buttonConnections) do
-		connection:Disconnect()
-	end
-	
-	table.insert(self._buttonConnections, self._button.MouseButton1Down:Connect(function()
-		self.IsHeld = true
-	end))
-
-	table.insert(self._buttonConnections, self._button.MouseButton1Up:Connect(function()
-		if self.IsHeld then
-			self.Released:Fire(self._value)
-		end
-		self.IsHeld = false
-	end))
-
-	if self.Changed then
-		self.Changed:Fire(self._value)
-	end
-
-	if self._mainConnection then
-		self._mainConnection:Disconnect()
-	end
-
-	self._mainConnection = UserInputService.InputChanged:Connect(function(inputObject, gameProcessed)
-		if inputObject.UserInputType == Enum.UserInputType.MouseMovement or inputObject.UserInputType == Enum.UserInputType.Touch then
-			self._inputPos = inputObject.Position
-			self:Update()
-		end
-	end)
-end
-
-function Slider:Update()
-	if self.IsHeld and self._inputPos then
-		local mousePos = self._inputPos[self._axis]
-		
-		local sliderSize = self._holder.AbsoluteSize[self._axis]
-		local sliderPos = self._holder.AbsolutePosition[self._axis]
-		local newPos = snapToScale((mousePos - sliderPos) / sliderSize, self._scaleIncrement)
-
-		local percent = Clamp(newPos, 0, 1)
-		self._percent = percent
-		self:Move()
-		self.Dragged:Fire(self._value)
-	end
-end
-
-function Slider:Untrack()
-	for _, connection in ipairs(self._buttonConnections) do
-		connection:Disconnect()
-	end
-	if self._mainConnection then
-		self._mainConnection:Disconnect()
-	end
-	self.IsHeld = false
-end
-
-function Slider:Reset()
-	for _, connection in ipairs(self._buttonConnections) do
-		connection:Disconnect()
-	end
-	if self._mainConnection then
-		self._mainConnection:Disconnect()
-	end
-	
-	self.IsHeld = false
-	
-	self._percent = 0
-	if self._config.DefaultValue then 
-		self._percent = getAlphaBetween(self._config.Start, self._config.End, self._config.DefaultValue)
-	end
-	self._percent = Clamp(self._percent, 0, 1)
-	self:Move()
-end
-
-function Slider:OverrideValue(newValue: number)
-	self.IsHeld = false
-	self._percent = getAlphaBetween(self._config.Start, self._config.End, newValue)
-	self._percent = Clamp(self._percent, 0, 1)
-	self._percent = snapToScale(self._percent, self._scaleIncrement)
-	self:Move()
-end
-
-function Slider:Move()
-	self._value = getNewValue(self)
-
-	if self._currentTween then
-		self._currentTween:Cancel()
-	end
-	self._currentTween = TweenService:Create(self._button, self._tweenInfo, {
-		Position = getNewPosition(self)
-	})
-	
-	self._currentTween:Play()
-	self.Changed:Fire(self._value)
-end
-
-function Slider:OverrideVisualValue(newValue: number)
-	if self.IsHeld then
-		return false
-	end
-	
-	local percent = getAlphaBetween(self._config.Start, self._config.End, newValue)
-	percent = Clamp(percent, 0, 1)
-	percent = snapToScale(percent, self._scaleIncrement)
-
-	if self._currentTween then
-		self._currentTween:Cancel()
-	end
-	self._currentTween = TweenService:Create(self._button, self._tweenInfo, {
-		Position = getNewPosition(self, percent)
-	})
-
-	self._currentTween:Play()
-end
-
-function Slider:OverrideIncrement(newIncrement: number)
-	self._config.Increment = newIncrement
-	self._scaleIncrement = getScaleIncrement(self)
-	self._percent = Clamp(self._percent, 0, 1)
-	self._percent = snapToScale(self._percent, self._scaleIncrement)
-	self:Move()
-end
-
-function Slider:GetValue()
-	return self._value
-end
-
-function Slider:GetIncrement()
-	return self._increment
-end
-
-function Slider:Destroy()
-	for _, connection in ipairs(self._buttonConnections) do
-		connection:Disconnect()
-	end
-	if self._mainConnection then
-		self._mainConnection:Disconnect()
-	end
-	self.Changed:Destroy()
-	self.Dragged:Destroy()
-	self.Released:Destroy()
-
-	for index = 1, #Slider.Sliders do
-		if Slider.Sliders[index] == self then
-			table.remove(Slider.Sliders, index)
-		end
-	end
-	
-	setmetatable(self, nil)
-	self = nil
-end
-
-UserInputService.InputEnded:Connect(function(inputObject, internallyProcessed)
-	if inputObject.UserInputType == Enum.UserInputType.MouseButton1 or inputObject.UserInputType == Enum.UserInputType.Touch then
-		for _, slider in ipairs(Slider.Sliders) do
-			if slider.IsHeld then
-				slider.Released:Fire(slider._value)
-			end
-			slider.IsHeld = false
-		end
-	end 
-end)
-
-return Slider
-	
------------------------------------------------------------------------------------------]]></ProtectedString>
-				<int64 name="SourceAssetId">8314798830</int64>
-				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX29D526BD04FB4D838031602C95B8437B">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<Content name="LinkedSource"><null></null></Content>
-				<string name="Name">Signal</string>
-				<string name="ScriptGuid">{62622776-2522-459F-B270-C49DBB4246DD}</string>
-				<ProtectedString name="Source"><![CDATA[----------------------------- Signal Module -----------------------------
--- > Used to create, connect, wait and destroy signals.
--- > Created by Quenty
------------------------------------------------------------------------------------------
-
---- Lua-side duplication of the API of events on Roblox objects.
--- Signals are needed for to ensure that for local events objects are passed by
--- reference rather than by value where possible, as the BindableEvent objects
--- always pass signal arguments by value, meaning tables will be deep copied.
--- Roblox's deep copy method parses to a non-lua table compatable format.
--- @classmod Signal
-
-local Signal = {}
-Signal.__index = Signal
-Signal.ClassName = "Signal"
-
---- Constructs a new signal.
--- @constructor Signal.new()
--- @treturn Signal
-function Signal.new()
-	local self = setmetatable({}, Signal)
-
-	self._bindableEvent = Instance.new("BindableEvent")
-	self._argData = nil
-	self._argCount = nil -- Prevent edge case of :Fire("A", nil) --> "A" instead of "A", nil
-
-	return self
-end
-
---- Fire the event with the given arguments. All handlers will be invoked. Handlers follow
--- Roblox signal conventions.
--- @param ... Variable arguments to pass to handler
--- @treturn nil
-function Signal:Fire(...)
-	self._argData = {...}
-	self._argCount = select("#", ...)
-	self._bindableEvent:Fire()
-	self._argData = nil
-	self._argCount = nil
-end
-
---- Connect a new handler to the event. Returns a connection object that can be disconnected.
--- @tparam function handler Function handler called with arguments passed when `:Fire(...)` is called
--- @treturn Connection Connection object that can be disconnected
-function Signal:Connect(handler)
-	if not (type(handler) == "function") then
-		error(("connect(%s)"):format(typeof(handler)), 2)
-	end
-
-	return self._bindableEvent.Event:Connect(function()
-		handler(unpack(self._argData, 1, self._argCount))
-	end)
-end
-
---- Wait for fire to be called, and return the arguments it was given.
--- @treturn ... Variable arguments from connection
-function Signal:Wait()
-	self._bindableEvent.Event:Wait()
-	assert(self._argData, "Missing arg data, likely due to :TweenSize/Position corrupting threadrefs.")
-	return unpack(self._argData, 1, self._argCount)
-end
-
---- Disconnects all connected events to the signal. Voids the signal as unusable.
--- @treturn nil
-function Signal:Destroy()
-	if self._bindableEvent then
-		self._bindableEvent:Destroy()
-		self._bindableEvent = nil
-	end
-
-	self._argData = nil
-	self._argCount = nil
-end
-
-return Signal]]></ProtectedString>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-		</Item>
-		<Item class="ImageLabel" referent="RBX2B59DB0A85D141D394E28248ECD88B70">
-			<Properties>
-				<bool name="Active">false</bool>
-				<Vector2 name="AnchorPoint">
-					<X>0</X>
-					<Y>0</Y>
-				</Vector2>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<bool name="AutoLocalize">true</bool>
-				<token name="AutomaticSize">0</token>
-				<Color3 name="BackgroundColor3">
-					<R>1</R>
-					<G>1</G>
-					<B>1</B>
-				</Color3>
-				<float name="BackgroundTransparency">0</float>
-				<Color3 name="BorderColor3">
-					<R>0.105882362</R>
-					<G>0.164705887</G>
-					<B>0.207843155</B>
-				</Color3>
-				<token name="BorderMode">0</token>
-				<int name="BorderSizePixel">1</int>
-				<bool name="ClipsDescendants">false</bool>
-				<bool name="Draggable">false</bool>
-				<Content name="Image"><url>rbxasset://textures/ui/GuiImagePlaceholder.png</url></Content>
-				<Color3 name="ImageColor3">
-					<R>1</R>
-					<G>1</G>
-					<B>1</B>
-				</Color3>
-				<Vector2 name="ImageRectOffset">
-					<X>0</X>
-					<Y>0</Y>
-				</Vector2>
-				<Vector2 name="ImageRectSize">
-					<X>0</X>
-					<Y>0</Y>
-				</Vector2>
-				<float name="ImageTransparency">0</float>
-				<int name="LayoutOrder">0</int>
-				<string name="Name">ImageLabel</string>
-				<Ref name="NextSelectionDown">null</Ref>
-				<Ref name="NextSelectionLeft">null</Ref>
-				<Ref name="NextSelectionRight">null</Ref>
-				<Ref name="NextSelectionUp">null</Ref>
-				<UDim2 name="Position">
-					<XS>0</XS>
-					<XO>0</XO>
-					<YS>0</YS>
-					<YO>0</YO>
-				</UDim2>
-				<token name="ResampleMode">0</token>
-				<Ref name="RootLocalizationTable">null</Ref>
-				<float name="Rotation">0</float>
-				<token name="ScaleType">0</token>
-				<bool name="Selectable">false</bool>
-				<Ref name="SelectionImageObject">null</Ref>
-				<UDim2 name="Size">
-					<XS>0</XS>
-					<XO>100</XO>
-					<YS>0</YS>
-					<YO>100</YO>
-				</UDim2>
-				<token name="SizeConstraint">0</token>
-				<Rect2D name="SliceCenter">
-					<min>
-						<X>0</X>
-						<Y>0</Y>
-					</min>
-					<max>
-						<X>0</X>
-						<Y>0</Y>
-					</max>
-				</Rect2D>
-				<float name="SliceScale">1</float>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UDim2 name="TileSize">
-					<XS>1</XS>
-					<XO>0</XO>
-					<YS>1</YS>
-					<YO>0</YO>
-				</UDim2>
-				<bool name="Visible">true</bool>
-				<int name="ZIndex">1</int>
 			</Properties>
 		</Item>
 	</Item>

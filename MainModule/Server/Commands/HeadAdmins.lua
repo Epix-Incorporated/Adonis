@@ -38,65 +38,38 @@ return function(Vargs, env)
 
 				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
 
-				local level = data.PlayerData.Level
-				local reason = args[3] or "No reason provided"
+				local level = data.PlayerData.Level;
+				local timebans = Core.Variables.TimeBans
 
-				for _, v in pairs(service.GetPlayers(plr, args[1], {
+				for i, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddTimeBan(v, tonumber(time), reason)
-						Functions.Hint("Banned "..tostring(v.Name).." for ".. args[2], {plr})
-					end
-				end
-			end
-		};
-		
-		DirectTimeBan = {
-			Prefix = Settings.Prefix;
-			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
-			Args = {"username", "number<s/m/h/d>", "reason"};
-			Hidden = false;
-			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
-			Fun = false;
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing time amount")
-				local time = args[2]
-				local lower, sub = string.lower, string.sub
-				if sub(lower(time), #time)=='s' then
-					time = sub(time, 1, #time-1)
-					time = tonumber(time)
-				elseif sub(lower(time), #time)=='m' then
-					time = sub(time, 1, #time-1)
-					time = tonumber(time)*60
-				elseif sub(lower(time), #time)=='h' then
-					time = sub(time, 1, #time-1)
-					time = ((time)*60)*60
-				elseif sub(lower(time), #time)=='d' then
-					time = sub(time, 1, #time-1)
-					time = ((tonumber(time)*60)*60)*24
-				end
+						local endTime = os.time() + tonumber(time)
+						local reason = service.Filter(args[3], plr, v) or "No reason provided";
+						local data = {
+							Name = v.Name;
+							UserId = v.UserId;
+							EndTime = endTime;
+							Reason = reason;
+						}
 
-				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
+						table.insert(timebans, data)
 
-				local reason = args[3] or "No reason provided"
+						-- Please make a Admin.AddTimeBan function like Admin.AddBan
+						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, {WithWrittenDate = true}))
+						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...", {plr})
 
-				for i in string.gmatch(args[1], "[^,]+") do
-					local UserId = service.Players:GetUserIdFromNameAsync(i)
+						Core.DoSave({
+							Type = "TableAdd";
+							Table = {"Core", "Variables", "TimeBans"};
+							Value = data;
+						})
 
-					if UserId == plr.UserId then
-						error("You cannot ban yourself or the creator of the game", 2)
-						return
-					end
-
-					if UserId then
-						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason)
-						Functions.Hint("Banned "..tostring(i).." for ".. args[2], {plr})
+						Functions.Hint("Banned "..tostring(v.Name).." for ".. tostring(time), {plr})
 					end
 				end
 			end
@@ -112,10 +85,19 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				
-				local ret = Admin.RemoveTimeBan(args[1])
-				if ret then
-					Functions.Hint(tostring(ret).." has been Unbanned", {plr})
+				local timebans = Core.Variables.TimeBans or {}
+
+				for i, data in pairs(timebans) do
+					if data.Name:lower():sub(1,#args[1]) == args[1]:lower() then
+						table.remove(timebans, i)
+						Core.DoSave({
+							Type = "TableRemove";
+							Table = {"Core", "Variables", "TimeBans"};
+							Value = data;
+						})
+
+						Functions.Hint(tostring(data.Name)..' has been Unbanned', {plr})
+					end
 				end
 			end
 		};
@@ -486,51 +468,6 @@ return function(Vargs, env)
 						Text = "You will cease to appear on the player list, on other players' screens.";
 						Time = 15;
 					})
-				end
-			end
-		};
-
-		AwardBadge = {
-			Prefix = Settings.Prefix;
-			Commands = {"awardbadge", "badge", "givebadge"};
-			Args = {"player", "badgeId"};
-			Description = "Awards the badge of the specified ID to the target player(s)";
-			AdminLevel = "HeadAdmins";
-			Function = function(plr: Player, args: {string})
-				if not Variables.BadgeInfoCache then
-					Variables.BadgeInfoCache = {}
-				end
-
-				local badgeId = assert(tonumber(args[2]), "Invalid badge ID specified!")
-				local badgeInfo = Variables.BadgeInfoCache[tostring(badgeId)]
-				if not badgeInfo then
-					local success, badgeInfo = nil, nil
-					local tries = 0
-					repeat
-						tries += 1
-						success, badgeInfo = pcall(service.BadgeService.GetBadgeInfoAsync, service.BadgeService, badgeId)
-					until success or tries > 2
-					Variables.BadgeInfoCache[tostring(badgeId)] = assert(success and badgeInfo, "Unable to retrieve badge information; please try again")
-				end
-
-				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
-					local success, hasBadge = nil, nil
-					local tries = 0
-					repeat
-						tries += 1
-						success, hasBadge = pcall(service.BadgeService.UserHasBadgeAsync, service.BadgeService, v.UserId, badgeId)
-					until success or tries > 2
-					if not success then
-						Functions.Hint(string.format("ERROR: Unable to get badge ownership status for %s; skipped", service.FormatPlayer(v)))
-						continue
-					end
-					if hasBadge then
-						Functions.Hint(string.format("%s already has the badge '%s'", service.FormatPlayer(v), badgeInfo.Name), {plr})
-					elseif service.BadgeService:AwardBadge(v.UserId, badgeId) then
-						Functions.Hint(string.format("Successfully awarded badge '%s' for %s", badgeInfo.Name, service.FormatPlayer(v)), {plr})
-					else
-						Functions.Hint(string.format("ERROR: Failed to award badge '%s' for %s due to an unexpected internal error", badgeInfo.Name, service.FormatPlayer(v)), {plr})
-					end
 				end
 			end
 		};

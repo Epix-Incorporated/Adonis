@@ -44,7 +44,6 @@ return { -- Decal IDs
 	["Door sliding"] = 7495552050,
 	["Double arrow"] = 7541578585,
 	["Mail"] = 7501175708,	-- originally 'Email'
-	["Epix"] = 7681261289,
 	["Error"] = 7501176860,
 	["Explore"] = 7646573201,
 	["Explore off"] = 7646577572,

@@ -88,13 +88,7 @@ return function(Vargs, GetEnv)
 
 
 
-	local RateLimiter, limitViolations = {
-		Remote = {};
-		Command = {};
-		Chat = {};
-		CustomChat = {};
-		RateLog = {};
-	}, {
+	local RateLimiter = {
 		Remote = {};
 		Command = {};
 		Chat = {};
@@ -104,22 +98,9 @@ return function(Vargs, GetEnv)
 
 	local function RateLimit(p, typ)
 		if p and type(p) == "userdata" and p:IsA("Player") then
-			local RateLimit_Type = RateLimiter[typ]
-			local LimitViolation_Type = limitViolations[typ]
-
-			if not RateLimit_Type[p.UserId] then
-				RateLimit_Type[p.UserId] = os.clock()
-
-				LimitViolation_Type[p.UserId] = 1
-			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
-				RateLimit_Type[p.UserId] = os.clock()
-
-				LimitViolation_Type[p.UserId] = 0
-			else
-				LimitViolation_Type[p.UserId] += 1
-			end
-
-			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
+			local ready = (not RateLimiter[typ][p.UserId] or (RateLimiter[typ][p.UserId] and time() - RateLimiter[typ][p.UserId] >= server.Process.RateLimits[typ]));
+			RateLimiter[typ][p.UserId] = time()
+			return ready
 		else
 			return true
 		end
@@ -131,7 +112,6 @@ return function(Vargs, GetEnv)
 		RateLimit = RateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
-		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired (like it currently does), but higher levels have issues with not detecting at all, so its good to have between 2 and 10
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -770,10 +750,10 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
+				end
 
-					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiClientIdle ~= false)
-					})
+				if Settings.AntiBuildingTools then
+					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
 
@@ -793,6 +773,7 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
+						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -801,22 +782,41 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						
-						if oldVer and newVer and newVer > oldVer and level > 100 then
+
+						wait(1)
+
+						if oldVer and newVer and newVer > oldVer and level > 300 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 15;
+								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						if level > 300 then
-							for i,v in pairs(server.Messages) do
-								v.Icon = v.Icon or server.MatIcons.Description;
-								Remote.MakeGui(p, "Notification", v)
-							end
+						wait(1)
+
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
+							Remote.MakeGui(p, "Notification", {
+								Title = "Warning!";
+								Message = "Using default datastore key!";
+								Icon = server.MatIcons.Description;
+								Time = 10;
+								OnClick = Core.Bytecode([[
+									local window = client.UI.Make("Window", {
+										Title = "How to change the DataStore key";
+										Size = {700,300};
+										Icon = "rbxassetid://7510994359";
+									})
+
+									window:Add("ImageLabel", {
+										Image = "rbxassetid://1059543904";
+									})
+
+									window:Ready()
+								]]);
+							})
 						end
 					end
 

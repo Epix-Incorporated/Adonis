@@ -58,7 +58,6 @@ return function(Vargs, GetEnv)
 		PendingReturns = {};
 		EncodeCache = {};
 		DecodeCache = {};
-		RemoteExecutionConfirmed = {};
 
 		TimeUntilKeyDestroyed = 60 * 5; --// How long until a player's key data should be completely removed?
 
@@ -109,39 +108,38 @@ return function(Vargs, GetEnv)
 		};
 
 		Returnables = {
-			RateLimits = function(p: Player,args: {[number]: any})
+			RateLimits = function(p, args)
 				return server.Process.RateLimits
 			end;
 
-			Test = function(p: Player,args: {[number]: any})
+			Test = function(p,args)
 				return "HELLO FROM THE OTHER SIDE :)!"
 			end;
 
-			Ping = function(p: Player,args: {[number]: any})
+			Ping = function(p,args)
 				return "Pong"
 			end;
 
-			Filter = function(p: Player,args: {[number]: any})
+			Filter = function(p,args)
 				return service.Filter(args[1],args[2],args[3])
 			end;
 
-			BroadcastFilter = function(p: Player,args: {[number]: any})
+			BroadcastFilter = function(p,args)
 				return service.BroadcastFilter(args[1],args[2] or p)
 			end;
 
-			TaskManager = function(p: Player,args: {[number]: any})
+			TaskManager = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local action = args[1]
 					if action == "GetTasks" then
 						local tab = {}
-						for _, v in next, service.GetTasks() do
-							local new = {
-								Status = v.Status;
-								Name = v.Name;
-								Index = v.Index;
-								Created = v.Created;
-								Function = tostring(v.Function);
-							}
+						for i,v in next, service.GetTasks() do
+							local new = {}
+							new.Status = v.Status
+							new.Name = v.Name
+							new.Index = v.Index
+							new.Created = v.Created
+							new.Function = tostring(v.Function)
 							table.insert(tab,new)
 						end
 						return tab
@@ -149,18 +147,18 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ExecutePermission = function(p: Player,args: {[number]: any})
+			ExecutePermission = function(p,args)
 				return Core.ExecutePermission(args[1],args[2],true)
 			end;
 
-			Variable = function(p: Player,args: {[number]: any})
+			Variable = function(p,args)
 				return Variables[args[1]]
 			end;
 
-			Default = function(p: Player,args: {[number]: any})
+			Default = function(p,args)
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
-				local ret
+				local ret = nil
 				local blocked = {
 					DataStore = true;
 					DataStoreKey = true;
@@ -180,13 +178,13 @@ return function(Vargs, GetEnv)
 
 				if type(setting) == "table" then
 					ret = {}
-					for _,set in pairs(setting) do
-						if Defaults[set] and (not blocked[set] or level >= Settings.Ranks.Creators.Level) then
+					for i,set in pairs(setting) do
+						if Defaults[set] and not (blocked[set] and not level >= Settings.Ranks.Creators.Level) then
 							ret[set] = Defaults[set]
 						end
 					end
 				elseif type(setting) == "string" then
-					if Defaults[setting] and (not blocked[setting] or level >= Settings.Ranks.Creators.Level) then
+					if Defaults[setting] and not (blocked[setting] and not level >= Settings.Ranks.Creators.Level) then
 						ret = Defaults[setting]
 					end
 				end
@@ -194,13 +192,17 @@ return function(Vargs, GetEnv)
 				return ret
 			end;
 
-			AllDefaults = function(p: Player,args: {[number]: any})
+			AllDefaults = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
-					local sets = {
-						Settings = table.clone(Defaults);
-						Descs = server.Descriptions;
-						Order = server.Order;
-					}
+					local sets = {}
+
+					sets.Settings = {}
+					sets.Descs = server.Descriptions
+					sets.Order = server.Order
+
+					for i,v in pairs(Defaults) do
+						sets.Settings[i] = v
+					end
 
 					local blocked = {
 						HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
@@ -227,7 +229,7 @@ return function(Vargs, GetEnv)
 						CustomRanks = true; -- Not supported yet
 					}
 
-					for setting in pairs(sets.Settings) do
+					for setting,value in pairs(sets.Settings) do
 						if blocked[setting] then
 							sets.Settings[setting] = nil
 						end
@@ -237,16 +239,16 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Setting = function(p: Player,args: {[number]: any})
+			Setting = function(p,args)
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
-				local ret
+				local ret = nil
 				local allowed = Remote.AllowedSettings
 
 				if type(setting) == "table" then
 					ret = {}
-					for _,set in pairs(setting) do
-						if Settings[set] and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
+					for i,set in pairs(setting) do
+						if Settings[set] ~= nil and (allowed[set] or level>=Settings.Ranks.Creators.Level) then
 							ret[set] = Settings[set]
 						end
 					end
@@ -259,17 +261,21 @@ return function(Vargs, GetEnv)
 				return ret
 			end;
 
-			AllSettings = function(p: Player,args: {[number]: any})
+			AllSettings = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
-					local sets = {
-						Settings = table.clone(Settings);
-						Descs = server.Descriptions;
-						Order = server.Order;
-					}
+					local sets = {}
+
+					sets.Settings = {}
+					sets.Descs = server.Descriptions
+					sets.Order = server.Order
+
+					for i,v in pairs(Settings) do
+						sets.Settings[i] = v
+					end
 
 					local blocked = Remote.BlockedSettings
 
-					for setting in pairs(sets.Settings) do
+					for setting,value in pairs(sets.Settings) do
 						if blocked[setting] then
 							sets.Settings[setting] = nil
 						end
@@ -279,7 +285,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			UpdateList = function(p: Player,args: {[number]: any})
+			UpdateList = function(p, args)
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]
 				if update then
@@ -287,16 +293,16 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			AdminLevel = function(p: Player,args: {[number]: any})
+			AdminLevel = function(p,args)
 				return Admin.GetLevel(p)
 			end;
 
-			Keybinds = function(p: Player,args: {[number]: any})
+			Keybinds = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				return playerData.Keybinds or {}
 			end;
 
-			UpdateKeybinds = function(p: Player,args: {[number]: any})
+			UpdateKeybinds = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
 				local resp = "OK"
@@ -311,12 +317,12 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			Playlist = function(p: Player,args: {[number]: any})
+			Playlist = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				return playerData.CustomPlaylist or {}
 			end;
 
-			UpdatePlaylist = function(p: Player,args: {[number]: any})
+			UpdatePlaylist = function(p,args)
 				local resp = "Error: Unknown Error"
 				if type(args)=="table" then
 					if string.len(service.HttpService:JSONEncode(args)) < 4000 then
@@ -333,7 +339,7 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			UpdateClient = function(p: Player,args: {[number]: any})
+			UpdateClient = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local setting = args[1]
 				local value = args[2]
@@ -346,7 +352,7 @@ return function(Vargs, GetEnv)
 				return "Updated"
 			end;
 
-			UpdateDonor = function(p: Player,args: {[number]: any})
+			UpdateDonor = function(p,args)
 				local playerData = Core.GetPlayer(p)
 				local donor = args[1]
 				local resp = "OK"
@@ -365,14 +371,14 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			UpdateAliases = function(p: Player,args: {[number]: any})
+			UpdateAliases = function(p, args)
 				local aliases = args[1] or {};
 
 				if type(aliases) == "table" then
 					local data = Core.GetPlayer(p)
 
 					--// check for stupid stuff
-					for i,v in next, aliases do
+					for i,v in next,aliases do
 						if type(i) ~= "string" or type(v) ~= "string" then
 							aliases[i] = nil
 						end
@@ -382,30 +388,30 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			PlayerData = function(p: Player,args: {[number]: any})
+			PlayerData = function(p,args)
 				local data = Core.GetPlayer(p)
 				data.isDonor = Admin.CheckDonor(p)
 				return data
 			end;
 
-			CheckAdmin = function(p: Player,args: {[number]: any})
+			CheckAdmin = function(p,args)
 				return Admin.CheckAdmin(p)
 			end;
 
-			SearchCommands = function(p: Player,args: {[number]: any})
+			SearchCommands = function(p,args)
 				return Admin.SearchCommands(p,args[1] or "all")
 			end;
-
-			CheckBackpack = function(p: Player,args: {[number]: any})
+		
+			CheckBackpack = function(p,args)
 				return Anti.CheckBackpack(p,args[1])
 			end;
 
-			FormattedCommands = function(p: Player,args: {[number]: any})
+			FormattedCommands = function(p,args)
 				local commands = Admin.SearchCommands(p,args[1] or "all")
 				local tab = {}
-				for _,v in pairs(commands) do
+				for i,v in pairs(commands) do
 					if not v.Hidden and not v.Disabled then
-						for a in pairs(v.Commands) do
+						for a,b in pairs(v.Commands) do
 							table.insert(tab,Admin.FormatCommand(v,a))
 						end
 					end
@@ -413,7 +419,7 @@ return function(Vargs, GetEnv)
 				return tab
 			end;
 
-			TerminalData = function(p: Player,args: {[number]: any})
+			TerminalData = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local entry = Remote.Terminal.Data[tostring(p.UserId)]
 					if not entry then
@@ -437,12 +443,12 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Terminal = function(p: Player,args: {[number]: any})
+			Terminal = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local data = args[2]
 					local message = args[1]
-					local command = string.match(message, "(.-) ") or message
-					local argString = string.match(message, "^.- (.+)") or ""
+					local command = message:match("(.-) ") or message
+					local argString = message:match("^.- (.+)") or ""
 					local comTable = Remote.Terminal.GetCommand(command)
 					if comTable then
 						local cArgs = Functions.Split(argString, " ", comTable.Arguments)
@@ -460,30 +466,7 @@ return function(Vargs, GetEnv)
 						}
 					end
 				end
-			end;
-
-			AudioLib = function(p,args)
-				if Admin.GetLevel(p) >= Settings.Ranks.Moderators.Level then
-					if not server.Functions.AudioLib then
-						local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
-						if not audioLibFolder then
-							audioLibFolder = service.New("Folder")
-							audioLibFolder.Name = "ADONIS_AUDIOLIB"
-							audioLibFolder.Parent = workspace
-						end
-						server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
-					end
-
-					return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])
-				else
-					task.spawn(Remote.MakeGui,p,"Notification",{
-						Title = "Global Audio";
-						Message = "Only Moderators or above may broadcast audio!";
-						Icon = server.Shared.MatIcons.Language;
-						Time = 3;
-					})
-				end
-			end;
+			end
 		};
 
 		Terminal = {
@@ -514,8 +497,8 @@ return function(Vargs, GetEnv)
 					Arguments = 1;
 					Description = "Sends a message in the Roblox chat";
 					Function = function(p, args, data)
-						for _,v in ipairs(service.GetPlayers()) do
-							Remote.Send(v,"Function","ChatMessage",args[1],Color3.fromRGB(255,64,77))
+						for i,v in next,service.GetPlayers() do
+							Remote.Send(v,"Function","ChatMessage",args[1],Color3.new(1,64/255,77/255))
 						end
 					end
 				};
@@ -537,30 +520,15 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for _,v in ipairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
-							warn = function(...) local nums = {...} for _,v in ipairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
+							print = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
+							warn = function(...) local nums = {...} for i,v in pairs(nums) do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
 						})
-
-						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
-							local ans = Remote.GetGui(p, "YesNoPrompt", {
-								Icon = server.MatIcons.Warning;
-								Question = "Are you sure you want to load this script into the server env?";
-								Title = "Adonis DebugLoadstring";
-								Delay = 5;
-							})
-
-							if ans == "Yes" then
-								server.Remote.RemoteExecutionConfirmed[p.UserId] = true
-							else
-								return
-							end
-						end
 
 						local func,err = Core.Loadstring(args[1], newenv)
 						if func then
 							func()
 						else
-							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(string.match(err, ":(.*)") or err))
+							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(err:match(":(.*)") or err))
 						end
 					end
 				};
@@ -599,7 +567,7 @@ return function(Vargs, GetEnv)
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
-							for _,v in ipairs(plrs) do
+							for i,v in pairs(plrs) do
 								v:Kick(args[2] or "Disconnected by server")
 								return {"Disconnect "..tostring(v.Name).." from the server"}
 							end
@@ -617,13 +585,12 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
-							for _,v in ipairs(plrs) do
-								local char = v.Character
-								if char and char.ClassName == "Model" then
-									char:BreakJoints()
+							for i,v in pairs(plrs) do
+								if v.Character and v.Character ~= nil then
+									v.Character:BreakJoints()
 									return {"Killed "..tostring(v.Name)}
 								else
-									return {tostring(v.Name).." has no character or it's not a model"}
+									return {tostring(v.Name).." has no character"}
 								end
 							end
 						else
@@ -640,7 +607,7 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
-							for _,v in ipairs(plrs) do
+							for i,v in pairs(plrs) do
 								v:LoadCharacter()
 								return {"Respawned "..tostring(v.Name)}
 							end
@@ -656,13 +623,13 @@ return function(Vargs, GetEnv)
 					Arguments = 0;
 					Description = "Disconnects all players from the server and prevents rejoining";
 					Function = function(p,args,data)
+						for i,v in next,service.Players:GetPlayers() do
+							v:Kick()
+						end
+
 						service.PlayerAdded:Connect(function(p)
 							p:Kick()
 						end)
-
-						for _,v in ipairs(service.Players:GetPlayers()) do
-							v:Kick()
-						end
 					end
 				};
 			};
@@ -678,19 +645,19 @@ return function(Vargs, GetEnv)
 				Remote.Fire(p, "TrustCheck", keys.Special)
 			end;--]]
 
-			ProcessChat = function(p: Player,msg: string)
+			ProcessChat = function(p,msg)
 				Process.Chat(p,msg)
 			end;
 
-			ExplorerAction = function(p: Player, ...)
+			ExplorerAction = function(p, ...)
 				--if Admin.CheckAdmin(p) then
-				--// Handle stuff like Dex calls(?)
+					--// Handle stuff like Dex calls(?)
 				--end
 			end;
 		};
 
 		Commands = {
-			GetReturn = function(p: Player,args: {[number]: any})
+			GetReturn = function(p,args)
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
@@ -704,27 +671,42 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			GiveReturn = function(p: Player,args: {[number]: any})
+			GiveReturn = function(p,args)
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:Fire(unpack(args,2))
 				end
 			end;
 
-			ClientCheck = function(p: Player,args: {[number]: any})
+			ClientCheck = function(p,args)
 				local key = tostring(p.UserId)
-				--local data = args[1]
+				local data = args[1]
 				local special = args[2]
 				local keys = Remote.Clients[key]
+
+				--if (math.abs(data.Received - keys.Sent) > 10) then
+				--	print("Something is wrong...")
+				--end
 
 				if keys and special and special == keys.Special then
 					keys.LastUpdate = os.time()
 				else
 					Anti.Detected(p, "Log", "Client sent incorrect check data")
 				end
+
+				return;
 			end;
 
-			Session = function(p: Player,args: {[number]: any})
+		--[[Session = function(p,args)
+				local type = args[1]
+				local data = args[2]
+				local handler = Remote.SessionHandlers[type]
+				if handler then
+					return handler(p, data)
+				end
+			end;--]]
+
+			Session = function(p, args)
 				local sessionKey = args[1];
 				local session = sessionKey and Remote.GetSession(sessionKey);
 
@@ -734,9 +716,16 @@ return function(Vargs, GetEnv)
 			end;
 
 			HandleExplore = function(p, args)
-				local command = Commands.Explore
-				local adminLevel = Admin.GetLevel(p)
-				if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
+				--// TODO
+				--// Make this a separate Admin method
+				local Command = Commands.Explore
+				if not Command then return end
+				local Level = Command.AdminLevel
+				if not Level then return end
+				local Rank = Settings.Ranks[Level]
+				if not Rank then return end
+				if not Rank.Level then return end
+				if Admin.GetLevel(p) >= Rank.Level then
 					local obj = args[1];
 					local com = args[2];
 					local data = args[3];
@@ -758,11 +747,11 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			PlayerEvent = function(p: Player,args: {[number]: any})
+			PlayerEvent = function(p,args)
 				service.Events[tostring(args[1])..p.UserId]:Fire(unpack(args,2))
 			end;
 
-			SaveTableAdd = function(p: Player,args: {[number]: any})
+			SaveTableAdd = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local tabName = args[1];
 					local value = args[2];
@@ -778,7 +767,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			SaveTableRemove = function(p: Player,args: {[number]: any})
+			SaveTableRemove = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local tabName = args[1];
 					local value = args[2];
@@ -797,7 +786,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			SaveSetSetting = function(p: Player,args: {[number]: any})
+			SaveSetSetting = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local setting = args[1]
 					local value = args[2]
@@ -823,14 +812,14 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ClearSavedSettings = function(p: Player,args: {[number]: any})
+			ClearSavedSettings = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings", {p})
 				end
 			end;
 
-			SetSetting = function(p: Player,args: {[number]: any})
+			SetSetting = function(p,args)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local setting = args[1]
 					local value = args[2]
@@ -850,48 +839,34 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Detected = function(p: Player,args: {[number]: any})
+			Detected = function(p,args)
 				Anti.Detected(p, args[1], args[2])
 			end;
 
-			TrelloOperation = function(p: Player,args: {[number]: any})
-				local adminLevel = Admin.GetLevel(p)
-				
-				local trello = HTTP.Trello.API
-				
-				local data = args[1]
-				if data.Action == "MakeCard" then
-					local command = Commands.MakeCard
-					if command and Admin.CheckComLevel(adminLevel, command.AdminLevel) then
-						local listName = data.List
+			TrelloOperation = function(p,args)
+				if Admin.GetLevel(p) > Settings.Ranks.Admins.Level then
+					local data = args[1]
+					if data.Action == "MakeCard" then
+						local list = data.List
 						local name = data.Name
 						local desc = data.Desc
-						
-						for _, overrideList in ipairs(HTTP.Trello.GetOverrideLists()) do 
-							if service.Trim(string.lower(overrideList)) == service.Trim(string.lower(listName)) then
-								Functions.Hint("You cannot create a card in that list", {p})
-								return
-							end
-						end
-						
+						local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
 						local lists = trello.getLists(Settings.Trello_Primary)
-						local list = trello.getListObj(lists, listName)
+						local list = trello.getListObj(lists,list)
 						if list then
-							local card = trello.makeCard(list.id, name, desc)
-							Functions.Hint("Made card \""..card.name.."\" in list \""..list.name.."\"", {p})
+							local card = trello.makeCard(list.id,name,desc)
+							Functions.Hint("Made card \""..card.name.."\"",{p})
 							Logs.AddLog(Logs.Script,{
 								Text = tostring(p).." performed Trello operation";
 								Desc = "Player created a Trello card";
 								Player = p;
 							})
-						else
-							Functions.Hint("\""..listName.."\" does not exist", {p})
 						end
 					end
 				end
 			end;
 
-			ClientLoaded = function(p: Player, args: {[number]: any})
+			ClientLoaded = function(p, args)
 				local key = tostring(p.UserId)
 				local client = Remote.Clients[key]
 
@@ -909,15 +884,15 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			LogError = function(p: Player,args: {[number]: any})
+			LogError = function(p,args)
 				logError(p,args[1])
 			end;
 
-			Test = function(p: Player,args: {[number]: any})
+			Test = function(p,args)
 				print("OK WE GOT COMMUNICATION! FROM: "..p.Name.." ORGL: "..args[1])
 			end;
 
-			ProcessCommand = function(p: Player,args: {[number]: any})
+			ProcessCommand = function(p,args)
 				if Process.RateLimit(p, "Command") then
 					Process.Command(p, args[1], {
 						Check = true
@@ -928,16 +903,17 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ProcessChat = function(p: Player,args: {[number]: any})
+			ProcessChat = function(p,args)
 				Process.Chat(p,args[1])
+				--Process.CustomChat(p,args[1])
 			end;
 
-			ProcessCustomChat = function(p: Player,args: {[number]: any})
+			ProcessCustomChat = function(p,args)
 				Process.Chat(p,args[1],"CustomChat")
 				Process.CustomChat(p,args[1],args[2],true)
 			end;
 
-			PrivateMessage = function(p: Player,args: {[number]: any})
+			PrivateMessage = function(p,args)
 				if not type(args[1]) == "string" then return end
 
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
@@ -972,7 +948,7 @@ return function(Vargs, GetEnv)
 			end;
 		};
 
-		NewSession = function(sessionType: string)
+		NewSession = function(sessionType)
 			local session = {
 				Ended = false;
 				NumUsers = 0;
@@ -987,7 +963,7 @@ return function(Vargs, GetEnv)
 					assert(not self.Ended, "Cannot add user to session: Session Ended")
 					if not self.Users[p] then
 						self.Users[p] = defaultData or {};
-						self.NumUsers += 1;
+						self.NumUsers = self.NumUsers + 1;
 					end
 				end;
 
@@ -995,7 +971,7 @@ return function(Vargs, GetEnv)
 					assert(not self.Ended, "Cannot remove user from session: Session Ended")
 					if self.Users[p] then
 						self.Users[p] = nil;
-						self.NumUsers -= 1;
+						self.NumUsers = self.NumUsers - 1;
 
 						if self.NumUsers == 0 then
 							self:FireEvent(nil, "LastUserRemoved");
@@ -1029,13 +1005,13 @@ return function(Vargs, GetEnv)
 					if not self.Ended then
 						for t,event in next,self.Events do
 							event:Disconnect();
+							self.Events[t] = nil;
 						end
-						table.clear(self.Events)
 
 						self:SendToUsers("SessionEnded");
 
-						table.clear(self.Users);
 						self.NumUsers = 0;
+						self.Users = {};
 						self.SessionEvent:Destroy();
 
 						self.Ended = true;
@@ -1064,21 +1040,21 @@ return function(Vargs, GetEnv)
 			return session;
 		end;
 
-		GetSession = function(sessionKey: string)
+		GetSession = function(sessionKey)
 			return Remote.Sessions[sessionKey];
 		end;
 
-		Fire = function(p: Player,...)
+		Fire = function(p, ...)
 			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
-				keys.Sent += 1
+				keys.Sent = keys.Sent+1
 				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0},...)
 			end
 		end;
 
-		Send = function(p: Player,com: string,...)
+		Send = function(p,com,...)
 			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
@@ -1086,16 +1062,16 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetFire = function(p: Player,...)
+		GetFire = function(p, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
-				keys.Sent += 1
+				keys.Sent = keys.Sent+1
 				return RemoteEvent.Function:InvokeClient(p, {Mode = "Get", Sent = 0}, ...)
 			end
 		end;
 
-		Get = function(p: Player,com: string,...)
+		Get = function(p,com,...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
@@ -1107,7 +1083,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		OldGet = function(p: Player,com: string, ...)
+		OldGet = function(p, com, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				local returns, finished
@@ -1121,7 +1097,7 @@ return function(Vargs, GetEnv)
 				print("GETTING RETURN");
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
-					task.delay(600, function() if not finished then event:Fire() end end)
+					delay(600, function() if not finished then event:Fire() end end)
 					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
 					--returns = returns or {event:Wait()}
 					Yield:Wait();
@@ -1129,12 +1105,10 @@ return function(Vargs, GetEnv)
 
 					print(string.format("WE GOT IT! %s", tostring(returns)));
 					pEvent:Disconnect()
-					pEvent = nil
 				end
 
 				print("GOT RETURN");
 				event:Disconnect()
-				event = nil
 
 				if returns then
 					if returns[1] == "__ADONIS_RETURN_ERROR" then
@@ -1143,12 +1117,12 @@ return function(Vargs, GetEnv)
 						return unpack(returns)
 					end
 				else
-					return
+					return nil
 				end
 			end
 		end;
 
-		CheckClient = function(p: Player)
+		CheckClient = function(p)
 			local ran,ret = pcall(function() return Remote.Get(p,"ClientHooked") end)
 			if ran and ret == Remote.Clients[tostring(p.UserId)].Special then
 				return true
@@ -1182,99 +1156,131 @@ return function(Vargs, GetEnv)
 			return;
 		end;
 
-		Ping = function(p: Player)
+		Ping = function(p)
 			return Remote.Get(p,"Ping")
 		end;
 
-		MakeGui = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+		MakeGui = function(p, GUI, data, themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			Remote.Send(p,"UI",GUI,theme,data or {})
+			Remote.Send(p, "UI", GUI, theme, data or {})
 		end;
 
-		MakeGuiGet = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+		MakeGuiGet = function(p,GUI,data,themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			return Remote.Get(p,"UI",GUI,theme,data or {})
 		end;
 
-		GetGui = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+		GetGui = function(p,GUI,data,themeData)
 			return Remote.MakeGuiGet(p,GUI,data,themeData)
 		end;
 
-		RemoveGui = function(p: Player,name: string | boolean | Instance,ignore: string)
+		RemoveGui = function(p,name,ignore)
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
 
-		RefreshGui = function(p: Player,name: string | boolean | Instance,ignore: string,data: {[any]: any},themeData: {[string]: any})
+		RefreshGui = function(p, name, ignore, data, themeData)
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
-			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})
+			Remote.Send(p,"RefreshUI", name, ignore, themeData, data or {})
 		end;
 
-		NewParticle = function(p: Player,target: Instance,class: string,properties: {[string]: any})
-			Remote.Send(p,"Function","NewParticle",target,class,properties)
+		NewParticle = function(p,target,type,properties)
+			Remote.Send(p,"Function","NewParticle",target,type,properties)
 		end;
 
-		RemoveParticle = function(p: Player,target: Instance,name: string)
+		RemoveParticle = function(p,target,name)
 			Remote.Send(p,"Function","RemoveParticle",target,name)
 		end;
 
-		NewLocal = function(p: Player,class: string,props: {[string]: any},parent: string?)
-			Remote.Send(p,"Function","NewLocal",class,props,parent)
+		NewLocal = function(p, type, props, parent)
+			Remote.Send(p,"Function","NewLocal",type,props,parent)
 		end;
 
-		MakeLocal = function(p: Player,object: Instance,parent: string?,clone: boolean?)
+		MakeLocal = function(p,object,parent,clone)
 			object.Parent = p
-			task.wait(0.5)
+			wait(0.5)
 			Remote.Send(p,"Function","MakeLocal",object,parent,clone)
 		end;
 
-		MoveLocal = function(p: Player,object: string,parent: string?,newParent: Instance)
+		MoveLocal = function(p,object,parent,newParent)
 			Remote.Send(p,"Function","MoveLocal",object,false,newParent)
 		end;
 
-		RemoveLocal = function(p: Player,object: string,parent: string?,match: boolean?)
+		RemoveLocal = function(p,object,parent,match)
 			Remote.Send(p,"Function","RemoveLocal",object,parent,match)
 		end;
 
-		SetLighting = function(p: Player,prop: string,value: any)
+		SetLighting = function(p,prop,value)
 			Remote.Send(p,"Function","SetLighting",prop,value)
 		end;
 
-		FireEvent = function(p: Player,...)
+		FireEvent = function(p,...)
 			Remote.Send(p,"FireEvent",...)
 		end;
 
-		NewPlayerEvent = function(p: Player,type: string,func: (...any) -> (...any))
+		NewPlayerEvent = function(p,type,func)
 			return service.Events[type..p.UserId]:Connect(func)
 		end;
 
-		StartLoop = function(p: Player,name: string,delay: number | string,funcCode: string)
+		StartLoop = function(p,name,delay,funcCode)
 			Remote.Send(p,"StartLoop",name,delay,Core.ByteCode(funcCode))
 		end;
 
-		StopLoop = function(p: Player,name: string)
+		StopLoop = function(p,name)
 			Remote.Send(p,"StopLoop",name)
 		end;
 
-		PlayAudio = function(p: Player,audioId: number,volume: number?,playbackSpeed: number?,looped: boolean?)
-			Remote.Send(p,"Function","PlayAudio",audioId,volume,playbackSpeed,looped)
+		PlayAudio = function(p,audioId,volume,pitch,looped)
+			Remote.Send(p,"Function","PlayAudio",audioId,volume,pitch,looped)
 		end;
 
-		StopAudio = function(p: Player,audioId: number)
-			Remote.Send(p,"Function","StopAudio",audioId)
+		StopAudio = function(p,id)
+			Remote.Send(p,"Function","StopAudio",id)
 		end;
 
-		FadeAudio = function(p: Player,audioId: number,inVol: number?,playbackSpeed: number?,looped: boolean?,incWait: number?)
-			Remote.Send(p,"Function","FadeAudio",audioId,inVol,playbackSpeed,looped,incWait)
+		FadeAudio = function(p,id,inVol,pitch,looped,incWait)
+			Remote.Send(p,"Function","FadeAudio",id,inVol,pitch,looped,incWait)
 		end;
 
-		StopAllAudio = function(p: Player)
+		StopAllAudio = function(p)
 			Remote.Send(p,"Function","KillAllLocalAudio")
 		end;
+		--[[
+		StartSession = function(p,type,data)
+			local index = Functions.GetRandom()
+			local data = data or {}
+			local custKill = data.Kill
+			data.Type = type
+			data.Player = p
+			data.Index = index
+			data.Kill = function()
+				Remote.Sessions[index] = nil
+				if custKill then return custKill() end
+				return true
+			end
+			Remote.KillSession(p,type)
+			Remote.Sessions[index] = data
+		end;
 
-		LoadCode = function(p: Player,code: string,getResult: boolean)
+		GetSession = function(p,type)
+			for i,v in pairs(Remote.Sessions) do
+				if v.Type == type and v.Player == p then
+					return v,i
+				end
+			end
+		end;
+
+		KillSession = function(p,type)
+			for i,v in pairs(Remote.Sessions) do
+				if v.Type == type and v.Player == p then
+					v.Kill()
+				end
+			end
+		end;
+		--]]
+		LoadCode = function(p,code,getResult)
 			if getResult then
 				return Remote.Get(p,"LoadCode",Core.Bytecode(code))
 			else
@@ -1282,7 +1288,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Encrypt = function(str: string?, key: string?, cache: {[string]: any}?)
+		Encrypt = function(str, key, cache)
 			cache = cache or Remote.EncodeCache or {}
 
 			if not key or not str then
@@ -1309,7 +1315,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Decrypt = function(str: string?, key: string?, cache: {[string]: any}?)
+		Decrypt = function(str, key, cache)
 			cache = cache or Remote.DecodeCache or {}
 
 			if not key or not str then

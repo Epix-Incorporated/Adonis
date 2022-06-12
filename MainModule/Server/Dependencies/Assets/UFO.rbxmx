@@ -1363,7 +1363,7 @@
 					<bool name="Playing">true</bool>
 					<token name="RollOffMode">0</token>
 					<Ref name="SoundGroup">null</Ref>
-					<Content name="SoundId"><url>rbxassetid://162670150</url></Content>
+					<Content name="SoundId"><url>rbxassetid://363808552</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 					<double name="TimePosition">0</double>
@@ -1401,7 +1401,7 @@
 					<bool name="Playing">true</bool>
 					<token name="RollOffMode">0</token>
 					<Ref name="SoundGroup">null</Ref>
-					<Content name="SoundId"><url>rbxassetid://162670150</url></Content>
+					<Content name="SoundId"><url>rbxassetid://1447681819</url></Content>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 					<double name="TimePosition">0</double>

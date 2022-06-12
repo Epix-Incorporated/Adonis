@@ -1367,16 +1367,7 @@ return function(data, Vargs)
 					Entry = "DropDown";
 					Setting = "CustomTheme";
 					Value = Variables.CustomTheme or "Game Theme";
-					Options = (function()
-						local themes = {"Game Theme"}
-						for _, v in ipairs(client.UIFolder:GetChildren()) do
-							local theme = (string.sub(v.Name, 1, 5) == "NoEnv" and string.sub(v.Name, 7)) or v.Name
-							if theme ~= "README" then
-								table.insert(themes, theme)
-							end
-						end
-						return themes
-					end)();
+					Options = (function() local themes = {"Game Theme"} for i,v in ipairs(client.UIFolder:GetChildren()) do if v.Name ~= "README" then table.insert(themes, v.Name) end end return themes end)();
 					Function = function(selection)
 						if selection == "Game Theme" then
 							Variables.CustomTheme = nil

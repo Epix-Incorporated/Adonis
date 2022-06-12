@@ -8,10 +8,7 @@ origEnv = nil
 logError = nil
 
 --// Processing
-return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
-	setfenv(1, env)
-
+return function()
 	local _G, game, script, getfenv, setfenv, workspace,
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
@@ -37,8 +34,8 @@ return function(Vargs, GetEnv)
 
 	local script = script
 
-	local service = Vargs.Service
-	local client = Vargs.Client
+	local service = service
+	local client = client
 
 	local GetEnv = GetEnv
 
@@ -165,7 +162,7 @@ return function(Vargs, GetEnv)
 			if ran then
 				local rets = {
 					TrackTask("UI: ".. module:GetFullName(),
-						if data.modNoEnv or data.NoEnv then func else setfenv(func,newEnv),
+						setfenv(func,newEnv),
 						data,
 						newEnv
 					)
@@ -235,10 +232,6 @@ return function(Vargs, GetEnv)
 					if v.Config then
 						for k,m in ipairs(v.Config:GetChildren()) do
 							if not endConfig[m.Name] then
-								if string.sub(m.Name, 1, 5) == "NoEnv" then
-									endConfig["Code"] = m
-								end
-
 								endConfig[m.Name] = m
 							end
 						end
@@ -279,18 +272,14 @@ return function(Vargs, GetEnv)
 			if newGui then
 				local isModule = newGui:IsA("ModuleScript")
 				local conf = newGui:FindFirstChild("Config")
-				local mod = conf and (conf:FindFirstChild("Modifier") or conf:FindFirstChild("NoEnv-Modifier"))
-
-				data.modNoEnv = mod and string.sub(mod.Name, 1, 5) == "NoEnv"
+				local mod = conf and conf:FindFirstChild("Modifier")
 
 				if isModule then
 					return UI.LoadModule(newGui, data, {
 						script = newGui;
 					})
 				elseif conf and foundConf and foundConf ~= true then
-					local code = foundConf:FindFirstChild("Code") or foundConf:FindFirstChild("NoEnv-Code")
-					data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
-
+					local code = foundConf.Code
 					local mult = foundConf.AllowMultiple
 					local keep = foundConf.CanKeepAlive
 
@@ -302,23 +291,17 @@ return function(Vargs, GetEnv)
 						local newEnv = {}
 
 						if folder:IsA("ModuleScript") then
-							local folderNoEnv = string.sub(folder.Name, 1, 5) == "NoEnv"
-
 							newEnv.script = folder
 							newEnv.gTable = gTable
-
-							local ran, func = pcall(require, folder)
+							local ran,func = pcall(require, folder)
 							local newEnv = GetEnv(newEnv)
-							local rets = {
-								folderNoEnv and pcall(func, newGui, gTable, data, newEnv) or pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
-							}
+							local rets = {pcall(setfenv(func,newEnv),newGui, gTable, data)}
 							local ran = rets[1]
 							local ret = rets[2]
 
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
-									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
-									data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
+									code = (ret:FindFirstChild("Config") and ret.Config:FindFirstChild("Code")) or code
 								else
 									return ret
 								end

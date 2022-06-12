@@ -798,7 +798,7 @@
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
-					<string name="Name">NoEnv-Code</string>
+					<string name="Name">Code</string>
 					<string name="ScriptGuid">{D3ADB31E-582B-4AC1-89DB-C1BEA60D38FC}</string>
 					<ProtectedString name="Source"><![CDATA[																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -952,11 +952,7 @@ local function isGui(child)
 end
 
 --// All global vars will be wiped/replaced except script
-return function(data, env)
-	if env then
-		setfenv(1, env)
-	end
-
+return function(data)
 	--local client = service.GarbleTable(client)
 	local Player = service.Players.LocalPlayer
 	local Mouse = Player:GetMouse()
@@ -1001,7 +997,6 @@ return function(data, env)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
-	local functionify
 
 	local Drag = GUI.Drag
 	local Close = Drag.Close
