@@ -262,7 +262,7 @@ return function(Vargs, GetEnv)
 
 						Variables.Blacklist.Lists.Trello = data.Blacklist
 						Variables.Whitelist.Lists.Trello = data.Whitelist
-
+          
 						--// Clear any custom ranks that were not fetched from Trello
 						for rank, info in pairs(Settings.Ranks) do 
 							if rank.IsExternal and not data.Ranks[rank] then

@@ -451,9 +451,9 @@ return function(Vargs, env)
 
 		Incognito = {
 			Prefix = Settings.Prefix;
-			Commands = {"incognito", "vanish", "incognitomode"};
+			Commands = {"incognito"};
 			Args = {"player"};
-			Description = "Removes the target player from other clients' perspectives (persists until rejoin, see a list of vanished players using "..Settings.Prefix.."incognitolist)";
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			Function = function(plr: Player, args: {string})

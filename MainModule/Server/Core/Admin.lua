@@ -241,14 +241,13 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-
+      
 		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
 				return
 			end
 
 			local key = tostring(p.UserId)
-
 			local cache = Admin.GroupsCache[key]
 			if cache then
 				return cache
@@ -284,7 +283,6 @@ return function(Vargs, GetEnv)
 		GetPlayerGroup = function(p: Player, group: number | string)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
-
 			if groups and groups.Groups then
 				for _, g in ipairs(groups.Groups) do 
 					if (isId and g.Id == group) or (not isId and g.Name == group) then

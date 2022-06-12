@@ -3244,6 +3244,7 @@ return function(Vargs, env)
 					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
+
 							local attachment0 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT0") or service.New("Attachment", {
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT0";
@@ -3880,7 +3881,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};	
+		};
 
 		LoopFling = {
 			Prefix = Settings.Prefix;
@@ -4365,7 +4366,6 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftHand")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "RightLeg" then
 											local foundKeys = {}
 											for i = #partInput, 1, -1 do
@@ -4373,7 +4373,6 @@ return function(Vargs, env)
 													table.insert(foundKeys, partInput[i])
 												end
 											end
-
 											if #foundKeys ~= 3 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4383,7 +4382,6 @@ return function(Vargs, env)
 												table.insert(partInput, "RightFoot")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "LeftLeg" then
 											local foundKeys = {}
 											for k2, v2 in pairs(partInput) do
@@ -4391,7 +4389,7 @@ return function(Vargs, env)
 													table.insert(foundKeys, k2)
 												end
 											end
-
+											
 											if #foundKeys ~= 3 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4401,7 +4399,6 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftFoot")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "Torso" then
 											local foundKeys = {}
 											for k2, v2 in pairs(partInput) do
@@ -4409,7 +4406,6 @@ return function(Vargs, env)
 													table.insert(foundKeys, k2)
 												end
 											end
-
 											if #foundKeys ~= 2 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4476,7 +4472,7 @@ return function(Vargs, env)
 								end
 
 
-								-- If "all" is specified
+							-- If "all" is specified
 							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
