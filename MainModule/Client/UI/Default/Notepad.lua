@@ -1,6 +1,10 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 
 	local window = client.UI.Make("Window", {
 		Name  = "Notepad";
@@ -42,7 +46,7 @@ return function(data)
 		TextScaled = false;
 		ClearTextOnFocus = false;
 		MultiLine = true;
-		Text = "";
+		Text = data.Text or "";
 	})
 	
 	local fonts = {}

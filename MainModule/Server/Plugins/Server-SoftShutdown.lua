@@ -75,14 +75,14 @@ return function()
 						table.insert(logs, 1, {
 							User = plr.Name,
 							Restart = true,
-							Time = service.GetTime(),
+							Time = os.time(),
 							Reason = args[1] or "N/A"
 						})
 					else
 						table.insert(logs, 1, {
 							User = "[Server]",
 							Restart = true,
-							Time = service.GetTime(),
+							Time = os.time(),
 							Reason = args[1] or "N/A"
 						})
 					end

@@ -7,6 +7,10 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
+	
+	local Routine = env.Routine
+	local Pcall = env.Pcall
+	local cPcall = env.cPcall
 
 	return {
 		ViewCommands = {
@@ -88,7 +92,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in pairs(commands) do
 					for _, p in ipairs(v.Commands) do
-						if (v.Prefix or "")..p:lower() == args[1]:lower() then
+						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
 							cmd = v
 							ind = i
 							break
@@ -98,10 +102,10 @@ return function(Vargs, env)
 				assert(cmd, "Command '"..args[1].."' not found")
 
 				local function formatStrForRichText(str: string): string
-					return str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
+					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
 				end
 
-				local cmdArgs = Admin.FormatCommand(cmd):sub((#cmd.Commands[1]+2))
+				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
 				if cmdArgs == "" then cmdArgs = "-" end
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
@@ -184,7 +188,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CommsPanel")
 			end
-		};						
+		};
 
 		RandomNum = {
 			Prefix = Settings.PlayerPrefix;
@@ -233,7 +237,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = ("RGB: %d, %d, %d | Num: %d"):format(bc.r*255, bc.g*255, bc.b*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.r*255, bc.g*255, bc.b*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
@@ -268,6 +272,8 @@ return function(Vargs, env)
 				local mats = {
 					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
 					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
+					--, "Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
+					--Beta Features Materials
 				}
 				for i, mat in ipairs(mats) do
 					mats[i] = {Text = mat; Desc = "Enum value: "..Enum.Material[mat].Value}
@@ -344,7 +350,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local tab = {}
-				for _, v in pairs(service.Players:GetPlayers()) do
+				for _, v in ipairs(service.Players:GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(tab, service.FormatPlayer(v))
 					end
@@ -359,7 +365,7 @@ return function(Vargs, env)
 					Icon = server.MatIcons["People alt"];
 					Tab = Logs.ListUpdaters.Donors(plr);
 					Update = "Donors";
-					AutoUpdate = if not args[1] or args[1]:lower() == "true" or args[1]:lower() == "yes" then 2 else nil;
+					AutoUpdate = if not args[1] or string.lower(args[1]) == "true" or string.lower(args[1]) == "yes" then 2 else nil;
 				})
 			end
 		};
@@ -395,30 +401,39 @@ return function(Vargs, env)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind, p in pairs(service.Players:GetPlayers()) do
-								if Admin.CheckAdmin(p) then
-									local ret = Remote.MakeGuiGet(p, "Notification", {
-										Title = "Help Request";
-										Message = plr.Name.." needs help! Reason: "..pending.Reason;
-										Icon = "rbxassetid://7501175708";
-										Time = 30;
-										OnClick = Core.Bytecode("return true");
-										OnClose = Core.Bytecode("return false");
-										OnIgnore = Core.Bytecode("return false");
-									})
+							for ind, p in ipairs(service.Players:GetPlayers()) do
+								Routine(function()
+									if Admin.CheckAdmin(p) then
+										local ret = Remote.MakeGuiGet(p, "Notification", {
+											Title = "Help Request";
+											Message = plr.Name.." needs help! Reason: "..pending.Reason;
+											Icon = server.MatIcons.Mail;
+											Time = 30;
+											OnClick = Core.Bytecode("return true");
+											OnClose = Core.Bytecode("return false");
+											OnIgnore = Core.Bytecode("return false");
+										})
 
-									num += 1
-									if ret then
-										if not answered then
-											answered = true
-											Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
+										num += 1
+										if ret then
+											if not answered then
+												answered = true
+												Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
+											else
+												Remote.MakeGui(p, "Notification", {
+													Title = "Help Request";
+													Message = "Another admin has already responded to this request!";
+													Icon = server.MatIcons.Mail;
+													Time = 5;
+												})
+											end
 										end
 									end
-								end
+								end)
 							end
 
-							local w = time()
-							repeat wait(0.5) until time()-w>30 or answered
+							local w = os.time()
+							repeat task.wait(0.5) until os.time()-w>30 or answered
 
 							pending.Pending = false;
 
@@ -457,8 +472,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 				if player then
-					local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(player)
-					if succeeded then
+					local succeeded, errorMsg, _, placeId, instanceId = pcall(function() return service.TeleportService:GetPlayerPlaceInstanceAsync(player) end)
+					if succeeded and placeId and instanceId then
 						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 					else
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg, {plr})
@@ -879,7 +894,7 @@ return function(Vargs, env)
 
 				for _, v: Player in pairs(players) do
 					task.defer(function()
-						local gameData = nil
+						local gameData
 
 						if elevated then
 							local level, rank = Admin.GetLevel(v)
@@ -926,23 +941,23 @@ return function(Vargs, env)
 				local data = {}
 
 				local donorList = {}
-				for _, v in pairs(service.GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
 				end
 
-				local adminDictionary, workspaceInfo = nil, nil
+				local adminDictionary, workspaceInfo
 				if elevated then
 					adminDictionary = {}
-					for _, v in pairs(service.GetPlayers()) do
+					for _, v in ipairs(service.GetPlayers()) do
 						local level, rank = Admin.GetLevel(v)
 						if level > 0 then
 							adminDictionary[v.Name] = rank or "Unknown"
 						end
 					end
 					local nilPlayers = 0
-					for _, v in pairs(service.NetworkServer:GetChildren()) do
+					for _, v in ipairs(service.NetworkServer:GetChildren()) do
 						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 							nilPlayers += 1
 						end
@@ -972,7 +987,7 @@ return function(Vargs, env)
 						query = elevated and res.query or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
 					}
-				end, function() return nil end))
+				end, function() return end))
 
 				Remote.MakeGui(plr, "ServerDetails", {
 					CreatorId = game.CreatorId;
@@ -1076,6 +1091,41 @@ return function(Vargs, env)
 						end)
 					end
 				end)
+			end
+		};
+
+		AudioPlayer = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"ap", "audioplayer", "mp", "musicplayer"};
+			Args = {"soundId?"};
+			Description = "Opens the audio player";
+			AdminLevel = "Players";
+			Hidden = false;
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "Music", {
+					Song = args[1]
+				})
+			end
+		};
+
+		CountryList = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"countries", "countrylist", "countrycodes"},
+			Args = {},
+			Description = "Shows you a list of countries and their respective codes",
+			AdminLevel = "Players";
+			Hidden = true;
+			Function = function(plr: Player, args: {string})
+				local list = {}
+				for code, name in pairs(require(server.Shared.CountryRegionCodes)) do
+					table.insert(list, code.." - "..name)
+				end
+				table.sort(list)
+				Remote.MakeGui(plr, "List", {
+					Title = "Countries";
+					Icon = server.MatIcons.Language;
+					Table = list;
+				})
 			end
 		};
 

@@ -8,7 +8,11 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed using client.Functions.GetRandom()
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = service.New("ScreenGui")
 	local mode = data.Mode
 	local gTable = client.UI.Register(gui, {Name = "Effect"})

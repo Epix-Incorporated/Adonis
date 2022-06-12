@@ -7,7 +7,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local gui = service.New("ScreenGui")

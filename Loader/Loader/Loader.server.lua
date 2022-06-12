@@ -29,6 +29,7 @@ end
 
 warn("Loading...")
 
+local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
@@ -60,6 +61,7 @@ else
 	local data = {
 		Settings = {};
 		Descriptions = {};
+		Messages = {};
 		ServerPlugins = {};
 		ClientPlugins = {};
 		Packages = {};
@@ -90,10 +92,16 @@ else
 	if data.DebugMode then
 		moduleId = model.Parent.MainModule
 	end
-
 	local success, setTab = pcall(require, settings)
-	if not success then
+	if success then
+		data.Messages = setTab.Settings.Messages
+	else
 		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
+		table.insert(data.Messages, {
+			Title = "Warning!";
+			Message = "Settings module error detected. Using default settings.";
+			Time = 15;
+		})
 		setTab = {}
 	end
 
@@ -118,20 +126,19 @@ else
 	end
 
 	if tonumber(moduleId) then
-		if game:GetService("RunService"):IsStudio() then
-			warn("Requiring Adonis MainModule. Expand for model URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-		else
-			warn("Requiring Adonis MainModule. Model URL: ", "https://www.roblox.com/library/".. moduleId)
-		end
+		warn("Requiring Adonis MainModule. Model URL: https://www.roblox.com/library/".. moduleId)
 	end
 
 	local module = require(moduleId)
 	local response = module(data)
 
 	if response == "SUCCESS" then
-		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not game:GetService("RunService"):IsStudio() then
+		if (data.Settings and data.Settings.HideScript) and not data.DebugMode and not RunService:IsStudio() then
 			model.Parent = nil
-			game:BindToClose(function() model.Parent = game:GetService("ServerScriptService") model.Name = "Adonis_Loader" end)
+			game:BindToClose(function()
+				model.Parent = ServerScriptService
+				model.Name = "Adonis_Loader"
+			end)
 		end
 
 		model.Name = "Adonis_Loader"

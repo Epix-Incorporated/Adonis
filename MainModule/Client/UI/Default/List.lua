@@ -1,6 +1,10 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local Name = data.Name
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
