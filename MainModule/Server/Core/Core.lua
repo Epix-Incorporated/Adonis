@@ -1133,7 +1133,7 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
-					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey or true then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
 						table.insert(server.Messages, {
 							Title = "Warning!";
 							Message = "Using default datastore key!";
