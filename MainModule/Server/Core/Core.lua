@@ -156,6 +156,8 @@ return function(Vargs, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+			
+			LoadAdminsFromDS = true;
 
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
@@ -900,6 +902,15 @@ return function(Vargs, GetEnv)
 				for i,ind in ipairs(tableAncestry) do
 					curTable = curTable[ind];
 					curName = ind;
+					
+					if curName and type(curName) == 'string' then
+						--// Admins do NOT load from the DataStore with this setting
+						if curName == "Ranks" then 
+							if not Settings.LoadAdminsFromDS then
+								return nil;
+							end 
+						end
+					end
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
@@ -908,8 +919,11 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if curName and type(curName) == 'string' and Blacklist[curName] then
-					return nil
+				if curName and type(curName) == 'string' then
+					if Blacklist[curName] then
+						return nil;
+					end
+					
 				end
 
 				return curTable, curName;
@@ -1090,10 +1104,16 @@ return function(Vargs, GetEnv)
 				local realTable,tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
-					--// warn("Stopped " .. displayName .. " from being set!")
-					--// Debugging --Coasterteam
-					return
+				if displayName and type(displayName) == 'string' then
+					if Blacklist[displayName] then 
+						return
+					end 
+					if type(indList) == 'table' and indList[1] == "Settings" and indList[2] == "Ranks" then
+						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
+							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
+							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+					end
 				end
 
 				if realTable and tab.Action == "Add" then
