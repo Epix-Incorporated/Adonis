@@ -902,6 +902,19 @@ return function(Vargs, GetEnv)
 				for i,ind in ipairs(tableAncestry) do
 					curTable = curTable[ind];
 					curName = ind;
+					
+					if curName and type(curName) == 'string' then
+						--// Admins do NOT load from the DataStore with this setting
+						if curName == "Ranks" then 
+							if not Settings.LoadAdminsFromDS then
+								return nil;
+							end 
+							--if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning then
+							--	warn("Admins are loading from the Adonis DataStore when SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Setting! (and set it to true!)")
+							--	Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+							--end
+						end
+					end
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
@@ -910,14 +923,11 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if curName and type(curName) == 'string'  then
+				if curName and type(curName) == 'string' then
 					if Blacklist[curName] then
-						return nil
+						return nil;
 					end
-					--// Admins do NOT load from the DataStore with this setting
-					if curName == "Ranks" and not Settings.LoadAdminsFromDS then
-						return nil
-					end
+					
 				end
 
 				return curTable, curName;
