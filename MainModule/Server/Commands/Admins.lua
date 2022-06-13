@@ -431,7 +431,7 @@ return function(Vargs, env)
 					end
 				elseif sub == "list" then
 					local Tab = {}
-					for Key, List in pairs(Variables.Whitelist.Lists) do 
+					for Key, List in pairs(Variables.Whitelist.Lists) do
 						local Prefix = Key == "Settings" and "" or "["..Key.."] "
 						for _, User in ipairs(List) do
 							table.insert(Tab, {Text = Prefix .. User, Desc = User})
@@ -1352,14 +1352,10 @@ return function(Vargs, env)
 			CrossServerDenied = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				local board = Settings.Trello_Primary
-				local appkey = Settings.Trello_AppKey
-				local token = Settings.Trello_Token
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
 
-				if not Settings.Trello_Enabled or board == "" or appkey == "" or token == "" then Functions.Hint('Trello has not been configured in settings', {plr}) return end
-
-				local trello = HTTP.Trello.API(appkey,token)
-				local lists = trello.getLists(board)
+				local lists = trello.getLists(Settings.Trello_Primary)
 				local list = trello.getListObj(lists, {"Banlist", "Ban List", "Bans"})
 
 				local level = data.PlayerData.Level
