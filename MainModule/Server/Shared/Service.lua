@@ -7,9 +7,9 @@ Routine = nil
 local main
 local ErrorHandler
 local RealMethods = {}
-local methods = setmetatable({},{
-	__index = function(tab,index)
-		return function(obj,...)
+local methods = setmetatable({}, {
+	__index = function(tab, index)
+		return function(obj, ...)
 			local r,class = pcall(function() return obj.ClassName end)
 			if r and class and obj[index] and type(obj[index]) == "function" then
 				if not RealMethods[class] then
@@ -1168,7 +1168,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end;
 
 				__newindex = function(tab,ind,new)
-					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "userdata") and ind or "Potentially dangerous index"
 
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
