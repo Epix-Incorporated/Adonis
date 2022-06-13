@@ -909,10 +909,6 @@ return function(Vargs, GetEnv)
 							if not Settings.LoadAdminsFromDS then
 								return nil;
 							end 
-							--if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning then
-							--	warn("Admins are loading from the Adonis DataStore when SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Setting! (and set it to true!)")
-							--	Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
-							--end
 						end
 					end
 
