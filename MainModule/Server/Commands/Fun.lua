@@ -2864,11 +2864,19 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					character.Head.Transparency = 0.99
-					if character.Head:FindFirstChild("Mesh") then
-						character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
-					elseif character.Humanoid:FindFirstChild("HeadScale") then
-						character.Humanoid.HeadScale.Value = 0.01
+					local headMesh = character.Head:FindFirstChild("Mesh")
+					if headMesh then
+						character.Head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						character.Head.Transparency = 1
+						for _, c in ipairs(character.Head:GetChildren()) do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
 					end
 
 					cl:Clone().Parent = decal1
@@ -2886,7 +2894,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
