@@ -1,9 +1,8 @@
 local AudioLib = {}
---AudioLib.__index = function(s, i) return s[i] end
 
 function AudioLib.new(container)
 	local self = {}
-	
+
 	self.DefaultProperties = {
 		Children = nil;
 		--ClearAllChildren = true;
@@ -18,29 +17,32 @@ function AudioLib.new(container)
 
 	self.Playlist = {}
 	self.Shuffle = false
-	
-	function self:GetSound() -- Retrieve the sound used for playing all music
+
+    --// Retrieve the sound used for playing all music
+	function self:GetSound()
 		return self.Sound
 	end
 
-	function self:UpdateSound(data) -- Loops through a table of properties used to overwrite those of an existing instance.
+    --// Loops through a table of properties used to overwrite those of an existing instance.
+	function self:UpdateSound(data)
 		for property,value in pairs(data) do
 			self.Sound[property] = value
 		end
 		return self.Sound
 	end
 
-	function self:SoundEnded() -- Loads the next song in the playlist
+    --// Loads the next song in the playlist
+	function self:SoundEnded()
 		if #self.Playlist > 0 then
 			local index = table.find(self.Playlist, self.Sound.SoundId)
 			if self.Shuffle then index = math.random(0, #self.Playlist) end
-			if (index + 1) > #self.Playlist then 
+			if (index + 1) > #self.Playlist then
 				index = 0
 			end
 			self.Sound.SoundId = self.Playlist[index + 1]
 		end
 	end
-	
+
 	local container = workspace:FindFirstChild(container.Name)
 	self.Sound = container:FindFirstChild("AudioLib_Sound")
 	if not self.Sound then

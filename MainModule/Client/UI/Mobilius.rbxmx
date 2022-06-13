@@ -2,14 +2,14 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBX4D12583F8A0D4194B2C81615A716A159">
+	<Item class="Folder" referent="RBX2892FC8222A842C48045E858E2A14350">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Mobilius</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ScreenGui" referent="RBX35DC2BFD57984F138E3BE5205891F3D5">
+		<Item class="ScreenGui" referent="RBXC9F38F322D904855A2028E3CC34E9D40">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
@@ -19,18 +19,23 @@
 				<string name="Name">PlayerList</string>
 				<bool name="ResetOnSpawn">true</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBXD83E236926B8445E93BAF59749285CE1">
+			<Item class="Folder" referent="RBXDB40F57E05554213ADBC9106A8121EB6">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="BoolValue" referent="RBX7456D705B36D4A2DA5BDDB68F59B581C">
+				<Item class="BoolValue" referent="RBX45FE11B6F8534A3784329CBBC80EB8EC">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -39,12 +44,12 @@
 						<bool name="Value">false</bool>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX96E8FEB058BD4245AC892EA29F462EEA">
+				<Item class="ModuleScript" referent="RBXC2744050A48D4604BAE65843AFE105A1">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Code</string>
-						<string name="ScriptGuid"></string>
+						<string name="Name">NoEnv-Code</string>
+						<string name="ScriptGuid">{8A8E8CE9-2C3D-4169-A529-7A3FE3829919}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -53,8 +58,8 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
-	script.Parent.Parent:Destroy()
+return function(data, env)
+	env.script.Parent.Parent:Destroy()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
@@ -62,7 +67,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBXF6DE1EBE87644F3BBDAAF39197D578E4">
+		<Item class="ScreenGui" referent="RBX56D4F8B831E440DF8EEBC1E54DBB510B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
@@ -72,53 +77,62 @@ end]]></ProtectedString>
 				<string name="Name">Hint</string>
 				<bool name="ResetOnSpawn">true</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="Folder" referent="RBX0309CDED630442B9B2A418C38D33409B">
+			<Item class="Folder" referent="RBXCA59B884D0BA4B979118C05EEE546099">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXDE55FAC6190E4092BF2FB8887C7DD985">
+				<Item class="ModuleScript" referent="RBX886B95A79880471CB45EBC274D39286A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Code</string>
-						<string name="ScriptGuid"></string>
+						<string name="Name">NoEnv-Code</string>
+						<string name="ScriptGuid">{2CB6BF6F-3DB8-4A81-AACE-7F269F90D1DC}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
 Routine = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local gTable = data.gTable
 	local gui = gTable.Object
 	local playergui = service.PlayerGui
 	local str = data.Message
-	
+
 	local hint = gui.HintFrame
 	local frame = hint.Frame
 	local msg = frame.msg
-	
+
 	client.Core.RemoveGui("Hint",gui)
-	
+
 	msg.Text = str
 	gTable:Ready()
-	
+
 	wait(data.Time or 5)
-	
+
 	gui:Destroy()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXE9B476AA643A4314B91BB2EEDAA83025">
+				<Item class="BoolValue" referent="RBXA7305A5A25CC4801B04DC439F7894486">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -128,7 +142,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX3AD9F9BD9BB2427FAB50EB576AC7B6F7">
+			<Item class="Frame" referent="RBX4F54CDC327EB41ED9DA1EFF460F4C369">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -168,7 +182,13 @@ end]]></ProtectedString>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>0</XO>
@@ -182,7 +202,7 @@ end]]></ProtectedString>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX72AAFEB6B9374530AFF4D787BDE8BA43">
+				<Item class="Frame" referent="RBX4D9B65B323644FF8B93028ADE8C2A0DC">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -222,7 +242,13 @@ end]]></ProtectedString>
 						<Ref name="RootLocalizationTable">null</Ref>
 						<float name="Rotation">0</float>
 						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
 						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
 						<UDim2 name="Size">
 							<XS>1</XS>
 							<XO>0</XO>
@@ -236,7 +262,7 @@ end]]></ProtectedString>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBXB5B9394496414193AA9692C4D44873B9">
+					<Item class="TextLabel" referent="RBX413739C50CBB4418849705475EC94B66">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -262,6 +288,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">1</token>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -280,7 +307,13 @@ end]]></ProtectedString>
 							<Ref name="RootLocalizationTable">null</Ref>
 							<float name="Rotation">0</float>
 							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
 							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
 							<UDim2 name="Size">
 								<XS>1</XS>
 								<XO>-5</XO>
@@ -316,7 +349,7 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ScreenGui" referent="RBX0C3FA08A0986418B9B0D4086C40F736F">
+		<Item class="ScreenGui" referent="RBX954B616CA4474AD8BC89E13D2DA9D78C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="AutoLocalize">false</bool>
@@ -326,11 +359,16 @@ end]]></ProtectedString>
 				<string name="Name">HelpButton</string>
 				<bool name="ResetOnSpawn">true</bool>
 				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<token name="ZIndexBehavior">0</token>
 			</Properties>
-			<Item class="ImageButton" referent="RBX0E4473787863475285E5440542687AF1">
+			<Item class="ImageButton" referent="RBXBDEB520E79DF4256AABC1DC653C7BC70">
 				<Properties>
 					<bool name="Active">true</bool>
 					<Vector2 name="AnchorPoint">
@@ -386,12 +424,19 @@ end]]></ProtectedString>
 						<YO>-45</YO>
 					</UDim2>
 					<Content name="PressedImage"><null></null></Content>
+					<token name="ResampleMode">0</token>
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
 					<bool name="Selectable">true</bool>
 					<bool name="Selected">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>0</XS>
 						<XO>40</XO>
@@ -423,19 +468,19 @@ end]]></ProtectedString>
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="Folder" referent="RBX4765E02257194508AB82E4D6CAB47344">
+			<Item class="Folder" referent="RBX2DF80D66F79845D8A73969648AF1B25B">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Config</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX43786AD2B2914E65AF558014C5B64753">
+				<Item class="ModuleScript" referent="RBX0768A7D76F8A4EA98E6A21DC2C2D301A">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Code</string>
-						<string name="ScriptGuid"></string>
+						<string name="Name">NoEnv-Code</string>
+						<string name="ScriptGuid">{793ADC20-EF20-4C4F-88EA-EE05E53BB8C6}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -444,15 +489,19 @@ service = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local playergui = service.PlayerGui
 	local localplayer = service.Player
 	local toggle = script.Parent.Parent.Toggle
-	
+
 	if client.Core.Get("Chat") then
 		toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	end
-	
+
 	toggle.MouseButton1Down:Connect(function()
 		local found = client.Core.Get("UserPanel",nil,true)
 		if found then
@@ -461,14 +510,14 @@ return function(data)
 			client.Core.Make("UserPanel",{})
 		end
 	end)
-	
+
 	script.Parent.Parent.Parent = playergui
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="BoolValue" referent="RBXD9BE0A6231884A548F8B0ABA03CFCFE4">
+				<Item class="BoolValue" referent="RBXCAF03274A4834C1E95556FF215DC0A1D">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<string name="Name">AllowMultiple</string>
@@ -479,13 +528,22 @@ end]]></ProtectedString>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="StringValue" referent="RBXD28DD889940942D2B8AD15A0EB51751F">
+		<Item class="StringValue" referent="RBX9C28B1116E8F41D1A35C16F347140540">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<string name="Value">Default</string>
+			</Properties>
+		</Item>
+		<Item class="BoolValue" referent="RBXE8A0B709570C4A11955C57288555E996">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">NoEnv</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Value">true</bool>
 			</Properties>
 		</Item>
 	</Item>

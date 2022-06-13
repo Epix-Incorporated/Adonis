@@ -53,7 +53,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		getmetatable, setmetatable, loadstring, coroutine,
 		rawequal, typeof, print, math, warn, error,  pcall,
 		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+		next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
 		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
@@ -88,10 +88,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
 
-	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
+	Instance = {
+		new = function(obj, parent)
+			local object = oldInstNew(obj, service.UnWrap(parent))
+
+			return if (service and client) then service.Wrap(object, true) else object
+		end
+	}
+
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
-			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
+			local index = if (main and main.Functions) then main.Functions.GetRandom() else math.random()
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
 			local data = {
@@ -106,16 +113,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = {pcall(func, ...)}
+				data.Returns = table.pack(pcall(func, ...))
 
-				if not data.Returns[1] then
+				if data.Returns[1] == false then
 					data.Status = "Errored"
 				else
 					data.Status = "Finished"
 				end
 
 				TrackedTasks[index] = nil
-				return unpack(data.Returns)
+				return unpack(data.Returns, 1, data.Returns.n)
 			end
 
 			if isThread then
@@ -969,71 +976,59 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		GetTime = function()
-			return os.time();
-		end;
+		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
 			if not options then options = {} end
-			
-			local formatString = options.FormatString 
-			if not formatString then 
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
+
+			local formatString = options.FormatString
+			if not formatString then
+				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
 			end
-			
-			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
-					
+
+			local dateTime = DateTime.fromUnixTimestamp(optTime or os.time())
+
+			--// Detect if the caller is server context.
 			if service.RunService:IsServer() then
-				return tim:FormatUniversalTime(formatString, "en-us")
+				return dateTime:FormatUniversalTime(formatString, "en-us")
 			else
-				local locale = service.Players.LocalPlayer.LocaleId
-				local success, str = pcall(function()
-					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
-				end)
-				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
+				--// Client context
+
+				local success, localTime = pcall(dateTime.FormatLocalTime, dateTime, formatString, service.Players.LocalPlayer.LocaleId)
+				--// Fallback if FormatLocalTime fails to fetch
+				return if success then localTime else dateTime:FormatLocalTime(formatString, "en-us")
 			end
 		end;
 
 		FormatPlayer = function(plr, withUserId)
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
-			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
+			if withUserId then
+				str ..= string.format(" [%d]", plr.UserId)
+			end
+
 			return str
 		end;
 
-		FormatNumber = function(num, separator)
-			num = tonumber(num)
-			if not num then return "NaN" end
-			if num >= 1e150 then return "Inf" end
-
-			local int, dec = unpack(tostring(num):split("."))
-
-			int = int:reverse()
-			local new = ""
-			local counter = 1
-			separator = separator or ","
-			for i = 1, #int do
-				if counter > 3 then
-					new ..= separator
-					counter = 1
-				end
-				new ..= int:sub(i, i)
-				counter += 1
+		FormatNumber = function(numberStr, delimiter)
+			if delimiter == nil then
+				delimiter = ","
 			end
 
-			return new:reverse() .. if dec then "."..dec else ""
+			local delimiterReplace = string.format("%%1%s%%2", delimiter)
+
+			--// Repeat substitution until there are no more unbroken four-digit sequences
+			local substitutions
+			repeat
+				numberStr, substitutions = string.gsub(numberStr, "^(-?%d+)(%d%d%d)", delimiterReplace)
+			until substitutions == 0
+
+			return numberStr
 		end;
 
-		OwnsAsset = function(p,id)
-			return service.MarketPlace:PlayerOwnsAsset(p,id)
-		end;
-
-		MaxLen = function(message,length)
-			if #message>length then
-				return message:sub(1,length).."..."
-			else
-				return message
-			end
+		MaxLen = function(message, length)
+			--// Truncate text implementation
+			return if (utf8.len(message) > length) then (string.sub(message, 1, length) .. "...") else message
 		end;
 
 		Yield = function()
@@ -1157,6 +1152,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			return service.NewProxy {
 				__index = function(tab, ind)
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
+
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
@@ -1171,6 +1168,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end;
 
 				__newindex = function(tab,ind,new)
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
+
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
@@ -1235,20 +1234,25 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 	service = setmetatable({
 		Variables = function() return ServiceVariables end;
+
 		Routine = Routine;
 		Running = true;
 		Pcall = Pcall;
 		cPcall = cPcall;
 		Threads = Threads;
+
 		DataModel = game;
+
 		WrapService = WrapService;
 		EventService = EventService;
 		ThreadService = ThreadService;
 		HelperService = HelperService;
+
 		MarketPlace = game:GetService("MarketplaceService");
 		GamepassService = game:GetService("GamePassService");
 		ChatService = game:GetService("Chat");
 		Gamepasses = game:GetService("GamePassService");
+
 		Delete = function(obj,num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
 		RbxEvent = function(signal, func) local event = signal:Connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;

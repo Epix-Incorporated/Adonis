@@ -455,14 +455,15 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq. 
 			local function checkServ()
-				if not pcall(function()
-					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")  or findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+				--[[if not pcall(function()
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
 						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
 					Detected("kick", "Disallowed Services Finding Error")
-				end
+				end--]]
 			end
 
 			local function soundIdCheck(Sound)
@@ -600,7 +601,7 @@ return function(Vargs, GetEnv)
 					not rawequal(type(First), "table") or
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
-					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - elapsedTime() - 60 * 60 * 15
+					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - os.clock() - 60 * 60 * 15
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
@@ -632,10 +633,10 @@ return function(Vargs, GetEnv)
 				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
-						Detected("kick", "Malicious Object?: " .. v)
+						--Detected("kick", "Malicious Object?: " .. v)
 					end
 				end
-	
+
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
@@ -664,7 +665,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				-- // Checks for anti-coregui detetection bypasses 
+				-- // Checks for anti-coregui detetection bypasses
 				xpcall(function()
 					local testDecal = service.UnWrap(Instance.new("Decal"))
 					testDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted

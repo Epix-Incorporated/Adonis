@@ -486,7 +486,7 @@ return function(Vargs, GetEnv)
 
 			local function checkMatch(msg)
 				local doReturn
-				local PlrLevel = Admin.GetLevel(plr)
+				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
 
 				for ind, data in pairs(Functions.PlayerFinders) do
 					if not data.Level or (data.Level and PlrLevel >= data.Level) then

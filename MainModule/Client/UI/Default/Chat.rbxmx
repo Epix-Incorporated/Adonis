@@ -1757,7 +1757,11 @@ client, cPcall, Pcall, Routine, service, gTable
 --// All guis are autonamed client.Variables.CodeName..gui.Name
 --// Be sure to update the console gui's code if you change stuff
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local client, cPcall, Pcall, Routine, service, gTable =
 		client, cPcall, Pcall, Routine, service, gTable
 

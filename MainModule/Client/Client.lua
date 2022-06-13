@@ -33,12 +33,12 @@ Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, t
 	getmetatable, setmetatable, loadstring, coroutine,
 	rawequal, typeof, print, math, warn, error,  pcall,
 	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
 	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
 	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
 	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 	Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
 local ServicesWeUse = {
 	"Workspace";
@@ -151,7 +151,7 @@ local Immutable = function(...)
 end
 
 local player = game:GetService("Players").LocalPlayer
-local Fire, Detected
+local Fire, Detected = nil,nil
 local wrap = coroutine.wrap
 local Kill; Kill = Immutable(function(info)
 	--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
@@ -373,8 +373,8 @@ Instance = {
 		return service_Wrap(nobj, true)
 	end
 }
-require = function(obj)
-	return service_Wrap(oldReq(service_UnWrap(obj)), true)
+require = function(obj, noWrap: boolean?)
+	return if noWrap == true then oldReq(service_UnWrap(obj)) else service_Wrap(oldReq(service_UnWrap(obj)), true)
 end
 
 client.Service = service
@@ -459,9 +459,11 @@ return service.NewProxy({
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
 		setfenv(1,setmetatable({}, {__metatable = unique}))
+
 		client.Folder = Folder;
 		client.UIFolder = Folder:WaitForChild("UI",9e9);
-		client.Shared = Folder:WaitForChild("Shared",9e9);
+		client.Shared = Folder:WaitForChild("Shared",9e9)
+
 		client.Loader = data.Loader
 		client.Module = data.Module
 		client.DepsName = depsName
@@ -694,3 +696,4 @@ return service.NewProxy({
 	__metatable = "Adonis";
 	__tostring = function() return "Adonis" end;
 })
+

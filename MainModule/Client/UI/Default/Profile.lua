@@ -4,7 +4,11 @@ local function boolToStr(bool)
 	return bool and "Yes" or "No"
 end
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local client = client
 	local service = client.Service
 
@@ -121,7 +125,7 @@ return function(data)
 				TextXAlignment = "Right";
 			})
 		end
-		
+
 		local c = 0
 		for _, v in ipairs({
 			{data.IsServerOwner, "Private Server Owner", client.MatIcons.Grade, "User owns the current private server"},
@@ -130,7 +134,7 @@ return function(data)
 			{player:GetRankInGroup(886423) >= 12, "Adonis Developer", "rbxassetid://6878433601", "User is an official developer of the Adonis admin system (see credit list)"},
 			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
 			{player.UserId == 1237666 or player.UserId == 698712377, "Adonis Creator [Sceleratis/Davey_Bones]", "rbxassetid://6878433601", "You're looking at the creator of the Adonis admin system!"},
-			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "ROBLOX Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
+			{player:IsInGroup(1200769) or player:IsInGroup(2868472), "Roblox Staff", "rbxassetid://6811962259", "User is an official Roblox employee (!)"},
 			{player:IsInGroup(3514227), "DevForum Member", "rbxassetid://6383940476", "User is a member of the Roblox Developer Forum"},
 			}) do
 			if v[1] then
@@ -187,7 +191,7 @@ return function(data)
 					displayName = item.DisplayName;
 					isOnline = item.IsOnline;
 				}
-				if item.IsOnline then 
+				if item.IsOnline then
 					onlineCount += 1
 				end
 				friendCount += 1
@@ -267,7 +271,7 @@ return function(data)
 	end
 
 	do --// Groups Tab
-		local sortedGroups = {}    
+		local sortedGroups = {}
 		local groupInfoRef = {}
 
 		local groupCount = 0

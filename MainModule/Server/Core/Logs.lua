@@ -87,7 +87,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if not log.Time and not log.NoTime then
-				log.Time = service.GetTime()
+				log.Time = os.time()
 			end
 
 			table.insert(tab, 1, log)
@@ -99,7 +99,17 @@ return function(Vargs, GetEnv)
 		end;
 
 		SaveCommandLogs = function()
+			--// Disable saving command logs in Studio; not required.
+			if service.RunService:IsStudio() or service.RunService:IsRunMode() then
+				return
+			end
+
 			warn("Saving command logs...")
+			
+			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
+				warn("Skipped saving command logs.")
+				return
+			end
 
 			local logsToSave = Logs.Commands --{}
 			local maxLogs = Logs.OldCommandLogsLimit
