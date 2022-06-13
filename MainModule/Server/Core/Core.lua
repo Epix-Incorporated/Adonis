@@ -156,6 +156,8 @@ return function(Vargs, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+			
+			LoadAdminsFromDS = true;
 
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
@@ -908,8 +910,14 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if curName and type(curName) == 'string' and Blacklist[curName] then
-					return nil
+				if curName and type(curName) == 'string'  then
+					if Blacklist[curName] then
+						return nil
+					end
+					--// Admins do NOT load from the DataStore with this setting
+					if curName == "Ranks" and not Settings.LoadAdminsFromDS then
+						return nil
+					end
 				end
 
 				return curTable, curName;
