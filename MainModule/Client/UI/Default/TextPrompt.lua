@@ -58,6 +58,6 @@ return function(data, env)
 
 	gTable = window.gTable
 	window:Ready()
-	repeat wait() until answer 
+	repeat task.wait() until answer 
 	return answer
 end

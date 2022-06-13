@@ -60,6 +60,7 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 * Official MainModule: https://www.roblox.com/library/7510592873/Adonis-MainModule
 * Documentation: https://github.com/Sceleratis/Adonis/wiki
 * Discord Server: https://discord.gg/rdkgGc4
+* Plugins Repository: https://github.com/Sceleratis/Adonis-Plugins
 
 ## Contributing
 
@@ -67,8 +68,12 @@ The purpose of this repository is to allow others to contribute and make improve
 
 ### [Contributing Guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md)
 
-Read the contributing guide to get a better understanding of our development process and workflow, along with answers to common questions related to contributing to Adonis.
+Read the [contributing guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md) to get a better understanding of our development process and workflow, along with answers to common questions related to contributing to Adonis.
 
 ### License
 
 Adonis is available under the terms of the MIT license. Read more details about the license [here](https://github.com/Sceleratis/Adonis/blob/master/LICENSE).
+
+### Thank you to our contributors!
+
+[![contributors](https://contributors-img.web.app/image?repo=sceleratis/adonis)](https://github.com/sceleratis/adonis/graphs/contributors)

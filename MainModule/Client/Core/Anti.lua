@@ -494,8 +494,6 @@ return function(Vargs, GetEnv)
 		end)
 	end
 
-
-
 	local Launch = function(mode,data)
 		if Anti.Detectors[mode] and service.NetworkClient then
 			Anti.Detectors[mode](data)

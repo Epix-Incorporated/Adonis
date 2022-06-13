@@ -38,38 +38,65 @@ return function(Vargs, env)
 
 				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
 
-				local level = data.PlayerData.Level;
-				local timebans = Core.Variables.TimeBans
+				local level = data.PlayerData.Level
+				local reason = args[3] or "No reason provided"
 
-				for i, v in pairs(service.GetPlayers(plr, args[1], {
+				for _, v in pairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						local endTime = os.time() + tonumber(time)
-						local reason = service.Filter(args[3], plr, v) or "No reason provided";
-						local data = {
-							Name = v.Name;
-							UserId = v.UserId;
-							EndTime = endTime;
-							Reason = reason;
-						}
+						Admin.AddTimeBan(v, tonumber(time), reason)
+						Functions.Hint("Banned "..tostring(v.Name).." for ".. args[2], {plr})
+					end
+				end
+			end
+		};
+		
+		DirectTimeBan = {
+			Prefix = Settings.Prefix;
+			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
+			Args = {"username", "number<s/m/h/d>", "reason"};
+			Hidden = false;
+			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
+			Fun = false;
+			AdminLevel = "HeadAdmins";
+			Function = function(plr: Player, args: {string}, data: {})
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing time amount")
+				local time = args[2]
+				local lower, sub = string.lower, string.sub
+				if sub(lower(time), #time)=='s' then
+					time = sub(time, 1, #time-1)
+					time = tonumber(time)
+				elseif sub(lower(time), #time)=='m' then
+					time = sub(time, 1, #time-1)
+					time = tonumber(time)*60
+				elseif sub(lower(time), #time)=='h' then
+					time = sub(time, 1, #time-1)
+					time = ((time)*60)*60
+				elseif sub(lower(time), #time)=='d' then
+					time = sub(time, 1, #time-1)
+					time = ((tonumber(time)*60)*60)*24
+				end
 
-						table.insert(timebans, data)
+				assert(tonumber(time), "Unable to cast time, check "..Settings.PlayerPrefix.."usage for more infomation on timeban.")
 
-						-- Please make a Admin.AddTimeBan function like Admin.AddBan
-						v:Kick("\n Reason: "..reason.."\nBanned until ".. service.FormatTime(endTime, {WithWrittenDate = true}))
-						Functions.Hint("Saving timeban for ".. tostring(v.Name) .."...", {plr})
+				local reason = args[3] or "No reason provided"
 
-						Core.DoSave({
-							Type = "TableAdd";
-							Table = {"Core", "Variables", "TimeBans"};
-							Value = data;
-						})
+				for i in string.gmatch(args[1], "[^,]+") do
+					local UserId = service.Players:GetUserIdFromNameAsync(i)
 
-						Functions.Hint("Banned "..tostring(v.Name).." for ".. tostring(time), {plr})
+					if UserId == plr.UserId then
+						error("You cannot ban yourself or the creator of the game", 2)
+						return
+					end
+
+					if UserId then
+						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason)
+						Functions.Hint("Banned "..tostring(i).." for ".. args[2], {plr})
 					end
 				end
 			end
@@ -85,19 +112,10 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				local timebans = Core.Variables.TimeBans or {}
-
-				for i, data in pairs(timebans) do
-					if data.Name:lower():sub(1,#args[1]) == args[1]:lower() then
-						table.remove(timebans, i)
-						Core.DoSave({
-							Type = "TableRemove";
-							Table = {"Core", "Variables", "TimeBans"};
-							Value = data;
-						})
-
-						Functions.Hint(tostring(data.Name)..' has been Unbanned', {plr})
-					end
+				
+				local ret = Admin.RemoveTimeBan(args[1])
+				if ret then
+					Functions.Hint(tostring(ret).." has been Unbanned", {plr})
 				end
 			end
 		};
@@ -433,9 +451,9 @@ return function(Vargs, env)
 
 		Incognito = {
 			Prefix = Settings.Prefix;
-			Commands = {"incognito", "vanish", "incognitomode"};
+			Commands = {"incognito"};
 			Args = {"player"};
-			Description = "Removes the target player from other clients' perspectives (persists until rejoin, see a list of vanished players using "..Settings.Prefix.."incognitolist)";
+			Description = "Removes the target player from other clients' perspectives (persists until rejoin)";
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			Function = function(plr: Player, args: {string})

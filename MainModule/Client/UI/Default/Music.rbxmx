@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXCBB476487DB546BABCDF249F0A7C9BBE">
+	<Item class="ModuleScript" referent="RBX079301A838A74CE894528F03803F6F8E">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Music</string>
-			<string name="ScriptGuid">{4A0C63B1-968D-4B8F-9BC8-B3ADFB4B65DC}</string>
+			<string name="ScriptGuid">{C3964A12-AC9F-4411-87D7-F7B291A534D7}</string>
 			<ProtectedString name="Source"><![CDATA[client = nil
 service = nil
 
@@ -15,15 +15,15 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
-	
+
+
 	-- Saving those microseconds from using the dot operator
-	
+
 	local Variables = client.Variables
 	local Functions = client.Functions
-	
+
 	-- Some pre-defined "global" variables
-	
+
 	local gTable
 	local song = data.Song
 	local sImg
@@ -42,23 +42,23 @@ return function(data, env)
 	local audioLib = nil
 	local controlPositionSlider = nil
 	local progressupdatewait = 0.05
-	
-	
+
+
 	-- The audio visulaiser at the top of the menu.
-	
+
 	local visualiserModule = require(script:FindFirstChild("Visualizer"))
 	local sliderModule = require(script:FindFirstChild("Slider"))
-	local localAudioLib = client.Shared.AudioLib
+	local localAudioLib = client.Shared:FindFirstChild("AudioLib")
 	localAudioLib = require(localAudioLib).new(service.LocalContainer())
-	
+
 	local localAudioLibFunction = function(func, args)
 		return localAudioLib[func](localAudioLib, args)
-	end 
+	end
 	audioLib = localAudioLibFunction
-	
-	
+
+
 	-- Function to run when we close the window
-	
+
 	local function doOnClose()
 		if visualiser then
 			visualiser:UnlinkFromSound()
@@ -72,9 +72,9 @@ return function(data, env)
 			Playing = false;
 		})
 	end
-	
+
 	-- The when the who the when the window
-	
+
 	local window = client.UI.Make("Window", {
 		Name = "Audio Player";
 		Title = "Audio Player";
@@ -86,7 +86,7 @@ return function(data, env)
 			doOnClose()
 		end
 	})
-	
+
 	-- The controls frame at the bottom of the window
 
 	local controls = window:Add("Frame", {
@@ -95,7 +95,7 @@ return function(data, env)
 		BackgroundColor3 = Color3.new(0.235294, 0.235294, 0.235294);
 		BackgroundTransparency = 0;
 	})
-	
+
 	-- Volume
 	local controlVolume = controls:Add("TextLabel", {
 		Text = "   ";
@@ -185,13 +185,13 @@ return function(data, env)
 		audioLib("UpdateSound", {
 			TimePosition = value / 10000 * length;
 		})
-	end)	
-	
+	end)
+
 	-- Make the window ready before completing any code - Used to allow for delays in loading caused by MarketplaceService.
-	
+
 	gTable = window.gTable
 	gTable:Ready()
-	
+
 	local function newTrackSelected(v)
 		local sound = audioLib("UpdateSound", {
 			SoundId = "rbxassetid://"..v.ID;
@@ -200,7 +200,7 @@ return function(data, env)
 		})
 	end
 	-- Song title and Audio Visaliser Frame.
-	
+
 	local heading = window:Add("TextLabel", {
 		Text = "Music Player";
 		Size = UDim2.new(1,0,0,20);
@@ -215,7 +215,7 @@ return function(data, env)
 		BackgroundTransparency = 1;
 		TextScaled = true;
 	})
-	
+
 	-- Create audio vislualiser
 
 	local visualiser = visualiserModule.new(visualiserFrame, 400)
@@ -223,10 +223,10 @@ return function(data, env)
 	if song then audioLib("UpdateSound", {
 		SoundId = "rbxassetid://"..song;
 		Playing = true;
-		TimePosition = 0;	
+		TimePosition = 0;
 		})
 	end
-	
+
 	-- Mute button
 
 	local muteButton = window:AddTitleButton({
@@ -311,24 +311,24 @@ return function(data, env)
 		Image = "rbxassetid://8318256297";
 		BackgroundTransparency = 1;
 	})
-	
+
 	-- Function that makes the song list.
-	
+
 	local function getSongs(tab, list)
 		local num = 0
 		selected = nil
 		if availableSongLists and availableSongLists[tab.Name] then availableSongLists[tab.Name] = nil end
 		if soundInstanceEndedEvent then soundInstanceEndedEvent:Disconnect() end
-		
+
 		tab:ClearAllChildren();
-		
+
 		local frame = tab:Add("ScrollingFrame", {
 			Size = UDim2.new(1, 0, 1, 1);
 			Position = UDim2.new(0, 0, 0, 0);
 			BackgroundColor3 = Color3.new(0.235294, 0.235294, 0.235294);
 			BackgroundTransparency = 1;
 		})
-		
+
 		local loading = frame:Add("TextLabel", {
 			Text = "Loading nothing yet!";
 			ToolTip = "Never gonna give you up, Never gonna let you down...";
@@ -338,9 +338,9 @@ return function(data, env)
 			ZIndex = 69420
 			--TextXAlignment = "Left";
 		})
-		
+
 		availableSongLists[tab.Name] = {}
-		
+
 		local function loop(i,v)
 			if type(v) == "table" then
 				loading.Text = "Loading tracks ("..i.."/"..#list..")";
@@ -361,7 +361,7 @@ return function(data, env)
 								selected.Button.BackgroundTransparency = 0
 							end
 							button.BackgroundTransparency = 0.5
-							
+
 							heading.Text = success and product_info.Name or v.Name
 							selected = {
 								ID = v.ID,
@@ -369,7 +369,7 @@ return function(data, env)
 								Button = button,
 								Index = i
 							}
-							
+
 							newTrackSelected(v)
 						end
 					})
@@ -382,9 +382,9 @@ return function(data, env)
 		for i,v in next,(list  or {}) do
 			task.spawn(loop, i, v)
 		end
-		
+
 		local sound = Variables.localSounds["AUDIO_PLAYER_SOUND"]
-		
+
 		if sound then
 			soundInstanceEndedEvent = sound.Ended:Connect(function()
 				if activeSongList and selected then
@@ -416,7 +416,7 @@ return function(data, env)
 								Playing = true;
 								TimePosition = 0;
 							})
-							
+
 							local success, product_info
 							local count = 0 --1
 
@@ -428,11 +428,11 @@ return function(data, env)
 								success, product_info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, toPlay.ID, Enum.InfoType.Asset) --5
 								count = count + 1 --6
 							end
-							
+
 							--local success, product_info = nil, nil
 							--repeat pcall(function()
 							--	success, product_info = service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
-							--	return success, product_info	
+							--	return success, product_info
 							--end) until success == true
 							heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
 							selected = {
@@ -448,14 +448,14 @@ return function(data, env)
 		end
 		loading:Destroy()
 	end
-	
+
 	-- Tabs for different playlists
-	
+
 	local tabFrame = window:Add("TabFrame",{
 		Size = UDim2.new(1, 0, 1, -165);
 		Position = UDim2.new(0, 0, 0, 90);
 	})
-	
+
 	local personalTab = tabFrame:NewTab("Personal",{
 		Text = "Personal";
 		OnFocus = function()
@@ -480,10 +480,10 @@ return function(data, env)
 			activeSongList = availableSongLists["Custom"] or {}
 		end;
 	})
-	
-	
+
+
 	--  The Custom Playlists editor window
-	
+
 	local binderBox; binderBox = tabFrame:Add("Frame", {
 		Visible = false;
 		Size = UDim2.new(1,0,1,0);
@@ -534,7 +534,7 @@ return function(data, env)
 		ZIndex = 10004;
 		TextChanged = function(newText, enter, box)
 			client.Variables.Playlist = {Playlist = {}}
-			for v in pairs(client.Variables.Playlist.Playlist) do 
+			for v in pairs(client.Variables.Playlist.Playlist) do
 				client.Variables.Playlist.Playlist[v] = nil
 			end
 			for i,v in next,(string.split(string.gsub(newText, " ", ""), ",")) do
@@ -552,17 +552,17 @@ return function(data, env)
 
 	PlaylistBox.BackgroundColor3 = PlaylistBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
 	binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
-	
+
 	--[[
-	
+
 	========================================================
 	|                                                      |
 	| Top control buttons (Save and load custom playlist)  |
 	|                                                      |
 	========================================================
-	
+
 	]]--
-	
+
 	-- Create playlist button
 	local playlistLoad = controls:Add("TextButton", {
 		Text = "⏫";
@@ -579,9 +579,9 @@ return function(data, env)
 			activeSongList = availableSongLists["Custom"] or {}
 		end
 	})
-	
+
 	-- Save cutom playlist
-	
+
 	local playlistSave = controls:Add("TextButton", {
 		Text = "⬆️";
 		TextSize = 15;
@@ -601,7 +601,7 @@ return function(data, env)
 			activeSongList = availableSongLists["Personal"] or {}
 		end
 	})
-	
+
 	-- Stop button
 	local controlStop = controls:Add("TextButton", {
 		Text = "⏹";
@@ -614,7 +614,7 @@ return function(data, env)
 		OnClick = function()
 			audioLib("UpdateSound", {
 				Playing = false;
-				TimePosition = 0;	
+				TimePosition = 0;
 			})
 		end
 	})
@@ -662,9 +662,9 @@ return function(data, env)
 
 		end
 	})
-	
+
 	-- Forward button
-	
+
 	local controlShuffle = nil
 	local controlShuffleBackgroundColor3 = nil
 	local function changeShuffleColor()
@@ -689,9 +689,9 @@ return function(data, env)
 	})
 
 	controlShuffleBackgroundColor3 = controlShuffle.BackgroundColor3
-	
+
 	-- Loop button
-	
+
 	local controlLoop = nil
 	local controlLoopBackgroundColor3 = nil
 	local function changeLoopColor()
@@ -718,11 +718,11 @@ return function(data, env)
 		end
 	})
 	controlLoopBackgroundColor3 = controlLoop.BackgroundColor3
-	
+
 	-- Bottom control buttons
-	
+
 	-- Custom Sound ID
-	
+
 	local controlID = controls:Add("TextLabel", {
 		Text = "  ID: ";
 		ToolTip = "ID: The Sound ID from the roblox catalogue.";
@@ -750,7 +750,7 @@ return function(data, env)
 			}
 		}
 	})
-	
+
 	-- Position
 	--local controlPosition = controls:Add("TextLabel", {
 	--	Text = "  Pos: ";
@@ -777,17 +777,17 @@ return function(data, env)
 	--		}
 	--	}
 	--})
-	
+
 	--[[
-	
+
 	========================================================
 	|                                                      |
 	| Bottom control buttons (Position and volume slider)  |
 	|                                                      |
 	========================================================
-	
+
 	]]--
-	
+
 	-- Volume
 	local controlVolume = controls:Add("TextLabel", {
 		Text = "   ";
@@ -797,14 +797,14 @@ return function(data, env)
 		Position = UDim2.new(1, -125, 1, -35);
 		TextXAlignment = "Left";
 	})
-	
+
 	controlVolume:Add("ImageLabel", {
 		Image = "rbxassetid://7541896266";
 		Size = UDim2.new(0, 20, 0, 20);
 		Position = UDim2.new(0, 5, 0, 5);
 		BackgroundTransparency = 1;
 	})
-	
+
 	local controlVolumeSliderContainer = controlVolume:Add("Frame", {
 		Image = "rbxassetid://7541896266";
 		Size = UDim2.new(1, -45, 0, 2);
@@ -812,7 +812,7 @@ return function(data, env)
 		BackgroundColor3 = Color3.new(0.454902, 0.454902, 0.454902);
 		BackgroundTransparency = 0;
 	})
-	
+
 	local controlVolumeSliderInstance = controlVolumeSliderContainer:Add("ImageButton", {
 		Name = "Slider";
 		--Text = "";
@@ -827,16 +827,16 @@ return function(data, env)
 			}
 		}
 	})
-	
+
 	local controlVolumeSlider = sliderModule.new(service.UnWrap(controlVolumeSliderContainer), {Start = 0, End = 1000, Increment = 1, DefaultValue = 0.5}, TweenInfo.new(0.1, Enum.EasingStyle.Quad), "X", 0)
 	controlVolumeSlider:Track()
-	
+
 	controlVolumeSlider.Changed:Connect(function(value)
 		audioLib("UpdateSound", {
 			Volume = value / 100;
 		})
 	end)
-	
+
 	-- Track position
 	local controlPosition = controls:Add("TextLabel", {
 		Text = "   ";
@@ -877,14 +877,14 @@ return function(data, env)
 		audioLib("UpdateSound", {
 			TimePosition = value / 10000 * length;
 		})
-	end)	
-	
+	end)
+
 	-- Used to play a sound on window open. 4881542521.
-	
+
 	-- Create OnClose event after everything has been initialised
-	
+
 	-- Load in track lists
-	
+
 	local loadingMessage = function(tab)
 		tab:Add("TextLabel", {
 			Text = "Waiting in queue to load tracks...";
@@ -896,7 +896,7 @@ return function(data, env)
 			--TextXAlignment = "Left";
 		})
 	end
-	
+
 	loadingMessage(personalTab)
 	loadingMessage(gameTab)
 	loadingMessage(adonisTab)
@@ -904,7 +904,7 @@ return function(data, env)
 	getSongs(gameTab, (client.Remote.Get("Variable", "MusicList") or {}))
 	getSongs(adonisTab, (client.Remote.Get("Variable", "MusicList") or {}))
 	activeSongList = availableSongLists["Personal"] or {}
-	
+
 	task.spawn(function()
 		local tempsound = audioLib("GetSound")
 		while task.wait(progressupdatewait) do
@@ -912,18 +912,18 @@ return function(data, env)
 			if tempsound and tempsound.TimeLength ~= 0 then
 				controlPositionSlider:OverrideVisualValue(tempsound.TimePosition / tempsound.TimeLength * 10000)
 			end
-		end	
+		end
 	end)
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="ModuleScript" referent="RBX690B5AA866684E8680EA2CC8D93FA6AB">
+		<Item class="ModuleScript" referent="RBX55DC8D6E05C04085B2FE7A16B8B4D3A9">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Visualizer</string>
-				<string name="ScriptGuid">{2086DC00-4C8E-4B30-A4F1-D6C23B274B31}</string>
+				<string name="ScriptGuid">{0087460F-28F3-4168-B330-7401BCFC92E4}</string>
 				<ProtectedString name="Source"><![CDATA[local RunService = game:GetService("RunService")
 
 local module = {}
@@ -967,11 +967,11 @@ function module.new(Frame, BarCount)
 		BAR_TO_BUFFER[i] = math.abs(BUFFER_COUNT- (i+ (i<=BUFFER_COUNT and -1 or 1) ))
 		BAR_TO_MULTIPLIER[i] = 1-(math.clamp(math.abs(BUFFER_COUNT- (i+ (i<=BUFFER_COUNT and -1 or 1) ))/BUFFER_COUNT, 0.01,1)^2)
 	end
-	
+
 	local UPDATE_WAIT = 1/SAMPLE_HZ
-	
+
 	-- Setup visualizer
-	
+
 	local Visualizer = {
 		Frame = Frame;
 		VolumeBuffer = table.create(BUFFER_COUNT+1);
@@ -980,10 +980,10 @@ function module.new(Frame, BarCount)
 		PlayingConnection = nil;
 		Sound = nil;
 	}
-	
+
 	-- Create the bar guis
 	for i=1, BAR_COUNT do
-		
+
 		local Bar = Frame:Add("Frame", {
 			BorderSizePixel = 0;
 			BackgroundColor3 = Color3.new(0.98,0.98,0.99);
@@ -991,16 +991,16 @@ function module.new(Frame, BarCount)
 			Size = UDim2.new(BAR_SIZE,0,0.02,0);
 			Position = UDim2.new(BAR_SIZE* (i-1), 0,0.5,0);
 		})
-		
+
 		Visualizer.Bars[i] = Bar
 	end
-	
+
 	local function HandlePlaying()
 		if Visualizer.BufferConnection then
 			Visualizer.BufferConnection:Disconnect()
 			Visualizer.BufferConnection = nil
 		end
-	
+
 		local Sound = Visualizer.Sound
 		if not Sound then return end
 
@@ -1067,19 +1067,19 @@ function module.new(Frame, BarCount)
 			end
 		end
 	end
-	
+
 	function Visualizer:LinkToSound(Sound)
-		
+
 		Visualizer:UnlinkFromSound()
-	
+
 		table.clear(Visualizer.VolumeBuffer)
-		
+
 		Visualizer.Sound = Sound
-		
+
 		HandlePlaying()
 		Visualizer.PlayingConnection = Sound:GetPropertyChangedSignal("Playing"):Connect(HandlePlaying)
 	end
-	
+
 	function Visualizer:UnlinkFromSound()
 
 		if Visualizer.PlayingConnection then
@@ -1092,7 +1092,7 @@ function module.new(Frame, BarCount)
 		end
 
 		Visualizer.Sound = nil
-		
+
 		for i,Bar in ipairs(Visualizer.Bars) do
 			Bar:TweenSize(
 				UDim2.new(BAR_SIZE,0,0.02,0),
@@ -1101,7 +1101,7 @@ function module.new(Frame, BarCount)
 		end
 
 	end
-	
+
 	function Visualizer:Destroy()
 		if Visualizer.PlayingConnection then
 			Visualizer.PlayingConnection:Disconnect()
@@ -1116,8 +1116,8 @@ function module.new(Frame, BarCount)
 		end
 		table.clear(Visualizer.VolumeBuffer)
 	end
-	
-	
+
+
 	return Visualizer
 end
 
@@ -1127,12 +1127,12 @@ return module
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ModuleScript" referent="RBX9680924CA7C74089BEDB674DB2D84285">
+		<Item class="ModuleScript" referent="RBXE1ED3420B5C642718907349EE161AD87">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Slider</string>
-				<string name="ScriptGuid">{D8B061CE-A9A0-4A91-AD85-FE61F9B162CF}</string>
+				<string name="ScriptGuid">{8AD85B7A-B61C-4D68-9106-50EA59AAF9B7}</string>
 				<ProtectedString name="Source"><![CDATA[--------------------------------------------------------------------------------------------
 -------------------------------------- Slider Module ---------------------------------------
 -- [Adonis Maintainer]: P3tray
@@ -1184,7 +1184,7 @@ Slider.__index = function(object, indexed)
 
 		if deprecatedStr == indexed then
 			warn(Format("%s is deprecated, please use %s instead", tbl[1], tbl[2]))
-			return tbl[3]	
+			return tbl[3]
 		end
 	end
 
@@ -1206,32 +1206,32 @@ function map(value, start, stop, newStart, newEnd, constrain)
 	if not constrain then
 		return newVal
 	end
-	
+
 	if newStart < newEnd then
 		newStart, newEnd = newEnd, newStart
 	end
-	
+
 	return Max(Min(newVal, newStart), newEnd)
 end
 
 function getNewPosition(self, percent)
 	local absoluteSize = self._button.AbsoluteSize[self._axis]
 	local holderSize = self._holder.AbsoluteSize[self._axis]
-	
+
 	local anchorPoint = self._button.AnchorPoint[self._axis]
-	
+
 	local paddingScale = (self._padding / holderSize)
-	
+
 	local minScale = (
 		(anchorPoint * absoluteSize) / holderSize +
 		paddingScale
 	)
-	
+
 	local decrement = ((2 * absoluteSize) * anchorPoint) - absoluteSize
 	local maxScale = (1 - minScale) + (decrement / holderSize)
 
 	local newPercent = map(percent or self._percent, 0, 1, minScale, maxScale, true)
-	
+
 	if self._axis == "X" then
 		return UDim2.new(newPercent, self._button.Position.X.Offset, self._button.Position.Y.Scale, self._button.Position.Y.Offset)
 	elseif self._axis == "Y" then
@@ -1250,7 +1250,7 @@ end
 function getNewValue(self)
 	local newValue = lerp(self._config.Start, self._config.End, self._percent)
 	local incrementScale = (1 / self._config.Increment)
-	
+
 	newValue = Floor(newValue * incrementScale) / incrementScale
 	return newValue
 end
@@ -1271,43 +1271,43 @@ function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTwee
 			break
 		end
 	end
-	
+
 	assert(not duplicate, "Cannot set two sliders with same frame!")
 	assert(configuration.Increment ~= nil, "Failed to find Increment in configuration table")
 	assert(configuration.Start ~= nil, "Failed to find Start in configuration table")
 	assert(configuration.End ~= nil, "Failed to find End in configuration table")
 	assert(configuration.Increment > 0, "Increment must be greater than 0")
 	assert(configuration.End > configuration.Start, "Config.End must be greater than Config.Start (" .. configuration.End .. " <= " .. configuration.Start .. ")")
-	
+
 	axis = axis or "x"
 	axis = Lower(axis)
 	assert(axis == "x" or axis == "y", "Axis must be X or Y!")
-	
+
 	assert(typeof(moveTweenInfo) == "TweenInfo", "MoveTweenInfo must be a TweenInfo object!")
-	
+
 	padding = padding or 5
 	assert(typeof(padding) == "number", "Padding variable must be a number!")
-	
+
 	local self = setmetatable({}, Slider)
-	
+
 	self._holder = holder
 	self._button = sliderBtn
 	self._config = configuration
 	self._axis = Upper(axis)
 	self._padding = padding
-	
+
 	self.IsHeld = false
 	self._mainConnection = nil
 	self._buttonConnections = {}
 	self._inputPos = nil
-	
+
 	self._percent = 0
 	if configuration.DefaultValue then
 		configuration.DefaultValue = Clamp(configuration.DefaultValue, configuration.Start, configuration.End)
-		self._percent = getAlphaBetween(configuration.Start, configuration.End, configuration.DefaultValue) 
+		self._percent = getAlphaBetween(configuration.Start, configuration.End, configuration.DefaultValue)
 	end
 	self._percent = Clamp(self._percent, 0, 1)
-	
+
 	self._value = getNewValue(self)
 	self._scaleIncrement = getScaleIncrement(self)
 
@@ -1317,10 +1317,10 @@ function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTwee
 	self.Changed = Signal.new()
 	self.Dragged = Signal.new()
 	self.Released = Signal.new()
-	
+
 	self:Move()
 	table.insert(Slider.Sliders, self)
-	
+
 	return self
 end
 
@@ -1328,7 +1328,7 @@ function Slider:Track()
 	for _, connection in ipairs(self._buttonConnections) do
 		connection:Disconnect()
 	end
-	
+
 	table.insert(self._buttonConnections, self._button.MouseButton1Down:Connect(function()
 		self.IsHeld = true
 	end))
@@ -1359,7 +1359,7 @@ end
 function Slider:Update()
 	if self.IsHeld and self._inputPos then
 		local mousePos = self._inputPos[self._axis]
-		
+
 		local sliderSize = self._holder.AbsoluteSize[self._axis]
 		local sliderPos = self._holder.AbsolutePosition[self._axis]
 		local newPos = snapToScale((mousePos - sliderPos) / sliderSize, self._scaleIncrement)
@@ -1388,11 +1388,11 @@ function Slider:Reset()
 	if self._mainConnection then
 		self._mainConnection:Disconnect()
 	end
-	
+
 	self.IsHeld = false
-	
+
 	self._percent = 0
-	if self._config.DefaultValue then 
+	if self._config.DefaultValue then
 		self._percent = getAlphaBetween(self._config.Start, self._config.End, self._config.DefaultValue)
 	end
 	self._percent = Clamp(self._percent, 0, 1)
@@ -1416,7 +1416,7 @@ function Slider:Move()
 	self._currentTween = TweenService:Create(self._button, self._tweenInfo, {
 		Position = getNewPosition(self)
 	})
-	
+
 	self._currentTween:Play()
 	self.Changed:Fire(self._value)
 end
@@ -1425,7 +1425,7 @@ function Slider:OverrideVisualValue(newValue: number)
 	if self.IsHeld then
 		return false
 	end
-	
+
 	local percent = getAlphaBetween(self._config.Start, self._config.End, newValue)
 	percent = Clamp(percent, 0, 1)
 	percent = snapToScale(percent, self._scaleIncrement)
@@ -1472,7 +1472,7 @@ function Slider:Destroy()
 			table.remove(Slider.Sliders, index)
 		end
 	end
-	
+
 	setmetatable(self, nil)
 	self = nil
 end
@@ -1485,22 +1485,22 @@ UserInputService.InputEnded:Connect(function(inputObject, internallyProcessed)
 			end
 			slider.IsHeld = false
 		end
-	end 
+	end
 end)
 
 return Slider
-	
+
 -----------------------------------------------------------------------------------------]]></ProtectedString>
 				<int64 name="SourceAssetId">8314798830</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ModuleScript" referent="RBX29D526BD04FB4D838031602C95B8437B">
+		<Item class="ModuleScript" referent="RBXA897A4EADC994B4E922A595FEE341EC2">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Signal</string>
-				<string name="ScriptGuid">{62622776-2522-459F-B270-C49DBB4246DD}</string>
+				<string name="ScriptGuid">{9ACE78A1-7123-447F-B11E-921DE1E2E90F}</string>
 				<ProtectedString name="Source"><![CDATA[----------------------------- Signal Module -----------------------------
 -- > Used to create, connect, wait and destroy signals.
 -- > Created by Quenty
@@ -1580,7 +1580,7 @@ return Signal]]></ProtectedString>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
-		<Item class="ImageLabel" referent="RBX2B59DB0A85D141D394E28248ECD88B70">
+		<Item class="ImageLabel" referent="RBX3140CF2107434B799D865A8D91582A46">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -1637,7 +1637,13 @@ return Signal]]></ProtectedString>
 				<float name="Rotation">0</float>
 				<token name="ScaleType">0</token>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>0</XS>
 					<XO>100</XO>

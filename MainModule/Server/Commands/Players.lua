@@ -7,6 +7,10 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
+	
+	local Routine = env.Routine
+	local Pcall = env.Pcall
+	local cPcall = env.cPcall
 
 	return {
 		ViewCommands = {
@@ -233,7 +237,7 @@ return function(Vargs, env)
 						BackgroundTransparency = 1;
 						TextXAlignment = "Left";
 						Text = "  "..bc.Name;
-						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.R*255, bc.G*255, bc.B*255, bc.Number);
+						ToolTip = string.format("RGB: %d, %d, %d | Num: %d", bc.r*255, bc.g*255, bc.b*255, bc.Number);
 						ZIndex = 11;
 						Children = {
 							{
@@ -268,6 +272,8 @@ return function(Vargs, env)
 				local mats = {
 					"Brick", "Cobblestone", "Concrete", "CorrodedMetal", "DiamondPlate", "Fabric", "Foil", "ForceField", "Glass", "Granite",
 					"Grass", "Ice", "Marble", "Metal", "Neon", "Pebble", "Plastic", "Slate", "Sand", "SmoothPlastic", "Wood", "WoodPlanks"
+					--, "Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
+					--Beta Features Materials
 				}
 				for i, mat in ipairs(mats) do
 					mats[i] = {Text = mat; Desc = "Enum value: "..Enum.Material[mat].Value}
@@ -396,32 +402,34 @@ return function(Vargs, env)
 							Variables.HelpRequests[plr.Name] = pending;
 
 							for ind, p in ipairs(service.Players:GetPlayers()) do
-								if Admin.CheckAdmin(p) then
-									local ret = Remote.MakeGuiGet(p, "Notification", {
-										Title = "Help Request";
-										Message = plr.Name.." needs help! Reason: "..pending.Reason;
-										Icon = server.MatIcons.Mail;
-										Time = 30;
-										OnClick = Core.Bytecode("return true");
-										OnClose = Core.Bytecode("return false");
-										OnIgnore = Core.Bytecode("return false");
-									})
+								Routine(function()
+									if Admin.CheckAdmin(p) then
+										local ret = Remote.MakeGuiGet(p, "Notification", {
+											Title = "Help Request";
+											Message = plr.Name.." needs help! Reason: "..pending.Reason;
+											Icon = server.MatIcons.Mail;
+											Time = 30;
+											OnClick = Core.Bytecode("return true");
+											OnClose = Core.Bytecode("return false");
+											OnIgnore = Core.Bytecode("return false");
+										})
 
-									num += 1
-									if ret then
-										if not answered then
-											answered = true
-											Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
-										else
-											Remote.MakeGui(p, "Notification", {
-												Title = "Help Request";
-												Message = "Another admin has already responded to this request!";
-												Icon = server.MatIcons.Mail;
-												Time = 5;
-											})
+										num += 1
+										if ret then
+											if not answered then
+												answered = true
+												Admin.RunCommand(Settings.Prefix.."tp", p.Name, plr.Name)
+											else
+												Remote.MakeGui(p, "Notification", {
+													Title = "Help Request";
+													Message = "Another admin has already responded to this request!";
+													Icon = server.MatIcons.Mail;
+													Time = 5;
+												})
+											end
 										end
 									end
-								end
+								end)
 							end
 
 							local w = os.time()
@@ -464,8 +472,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local player = service.Players:GetUserIdFromNameAsync(args[1])
 				if player then
-					local succeeded, errorMsg, placeId, instanceId = service.TeleportService:GetPlayerPlaceInstanceAsync(player)
-					if succeeded then
+					local succeeded, errorMsg, _, placeId, instanceId = pcall(function() return service.TeleportService:GetPlayerPlaceInstanceAsync(player) end)
+					if succeeded and placeId and instanceId then
 						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
 					else
 						Functions.Hint("Could not follow "..args[1]..". "..errorMsg, {plr})
