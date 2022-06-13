@@ -1104,10 +1104,16 @@ return function(Vargs, GetEnv)
 				local realTable,tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
-					--// warn("Stopped " .. displayName .. " from being set!")
-					--// Debugging --Coasterteam
-					return
+				if displayName and type(displayName) == 'string' then
+					if Blacklist[displayName] then 
+						return
+					end 
+					if type(indList) == 'table' and indList[1] == "Settings" and indList[2] == "Ranks" then
+						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
+							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
+							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+					end
 				end
 
 				if realTable and tab.Action == "Add" then
