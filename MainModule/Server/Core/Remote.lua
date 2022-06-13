@@ -91,6 +91,8 @@ return function(Vargs, GetEnv)
 			DataStore = true;
 			DataStoreKey = true;
 			DataStoreEnabled = true;
+			
+			LoadAdminsFromDS = true;
 
 			Creators = true;
 			Permissions = true;
