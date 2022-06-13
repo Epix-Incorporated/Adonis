@@ -228,6 +228,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.OnSpawn = {};		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
 	settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
+	settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
 	settings.Prefix = ":"				-- The : in :kill me
@@ -405,6 +406,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
 	descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
+	descs.LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]]
 	descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
 	descs.Prefix = [[ The : in :kill me ]]
