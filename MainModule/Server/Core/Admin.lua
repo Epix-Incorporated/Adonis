@@ -241,14 +241,13 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-
+      
 		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
 				return
 			end
 
 			local key = tostring(p.UserId)
-
 			local cache = Admin.GroupsCache[key]
 			if cache then
 				return cache
@@ -284,7 +283,6 @@ return function(Vargs, GetEnv)
 		GetPlayerGroup = function(p: Player, group: number | string)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
-
 			if groups and groups.Groups then
 				for _, g in ipairs(groups.Groups) do 
 					if (isId and g.Id == group) or (not isId and g.Name == group) then
@@ -783,6 +781,35 @@ return function(Vargs, GetEnv)
 			service.Events.PlayerBanned:Fire(p, reason, doSave)
 		end;
 
+		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string)
+			local value = {
+				Name = p.Name;
+				UserId = p.UserId;
+				EndTime = os.time() + tonumber(duration);
+				Reason = reason
+			}
+			
+			table.insert(Core.Variables.TimeBans, value)
+			
+			Core.DoSave({
+				Type = "TableAdd";
+				Table = {"Core", "Variables", "TimeBans"};
+				Value = value;
+			})
+
+			Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+
+			if type(p) ~= "table" then
+				if not service.Players:FindFirstChild(p.Name) then
+					Remote.Send(p,'Function','KillClient')
+				else
+					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
+				end
+			end
+
+			service.Events.PlayerBanned:Fire(p, reason, true)
+		end,
+
 		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
 			local id = type(name) == "number" and name
 
@@ -830,6 +857,22 @@ return function(Vargs, GetEnv)
 			end
 			return ret
 		end;
+
+		RemoveTimeBan = function(name : string | number | Instance)
+			local ret
+			for i,v in pairs(Core.Variables.TimeBans) do
+				if Admin.DoBanCheck(name, v) then
+					table.remove(Core.Variables.TimeBans, i)
+					ret = v
+					Core.DoSave({
+						Type = "TableRemove";
+						Table = {"Core", "Variables", "TimeBans"};
+						Value = v;
+					})
+				end
+			end
+			return ret
+		end,
 
 		RunCommand = function(coma: string, ...)
 			local _, com = Admin.GetCommand(coma)

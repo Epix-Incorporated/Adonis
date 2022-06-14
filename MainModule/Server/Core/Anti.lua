@@ -427,7 +427,7 @@ return function(Vargs, GetEnv)
 								player.Name,
 								action,
 								string.sub(info, 1, 50)
-							),
+							);
 							Time = 30;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
 						})
