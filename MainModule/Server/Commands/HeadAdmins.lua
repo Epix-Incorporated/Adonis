@@ -55,7 +55,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		DirectTimeBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
@@ -114,7 +114,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
-				
+
 				local ret = Admin.RemoveTimeBan(args[1])
 				if ret then
 					Functions.Hint(tostring(ret).." has been Unbanned", {plr})
@@ -268,8 +268,11 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				if not args[1] then error("You need to supply a list name.") end
-				local trello = HTTP.Trello.API(Settings.Trello_AppKey,Settings.Trello_Token)
+				assert(args[1], "You need to supply a list name.")
+
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
+
 				local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
 				Functions.Hint("Made list "..list.name, {plr})
 			end
@@ -284,12 +287,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				if not args[1] then error("Enter a valid list name") end
-				local trello = HTTP.Trello.API(Settings.Trello_AppKey, Settings.Trello_Token)
-				local list = trello.Boards.GetList(Settings.Trello_Primary, args[1])
-				if not list then error("List not found.") end
+				local trello = HTTP.Trello.API
+				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
+				assert(args[1], "Enter a valid list name")
+				local list = assert(trello.Boards.GetList(Settings.Trello_Primary, args[1]), "List not found.")
+
 				local cards = trello.Lists.GetCards(list.id)
-				local temp = {}
+				local temp = table.create(#cards)
 				for i, v in pairs(cards) do
 					table.insert(temp, {Text=v.name,Desc=v.desc})
 				end
