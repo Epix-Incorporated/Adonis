@@ -558,14 +558,6 @@ return function(Vargs)
 				if ran then
 					Detected("crash", "RobloxLocked usable")
 				end
-
-				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
-					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
-					if object then
-						Detected("kick", "Malicious Object?: " .. v)
-					end
-				end
 	
 				local function getDictionaryLenght(dictionary)
 					local len = 0
