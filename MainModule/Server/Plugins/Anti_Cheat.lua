@@ -27,9 +27,6 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Settings = server.Settings;
 
-		--// Client check
-		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
-
 		Anti.Init = nil;
 		Logs:AddLog("Script", "AntiExploit Plugin Module Initialized")
 	end
