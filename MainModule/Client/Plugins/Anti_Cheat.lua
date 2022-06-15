@@ -601,6 +601,30 @@ return function(Vargs)
 						return
 					end
 
+					local function getToolUrls()
+						local toolIcons = {}
+						local backpack = service.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
+						local character = service.Players.LocalPlayer.Character
+
+						if character then
+							for _, v in ipairs(character:GetChildren()) do
+								if v:IsA("BackpackItem") and v.TextureId ~= "" then
+									table.insert(toolIcons, v.TextureId)
+								end
+							end
+						end
+
+						if backpack then
+							for _, v in ipairs(backpack:GetChildren()) do
+								if v:IsA("BackpackItem") and v.TextureId ~= "" then
+									table.insert(toolIcons, v.TextureId)
+								end
+							end
+						end
+
+						return toolIcons
+					end
+
 					local hasDetected = false
 					local activated = false
 					local rawContentProvider = service.UnWrap(service.ContentProvider)
@@ -611,6 +635,19 @@ return function(Vargs)
 						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
 							activated = true
 						elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
+							local isItemIcon = false
+
+							for _, v in ipairs(getToolUrls()) do
+								if string.find then
+									isItemIcon = true
+									break
+								end
+							end
+
+							if isItemIcon == true then
+								return
+							end
+
 							hasDetected = true
 							Detected("Kick", "Disallowed content URL detected in CoreGui")
 						end
