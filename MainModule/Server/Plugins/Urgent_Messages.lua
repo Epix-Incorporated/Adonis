@@ -1,7 +1,11 @@
 server = nil;
 service = nil;
 
-return function(Vargs)
+return function(Vargs, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 

@@ -4,7 +4,11 @@
     Date: 4/3/2022
 --]]
 
-return function(Vargs)
+return function(Vargs, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -22,7 +26,7 @@ return function(Vargs)
             elseif string.lower(type) == "waypoint" then
                 Variables.Waypoints[name] = child.Position
             end
-            
+
             Logs.AddLog("Script", {
                 Text = "Found ".. child.Name;
                 Desc = "Found and registered system object of type '".. type .."' with name '".. name .."'";

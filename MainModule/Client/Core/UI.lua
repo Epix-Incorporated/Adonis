@@ -153,7 +153,10 @@ return function(Vargs, GetEnv)
 				client = CloneTable(client),
 				service = CloneTable(service)
 			})
-			newEnv.service.Threads = CloneTable(service.Threads)
+
+			if newEnv.service.Threads then
+				newEnv.service.Threads = CloneTable(service.Threads)
+			end
 
 			for i,v in pairs(newEnv.client) do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
@@ -162,9 +165,15 @@ return function(Vargs, GetEnv)
 			end
 
 			if ran then
+				if data.isModifier and not data.modNoEnv then
+					setfenv(func, env)
+				elseif not data.isModifier and data.isCode and not data.NoEnv then
+					setfenv(func, env)
+				end
+
 				local rets = {
 					TrackTask("UI: ".. module:GetFullName(),
-						if data.modNoEnv or data.NoEnv then func else setfenv(func,newEnv),
+						func,
 						data,
 						newEnv
 					)
@@ -278,8 +287,10 @@ return function(Vargs, GetEnv)
 			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 
 			--// Check for any childs with 'NoEnv' and trigger NoEnv
+			--// Enforce NoEnv to ensure theme is using it.
 			if not data.NoEnv and folder:FindFirstChild("NoEnv") then
 				data.NoEnv = true
+				data.modNoEnv = true
 			end
 
 			--// folder2
@@ -290,7 +301,7 @@ return function(Vargs, GetEnv)
 				local conf = newGui:FindFirstChild("Config")
 				local mod = conf and (conf:FindFirstChild("Modifier") or conf:FindFirstChild("NoEnv-Modifier"))
 
-				if mod and (not data.modNoEnv) then
+				if mod and not data.modNoEnv then
 					data.modNoEnv = string.sub(mod.Name, 1, 5) == "NoEnv"
 				end
 
@@ -301,8 +312,8 @@ return function(Vargs, GetEnv)
 				elseif conf and foundConf and foundConf ~= true then
 					local code = foundConf:FindFirstChild("Code") or foundConf:FindFirstChild("NoEnv-Code")
 
-					if not data.NoEnv then
-						data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
+					if not data.NoEnv and code then
+						data.NoEnv = string.sub(code.Name, 1, 5) == "NoEnv"
 					end
 
 					local mult = foundConf.AllowMultiple
@@ -331,7 +342,10 @@ return function(Vargs, GetEnv)
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
-									data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
+
+									if not data.NoEnv and code then
+										data.NoEnv = string.sub(code.Name, 1, 5) == "NoEnv"
+									end
 								else
 									return ret
 								end
@@ -353,6 +367,7 @@ return function(Vargs, GetEnv)
 								gTable = gTable;
 								Data = data;
 								GUI = newGui;
+								isModifier = true;
 							})
 						end
 
@@ -363,6 +378,7 @@ return function(Vargs, GetEnv)
 							GUI = newGui;
 							Theme = theme;
 							ThemeFolder = folder;
+							isCode = true;
 						})
 					end
 				end
