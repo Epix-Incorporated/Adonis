@@ -27,7 +27,7 @@ return function(Vargs, env)
 		if ran and type(WebModFunc) == "function" then
 			task.defer(WebModFunc, Vargs, env)
 		elseif not ran then
-			warn("Unepexcted error while loading WebPanel!", tostring(WebModFunc))
+			warn("Unexpected error while loading WebPanel!", tostring(WebModFunc))
 		end
 	end
 
