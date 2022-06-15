@@ -638,7 +638,7 @@ return function(Vargs)
 							local isItemIcon = false
 
 							for _, v in ipairs(getToolUrls()) do
-								if string.find then
+								if string.find(url, v, 1, true) then
 									isItemIcon = true
 									break
 								end
