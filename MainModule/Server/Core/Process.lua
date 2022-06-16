@@ -296,7 +296,7 @@ return function(Vargs, GetEnv)
 						if allowed and (not Settings.Trello_Enabled or (Settings.Trello_Enabled and trello == nil)) and command.TrelloRequired then -- if trello is disabled or is setup incorrectly
 							Remote.MakeGui(p, "Output", {
 								Title = "";
-								Message = "Trello features is disabled or configured incorrectly in settings";
+								Message = "Trello features are disabled or configured incorrectly in settings";
 								Color = Color3.new(1, 0, 0);
 							})
 							return
