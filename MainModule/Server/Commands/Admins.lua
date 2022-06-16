@@ -1350,6 +1350,7 @@ return function(Vargs, env)
 			Fun = false;
 			Filter = true;
 			CrossServerDenied = true;
+			TrelloRequired = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local trello = HTTP.Trello.API
