@@ -506,7 +506,7 @@ return function(Vargs, GetEnv)
 				if Message == " " then
 					lastLogOutput = os.clock()
 				elseif type(Message) ~= "string" then
-					pcall(Detected, "crash", "Tamper Protection 24589")
+					pcall(Detected, "crash", "Tamper Protection 24589 (Invalid MessageOut)")
 					task.wait(1)
 					pcall(Disconnect, "Adonis_24589")
 					pcall(Kill, "Adonis_24589")
@@ -679,10 +679,10 @@ return function(Vargs, GetEnv)
 					testDecal:Destroy()
 					task.wait(6)
 					if not activated then
-						Detected("kick", "Coregui detection bypass found")
+						Detected("log", "Coregui detection bypass found")
 					end
 				end, function()
-					Detected("kick", "Tamper Protection 568234")
+					--Detected("kick", "Tamper Protection 568234")
 				end)
 
 				-- // Checks disallowed content URLs in the CoreGui
