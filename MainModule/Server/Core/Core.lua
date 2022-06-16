@@ -54,7 +54,7 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
-		service.DataStoreService = require(Deps.MockDataStoreService)
+		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
 
 		disableAllGUIs(server.Client.UI);
 
