@@ -13,7 +13,7 @@
     <a href="https://github.com/Sceleratis/Adonis/releases">
         <img src="https://img.shields.io/github/v/release/Sceleratis/Adonis?label=version"/>
     </a>
-    <a href="https://discord.gg/H5RvTP3">
+    <a href="https://dvr.cx/discord">
         <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
     </a>
 </div>
