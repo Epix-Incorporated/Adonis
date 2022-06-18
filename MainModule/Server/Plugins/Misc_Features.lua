@@ -21,7 +21,7 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	-- // Remove legacy trello board
-	local epix_board_index = type(Settings.Trello_Secondary) == "table" table.find(Settings.Trello_Secondary, "9HH6BEX2")
+	local epix_board_index = type(Settings.Trello_Secondary) == "table" and table.find(Settings.Trello_Secondary, "9HH6BEX2")
 	if epix_board_index then
 		table.remove(Settings.Trello_Secondary, epix_board_index)
 		Logs:AddLog("Script", "Removed legacy trello board");
