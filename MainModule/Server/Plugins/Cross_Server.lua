@@ -8,10 +8,9 @@ logError = nil
 
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function(Vargs, env)
-	if env then
-		setfenv(1, env)
-	end
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;

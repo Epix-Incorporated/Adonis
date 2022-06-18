@@ -7,7 +7,7 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
-	
+
 	local Routine = env.Routine
 	local Pcall = env.Pcall
 	local cPcall = env.cPcall

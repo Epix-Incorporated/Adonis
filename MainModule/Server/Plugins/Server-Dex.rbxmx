@@ -8,10 +8,9 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Server-Dex</string>
 			<string name="ScriptGuid">{0FAEA1DA-BB5D-4158-A5FF-FD4B41C72027}</string>
-			<ProtectedString name="Source"><![CDATA[return function(Vargs, env)
-	if env then
-		setfenv(1, env)
-	end
+			<ProtectedString name="Source"><![CDATA[return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;

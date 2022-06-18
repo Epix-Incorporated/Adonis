@@ -979,7 +979,7 @@ return function(Vargs, env)
 							end
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>")
-							
+
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
 							local player = args[1]
@@ -3620,7 +3620,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-				
+
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
 
@@ -4890,12 +4890,12 @@ return function(Vargs, env)
 					[71] = Enum.AccessoryType.RightShoe,
 					[72] = Enum.AccessoryType.DressSkirt,
 				}
-				
+
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						
+
 						if SingleAssetIds[typeId] then
 							humanoidDesc[SingleAssetIds[typeId]] = itemId
 						elseif AccessoryAssetIds[typeId] then
@@ -4914,7 +4914,7 @@ return function(Vargs, env)
 						else
 							error("Item not supported")
 						end
-						
+
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
@@ -4962,7 +4962,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemovePants = {
 			Prefix = Settings.Prefix;
 			Commands = {"removepants"};
