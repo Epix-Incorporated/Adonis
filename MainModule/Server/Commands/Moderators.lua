@@ -1198,6 +1198,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows Trello bans";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local tab = {}

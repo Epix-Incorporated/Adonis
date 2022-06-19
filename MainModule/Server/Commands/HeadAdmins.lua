@@ -264,6 +264,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "You need to supply a list name.")
@@ -283,6 +284,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Views the specified Trello list from the primary board set in Settings.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
@@ -306,6 +308,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CreateCard")
