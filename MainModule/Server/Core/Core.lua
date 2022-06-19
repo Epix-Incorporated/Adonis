@@ -158,6 +158,9 @@ return function(Vargs, GetEnv)
 			Allowed_API_Calls = true;
 			
 			LoadAdminsFromDS = true;
+			
+			WebPanel_ApiKey = true;
+			WebPanel_Enabled = true;
 
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
