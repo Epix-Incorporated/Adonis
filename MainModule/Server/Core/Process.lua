@@ -264,6 +264,7 @@ return function(Vargs, GetEnv)
 					else
 						local allowed = false
 						local isSystem = false
+						local trello = HTTP.Trello.API
 
 						local pDat = {
 							Player = opts.Player or p;
@@ -287,6 +288,15 @@ return function(Vargs, GetEnv)
 							Remote.MakeGui(p, "Output", {
 								Title = "";
 								Message = "This command cannot be used in Roblox Studio.";
+								Color = Color3.new(1, 0, 0);
+							})
+							return
+						end
+
+						if allowed and (not Settings.Trello_Enabled or (Settings.Trello_Enabled and trello == nil)) and command.TrelloRequired then -- if trello is disabled or is setup incorrectly
+							Remote.MakeGui(p, "Output", {
+								Title = "";
+								Message = "Trello features are disabled or configured incorrectly in settings";
 								Color = Color3.new(1, 0, 0);
 							})
 							return
