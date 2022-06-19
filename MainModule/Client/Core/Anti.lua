@@ -13,25 +13,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-			_G, game, script, getfenv, setfenv, workspace,
-			getmetatable, setmetatable, loadstring, coroutine,
-			rawequal, typeof, print, math, warn, error,  pcall,
-			xpcall, select, rawset, rawget, ipairs, pairs,
-			next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-			newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-			NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-			NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-			Vector3int16, require, table, type, wait,
-			Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local Anti, Process, UI, Variables
 	local script = script
@@ -457,10 +457,10 @@ return function(Vargs, GetEnv)
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
-						--Detected("crash", "Disallowed Services Detected")
-					end
-				end) then
+						if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
+							--Detected("crash", "Disallowed Services Detected")
+						end
+					end) then
 					--Detected("kick", "Disallowed Services Finding Error")
 				end
 			end
@@ -629,13 +629,13 @@ return function(Vargs, GetEnv)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+				--[=[for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
-						--Detected("kick", "Malicious Object?: " .. v)
+						Detected("kick", "Malicious Object?: " .. v)
 					end
-				end
-	
+				end]=]
+
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
