@@ -2832,7 +2832,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local cl = Deps.Assets.Dogg:Clone()
-
+				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
 				local decal1 = service.New("Decal")
@@ -2849,7 +2849,8 @@ return function(Vargs, env)
 				sound.Looped = true
 
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
+					local character = v.Character
+					for k, p in pairs(character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -2863,8 +2864,20 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local headMesh = character.Head:FindFirstChild("Mesh")
+					if headMesh then
+						character.Head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						character.Head.Transparency = 1
+						for _, c in ipairs(character.Head:GetChildren()) do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
@@ -2881,7 +2894,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
