@@ -664,8 +664,9 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				-- // Checks for anti-coregui detetection bypasses 
-				xpcall(function()
+				-- // Checks for anti-coregui detetection bypasses
+				-- It's not physically possible for this code to error, yet it still does, weird
+				--[[xpcall(function()
 					local testDecal = service.UnWrap(Instance.new("Decal"))
 					testDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					local activated = false
@@ -681,8 +682,8 @@ return function(Vargs, GetEnv)
 						Detected("log", "Coregui detection bypass found")
 					end
 				end, function()
-					--Detected("kick", "Tamper Protection 568234")
-				end)
+					Detected("kick", "Tamper Protection 568234")
+				end)]]
 
 			end)
 		end
