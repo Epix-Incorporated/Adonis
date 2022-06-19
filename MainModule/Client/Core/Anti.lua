@@ -506,7 +506,7 @@ return function(Vargs, GetEnv)
 				if Message == " " then
 					lastLogOutput = os.clock()
 				elseif type(Message) ~= "string" then
-					pcall(Detected, "crash", "Tamper Protection 24589")
+					pcall(Detected, "crash", "Tamper Protection 24589 (Invalid MessageOut)")
 					task.wait(1)
 					pcall(Disconnect, "Adonis_24589")
 					pcall(Kill, "Adonis_24589")
@@ -630,12 +630,12 @@ return function(Vargs, GetEnv)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+				--[=[for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
-						--Detected("kick", "Malicious Object?: " .. v)
+						Detected("kick", "Malicious Object?: " .. v)
 					end
-				end
+				end]=]
 
 				local function getDictionaryLenght(dictionary)
 					local len = 0
@@ -680,7 +680,7 @@ return function(Vargs, GetEnv)
 					testDecal:Destroy()
 					task.wait(6)
 					if not activated then
-						Detected("kick", "Coregui detection bypass found")
+						Detected("log", "Coregui detection bypass found")
 					end
 				end, function()
 					Detected("kick", "Tamper Protection 568234")
