@@ -16,6 +16,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
@@ -62,6 +63,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
