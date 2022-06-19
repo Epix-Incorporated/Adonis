@@ -54,7 +54,7 @@ return function(Vargs, GetEnv)
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
 
-		service.DataStoreService = require(Deps.MockDataStoreService)
+		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
 
 		disableAllGUIs(server.Client.UI);
 
@@ -147,6 +147,7 @@ return function(Vargs, GetEnv)
 			DataStore = true;
 			DataStoreKey = true;
 			DataStoreEnabled = true;
+			LocalDatastore = true;
 
 			Creators = true;
 			Permissions = true;
@@ -1143,7 +1144,7 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
-					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey and not Settings.LocalDatastore then
 						table.insert(server.Messages, {
 							Title = "Warning!";
 							Message = "Using default datastore key!";

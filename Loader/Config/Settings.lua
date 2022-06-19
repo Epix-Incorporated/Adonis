@@ -144,6 +144,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
+	settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
@@ -349,6 +350,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
+	descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 	descs.Storage = [[ Where things like tools are stored ]]
 	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
@@ -462,6 +464,7 @@ local descs = {};			--// Contains settings descriptions
 		"DataStore";
 		"DataStoreKey";
 		"DataStoreEnabled";
+		"LocalDatastore";
 		" ";
 		"Storage";
 		"RecursiveTools";
