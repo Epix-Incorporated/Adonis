@@ -39,7 +39,7 @@ return function(Vargs, env)
 
 						Functions.Hint("Kicked "..PlayerName, {plr})
 					else
-						Functions.Hint("Unable to kick "..PlayerName.." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to kick "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1486,28 +1486,32 @@ return function(Vargs, env)
 			Description = "Makes a camera named whatever you pick";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if plr and plr.Character and plr.Character:FindFirstChild("Head") then
-					if workspace:FindFirstChild("Camera: "..args[1]) then
-						Functions.Hint(args[1].." Already Exists!", {plr})
-					else
-						local cam = service.New("Part", workspace)
-						cam.Position = plr.Character.Head.Position
-						cam.Anchored = true
-						cam.BrickColor = BrickColor.new("Really black")
-						cam.CanCollide = false
-						cam.Locked = true
-						cam.FormFactor = "Custom"
-						cam.Size = Vector3.new(1, 1, 1)
-						cam.TopSurface = "Smooth"
-						cam.BottomSurface = "Smooth"
-						cam.Name="Camera: "..args[1]
-						--service.New("PointLight", cam)
-						cam.Transparency=1--.9
-						local mesh=service.New("SpecialMesh", cam)
-						mesh.Scale=Vector3.new(1, 1, 1)
-						mesh.MeshType="Sphere"
-						table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
-					end
+				local head = plr.Character and (plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart"))
+				assert(head and head:IsA("BasePart"), "You don't have a character head or root part")
+				if workspace:FindFirstChild("Camera: "..args[1]) then
+					Functions.Hint(args[1].." Already Exists!", {plr})
+				else
+					local cam = service.New("Part", {
+						Parent = workspace;
+						Name = "Camera: "..args[1];
+						Position = head.Position;
+						Anchored = true;
+						BrickColor = BrickColor.new("Really black");
+						CanCollide = false;
+						Locked = true;
+						FormFactor = "Custom";
+						Size = Vector3.new(1, 1, 1);
+						TopSurface = "Smooth";
+						BottomSurface = "Smooth";
+						cam.Transparency = 1;--.9
+					})
+					--service.New("PointLight", cam)
+					local mesh = service.New("SpecialMesh", {
+						Parent = cam;
+						Scale = Vector3.new(1, 1, 1);
+						MeshType = "Sphere";
+					})
+					table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
 				end
 			end
 		};
@@ -1538,7 +1542,7 @@ return function(Vargs, env)
 					for _, v in pairs(service.GetPlayers(plr, args[2])) do
 						if v and v.Character:FindFirstChild("Humanoid") then
 							plr.ReplicationFocus = v.Character.PrimaryPart
-							Remote.Send(p, "Function", "SetView", v.Character.Humanoid)
+							Remote.Send(p, "Function", "SetView", v.Character:FindFirstChildOfClass("Humanoid"))
 						end
 					end
 				end
@@ -1555,7 +1559,7 @@ return function(Vargs, env)
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v and v.Character:FindFirstChild("Humanoid") then
 						plr.ReplicationFocus = v.Character.PrimaryPart
-						Remote.Send(plr, "Function", "SetView", v.Character.Humanoid)
+						Remote.Send(plr, "Function", "SetView", v.Character:FindFirstChildOfClass("Humanoid"))
 					end
 				end
 			end
@@ -1569,7 +1573,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
+					if v and v.Character:FindFirstChildOfClass("Humanoid") then
 						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
 					end
 				end
