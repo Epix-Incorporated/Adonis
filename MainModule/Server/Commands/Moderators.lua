@@ -37,7 +37,9 @@ return function(Vargs, env)
 							v:Kick(args[2])
 						end
 
-						Functions.Hint("Kicked ".. PlayerName, {plr})
+						Functions.Hint("Kicked "..PlayerName, {plr})
+					else
+						Functions.Hint("Unable to kick "..PlayerName.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -415,6 +417,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to warn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -492,6 +496,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to kickwarn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
