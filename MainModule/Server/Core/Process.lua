@@ -379,7 +379,7 @@ return function(Vargs, GetEnv)
 							return
 						end
 					else
-						local allowed,denyType,waitForDuration = false,nil,nil
+						local allowed, denyType, waitForDuration = false, nil, nil
 						local isSystem = false
 						local trello = HTTP.Trello.API
 
@@ -460,15 +460,15 @@ return function(Vargs, GetEnv)
 										error = (error and string.match(error, ":(.+)$")) or error or "Unknown error"
 
 										if not isSystem then
-											Remote.MakeGui(p, 'Output', {
-												Title = '',
+											Remote.MakeGui(p, "Output", {
+												Title = "",
 												Message = error,
 												Color = Color3.new(1, 0, 0)
 											})
 										end
 									elseif error and type(error) ~= "string" and error ~= true then
 										if not isSystem then
-											Remote.MakeGui(p,"Output", {
+											Remote.MakeGui(p, "Output", {
 												Title = "";
 												Message = "There was an error but the error was not a string? "..tostring(error);
 												Color = Color3.new(1, 0, 0);
@@ -499,40 +499,22 @@ return function(Vargs, GetEnv)
 							end
 						else
 							if not isSystem and not opts.NoOutput then
-								if denyType == "Studio" then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "This command cannot be used in Roblox Studio.";
-										Color = Color3.new(1, 0, 0);
-									})
-								elseif denyType == "Chat" then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Color = Color3.new(1, 0, 0);
-										Message = "Specified command not permitted as chat message (Command not chattable)";
-									})
-								elseif denyType == "CrossServerBlacklist" then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Color = Color3.new(1, 0, 0);
-										Message = "This command doesn't permit the in cross server";
-									})
-								elseif denyType == "CrossServerDisabled" then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Color = Color3.new(1, 0, 0);
-										Message = "This command has cross server enabled, but cross commands are disabled";
-									})
-								elseif denyType == "PlayerCooldown" or denyType == "ServerCooldown" or denyType == "CrossCooldown" then
+								if denyType and denyType:match("Cooldown$") then
 									Remote.MakeGui(p, "Output", {
 										Title = "";
 										Message = "You must wait "..tostring(waitForDuration).." seconds to use the command "..matched;
-										Color = Color3.new(1, 0.521569, 0.129412);
+										Color = Color3.fromRGB(255, 133, 33);
 									})
 								else
+									local DENIAL_MESSAGES = {
+										Studio = "This command cannot be used in Roblox Studio.",
+										Chat = "This command is not permitted as chat message (non-chattable command).",
+										CrossServerBlacklist = "This command may not be run across servers (cross-server blacklisted).",
+										CrossServerDisabled = "Cross-server features are currently disabled."
+									}
 									Remote.MakeGui(p, "Output", {
 										Title = "";
-										Message = "You are not allowed to run " .. msg;
+										Message = DENIAL_MESSAGES[denyType] or ("You are not allowed to run " .. msg);
 										Color = Color3.new(1, 0, 0);
 									})
 								end
