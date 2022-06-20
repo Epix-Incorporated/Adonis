@@ -166,18 +166,18 @@ return function(Vargs, env)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
-								Functions.Hint("Removed "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("Removed "..v.Name.."'s moderator powers", {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
-									Message = "Your admin powers have been removed";
+									Message = "Your moderator powers have been removed";
 									Icon = server.MatIcons["Remove moderator"];
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("You do not have permission to remove "..v.Name.."'s moderator powers", {plr})
 							end
 						else
-							Functions.Hint(v.Name..' is not an admin', {plr})
+							Functions.Hint(v.Name..' is not a moderator', {plr})
 						end
 					end
 				else
