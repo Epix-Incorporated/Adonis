@@ -2213,9 +2213,9 @@ return function(Vargs, env)
 				for _, v in pairs(Variables.InsertList) do table.insert(tab, v) end
 				for _, v in pairs(HTTP.Trello.InsertList) do table.insert(tab, v) end
 				for i, v in pairs(tab) do
-					tab[i] = {Text = v.Name; Desc = v.ID;}
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab;})
+				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab; TextSelectable = true})
 			end
 		};
 
@@ -5889,14 +5889,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local listforclient={}
-				for i, v in pairs(Variables.MusicList) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
+				local tab = {}
+				for _, v in pairs(Variables.MusicList) do table.insert(tab, v) end
+				for _, v in pairs(HTTP.Trello.Music) do table.insert(tab, v) end
+				for i, v in pairs(tab) do
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				for i, v in pairs(HTTP.Trello.Music) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
-				end
-				Remote.MakeGui(plr, "List", {Title = "Music List", Table = listforclient})
+				Remote.MakeGui(plr, "List", {Title = "Music List", Table = tab, TextSelectable = true})
 			end
 		};
 
