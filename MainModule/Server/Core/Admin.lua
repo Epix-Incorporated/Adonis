@@ -447,6 +447,7 @@ return function(Vargs, GetEnv)
 
 		UpdateCachedLevel = function(p: Player, data: {[string]: any}?)
 			local data = data or Core.GetPlayer(p)
+			local oLevel, oRank = data.AdminLevel, data.AdminRank
 			local level, rank = Admin.GetUpdatedLevel(p, data)
 
 			data.AdminLevel = level
@@ -458,6 +459,14 @@ return function(Vargs, GetEnv)
 				Desc = "Updating the cached admin level for ".. p.Name;
 				Player = p;
 			})
+
+			if Settings.Console and (oLevel ~= level or oRank ~= rank) then
+				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+					task.defer(Remote.RefreshGui, p, "Console")
+				else
+					task.defer(Remote.RemoveGui, p, "Console")
+				end
+			end
 
 			return level, rank
 		end;
