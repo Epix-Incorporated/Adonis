@@ -1230,7 +1230,7 @@ return function(Vargs, env)
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "HardCrash")
 					else
-						Functions.Hint("Unable to crash "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1254,7 +1254,7 @@ return function(Vargs, env)
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "RAMCrash")
 					else
-						Functions.Hint("Unable to crash "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1278,7 +1278,7 @@ return function(Vargs, env)
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "GPUCrash")
 					else
-						Functions.Hint("Unable to crash "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1333,9 +1333,9 @@ return function(Vargs, env)
 					})) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason)
-						Functions.Hint("Server-banned "..service.FormatPlayer(v), {plr})
+						Functions.Hint("Server-banned "..tostring(v), {plr})
 					else
-						Functions.Hint("Unable to ban "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to ban "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
