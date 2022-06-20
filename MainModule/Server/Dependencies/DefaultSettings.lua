@@ -215,6 +215,19 @@ local descs = {};			--// Contains settings descriptions
 		[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 	};
 
+	settings.CommandCooldowns = {
+		--[[
+			REFERENCE:
+				command_full_name: The name of a command (e.g. :cmds)
+				
+			[command_full_name] = {
+				Player = 0; -- How many seconds for player cooldown?
+				Server = 0; -- How many seconds for server cooldown?
+				Cross = 0; -- How many seconds for cross cooldown? (cross cooldown is similar to player, but also saves cooldown cache in the player data)
+			}
+		]]	
+	}
+
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {};			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Blacklist = {};		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}

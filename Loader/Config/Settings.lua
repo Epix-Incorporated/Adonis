@@ -215,18 +215,18 @@ settings.Aliases = {
 	[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 };
 
-settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-settings.Muted = {};			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-settings.Blacklist = {};		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
-settings.Whitelist = {};		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+settings.Banned = {}		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+settings.Muted = {}			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+settings.Blacklist = {}		-- List of people banned from running commands 	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
+settings.Whitelist = {}		-- People who can join if whitelist enabled	  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 
-settings.MusicList = {}; 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
-settings.CapeList = {};		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
-settings.InsertList = {}; 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
+settings.MusicList = {} 	-- List of songs to appear in the :musiclist	  Format: {{Name = "somesong", ID = 1234567}, {Name = "anotherone", ID = 1243562}}
+settings.CapeList = {}		-- List of capes							  Format: {{Name = "somecape", Material = "Fabric", Color = "Bright yellow", ID = 12345567, Reflectance = 1}; {etc more stuff here}}
+settings.InsertList = {} 	-- List of models to appear in the :insertlist and can be inserted using ':insert <name>'	  Format: {{Name = "somemodel", ID = 1234567}; {Name = "anotherone", ID = 1243562}}
 
-settings.OnStartup = {};	-- List of commands ran at server start								Format: {":notif TestNotif"}
-settings.OnJoin = {};		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
-settings.OnSpawn = {};		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
+settings.OnStartup = {}		-- List of commands ran at server start								Format: {":notif TestNotif"}
+settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminlevel)		Format: {":cmds"}
+settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
 settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
@@ -264,12 +264,25 @@ settings.Commands = {
 	};
 }
 
-settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
-settings.Trello_Enabled = false;		  -- Are the Trello features enabled?
-settings.Trello_Primary = ""; 		      -- Primary Trello board
-settings.Trello_Secondary = {}; 		  -- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
-settings.Trello_AppKey = "";              -- Your Trello AppKey						  	Link: https://trello.com/app-key
-settings.Trello_Token = "";               -- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
+settings.CommandCooldowns = {
+--[[
+	REFERENCE:
+		command_full_name: The name of a command (e.g. :cmds)
+
+	[command_full_name] = {
+		Player = 0;
+		Server = 0;
+		Cross = 0;
+	}
+]]	
+}
+    
+settings.HttpWait = 60					-- How long things that use the HttpService will wait before updating again
+settings.Trello_Enabled = false			-- Are the Trello features enabled?
+settings.Trello_Primary = ""			-- Primary Trello board
+settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
+settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trello.com/app-key
+settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 
 settings.G_API = true					-- If true allows other server scripts to access certain functions described in the API module through _G.Adonis
 settings.G_Access = false				-- If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
@@ -293,10 +306,10 @@ settings.Allowed_API_Calls = {
 }
 
 settings.FunCommands = true			-- Are fun commands enabled?
-settings.PlayerCommands = true 	-- Are players commands enabled?
-settings.CommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
-settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
-settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
+settings.PlayerCommands = true		-- Are player-level utility commands enabled?
+settings.CommandFeedback = false	-- Should players be notified when commands with non-obvious effects are run on them?
+settings.CrossServerCommands = true	-- Are commands which affect more than one server enabled?
+settings.ChatCommands = true		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
 settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 
@@ -305,7 +318,7 @@ settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they ar
 settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
-settings.SaveCommandLogs = true		-- If command logs are saved to the datastores
+settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
 settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
@@ -314,8 +327,8 @@ settings.AutoClean = false		-- Will auto clean workspace of things like hats and
 settings.AutoCleanDelay = 60	-- Time between auto cleans
 settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
 
-settings.Console = true							-- Command console
-settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
+settings.Console = true				-- Whether the command console is enabled
+settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
 
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
 settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
