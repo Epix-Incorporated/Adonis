@@ -156,9 +156,17 @@ return function(Vargs, env)
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				local ret = Admin.RemoveBan(args[1], true)
-				if ret then
-					Functions.Hint(tostring(ret)..' has been Unbanned', {plr})
+				assert(args[1], "Argument #1 (player) is required")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local ret = Admin.RemoveBan(v.Name, true)
+					if ret then
+						if type(ret) == "table" then
+							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
+						else
+							ret = tostring(ret)
+						end
+						Functions.Hint(ret.." has been unbanned from the game", {plr})
+					end
 				end
 			end
 		};
