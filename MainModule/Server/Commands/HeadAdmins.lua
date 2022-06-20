@@ -144,6 +144,8 @@ return function(Vargs, env)
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true)
 						Functions.Hint("Game banned "..tostring(v), {plr})
+					else
+						Functions.Hint("Unable to game-ban "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -192,9 +194,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now an admin', {plr})
+						Functions.Hint(v.Name.." is now an admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -221,9 +223,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp admin', {plr})
+						Functions.Hint(v.Name.." is now a temporary admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -242,7 +244,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing message")
 
 				if not Core.CrossServer("Message", plr.Name, args[1]) then
-					error("CrossServer Handler Not Ready");
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -260,9 +262,8 @@ return function(Vargs, env)
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 
-
 				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
-					error("CrossServer Handler Not Ready");
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -405,7 +406,7 @@ return function(Vargs, env)
 			Commands = {"explore", "explorer"};
 			Args = {};
 			Hidden = false;
-			Description = "Lets you explore the game, kinda like a file browser";
+			Description = "Lets you explore the game, kinda like a file browser (alternative to "..Settings.Prefix.."dex)";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
