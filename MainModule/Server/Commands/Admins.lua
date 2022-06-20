@@ -145,10 +145,10 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank", "unpa", "unoa", "unta"};
-			Args = {"player", "temp (true/false)"};
+			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
+			Args = {"player", "temp (true/false) (Default: false)"};
 			Hidden = false;
-			Description = "Removes the target players' admin powers; Saves unless <temp> is 'true'";
+			Description = "Removes the target players' admin/moderator powers; Saves unless <temp> is 'true'";
 			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
@@ -162,22 +162,22 @@ return function(Vargs, env)
 
 				if plrs and #plrs > 0 then
 					for _, v in ipairs(plrs) do
-						local targLevel = Admin.GetLevel(v)
+						local targLevel, targRank = Admin.GetLevel(v)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
-								Functions.Hint("Removed "..v.Name.."'s moderator powers", {plr})
+								Functions.Hint(string.format("Removed %s from rank %s", v.Name, targRank or "[unknown rank]"), {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
-									Message = "Your moderator powers have been removed";
+									Message = string.format("You are no longer a(n) %s", targRank or "admin");
 									Icon = server.MatIcons["Remove moderator"];
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s moderator powers", {plr})
+								Functions.Hint("You do not have permission to remove "..v.Name.."'s rank", {plr})
 							end
 						else
-							Functions.Hint(v.Name..' is not a moderator', {plr})
+							Functions.Hint(v.Name.." does not already have any rank to remove", {plr})
 						end
 					end
 				else
@@ -208,7 +208,7 @@ return function(Vargs, env)
 
 											Functions.Hint("Removed ".. tostring(user) .." from ".. rank, {plr})
 											Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rank))
-											found = true;
+											found = true
 										end
 									end
 								end
@@ -241,8 +241,8 @@ return function(Vargs, env)
 				if plrs and #plrs>0 then
 					for _, v in ipairs(plrs) do
 						local targLevel = Admin.GetLevel(v)
-						if targLevel>0 then
-							if sendLevel>targLevel then
+						if targLevel > 0 then
+							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v,true)
 								Functions.Hint("Removed "..v.Name.."'s admin powers", {plr})
 								Remote.MakeGui(v, "Notification", {
