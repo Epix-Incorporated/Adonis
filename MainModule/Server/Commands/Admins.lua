@@ -1325,21 +1325,21 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unban"};
 			Args = {"player"};
-			Description = "Unbans the target player(s)";
+			Description = "Un-bans the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1],"Argument 1 is required")
+				assert(args[1], "Argument #1 (player) is required")
 				for _,v in pairs(service.GetPlayers(plr,args[1])) do
 					local ret = Admin.RemoveBan(v.Name)
 					if ret then
 						if type(ret) == "table" then
-							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId);
+							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
 						else
-							ret = tostring(ret);
+							ret = tostring(ret)
 						end
-						Functions.Hint(ret.. ' has been unbanned', {plr})
+						Functions.Hint(ret.. " has been unbanned", {plr})
+					end
 				end
-			end
 			end
 		};
 
