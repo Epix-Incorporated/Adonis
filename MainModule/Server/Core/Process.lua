@@ -381,6 +381,7 @@ return function(Vargs, GetEnv)
 					else
 						local allowed,denyType,waitForDuration = false,nil,nil
 						local isSystem = false
+						local trello = HTTP.Trello.API
 
 						local pDat = {
 							Player = opts.Player or p;
@@ -393,9 +394,9 @@ return function(Vargs, GetEnv)
 							allowed = true
 							p = p or "SYSTEM"
 						else
-							allowed,denyType,waitForDuration = Admin.CheckPermission(pDat, command, false, opts)
+							allowed, denyType, waitForDuration = Admin.CheckPermission(pDat, command, false, opts)
 						end
-						
+
 						if allowed then
 							if not command.Disabled then
 								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ""
@@ -643,11 +644,11 @@ return function(Vargs, GetEnv)
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(1, 1, 1))
 							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 3)=="/e " then
+						elseif string.sub(msg, 1, 3) == "/e " then
 							service.Events.PlayerChatted:Fire(p, msg)
 							msg = string.sub(msg, 4)
 							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 8)=="/system " then
+						elseif string.sub(msg, 1, 8) == "/system " then
 							service.Events.PlayerChatted:Fire(p, msg)
 							msg = string.sub(msg, 9)
 							Process.Command(p, msg, {Chat = true;})

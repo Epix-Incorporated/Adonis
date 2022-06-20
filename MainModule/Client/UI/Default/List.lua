@@ -4,7 +4,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local Name = data.Name
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
@@ -141,7 +141,7 @@ return function(data, env)
 			end
 
 			if PagesEnabled and #gotList > PageSize then
-			
+
 
 				scroller.Size = UDim2.new(1,-10,1,-60);
 				nextPageButton.Visible = true;
@@ -252,7 +252,7 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {RichTextAllowed = RichText; TextSelectable = TextSelectable});
 				end
 
 				lastPageButton.BackgroundTransparency = origLTrans;
@@ -305,7 +305,7 @@ return function(data, env)
 					end
 
 					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {RichTextAllowed = RichText; TextSelectable = TextSelectable});
 				end
 
 				lastPageButton.BackgroundTransparency = origLTrans;

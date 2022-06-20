@@ -455,14 +455,15 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq. 
 			local function checkServ()
-				if not pcall(function()
-					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")  or findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+				--[[if not pcall(function()
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
 						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
 					Detected("kick", "Disallowed Services Finding Error")
-				end
+				end--]]
 			end
 
 			local function soundIdCheck(Sound)
@@ -505,7 +506,7 @@ return function(Vargs, GetEnv)
 				if Message == " " then
 					lastLogOutput = os.clock()
 				elseif type(Message) ~= "string" then
-					pcall(Detected, "crash", "Tamper Protection 24589")
+					pcall(Detected, "crash", "Tamper Protection 24589 (Invalid MessageOut)")
 					task.wait(1)
 					pcall(Disconnect, "Adonis_24589")
 					pcall(Kill, "Adonis_24589")
@@ -629,13 +630,13 @@ return function(Vargs, GetEnv)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+				--[=[for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
 						Detected("kick", "Malicious Object?: " .. v)
 					end
-				end
-	
+				end]=]
+
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
@@ -664,8 +665,9 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				-- // Checks for anti-coregui detetection bypasses 
-				xpcall(function()
+				-- // Checks for anti-coregui detetection bypasses
+				-- It's not physically possible for this code to error, yet it still does, weird
+				--[[xpcall(function()
 					local testDecal = service.UnWrap(Instance.new("Decal"))
 					testDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					local activated = false
@@ -678,11 +680,11 @@ return function(Vargs, GetEnv)
 					testDecal:Destroy()
 					task.wait(6)
 					if not activated then
-						Detected("kick", "Coregui detection bypass found")
+						Detected("log", "Coregui detection bypass found")
 					end
 				end, function()
 					Detected("kick", "Tamper Protection 568234")
-				end)
+				end)]]
 
 				-- // Checks disallowed content URLs in the CoreGui
 				xpcall(function()

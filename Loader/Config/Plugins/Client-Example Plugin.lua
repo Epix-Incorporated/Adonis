@@ -9,7 +9,7 @@ return function(Vargs)
 		Icon = "rbxassetid://357249130";
 	})
 	
-	window.Add("ImageLabel",{
+	window:Add("ImageLabel",{
 		Image = "rbxassetid://531490964";
 	})
 	

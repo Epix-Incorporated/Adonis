@@ -50,9 +50,11 @@ return function(Vargs, GetEnv)
 		Core.ModuleID = data.ModuleID or 7510592873
 		Core.LoaderID = data.LoaderID or 7510622625
 		Core.DebugMode = data.DebugMode or false
-		Core.Name = server.Functions:GetRandom()
+		Core.Name = Functions:GetRandom()
 		Core.LoadstringObj = Core.GetLoadstring()
 		Core.Loadstring = require(Core.LoadstringObj)
+
+		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
 
 		disableAllGUIs(server.Client.UI);
 
@@ -70,17 +72,17 @@ return function(Vargs, GetEnv)
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
-			if server.Core.RemoteEvent and not server.Core.FixingEvent and (function() for i,v in pairs(server.Core.RemoteEvent) do if c == v then return true end end end)() then
+			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in pairs(Core.RemoteEvent) do if c == v then return true end end end)() then
 				wait();
-				server.Core.MakeEvent()
+				Core.MakeEvent()
 			end
 		end)
 
 		--// Load data
-		Core.DataStore = server.Core.GetDataStore()
+		Core.DataStore = Core.GetDataStore()
 		if Core.DataStore then
 			TrackTask("Thread: DSLoadAndHook", function()
-				pcall(server.Core.LoadData)
+				pcall(Core.LoadData)
 			end)
 		end
 
@@ -145,6 +147,7 @@ return function(Vargs, GetEnv)
 			DataStore = true;
 			DataStoreKey = true;
 			DataStoreEnabled = true;
+			LocalDatastore = true;
 
 			Creators = true;
 			Permissions = true;
@@ -293,7 +296,7 @@ return function(Vargs, GetEnv)
 
 			local depsName = Functions:GetRandom()
 			local folder = server.Client:Clone()
-			local acli = server.Deps.ClientMover:Clone();
+			local acli = Deps.ClientMover:Clone();
 			local client = folder.Client
 			local parentObj = parent or service.StarterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
 			local clientLoader = {
@@ -396,7 +399,7 @@ return function(Vargs, GetEnv)
 				local depsName = Functions:GetRandom()
 				local eventName = Functions:GetRandom()
 				local folder = server.Client:Clone()
-				local acli = server.Deps.ClientMover:Clone();
+				local acli = Deps.ClientMover:Clone();
 				local client = folder.Client
 				local parentTo = "PlayerGui" --// Roblox, seriously, please give the server access to PlayerScripts already so I don't need to do this.
 				local parentObj = p:FindFirstChildOfClass(parentTo) or p:WaitForChild(parentTo, 600);
@@ -628,8 +631,7 @@ return function(Vargs, GetEnv)
 						data.AdminNotes = (data.AdminNotes and Functions.DSKeyNormalize(data.AdminNotes, true)) or {}
 						data.Warnings = (data.Warnings and Functions.DSKeyNormalize(data.Warnings, true)) or {}
 
-						local BLOCKED_SETTINGS = server.Core.PlayerDataKeyBlacklist
-
+						local BLOCKED_SETTINGS = Core.PlayerDataKeyBlacklist
 						for i,v in pairs(data) do
 							if not BLOCKED_SETTINGS[i] then
 								PlayerData[i] = v
@@ -697,9 +699,9 @@ return function(Vargs, GetEnv)
 				end
 			end--]]
 		end;
-
 		GetDataStore = function()
 			local ran,store = pcall(function()
+				
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
@@ -890,7 +892,7 @@ return function(Vargs, GetEnv)
 		IndexPathToTable = function(tableAncestry)
 			local Blacklist = Core.DS_BLACKLIST
 			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
-				return server.Settings[tableAncestry], tableAncestry;
+				return Settings[tableAncestry], tableAncestry;
 			elseif type(tableAncestry) == "table" then
 				local curTable = server;
 				local curName = "Server";
@@ -945,7 +947,7 @@ return function(Vargs, GetEnv)
 			if not foundTable then
 				foundTable = {
 					TableName = tableName;
-					TableKey = "SAVEDTABLE_".. tableName;
+					TableKey = "SAVEDTABLE_" .. tableName;
 				}
 
 				table.insert(tabs, foundTable);
@@ -978,6 +980,10 @@ return function(Vargs, GetEnv)
 				local tab = data.Table
 				local value = data.Value
 
+				if type(tab) == "string" then
+					tab = {"Settings", tab}
+				end
+
 				data.Action = "Remove"
 				data.Time = os.time()
 
@@ -993,13 +999,15 @@ return function(Vargs, GetEnv)
 
 					--// Check that the real table actually has the item to remove, do not create if it does not have it
 					--// Prevents snowballing
+					local indList = tab
 					local continueOperation = false
-					if indList[1] == "Settings" then
-						local indClone = table.clone(indList)
+					if tab[1] == "Settings" or tab[2] == "Settings" then
+						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
+
 						local realTable,tableName = Core.IndexPathToTable(indClone)
 						for i,v in pairs(realTable) do
-							if CheckMatch(v, tab.Value) then
+							if CheckMatch(v, value) then
 								continueOperation = true
 							end
 						end
@@ -1020,6 +1028,10 @@ return function(Vargs, GetEnv)
 				local tab = data.Table
 				local value = data.Value
 
+				if type(tab) == "string" then
+					tab = {"Settings", tab}
+				end
+
 				data.Action = "Add"
 				data.Time = os.time()
 
@@ -1035,13 +1047,14 @@ return function(Vargs, GetEnv)
 
 					--// Check that the real table does not have the item to add, do not create if it has it
 					--// Prevents snowballing
+					local indList = tab
 					local continueOperation = true
-					if indList[1] == "Settings" then
-						local indClone = table.clone(indList)
+					if tab[1] == "Settings" or tab[2] == "Settings" then
+						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
 						for i,v in pairs(realTable) do
-							if CheckMatch(v, tab.Value) then
+							if CheckMatch(v, value) then
 								continueOperation = false
 							end
 						end
@@ -1121,13 +1134,13 @@ return function(Vargs, GetEnv)
 				local SavedSettings
 				local SavedTables
 				if Core.DataStore and Settings.DataStoreEnabled then
-					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey or true then
+					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey and not Settings.LocalDatastore then
 						table.insert(server.Messages, {
 							Title = "Warning!";
 							Message = "Using default datastore key!";
 							Icon = server.MatIcons.Description;
 							Time = 15;
-							OnClick = server.Core.Bytecode([[
+							OnClick = Core.Bytecode([[
 								local window = client.UI.Make("Window", {
 									Title = "How to change the DataStore key";
 									Size = {700,300};

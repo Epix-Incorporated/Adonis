@@ -144,6 +144,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
+	settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
@@ -316,6 +317,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.SystemTitle = "System Message"		-- Title to display in :sm and :bc
 
 	settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
+	settings.SaveCommandLogs = true		-- If command logs are saved to the datastores
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
@@ -372,7 +374,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
-	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
 	---------------------
@@ -385,6 +386,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
+	descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 	descs.Storage = [[ Where things like tools are stored ]]
 	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
@@ -451,6 +453,7 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.CreatorPowers = [[ When true gives me place owner admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 	descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
+	descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
@@ -489,7 +492,6 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
-	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
 	order = {
@@ -497,6 +499,7 @@ local descs = {};			--// Contains settings descriptions
 		"DataStore";
 		"DataStoreKey";
 		"DataStoreEnabled";
+		"LocalDatastore";
 		" ";
 		"Storage";
 		"RecursiveTools";
@@ -560,6 +563,7 @@ local descs = {};			--// Contains settings descriptions
 		"SystemTitle";
 		" ";
 		"MaxLogs";
+		"SaveCommandLogs";
 		"Notification";
 		"SongHint";
 		"TopBarShift";
@@ -595,7 +599,6 @@ local descs = {};			--// Contains settings descriptions
 		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiClientIdle";
-		"AntiLeak";
 		"ProtectHats";
 	}
 

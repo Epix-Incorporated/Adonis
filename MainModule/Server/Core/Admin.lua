@@ -258,7 +258,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetPlayerGroups = function(p)
+		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
 				return {}
 			end
@@ -270,7 +270,7 @@ return function(Vargs, GetEnv)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
 			
-			if groups and #groups>0 then
+			if groups and #groups > 0 then
 				for _, g in ipairs(groups) do 
 					if (isId and g.Id == group) or (not isId and g.Name == group) then
 						return g
@@ -505,6 +505,7 @@ return function(Vargs, GetEnv)
 
 		UpdateCachedLevel = function(p, data)
 			local data = data or Core.GetPlayer(p)
+			local oLevel, oRank = data.AdminLevel, data.AdminRank
 			local level, rank = Admin.GetUpdatedLevel(p, data)
 
 			data.AdminLevel = level
@@ -516,6 +517,14 @@ return function(Vargs, GetEnv)
 				Desc = "Updating the cached admin level for ".. p.Name;
 				Player = p;
 			})
+
+			if Settings.Console and (oLevel ~= level or oRank ~= rank) then
+				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+					task.defer(Remote.RefreshGui, p, "Console")
+				else
+					task.defer(Remote.RemoveGui, p, "Console")
+				end
+			end
 
 			return level, rank
 		end;
@@ -600,12 +609,8 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers then
-					for _, userId in ipairs({1237666, 76328606, 698712377}) do
-						if p.UserId == userId then
-							return true
-						end
-					end
+				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+					return true
 				end
 
 				if tonumber(CreatorId) and p.UserId == CreatorId then
@@ -668,7 +673,7 @@ return function(Vargs, GetEnv)
 
 			if isTemp then
 				temp = true
-				table.remove(Admin.TempAdmins,tempInd)
+				table.remove(Admin.TempAdmins, tempInd)
 			end
 
 			if override then
@@ -741,7 +746,7 @@ return function(Vargs, GetEnv)
 			local value = p.Name ..":".. p.UserId
 
 			if newList then
-				table.insert(newList,value)
+				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
 					TrackTask("Thread: SaveAdmin", Core.DoSave, {
@@ -849,7 +854,36 @@ return function(Vargs, GetEnv)
 			service.Events.PlayerBanned:Fire(p, reason, doSave)
 		end;
 
-		DoBanCheck = function(name, check)
+		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string)
+			local value = {
+				Name = p.Name;
+				UserId = p.UserId;
+				EndTime = os.time() + tonumber(duration);
+				Reason = reason
+			}
+			
+			table.insert(Core.Variables.TimeBans, value)
+			
+			Core.DoSave({
+				Type = "TableAdd";
+				Table = {"Core", "Variables", "TimeBans"};
+				Value = value;
+			})
+
+			Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+
+			if type(p) ~= "table" then
+				if not service.Players:FindFirstChild(p.Name) then
+					Remote.Send(p, "Function", "KillClient")
+				else
+					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
+				end
+			end
+
+			service.Events.PlayerBanned:Fire(p, reason, true)
+		end,
+
+		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
 			local id = type(name) == "number" and name
 
 			if type(name) == "userdata" and name:IsA("Player") then
@@ -869,9 +903,9 @@ return function(Vargs, GetEnv)
 
 				if cName then
 					if string.lower(cName) == string.lower(name) then
-						return true;
+						return true
 					elseif id and cId and id == cId then
-						return true;
+						return true
 					end
 				end
 			end
@@ -897,11 +931,27 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
-		RunCommand = function(coma, ...)
-			local ind, com = Admin.GetCommand(coma)
+		RemoveTimeBan = function(name : string | number | Instance)
+			local ret
+			for i,v in pairs(Core.Variables.TimeBans) do
+				if Admin.DoBanCheck(name, v) then
+					table.remove(Core.Variables.TimeBans, i)
+					ret = v
+					Core.DoSave({
+						Type = "TableRemove";
+						Table = {"Core", "Variables", "TimeBans"};
+						Value = v;
+					})
+				end
+			end
+			return ret
+		end,
+
+		RunCommand = function(coma: string, ...)
+			local _, com = Admin.GetCommand(coma)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
 				--[[local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
@@ -919,7 +969,7 @@ return function(Vargs, GetEnv)
 				local adminLvl = Admin.GetLevel(plr)
 
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				local ran, error = TrackTask(plr.Name .. ": ".. coma, com.Function, plr, args, {
 					PlayerData = {
@@ -933,10 +983,10 @@ return function(Vargs, GetEnv)
 				if error then
 					--logError(plr,"Command",error)
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = '';
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 					return;
 				end
@@ -955,10 +1005,10 @@ return function(Vargs, GetEnv)
 				}})
 				if error then
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = "";
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 				end
 			end

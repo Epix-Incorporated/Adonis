@@ -64,6 +64,7 @@ return function()
 		Description = "Restarts the server";
 		Hidden = false;
 		Fun = false;
+		Filter = true;
 		NoStudio = true; --// TeleportService does not work in Studio 
 		AdminLevel = "Admins";
 		Function = function(plr: Player, args: {string})
