@@ -538,13 +538,8 @@ return function(Vargs, GetEnv)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers then
-					local creatorAccounts = {1237666, 76328606, 698712377}
-					for _, userId in ipairs(creatorAccounts) do
-						if p.UserId == userId then
-							return true
-						end
-					end
+				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+					return true
 				end
 
 				if tonumber(CreatorId) and p.UserId == CreatorId then
@@ -600,7 +595,7 @@ return function(Vargs, GetEnv)
 
 			if isTemp then
 				temp = true
-				table.remove(Admin.TempAdmins,tempInd)
+				table.remove(Admin.TempAdmins, tempInd)
 			end
 
 			if override then
@@ -673,7 +668,7 @@ return function(Vargs, GetEnv)
 			local value = p.Name ..":".. p.UserId
 
 			if newList then
-				table.insert(newList,value)
+				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
 					TrackTask("Thread: SaveAdmin", Core.DoSave, {
@@ -801,7 +796,7 @@ return function(Vargs, GetEnv)
 
 			if type(p) ~= "table" then
 				if not service.Players:FindFirstChild(p.Name) then
-					Remote.Send(p,'Function','KillClient')
+					Remote.Send(p, "Function", "KillClient")
 				else
 					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
 				end
@@ -830,9 +825,9 @@ return function(Vargs, GetEnv)
 
 				if cName then
 					if string.lower(cName) == string.lower(name) then
-						return true;
+						return true
 					elseif id and cId and id == cId then
-						return true;
+						return true
 					end
 				end
 			end
@@ -878,7 +873,7 @@ return function(Vargs, GetEnv)
 			local _, com = Admin.GetCommand(coma)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
 				--[[local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
@@ -896,7 +891,7 @@ return function(Vargs, GetEnv)
 				local adminLvl = Admin.GetLevel(plr)
 
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				local ran, error = TrackTask(plr.Name .. ": ".. coma, com.Function, plr, args, {
 					PlayerData = {
@@ -910,10 +905,10 @@ return function(Vargs, GetEnv)
 				if error then
 					--logError(plr,"Command",error)
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = '';
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 					return;
 				end
@@ -932,10 +927,10 @@ return function(Vargs, GetEnv)
 				}})
 				if error then
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = "";
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 				end
 			end
