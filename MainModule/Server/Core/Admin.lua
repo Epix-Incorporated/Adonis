@@ -240,7 +240,7 @@ return function(Vargs, GetEnv)
 		--// How long admin levels will be cached (unless forcibly updated via something like :admin user)
 		AdminLevelCacheTimeout = 30;
 
-		DoHideChatCmd = function(p, message, data)
+		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
 			local pData = data or Core.GetPlayer(p)
 			if pData.Client.HideChatCommands then
 				if Variables.BlankPrefix and
