@@ -995,10 +995,16 @@ return function(Vargs, GetEnv)
 			return temp
 		end;
 
+		ResetReplicationFocus(player)
+			if not workspace.StreamingEnabled then return end
+			local rootPart = player.Character and player.Character.PrimaryPart
+			player.ReplicationFocus = rootPart or nil
+		end;
+
 		LoadOnClient = function(player,source,object,name)
 			if service.Players:FindFirstChild(player.Name) then
-				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild('PlayerGui', 15) or player:WaitForChild('Backpack')
-				local cl = Core.NewScript('LocalScript',source)
+				local parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 15) or player:WaitForChild("Backpack")
+				local cl = Core.NewScript("LocalScript", source)
 				cl.Name = name or Functions.GetRandom()
 				cl.Parent = parent
 				cl.Disabled = false
