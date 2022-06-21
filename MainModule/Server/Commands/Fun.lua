@@ -749,7 +749,7 @@ return function(Vargs, env)
 				if not args[2] then
 					color = BrickColor.random().Color
 					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
-				else 
+				else
 					color = Functions.ParseColor3(args[2])
 					assert(color, "Invalid color provided")
 				end
@@ -759,10 +759,10 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 
-						for _, property in ipairs(BodyColorProperties) do 
+						for _, property in ipairs(BodyColorProperties) do
 							humanoidDesc[property] = color
-						end 
-						
+						end
+
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
@@ -3239,7 +3239,7 @@ return function(Vargs, env)
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
 
-				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
+				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then
 					colorSequence = ColorSequence.new{
 						ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
 						ColorSequenceKeypoint.new(1/7, Color3.fromRGB(255, 136, 0)),
@@ -4402,7 +4402,7 @@ return function(Vargs, env)
 													table.insert(foundKeys, k2)
 												end
 											end
-											
+
 											if #foundKeys ~= 3 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -5096,7 +5096,7 @@ return function(Vargs, env)
 				else
 					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
-			end 
+			end
 		};
 
 		Gear = {
@@ -5177,7 +5177,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		OldBodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldbodyswap", "oldbodysteal"};
@@ -5243,18 +5243,18 @@ return function(Vargs, env)
 					if not v1.Character then continue end
 					local v1hum = v1.Character:FindFirstChildOfClass("Humanoid")
 					local v1desc = v1hum:GetAppliedDescription()
-		
+
 					for _, v2 in pairs(service.GetPlayers(plr, args[2])) do
 						if not v2.Character then continue end
 						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
 						local v2desc = v2hum:GetAppliedDescription()
-		
+
 						local v1pos, v2pos = v1.Character:GetPivot(), v2.Character:GetPivot()
-		
+
 						v1hum:UnequipTools()
 						v2hum:UnequipTools()
 						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
-		
+
 						for _, t in ipairs(v1tools) do
 							if t:IsA("Tool") then
 								t.Parent = v2.Backpack
@@ -5265,10 +5265,10 @@ return function(Vargs, env)
 								t.Parent = v1.Backpack
 							end
 						end
-		
+
 						v1hum:ApplyDescription(v2desc)
 						v2hum:ApplyDescription(v1desc)
-		
+
 						v1.Character:PivotTo(v2pos)
 						v2.Character:PivotTo(v1pos)
 					end

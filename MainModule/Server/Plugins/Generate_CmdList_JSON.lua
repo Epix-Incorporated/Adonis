@@ -3,7 +3,10 @@ service = nil;
 
 --// This module is only used to generate and update a list of non-custom commands for the webpanel and will not operate under normal circumstances
 
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
