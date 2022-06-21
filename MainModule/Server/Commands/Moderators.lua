@@ -1538,12 +1538,17 @@ return function(Vargs, env)
 			Description = "Forces one player to view another";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for k, p in pairs(service.GetPlayers(plr, args[1])) do
-					for _, v in pairs(service.GetPlayers(plr, args[2])) do
-						if v and v.Character:FindFirstChild("Humanoid") then
-							plr.ReplicationFocus = v.Character.PrimaryPart
-							Remote.Send(p, "Function", "SetView", v.Character:FindFirstChildOfClass("Humanoid"))
-						end
+				local targets = service.GetPlayers(plr, args[2])
+				for _, viewer in pairs(service.GetPlayers(plr, args[1])) do
+					for _, target in pairs(targets) do
+						local targetHum = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
+						if not targetHum then continue end
+						local rootPart = target.Character.PrimaryPart
+						if not rootPart then continue end
+						Functions.ResetReplicationFocus(viewer)
+						viewer.ReplicationFocus = rootPart
+						Remote.Send(viewer, "Function", "SetView", targetHum)
+						Functions.Hint(service.FormatPlayer(viewer).." is now viewing "..service.FormatPlayer(target), {plr})
 					end
 				end
 			end
@@ -1557,10 +1562,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
-						plr.ReplicationFocus = v.Character.PrimaryPart
-						Remote.Send(plr, "Function", "SetView", v.Character:FindFirstChildOfClass("Humanoid"))
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if not hum then
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a character humanoid", {plr})
+						continue
 					end
+					local rootPart = v.Character.PrimaryPart
+					if not rootPart then
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a HumanoidRootPart", {plr})
+						continue
+					end
+					Functions.ResetReplicationFocus(plr)
+					plr.ReplicationFocus = rootPart
+					Remote.Send(plr, "Function", "SetView", hum)
 				end
 			end
 		};
@@ -1587,13 +1601,13 @@ return function(Vargs, env)
 			Description = "Resets your view";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if args[1] then
-					for _, v in pairs(service.GetPlayers(plr, args[1])) do
-						plr.ReplicationFocus = nil
-						Remote.Send(v, "Function", "SetView", "reset")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character.PrimaryPart then
+						Functions.ResetReplicationFocus(v)
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a character and/or HumanoidRootPart", {plr})
 					end
-				else
-					Remote.Send(plr, "Function", "SetView", "reset")
+					Remote.Send(v, "Function", "SetView", "reset")
 				end
 			end
 		};
