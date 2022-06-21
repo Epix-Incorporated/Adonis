@@ -50,15 +50,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	Vector3int16, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick =
 		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, task.wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, task.wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
 
 	main = server or client
 	ErrorHandler = errorHandler
@@ -976,6 +976,18 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
+		EscapeControlCharacters = function(str)
+			return str:gsub("%c", {
+				["\a"] = "\\a",
+				["\b"] = "\\b",
+				["\f"] = "\\f",
+				["\n"] = "\\n",
+				["\r"] = "\\r",
+				["\t"] = "\\t",
+				["\v"] = "\\v"
+			})
+		end;
+
 		GetTime = function()
 			return os.time();
 		end;
@@ -983,14 +995,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
 			if not options then options = {} end
-			
+
 			local formatString = options.FormatString 
 			if not formatString then 
 				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
 			end
-			
+
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
-					
+
 			if service.RunService:IsServer() then
 				return tim:FormatUniversalTime(formatString, "en-us")
 			else
@@ -1008,33 +1020,46 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return str
 		end;
 
-		FormatNumber = function(num, separator)
+		FormatNumber = function(num: number?, doAbbreviate: boolean?, separator: string?): string
 			num = tonumber(num)
-			if not num then return "NaN" end
-			if num >= 1e150 then return "Inf" end
+			separator = separator or ","
 
-			local int, dec = unpack(tostring(num):split("."))
+			if not num then return "NaN" end
+			if math.abs(num) >= 1e150 then return "Inf" end
+
+			local int, dec = unpack(tostring(math.abs(num)):split("."))
+
+			if doAbbreviate and math.abs(num) >= 1000 then
+				local ABBREVIATIONS = {
+					"K", "M", "B", "T", "Qd", "Qi"
+				}
+				local thousands = math.floor((#int - 1) / 3)
+				local suffix = ABBREVIATIONS[thousands]
+				if suffix then
+					return tonumber(string.format("%.2f", num / (10 ^ (3 * thousands)))) .. suffix
+				end
+				return service.FormatNumber(num / (10 ^ (3 * #ABBREVIATIONS)), false, separator) .. ABBREVIATIONS[#ABBREVIATIONS]
+			end
 
 			int = int:reverse()
-			local new = ""
+			local newInt = ""
 			local counter = 1
-			separator = separator or ","
 			for i = 1, #int do
 				if counter > 3 then
-					new ..= separator
+					newInt ..= separator
 					counter = 1
 				end
-				new ..= int:sub(i, i)
+				newInt ..= int:sub(i, i)
 				counter += 1
 			end
 
-			return new:reverse() .. if dec then "."..dec else ""
+			return (if num < 0 then "-" else "") .. newInt:reverse() .. if dec then "."..dec else ""
 		end;
 
 		OwnsAsset = function(p,id)
 			return service.CheckAssetOwnership(p, id)
 		end;
-		
+
 		GetProductInfo = function(assetId, infoType)
 			assetId = tonumber(assetId) or 0
 			infoType = infoType or Enum.InfoType.Asset
