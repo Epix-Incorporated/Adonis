@@ -527,6 +527,18 @@ return function(Vargs, env)
 				Functions.Message("Random Quote", quotes[math.random(1, #quotes)], {plr})
 			end
 		};
+		
+		BadQuote = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"badquote", "uninspiration"};
+			Args = {};
+			Description = "Shows you a random quote";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local quotes = require(Deps.Assets.BadQuotes)
+				Functions.Message("Random Bad Quote", quotes[math.random(1, #quotes)], {plr})
+			end
+		};
 
 		Usage = {
 			Prefix = Settings.PlayerPrefix;
