@@ -13,7 +13,7 @@
     <a href="https://github.com/Sceleratis/Adonis/releases">
         <img src="https://img.shields.io/github/v/release/Sceleratis/Adonis?label=version"/>
     </a>
-    <a href="https://discord.gg/H5RvTP3">
+    <a href="https://dvr.cx/discord">
         <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
     </a>
 </div>
@@ -23,14 +23,14 @@ Adonis is a server moderation and management system created for use on the Roblo
 
 ## Installation
 
-📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw).**
+📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw) or read the unofficial setup guide [here](https://devforum.roblox.com/t/1535122).**
 <br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/H5RvTP3).
 
 ### Method 1: Official Roblox Model
 
 * [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox library
 
-* Insert the model into Studio using the Toolbox into `ServerScriptService`
+* Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace)
 
 ### Method 2: GitHub Releases
 

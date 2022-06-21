@@ -77,10 +77,9 @@ return function(Vargs, GetEnv)
 		Commands = {"softshutdown", "restart", "sshutdown", "restartserver"};
 		Args = {"reason"};
 		Description = "Restarts the server";
-		Hidden = false;
-		Fun = false;
-		NoStudio = true; --// TeleportService does not work in Studio
-		AdminLevel = "Admins",
+		Filter = true;
+		NoStudio = true; --// TeleportService does not work in Studio 
+		AdminLevel = "Admins";
 		Function = function(plr: Player, args: {string})
 			if #Players:GetPlayers() == 0 then return end
 

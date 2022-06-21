@@ -144,6 +144,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
+	settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 	settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
@@ -213,6 +214,19 @@ local descs = {};			--// Contains settings descriptions
 	settings.Aliases = {
 		[":examplealias <player> <fireColor>"] = ":ff <player> | :fling <player> | :fire <player> <fireColor>" --// Order arguments appear in alias string determines their required order in the command message when ran later
 	};
+
+	settings.CommandCooldowns = {
+		--[[
+			REFERENCE:
+				command_full_name: The name of a command (e.g. :cmds)
+				
+			[command_full_name] = {
+				Player = 0; -- How many seconds for player cooldown?
+				Server = 0; -- How many seconds for server cooldown?
+				Cross = 0; -- How many seconds for cross cooldown? (cross cooldown is similar to player, but also saves cooldown cache in the player data)
+			}
+		]]	
+	}
 
 	settings.Banned = {};		-- List of people banned from the game 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
 	settings.Muted = {};			-- List of people muted (cannot send chat messages)				 		  Format: {"Username"; "Username:UserId"; UserId; "Group:GroupId:GroupRank"; "Group:GroupId"; "Item:ItemID"; "GamePass:GamePassID";}
@@ -360,7 +374,6 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
-	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
 	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
 
 	---------------------
@@ -373,6 +386,7 @@ local descs = {};			--// Contains settings descriptions
 	descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
 	descs.DataStoreKey = [[ Key used to encode all datastore entries; Changing this will lose any saved data ]]
 	descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be saveable in-game; PlayerData will still save ]]
+	descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 	descs.Storage = [[ Where things like tools are stored ]]
 	descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
@@ -478,7 +492,6 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
-	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
 	order = {
@@ -486,6 +499,7 @@ local descs = {};			--// Contains settings descriptions
 		"DataStore";
 		"DataStoreKey";
 		"DataStoreEnabled";
+		"LocalDatastore";
 		" ";
 		"Storage";
 		"RecursiveTools";
@@ -585,7 +599,6 @@ local descs = {};			--// Contains settings descriptions
 		"AntiSpeed";
 		"AntiBuildingTools";
 		"AntiClientIdle";
-		"AntiLeak";
 		"ProtectHats";
 	}
 
