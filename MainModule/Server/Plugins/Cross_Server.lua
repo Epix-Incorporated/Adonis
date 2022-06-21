@@ -8,7 +8,10 @@ logError = nil
 
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -77,11 +80,11 @@ return function(Vargs)
 		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
 		end;]]
-		
+
 		Message = function(jobId, fromPlayer, message, time)
 			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
 		end;
-		
+
 		RemovePlayer = function(jobId, name, BanMessage, reason)
 			--// probably should move this to userid
 			local player =	service.Players:FindFirstChild(name)

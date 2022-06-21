@@ -641,6 +641,11 @@ return service.NewProxy({
 		--// Load Plugins
 		log("~! Running plugins")
 		for index,plugin in ipairs(Folder.Plugins:GetChildren()) do
+			--// Pass example/README plugins.
+			if plugin.Name == "README" then
+				continue
+			end
+
 			LoadModule(plugin, false, {script = plugin}); --noenv
 		end
 

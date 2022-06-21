@@ -526,7 +526,7 @@ return service.NewProxy({
 		-- For some reason line 540 errors because CloneTable is nil
 		local function CloneTable(tab, recursive)
 			local clone = table.clone(tab)
-		
+
 			if recursive then
 				for i,v in pairs(clone) do
 					if type(v) == "table" then
@@ -534,7 +534,7 @@ return service.NewProxy({
 					end
 				end
 			end
-		
+
 			return clone
 		end
 		server.OriginalSettings = CloneTable(server.Settings, true)
@@ -678,9 +678,9 @@ return service.NewProxy({
 			f(data);
 		end
 
-		--// Load Plugins
+		--// Load Plugins; enforced NoEnv policy, make sure your plugins has the 2nd argument defined!
 		for index,plugin in ipairs(server.PluginsFolder:GetChildren()) do
-			LoadModule(plugin, false, {script = plugin}, true); --noenv
+			LoadModule(plugin, false, {script = plugin}, true, true); --noenv
 		end
 
 		for index,plugin in pairs(data.ServerPlugins or {}) do

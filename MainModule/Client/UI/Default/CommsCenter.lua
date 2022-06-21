@@ -2,13 +2,15 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local gTable, window, commslog, layout
 	local messageObjs = {}
 
 	local function newMessage(Type, Title, Message, Icon, Time, Function)
-		print(Icon)
-
 		local newMsg = commslog:Add("Frame", {
 			Size = UDim2.new(1, 0, 0, 50);
 			BackgroundTransparency = 1;
@@ -40,7 +42,7 @@ return function(data)
 							BackgroundTransparency = 1;
 							OnClick = Function;
 						};
-						
+
 						{ClassName = "TextButton";
 							Name = "Type";
 							Size = UDim2.new(1, -55, 0, 15);
@@ -51,7 +53,7 @@ return function(data)
 							BackgroundTransparency = 1;
 							OnClick = Function;
 						};
-						
+
 						{ClassName = "TextButton";
 							Name = "Time";
 							Size = UDim2.new(1, -55, 0, 15);
@@ -62,7 +64,7 @@ return function(data)
 							BackgroundTransparency = 1;
 							OnClick = Function;
 						};
-						
+
 						{ClassName = "TextButton";
 							Name = "Function";
 							Size = UDim2.new(1, -55, 0, 15);
@@ -100,20 +102,22 @@ return function(data)
 			table.remove(messageObjs, 1)
 		end
 	end
-	
-	local success, isAmerica = xpcall(function()
-		return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
-	end, function() return false end)
-	
-	window = client.UI.Make("Window",{
-		Name  = "CommunicationsCenter";
-		Title =  if isAmerica then "Communications Center" else "Communications Center";
-		Icon = client.MatIcons.Forum;
-		Size  = {500, 300};
-		OnClose = function()
-			client.Variables.CommsCenterBindableEvent = nil
-		end;
-	})
+
+	do
+		local success, isAmerica = xpcall(function()
+			return service.LocalizationService:GetCountryRegionForPlayerAsync(service.Players.LocalPlayer) == "US"
+		end, function() return false end)
+
+		window = client.UI.Make("Window",{
+			Name  = "CommunicationsCenter";
+			Title =  if isAmerica then "Communications Center" else "Communications Center";
+			Icon = client.MatIcons.Forum;
+			Size  = {500, 300};
+			OnClose = function()
+				client.Variables.CommsCenterBindableEvent = nil
+			end;
+		})
+	end
 
 	commslog = window:Add("ScrollingFrame",{
 		Size = UDim2.new(1, 0, 1, 0);
@@ -140,7 +144,7 @@ return function(data)
 			newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function);
 		end
 	end
-	
+
 	service.HookEvent("CommsCenter", function(v)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)

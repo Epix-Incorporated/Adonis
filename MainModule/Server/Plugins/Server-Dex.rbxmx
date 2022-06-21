@@ -8,14 +8,17 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Server-Dex</string>
 			<string name="ScriptGuid">{0FAEA1DA-BB5D-4158-A5FF-FD4B41C72027}</string>
-			<ProtectedString name="Source"><![CDATA[return function(Vargs)
+			<ProtectedString name="Source"><![CDATA[return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
 	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
-	
+
 	local dexGui = script:WaitForChild("Dex_Explorer", 120)
 	if not dexGui then
 		Logs:AddLog("Script", "DexGui unable to be located?")
@@ -79,7 +82,7 @@
 						local obj = args[1];
 						local prop = args[2];
 						local value = args[3];
-						
+
 						if value ~= nil then
 							obj[prop] = value;
 							return true;
@@ -201,22 +204,22 @@ local Windows = {
 
 function switchWindows(wName,over)
 	if CurrentWindow == wName and not over then return end
-	
+
 	local count = 0
-	
+
 	for i,v in pairs(Windows) do
 		count = 0
 		if i ~= wName then
 			for _,c in pairs(v) do c:TweenPosition(UDim2.new(1, 30, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
 		end
 	end
-	
+
 	count = 0
-	
+
 	if Windows[wName] then
 		for _,c in pairs(Windows[wName]) do c:TweenPosition(UDim2.new(1, -300, count * 0.5, count * 36), "Out", "Quad", 0.5, true) count = count + 1 end
 	end
-	
+
 	if wName ~= "_BLANK" then
 		CurrentWindow = wName
 		for i,v in pairs(SlideFrame:GetChildren()) do
@@ -271,7 +274,7 @@ for i,v in pairs(SlideFrame:GetChildren()) do
 	v.MouseButton1Click:connect(function()
 		switchWindows(v.Name)
 	end)
-	
+
 	v.MouseEnter:connect(function()v.BackgroundTransparency = 0.5 end)
 	v.MouseLeave:connect(function()if CurrentWindow~=v.Name then v.BackgroundTransparency = 1 end end)
 end
@@ -280,7 +283,7 @@ function createSetting(name,interName,defaultOn)
 	local newSetting = SettingTemplate:Clone()
 	newSetting.Position = UDim2.new(0,0,0,#SettingList:GetChildren() * 60)
 	newSetting.SName.Text = name
-	
+
 	local function toggle(on)
 		if on then
 			newSetting.Change.Bar:TweenPosition(UDim2.new(0,32,0,-2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.25,true)
@@ -293,15 +296,15 @@ function createSetting(name,interName,defaultOn)
 			newSetting.Status.Text = "Off"
 			Settings[interName] = false
 		end
-	end	
-	
+	end
+
 	newSetting.Change.MouseButton1Click:connect(function()
 		toggle(not Settings[interName])
 	end)
-	
+
 	newSetting.Visible = true
 	newSetting.Parent = SettingList
-	
+
 	if defaultOn then
 		toggle(true)
 	end
@@ -4235,7 +4238,7 @@ function getRbxApi()
 		local properties = {}
 
 		if not class then return properties end
-		
+
 		while class do
 			for _,member in pairs(class.Members) do
 				if member.MemberType == "Property" then
@@ -4249,7 +4252,7 @@ function getRbxApi()
 
 		return properties
 	end
-	
+
 	for i, class in ipairs(apiDump.Classes) do
 		Classes[class.Name] = class
 	end
@@ -5176,7 +5179,7 @@ end
 function GetControl(object, propertyData, readOnly)
 	local propertyType = propertyData["ValueType"]
 	local control = nil
-	
+
 	if propertyType.Category == "Enum" and RbxApi.Enums[propertyType.Name] then
 		control = Controls["Enum"](object, propertyData, readOnly)
 	elseif propertyType.Category == "Class" and RbxApi.Classes[propertyType.Name] then
@@ -7192,7 +7195,7 @@ local Icon, ClassIcon do
 					Parent = IconFrame
 				});
 			})
-		end 
+		end
 
 		IconFrame.IconMap.ImageRectOffset = Vector2_new(offset, 0);
 		return IconFrame
@@ -7967,7 +7970,7 @@ function CreateInsertObjectMenu(choices, currentChoice, readOnly, onClick)
 
 	table.sort(choices, function(a,b) return a < b end)
 
-	local frame = Instance_new("Frame")	
+	local frame = Instance_new("Frame")
 	frame.Name = "InsertObject"
 	frame.Size = UDim2_new(0, 200, 1, 0)
 	frame.BackgroundTransparency = 1
@@ -8054,7 +8057,7 @@ function CreateFunctionCallerMenu(choices, currentChoice, readOnly, onClick)
 
 	table.sort(choices, function(a,b) return a.Name < b.Name end)
 
-	local frame = Instance_new("Frame")	
+	local frame = Instance_new("Frame")
 	frame.Name = "InsertObject"
 	frame.Size = UDim2_new(0, 200, 1, 0)
 	frame.BackgroundTransparency = 1
@@ -8255,7 +8258,7 @@ function CreateRightClickMenuItem(text, onClick, insObj)
 			button.TextColor3 = DropDown.TextColor
 			button.BackgroundColor3 = DropDown.BackColor
 			onClick(text)
-		end)	
+		end)
 	else
 		local sep = Instance_new("Frame", button)
 		sep.Size = UDim2_new(1, -20, 0, 1)
@@ -8271,7 +8274,7 @@ end
 function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 	local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 
-	local frame = Instance_new("TextButton")	
+	local frame = Instance_new("TextButton")
 	frame.Name = "DropDown"
 	frame.Size = UDim2_new(0, 200, 0, 0)
 	frame.BackgroundTransparency = 1
@@ -8301,7 +8304,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 				menu.Size = menu.Size + UDim2_new(0, 0, 0, 20)
 			else
 				menu.Size = menu.Size + UDim2_new(0, 0, 0, 7)
-			end		
+			end
 		end
 
 		frame.Size = menu.Size + UDim2_new(0, 0, 0, 6)
@@ -8320,7 +8323,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 			hideMenu()
 		end
 
-		local previous		
+		local previous
 		for i,name in pairs(choices) do
 			local option = CreateRightClickMenuItem(name, function()
 				choice(name)
@@ -8339,7 +8342,7 @@ function CreateRightClickMenu(choices, currentChoice, readOnly, onClick)
 			option.ZIndex = menu.ZIndex
 			option.Parent = menu
 
-			previous = option			
+			previous = option
 		end
 	end
 
@@ -8352,7 +8355,7 @@ function checkMouseInGui(gui)
 	if gui == nil then return false end
 	local plrMouse = game:GetService("Players").LocalPlayer:GetMouse()
 	local guiPosition = gui.AbsolutePosition
-	local guiSize = gui.AbsoluteSize	
+	local guiSize = gui.AbsoluteSize
 
 	if plrMouse.X >= guiPosition.x and plrMouse.X <= guiPosition.x + guiSize.x and plrMouse.Y >= guiPosition.y and plrMouse.Y <= guiPosition.y + guiSize.y then
 		return true
@@ -8570,7 +8573,7 @@ local Selection do
 
 	function Selection:Set(objects)
 		if Selection.Finding then
-			Selection.Found = objects	
+			Selection.Found = objects
 		end
 
 		local lupdate = false
@@ -9073,8 +9076,8 @@ function rightClickMenu(sObj)
 							v2.Parent = list[i].Parent or workspace
 							table.insert(ungrouped,v2)
 							RemoteEvent:InvokeServer("SetProperty", v2, "Parent", list[i].Parent or workspace)
-						end		
-						pcall(delete,list[i])			
+						end
+						pcall(delete,list[i])
 					end
 				end
 				Selection:Set({})
@@ -9385,7 +9388,7 @@ do
 									Icon(expand,NODE_EXPANDED_OVER)
 								else
 									Icon(expand,NODE_COLLAPSED_OVER)
-								end								
+								end
 							end
 						end
 					end)
@@ -9410,11 +9413,11 @@ do
 						end)
 					end)
 
-					local function radd(o,refresh,parent)	
-						addObject(o,refresh,parent)					
+					local function radd(o,refresh,parent)
+						addObject(o,refresh,parent)
 						local s,children = pcall(function() return o:GetChildren() end, o)
 						if s then
-							for i = 1,#children do								
+							for i = 1,#children do
 								radd(children[i],refresh,o)
 							end
 						end
@@ -9423,9 +9426,9 @@ do
 					expand.MouseButton1Down:connect(function()
 						local node = TreeList[i + self.ScrollIndex]
 						if #node > 0 then
-							if node.Object ~= HiddenEntriesMain then				
+							if node.Object ~= HiddenEntriesMain then
 								node.Expanded = not node.Expanded
-							else	
+							else
 								if not MuteHiddenItems then
 									NodeLookup[HiddenGame] = {
 										Object = HiddenGame;
@@ -9438,7 +9441,7 @@ do
 										if not childrenGame[v] then
 											radd(v, true, HiddenGame)
 										end
-									end									
+									end
 								end
 
 								MuteHiddenItems = not MuteHiddenItems
@@ -9802,7 +9805,7 @@ addObject = function(object,noupdate,parent)
 	if parent then
 		parentNode = NodeLookup[parent]
 	else
-		parentNode = NodeLookup[object.Parent]	
+		parentNode = NodeLookup[object.Parent]
 	end
 
 	if not parentNode then
@@ -9850,7 +9853,7 @@ local function makeObject(obj, par)
 		end)
 	end
 	newObject.Parent = par
-	
+
 	obj.Properties.Parent = par--]]
 
 	RemoteEvent:InvokeServer("InstanceNew", obj.ClassName, obj.Properties)
@@ -9886,8 +9889,8 @@ do
 		Expanded = true;
 	}
 
-	registerNodeLookup4(HiddenEntries)	
-	registerNodeLookup4(HiddenGame)	
+	registerNodeLookup4(HiddenEntries)
+	registerNodeLookup4(HiddenGame)
 
 	Connect(game.DescendantAdded,addObject)
 	Connect(game.DescendantRemoving,removeObject)
@@ -9901,11 +9904,11 @@ do
 
 	local function r(o)
 		if o == game and MuteHiddenItems then
-			for i, v in pairs(gameChildren) do			
+			for i, v in pairs(gameChildren) do
 				addObject(v,true)
 				r(v)
 			end
-			return	
+			return
 		end
 
 		local s,children = pcall(get,o)
@@ -9917,7 +9920,7 @@ do
 		end
 	end
 
-	r(game)	
+	r(game)
 	r(DexOutput)
 
 	r(HiddenEntries)
@@ -10142,13 +10145,13 @@ while RbxApi == nil do
 end
 
 explorerFilter.Changed:connect(function(prop)
-	if prop == "Text" then		
+	if prop == "Text" then
 		Selection.Finding = true
 		rawUpdateList()
 	end
 end)
 
-explorerFilter.FocusLost:connect(function()	
+explorerFilter.FocusLost:connect(function()
 	if explorerFilter.Text == "" then
 		if Selection.Found[1] then
 			scrollBar:ScrollTo(NodeLookup[Selection.Found[1]].Index)

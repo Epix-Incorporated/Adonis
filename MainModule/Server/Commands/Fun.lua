@@ -733,6 +733,44 @@ return function(Vargs, env)
 			end
 		};
 
+			<<<<<<< HEAD
+			=======
+			PlayerColor = {
+				Prefix = Settings.Prefix;
+				Commands = {"color", "playercolor", "bodycolor"};
+				Args = {"player", "brickcolor or RGB"};
+				Hidden = false;
+				Description = "Recolors the target character(s) with the given color, or random if none is given";
+				Fun = true;
+				AdminLevel = "Moderators";
+				Function = function(plr: Player, args: {string})
+					local color
+
+					local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
+
+					if not args[2] then
+					color = BrickColor.random().Color
+					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
+				else
+					color = Functions.ParseColor3(args[2])
+					assert(color, "Invalid color provided")
+				end
+
+					for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+
+						for _, property in ipairs(BodyColorProperties) do
+							humanoidDesc[property] = color
+						end
+
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+					end
+				end
+				end
+			};
+
 		Material = {
 			Prefix = Settings.Prefix;
 			Commands = {"mat", "material"};
@@ -2823,7 +2861,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local cl = Deps.Assets.Dogg:Clone()
-				
+
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
 				local decal1 = service.New("Decal")
@@ -2885,7 +2923,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
@@ -3230,7 +3268,7 @@ return function(Vargs, env)
 				local color = Functions.ParseColor3(args[3])
 				local colorSequence = ColorSequence.new(color or Color3.new(1, 1, 1))
 
-				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then 
+				if not color and args[3] and (args[3]:lower() == "truecolors" or args[3]:lower() == "rainbow") then
 					colorSequence = ColorSequence.new{
 						ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
 						ColorSequenceKeypoint.new(1/7, Color3.fromRGB(255, 136, 0)),
@@ -4193,6 +4231,318 @@ return function(Vargs, env)
 			end
 		};
 
+			<<<<<<< HEAD
+			=======
+			Transparency = {
+				Prefix = Settings.Prefix;
+				Commands = {"transparency", "trans"};
+				Args = {"player", "value (0-1)"};
+				Hidden = false;
+				Description = "Set the transparency of the target's character";
+				Fun = true;
+				AdminLevel = "Moderators";
+				Function = function(plr: Player, args: {string})
+					for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for k, p in pairs(v.Character:GetChildren()) do
+							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+								p.Transparency = args[2]
+								if p.Name == "Head" then
+									for _, v2 in pairs(p:GetChildren()) do
+										if v2:IsA("Decal") then
+											v2.Transparency = args[2]
+										end
+									end
+								end
+							elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
+								for _, v2 in pairs(p:GetChildren()) do
+									if v2:IsA("BasePart") then
+										v2.Transparency = args[2]
+									end
+								end
+							end
+						end
+					end
+				end
+				end
+			};
+
+		TransparentPart = {
+			Prefix = Settings.Prefix;
+			Commands = {"transparentpart"};
+			Args = {"player", "parts", "value (0-1)"};
+			Hidden = false;
+			Description = "Set the transparency of the target's character's parts, including accessories. Supports comma separated list of parts.";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for i, player in pairs(service.GetPlayers(plr, args[1])) do
+					if player.Character then
+						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local rigType =  humanoid.RigType
+							local GroupPartInputs = {"LeftArm", "RightArm", "RightLeg", "LeftLeg", "Torso"}
+							local PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}
+
+							local usageText = {
+								"Possible inputs are:",
+								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
+								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
+								"",
+								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
+								"Special Inputs: all, accessories",
+								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
+								"limbs: Changes the transparency of all limbs",
+								"face: Changes the transparency of the face",
+								"accessories: Changes transparency of accessories"
+							}
+
+							if not (args[2]) then
+								--assert(args[2], "No parts specified. See developer console for possible inputs.")
+								local tab = {}
+								for _,v in pairs(usageText) do
+									table.insert(tab, {
+										Text = v;
+										Desc = v;
+									})
+								end
+								--// Generate the UI for this player
+								server.Remote.MakeGui(plr, "List", {
+									Tab = tab;
+									Title = "Command Usage";
+								})
+								return
+							end
+
+							local partInput = {}
+							local inputs = string.split(args[2], ",")
+
+							for _, v in pairs(inputs) do
+								if v ~= "" then
+									if v == "all" then
+										partInput = "all"
+										break -- break if "all" is found.
+									end
+
+									-- Validate inputs
+									if v == "limbs" or v == "face" or v == "accessories" then
+										table.insert(partInput, v)
+									else
+										local found = false
+										while found ~= true do
+											for _,v2 in pairs(GroupPartInputs) do
+												if v == v2 then
+													table.insert(partInput, v)
+													found = true
+													break
+												end
+											end
+
+											for _,v2 in pairs(PartInputs) do
+												if v == v2 then
+													table.insert(partInput, v)
+													found = true
+													break
+												end
+											end
+
+											if not (found) then
+												assert(nil, "'"..v.."'".." is not a valid input. Run command with no arguments to see possible inputs.")
+											end
+										end
+									end
+								else
+									assert(nil, "Part argument contains empty value.")
+								end
+							end
+
+
+							-- Check if partInput is a table
+							if typeof(partInput) == "table" then
+								local hash = {}
+
+								-- Check for duplicates
+								for i,v in pairs(partInput) do
+									if not (hash[v]) then
+										hash[v] = i -- Store into table to check for duplicates.
+									else
+										assert(nil, "Duplicate '"..v.."'".." found in input. Specify each input once only.")
+									end
+								end
+
+
+								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
+
+								if rigType == Enum.HumanoidRigType.R15 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightArm" then
+											local foundKeys = {}
+											for k2, v2 in pairs(partInput) do
+												if v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand" then
+													table.insert(foundKeys, k2)
+												end
+											end
+											-- If not all keys were found just remove all keys and add them manually
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "RightUpperArm")
+												table.insert(partInput, "RightLowerArm")
+												table.insert(partInput, "RightHand")
+											end
+											table.remove(partInput, i) -- Remove the group part input
+
+										elseif partInput[i] == "LeftArm" then
+											local foundKeys = {}
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand" then
+													table.insert(foundKeys, k2)
+												end
+											end
+
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "LeftUpperArm")
+												table.insert(partInput, "LeftLowerArm")
+												table.insert(partInput, "LeftHand")
+											end
+											table.remove(partInput, i)
+										elseif partInput[i] == "RightLeg" then
+											local foundKeys = {}
+											for i = #partInput, 1, -1 do
+												if partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
+													table.insert(foundKeys, partInput[i])
+												end
+											end
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "RightUpperLeg")
+												table.insert(partInput, "RightLowerLeg")
+												table.insert(partInput, "RightFoot")
+											end
+											table.remove(partInput, i)
+										elseif partInput[i] == "LeftLeg" then
+											local foundKeys = {}
+											for k2, v2 in pairs(partInput) do
+												if v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot" then
+													table.insert(foundKeys, k2)
+												end
+											end
+
+											if #foundKeys ~= 3 then
+												for _, foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "LeftUpperLeg")
+												table.insert(partInput, "LeftLowerLeg")
+												table.insert(partInput, "LeftFoot")
+											end
+											table.remove(partInput, i)
+										elseif partInput[i] == "Torso" then
+											local foundKeys = {}
+											for k2, v2 in pairs(partInput) do
+												if v2 == "UpperTorso" or v2 == "LowerTorso" then
+													table.insert(foundKeys, k2)
+												end
+											end
+											if #foundKeys ~= 2 then
+												for _, foundKey in pairs(foundKeys) do
+													table.remove(partInput, foundKey)
+												end
+												table.insert(partInput, "UpperTorso")
+												table.insert(partInput, "LowerTorso")
+											end
+											table.remove(partInput, i)
+										end
+									end
+								end
+
+								if rigType == Enum.HumanoidRigType.R6 then
+									for i = #partInput, 1, -1 do
+										if partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand" then
+											table.remove(partInput, i)
+										elseif partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand" then
+											table.remove(partInput, i)
+										elseif partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
+											table.remove(partInput, i)
+										elseif partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot" then
+											table.remove(partInput, i)
+										elseif partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso" then
+											table.remove(partInput, i)
+										end
+									end
+								end
+
+
+								-- Make chosen parts transparent
+								for k, v in pairs(partInput) do
+									if not (v == "limbs" or v == "face" or v == "accessories") then
+										local part = player.Character:FindFirstChild(v)
+										if part ~= nil and part:IsA("BasePart") then
+											part.Transparency = args[3]
+										end
+
+									elseif v == "limbs" then
+										for key, part in pairs(player.Character:GetChildren()) do
+											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+												part.Transparency = args[3]
+											end
+										end
+
+									elseif v == "face" then
+										local headPart = player.Character:FindFirstChild("Head")
+										for _, v2 in pairs(headPart:GetChildren()) do
+											if v2:IsA("Decal") then
+												v2.Transparency = args[3]
+											end
+										end
+
+									elseif v == "accessories" then
+										for key, part in pairs(player.Character:GetChildren()) do
+											if part:IsA("Accessory") then
+												for _, v2 in pairs(part:GetChildren()) do
+													if v2:IsA("BasePart") then
+														v2.Transparency = args[3]
+													end
+												end
+											end
+										end
+									end
+								end
+
+
+								-- If "all" is specified
+							elseif partInput == "all" then
+								for k, p in pairs(player.Character:GetChildren()) do
+									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+										p.Transparency = args[3]
+										if p.Name == "Head" then
+											for _, v2 in pairs(p:GetChildren()) do
+												if v2:IsA("Decal") then
+													v2.Transparency = args[3]
+												end
+											end
+										end
+									elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
+										for _, v2 in pairs(p:GetChildren()) do
+											if v2:IsA("BasePart") then
+												v2.Transparency = args[3]
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		};
+
 		MakeTalk = {
 			Prefix = Settings.Prefix;
 			Commands = {"talk", "maketalk"};
@@ -4777,7 +5127,7 @@ return function(Vargs, env)
 				else
 					error("Invalid ID provided, Not AssetType Gear.", 0)
 				end
-			end 
+			end
 		};
 
 		Gear = {
@@ -4858,7 +5208,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		OldBodySwap = {
 			Prefix = Settings.Prefix;
 			Commands = {"oldbodyswap", "oldbodysteal"};
@@ -4924,18 +5274,18 @@ return function(Vargs, env)
 					if not v1.Character then continue end
 					local v1hum = v1.Character:FindFirstChildOfClass("Humanoid")
 					local v1desc = v1hum:GetAppliedDescription()
-		
+
 					for _, v2 in pairs(service.GetPlayers(plr, args[2])) do
 						if not v2.Character then continue end
 						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
 						local v2desc = v2hum:GetAppliedDescription()
-		
+
 						local v1pos, v2pos = v1.Character:GetPivot(), v2.Character:GetPivot()
-		
+
 						v1hum:UnequipTools()
 						v2hum:UnequipTools()
 						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
-		
+
 						for _, t in ipairs(v1tools) do
 							if t:IsA("Tool") then
 								t.Parent = v2.Backpack
@@ -4946,10 +5296,10 @@ return function(Vargs, env)
 								t.Parent = v1.Backpack
 							end
 						end
-		
+
 						v1hum:ApplyDescription(v2desc)
 						v2hum:ApplyDescription(v1desc)
-		
+
 						v1.Character:PivotTo(v2pos)
 						v2.Character:PivotTo(v1pos)
 					end
