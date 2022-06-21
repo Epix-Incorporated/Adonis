@@ -2,7 +2,11 @@
 client = nil
 service = nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local UI = client.UI
 	local Remote = client.Remote
 
@@ -42,7 +46,7 @@ return function(data)
 				if reply:IsFocused() then
 					reply:ReleaseFocus() -- Prevents box text from being checked before it is populated on mobile devices
 				end
-
+				
 				if service.Trim(reply.Text) == "" then
 					debounce = false
 					UI.Make("Hint", {

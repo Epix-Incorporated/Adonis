@@ -3,7 +3,11 @@ service = nil
 
 --// Ported from Kronos
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gTable
 	
 	local window = client.UI.Make("Window",{

@@ -2,13 +2,13 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="NumberValue" referent="RBX827E40F6BE2C4BA68C56A0CA32FE08AC">
+	<Item class="BoolValue" referent="RBX6B6BA38A7F4D4CA19B04FE8A7808A1BD">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
-			<string name="Name">Version</string>
+			<string name="Name">NoEnv</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<double name="Value">235</double>
+			<bool name="Value">true</bool>
 		</Properties>
 	</Item>
 </roblox>

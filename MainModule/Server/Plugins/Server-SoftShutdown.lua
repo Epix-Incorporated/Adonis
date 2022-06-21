@@ -64,6 +64,7 @@ return function()
 		Description = "Restarts the server";
 		Hidden = false;
 		Fun = false;
+		Filter = true;
 		NoStudio = true; --// TeleportService does not work in Studio 
 		AdminLevel = "Admins";
 		Function = function(plr: Player, args: {string})
@@ -75,14 +76,14 @@ return function()
 						table.insert(logs, 1, {
 							User = plr.Name,
 							Restart = true,
-							Time = service.GetTime(),
+							Time = os.time(),
 							Reason = args[1] or "N/A"
 						})
 					else
 						table.insert(logs, 1, {
 							User = "[Server]",
 							Restart = true,
-							Time = service.GetTime(),
+							Time = os.time(),
 							Reason = args[1] or "N/A"
 						})
 					end

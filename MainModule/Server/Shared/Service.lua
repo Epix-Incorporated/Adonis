@@ -7,9 +7,9 @@ Routine = nil
 local main
 local ErrorHandler
 local RealMethods = {}
-local methods = setmetatable({},{
-	__index = function(tab,index)
-		return function(obj,...)
+local methods = setmetatable({}, {
+	__index = function(tab, index)
+		return function(obj, ...)
 			local r,class = pcall(function() return obj.ClassName end)
 			if r and class and obj[index] and type(obj[index]) == "function" then
 				if not RealMethods[class] then
@@ -20,7 +20,7 @@ local methods = setmetatable({},{
 					RealMethods[class][index] = obj[index]
 				end
 
-				if RealMethods[class][index] ~= obj[index] or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] then --or pcall(function() return coroutine.create(obj[index]) end) then
 					if ErrorHandler then
 						ErrorHandler("MethodError", debug.traceback() .. " || Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
@@ -67,6 +67,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	client = nil
 
 	local service;
+	local passOwnershipCache = {}
+	local assetOwnershipCache = {}
+	local assetInfoCache = {}
+	local groupInfoCache = {}
+	local toBoolean = function(stat: any): boolean if stat then return true else return false end end
 
 	local WaitingEvents = {}
 	local HookedEvents = {}
@@ -1027,8 +1032,138 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		OwnsAsset = function(p,id)
-			return service.MarketPlace:PlayerOwnsAsset(p,id)
+			return service.CheckAssetOwnership(p, id)
 		end;
+		
+		GetProductInfo = function(assetId, infoType)
+			assetId = tonumber(assetId) or 0
+			infoType = infoType or Enum.InfoType.Asset
+
+			if assetId > 0 then
+				local cache = assetInfoCache[tostring(assetId).."-"..tostring(infoType)]
+
+				if not cache then
+					cache = {
+						results = {
+							Created = false;	
+						};
+						lastUpdated = os.clock();
+					}
+					assetInfoCache[tostring(assetId).."-"..tostring(infoType)] = cache
+				end
+
+				local canUpdateCache = not cache.lastUpdated or os.clock()-cache.lastUpdated > 120
+
+				if canUpdateCache then
+					local suc,info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
+
+					if suc and type(info) == "table" then
+						info.Created = true
+						cache.results = info
+					else
+						cache.results.Created = false
+					end
+				end
+
+				return service.CloneTable(cache.results)
+			end
+		end;
+
+		CheckPassOwnership = function(userId, gamepassId)
+			local cacheIndex = tonumber(userId).."-"..tonumber(gamepassId)
+			local currentCache = passOwnershipCache[cacheIndex]
+
+			if currentCache and currentCache.owned then
+				return true
+			elseif (currentCache and (os.time()-currentCache.lastUpdated > 60)) or not currentCache then
+				local cacheTab = {
+					owned = (currentCache and currentCache.owned) or false;
+					lastUpdated = os.time();
+				}
+				passOwnershipCache[cacheIndex] = cacheTab
+
+				local suc,ers = pcall(function()
+					return service.MarketplaceService:UserOwnsGamePassAsync(userId, gamepassId)
+				end)
+
+				if suc then
+					cacheTab.owned = toBoolean(ers)
+					return toBoolean(ers)
+				else
+					return cacheTab.owned
+				end
+			elseif currentCache then
+				return currentCache.owned
+			end
+		end;
+
+		CheckAssetOwnership = function(player, assetId)
+			local cacheIndex = tonumber(player.UserId).."-"..tonumber(assetId)
+			local currentCache = assetOwnershipCache[cacheIndex]
+
+			if currentCache and currentCache.owned then
+				return true
+			elseif (currentCache and (os.time()-currentCache.lastUpdated > 60)) or not currentCache then
+				local cacheTab = {
+					owned = (currentCache and currentCache.owned) or false;
+					lastUpdated = os.time();
+				}
+				passOwnershipCache[cacheIndex] = cacheTab
+
+				local suc,ers = pcall(function()
+					return service.MarketplaceService:PlayerOwnsAsset(player, assetId)
+				end)
+
+				if suc then
+					cacheTab.owned = toBoolean(ers)
+				end
+
+				return cacheTab.owned
+			elseif currentCache then
+				return currentCache.owned
+			end
+		end;
+
+		GetGroupInfo = function(groupId)
+			groupId = tonumber(groupId) or 0
+
+			if groupId > 0 then
+				local existingCache = groupInfoCache[groupId]
+				local canUpdate = not existingCache or os.time()-existingCache.lastUpdated > 120
+
+				if canUpdate then
+					existingCache = {
+						results = (existingCache and existingCache.results) or {};
+						lastUpdated = os.time();
+					}
+					groupInfoCache[groupId] = existingCache
+
+					local suc,info = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, groupId)
+
+					if suc and type(info) == "table" then
+						existingCache.results = info
+					else
+						existingCache.results.Failed = true
+					end
+				end
+
+				return service.CloneTable(existingCache.results)
+			end
+		end;
+
+		GetGroupCreatorId = function(groupId)
+			groupId = tonumber(groupId) or 0
+
+			if groupId > 0 then
+				local groupInfo = service.GetGroupInfo(groupId)
+
+				if groupInfo and groupInfo.Created then
+					return groupInfo.Owner.Id
+				end
+			end
+
+			return 0
+		end,
 
 		MaxLen = function(message,length)
 			if #message>length then
@@ -1159,6 +1294,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			return service.NewProxy {
 				__index = function(tab, ind)
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
+
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
@@ -1173,6 +1310,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				end;
 
 				__newindex = function(tab,ind,new)
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "userdata") and ind or "Potentially dangerous index"
+
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
 					if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then

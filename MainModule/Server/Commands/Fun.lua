@@ -589,7 +589,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local gear = service.Insert(tonumber(212641536))
-				if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
+				if gear:IsA("BackpackItem") then
 					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
 					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						if v:FindFirstChild("Backpack") then
@@ -2832,7 +2832,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local cl = Deps.Assets.Dogg:Clone()
-
+				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
 				local decal1 = service.New("Decal")
@@ -2849,7 +2849,8 @@ return function(Vargs, env)
 				sound.Looped = true
 
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
+					local character = v.Character
+					for k, p in pairs(character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -2863,8 +2864,20 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local headMesh = character.Head:FindFirstChild("Mesh")
+					if headMesh then
+						character.Head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						character.Head.Transparency = 1
+						for _, c in ipairs(character.Head:GetChildren()) do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
@@ -2881,7 +2894,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
@@ -3244,6 +3257,7 @@ return function(Vargs, env)
 					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
+
 							local attachment0 = p:FindFirstChild("ADONIS_TRAIL_ATTACHMENT0") or service.New("Attachment", {
 								Parent = p;
 								Name = "ADONIS_TRAIL_ATTACHMENT0";
@@ -3880,7 +3894,7 @@ return function(Vargs, env)
 					end
 				end
 			end
-		};	
+		};
 
 		LoopFling = {
 			Prefix = Settings.Prefix;
@@ -4365,7 +4379,6 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftHand")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "RightLeg" then
 											local foundKeys = {}
 											for i = #partInput, 1, -1 do
@@ -4373,7 +4386,6 @@ return function(Vargs, env)
 													table.insert(foundKeys, partInput[i])
 												end
 											end
-
 											if #foundKeys ~= 3 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4383,7 +4395,6 @@ return function(Vargs, env)
 												table.insert(partInput, "RightFoot")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "LeftLeg" then
 											local foundKeys = {}
 											for k2, v2 in pairs(partInput) do
@@ -4391,7 +4402,7 @@ return function(Vargs, env)
 													table.insert(foundKeys, k2)
 												end
 											end
-
+											
 											if #foundKeys ~= 3 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4401,7 +4412,6 @@ return function(Vargs, env)
 												table.insert(partInput, "LeftFoot")
 											end
 											table.remove(partInput, i)
-
 										elseif partInput[i] == "Torso" then
 											local foundKeys = {}
 											for k2, v2 in pairs(partInput) do
@@ -4409,7 +4419,6 @@ return function(Vargs, env)
 													table.insert(foundKeys, k2)
 												end
 											end
-
 											if #foundKeys ~= 2 then
 												for _, foundKey in pairs(foundKeys) do
 													table.remove(partInput, foundKey)
@@ -4476,7 +4485,7 @@ return function(Vargs, env)
 								end
 
 
-								-- If "all" is specified
+							-- If "all" is specified
 							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
@@ -5061,6 +5070,35 @@ return function(Vargs, env)
 			end
 		};
 
+		StarterGear = {
+			Prefix = Settings.Prefix;
+			Commands = {"startergear", "givestartergear"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Inserts the desired gear into the target player(s)'s starter gear";
+			Fun = true;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local gearID = assert(tonumber(args[2]), "Invalid ID (not Number?)")
+				local AssetIdType = service.MarketPlace:GetProductInfo(gearID).AssetTypeId
+
+				if AssetIdType == 19 then
+					local gear = service.Insert(gearID)
+
+					if gear:IsA("BackpackItem") then
+						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
+							if v:FindFirstChild("StarterGear") then
+								gear:Clone().Parent = v.StarterGear
+							end
+						end
+					end
+				else
+					error("Invalid ID provided, Not AssetType Gear.", 0)
+				end
+			end 
+		};
+
 		Gear = {
 			Prefix = Settings.Prefix;
 			Commands = {"gear", "givegear"};
@@ -5076,7 +5114,7 @@ return function(Vargs, env)
 				if AssetIdType == 19 then
 					local gear = service.Insert(gearID)
 
-					if gear.ClassName == "Tool" or gear.ClassName == "HopperBin" then
+					if gear:IsA("BackpackItem") then
 						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
 						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							if v:FindFirstChild("Backpack") then

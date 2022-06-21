@@ -119,10 +119,22 @@ return function(Vargs, GetEnv)
 					for b, v in pairs(lvl) do
 						lvl[b] = Admin.StringToComLevel(v)
 					end
+				elseif type(lvl) == "nil" then
+					cmd.AdminLevel = 0
 				end
 
 				if not cmd.Prefix then
 					cmd.Prefix = Settings.Prefix
+				end
+
+				if not cmd.Args then
+					cmd.Args = {}
+				end
+				
+				if not cmd.Function then
+					cmd.Function = function(plr)
+						Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
+					end
 				end
 
 				if cmd.ListUpdater then

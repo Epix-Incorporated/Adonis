@@ -38,7 +38,11 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local playergui = service.PlayerGui
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
@@ -57,7 +61,7 @@ return function(data)
 	}
 
 	table.insert(client.Variables.CommunicationsHistory, log) 
-	service.Events.CommsCenter:Fire(log)
+	service.Events.CommsPanel:Fire(log)
 
 	
 	if str and type(str)=="string" then

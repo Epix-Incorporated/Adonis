@@ -13,24 +13,6 @@ return function(Vargs, env)
 	local cPcall = env.cPcall
 
 	return {
-		AudioPlayer = {
-			Prefix = Settings.Prefix;
-			Commands = {"audioplayer", "mediaplayer", "musicplayer", "soundplayer", "player", "ap"};
-			Args = {"player"};
-			Description = "Opens an audio player window";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = true;
-					UseFakePlayer = true;
-					})) do
-					Remote.MakeGui(v, "Music")
-				end
-			end
-		};
-
 		Kick = {
 			Prefix = Settings.Prefix;
 			Commands = {"kick"};
@@ -55,7 +37,9 @@ return function(Vargs, env)
 							v:Kick(args[2])
 						end
 
-						Functions.Hint("Kicked ".. PlayerName, {plr})
+						Functions.Hint("Kicked "..PlayerName, {plr})
+					else
+						Functions.Hint("Unable to kick "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -433,6 +417,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to warn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -510,6 +496,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to kickwarn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -997,7 +985,7 @@ return function(Vargs, env)
 							end
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>")
-							
+
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
 							local player = args[1]
@@ -1216,6 +1204,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows Trello bans";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local tab = {}
@@ -1491,34 +1480,38 @@ return function(Vargs, env)
 
 		MakeCamera = {
 			Prefix = Settings.Prefix;
-			Commands = {"makecam", "makecamera", "camera"};
+			Commands = {"makecam", "makecamera", "camera", "newcamera", "newcam"};
 			Args = {"name"};
 			Filter = true;
 			Description = "Makes a camera named whatever you pick";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if plr and plr.Character and plr.Character:FindFirstChild("Head") then
-					if workspace:FindFirstChild("Camera: "..args[1]) then
-						Functions.Hint(args[1].." Already Exists!", {plr})
-					else
-						local cam = service.New("Part", workspace)
-						cam.Position = plr.Character.Head.Position
-						cam.Anchored = true
-						cam.BrickColor = BrickColor.new("Really black")
-						cam.CanCollide = false
-						cam.Locked = true
-						cam.FormFactor = "Custom"
-						cam.Size = Vector3.new(1, 1, 1)
-						cam.TopSurface = "Smooth"
-						cam.BottomSurface = "Smooth"
-						cam.Name="Camera: "..args[1]
-						--service.New("PointLight", cam)
-						cam.Transparency=1--.9
-						local mesh=service.New("SpecialMesh", cam)
-						mesh.Scale=Vector3.new(1, 1, 1)
-						mesh.MeshType="Sphere"
-						table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
-					end
+				local head = plr.Character and (plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart"))
+				assert(head and head:IsA("BasePart"), "You don't have a character head or root part")
+				if workspace:FindFirstChild("Camera: "..args[1]) then
+					Functions.Hint(args[1].." Already Exists!", {plr})
+				else
+					local cam = service.New("Part", {
+						Parent = workspace;
+						Name = "Camera: "..args[1];
+						Position = head.Position;
+						Anchored = true;
+						BrickColor = BrickColor.new("Really black");
+						CanCollide = false;
+						Locked = true;
+						FormFactor = "Custom";
+						Size = Vector3.new(1, 1, 1);
+						TopSurface = "Smooth";
+						BottomSurface = "Smooth";
+						Transparency = 1;--.9
+					})
+					--service.New("PointLight", cam)
+					local mesh = service.New("SpecialMesh", {
+						Parent = cam;
+						Scale = Vector3.new(1, 1, 1);
+						MeshType = "Sphere";
+					})
+					table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
 				end
 			end
 		};
@@ -1594,7 +1587,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
+					if v and v.Character:FindFirstChildOfClass("Humanoid") then
 						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
 					end
 				end
@@ -1610,7 +1603,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character.PrimaryPart then
-						Functions.ResetReplicationFocus(plr)
+						Functions.ResetReplicationFocus(v)
 					else
 						Functions.Hint(service.FormatPlayer(v).." doesn't have a character and/or HumanoidRootPart", {plr})
 					end
@@ -2244,9 +2237,9 @@ return function(Vargs, env)
 				for _, v in pairs(Variables.InsertList) do table.insert(tab, v) end
 				for _, v in pairs(HTTP.Trello.InsertList) do table.insert(tab, v) end
 				for i, v in pairs(tab) do
-					tab[i] = {Text = v.Name; Desc = v.ID;}
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab;})
+				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab; TextSelectable = true})
 			end
 		};
 
@@ -3652,7 +3645,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-				
+
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
 
@@ -4343,9 +4336,9 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local place = tonumber(args[2]) or game.PlaceId
-				local code = service.TeleportService:ReserveServer(place)
+				local code, serverId = service.TeleportService:ReserveServer(place)
 				local servers = Core.GetData("PrivateServers") or {}
-				servers[args[1]] = {Code = code, ID = place}
+				servers[args[1]] = {Code = code, ID = place, PrivateServerID = serverId}
 				Core.SetData("PrivateServers", servers)
 				Functions.Hint("Made server "..args[1].." | Place: "..place, {plr})
 			end
@@ -4728,6 +4721,143 @@ return function(Vargs, env)
 			end
 		};
 
+		CustomTShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"customtshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the t-shirt that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {[number]:string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Could not retrieve t-shirt asset for the supplied ID")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
+						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.GraphicTShirt = ClothingId
+						end]]
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomShirt = {
+			Prefix = Settings.Prefix;
+			Commands = {"customshirt"};
+			Args = {"player", "ID"};
+			Hidden = false;
+			Description = "Give the target player(s) the shirt that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Shirt") then k:Destroy() end
+						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end]]
+						Shirt:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomPants = {
+			Prefix = Settings.Prefix;
+			Commands = {"custompants"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the pants that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local ClothingId = tonumber(args[2])
+				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
+				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
+				assert(Pants, "Unexpected error occured; clothing is missing")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character then
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
+						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end]]
+						Pants:Clone().Parent = v.Character
+					end
+				end
+			end
+		};
+
+		CustomFace = {
+			Prefix = Settings.Prefix;
+			Commands = {"customface"};
+			Args = {"player", "id"};
+			Hidden = false;
+			Description = "Give the target player(s) the face that belongs to <ID>. Supports images and catalog items.";
+			Fun = false;
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				local faceId = assert(tonumber(args[2]), "Invalid asset ID provided")
+				local faceAssetTypeId = service.MarketPlace:GetProductInfo(tonumber(args[2])).AssetTypeId
+				local asset;
+
+				if faceAssetTypeId == 1 then
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. args[2];
+					});
+				elseif faceAssetTypeId == 13 and Functions.GetTexture(faceId) ~= 6825455804 then -- just incase GetTexture actually works?
+					asset = service.New("Decal", {
+						Name = "face";
+						Face = "Front";
+						Texture = "rbxassetid://" .. tostring(Functions.GetTexture(faceId));
+					});
+				elseif faceAssetTypeId == 18 then
+					asset = service.Insert(faceId)
+				else
+					error("Invalid face(Image/robloxFace)", 0)
+				end
+
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					local Head = v.Character and v.Character:FindFirstChild("Head")
+					local face = Head and Head:FindFirstChild("face")
+
+					if Head then
+						if face then
+							face:Destroy()--.Texture = "http://www.roblox.com/asset/?id=" .. args[2]
+						end
+
+						local clone = asset:Clone();
+						clone.Parent = v.Character:FindFirstChild("Head")
+					end
+				end
+			end
+		};
+
 		AvatarItem = {
 			Prefix = Settings.Prefix;
 			Commands = {"avataritem", "giveavtaritem", "catalogitem", "accessory", "hat", "tshirt", "givetshirt", "shirt", "giveshirt", "pants", "givepants", "face", "anim",
@@ -4785,12 +4915,12 @@ return function(Vargs, env)
 					[71] = Enum.AccessoryType.RightShoe,
 					[72] = Enum.AccessoryType.DressSkirt,
 				}
-				
+
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						
+
 						if SingleAssetIds[typeId] then
 							humanoidDesc[SingleAssetIds[typeId]] = itemId
 						elseif AccessoryAssetIds[typeId] then
@@ -4809,7 +4939,7 @@ return function(Vargs, env)
 						else
 							error("Item not supported")
 						end
-						
+
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
@@ -4857,7 +4987,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemovePants = {
 			Prefix = Settings.Prefix;
 			Commands = {"removepants"};
@@ -5294,14 +5424,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local listforclient={}
-				for i, v in pairs(Variables.MusicList) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
+				local tab = {}
+				for _, v in pairs(Variables.MusicList) do table.insert(tab, v) end
+				for _, v in pairs(HTTP.Trello.Music) do table.insert(tab, v) end
+				for i, v in pairs(tab) do
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				for i, v in pairs(HTTP.Trello.Music) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
-				end
-				Remote.MakeGui(plr, "List", {Title = "Music List", Table = listforclient})
+				Remote.MakeGui(plr, "List", {Title = "Music List", Table = tab, TextSelectable = true})
 			end
 		};
 
@@ -6113,6 +6242,9 @@ return function(Vargs, env)
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
+					TimeOptions = {
+						WithDate = true;
+					};
 				})
 			end
 		};
@@ -6190,6 +6322,9 @@ return function(Vargs, env)
 				local list = {}
 				for _, v in pairs(Settings.Muted) do
 					table.insert(list, v)
+				end
+				for _, v in pairs(HTTP.Trello.Mutes) do
+					table.insert(list, "[Trello] "..v)
 				end
 				Remote.MakeGui(plr, "List", {Title = "Mute List"; Table = list;})
 			end
@@ -6410,12 +6545,12 @@ return function(Vargs, env)
 				local reverbs = ReverbType:GetEnumItems()
 				if not rev or not ReverbType[rev] then
 
-					Functions.Hint("Argument 1 missing or nil. Opening Reverb List", {plr})
+					Functions.Hint("Reverb type was not specified or is invalid. Opening list of valid reverb types", {plr})
 
 					local tab = {}
 					table.insert(tab, {Text = "Note: Argument is CASE SENSITIVE"})
 					for _, v in pairs(reverbs) do
-						table.insert(tab, {Text = v})
+						table.insert(tab, {Text = v.Name})
 					end
 					Remote.MakeGui(plr, "List", {Title = "Reverbs"; Table = tab;})
 
