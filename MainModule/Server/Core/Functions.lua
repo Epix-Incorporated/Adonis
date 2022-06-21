@@ -997,7 +997,7 @@ return function(Vargs, GetEnv)
 			return temp
 		end;
 
-		ResetReplicationFocus(player)
+		ResetReplicationFocus = function(player)
 			--if not workspace.StreamingEnabled then return end
 			local rootPart = player.Character and player.Character.PrimaryPart
 			player.ReplicationFocus = rootPart or nil
