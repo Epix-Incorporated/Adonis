@@ -231,6 +231,7 @@ return function(Vargs, GetEnv)
 									for _, card in ipairs(list.cards) do
 										table.insert(users, card.name)
 									end
+									data.Ranks[list.name] = users
 								end
 							end
 						end
