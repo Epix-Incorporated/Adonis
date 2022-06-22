@@ -146,7 +146,6 @@ return function(Vargs, GetEnv)
 		Description = "DEBUG LOADSTRING";
 		Hidden = true;
 		NoFilter = true;
-		Fun = false;
 		AdminLevel = "Creators";
 		Function = function(plr,args)
 			--error("Disabled", 0)
