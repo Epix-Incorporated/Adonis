@@ -16,6 +16,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
@@ -62,6 +63,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
 			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
@@ -142,6 +144,8 @@ return function(Vargs, env)
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true)
 						Functions.Hint("Game banned "..tostring(v), {plr})
+					else
+						Functions.Hint("Unable to game-ban "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -154,9 +158,17 @@ return function(Vargs, env)
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				local ret = Admin.RemoveBan(args[1], true)
-				if ret then
-					Functions.Hint(tostring(ret)..' has been Unbanned', {plr})
+				assert(args[1], "Argument #1 (player) is required")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local ret = Admin.RemoveBan(v.Name, true)
+					if ret then
+						if type(ret) == "table" then
+							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
+						else
+							ret = tostring(ret)
+						end
+						Functions.Hint(ret.." has been unbanned from the game", {plr})
+					end
 				end
 			end
 		};
@@ -182,9 +194,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now an admin', {plr})
+						Functions.Hint(v.Name.." is now an admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -211,9 +223,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp admin', {plr})
+						Functions.Hint(v.Name.." is now a temporary admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -232,7 +244,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing message")
 
 				if not Core.CrossServer("Message", plr.Name, args[1]) then
-					error("CrossServer Handler Not Ready");
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -250,9 +262,8 @@ return function(Vargs, env)
 				assert(args[1], "Missing time amount")
 				assert(args[2], "Missing message")
 
-
 				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
-					error("CrossServer Handler Not Ready");
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -264,6 +275,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "You need to supply a list name.")
@@ -283,6 +295,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Views the specified Trello list from the primary board set in Settings.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
@@ -306,6 +319,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CreateCard")
@@ -392,7 +406,7 @@ return function(Vargs, env)
 			Commands = {"explore", "explorer"};
 			Args = {};
 			Hidden = false;
-			Description = "Lets you explore the game, kinda like a file browser";
+			Description = "Lets you explore the game, kinda like a file browser (alternative to "..Settings.Prefix.."dex)";
 			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})

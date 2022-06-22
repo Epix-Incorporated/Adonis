@@ -50,15 +50,15 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	Vector3int16, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick =
 		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, task.wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, task.wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick;
 
 	main = server or client
 	ErrorHandler = errorHandler
@@ -67,6 +67,11 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	client = nil
 
 	local service;
+	local passOwnershipCache = {}
+	local assetOwnershipCache = {}
+	local assetInfoCache = {}
+	local groupInfoCache = {}
+	local toBoolean = function(stat: any): boolean if stat then return true else return false end end
 
 	local WaitingEvents = {}
 	local HookedEvents = {}
@@ -88,17 +93,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	local HelperService = Instance.new("Folder")
 	local EventService = Instance.new("Folder")
 
-	Instance = {
-		new = function(obj, parent)
-			local object = oldInstNew(obj, service.UnWrap(parent))
-
-			return if (service and client) then service.Wrap(object, true) else object
-		end
-	}
-
+	local Instance = {new = function(obj, parent) local obj = oldInstNew(obj) if parent then obj.Parent = service.UnWrap(parent) end return service and client and service.Wrap(obj, true) or obj end}
 	local Events, Threads, Wrapper, Helpers = {
 		TrackTask = function(name, func, ...)
-			local index = if (main and main.Functions) then main.Functions.GetRandom() else math.random()
+			local index = (main and main.Functions and main.Functions:GetRandom()) or math.random();
 			local isThread = string.sub(name, 1, 7) == "Thread:"
 
 			local data = {
@@ -113,16 +111,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			local function taskFunc(...)
 				TrackedTasks[index] = data
 				data.Status = "Running"
-				data.Returns = table.pack(pcall(func, ...))
+				data.Returns = {pcall(func, ...)}
 
-				if data.Returns[1] == false then
+				if not data.Returns[1] then
 					data.Status = "Errored"
 				else
 					data.Status = "Finished"
 				end
 
 				TrackedTasks[index] = nil
-				return unpack(data.Returns, 1, data.Returns.n)
+				return unpack(data.Returns)
 			end
 
 			if isThread then
@@ -642,6 +640,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return new
 		end;
 
+		IsLocked = function(obj) return not pcall(function() obj.Name = obj.Name return obj.Name end) end;
+
 		Timer = function(t,func,check)
 			local start = time()
 			local event; event = service.RunService.RenderStepped:Connect(function()
@@ -976,59 +976,226 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		GetTime = os.time;
+		EscapeControlCharacters = function(str)
+			return str:gsub("%c", {
+				["\a"] = "\\a",
+				["\b"] = "\\b",
+				["\f"] = "\\f",
+				["\n"] = "\\n",
+				["\r"] = "\\r",
+				["\t"] = "\\t",
+				["\v"] = "\\v"
+			})
+		end;
+
+		GetTime = function()
+			return os.time();
+		end;
 
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
 			if not options then options = {} end
 
-			local formatString = options.FormatString
-			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
+			local formatString = options.FormatString 
+			if not formatString then 
+				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
 			end
 
-			local dateTime = DateTime.fromUnixTimestamp(optTime or os.time())
+			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
 
-			--// Detect if the caller is server context.
 			if service.RunService:IsServer() then
-				return dateTime:FormatUniversalTime(formatString, "en-us")
+				return tim:FormatUniversalTime(formatString, "en-us")
 			else
-				--// Client context
-
-				local success, localTime = pcall(dateTime.FormatLocalTime, dateTime, formatString, service.Players.LocalPlayer.LocaleId)
-				--// Fallback if FormatLocalTime fails to fetch
-				return if success then localTime else dateTime:FormatLocalTime(formatString, "en-us")
+				local locale = service.Players.LocalPlayer.LocaleId
+				local success, str = pcall(function()
+					return tim:FormatLocalTime(formatString, locale) -- Show in player's local timezone and format
+				end)
+				return success and str or tim:FormatLocalTime(formatString, "en-us") -- Fallback if locale is not supported by DateTime
 			end
 		end;
 
 		FormatPlayer = function(plr, withUserId)
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
-			if withUserId then
-				str ..= string.format(" [%d]", plr.UserId)
-			end
-
+			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
 			return str
 		end;
 
-		FormatNumber = function(numberStr, delimiter)
-			if delimiter == nil then
-				delimiter = ","
+		FormatNumber = function(num: number?, doAbbreviate: boolean?, separator: string?): string
+			num = tonumber(num)
+			separator = separator or ","
+
+			if not num then return "NaN" end
+			if math.abs(num) >= 1e150 then return "Inf" end
+
+			local int, dec = unpack(tostring(math.abs(num)):split("."))
+
+			if doAbbreviate and math.abs(num) >= 1000 then
+				local ABBREVIATIONS = {
+					"K", "M", "B", "T", "Qd", "Qi"
+				}
+				local thousands = math.floor((#int - 1) / 3)
+				local suffix = ABBREVIATIONS[thousands]
+				if suffix then
+					return tonumber(string.format("%.2f", num / (10 ^ (3 * thousands)))) .. suffix
+				end
+				return service.FormatNumber(num / (10 ^ (3 * #ABBREVIATIONS)), false, separator) .. ABBREVIATIONS[#ABBREVIATIONS]
 			end
 
-			local delimiterReplace = string.format("%%1%s%%2", delimiter)
+			int = int:reverse()
+			local newInt = ""
+			local counter = 1
+			for i = 1, #int do
+				if counter > 3 then
+					newInt ..= separator
+					counter = 1
+				end
+				newInt ..= int:sub(i, i)
+				counter += 1
+			end
 
-			--// Repeat substitution until there are no more unbroken four-digit sequences
-			local substitutions
-			repeat
-				numberStr, substitutions = string.gsub(numberStr, "^(-?%d+)(%d%d%d)", delimiterReplace)
-			until substitutions == 0
-
-			return numberStr
+			return (if num < 0 then "-" else "") .. newInt:reverse() .. if dec then "."..dec else ""
 		end;
 
-		MaxLen = function(message, length)
-			--// Truncate text implementation
-			return if (utf8.len(message) > length) then (string.sub(message, 1, length) .. "...") else message
+		OwnsAsset = function(p,id)
+			return service.CheckAssetOwnership(p, id)
+		end;
+
+		GetProductInfo = function(assetId, infoType)
+			assetId = tonumber(assetId) or 0
+			infoType = infoType or Enum.InfoType.Asset
+
+			if assetId > 0 then
+				local cache = assetInfoCache[tostring(assetId).."-"..tostring(infoType)]
+
+				if not cache then
+					cache = {
+						results = {
+							Created = false;	
+						};
+						lastUpdated = os.clock();
+					}
+					assetInfoCache[tostring(assetId).."-"..tostring(infoType)] = cache
+				end
+
+				local canUpdateCache = not cache.lastUpdated or os.clock()-cache.lastUpdated > 120
+
+				if canUpdateCache then
+					local suc,info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, assetId, infoType)
+
+					if suc and type(info) == "table" then
+						info.Created = true
+						cache.results = info
+					else
+						cache.results.Created = false
+					end
+				end
+
+				return service.CloneTable(cache.results)
+			end
+		end;
+
+		CheckPassOwnership = function(userId, gamepassId)
+			local cacheIndex = tonumber(userId).."-"..tonumber(gamepassId)
+			local currentCache = passOwnershipCache[cacheIndex]
+
+			if currentCache and currentCache.owned then
+				return true
+			elseif (currentCache and (os.time()-currentCache.lastUpdated > 60)) or not currentCache then
+				local cacheTab = {
+					owned = (currentCache and currentCache.owned) or false;
+					lastUpdated = os.time();
+				}
+				passOwnershipCache[cacheIndex] = cacheTab
+
+				local suc,ers = pcall(function()
+					return service.MarketplaceService:UserOwnsGamePassAsync(userId, gamepassId)
+				end)
+
+				if suc then
+					cacheTab.owned = toBoolean(ers)
+					return toBoolean(ers)
+				else
+					return cacheTab.owned
+				end
+			elseif currentCache then
+				return currentCache.owned
+			end
+		end;
+
+		CheckAssetOwnership = function(player, assetId)
+			local cacheIndex = tonumber(player.UserId).."-"..tonumber(assetId)
+			local currentCache = assetOwnershipCache[cacheIndex]
+
+			if currentCache and currentCache.owned then
+				return true
+			elseif (currentCache and (os.time()-currentCache.lastUpdated > 60)) or not currentCache then
+				local cacheTab = {
+					owned = (currentCache and currentCache.owned) or false;
+					lastUpdated = os.time();
+				}
+				passOwnershipCache[cacheIndex] = cacheTab
+
+				local suc,ers = pcall(function()
+					return service.MarketplaceService:PlayerOwnsAsset(player, assetId)
+				end)
+
+				if suc then
+					cacheTab.owned = toBoolean(ers)
+				end
+
+				return cacheTab.owned
+			elseif currentCache then
+				return currentCache.owned
+			end
+		end;
+
+		GetGroupInfo = function(groupId)
+			groupId = tonumber(groupId) or 0
+
+			if groupId > 0 then
+				local existingCache = groupInfoCache[groupId]
+				local canUpdate = not existingCache or os.time()-existingCache.lastUpdated > 120
+
+				if canUpdate then
+					existingCache = {
+						results = (existingCache and existingCache.results) or {};
+						lastUpdated = os.time();
+					}
+					groupInfoCache[groupId] = existingCache
+
+					local suc,info = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, groupId)
+
+					if suc and type(info) == "table" then
+						existingCache.results = info
+					else
+						existingCache.results.Failed = true
+					end
+				end
+
+				return service.CloneTable(existingCache.results)
+			end
+		end;
+
+		GetGroupCreatorId = function(groupId)
+			groupId = tonumber(groupId) or 0
+
+			if groupId > 0 then
+				local groupInfo = service.GetGroupInfo(groupId)
+
+				if groupInfo and groupInfo.Created then
+					return groupInfo.Owner.Id
+				end
+			end
+
+			return 0
+		end,
+
+		MaxLen = function(message,length)
+			if #message>length then
+				return message:sub(1,length).."..."
+			else
+				return message
+			end
 		end;
 
 		Yield = function()
@@ -1234,25 +1401,20 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 	service = setmetatable({
 		Variables = function() return ServiceVariables end;
-
 		Routine = Routine;
 		Running = true;
 		Pcall = Pcall;
 		cPcall = cPcall;
 		Threads = Threads;
-
 		DataModel = game;
-
 		WrapService = WrapService;
 		EventService = EventService;
 		ThreadService = ThreadService;
 		HelperService = HelperService;
-
 		MarketPlace = game:GetService("MarketplaceService");
 		GamepassService = game:GetService("GamePassService");
 		ChatService = game:GetService("Chat");
 		Gamepasses = game:GetService("GamePassService");
-
 		Delete = function(obj,num) game:GetService("Debris"):AddItem(obj,(num or 0)) pcall(obj.Destroy, obj) end;
 		RbxEvent = function(signal, func) local event = signal:Connect(func) table.insert(RbxEvents, event) return event end;
 		SelfEvent = function(signal, func) local rbxevent = service.RbxEvent(signal, function(...) func(...) end) end;

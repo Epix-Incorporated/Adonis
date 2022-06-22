@@ -37,7 +37,9 @@ return function(Vargs, env)
 							v:Kick(args[2])
 						end
 
-						Functions.Hint("Kicked ".. PlayerName, {plr})
+						Functions.Hint("Kicked "..PlayerName, {plr})
+					else
+						Functions.Hint("Unable to kick "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -415,6 +417,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to warn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -492,6 +496,8 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
+					else
+						Functions.Hint("Unable to kickwarn "..v.Name.." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -979,7 +985,7 @@ return function(Vargs, env)
 							end
 						elseif cmd == "EndSession" and p == plr then
 							systemMessage("<i>Session ended</i>")
-							
+
 							newSession:End()
 						elseif cmd == "AddPlayerToSession" and (p == plr or Admin.CheckAdmin(p)) then
 							local player = args[1]
@@ -1198,6 +1204,7 @@ return function(Vargs, env)
 			Hidden = false;
 			Description = "Shows Trello bans";
 			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local tab = {}
@@ -1473,34 +1480,38 @@ return function(Vargs, env)
 
 		MakeCamera = {
 			Prefix = Settings.Prefix;
-			Commands = {"makecam", "makecamera", "camera"};
+			Commands = {"makecam", "makecamera", "camera", "newcamera", "newcam"};
 			Args = {"name"};
 			Filter = true;
 			Description = "Makes a camera named whatever you pick";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if plr and plr.Character and plr.Character:FindFirstChild("Head") then
-					if workspace:FindFirstChild("Camera: "..args[1]) then
-						Functions.Hint(args[1].." Already Exists!", {plr})
-					else
-						local cam = service.New("Part", workspace)
-						cam.Position = plr.Character.Head.Position
-						cam.Anchored = true
-						cam.BrickColor = BrickColor.new("Really black")
-						cam.CanCollide = false
-						cam.Locked = true
-						cam.FormFactor = "Custom"
-						cam.Size = Vector3.new(1, 1, 1)
-						cam.TopSurface = "Smooth"
-						cam.BottomSurface = "Smooth"
-						cam.Name="Camera: "..args[1]
-						--service.New("PointLight", cam)
-						cam.Transparency=1--.9
-						local mesh=service.New("SpecialMesh", cam)
-						mesh.Scale=Vector3.new(1, 1, 1)
-						mesh.MeshType="Sphere"
-						table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
-					end
+				local head = plr.Character and (plr.Character:FindFirstChild("Head") or plr.Character:FindFirstChild("HumanoidRootPart"))
+				assert(head and head:IsA("BasePart"), "You don't have a character head or root part")
+				if workspace:FindFirstChild("Camera: "..args[1]) then
+					Functions.Hint(args[1].." Already Exists!", {plr})
+				else
+					local cam = service.New("Part", {
+						Parent = workspace;
+						Name = "Camera: "..args[1];
+						Position = head.Position;
+						Anchored = true;
+						BrickColor = BrickColor.new("Really black");
+						CanCollide = false;
+						Locked = true;
+						FormFactor = "Custom";
+						Size = Vector3.new(1, 1, 1);
+						TopSurface = "Smooth";
+						BottomSurface = "Smooth";
+						Transparency = 1;--.9
+					})
+					--service.New("PointLight", cam)
+					local mesh = service.New("SpecialMesh", {
+						Parent = cam;
+						Scale = Vector3.new(1, 1, 1);
+						MeshType = "Sphere";
+					})
+					table.insert(Variables.Cameras, {Brick = cam, Name = args[1]})
 				end
 			end
 		};
@@ -1527,12 +1538,17 @@ return function(Vargs, env)
 			Description = "Forces one player to view another";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for k, p in pairs(service.GetPlayers(plr, args[1])) do
-					for _, v in pairs(service.GetPlayers(plr, args[2])) do
-						if v and v.Character:FindFirstChild("Humanoid") then
-							plr.ReplicationFocus = v.Character.PrimaryPart
-							Remote.Send(p, "Function", "SetView", v.Character.Humanoid)
-						end
+				local targets = service.GetPlayers(plr, args[2])
+				for _, viewer in pairs(service.GetPlayers(plr, args[1])) do
+					for _, target in pairs(targets) do
+						local targetHum = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
+						if not targetHum then continue end
+						local rootPart = target.Character.PrimaryPart
+						if not rootPart then continue end
+						Functions.ResetReplicationFocus(viewer)
+						viewer.ReplicationFocus = rootPart
+						Remote.Send(viewer, "Function", "SetView", targetHum)
+						Functions.Hint(service.FormatPlayer(viewer).." is now viewing "..service.FormatPlayer(target), {plr})
 					end
 				end
 			end
@@ -1546,10 +1562,19 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
-						plr.ReplicationFocus = v.Character.PrimaryPart
-						Remote.Send(plr, "Function", "SetView", v.Character.Humanoid)
+					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
+					if not hum then
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a character humanoid", {plr})
+						continue
 					end
+					local rootPart = v.Character.PrimaryPart
+					if not rootPart then
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a HumanoidRootPart", {plr})
+						continue
+					end
+					Functions.ResetReplicationFocus(plr)
+					plr.ReplicationFocus = rootPart
+					Remote.Send(plr, "Function", "SetView", hum)
 				end
 			end
 		};
@@ -1562,7 +1587,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v and v.Character:FindFirstChild("Humanoid") then
+					if v and v.Character:FindFirstChildOfClass("Humanoid") then
 						Remote.MakeGui(plr, "Viewport", {Subject = v.Character.HumanoidRootPart});
 					end
 				end
@@ -1576,13 +1601,13 @@ return function(Vargs, env)
 			Description = "Resets your view";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if args[1] then
-					for _, v in pairs(service.GetPlayers(plr, args[1])) do
-						plr.ReplicationFocus = nil
-						Remote.Send(v, "Function", "SetView", "reset")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if v.Character and v.Character.PrimaryPart then
+						Functions.ResetReplicationFocus(v)
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a character and/or HumanoidRootPart", {plr})
 					end
-				else
-					Remote.Send(plr, "Function", "SetView", "reset")
+					Remote.Send(v, "Function", "SetView", "reset")
 				end
 			end
 		};
@@ -2212,9 +2237,9 @@ return function(Vargs, env)
 				for _, v in pairs(Variables.InsertList) do table.insert(tab, v) end
 				for _, v in pairs(HTTP.Trello.InsertList) do table.insert(tab, v) end
 				for i, v in pairs(tab) do
-					tab[i] = {Text = v.Name; Desc = v.ID;}
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab;})
+				Remote.MakeGui(plr, "List", {Title = "Insert List", Table = tab; TextSelectable = true})
 			end
 		};
 
@@ -3620,7 +3645,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument 1 missing")
-				
+
 				local color = Functions.ParseColor3(args[1])
 				assert(color, "Invalid color provided")
 
@@ -4839,6 +4864,7 @@ return function(Vargs, env)
 				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
 			Description = "Give the target player(s) the avatar/catalog item matching <ID> and adds it to their HumanoidDescription.";
+			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
@@ -4890,12 +4916,12 @@ return function(Vargs, env)
 					[71] = Enum.AccessoryType.RightShoe,
 					[72] = Enum.AccessoryType.DressSkirt,
 				}
-				
+
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-						
+
 						if SingleAssetIds[typeId] then
 							humanoidDesc[SingleAssetIds[typeId]] = itemId
 						elseif AccessoryAssetIds[typeId] then
@@ -4914,7 +4940,7 @@ return function(Vargs, env)
 						else
 							error("Item not supported")
 						end
-						
+
 						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
 					end
 				end
@@ -4962,7 +4988,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		RemovePants = {
 			Prefix = Settings.Prefix;
 			Commands = {"removepants"};
@@ -5399,14 +5425,13 @@ return function(Vargs, env)
 			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local listforclient={}
-				for i, v in pairs(Variables.MusicList) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
+				local tab = {}
+				for _, v in pairs(Variables.MusicList) do table.insert(tab, v) end
+				for _, v in pairs(HTTP.Trello.Music) do table.insert(tab, v) end
+				for i, v in pairs(tab) do
+					tab[i] = {Text = v.Name .." - "..v.ID; Desc = v.ID;}
 				end
-				for i, v in pairs(HTTP.Trello.Music) do
-					table.insert(listforclient, {Text=v.Name, Desc=v.ID})
-				end
-				Remote.MakeGui(plr, "List", {Title = "Music List", Table = listforclient})
+				Remote.MakeGui(plr, "List", {Title = "Music List", Table = tab, TextSelectable = true})
 			end
 		};
 
@@ -6218,6 +6243,9 @@ return function(Vargs, env)
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
 					Sanitize = true;
 					Stacking = true;
+					TimeOptions = {
+						WithDate = true;
+					};
 				})
 			end
 		};

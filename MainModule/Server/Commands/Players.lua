@@ -7,7 +7,7 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
-	
+
 	local Routine = env.Routine
 	local Pcall = env.Pcall
 	local cPcall = env.cPcall
@@ -25,46 +25,50 @@ return function(Vargs, env)
 				local cStr = ""
 
 				local cmdCount = 0
-				for i, v in pairs(commands) do
-					if not v.Hidden and not v.Disabled then
-						local lvl = v.AdminLevel;
-						local gotLevels = {};
-
-						if type(lvl) == "table" then
-							for i, v in pairs(lvl) do
-								table.insert(gotLevels, v);
-							end
-						elseif type(lvl) == "string" or type(lvl) == "number" then
-							table.insert(gotLevels, lvl);
-						end
-
-						for i, lvl in pairs(gotLevels) do
-							local tempStr = "";
-
-							if type(lvl) == "number" then
-								local list, name, data = Admin.LevelToList(lvl);
-								--print(tostring(list), tostring(name), tostring(data))
-								tempStr = (name or "No Rank") .."; Level ".. lvl;
-							elseif type(lvl) == "string" then
-								local numLvl = Admin.StringToComLevel(lvl);
-								tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
-							end
-
-							if i > 1 then
-								tempStr = cStr.. ", ".. tempStr;
-							end
-
-							cStr = tempStr;
-						end
-
-						table.insert(tab, {
-							Text = Admin.FormatCommand(v),
-							Desc = "["..cStr.."] "..v.Description,
-							Filter = cStr
-						})
-						cmdCount += 1
+				for _, v in pairs(commands) do
+					if v.Hidden or v.Disabled then
+						continue
 					end
+
+					local lvl = v.AdminLevel
+					local gotLevels = {}
+
+					if type(lvl) == "table" then
+						for _, v in pairs(lvl) do
+							table.insert(gotLevels, v)
+						end
+					elseif type(lvl) == "string" or type(lvl) == "number" then
+						table.insert(gotLevels, lvl)
+					end
+
+					for i, lvl in pairs(gotLevels) do
+						local tempStr = ""
+
+						if type(lvl) == "number" then
+							local list, name, data = Admin.LevelToList(lvl)
+							--print(tostring(list), tostring(name), tostring(data))
+							tempStr = (name or "No Rank") .."; Level ".. lvl
+						elseif type(lvl) == "string" then
+							local numLvl = Admin.StringToComLevel(lvl)
+							tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
+						end
+
+						if i > 1 then
+							tempStr = cStr.. ", ".. tempStr
+						end
+
+						cStr = tempStr
+					end
+
+					table.insert(tab, {
+						Text = Admin.FormatCommand(v),
+						Desc = "["..cStr.."] "..v.Description,
+						Filter = cStr
+					})
+					cmdCount += 1
 				end
+
+				table.sort(tab, function(a, b) return a.Text < b.Text end)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Commands ("..cmdCount..")";
@@ -548,7 +552,7 @@ return function(Vargs, env)
 					"<i>"..Settings.SpecialPrefix.."nonadmins</i> - Non-admins (normal players) in the server";
 					"<i>"..Settings.SpecialPrefix.."others</i> - Everyone except yourself";
 					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server";
-					"<i>@USERNAME</i> - Targets a specific player with that exact username";
+					"<i>@USERNAME</i> - Targets a specific player with that exact username Ex: <i>"..Settings.Prefix.."god @Sceleratis </i> would give a player with the username 'Sceleratis' god powers";
 					"<i>#NUM</i> - NUM random players in the server <i>"..Settings.Prefix.."ff #5</i> will ff 5 random players.";
 					"<i>"..Settings.SpecialPrefix.."friends</i> - Your friends who are in the server";
 					"<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: "..Settings.Prefix.."kill %raiders";

@@ -13,7 +13,7 @@
     <a href="https://github.com/Sceleratis/Adonis/releases">
         <img src="https://img.shields.io/github/v/release/Sceleratis/Adonis?label=version"/>
     </a>
-    <a href="https://discord.gg/H5RvTP3">
+    <a href="https://dvr.cx/discord">
         <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
     </a>
 </div>
@@ -21,16 +21,16 @@
 
 Adonis is a server moderation and management system created for use on the Roblox platform.
 
-## Installation
+## ✨ Installation
 
-📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw).**
+📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw) or read the unofficial setup guide [here](https://devforum.roblox.com/t/1535122).**
 <br>If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/H5RvTP3).
 
 ### Method 1: Official Roblox Model
 
 * [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox library
 
-* Insert the model into Studio using the Toolbox into `ServerScriptService`
+* Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace)
 
 ### Method 2: GitHub Releases
 
@@ -46,7 +46,7 @@ Adonis is a server moderation and management system created for use on the Roblo
 * Import the compiled model file into Studio
   * Note: By default, loaders compiled from the repository have <a href="#debug-mode">`DebugMode`</a> enabled. **This method compiles the _bleeding edge_ version of Adonis, which may be unstable.**
 
-## Debug Mode
+## 🛠️ Debug Mode
 
 The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you want to stay on a particular version of Adonis or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
 
@@ -55,22 +55,22 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 * Open `Adonis_Loader` > `Loader` > `Loader`
 * Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
 
-## Links
+## 🔗 Links
 * Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Loader
 * Official MainModule: https://www.roblox.com/library/7510592873/Adonis-MainModule
 * Documentation: https://github.com/Sceleratis/Adonis/wiki
 * Discord Server: https://discord.gg/rdkgGc4
 * Plugins Repository: https://github.com/Sceleratis/Adonis-Plugins
 
-## Contributing
+## ⭐ Contributing
 
 The purpose of this repository is to allow others to contribute and make improvements to Adonis. Even if you've never contributed on GitHub before, we would appreciate any contributions that you can provide.
 
-### [Contributing Guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md)
+### 📜 Contributing Guide
 
 Read the [contributing guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md) to get a better understanding of our development process and workflow, along with answers to common questions related to contributing to Adonis.
 
-### License
+### ⚖️ License
 
 Adonis is available under the terms of the MIT license. Read more details about the license [here](https://github.com/Sceleratis/Adonis/blob/master/LICENSE).
 

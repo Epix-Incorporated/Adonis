@@ -8,7 +8,10 @@ logError = nil
 
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -77,11 +80,11 @@ return function(Vargs)
 		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
 		end;]]
-		
+
 		Message = function(jobId, fromPlayer, message, time)
 			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
 		end;
-		
+
 		RemovePlayer = function(jobId, name, BanMessage, reason)
 			--// probably should move this to userid
 			local player =	service.Players:FindFirstChild(name)
@@ -109,16 +112,17 @@ return function(Vargs)
 		end;
 
 		CrossServerVote = function(jobId, data)
-			local question = data.Question;
-			local answers = data.Answers;
-			local voteKey = data.VoteKey;
+			local question = data.Question
+			local answers = data.Answers
+			local voteKey = data.VoteKey
 
 			local start = os.time()
-			local players = service.GetPlayers()
 
-			for i,v in pairs(players) do
+			Logs.AddLog("Commands", {Text = "[CRS_SERVER] Vote initiated by "..data.Initiator, Desc = question})
+
+			for _, v in pairs(service.GetPlayers()) do
 				Routine(function()
-					local response = Remote.GetGui(v, "Vote", {Question = question,Answers = answers})
+					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
 					if response and os.time() - start <= 120 then
 						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
@@ -140,9 +144,9 @@ return function(Vargs)
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, args[1]) then
-				error("CrossServer Handler Not Ready");
+				error("CrossServer handler not ready (try again later)")
 			end
 		end;
 	};
@@ -155,7 +159,7 @@ return function(Vargs)
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			local disced = false;
 			local updateKey = "SERVERPING".. math.random();
 			local replyList = {};
@@ -167,8 +171,8 @@ return function(Vargs)
 
 			local function listUpdate()
 				local tab = {}
-				local totalPlayers = 0;
-				local totalServers = 0;
+				local totalPlayers = 0
+				local totalServers = 0
 
 				for jobId,data in pairs(replyList) do
 					totalServers = totalServers + 1;
@@ -197,7 +201,7 @@ return function(Vargs)
 
 			if not Core.CrossServer("Ping") then
 				doDisconnect();
-				error("CrossServer Handler Not Ready");
+				error("CrossServer handler not ready (try again later)")
 			else
 				local closeEvent = Remote.NewPlayerEvent(plr,updateKey, function()
 					doDisconnect();
@@ -210,7 +214,7 @@ return function(Vargs)
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
-					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')";
+					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')",
 					AutoUpdate = 1,
 				})
 
@@ -228,14 +232,14 @@ return function(Vargs)
 		AdminLevel = "Moderators";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			local question = args[2]
-			if not question then error("You forgot to supply a question!") end
+			if not question then error("You forgot to supply a question! (argument #2)") end
 			local answers = args[1]
 			local anstab = {}
 			local responses = {}
-			local voteKey = "ADONISVOTE".. math.random();
-			local startTime = os.time();
+			local voteKey = "ADONISVOTE".. math.random()
+			local startTime = os.time()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
 				table.insert(responses, data.Data.Response)
@@ -251,12 +255,12 @@ return function(Vargs)
 					--"Didn't Vote: "..#players-total;
 				}
 
-				for i,v in pairs(responses) do
+				for _, v in pairs(responses) do
 					if not results[v] then results[v] = 0 end
-					results[v] = results[v]+1
+					results[v] += 1
 				end
 
-				for i,v in pairs(anstab) do
+				for _, v in pairs(anstab) do
 					local ans = v
 					local num = results[v]
 					local percent
@@ -267,10 +271,13 @@ return function(Vargs)
 						percent = math.floor((num/total)*100)
 					end
 
-					table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
+					table.insert(tab, {
+						Text = ans.." | "..percent.."% - "..num.."/"..total,
+						Desc="Number: "..num.."/"..total.." | Percent: "..percent
+					})
 				end
 
-				return tab;
+				return tab
 			end
 
 			Logs.TempUpdaters[voteKey] = voteUpdate;
@@ -279,19 +286,20 @@ return function(Vargs)
 				anstab = {"Yes","No"}
 			else
 				for ans in answers:gmatch("([^,]+)") do
-					table.insert(anstab,ans)
+					table.insert(anstab, ans)
 				end
 			end
 
 			local data = {
 				Answers = anstab;
 				Question = question;
-				VoteKey = voteKey
+				VoteKey = voteKey;
+				Initiator = service.FormatPlayer(plr);
 			}
 
 			Core.CrossServer("CrossServerVote", data)
 
-			Remote.MakeGui(plr,"List",{
+			Remote.MakeGui(plr, "List", {
 				Title = 'Results',
 				Tab = voteUpdate(),
 				Update = "TempUpdate",
@@ -308,22 +316,22 @@ return function(Vargs)
 		local data = {ServerId, ...};
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
-			counter = counter+1;
+			counter += 1
 			if not lastTick then lastTick = os.time() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60;
+				repeat wait() until os.time()-lastTick > 60
 			end
 
 			if os.time()-lastTick > 60 then
-				lastTick = os.time();
-				counter = 1;
+				lastTick = os.time()
+				counter = 1
 			end
 
 			--// publish
 			MsgService:PublishAsync(subKey, data)
 		end, 300, true)
 
-		return true;
+		return true
 	end
 
 	Process.CrossServerMessage = function(msg)
