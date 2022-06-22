@@ -17,7 +17,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"glitch", "glitchdisorient", "glitch1", "glitchy"};
 			Args = {"player", "intensity"};
-			Hidden = false;
 			Description = "Makes the target player(s)'s character teleport back and forth rapidly, quite trippy, makes bricks appear to move as the player turns their character";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -44,7 +43,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ghostglitch", "glitch2", "glitchghost"};
 			Args = {"player", "intensity"};
-			Hidden = false;
 			Description = "The same as gd but less trippy, teleports the target player(s) back and forth in the same direction, making two ghost like images of the game";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -71,7 +69,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"vibrate", "glitchvibrate"};
 			Args = {"player", "intensity"};
-			Hidden = false;
 			Description = "Kinda like gd, but teleports the player to four points instead of two";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -100,7 +97,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unglitch", "unglitchghost", "ungd", "ungg", "ungv", "unvibrate"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "UnGlitchs the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -121,7 +117,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setfps"};
 			Args = {"player", "fps"};
-			Hidden = false;
 			Description = "Sets the target players's FPS";
 			Fun = true;
 			AdminLevel = "Admins";
@@ -139,7 +134,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"restorefps", "revertfps", "unsetfps"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Restores the target players's FPS";
 			Fun = true;
 			AdminLevel = "Admins";
@@ -154,7 +148,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"gerald"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "A massive Gerald AloeVera hat.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -185,7 +178,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ungerald"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "De-Geraldification";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -313,7 +305,6 @@ return function(Vargs, env)
 			Commands = {"chargear", "charactergear", "doll", "cgear"};
 			Args = {"player/username"};
 			Fun = true;
-			Hidden = false;
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
@@ -378,7 +369,6 @@ return function(Vargs, env)
 			Commands = {"playergear", "dollify", "pgear", "plrgear"};
 			Args = {"player"};
 			Fun = true;
-			Hidden = false;
 			AdminLevel = "Moderators";
 			Description = "Turns a player into a doll which can be picked up";
 			Function = function(runner, args)
@@ -430,7 +420,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"lowres", "pixelrender", "pixel", "pixelize"};
 			Args = {"player", "pixelSize", "renderDist"};
-			Hidden = false;
 			Description = "Pixelizes the player's view";
 			Fun = true;
 			AdminLevel = "Admins";
@@ -568,7 +557,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"Davey_Bones"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turns you into me <3";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -583,7 +571,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"boombox"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Gives the target player(s) a boombox";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -604,7 +591,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"infect", "zombify"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turn the target player(s) into a suit zombie";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -656,7 +642,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"rainbowify", "rainbow"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s)'s character flash random colors";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -703,7 +688,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"noobify", "noob"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) look like a noob";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -737,7 +721,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"color", "playercolor", "bodycolor"};
 			Args = {"player", "brickcolor or RGB"};
-			Hidden = false;
 			Description = "Recolors the target character(s) with the given color, or random if none is given";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -773,7 +756,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"mat", "material"};
 			Args = {"player", "material"};
-			Hidden = false;
 			Description = "Make the target the material you choose";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -830,7 +812,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"neon", "neonify"};
 			Args = {"player", "(optional)color"};
-			Hidden = false;
 			Description = "Make the target neon";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -863,7 +844,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ghostify", "ghost"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turn the target player(s) into a ghost";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -903,7 +883,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"goldify", "gold"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) look like gold";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -938,7 +917,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"shiney", "shineify", "shine"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s)'s character shiney";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -972,7 +950,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"spook"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s)'s screen 2spooky4them";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -989,7 +966,6 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "\"Fun isn't something one considers when balancing the universe. But this... does put a smile on my face.\"";
 			Fun = true;
-			Hidden = false;
 			AdminLevel = "Admins";
 			Function = function(plr, args, data)
 				local players = {}
@@ -1337,7 +1313,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"blind"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Blinds the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1352,7 +1327,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"screenimage", "scrimage", "image"};
 			Args = {"player", "textureid"};
-			Hidden = false;
 			Description = "Places the desired image on the target's screen";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1372,7 +1346,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"screenvideo", "scrvid", "video"};
 			Args = {"player", "videoid"};
-			Hidden = false;
 			Description = "Places the desired video on the target's screen";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1389,7 +1362,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"uneffect", "unimage", "uneffectgui", "unspook", "unblind", "unstrobe", "untrippy", "unpixelize", "unlowres", "unpixel", "undance", "unflashify", "unrainbowify", "guifix", "fixgui"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes any effect GUIs on the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1404,7 +1376,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forest", "sendtotheforest", "intothewoods"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sends player to The Forest for a time out";
 			Fun = true;
 			NoStudio = true;
@@ -1422,7 +1393,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"maze", "sendtothemaze", "mazerunner"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sends player to The Maze for a time out";
 			Fun = true;
 			NoStudio = true;
@@ -1596,7 +1566,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"chik3n", "zelith", "z3lith"};
 			Args = {};
-			Hidden = false;
 			Description = "Call on the KFC dark prophet powers of chicken";
 			Fun = true;
 			AdminLevel = "HeadAdmins";
@@ -1912,7 +1881,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"swagify", "swagger"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Swag the target player(s) up";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1933,7 +1901,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"shrek", "shrekify", "shrekislife", "swamp"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Shrekify the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -1966,7 +1933,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"rocket", "firework"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Send the target player(s) to the moon!";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2020,7 +1986,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"dance"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) dance";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2039,7 +2004,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"breakdance", "fundance", "lolwut"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) break dance";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2081,7 +2045,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"puke", "barf", "throwup", "vomit"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) puke";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2153,7 +2116,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"cut", "stab", "shank", "bleed"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s) bleed";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2225,7 +2187,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"poison"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Slowly kills the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2279,7 +2240,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
-			Hidden = false;
 			Description = "Gives the target player(s) hat pets, controled using the !pets command.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2348,7 +2308,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"pets"};
 			Args = {"follow/float/swarm/attack", "player"};
-			Hidden = false;
 			Description = "Makes your hat pets do the specified command (follow/float/swarm/attack)";
 			Fun = true;
 			AdminLevel = "Players";
@@ -2382,7 +2341,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"grav", "bringtoearth"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s)'s gravity normal";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2402,7 +2360,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setgrav", "gravity", "setgravity"};
 			Args = {"player", "number"};
-			Hidden = false;
 			Description = "Set the target player(s)'s gravity";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2434,7 +2391,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"nograv", "nogravity", "superjump"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "NoGrav the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2466,7 +2422,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"bunnyhop", "bhop"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the player jump, and jump... and jump. Just like the rabbit noobs you find in sf games ;)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2487,7 +2442,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unbunnyhop"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Stops the forced hippity hoppening";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2506,7 +2460,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"freefall", "skydive"};
 			Args = {"player", "height"};
-			Hidden = false;
 			Description = "Teleport the target player(s) up by <height> studs";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2523,7 +2476,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"stickify", "stick", "stickman"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turns the target player(s) into a stick figure";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2555,7 +2507,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hole", "sparta"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sends the target player(s) down a hole";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2593,7 +2544,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"lightning", "smite"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Zeus strikes down the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2682,7 +2632,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"disco"};
 			Args = {};
-			Hidden = false;
 			Description = "Turns the place into a disco party";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2701,7 +2650,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"spin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) spin";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2735,7 +2683,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unspin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) stop spinning";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2756,7 +2703,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"dog", "dogify"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turn the target player(s) into a dog";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2826,13 +2772,12 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"dogg", "snoop", "snoopify", "dodoubleg"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turns the target into the one and only D O Double G";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local cl = Deps.Assets.Dogg:Clone()
-				
+
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
 				local decal1 = service.New("Decal")
@@ -2894,12 +2839,11 @@ return function(Vargs, env)
 				end
 			end
 		};
-		
+
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sends shivers down ur spine";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -2971,7 +2915,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"k1tty", "cut3"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "2 cute 4 u";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3043,7 +2986,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"nyan", "p0ptart"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Poptart kitty";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3107,7 +3049,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"fr0g", "fr0ggy", "mlgfr0g", "mlgfrog"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "MLG fr0g";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3168,7 +3109,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"sh1a", "lab00f", "sh1alab00f", "shia"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sh1a LaB00f";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3286,7 +3226,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unparticle", "removeparticles"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes particle emitters from target";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3304,7 +3243,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"particle"};
 			Args = {"player", "textureid", "startColor3", "endColor3"};
-			Hidden = false;
 			Description = "Put custom particle emitter on target";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3369,7 +3307,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"flatten", "2d", "flat"};
 			Args = {"player", "optional num"};
-			Hidden = false;
 			Description = "Flatten.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3498,7 +3435,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"oldflatten", "o2d", "oflat"};
 			Args = {"player", "optional num"};
-			Hidden = false;
 			Description = "Old Flatten. Went lazy on this one.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3528,7 +3464,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"sticky"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Sticky";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3551,7 +3486,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"break"};
 			Args = {"player", "optional num"};
-			Hidden = false;
 			Description = "Break the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3614,7 +3548,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"skeleton"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turn the target player(s) into a skeleton";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3645,7 +3578,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"creeper", "creeperify"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turn the target player(s) into a creeper";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3704,7 +3636,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"bighead"};
 			Args = {"player", "num"};
-			Hidden = false;
 			Description = "Give the target player(s) a larger ego";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3734,7 +3665,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"smallhead", "minihead"};
 			Args = {"player", "num"};
-			Hidden = false;
 			Description = "Give the target player(s) a small head";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3764,7 +3694,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"resize", "size", "scale"};
 			Args = {"player", "mult"};
-			Hidden = false;
 			Description = "Resize the target player(s)'s character by <mult>";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3838,7 +3767,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"seizure"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Make the target player(s)'s character spazz out on the floor";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3860,7 +3788,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unseizure"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes the effects of the seizure command";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3879,7 +3806,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"removelimbs", "delimb"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Remove the target player(s)'s arms and legs";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3900,7 +3826,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"loopfling"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Loop flings the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -3917,7 +3842,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unloopfling"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "UnLoop Fling";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -4206,7 +4130,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"transparency", "trans"};
 			Args = {"player", "value (0-1)"};
-			Hidden = false;
 			Description = "Set the transparency of the target's character";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -4240,7 +4163,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"transparentpart"};
 			Args = {"player", "parts", "value (0-1)"};
-			Hidden = false;
 			Description = "Set the transparency of the target's character's parts, including accessories. Supports comma separated list of parts.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5043,7 +4965,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"freaky"};
 			Args = {"0-600,0-600,0-600", "optional player"};
-			Hidden = false;
 			Description = "Does freaky stuff to lighting. Like a messed up ambient.";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5074,7 +4995,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"startergear", "givestartergear"};
 			Args = {"player", "id"};
-			Hidden = false;
 			Description = "Inserts the desired gear into the target player(s)'s starter gear";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5103,7 +5023,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"gear", "givegear"};
 			Args = {"player", "id"};
-			Hidden = false;
 			Description = "Gives the target player(s) a gear from the catalog based on the ID you supply";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5132,7 +5051,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"slippery", "iceskate", "icewalk", "slide"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) slide when they walk";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5162,7 +5080,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unslippery", "uniceskate", "unslide"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Get sum friction all up in yo step";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5182,7 +5099,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"oldbodyswap", "oldbodysteal"};
 			Args = {"player1", "player2"};
-			Hidden = false;
 			Description = "[Old] Swaps player1's and player2's bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5234,7 +5150,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"bodyswap", "bodysteal", "bswap"};
 			Args = {"player1", "player2"};
-			Hidden = false;
 			Description = "Swaps player1's and player2's avatars, bodies and tools";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5280,7 +5195,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"explode", "boom", "boomboom"};
 			Args = {"player", "radius (default: 20 studs)", "blast pressure (default: 500,000)", "visible? (default: true)"};
-			Hidden = false;
 			Description = "Explodes the target player(s)";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5304,7 +5218,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"trip"};
 			Args = {"player", "angle"};
-			Hidden = false;
 			Description = "Rotates the target player(s) by 180 degrees or a custom angle";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5322,7 +5235,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"oddliest"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turns you into the one and only Oddliest";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5337,7 +5249,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"sceleratis"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Turns you into me <3";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5352,7 +5263,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"thermal", "thermalvision", "heatvision"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Looks like heat vision";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5379,7 +5289,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unthermal", "unthermalvision"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes the thermal effect from the target player's screen";
 			Fun = true;
 			AdminLevel = "Moderators";
@@ -5394,7 +5303,6 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ggrav", "gamegrav", "workspacegrav"};
 			Args = {"number or fix"};
-			Hidden = false;
 			Description = "Sets Workspace.Gravity";
 			Fun = true;
 			AdminLevel = "Admins";
@@ -5409,7 +5317,6 @@ return function(Vargs, env)
 			Commands = {"createsoundpart", "createspart"};
 			Args = {"soundid", "soundrange (default: 10) (max: 100)", "pitch (default: 1)", "noloop (default: false)", "volume (default: 1)", "clicktotoggle (default: false)", "share type (default: everyone)"};
 			Description = "Creates a sound part";
-			Hidden = false;
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
