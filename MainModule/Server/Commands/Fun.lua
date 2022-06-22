@@ -722,7 +722,7 @@ return function(Vargs, env)
 			Commands = {"color", "playercolor", "bodycolor"};
 			Args = {"player", "brickcolor or RGB"};
 			Description = "Recolors the target character(s) with the given color, or random if none is given";
-			Fun = true;
+			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local color
