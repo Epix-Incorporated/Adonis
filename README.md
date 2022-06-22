@@ -66,11 +66,11 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 
 The purpose of this repository is to allow others to contribute and make improvements to Adonis. Even if you've never contributed on GitHub before, we would appreciate any contributions that you can provide.
 
-### [Contributing Guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md)
+### 📜 Contributing Guide
 
 Read the [contributing guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md) to get a better understanding of our development process and workflow, along with answers to common questions related to contributing to Adonis.
 
-### License
+### ⚖️ License
 
 Adonis is available under the terms of the MIT license. Read more details about the license [here](https://github.com/Sceleratis/Adonis/blob/master/LICENSE).
 
