@@ -11,8 +11,6 @@
 --]]
 
 
-
-
 ----------------------------------------------------------------------------------------
 --                                  Adonis Loader                                     --
 ----------------------------------------------------------------------------------------
@@ -23,7 +21,7 @@
 --	                  This is not designed to work in solo mode                   --
 ----------------------------------------------------------------------------------------
 
-local warn = function(...)
+local function warn(...)
 	warn(":: Adonis ::", ...)
 end
 
@@ -31,6 +29,7 @@ warn("Loading...")
 
 local ServerScriptService = game:GetService("ServerScriptService")
 local RunService = game:GetService("RunService")
+
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
 	if mutex:IsA("StringValue") then
@@ -96,7 +95,7 @@ else
 	if success then
 		data.Messages = setTab.Settings.Messages
 	else
-		warn("Settings module errored while loading; Using defaults; Error Message: ", setTab)
+		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
 			Title = "Warning!";
 			Message = "Settings module error detected. Using default settings.";
@@ -109,20 +108,20 @@ else
 	data.Descriptions = setTab.Description
 	data.Order = setTab.Order
 
-	for _, Plugin in ipairs(plugins:GetChildren()) do
-		if Plugin:IsA("Folder") then
-			table.insert(data.Packages, Plugin)
-		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "client:" or string.sub(string.lower(Plugin.Name), 1, 7) == "client-" then
-			table.insert(data.ClientPlugins, Plugin)
-		elseif string.sub(string.lower(Plugin.Name), 1, 7) == "server:" or string.sub(string.lower(Plugin.Name), 1, 7) == "server-" then
-			table.insert(data.ServerPlugins, Plugin)
+	for _, plugin in ipairs(plugins:GetChildren()) do
+		if plugin:IsA("Folder") then
+			table.insert(data.Packages, plugin)
+		elseif plugin.Name:lower():match("^client[%-:]") then
+			table.insert(data.ClientPlugins, plugin)
+		elseif plugin.Name:lower():match("^server[%-:]") then
+			table.insert(data.ServerPlugins, plugin)
 		else
-			warn("Unknown Plugin Type for "..tostring(Plugin).."; Plugin name should either start with server:, server-, client:, or client-")
+			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(Plugin).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
 		end
 	end
 
-	for _, Theme in ipairs(themes:GetChildren()) do
-		table.insert(data.Themes, Theme)
+	for _, theme in ipairs(themes:GetChildren()) do
+		table.insert(data.Themes, theme)
 	end
 
 	if tonumber(moduleId) then
@@ -143,7 +142,7 @@ else
 
 		model.Name = "Adonis_Loader"
 	else
-		error(" !! MainModule failed to load !! ")
+		error(" !! Adonis MainModule failed to load !! ")
 	end
 end
 
