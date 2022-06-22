@@ -5353,6 +5353,7 @@ return function(Vargs, env)
 				"torso", "larm", "leftarm", "rarm", "rightarm", "lleg", "leftleg", "rleg", "rightleg", "head"}; -- Legacy aliases from old commands
 			Args = {"player", "ID"};
 			Description = "Give the target player(s) the avatar/catalog item matching <ID> and adds it to their HumanoidDescription.";
+			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {[number]:string})
 				local itemId = assert(tonumber(args[2]), "Argument 2 missing or invalid")
