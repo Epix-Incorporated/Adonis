@@ -1,10 +1,11 @@
 ---
 name: Question
-about: Make an enquiry about the Adonis admin system.
+about: Make any inquiry related to the Adonis admin system, whether you're a game
+  developer or an in-game admin user.
 title: ''
 labels: question
 assignees: ''
 
 ---
 
-[ Describe your question clearly, and, if applicable, what exactly you want to achieve (whether as a user or a developer). ]
+[ State your question clearly, and, if applicable, what exactly you want to achieve. ]
