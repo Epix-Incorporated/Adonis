@@ -546,7 +546,7 @@ return function(Vargs, GetEnv)
 								Icon = server.MatIcons.Warning;
 								Question = "Are you sure you want to load this script into the server env?";
 								Title = "Adonis DebugLoadstring";
-								Delay = 5;
+								Delay = 3;
 							})
 
 							if ans == "Yes" then
