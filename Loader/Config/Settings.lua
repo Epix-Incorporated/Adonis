@@ -276,7 +276,7 @@ settings.CommandCooldowns = {
 	}
 ]]	
 }
-    
+
 settings.HttpWait = 60					-- How long things that use the HttpService will wait before updating again
 settings.Trello_Enabled = false			-- Are the Trello features enabled?
 settings.Trello_Primary = ""			-- Primary Trello board

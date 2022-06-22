@@ -2861,7 +2861,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local cl = Deps.Assets.Dogg:Clone()
-
+				
 				local mesh = service.New("BlockMesh")
 				mesh.Scale = Vector3.new(2, 3, 0.1)
 				local decal1 = service.New("Decal")
@@ -2923,7 +2923,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		Sp00ky = {
 			Prefix = Settings.Prefix;
 			Commands = {"sp00ky", "spooky", "spookyscaryskeleton"};
