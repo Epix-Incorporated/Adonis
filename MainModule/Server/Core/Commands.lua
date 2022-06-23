@@ -113,7 +113,7 @@ return function(Vargs, GetEnv)
 		end
 
 		--// Update existing permissions to new levels
-		for i, cmd in pairs(Commands) do
+		for ind, cmd in pairs(Commands) do
 			if type(cmd) == "table" and cmd.AdminLevel then
 				local lvl = cmd.AdminLevel
 				if type(lvl) == "string" then
@@ -127,22 +127,16 @@ return function(Vargs, GetEnv)
 					cmd.AdminLevel = 0
 				end
 
-				if not cmd.Prefix then
-					cmd.Prefix = Settings.Prefix
-				end
+				cmd.Prefix = cmd.Prefix or Settings.Prefix
 
-				if not cmd.Args then
-					cmd.Args = cmd.Arguments or {}
-				end
+				cmd.Args = cmd.Args or cmd.Arguments or {}
 
-				if not cmd.Function then
-					function cmd.Function(plr)
-						Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
-					end
+				cmd.Function = cmd.Function or function(plr)
+					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
 				end
 
 				if cmd.ListUpdater then
-					Logs.ListUpdaters[i] = function(plr, ...)
+					Logs.ListUpdaters[ind] = function(plr, ...)
 						if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
 							if type(cmd.ListUpdater) == "function" then
 								return cmd.ListUpdater(plr, ...)
