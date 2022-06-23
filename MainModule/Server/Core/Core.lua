@@ -897,39 +897,34 @@ return function(Vargs, GetEnv)
 		IndexPathToTable = function(tableAncestry)
 			local Blacklist = Core.DS_BLACKLIST
 			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
-				return server.Settings[tableAncestry], tableAncestry;
+				return server.Settings[tableAncestry], tableAncestry
 			elseif type(tableAncestry) == "table" then
-				local curTable = server;
-				local curName = "Server";
+				local curTable = server
+				local curName = "Server"
 
-				for i,ind in ipairs(tableAncestry) do
-					curTable = curTable[ind];
-					curName = ind;
+				for _, ind in ipairs(tableAncestry) do
+					curTable = curTable[ind]
+					curName = ind
 					
-					if curName and type(curName) == 'string' then
+					if curName and type(curName) == "string" then
 						--// Admins do NOT load from the DataStore with this setting
-						if curName == "Ranks" then 
-							if not Settings.LoadAdminsFromDS then
-								return nil;
-							end 
+						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then 
+							return nil
 						end
 					end
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
 						--// Not allowed or table is not found
-						return nil;
+						return nil
 					end
 				end
 
-				if curName and type(curName) == 'string' then
-					if Blacklist[curName] then
-						return nil;
-					end
-					
+				if curName and type(curName) == "string" and Blacklist[curName] then
+					return nil
 				end
 
-				return curTable, curName;
+				return curTable, curName
 			end
 			return nil
 		end;
@@ -937,7 +932,7 @@ return function(Vargs, GetEnv)
 		ClearAllData = function()
 			local tabs = Core.GetData("SavedTables") or {};
 
-			for i,v in pairs(tabs) do
+			for _, v in pairs(tabs) do
 				if v.TableKey then
 					Core.RemoveData(v.TableKey);
 				end
@@ -1104,14 +1099,14 @@ return function(Vargs, GetEnv)
 					indList = nameRankComp[indList];
 				end
 
-				local realTable,tableName = Core.IndexPathToTable(indList);
+				local realTable, tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-				if displayName and type(displayName) == 'string' then
+				if displayName and type(displayName) == "string" then
 					if Blacklist[displayName] then 
 						return
 					end 
-					if type(indList) == 'table' and indList[1] == "Settings" and indList[2] == "Ranks" then
+					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
 						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
 							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
@@ -1121,12 +1116,12 @@ return function(Vargs, GetEnv)
 
 				if realTable and tab.Action == "Add" then
 					for i,v in pairs(realTable) do
-						if CheckMatch(v,tab.Value) then
+						if CheckMatch(v, tab.Value) then
 							table.remove(realTable, i)
 						end
 					end
 
-					AddLog("Script",{
+					AddLog("Script", {
 						Text = "Added value to ".. displayName;
 						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
 					})
@@ -1191,12 +1186,12 @@ return function(Vargs, GetEnv)
 					if not key and not data then
 						if not SavedSettings then
 							SavedSettings = {}
-							SaveData("SavedSettings",{})
+							SaveData("SavedSettings", {})
 						end
 
 						if not SavedTables then
 							SavedTables = {}
-							SaveData("SavedTables",{})
+							SaveData("SavedTables", {})
 						end
 					end
 
