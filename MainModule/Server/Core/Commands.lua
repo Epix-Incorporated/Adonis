@@ -132,7 +132,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if not cmd.Args then
-					cmd.Args = if cmd.Arguments then cmd.Arguments else {}
+					cmd.Args = cmd.Arguments or {}
 				end
 
 				if not cmd.Function then
