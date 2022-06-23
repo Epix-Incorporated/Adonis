@@ -990,7 +990,7 @@ return function(Vargs, GetEnv)
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for _, v in pairs(sets) do
+					for i, v in pairs(sets) do
 						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
 							table.remove(sets, i)
 						end
@@ -1005,7 +1005,7 @@ return function(Vargs, GetEnv)
 						indClone[1] = "OriginalSettings"
 
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i, v in pairs(realTable) do
+						for _, v in pairs(realTable) do
 							if CheckMatch(v, value) then
 								continueOperation = true
 							end
@@ -1052,7 +1052,7 @@ return function(Vargs, GetEnv)
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i, v in pairs(realTable) do
+						for _, v in pairs(realTable) do
 							if CheckMatch(v, value) then
 								continueOperation = false
 							end
