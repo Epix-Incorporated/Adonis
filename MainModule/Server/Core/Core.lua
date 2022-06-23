@@ -6,13 +6,12 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
-local disableAllGUIs;
-function disableAllGUIs(folder)
-	for i,v in ipairs(folder:GetChildren()) do
+local function disableAllGUIs(folder: Folder)
+	for _, v in ipairs(folder:GetChildren()) do
 		if v:IsA("ScreenGui") then
-			v.Enabled = false;
+			v.Enabled = false
 		elseif v:IsA("Folder") or v:IsA("Model") then
-			disableAllGUIs(v);
+			disableAllGUIs(v)
 		end
 	end
 end;
@@ -197,7 +196,7 @@ return function(Vargs, GetEnv)
 
 		MakeEvent = function()
 			local remoteParent = service.ReplicatedStorage;
-			local ran, error = pcall(function()
+			local ran, err = pcall(function()
 				if server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false}, true, true)
@@ -247,14 +246,14 @@ return function(Vargs, GetEnv)
 				end
 			end)
 
-			if error then
-				warn(error)
+			if err then
+				warn(err)
 			end
 		end;
 
 		UpdateConnections = function()
 			if service.NetworkServer then
-				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
 					if cli:IsA("NetworkReplicator") then
 						Core.Connections[cli] = cli:GetPlayer()
 					end
@@ -264,7 +263,7 @@ return function(Vargs, GetEnv)
 
 		UpdateConnection = function(p)
 			if service.NetworkServer then
-				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						Core.Connections[cli] = p
 					end
@@ -274,7 +273,7 @@ return function(Vargs, GetEnv)
 
 		GetNetworkClient = function(p)
 			if service.NetworkServer then
-				for i,cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						return cli
 					end
@@ -287,7 +286,7 @@ return function(Vargs, GetEnv)
 				local loader = Core.ClientLoader;
 				loader.Removing = true;
 
-				for i,v in pairs(loader.Events) do
+				for _, v in pairs(loader.Events) do
 					v:Disconnect()
 				end
 
@@ -363,7 +362,7 @@ return function(Vargs, GetEnv)
 					end)
 				end;
 
-				for i,child in ipairs(folder:GetDescendants()) do
+				for _, child in ipairs(folder:GetDescendants()) do
 					sec(child);
 				end
 
@@ -897,7 +896,7 @@ return function(Vargs, GetEnv)
 				local curTable = server;
 				local curName = "Server";
 
-				for i,ind in ipairs(tableAncestry) do
+				for _, ind in ipairs(tableAncestry) do
 					curTable = curTable[ind];
 					curName = ind;
 
@@ -920,14 +919,14 @@ return function(Vargs, GetEnv)
 		ClearAllData = function()
 			local tabs = Core.GetData("SavedTables") or {};
 
-			for i,v in pairs(tabs) do
+			for _, v in pairs(tabs) do
 				if v.TableKey then
 					Core.RemoveData(v.TableKey);
 				end
 			end
 
-			Core.SetData("SavedSettings",{});
-			Core.SetData("SavedTables",{});
+			Core.SetData("SavedSettings", {});
+			Core.SetData("SavedTables", {});
 			Core.CrossServer("LoadData");
 		end;
 
@@ -937,10 +936,10 @@ return function(Vargs, GetEnv)
 
 			local foundTable = nil;
 
-			for i,v in pairs(tabs) do
+			for _, v in pairs(tabs) do
 				if type(v) == "table" and v.TableName and v.TableName == tableName then
 					foundTable = v
-					break;
+					break
 				end
 			end
 
@@ -1095,7 +1094,7 @@ return function(Vargs, GetEnv)
 					indList = nameRankComp[indList];
 				end
 
-				local realTable,tableName = Core.IndexPathToTable(indList);
+				local realTable, tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
 				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
@@ -1105,22 +1104,22 @@ return function(Vargs, GetEnv)
 				end
 
 				if realTable and tab.Action == "Add" then
-					for i,v in pairs(realTable) do
-						if CheckMatch(v,tab.Value) then
+					for i, v in pairs(realTable) do
+						if CheckMatch(v, tab.Value) then
 							table.remove(realTable, i)
 						end
 					end
 
-					AddLog("Script",{
+					AddLog("Script", {
 						Text = "Added value to ".. displayName;
 						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
 					})
 
 					table.insert(realTable, tab.Value)
 				elseif realTable and tab.Action == "Remove" then
-					for i,v in pairs(realTable) do
+					for i, v in pairs(realTable) do
 						if CheckMatch(v, tab.Value) then
-							AddLog("Script",{
+							AddLog("Script", {
 								Text = "Removed value from ".. displayName;
 								Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
 							})
@@ -1176,23 +1175,23 @@ return function(Vargs, GetEnv)
 					if not key and not data then
 						if not SavedSettings then
 							SavedSettings = {}
-							SaveData("SavedSettings",{})
+							SaveData("SavedSettings", {})
 						end
 
 						if not SavedTables then
 							SavedTables = {}
-							SaveData("SavedTables",{})
+							SaveData("SavedTables", {})
 						end
 					end
 
 					if SavedSettings then
 						for setting,value in pairs(SavedSettings) do
 							if not Blacklist[setting] then
-								if setting == 'Prefix' or setting == 'AnyPrefix' or setting == 'SpecialPrefix' then
+								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
-									for i,v in pairs(server.Commands) do
-										if v.Prefix == orig then
-											v.Prefix = value
+									for _, cmd in pairs(server.Commands) do
+										if cmd.Prefix == orig then
+											cmd.Prefix = value
 										end
 									end
 								end
@@ -1203,11 +1202,11 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedTables then
-						for i,tData in pairs(SavedTables) do
+						for _, tData in pairs(SavedTables) do
 							if tData.TableName and tData.TableKey and not Blacklist[tData.tableName] then
 								local data = GetData(tData.TableKey);
 								if data then
-									for k,v in ipairs(data) do
+									for _, v in ipairs(data) do
 										LoadData("TableUpdate", v)
 									end
 								end
@@ -1217,8 +1216,8 @@ return function(Vargs, GetEnv)
 						end
 
 						if Core.Variables.TimeBans then
-							for i,v in pairs(Core.Variables.TimeBans) do
-								if v.EndTime-os.time() <= 0 then
+							for i, v in pairs(Core.Variables.TimeBans) do
+								if v.EndTime - os.time() <= 0 then
 									table.remove(Core.Variables.TimeBans, i)
 									DoSave({
 										Type = "TableRemove";
@@ -1230,7 +1229,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					AddLog(Logs.Script,{
+					AddLog(Logs.Script, {
 						Text = "Loaded saved data";
 						Desc = "Data was retrieved from the datastore and loaded successfully";
 					})
@@ -1301,7 +1300,7 @@ return function(Vargs, GetEnv)
 							return service.NewProxy {
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
-										AddLog(Logs.Script,{
+										AddLog(Logs.Script, {
 											Text = "Access to "..tostring(inde).." was granted";
 											Desc = "A server script was granted access to "..tostring(inde);
 										})
@@ -1312,7 +1311,7 @@ return function(Vargs, GetEnv)
 											return targ[inde]
 										end
 									elseif API_Special[inde] == false then
-										AddLog(Logs.Script,{
+										AddLog(Logs.Script, {
 											Text = "Access to "..tostring(inde).." was denied";
 											Desc = "A server script attempted to access "..tostring(inde).." via _G.Adonis.Access";
 										})
@@ -1322,7 +1321,7 @@ return function(Vargs, GetEnv)
 										error("Could not find "..tostring(inde))
 									end
 								end;
-								__newindex = function(tabl,inde,valu)
+								__newindex = function(tabl, inde, valu)
 									if Settings.G_Access_Perms == "Read" then
 										error("Read-only")
 									elseif Settings.G_Access_Perms == "Write" then
@@ -1348,7 +1347,7 @@ return function(Vargs, GetEnv)
 						end
 
 						if exists and exists.noCache ~= true and (not exists.runLimit or (exists.runLimit and exists.Executions <= exists.runLimit)) then
-							exists.Executions = exists.Executions+1
+							exists.Executions += 1
 							return exists.Source, exists.Loadstring
 						end
 
@@ -1433,7 +1432,7 @@ return function(Vargs, GetEnv)
 							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 								rawset(_G, "Adonis", AdonisGTable)
 							else
-								warn("ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
+								warn("⚠️ ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
 							end
 						end
 					end, true)
@@ -1445,7 +1444,7 @@ return function(Vargs, GetEnv)
 
 			AddLog(Logs.Script,{
 				Text = "Started _G API";
-				Desc = "_G API was initialized and is ready to use";
+				Desc = "The Adonis _G API was initialized and is ready to use";
 			})
 		end;
 	};
