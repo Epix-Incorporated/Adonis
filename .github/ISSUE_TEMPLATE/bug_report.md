@@ -1,14 +1,15 @@
 ---
 name: Bug report
-about: Create a report to help us understand and fix broken features or functionality.
+about: Create a report to help us understand and fix broken features or functionality
+  within Adonis.
 title: ''
 labels: bug
 assignees: Expertcoderz
 
 ---
 
-Provide a clear and concise description of what the bug is:
-- What is the expected behavior/result?
-- What happens instead? What is the impact?
-- When does it happen? How frequently?
-- Any additional context or information eg. screenshots.
+- What are the steps that lead to the bug occurring? / How frequently does the bug occur?
+- What was the normally expected/desired result?
+- What was the actual result (bug)?
+- What is the impact of this bug?
+- (Any additional context or information eg. in the form of error messages or screenshots.)

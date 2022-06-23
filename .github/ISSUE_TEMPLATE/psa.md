@@ -8,4 +8,4 @@ assignees: ''
 
 ---
 
-[ Type your content here. ]
+[Type your message content here.]
