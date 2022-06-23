@@ -83,9 +83,13 @@ return function(Vargs, GetEnv)
 
 	local function RunAfterPlugins()
 		--// Load custom user-supplied commands in settings.Commands
+
+		local commandEnv = GetEnv(nil, {
+			script = server.Config and server.Config:FindFirstChild("Settings") or script;
+		})
 		for ind, cmd in pairs(Settings.Commands or {}) do
 			if type(cmd) == "table" and cmd.Function then
-				setfenv(cmd.Function, getfenv())
+				setfenv(cmd.Function, commandEnv)
 				Commands[ind] = cmd
 			end
 		end
@@ -128,11 +132,11 @@ return function(Vargs, GetEnv)
 				end
 
 				if not cmd.Args then
-					cmd.Args = {}
+					cmd.Args = if cmd.Arguments then cmd.Arguments else {}
 				end
-				
+
 				if not cmd.Function then
-					cmd.Function = function(plr)
+					function cmd.Function(plr)
 						Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
 					end
 				end
@@ -143,6 +147,7 @@ return function(Vargs, GetEnv)
 							if type(cmd.ListUpdater) == "function" then
 								return cmd.ListUpdater(plr, ...)
 							end
+
 							return Logs[cmd.ListUpdater]
 						end
 					end
