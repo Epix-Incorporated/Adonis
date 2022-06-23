@@ -1,0 +1,8 @@
+loader:
+- Loader/**/*
+
+anti-exploit:
+- any: ['MainModule/Client/Core/Anti.lua', 'MainModule/Server/Core/Anti.lua']
+
+command:
+- MainModule/Server/Commands/*

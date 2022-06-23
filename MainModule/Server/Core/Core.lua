@@ -962,10 +962,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		DoSave = function(data)
-			local type = data.Type
-			if type == "ClearSettings" then
-				Core.ClearAllData();
-			elseif type == "SetSetting" then
+			if data.Type == "ClearSettings" then
+				Core.ClearAllData()
+			elseif data.Type == "SetSetting" then
 				local setting = data.Setting
 				local value = data.Value
 
@@ -974,9 +973,9 @@ return function(Vargs, GetEnv)
 					return settings
 				end)
 
-				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
-			elseif type == "TableRemove" then
-				local key = Core.GetTableKey(data.Table);
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value})
+			elseif data.Type == "TableRemove" then
+				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
 				local value = data.Value
 
@@ -991,9 +990,9 @@ return function(Vargs, GetEnv)
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i,v in pairs(sets) do
+					for i, v in pairs(sets) do
 						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
-							table.remove(sets,i)
+							table.remove(sets, i)
 						end
 					end
 
@@ -1006,7 +1005,7 @@ return function(Vargs, GetEnv)
 						indClone[1] = "OriginalSettings"
 
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable) do
+						for _, v in pairs(realTable) do
 							if CheckMatch(v, value) then
 								continueOperation = true
 							end
@@ -1022,9 +1021,9 @@ return function(Vargs, GetEnv)
 					return sets
 				end)
 
-				Core.CrossServer("LoadData", "TableUpdate", data);
-			elseif type == "TableAdd" then
-				local key = Core.GetTableKey(data.Table);
+				Core.CrossServer("LoadData", "TableUpdate", data)
+			elseif data.Type == "TableAdd" then
+				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
 				local value = data.Value
 
@@ -1039,7 +1038,7 @@ return function(Vargs, GetEnv)
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i,v in pairs(sets) do
+					for i, v in pairs(sets) do
 						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
 							table.remove(sets, i)
 						end
@@ -1053,7 +1052,7 @@ return function(Vargs, GetEnv)
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable) do
+						for _, v in pairs(realTable) do
 							if CheckMatch(v, value) then
 								continueOperation = false
 							end
@@ -1067,10 +1066,10 @@ return function(Vargs, GetEnv)
 					return sets
 				end)
 
-				Core.CrossServer("LoadData", "TableUpdate", data);
+				Core.CrossServer("LoadData", "TableUpdate", data)
 			end
 
-			AddLog(Logs.Script,{
+			AddLog(Logs.Script, {
 				Text = "Saved setting change to datastore";
 				Desc = "A setting change was issued and saved";
 			})
