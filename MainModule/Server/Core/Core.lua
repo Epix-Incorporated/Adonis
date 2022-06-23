@@ -980,7 +980,7 @@ return function(Vargs, GetEnv)
 				local tab = data.Table
 				local value = data.Value
 
-				if type(tab) == "string" then
+				if typeof(tab) == "string" then
 					tab = {"Settings", tab}
 				end
 
@@ -1028,7 +1028,7 @@ return function(Vargs, GetEnv)
 				local tab = data.Table
 				local value = data.Value
 
-				if type(tab) == "string" then
+				if typeof(tab) == "string" then
 					tab = {"Settings", tab}
 				end
 
