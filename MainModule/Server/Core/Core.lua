@@ -157,9 +157,9 @@ return function(Vargs, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
-			
+
 			LoadAdminsFromDS = true;
-			
+
 			WebPanel_ApiKey = true;
 			WebPanel_Enabled = true;
 
@@ -287,7 +287,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-	 	MakeClient = function(parent)
+		MakeClient = function(parent)
 			if not parent and Core.ClientLoader then
 				local loader = Core.ClientLoader;
 				loader.Removing = true;
@@ -707,7 +707,7 @@ return function(Vargs, GetEnv)
 		end;
 		GetDataStore = function()
 			local ran,store = pcall(function()
-				
+
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
@@ -906,7 +906,7 @@ return function(Vargs, GetEnv)
 				for _, ind in ipairs(tableAncestry) do
 					curTable = curTable[ind]
 					curName = ind
-					
+
 					if curName and type(curName) == "string" then
 						--// Admins do NOT load from the DataStore with this setting
 						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then 
@@ -946,7 +946,7 @@ return function(Vargs, GetEnv)
 
 		GetTableKey = function(indList)
 			local tabs = Core.GetData("SavedTables") or {};
-			local realTable,tableName = Core.IndexPathToTable(indList);
+			local realTable, tableName = Core.IndexPathToTable(indList)
 
 			local foundTable = nil;
 
@@ -975,10 +975,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		DoSave = function(data)
-			local type = data.Type
-			if type == "ClearSettings" then
-				Core.ClearAllData();
-			elseif type == "SetSetting" then
+			if data.Type == "ClearSettings" then
+				Core.ClearAllData()
+			elseif data.Type == "SetSetting" then
 				local setting = data.Setting
 				local value = data.Value
 
@@ -987,9 +986,9 @@ return function(Vargs, GetEnv)
 					return settings
 				end)
 
-				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value});
-			elseif type == "TableRemove" then
-				local key = Core.GetTableKey(data.Table);
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value})
+			elseif data.Type == "TableRemove" then
+				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
 				local value = data.Value
 
@@ -1000,9 +999,9 @@ return function(Vargs, GetEnv)
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i,v in pairs(sets) do
+					for i, v in pairs(sets) do
 						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
-							table.remove(sets,i)
+							table.remove(sets, i)
 						end
 					end
 
@@ -1013,8 +1012,8 @@ return function(Vargs, GetEnv)
 					if indList[1] == "Settings" then
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
-						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable or {}) do
+						local realTable, tableName = Core.IndexPathToTable(indClone)
+						for _, v in pairs(realTable or {}) do
 							if CheckMatch(v, value) then
 								continueOperation = true
 							end
@@ -1030,9 +1029,9 @@ return function(Vargs, GetEnv)
 					return sets
 				end)
 
-				Core.CrossServer("LoadData", "TableUpdate", data);
-			elseif type == "TableAdd" then
-				local key = Core.GetTableKey(data.Table);
+				Core.CrossServer("LoadData", "TableUpdate", data)
+			elseif data.Type == "TableAdd" then
+				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
 				local value = data.Value
 
@@ -1043,7 +1042,7 @@ return function(Vargs, GetEnv)
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i,v in pairs(sets) do
+					for i, v in pairs(sets) do
 						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
 							table.remove(sets, i)
 						end
@@ -1057,7 +1056,7 @@ return function(Vargs, GetEnv)
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable or {}) do
+						for _, v in pairs(realTable or {}) do
 							if CheckMatch(v, value) then
 								continueOperation = false
 							end
@@ -1071,10 +1070,10 @@ return function(Vargs, GetEnv)
 					return sets
 				end)
 
-				Core.CrossServer("LoadData", "TableUpdate", data);
+				Core.CrossServer("LoadData", "TableUpdate", data)
 			end
 
-			AddLog(Logs.Script,{
+			AddLog(Logs.Script, {
 				Text = "Saved setting change to datastore";
 				Desc = "A setting change was issued and saved";
 			})
