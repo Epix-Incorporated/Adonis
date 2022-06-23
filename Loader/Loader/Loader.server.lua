@@ -21,7 +21,7 @@
 --	                  This is not designed to work in solo mode                   --
 ----------------------------------------------------------------------------------------
 
-local function warn(...)
+local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
@@ -116,7 +116,7 @@ else
 		elseif plugin.Name:lower():match("^server[%-:]") then
 			table.insert(data.ServerPlugins, plugin)
 		else
-			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(Plugin).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
+			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(plugin).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
 		end
 	end
 
