@@ -1,21 +1,13 @@
 ---
 name: Feature request
-about: Suggest an idea for a new feature, a way to improve or enhance an existing
-  feature, etc.
+about: Suggest an idea for a new feature, or a way to improve an existing feature
+  within Adonis.
 title: ''
 labels: enhancement
 assignees: Expertcoderz
 
 ---
 
-**Is your feature request related to a (non-bug) problem? If so, please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] / it is currently too difficult to [...]
-
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
+- Is your feature request related to a problem? If so, please describe concisely. (Eg. "I'm always frustrated when [...]", "It's currently too difficult to [...]")
+- What is the solution or enhancement you'd like? Please describe.
+- (Any additional context.)
