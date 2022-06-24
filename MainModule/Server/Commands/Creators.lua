@@ -28,7 +28,7 @@ return function(Vargs, env)
 					end
 
 					if UserId then
-						Admin.AddBan({UserId = UserId, Name = i}, reason, true)
+						Admin.AddBan({UserId = UserId, Name = i}, reason, true, plr)
 						Functions.Hint("Direct banned "..i, {plr})
 					end
 				end
