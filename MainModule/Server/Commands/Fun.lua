@@ -717,41 +717,6 @@ return function(Vargs, env)
 			end
 		};
 
-		PlayerColor = {
-			Prefix = Settings.Prefix;
-			Commands = {"color", "playercolor", "bodycolor"};
-			Args = {"player", "brickcolor or RGB"};
-			Description = "Recolors the target character(s) with the given color, or random if none is given";
-			Fun = false;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local color
-
-				local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
-
-				if not args[2] then
-					color = BrickColor.random().Color
-					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
-				else
-					color = Functions.ParseColor3(args[2])
-					assert(color, "Invalid color provided")
-				end
-
-				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
-					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-
-						for _, property in ipairs(BodyColorProperties) do
-							humanoidDesc[property] = color
-						end
-
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
-					end
-				end
-			end
-		};
-
 		Material = {
 			Prefix = Settings.Prefix;
 			Commands = {"mat", "material"};
