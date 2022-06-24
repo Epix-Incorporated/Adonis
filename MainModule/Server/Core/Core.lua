@@ -1013,7 +1013,7 @@ return function(Vargs, GetEnv)
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable) do
+						for i,v in pairs(realTable or {}) do
 							if CheckMatch(v, value) then
 								continueOperation = true
 							end
@@ -1056,7 +1056,7 @@ return function(Vargs, GetEnv)
 						local indClone = table.clone(indList)
 						indClone[1] = "OriginalSettings"
 						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for i,v in pairs(realTable) do
+						for i,v in pairs(realTable or {}) do
 							if CheckMatch(v, value) then
 								continueOperation = false
 							end
