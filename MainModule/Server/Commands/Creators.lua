@@ -16,8 +16,6 @@ return function(Vargs, env)
 			Description = "DirectBans the specified user (Saves)";
 			AdminLevel = "Creators";
 			Filter = true;
-			Hidden = false;
-			Fun = false;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
@@ -90,9 +88,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forceplace"};
 			Args = {"player", "placeId/serverName"};
-			Hidden = false;
 			Description = "Force the target player(s) to teleport to the desired place";
-			Fun = false;
 			NoStudio = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -134,7 +130,6 @@ return function(Vargs, env)
 			Args = {"player", "amount"};
 			Hidden = true;
 			Description = "Lets you give <player> <amount> player points";
-			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -155,9 +150,7 @@ return function(Vargs, env)
 			Prefix = "";
 			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "adonissettings"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the Adonis settings management interface";
-			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Settings"})
@@ -168,9 +161,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"headadmin", "owner", "hadmin", "oa"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a HeadAdmin; Saves";
-			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
@@ -197,9 +188,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempheadadmin", "tempowner", "toa", "thadmin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a temporary head admin; Does not save";
-			Fun = false;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
@@ -272,7 +261,6 @@ return function(Vargs, env)
 			Prefix = "";
 			Commands = {Settings.Prefix.."terminal", Settings.Prefix.."console", ":terminal", ":console"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the debug terminal";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})

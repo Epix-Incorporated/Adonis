@@ -13,9 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempban", "timedban", "timeban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
-			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
-			Fun = false;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -60,9 +58,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
 			Args = {"username", "number<s/m/h/d>", "reason"};
-			Hidden = false;
 			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
-			Fun = false;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -108,9 +104,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"untimeban", "untimedban", "untban", "untempban", "untemporaryban"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes specified player from Timebans list";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -129,8 +123,6 @@ return function(Vargs, env)
 			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
-			Hidden = false;
-			Fun = false;
 			Function = function(plr: Player, args: {string}, data: {})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -177,9 +169,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"admin", "permadmin", "pa", "padmin", "fulladmin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
@@ -206,9 +196,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempadmin", "ta"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a temporary admin; Does not save";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
@@ -272,9 +260,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"makelist", "newlist", "newtrellolist", "maketrellolist"};
 			Args = {"name"};
-			Hidden = false;
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
-			Fun = false;
 			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -292,9 +278,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"viewlist", "viewtrellolist"};
 			Args = {"name"};
-			Hidden = false;
 			Description = "Views the specified Trello list from the primary board set in Settings.";
-			Fun = false;
 			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -316,9 +300,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"makecard", "maketrellocard", "createcard"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
-			Fun = false;
 			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -405,9 +387,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"explore", "explorer"};
 			Args = {};
-			Hidden = false;
 			Description = "Lets you explore the game, kinda like a file browser (alternative to "..Settings.Prefix.."dex)";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Explorer")
@@ -419,8 +399,6 @@ return function(Vargs, env)
 			Commands = {"promptinvite", "inviteprompt", "forceinvite"};
 			Args = {"player"};
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -434,8 +412,6 @@ return function(Vargs, env)
 			Commands = {"forcerejoin"};
 			Args = {"player"};
 			Description = "Forces target player(s) to rejoin the server, same as them running !rejoin";
-			Hidden = false;
-			Fun = false;
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})

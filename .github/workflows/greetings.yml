@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "👋 Welcome! It looks like this is your first time creating an issue here. Do expect a maintainer's response in a few days' time regarding your matter."
+        pr-message: "👋 Hello there! It looks like this is your first time contributing to the Adonis project. Remember to have read the Contribution Guidelines! Good luck!"

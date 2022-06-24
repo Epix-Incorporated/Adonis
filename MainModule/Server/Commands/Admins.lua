@@ -147,9 +147,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
 			Args = {"player", "temp (true/false) (Default: false)"};
-			Hidden = false;
 			Description = "Removes the target players' admin/moderator powers; Saves unless <temp> is 'true'";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing player name")
@@ -227,9 +225,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempunadmin", "untempadmin", "tunadmin", "untadmin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes the target players' admin powers for this server; Does not save";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				assert(args[1], "Missing player name")
@@ -266,9 +262,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempmod", "tmod", "temp", "helper"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a temporary moderator; Does not save";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
@@ -295,9 +289,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"mod", "moderator"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a moderator; Saves";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
@@ -338,9 +330,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"shutdownlogs", "shutdownlog", "slogs", "shutdowns"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows who shutdown or restarted a server and when";
-			Fun = false;
 			AdminLevel = "Admins";
 			ListUpdater = function(plr: Player)
 				local logs = Core.GetData("ShutdownLogs") or {}
@@ -367,9 +357,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"slock", "serverlock", "lockserver"};
 			Args = {"on/off"};
-			Hidden = false;
 			Description = "Enables/disables server lock";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				if not args[1] or (args[1] and (string.lower(args[1]) == "on" or string.lower(args[1]) == "true")) then
@@ -386,9 +374,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"wl", "enablewhitelist", "whitelist"};
 			Args = {"on/off/add/remove/list", "optional player"};
-			Hidden = false;
 			Description = "Enables/disables the whitelist; :wl username to add them to the whitelist";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local sub = string.lower(args[1])
@@ -538,9 +524,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
 			Args = {"player", "element", "true/false"};
-			Hidden = false;
 			Description = "Enables or disables CoreGui elements for the target player(s)";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _,v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -571,9 +555,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"lockmap"};
 			Args = {};
-			Hidden = false;
 			Description = "Locks the map";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, Obj in ipairs(workspace:GetDescendants())do
@@ -588,9 +570,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unlockmap"};
 			Args = {};
-			Hidden = false;
 			Description = "Unlocks the map";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, Obj in ipairs(workspace:GetDescendants())do
@@ -605,9 +585,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"btools", "f3x", "buildtools", "buildingtools", "buildertools"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Gives the target player(s) F3X building tools.";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local F3X = service.New("Tool", {
@@ -649,9 +627,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"insert", "ins"};
 			Args = {"id"};
-			Hidden = false;
 			Description = "Inserts whatever object belongs to the ID you supply, the object must be in the place owner's or ROBLOX's inventory";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local id = string.lower(args[1])
@@ -724,9 +700,7 @@ return function(Vargs, env)
 			Commands = {"newteam", "createteam", "maketeam"};
 			Args = {"name", "BrickColor"};
 			Filter = true;
-			Hidden = false;
 			Description = "Make a new team with the specified name and color";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local colorCode = tonumber(args[1])
@@ -743,9 +717,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"removeteam", "deleteteam"};
 			Args = {"name"};
-			Hidden = false;
 			Description = "Remove the specified team";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.Teams:GetTeams()) do
@@ -1143,9 +1115,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unloopkill"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Un-Loop Kill";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -1158,9 +1128,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"lag", "fpslag"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s)'s FPS drop";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -1177,9 +1145,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unlag", "unfpslag"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Un-Lag";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -1192,9 +1158,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"crash"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Crashes the target player(s)";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
@@ -1216,9 +1180,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hardcrash"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Hard crashes the target player(s)";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
@@ -1240,9 +1202,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ramcrash", "memcrash"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "RAM crashes the target player(s)";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
@@ -1264,9 +1224,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"gpucrash"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "GPU crashes the target player(s)";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
@@ -1320,8 +1278,6 @@ return function(Vargs, env)
 			Description = "Bans the player from the server";
 			AdminLevel = "Admins";
 			Filter = true;
-			Hidden = false;
-			Fun = false;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -1368,8 +1324,6 @@ return function(Vargs, env)
 			Commands = {"trelloban"};
 			Args = {"player", "reason"};
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
-			Hidden = false;
-			Fun = false;
 			Filter = true;
 			CrossServerDenied = true;
 			TrelloRequired = true;
@@ -1441,7 +1395,6 @@ return function(Vargs, env)
 			Args = {"player"};
 			Hidden = true;
 			Description = "Sends the target player(s) to nil, where they will not show up on the player list and not normally be able to interact with the game";
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -1457,8 +1410,6 @@ return function(Vargs, env)
 			Commands = {"promptpremiumpurchase", "premiumpurchaseprompt"};
 			Args = {"player"};
 			Description = "Opens the Roblox Premium purchase prompt for the target player(s)";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
@@ -1473,8 +1424,6 @@ return function(Vargs, env)
 			Args = {"player", "duration (seconds)", "text"};
 			Filter = true;
 			Description = "Sends a Roblox-styled notification for the target player(s)";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
