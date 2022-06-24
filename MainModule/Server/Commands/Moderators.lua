@@ -3461,10 +3461,8 @@ return function(Vargs, env)
 		Transparency = {
 			Prefix = Settings.Prefix;
 			Commands = {"transparency", "trans"};
-			Args = {"player", "value (0-1)"};
-			Hidden = false;
+			Args = {"player", "% value (0-1)"};
 			Description = "Set the transparency of the target's character";
-			Fun = false;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -3496,9 +3494,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"transparentpart"};
 			Args = {"player", "parts", "value (0-1)"};
-			Hidden = false;
-			Description = "Set the transparency of the target's character's parts, including accessories. Supports comma separated list of parts.";
-			Fun = false;
+			Description = "Set the transparency of the target's character's parts, including accessories; supports a comma-separated list of part names";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, player in pairs(service.GetPlayers(plr, args[1])) do
