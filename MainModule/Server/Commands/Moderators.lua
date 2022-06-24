@@ -3493,7 +3493,7 @@ return function(Vargs, env)
 		TransparentPart = {
 			Prefix = Settings.Prefix;
 			Commands = {"transparentpart"};
-			Args = {"player", "parts", "value (0-1)"};
+			Args = {"player", "part names", "% value (0-1)"};
 			Description = "Set the transparency of the target's character's parts, including accessories; supports a comma-separated list of part names";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -3799,7 +3799,7 @@ return function(Vargs, env)
 
 		Visible = {
 			Prefix = Settings.Prefix;
-			Commands = {"visible", "vis"};
+			Commands = {"visible", "vis", "uninvisible"};
 			Args = {"player"};
 			Hidden = false;
 			Description = "Makes the target player(s) visible";
