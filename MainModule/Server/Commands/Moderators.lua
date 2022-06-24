@@ -5047,69 +5047,20 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {[number]:string})
 				local ClothingId = tonumber(args[2])
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
-				local TShirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
-				assert(TShirt, "Could not retrieve t-shirt asset for the supplied ID")
-
-				local clothingTemplate = "rbxassetid://"..ClothingId
-
+				local Shirt = ((AssetIdType == 11 or AssetIdType == 2) and service.Insert(ClothingId)) or (AssetIdType == 1 and Functions.CreateClothingFromImageId("ShirtGraphic", ClothingId)) or error("Item ID passed has invalid item type")
+				assert(Shirt, "Could not retrieve t-shirt asset for the supplied ID")
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						local bCreateNewDefaultClothing = false
-
-						if (humanoid) then
-							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
-								-- Check if the player already has a specified clothing instance.
-								local prePlayerShirtGraphic = v.Character:FindFirstChildOfClass("ShirtGraphic")
-
-								-- If the character has the specified clothing.
-								if (prePlayerShirtGraphic) then
-									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.GraphicTShirt == 0) then
-										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in pairs(v.Character:GetChildren()) do
-											if (v:IsA("ShirtGraphic")) then
-												v:Destroy()
-											end
-										end
-
-										bCreateNewDefaultClothing = true
-									end
-								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.GraphicTShirt == 0) then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
-								end
-
-
-								if (bCreateNewDefaultClothing) then
-									-- Set a new specified clothing.
-									local humDescClone = humanoidAppliedDesc:Clone()
-
-									humDescClone.GraphicTShirt = 6901238398 -- Some template shirt graphic
-									v.Character.Humanoid:ApplyDescription(humDescClone)
-									humDescClone:Destroy()
-								end
-
-								-- Set the specified clothing.
-								local playerShirtGraphicInstance = v.Character:FindFirstChildOfClass("ShirtGraphic")
-
-								if (playerShirtGraphicInstance) then
-									playerShirtGraphicInstance.Graphic = clothingTemplate
-								else
-									-- Incase something went wrong
-									TShirt:Clone().Parent = v.Character
-								end
-							else 
-								-- If no HumanoidDescription
-								TShirt:Clone().Parent = v.Character
-							end
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("ShirtGraphic") then k:Destroy() end
 						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.GraphicTShirt = ClothingId
+						end]]
+						Shirt:Clone().Parent = v.Character
 					end
 				end
 			end
@@ -5128,68 +5079,18 @@ return function(Vargs, env)
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 				local Shirt = AssetIdType == 11 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Shirt", ClothingId) or error("Item ID passed has invalid item type")
 				assert(Shirt, "Unexpected error occured; clothing is missing")
-				
-				local clothingTemplate = "rbxassetid://"..ClothingId
-				
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						local bCreateNewDefaultClothing = false
-						
-						if (humanoid) then
-							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
-								-- Check if the player already has a specified clothing instance.
-								local prePlayerShirt = v.Character:FindFirstChildOfClass("Shirt")
-								
-								-- If the character has the specified clothing.
-								if (prePlayerShirt) then
-									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.Shirt == 0) then
-										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in pairs(v.Character:GetChildren()) do
-											if (v:IsA("Shirt")) then
-												v:Destroy()
-											end
-										end
-
-										bCreateNewDefaultClothing = true
-									end
-								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.Shirt == 0) then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
-								end
-								
-								
-								if (bCreateNewDefaultClothing) then
-									-- Set a new specified clothing.
-									local humDescClone = humanoidAppliedDesc:Clone()
-									
-									-- Default Shirt ID 855777286, given when no valid shirt was set with HumanoidDescription
-									humDescClone.Shirt = 855777286 -- Default shirt TODO: You want to change this because the ID put here can't be given with the command if already ran.
-									v.Character.Humanoid:ApplyDescription(humDescClone)
-									humDescClone:Destroy()
-								end
-								
-								-- Set the specified clothing.
-								local playerShirtInstance = v.Character:FindFirstChildOfClass("Shirt")
-
-								if (playerShirtInstance) then
-									playerShirtInstance.ShirtTemplate = clothingTemplate
-								else
-									-- Incase something went wrong
-									Shirt:Clone().Parent = v.Character
-								end
-							else 
-								-- If no HumanoidDescription
-								Shirt:Clone().Parent = v.Character
-							end
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Shirt") then k:Destroy() end
 						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Shirt = ClothingId
+						end]]
+						Shirt:Clone().Parent = v.Character
 					end
 				end
 			end
@@ -5208,68 +5109,18 @@ return function(Vargs, env)
 				local AssetIdType = service.MarketPlace:GetProductInfo(ClothingId).AssetTypeId
 				local Pants = AssetIdType == 12 and service.Insert(ClothingId) or AssetIdType == 1 and Functions.CreateClothingFromImageId("Pants", ClothingId) or error("Item ID passed has invalid item type")
 				assert(Pants, "Unexpected error occured; clothing is missing")
-
-				local clothingTemplate = "rbxassetid://"..ClothingId
-
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						local bCreateNewDefaultClothing = false
-
-						if (humanoid) then
-							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
-								-- Check if the player already has a specified clothing instance.
-								local prePlayerPants = v.Character:FindFirstChildOfClass("Pants")
-
-								-- If the character has the specified clothing.
-								if (prePlayerPants) then
-									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.Pants == 0) then
-										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in pairs(v.Character:GetChildren()) do
-											if (v:IsA("Pants")) then
-												v:Destroy()
-											end
-										end
-
-										bCreateNewDefaultClothing = true
-									end
-								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.Pants == 0) then
-										bCreateNewDefaultClothing = true
-									else
-										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
-										-- then just create a default clothing as well.
-										bCreateNewDefaultClothing = true
-									end
-								end
-
-
-								if (bCreateNewDefaultClothing) then
-									-- Set a new specified clothing.
-									local humDescClone = humanoidAppliedDesc:Clone()
-
-									-- Default Pants ID 855782781, given when no valid pants was set with HumanoidDescription
-									humDescClone.Pants = 855782781 -- Default pants
-									v.Character.Humanoid:ApplyDescription(humDescClone)
-									humDescClone:Destroy()
-								end
-
-								-- Set the specified clothing.
-								local playerPantsInstance = v.Character:FindFirstChildOfClass("Pants")
-
-								if (playerPantsInstance) then
-									playerPantsInstance.PantsTemplate = clothingTemplate
-								else
-									-- Incase something went wrong
-									Pants:Clone().Parent = v.Character
-								end
-							else 
-								-- If no HumanoidDescription
-								Pants:Clone().Parent = v.Character
-							end
+						for g, k in pairs(v.Character:GetChildren()) do
+							if k:IsA("Pants") then k:Destroy() end
 						end
+						--[[local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local humandescrip = humanoid and humanoid:FindFirstChildOfClass("HumanoidDescription")
+
+						if humandescrip then
+							humandescrip.Pants = ClothingId
+						end]]
+						Pants:Clone().Parent = v.Character
 					end
 				end
 			end
