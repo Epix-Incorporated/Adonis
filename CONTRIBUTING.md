@@ -1,5 +1,5 @@
 # 📜 Contribution Guidelines
-*Updated on 2022-06-22 15:23 UTC by Expertcoderz*
+*Updated on 2022-06-24 13:12 UTC by Expertcoderz*
 
 Adonis is an ever expanding, frequently updated, slightly complicated, system. In order to keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
@@ -59,3 +59,7 @@ Discord server: https://discord.com/invite/H5RvTP3
 ### That's all, folks!
 
 Feel free to make enquiries in our Discord server.
+
+<img src="https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260"/>
+
+<hr>
