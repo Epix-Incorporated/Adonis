@@ -3440,8 +3440,8 @@ return function(data, env)
 			end
 
 			bar.InputBegan:Connect(function(input)
-				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
-					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
+				if not moving and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					value = ((input.Position.X) - (new.AbsolutePosition.X)) / (new.AbsoluteSize.X)
 
 					if value < 0 then
 						value = 0
@@ -4260,18 +4260,20 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-				inputStart(Mouse.X, Mouse.Y)
+				local Position = input.Position
+				inputStart(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch) then
-				inputMoved(input.Position.X, input.Position.Y)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local Position = input.Position
+				inputMoved(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if (input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -10869,11 +10871,11 @@ function module.new(Frame, BarCount)
 		BAR_TO_BUFFER[i] = math.abs(BUFFER_COUNT- (i+ (i<=BUFFER_COUNT and -1 or 1) ))
 		BAR_TO_MULTIPLIER[i] = 1-(math.clamp(math.abs(BUFFER_COUNT- (i+ (i<=BUFFER_COUNT and -1 or 1) ))/BUFFER_COUNT, 0.01,1)^2)
 	end
-	
+
 	local UPDATE_WAIT = 1/SAMPLE_HZ
-	
+
 	-- Setup visualizer
-	
+
 	local Visualizer = {
 		Frame = Frame;
 		VolumeBuffer = table.create(BUFFER_COUNT+1);
@@ -10882,10 +10884,10 @@ function module.new(Frame, BarCount)
 		PlayingConnection = nil;
 		Sound = nil;
 	}
-	
+
 	-- Create the bar guis
 	for i=1, BAR_COUNT do
-		
+
 		local Bar = Frame:Add("Frame", {
 			BorderSizePixel = 0;
 			BackgroundColor3 = Color3.new(0.98,0.98,0.99);
@@ -10893,16 +10895,16 @@ function module.new(Frame, BarCount)
 			Size = UDim2.new(BAR_SIZE,0,0.02,0);
 			Position = UDim2.new(BAR_SIZE* (i-1), 0,0.5,0);
 		})
-		
+
 		Visualizer.Bars[i] = Bar
 	end
-	
+
 	local function HandlePlaying()
 		if Visualizer.BufferConnection then
 			Visualizer.BufferConnection:Disconnect()
 			Visualizer.BufferConnection = nil
 		end
-	
+
 		local Sound = Visualizer.Sound
 		if not Sound then return end
 
@@ -10969,19 +10971,19 @@ function module.new(Frame, BarCount)
 			end
 		end
 	end
-	
+
 	function Visualizer:LinkToSound(Sound)
-		
+
 		Visualizer:UnlinkFromSound()
-	
+
 		table.clear(Visualizer.VolumeBuffer)
-		
+
 		Visualizer.Sound = Sound
-		
+
 		HandlePlaying()
 		Visualizer.PlayingConnection = Sound:GetPropertyChangedSignal("Playing"):Connect(HandlePlaying)
 	end
-	
+
 	function Visualizer:UnlinkFromSound()
 
 		if Visualizer.PlayingConnection then
@@ -10994,7 +10996,7 @@ function module.new(Frame, BarCount)
 		end
 
 		Visualizer.Sound = nil
-		
+
 		for i,Bar in ipairs(Visualizer.Bars) do
 			Bar:TweenSize(
 				UDim2.new(BAR_SIZE,0,0.02,0),
@@ -11003,7 +11005,7 @@ function module.new(Frame, BarCount)
 		end
 
 	end
-	
+
 	function Visualizer:Destroy()
 		if Visualizer.PlayingConnection then
 			Visualizer.PlayingConnection:Disconnect()
@@ -11018,8 +11020,8 @@ function module.new(Frame, BarCount)
 		end
 		table.clear(Visualizer.VolumeBuffer)
 	end
-	
-	
+
+
 	return Visualizer
 end
 

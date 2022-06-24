@@ -188,7 +188,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 
@@ -2076,7 +2076,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	--local client = service.GarbleTable(client)
 	local Player = service.Players.LocalPlayer
 	local Mouse = Player:GetMouse()
@@ -2578,8 +2578,8 @@ return function(data, env)
 			end
 
 			bar.InputBegan:Connect(function(input)
-				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
-					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
+				if not moving and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					value = ((input.Position.X) - (new.AbsolutePosition.X)) / (new.AbsoluteSize.X)
 
 					if value < 0 then
 						value = 0
@@ -3440,18 +3440,20 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-				inputStart(Mouse.X, Mouse.Y)
+				local Position = input.Position
+				inputStart(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch then
-				inputMoved(input.Position.X, input.Position.Y)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local Position = input.Position
+				inputMoved(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -7134,7 +7136,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local frame = gui.Frame
 	local frame2 = frame.Frame
@@ -7153,7 +7155,7 @@ return function(data, env)
 
 	ttl.Text = title
 	msg.Text = message
-	
+
 	local function fadeOut()
 		for i = 1,12 do
 			msg.TextTransparency = msg.TextTransparency+0.05
@@ -7165,7 +7167,7 @@ return function(data, env)
 		end
 		service.UnWrap(gui):Destroy()
 	end
-	
+
 	gTable.CustomDestroy = function()
 		fadeOut()
 	end
@@ -7179,7 +7181,7 @@ return function(data, env)
 		wait(1)
 		sound:Destroy()
 	end)
-	
+
 	gTable.Ready()
 
 	frame:TweenSize(UDim2.new(0, 350, 0, 150), Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.2)
@@ -7191,7 +7193,7 @@ return function(data, env)
 	else
 		wait(tim)
 	end
-	
+
 	fadeOut()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -8246,7 +8248,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local gui = script.Parent.Parent
 	local playergui = service.PlayerGui
 	local str = data.Message
@@ -8296,7 +8298,7 @@ return function(data, env)
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
 	local bounds = gui.Frame.msg.TextBounds.X
-	
+
 	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://255881176"
@@ -8411,7 +8413,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local playergui = service.PlayerGui
 	local gui = client.UI.Prepare(script.Parent.Parent)
 	local label = gui.LABEL
@@ -8672,7 +8674,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local gui = client.UI.Prepare(script.Parent.Parent) -- Change it to a TextLabel to avoid chat clearing
 	local playergui = service.PlayerGui
 	local frame = gui.Frame
@@ -11168,7 +11170,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local client, cPcall, Pcall, Routine, service, gTable =
 		client, cPcall, Pcall, Routine, service, gTable
 
@@ -12725,7 +12727,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local player = service.Players.LocalPlayer
 	local playergui = player.PlayerGui
 	local gui = script.Parent.Parent
@@ -13277,7 +13279,7 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
 	local scr = client.UI.Prepare(script.Parent.Parent)
@@ -13298,7 +13300,7 @@ return function(data, env)
 	end
 
 	t2.Text = msg
-	
+
 	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://7152562261"
@@ -13392,13 +13394,13 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local playergui = service.PlayerGui
 	local localplayer = service.Players.LocalPlayer
-	
+
 	client.Variables.PlayerListEnabled = false
 	service.StarterGui:SetCoreGuiEnabled('PlayerList',false)
-	
+
 	local gui = script.Parent.Parent
 	local drag = gui.Drag
 	local frame = gui.Drag.Frame
@@ -13406,31 +13408,31 @@ return function(data, env)
 	local list = gui.Drag.Frame.List
 	local entry = gui.Entry
 	local fakeDrag = gui.Drag.Frame.FakeDragger
-	
+
 	local top
-	
+
 	gTable:Ready()
-	
+
 	local specialPeople = {
 		["1237666"] = 355277187; -- Sceleratis
 		["39958537"] = 116524268; -- kryptonikofficial
 		["66136675"] = 355858707; -- Chirality
 		["102761590"] = 355858707; -- ayymd
 		["6087802"] = 355858707; -- j1my3p1x
-		["33869774"] = 355858707; -- LLVM 
+		["33869774"] = 355858707; -- LLVM
 		["60557514"] = 355858707; -- Axstin
 		["28606349"] = 99727663; -- MrRootx
 		["64362264"] = 48094325; -- Waffle
 		["39259729"] = 356709818; -- Cdk
 		["68591528"] = 397876352; -- PlasticPeachey
 	}
-	
+
 	local mouse=service.Players.LocalPlayer:GetMouse()
 	local nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
 	local defx,defy,defp=nx,ny,drag.Position.X.Offset
 	local dragging=false
 	local dontSize=false
-	
+
 	local function checkStats()
 		local stats = localplayer:FindFirstChild("leaderstats")
 		if stats and not dontSize then
@@ -13439,43 +13441,43 @@ return function(data, env)
 			drag.Size = UDim2.new(0,nx,0,30)
 			drag.Position = UDim2.new(1,-(nx),0,0)
 		end
-		
-		if stats then 
+
+		if stats then
 			return true
-		else 
+		else
 			return false
 		end
 	end
-	
+
 	local function fadeIn()
 		frame.BackgroundTransparency = 0
 		list.BackgroundTransparency = 0
 		fakeDrag.Visible = true
 	end
-	
+
 	local function fadeOut()
 		frame.BackgroundTransparency = 0.7
 		list.BackgroundTransparency = 1
 		fakeDrag.Visible = false
 	end
-	
+
 	local function populate()
 		list:ClearAllChildren()
 		checkStats()
-		
+
 		local teams = {
 			Neutral = {Color = BrickColor.White(), Players = {}, Stats = {}, StatNames = {}}
 		}
-		
+
 		local numPlayers = 0
 		local numEntries = 0
 		local leaderstats = {}
 		local found = {}
-		
+
 		for i,v in pairs(service.Teams:GetChildren()) do
 			teams[v.Name] = {Color = v.TeamColor, Players = {}, Stats = {}, StatNames = {}}
 		end
-		
+
 		for i,v in pairs(service.Players:GetPlayers()) do
 			local good = false
 			local team
@@ -13492,7 +13494,7 @@ return function(data, env)
 				team = teams.Neutral
 				table.insert(teams.Neutral.Players,v)
 			end
-			
+
 			local stats = v:FindFirstChild("leaderstats")
 			if stats then
 				for k,m in pairs(stats:GetChildren()) do
@@ -13513,9 +13515,9 @@ return function(data, env)
 			end
 			numPlayers = numPlayers+1
 		end
-		
+
 		if top then top:Destroy() end
-		
+
 		top = entry:Clone()
 		top.Visible = true
 		top.Position = UDim2.new(0,0,0,0)
@@ -13539,9 +13541,9 @@ return function(data, env)
 				new.Position = UDim2.new(0,(stat-1)*70,0,0)
 			end
 		end
-		
+
 		top.Parent = drag
-		
+
 		if #teams.Neutral.Players==0 then
 			teams.Neutral = nil
 		end
@@ -13584,22 +13586,22 @@ return function(data, env)
 				local player = entry:Clone()
 				player.Visible = true
 				player.Position = UDim2.new(0,0,0,numEntries*25)
-				
+
 				local image = player:FindFirstChild("ImageLabel")
 				local pstats = player:FindFirstChild("Stats")
 				local nameb = player:FindFirstChild("Nameb")
 				local pstat = player:FindFirstChild("Stat")
-				
+
 				if nameb then
 					nameb.Text = p.Name
 				end
-				
+
 				player.Parent = list
-				
+
 				if string.len(p.Name)>15 then
 					nameb.TextScaled = true
 				end
-				
+
 				local custom = specialPeople[tostring(p.UserId)]
 				if image then
 					if custom then
@@ -13627,7 +13629,7 @@ return function(data, env)
 						image.Visible = false
 					end
 				end
-				
+
 				local stats = p:FindFirstChild("leaderstats")
 				if stats and pstats and pstat then
 					stats = stats:GetChildren()
@@ -13657,7 +13659,7 @@ return function(data, env)
 				numEntries = numEntries+1
 			end
 		end
-		
+
 		if not dontSize then
 			local noomis = numEntries
 			if noomis>10 then
@@ -13668,22 +13670,22 @@ return function(data, env)
 			defy = newy
 			frame.Size = UDim2.new(0,nx,0,newy)
 		end
-		
+
 		list.CanvasSize = UDim2.new(0, 0, 0, ((numEntries)*20))
 	end
-	
+
 	drag.Position = UDim2.new(1,-nx,0,0)
-	
+
 	fadeOut()
-	
+
 	frame.MouseEnter:Connect(function()
 		fadeIn()
 	end)
-	
+
 	frame.MouseLeave:Connect(function()
 		fadeOut()
 	end)
-	
+
 	service.UserInputService.InputBegan:Connect(function(InputObject)
 		local textbox = service.UserInputService:GetFocusedTextBox()
 		if not (textbox) and InputObject.UserInputType==Enum.UserInputType.Keyboard and InputObject.KeyCode == Enum.KeyCode.Tab then
@@ -13694,36 +13696,36 @@ return function(data, env)
 			end
 		end
 	end)
-	
+
 	mouse.Move:Connect(function(x,y)
 		if dragging then
 			np=defp+(dragger.Position.X.Offset)
 			nx=defx-(dragger.Position.X.Offset)
 			ny=defy+(dragger.Position.Y.Offset+20)
-			
-			if nx<100 then 
-				nx=100 
+
+			if nx<100 then
+				nx=100
 			end
-			
-			if ny<50 then 
-				ny=50 
+
+			if ny<50 then
+				ny=50
 			end
-			
-			frame.Size=UDim2.new(1, 0, 0, ny) 
+
+			frame.Size=UDim2.new(1, 0, 0, ny)
 			drag.Size=UDim2.new(0, nx, 0, 30)
-			 
+
 			if nx>100 then
 				drag.Position=UDim2.new(drag.Position.X.Scale,np,drag.Position.Y.Scale,drag.Position.Y.Offset)
-			end		
+			end
 		end
 	end)
-	
+
 	dragger.DragBegin:Connect(function(init)
 		defp = drag.Position.X.Offset
 		dragging = true
 		dontSize = true
 	end)
-	
+
 	dragger.DragStopped:Connect(function(x,y)
 		dragging = false
 		nx,ny,np=drag.AbsoluteSize.X,frame.AbsoluteSize.Y,nil--350,300
@@ -13731,7 +13733,7 @@ return function(data, env)
 		dragger.Position = UDim2.new(0,0,1,-20)
 		--populate()
 	end)
-	
+
 	--[[
 	for k,p in pairs(service.Players:GetPlayers()) do
 		p.Changed:Connect(populate)
@@ -13742,7 +13744,7 @@ return function(data, env)
 			end
 		end)
 	end
-	
+
 	service.Players.PlayerAdded:Connect(function(p)
 		populate()
 		p.Changed:Connect(populate)
@@ -13754,14 +13756,14 @@ return function(data, env)
 		wait(0.5)
 		populate()
 	end)
-	
+
 	service.Teams.ChildAdded:Connect(populate)
 	service.Teams.ChildRemoved:Connect(populate)
-	
+
 	wait(0.5)
 	populate()
 	--]]
-	
+
 	while wait(0.5) do
 		populate()
 	end
