@@ -824,11 +824,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddBan = function(p, reason, doSave)
+		AddBan = function(p, reason, doSave, moderator: Player?)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
+				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
 
 			table.insert(Settings.Banned, value)--p.Name..':'..p.UserId
@@ -854,12 +855,13 @@ return function(Vargs, GetEnv)
 			service.Events.PlayerBanned:Fire(p, reason, doSave)
 		end;
 
-		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string)
+		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				EndTime = os.time() + tonumber(duration);
-				Reason = reason
+				Reason = reason;
+				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
 			
 			table.insert(Core.Variables.TimeBans, value)
