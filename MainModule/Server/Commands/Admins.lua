@@ -1288,7 +1288,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddBan(v, reason)
+						Admin.AddBan(v, reason, false, plr)
 						Functions.Hint("Server-banned "..tostring(v), {plr})
 					else
 						Functions.Hint("Unable to ban "..tostring(v).." (insufficient permission level)", {plr})
