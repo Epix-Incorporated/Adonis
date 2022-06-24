@@ -253,27 +253,27 @@ end;
 local function LoadPackage(package, folder, runNow)
 	--// runNow - Run immediately after unpacking (default behavior is to just unpack (((only needed if loading after startup))))
 	--// runNow currently not used (limitations) so all packages must be present at server startup
-	local unpack; unpack = function(curFolder, unpackInto)
+	local function unpackFolder(curFolder, unpackInto)
 		if unpackInto then
-			for i,obj in ipairs(curFolder:GetChildren()) do
-				local clone = obj:Clone();
+			for _, obj in ipairs(curFolder:GetChildren()) do
+				local clone = obj:Clone()
 				if obj:IsA("Folder") then
-					local realFolder = unpackInto:FindFirstChild(obj.Name);
+					local realFolder = unpackInto:FindFirstChild(obj.Name)
 					if not realFolder then
-						clone.Parent = unpackInto;
+						clone.Parent = unpackInto
 					else
-						unpack(obj, realFolder);
+						unpackFolder(obj, realFolder)
 					end
 				else
-					clone.Parent = unpackInto;
+					clone.Parent = unpackInto
 				end
 			end
 		else
-			warn("Missing parent to unpack into for ".. tostring(curFolder));
+			warn("Missing parent to unpack into for ".. tostring(curFolder))
 		end
-	end;
+	end
 
-	unpack(package, folder);
+	unpackFolder(package, folder)
 end;
 
 local function CleanUp()
@@ -288,7 +288,7 @@ local function CleanUp()
 
 	pcall(service.Threads.StopAll)
 	pcall(function()
-		for i,v in pairs(RbxEvents) do
+		for i, v in pairs(RbxEvents) do
 			print("Disconnecting event")
 			v:Disconnect()
 			table.remove(RbxEvents, i)
@@ -298,7 +298,7 @@ local function CleanUp()
 	--loader.Disabled = true
 	--loader:Destroy()
 	if server.Core and server.Core.RemoteEvent then
-		pcall(server.Core.DisconnectEvent);
+		pcall(server.Core.DisconnectEvent)
 	end
 
 	--[[delay(0, function()
@@ -566,7 +566,7 @@ return service.NewProxy({
 		end
 
 		--// Copy client themes, plugins, and shared modules to the client folder
-		local packagesToRunWithPlugins = {};
+		local packagesToRunWithPlugins = {}
 		local shared = service.New("Folder", {
 			Name = "Shared";
 			Parent = server.Client;

@@ -996,9 +996,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			if options == true then options = {WithDate = true} end
 			if not options then options = {} end
 
-			local formatString = options.FormatString 
-			if not formatString then 
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm") 
+			local formatString = options.FormatString
+			if not formatString then
+				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
 			end
 
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
@@ -1070,7 +1070,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				if not cache then
 					cache = {
 						results = {
-							Created = false;	
+							Created = false;
 						};
 						lastUpdated = os.clock();
 					}
@@ -1319,7 +1319,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			return service.NewProxy {
 				__index = function(tab, ind)
-					local ind = (type(ind) ~= "table" and typeof(ind) ~= "newproxy") and ind or "Potentially dangerous index"
+					local ind = (type(ind) ~= "table" and typeof(ind) ~= "userdata") and ind or "Potentially dangerous index"
 
 					local topEnv = doChecks and get and get(2)
 					local setRan = doChecks and pcall(settings)
