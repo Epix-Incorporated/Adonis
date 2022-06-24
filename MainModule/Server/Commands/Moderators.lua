@@ -1620,7 +1620,7 @@ return function(Vargs, env)
 		};
 
 		Clean = {
-			Prefix = Settings.PlayerPrefix;
+			Prefix = Settings.Prefix;
 			Commands = {"clean"};
 			Args = {};
 			Hidden = false;
