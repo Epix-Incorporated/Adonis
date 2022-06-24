@@ -48,8 +48,6 @@ Once in a while after changes are merged, some quick testing will be done by a m
 
 **A:** After your contribution is accepted, post your Discord & ROBLOX usernames into the discussion thread (<https://github.com/Sceleratis/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the ROBLOX group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
 
-ℹ️ **Note:** Being a member of the group and having the "Contributors" rank or higher will also automatically grant you complimentary donor perks access in games using Adonis, without needing to own the donor pass/shirt.
-
 ROBLOX group: https://www.roblox.com/groups/886423
 
 Discord server: https://discord.com/invite/H5RvTP3
