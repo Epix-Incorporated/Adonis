@@ -24,6 +24,7 @@ There is a very clear/obvious difference between unavoidably complex code and in
 - Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
 - Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
 - No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
+- Don't overwrite builtin globals when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
 - Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
 - Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
 
