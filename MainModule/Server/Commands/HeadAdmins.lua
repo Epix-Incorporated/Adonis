@@ -47,7 +47,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddTimeBan(v, tonumber(time), reason)
+						Admin.AddTimeBan(v, tonumber(time), reason, plr)
 						Functions.Hint("Banned "..tostring(v.Name).." for ".. args[2], {plr})
 					end
 				end
@@ -93,7 +93,7 @@ return function(Vargs, env)
 					end
 
 					if UserId then
-						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason)
+						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason, plr)
 						Functions.Hint("Banned "..tostring(i).." for ".. args[2], {plr})
 					end
 				end
@@ -134,7 +134,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddBan(v, reason, true)
+						Admin.AddBan(v, reason, true, plr)
 						Functions.Hint("Game banned "..tostring(v), {plr})
 					else
 						Functions.Hint("Unable to game-ban "..tostring(v).." (insufficient permission level)", {plr})

@@ -2381,8 +2381,8 @@ return function(data, env)
 			end
 
 			bar.InputBegan:Connect(function(input)
-				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
-					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
+				if not moving and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					value = ((input.Position.X) - (new.AbsolutePosition.X)) / (new.AbsoluteSize.X)
 
 					if value < 0 then
 						value = 0
@@ -3208,18 +3208,20 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-				inputStart(Mouse.X, Mouse.Y)
+				local Position = input.Position
+				inputStart(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch then
-				inputMoved(input.Position.X, input.Position.Y)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local Position = input.Position
+				inputMoved(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)

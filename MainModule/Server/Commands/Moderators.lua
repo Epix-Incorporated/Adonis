@@ -120,7 +120,10 @@ return function(Vargs, env)
 					if timeLeft <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
 					else
-						table.insert(tab, {Text = tostring(v.Name)..":"..tostring(v.UserId), Desc = "Minutes Left: "..tostring(minutes)})
+						table.insert(tab, {
+							Text = tostring(v.Name)..":"..tostring(v.UserId),
+							Desc = string.format("Issued by: %s | Minutes left: %d", v.Moderator or "%UNKNOWN%", minutes)
+						})
 					end
 				end
 
@@ -1962,6 +1965,7 @@ return function(Vargs, env)
 				for _, v in pairs(Settings.Banned) do
 					local entry = type(v) == "string" and v
 					local reason = "No reason provided"
+					local moderator = "%UNKNOWN%"
 					count +=1
 					if type(v) == "table" then
 						if v.Name and v.UserId then
@@ -1974,8 +1978,14 @@ return function(Vargs, env)
 						if v.Reason then
 							reason = v.Reason
 						end
+						if v.Moderator then
+							moderator = v.Moderator
+						end
 					end
-					table.insert(tab, {Text = tostring(entry), Desc = reason})
+					table.insert(tab, {
+						Text = tostring(entry),
+						Desc = string.format("Issued by: %s | Reason: %s", moderator, reason)
+					})
 				end
 				table.insert(tab, 1, "# Banned Users: "..count)
 				table.insert(tab, 2, "―――――――――――――――――――――――")
