@@ -123,13 +123,13 @@ return function(Vargs, env)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.UserId, tonumber(args[2])) end)
 					if ran and service.PointsService:GetAwardablePoints() >= tonumber(args[2]) then
-						Functions.Hint('Gave '..args[2]..' points to '..v.Name, {plr})
+						Functions.Hint("Gave "..args[2].." points to "..service.FormatPlayer(v), {plr})
 					elseif service.PointsService:GetAwardablePoints() < tonumber(args[2]) then
-						Functions.Hint("You don't have "..args[2]..' points to give to '..v.Name, {plr})
+						Functions.Hint("You don't have "..args[2].." points to give to "..service.FormatPlayer(v), {plr})
 					else
-						Functions.Hint("(Unknown Error) Failed to give "..args[2]..' points to '..v.Name, {plr})
+						Functions.Hint("(Unknown Error) Failed to give "..args[2].." points to "..service.FormatPlayer(v), {plr})
 					end
-					Functions.Hint('Available Player Points: '..service.PointsService:GetAwardablePoints(), {plr})
+					Functions.Hint("Available Player Points: "..service.PointsService:GetAwardablePoints(), {plr})
 				end
 			end
 		};
@@ -164,9 +164,9 @@ return function(Vargs, env)
 							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a head admin', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a head admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -191,9 +191,9 @@ return function(Vargs, env)
 							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp head admin', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temp head admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
