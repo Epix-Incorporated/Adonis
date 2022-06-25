@@ -465,16 +465,23 @@ return function(Vargs, env)
 			NoStudio = true; -- TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local player = service.Players:GetUserIdFromNameAsync(args[1])
-				if player then
-					local succeeded, errorMsg, _, placeId, instanceId = pcall(function() return service.TeleportService:GetPlayerPlaceInstanceAsync(player) end)
-					if succeeded and placeId and instanceId then
-						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					local succeeded, fault, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
+					if succeeded then
+						if found and placeId and jobId then
+							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
+							Functions.Hint("Teleporting...", {plr})
+						else
+							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
+						end
 					else
-						Functions.Hint("Could not follow "..args[1]..". "..errorMsg, {plr})
+						Functions.Hint("Unexpected internal error: "..fault, {plr})
 					end
 				else
-					Functions.Hint(args[1].." is not a valid Roblox user", {plr})
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
 			end
 		};
@@ -501,7 +508,7 @@ return function(Vargs, env)
 					Title = "Change Log";
 					Icon = server.MatIcons["Text snippet"];
 					Table = server.Changelog;
-					Size = {500,400};
+					Size = {500, 400};
 				})
 			end
 		};
@@ -537,7 +544,7 @@ return function(Vargs, env)
 					"Usage example: <i>"..Settings.Prefix.."kill "..Settings.SpecialPrefix.."all</i> (where <i>"..Settings.SpecialPrefix.."all</i> is the selector)";
 					"<i>"..Settings.SpecialPrefix.."me</i> - Yourself";
 					"<i>"..Settings.SpecialPrefix.."all</i> - Everyone in the server";
-					"<i>"..Settings.SpecialPrefix.."admins</i> - Admin in the server";
+					"<i>"..Settings.SpecialPrefix.."admins</i> - All admins in the server";
 					"<i>"..Settings.SpecialPrefix.."nonadmins</i> - Non-admins (normal players) in the server";
 					"<i>"..Settings.SpecialPrefix.."others</i> - Everyone except yourself";
 					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server";
@@ -546,7 +553,7 @@ return function(Vargs, env)
 					"<i>"..Settings.SpecialPrefix.."friends</i> - Your friends who are in the server";
 					"<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: "..Settings.Prefix.."kill %raiders";
 					"<i>$GROUPID</i> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)";
-					"<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. "..Settings.Prefix.."kill all,-scel will kill everyone except scel";
+					"<i>-PLAYERNAME</i> - Inverts the selection, ie. will remove PLAYERNAME from list of players to run command on. "..Settings.Prefix.."kill all,-scel will kill everyone except scel";
 					"<i>radius-NUM</i> -- Anyone within a NUM-stud radius of you. "..Settings.Prefix.."ff radius-5 will ff anyone within a 5-stud radius of you.";
 					"";
 					"<b>――――― Repetition ―――――</b>";
@@ -557,7 +564,7 @@ return function(Vargs, env)
 					"";
 					"<b>――――― Reference Info ―――――</b>";
 					"<i>"..Settings.Prefix.."cmds</i> for a list of available commands";
-					"<i>"..Settings.Prefix.."cmdinfo &lt;command w/o prefix&gt;</i> for detailed info about a command";
+					"<i>"..Settings.Prefix.."cmdinfo &lt;command&gt;</i> for detailed info about a specific command";
 					"<i>"..Settings.PlayerPrefix.."brickcolors</i> for a list of BrickColors";
 					"<i>"..Settings.PlayerPrefix.."materials</i> for a list of materials";
 					"";
@@ -583,19 +590,26 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				assert(args[1], "Missing player name")
-				local player = service.Players:GetUserIdFromNameAsync(args[1])
-
-				if player then
-					for i, v in pairs(plr:GetFriendsOnline()) do
-						if v.VisitorId == player and v.IsOnline and v.PlaceId and v.GameId then
-							local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
-							new.Disabled = false
-							new.Parent = plr:FindFirstChildOfClass("Backpack")
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					for _, v in ipairs(plr:GetFriendsOnline()) do
+						if v.VisitorId == userId then
+							if v.IsOnline and v.PlaceId and v.GameId then
+								local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
+								new.Disabled = false
+								new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
+								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
+							else
+								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
+							end
+							return
 						end
 					end
+					Functions.Hint("You are not a friend of "..service.Players:GetNameFromUserIdAsync(userId))
 				else
-					Functions.Hint(args[1].." is not a valid Roblox user", {plr})
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
 			end
 		};
