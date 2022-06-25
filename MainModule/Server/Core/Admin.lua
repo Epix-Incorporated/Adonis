@@ -852,7 +852,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			service.Events.PlayerBanned:Fire(p, reason, doSave)
+			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
 		end;
 
 		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?)
@@ -882,7 +882,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			service.Events.PlayerBanned:Fire(p, reason, true)
+			service.Events.PlayerBanned:Fire(p, reason, true, moderator)
 		end,
 
 		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
