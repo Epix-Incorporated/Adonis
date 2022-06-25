@@ -1346,11 +1346,14 @@ return function(Vargs, env)
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(209424751, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(209424751, players)
 			end
 		};
 
@@ -1363,11 +1366,14 @@ return function(Vargs, env)
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(280846668, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(280846668, players)
 			end
 		};
 
