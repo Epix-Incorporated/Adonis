@@ -118,7 +118,7 @@ return function(Vargs, GetEnv)
 
 		Remote = function(data, com, ...)
 			local args = {...}
-			Remote.Received = += 1
+			Remote.Received += 1
 			if type(com) == "string" then
 				if com == client.DepsName.."GIVE_KEY" then
 					if not Core.Key then
@@ -169,7 +169,7 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(...)
 			service.Events.CharacterAdded:Fire(...)
 
-			wait();
+			wait()
 			UI.GetHolder()
 		end;
 
@@ -194,11 +194,11 @@ return function(Vargs, GetEnv)
 			end
 
 			if Variables.ChatEnabled then
-				service.StarterGui:SetCoreGuiEnabled("Chat",true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 			end
 
 			if Variables.PlayerListEnabled then
-				service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()
