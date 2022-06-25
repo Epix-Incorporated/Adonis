@@ -116,9 +116,9 @@ return function(Vargs, GetEnv)
 			RateLog = 10;
 		};
 
-		Remote = function(data,com,...)
+		Remote = function(data, com, ...)
 			local args = {...}
-			Remote.Received = Remote.Received+1
+			Remote.Received = += 1
 			if type(com) == "string" then
 				if com == client.DepsName.."GIVE_KEY" then
 					if not Core.Key then
@@ -128,8 +128,6 @@ return function(Vargs, GetEnv)
 						log("~! Call Finish_Loading()")
 						client.Finish_Loading()
 					end
-				elseif Remote.UnEncrypted[com] then
-					return {Remote.UnEncrypted[com](...)}
 				elseif Core.Key then
 					local comString = Remote.Decrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
