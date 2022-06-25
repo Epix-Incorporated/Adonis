@@ -14,7 +14,7 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask, Pcall
+	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
@@ -32,7 +32,6 @@ return function(Vargs, GetEnv)
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
 		Encrypt = Remote.Encrypt
-		UnEncrypted = Remote.UnEncrypted
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -279,7 +278,7 @@ return function(Vargs, GetEnv)
 						if type(com) == "string" then
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
+									Remote.Fire(p, keys.Special.."GIVE_KEY", keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
@@ -293,14 +292,6 @@ return function(Vargs, GetEnv)
 									Desc = "Player requested key from server",
 									Player = p;
 								})
-							elseif UnEncrypted[com] then
-								AddLog("RemoteFires", {
-									Text = p.Name.." fired "..tostring(com),
-									Desc = "Player fired unencrypted remote command "..com,
-									Player = p;
-								})
-
-								return {UnEncrypted[com](p,...)}
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
