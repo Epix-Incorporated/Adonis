@@ -3051,7 +3051,7 @@ return function(Vargs, env)
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
 					local tool = service.New("Tool", {
-						ToolTip = "ClickTP - "..service.FormatPlayer(v)
+						ToolTip = "ClickTP - "..service.FormatPlayer(v);
 						CanBeDropped = false;
 						RequiresHandle = false;
 					})
@@ -3076,7 +3076,7 @@ return function(Vargs, env)
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
 					local tool = service.New("Tool", {
-						ToolTip = "ClickWalk - "..service.FormatPlayer(v)
+						ToolTip = "ClickWalk - "..service.FormatPlayer(v);
 						CanBeDropped = false;
 						RequiresHandle = false;
 					})
