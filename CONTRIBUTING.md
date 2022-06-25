@@ -1,7 +1,7 @@
 <div align="center">
 
 # 📜 Adonis Contribution Guidelines
-*Updated on 2022-06-25 18:33 UTC by Expertcoderz*
+*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
 <img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
 
@@ -26,7 +26,7 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 **A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
   
-<details><summary>Generally, however, here are a few things to note [click to expand]:</summary>
+<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
 <hr>
 
   Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
@@ -72,5 +72,7 @@ Discord server: https://discord.com/invite/H5RvTP3
 ### That's all, folks!
 
 Feel free to make enquiries in our Discord server.
+  
+<sub>Adonis Contribution Guide 2022</sub>
 
 </div>
