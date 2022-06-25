@@ -2419,10 +2419,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local scrapt = v.Character:FindFirstChild("HippityHopitus")
-					if scrapt then
-						scrapt.Disabled = true
-						scrapt:Destroy()
+					local scr = v.Character:FindFirstChild("HippityHopitus")
+					if scr then
+						scr.Disabled = true
+						scr:Destroy()
 					end
 				end
 			end
@@ -2522,8 +2522,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
-						Admin.RunCommand(Settings.Prefix.."freeze", 
-						)
+						Admin.RunCommand(Settings.Prefix.."freeze", v.Name)
 						local char = v.Character
 						local zeus = service.New("Model", char)
 						local cloud = service.New("Part", zeus)
