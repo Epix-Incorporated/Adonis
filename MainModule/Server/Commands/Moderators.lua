@@ -30,16 +30,15 @@ return function(Vargs, env)
 					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
-						local PlayerName = v.Name
+						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
 							Remote.Send(v, "Function", "Kill")
 						else
 							v:Kick(args[2])
 						end
-
-						Functions.Hint("Kicked "..PlayerName, {plr})
+						Functions.Hint("Kicked "..playerName, {plr})
 					else
-						Functions.Hint("Unable to kick "..v.Name.." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to kick "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -414,12 +413,12 @@ return function(Vargs, env)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Shield;
-							Message = "Warned ".. v.Name;
+							Message = "Warned ".. service.FormatPlayer(v);
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
 					else
-						Functions.Hint("Unable to warn "..v.Name.." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to warn "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -456,7 +455,7 @@ return function(Vargs, env)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Shield;
-							Message = "Removed warning from ".. v.Name;
+							Message = "Removed warning from ".. service.FormatPlayer(v);
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
@@ -492,12 +491,12 @@ return function(Vargs, env)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Shield;
-							Message = "Warned ".. v.Name;
+							Message = "Kick-warned ".. service.FormatPlayer(v);
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
 					else
-						Functions.Hint("Unable to kickwarn "..v.Name.." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to kick-warn "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -507,7 +506,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"warnings", "showwarnings"};
 			Args = {"player"};
-			Description = "Shows warnings a player has";
+			Description = "Shows a list of warnings a player has";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -531,7 +530,8 @@ return function(Vargs, env)
 					end
 
 					Remote.MakeGui(plr, "List", {
-						Title = v.Name;
+						Title = service.FormatPlayer(v);
+						Icon = server.MatIcons.Gavel;
 						Table = tab;
 						TimeOptions = {
 							WithDate = true;
@@ -555,7 +555,7 @@ return function(Vargs, env)
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
 						Icon = server.MatIcons.Shield;
-						Message = "Cleared warnings for ".. v.Name;
+						Message = "Cleared warnings for ".. service.FormatPlayer(v);
 						Time = 5;
 						OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 					})
@@ -735,7 +735,7 @@ return function(Vargs, env)
 						for k, t in pairs(v.Backpack:GetChildren()) do
 							t.Parent = tools
 						end
-						Admin.RunCommand(Settings.Prefix.."name", v.Name, "-AFK-_"..v.Name.."_-AFK-")
+						Admin.RunCommand(Settings.Prefix.."name", v.Name, "-AFK-_"..service.FormatPlayer(v).."_-AFK-")
 						local torso = v.Character.HumanoidRootPart
 						local pos = torso.CFrame
 						local running=true
@@ -1276,7 +1276,7 @@ return function(Vargs, env)
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						Remote.MakeGui(plr, "List", {
-							Title = v.Name.."'s tools";
+							Title = service.FormatPlayer(v).."'s tools";
 							Icon = server.MatIcons["Inventory 2"];
 							Table = Logs.ListUpdaters.ShowBackpack(plr, v);
 							AutoUpdate = if args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes") then 1 else nil;
@@ -1348,8 +1348,8 @@ return function(Vargs, env)
 								})
 							else
 								table.insert(tab, {
-									Text = "[LOADING] "..v.Name;
-									Desc = "Lower: "..string.lower(v.Name).." - Ping: "..ping;
+									Text = "[LOADING] "..service.FormatPlayer(v, true);
+									Desc = "Lower: "..string.lower(v.Name).." | Ping: "..ping;
 								})
 							end
 						end
@@ -1434,7 +1434,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local tab = {}
-				for i, v in pairs(Variables.Cameras) do
+				for _, v in pairs(Variables.Cameras) do
 					table.insert(tab, {Text = v.Name, Desc = "Pos: "..tostring(v.Brick.Position)})
 				end
 				Remote.MakeGui(plr, "List", {Title = "Cameras", Tab = tab})
@@ -1749,6 +1749,7 @@ return function(Vargs, env)
 				})
 			end;
 		};
+
 		GetPing = {
 			Prefix = Settings.Prefix;
 			Commands = {"getping"};
@@ -1757,10 +1758,11 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					Functions.Hint(v.Name.."'s Ping is "..Remote.Get(v, "Ping").."ms", {plr})
+					Functions.Hint(service.FormatPlayer(v).."'s Ping is "..Remote.Get(v, "Ping").."ms", {plr})
 				end
 			end
 		};
+
 		ShowTasks = {
 			Prefix = "";
 			Commands = {":tasks", ":tasklist", Settings.Prefix.."tasks", Settings.Prefix.."tasklist"};
@@ -1880,7 +1882,7 @@ return function(Vargs, env)
 					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
 						table.insert(unsorted, {
-							Text = string.format(RANK_TEXT_FORMAT, v.Name, (rankName or ("Level: ".. level)));
+							Text = string.format(RANK_TEXT_FORMAT, service.FormatPlayer(v), (rankName or ("Level: ".. level)));
 							Desc = string.format(RANK_DESCRIPTION_FORMAT, rankName or (level >= 1000 and "Place Owner") or "Unknown", level);
 							SortLevel = level;
 						})
@@ -1888,11 +1890,11 @@ return function(Vargs, env)
 				end
 
 				table.sort(unsorted, function(one, two)
-					return one.SortLevel > two.SortLevel;
+					return one.SortLevel > two.SortLevel
 				end)
 
-				for i, v in ipairs(unsorted) do
-					v.SortLevel = nil;
+				for _, v in ipairs(unsorted) do
+					v.SortLevel = nil
 					table.insert(temptable, v)
 				end
 
@@ -2305,9 +2307,9 @@ return function(Vargs, env)
 				end
 			end;
 			Function = function(plr: Player, args: {string})
-				for i, v in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(plr, "List", {
-						Title = v.Name .." Instances";
+						Title = service.FormatPlayer(v).."'s Client Instances";
 						Table = Logs.ListUpdaters.ShowClientInstances(plr, v);
 						Stacking = false;
 						Update = "ShowClientInstances";
@@ -2329,8 +2331,8 @@ return function(Vargs, env)
 						Routine(Remote.RemoveGui, v, true)
 					else
 						Routine(function()
-							for _, gui in ipairs({"Message", "Hint", "Notification", "PM", "Output", "Effect", "Alert"}) do
-								Remote.RemoveGui(v, gui)
+							for _, guiName in ipairs({"Message", "Hint", "Notification", "PM", "Output", "Effect", "Alert"}) do
+								Remote.RemoveGui(v, guiName)
 							end
 						end)
 					end
@@ -2429,8 +2431,8 @@ return function(Vargs, env)
 			Description = "Shows you the list of capes for the cape command";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local list={}
-				for i, v in pairs(Variables.Capes) do
+				local list = {}
+				for _, v in pairs(Variables.Capes) do
 					table.insert(list, v.Name)
 				end
 				Remote.MakeGui(plr, "List", {Title = "Cape List", Tab = list;})
@@ -3043,17 +3045,20 @@ return function(Vargs, env)
 			Description = "Gives you a tool that lets you click where you want the target player to stand, hold r to rotate them";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local plrBackpack = assert(plr:FindFirstChildOfClass("Backpack"), "You have no backpack")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Teleport"
 					scr.Target.Value = v.Name
-					local tool = service.New("Tool")
-					tool.CanBeDropped = false
-					tool.RequiresHandle = false
+					local tool = service.New("Tool", {
+						ToolTip = "ClickTP - "..service.FormatPlayer(v)
+						CanBeDropped = false;
+						RequiresHandle = false;
+					})
 					service.New("StringValue", tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
-					tool.Parent = plr.Backpack
+					tool.Parent = plrBackpack
 				end
 			end
 		};
@@ -3065,17 +3070,20 @@ return function(Vargs, env)
 			Description = "Gives you a tool that lets you click where you want the target player to walk, hold r to rotate them";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local plrBackpack = assert(plr:FindFirstChildOfClass("Backpack"), "You have no backpack")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local scr = Deps.Assets.ClickTeleport:Clone()
 					scr.Mode.Value = "Walk"
 					scr.Target.Value = v.Name
-					local tool = service.New("Tool")
-					tool.CanBeDropped = false
-					tool.RequiresHandle = false
+					local tool = service.New("Tool", {
+						ToolTip = "ClickWalk - "..service.FormatPlayer(v)
+						CanBeDropped = false;
+						RequiresHandle = false;
+					})
 					service.New("StringValue", tool).Name = Variables.CodeName
 					scr.Parent = tool
 					scr.Disabled = false
-					tool.Parent = plr.Backpack
+					tool.Parent = plrBackpack
 				end
 			end
 		};
@@ -6097,7 +6105,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(plr, "List", {
-						Title = v.Name.." Local Log";
+						Title = service.FormatPlayer(v).."'s Local Log";
 						Table = Logs.ListUpdaters.LocalLog(plr, v);
 						Update = "LocalLog";
 						UpdateArg = v;
