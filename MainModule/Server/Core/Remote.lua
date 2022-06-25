@@ -672,22 +672,12 @@ return function(Vargs, GetEnv)
 
 		};
 
-		UnEncrypted = {
-			--[[TrustCheck = function(p)
-				local keys = Remote.Clients[tostring(p.UserId)]
-				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;--]]
-
-			ProcessChat = function(p: Player,msg: string)
-				Process.Chat(p,msg)
-			end;
-
-			ExplorerAction = function(p: Player, ...)
-				--if Admin.CheckAdmin(p) then
-				--// Handle stuff like Dex calls(?)
-				--end
-			end;
-		};
+		UnEncrypted = setmetatable({}, {
+			__newindex = function(_, ind, val)
+				warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands")
+				Remote.Commands[ind] = val
+			end
+		});
 
 		Commands = {
 			GetReturn = function(p: Player,args: {[number]: any})
