@@ -164,7 +164,7 @@ return function(Vargs, env)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
-								Functions.Hint(string.format("Removed %s from rank %s", v.Name, targRank or "[unknown rank]"), {plr})
+								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v), targRank or "[unknown rank]"), {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = string.format("You are no longer a(n) %s", targRank or "admin");
@@ -172,10 +172,10 @@ return function(Vargs, env)
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s rank", {plr})
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s rank", {plr})
 							end
 						else
-							Functions.Hint(v.Name.." does not already have any rank to remove", {plr})
+							Functions.Hint(service.FormatPlayer(v).." does not already have any rank to remove", {plr})
 						end
 					end
 				else
@@ -240,7 +240,7 @@ return function(Vargs, env)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v,true)
-								Functions.Hint("Removed "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("Removed "..service.FormatPlayer(v).."'s admin powers", {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
@@ -248,10 +248,10 @@ return function(Vargs, env)
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s admin powers", {plr})
 							end
 						else
-							Functions.Hint(v.Name..' is not an admin', {plr})
+							Functions.Hint(service.FormatPlayer(v).." is not an admin", {plr})
 						end
 					end
 				end
@@ -277,9 +277,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp moderator', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temp moderator", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -304,9 +304,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a moderator', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a moderator", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -396,7 +396,7 @@ return function(Vargs, env)
 						if #plrs>0 then
 							for _, v in ipairs(plrs) do
 								table.insert(Variables.Whitelist.Lists.Settings, v.Name..":"..v.UserId)
-								Functions.Hint("Added "..v.Name.." to the whitelist", {plr})
+								Functions.Hint("Added "..service.FormatPlayer(v).." to the whitelist", {plr})
 							end
 						else
 							table.insert(Variables.Whitelist.Lists.Settings, args[2])
@@ -1017,7 +1017,7 @@ return function(Vargs, env)
 					cl.Parent = v.Backpack
 					task.wait()
 					cl.Disabled = false
-					Functions.Hint("Ran LocalScript on "..v.Name, {plr})
+					Functions.Hint("Ran LocalScript on "..service.FormatPlayer(v), {plr})
 				end
 			end
 		};
@@ -1034,7 +1034,7 @@ return function(Vargs, env)
 					local PlayerData = Core.GetPlayer(v)
 					if not PlayerData.AdminNotes then PlayerData.AdminNotes={} end
 					table.insert(PlayerData.AdminNotes, args[2])
-					Functions.Hint("Added "..v.Name.." Note "..args[2], {plr})
+					Functions.Hint("Added "..service.FormatPlayer(v).." Note "..args[2], {plr})
 					Core.SavePlayer(v, PlayerData)
 				end
 			end
@@ -1055,7 +1055,7 @@ return function(Vargs, env)
 						else
 							for k, m in ipairs(PlayerData.AdminNotes) do
 								if string.sub(string.lower(m), 1, #args[2]) == string.lower(args[2]) then
-									Functions.Hint("Removed "..v.Name.." Note "..m, {plr})
+									Functions.Hint("Removed "..service.FormatPlayer(v).." Note "..m, {plr})
 									table.remove(PlayerData.AdminNotes, k)
 								end
 							end
@@ -1077,10 +1077,10 @@ return function(Vargs, env)
 					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then
-						Functions.Hint("No notes on "..v.Name, {plr})
-						return
+						Functions.Hint("No notes found on "..service.FormatPlayer(v), {plr})
+						continue
 					end
-					Remote.MakeGui(plr, "List", {Title = v.Name, Table = notes})
+					Remote.MakeGui(plr, "List", {Title = service.FormatPlayer(v), Table = notes})
 				end
 			end
 		};
