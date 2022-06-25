@@ -544,7 +544,7 @@ return function(Vargs, env)
 					"Usage example: <i>"..Settings.Prefix.."kill "..Settings.SpecialPrefix.."all</i> (where <i>"..Settings.SpecialPrefix.."all</i> is the selector)";
 					"<i>"..Settings.SpecialPrefix.."me</i> - Yourself";
 					"<i>"..Settings.SpecialPrefix.."all</i> - Everyone in the server";
-					"<i>"..Settings.SpecialPrefix.."admins</i> - Admin in the server";
+					"<i>"..Settings.SpecialPrefix.."admins</i> - All admins in the server";
 					"<i>"..Settings.SpecialPrefix.."nonadmins</i> - Non-admins (normal players) in the server";
 					"<i>"..Settings.SpecialPrefix.."others</i> - Everyone except yourself";
 					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server";
@@ -553,7 +553,7 @@ return function(Vargs, env)
 					"<i>"..Settings.SpecialPrefix.."friends</i> - Your friends who are in the server";
 					"<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: "..Settings.Prefix.."kill %raiders";
 					"<i>$GROUPID</i> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)";
-					"<i>-PLAYERNAME</i> - Will remove PLAYERNAME from list of players to run command on. "..Settings.Prefix.."kill all,-scel will kill everyone except scel";
+					"<i>-PLAYERNAME</i> - Inverts the selection, ie. will remove PLAYERNAME from list of players to run command on. "..Settings.Prefix.."kill all,-scel will kill everyone except scel";
 					"<i>radius-NUM</i> -- Anyone within a NUM-stud radius of you. "..Settings.Prefix.."ff radius-5 will ff anyone within a 5-stud radius of you.";
 					"";
 					"<b>――――― Repetition ―――――</b>";
@@ -564,7 +564,7 @@ return function(Vargs, env)
 					"";
 					"<b>――――― Reference Info ―――――</b>";
 					"<i>"..Settings.Prefix.."cmds</i> for a list of available commands";
-					"<i>"..Settings.Prefix.."cmdinfo &lt;command w/o prefix&gt;</i> for detailed info about a command";
+					"<i>"..Settings.Prefix.."cmdinfo &lt;command&gt;</i> for detailed info about a specific command";
 					"<i>"..Settings.PlayerPrefix.."brickcolors</i> for a list of BrickColors";
 					"<i>"..Settings.PlayerPrefix.."materials</i> for a list of materials";
 					"";
