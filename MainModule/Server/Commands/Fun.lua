@@ -1341,7 +1341,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forest", "sendtotheforest", "intothewoods"};
 			Args = {"player"};
-			Description = "Sends player to The Forest for a time out";
+			Description = "Sends player to The Forest for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
@@ -1361,7 +1361,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"maze", "sendtothemaze", "mazerunner"};
 			Args = {"player"};
-			Description = "Sends player to The Maze for a time out";
+			Description = "Sends player to The Maze for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
@@ -1370,7 +1370,7 @@ return function(Vargs, env)
 				for i, p in ipairs(players) do
 					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
 						table.remove(players, i)
-						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(280846668, players)
