@@ -92,34 +92,22 @@ return function(Vargs, env)
 			NoStudio = true;
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
-				local id = tonumber(args[2])
+				local reservedServerInfo = (Core.GetData("PrivateServers") or {})[args[2]]
+				local placeId = assert(if reservedServerInfo then reservedServerInfo.ID else tonumber(args[2]), "Invalid place ID or server name (argument #2)")
 				local players = service.GetPlayers(plr, args[1])
-				local servers = Core.GetData("PrivateServers") or {}
-				local code = servers[args[2]]
-				if code then
-					for i, v in pairs(players) do
-						service.TeleportService:TeleportToPrivateServer(code.ID, code.Code, {v})
-						local TeleportValidation
-						TeleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(Player,TeleportResult,ErrorMessage)
-							if Player == v then
-								Functions.Hint(string.format("Failed to teleport %s: %s",v.Name,ErrorMessage), {plr})
-								TeleportValidation:Disconnect()
-							end
-						end)
-					end
-				elseif id then
-					for i, v in pairs(players) do
-						service.TeleportService:Teleport(args[2], v)
-						local TeleportValidation
-						TeleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(Player,TeleportResult,ErrorMessage)
-							if Player == v then
-								Functions.Hint(string.format("Failed to teleport %s: %s",v.Name,ErrorMessage), {plr})
-								TeleportValidation:Disconnect()
-							end
-						end)
-					end
-				else
-					error("Invalid place ID/server name")
+				local teleportOptions = if reservedServerInfo then service.New("TeleportOptions", {
+					ReservedServerAccessCode = reservedServerInfo.Code
+				}) else nil
+
+				local teleportValidation = service.TeleportService.TeleportInitFailed:Connect(function(p: Player, teleportResult: Enum.TeleportResult, errorMessage: string)
+					Function.Hint(string.format("Failed to teleport %s: [%s] %s", service.FormatPlayer(p), teleportResult.Name, errorMessage or "???"), {plr})
+				end)
+				local success, fault = pcall(service.TeleportService.TeleportAsync, service.TeleportService, placeId, players, teleportOptions)
+				teleportValidation:Disconnect()
+				if success and plr and plr.Parent == service.Players then
+					Functions.Hint("Teleport success", {plr})
+				elseif not success then
+					error(fault)
 				end
 			end
 		};
