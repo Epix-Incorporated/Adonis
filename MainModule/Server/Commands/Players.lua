@@ -453,7 +453,7 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.TeleportService.TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
 
@@ -508,7 +508,7 @@ return function(Vargs, env)
 					Title = "Change Log";
 					Icon = server.MatIcons["Text snippet"];
 					Table = server.Changelog;
-					Size = {500,400};
+					Size = {500, 400};
 				})
 			end
 		};
