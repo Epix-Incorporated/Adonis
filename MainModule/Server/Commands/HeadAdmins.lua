@@ -48,7 +48,9 @@ return function(Vargs, env)
 					})) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddTimeBan(v, tonumber(time), reason, plr)
-						Functions.Hint("Banned "..tostring(v.Name).." for ".. args[2], {plr})
+						Functions.Hint("Time-banned "..service.FormatPlayer(v).." for ".. args[2], {plr})
+					else
+						Functions.Hint("Unable to time-ban "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -85,16 +87,16 @@ return function(Vargs, env)
 				local reason = args[3] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local UserId = service.Players:GetUserIdFromNameAsync(i)
+					local userId = service.Players:GetUserIdFromNameAsync(i)
 
-					if UserId == plr.UserId then
+					if userId == plr.UserId then
 						error("You cannot ban yourself or the creator of the game", 2)
 						return
 					end
 
-					if UserId then
+					if userId then
 						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason, plr)
-						Functions.Hint("Banned "..tostring(i).." for ".. args[2], {plr})
+						Functions.Hint("Time-banned '"..tostring(i).."' for ".. args[2], {plr})
 					end
 				end
 			end
@@ -184,9 +186,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name.." is now an admin", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now an admin", {plr})
 					else
-						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -211,9 +213,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name.." is now a temporary admin", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temporary admin", {plr})
 					else
-						Functions.Hint(v.Name.." is already the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -229,9 +231,7 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-
-				if not Core.CrossServer("Message", plr.Name, args[1]) then
+				if not Core.CrossServer("Message", plr.Name, assert(args[1], "Missing message")) then
 					error("CrossServer handler not ready; please try again later")
 				end
 			end;
@@ -247,10 +247,7 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing time amount")
-				assert(args[2], "Missing message")
-
-				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
+				if not Core.CrossServer("Message", plr.Name, assert(args[2], "Missing message"), assert(args[1], "Missing time amount")]) then
 					error("CrossServer handler not ready; please try again later")
 				end
 			end;
@@ -289,8 +286,8 @@ return function(Vargs, env)
 
 				local cards = trello.Lists.GetCards(list.id)
 				local temp = table.create(#cards)
-				for i, v in pairs(cards) do
-					table.insert(temp, {Text=v.name,Desc=v.desc})
+				for _, v in pairs(cards) do
+					table.insert(temp, {Text = v.name, Desc = v.desc})
 				end
 				Remote.MakeGui(plr, "List", {Title = list.name; Tab = temp})
 			end
@@ -334,7 +331,7 @@ return function(Vargs, env)
 			Description = "Changes the backup for the restore map command to the map's current state";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				local plr_name = plr and plr.Name
+				local plr_name = if plr then service.FormatPlayer(plr) else "%SYSTEM%"
 
 				if plr then
 					Functions.Hint("Updating Map Backup...", {plr})
@@ -378,7 +375,7 @@ return function(Vargs, env)
 
 				Logs.AddLog(Logs.Script, {
 					Text = "Backup Complete";
-					Desc = (plr_name or "<SERVER>").." has successfully backed up the map.";
+					Desc = plr_name.." has successfully backed up the map.";
 				})
 			end
 		};
