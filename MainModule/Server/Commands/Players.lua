@@ -469,8 +469,8 @@ return function(Vargs, env)
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
 				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
 				if success and userId then
-					local succeeded, fault, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
-					if succeeded then
+					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
+					if success then
 						if found and placeId and jobId then
 							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
 							Functions.Hint("Teleporting...", {plr})
@@ -478,7 +478,7 @@ return function(Vargs, env)
 							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
 						end
 					else
-						Functions.Hint("Unexpected internal error: "..fault, {plr})
+						Functions.Hint("Unexpected internal error: "..found, {plr})
 					end
 				else
 					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
