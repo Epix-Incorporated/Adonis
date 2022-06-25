@@ -453,7 +453,7 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+				service.TeleportService.TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
 			end
 		};
 
@@ -467,16 +467,21 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument #1 (username) is required")
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local userId = service.Players:GetUserIdFromNameAsync(args[1])
-				if userId then
-					local succeeded, errorMsg, _, placeId, instanceId = pcall(function() return service.TeleportService:GetPlayerPlaceInstanceAsync(userId) end)
-					if succeeded and placeId and instanceId then
-						service.TeleportService:TeleportToPlaceInstance(placeId, instanceId, plr)
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					local succeeded, fault, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
+					if succeeded then
+						if found and placeId and jobId then
+							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
+							Functions.Hint("Teleporting...", {plr})
+						else
+							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
+						end
 					else
-						Functions.Hint("Could not follow "..args[1]..". "..errorMsg, {plr})
+						Functions.Hint("Unexpected internal error: "..fault, {plr})
 					end
 				else
-					Functions.Hint(args[1].." is not a valid Roblox user", {plr})
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
 			end
 		};
@@ -587,17 +592,24 @@ return function(Vargs, env)
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
 				assert(args[1], "Argument #1 (username) is required")
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local userId = service.Players:GetUserIdFromNameAsync(args[1])
-				if userId then
-					for _, v in pairs(plr:GetFriendsOnline()) do
-						if v.VisitorId == userId and v.IsOnline and v.PlaceId and v.GameId then
-							local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
-							new.Disabled = false
-							new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					for _, v in ipairs(plr:GetFriendsOnline()) do
+						if v.VisitorId == userId then
+							if v.IsOnline and v.PlaceId and v.GameId then
+								local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
+								new.Disabled = false
+								new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
+								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
+							else
+								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
+							end
+							return
 						end
 					end
+					Functions.Hint("You are not a friend of "..service.Players:GetNameFromUserIdAsync(userId))
 				else
-					Functions.Hint(args[1].." is not a valid Roblox user", {plr})
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
 			end
 		};
