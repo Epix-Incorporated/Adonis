@@ -1,5 +1,9 @@
-# 📜 Contribution Guidelines
-*Updated on 2022-06-24 13:13 UTC by Expertcoderz*
+<div align="center">
+
+# 📜 Adonis Contribution Guidelines
+*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
+
+<img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
 
 Adonis is an ever expanding, frequently updated, slightly complicated, system. In order to keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
@@ -20,13 +24,24 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 ## Q: Is there a style guide for writing code?
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. Generally, however, here are a few things to note:
-- Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
-- Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
-- No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
-- Don't overwrite builtin globals when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
-- Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
-- Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
+  
+<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
+<hr>
+
+  Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
+
+  Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
+
+  No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
+
+  Don't overwrite builtin globals unnecessarily when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
+
+  Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
+  
+  Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
+<hr>
+</details>
 
 ## Q: What are some things I should watch out for when submitting my changes?
 
@@ -57,3 +72,7 @@ Discord server: https://discord.com/invite/H5RvTP3
 ### That's all, folks!
 
 Feel free to make enquiries in our Discord server.
+  
+<sub>Adonis Contribution Guide 2022</sub>
+
+</div>
