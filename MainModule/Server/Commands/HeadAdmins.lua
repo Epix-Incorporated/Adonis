@@ -95,7 +95,7 @@ return function(Vargs, env)
 					end
 
 					if userId then
-						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason, plr)
+						Admin.AddTimeBan({UserId = userId, Name = i}, tonumber(time), reason, plr)
 						Functions.Hint("Time-banned '"..tostring(i).."' for ".. args[2], {plr})
 					end
 				end
