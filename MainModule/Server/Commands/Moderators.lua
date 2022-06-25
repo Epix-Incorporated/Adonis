@@ -1846,21 +1846,17 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"toserver", "joinserver", "jserver", "jplace"};
 			Args = {"player", "JobId"};
-			Description = "Send player(s) to a server using the server's JobId";
+			Description = "Send player(s) to a specific server using the server's JobId";
 			NoStudio = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local jobId = args[2];
-				assert(args[1], "Missing player name")
-				assert(jobId, "Missing server JobId")
-				if service.RunService:IsStudio() then
-					error("Command cannot be used in studio.", 0)
-				else
-					for _, v in pairs(service.GetPlayers(plr, args[1])) do
-						Functions.Message("Adonis", "Teleporting to server \""..jobId.."\"\nPlease wait", {v}, false, 10)
-						service.TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, v)
-					end
-				end
+				local players = service.GetPlayers(plr, assert(args[1], "Missing argument #1 (players)"))
+				local teleportOptions = service.New("TeleportOptions", {
+					ServerInstanceId = assert(args[2], "Missing argument #2 (server JobId)")
+				})
+
+				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
+				Functions.Message("Adonis", "Teleporting to server \""..args[2].."\"\nPlease wait...", players, false, 10)
 			end
 		};
 
@@ -1875,12 +1871,12 @@ return function(Vargs, env)
 				local RANK_RICHTEXT = "<b><font color='rgb(77, 77, 255)'>%s (Level: %d)</font></b>"
 				local RANK_TEXT_FORMAT = "%s [%s]"
 
-				local temptable = {};
-				local unsorted = {};
+				local temptable = {}
+				local unsorted = {}
 
 				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>==== Admins In-Game ====</font></b>")
 
-				for i, v in ipairs(service.GetPlayers()) do
+				for _, v in ipairs(service.GetPlayers()) do
 					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
 						table.insert(unsorted, {
@@ -4446,35 +4442,26 @@ return function(Vargs, env)
 			Description = "Teleport the target player(s) to the place belonging to <placeID> or a reserved server";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local id = tonumber(args[2])
-				local players = service.GetPlayers(plr, args[1])
-				local servers = Core.GetData("PrivateServers") or {}
-				local code = servers[args[2]]
-				if code then
-					for i, v in pairs(players) do
-						Routine(function()
-							local tp = Remote.MakeGuiGet(v, "Notification", {
+				local reservedServerInfo = (Core.GetData("PrivateServers") or {})[args[2]]
+				local placeId = assert(if reservedServerInfo then reservedServerInfo.ID else tonumber(args[2]), "Invalid place ID or server name (argument #2)")
+				local teleportOptions = if reservedServerInfo then service.New("TeleportOptions", {
+					ReservedServerAccessCode = reservedServerInfo.Code
+				}) else nil
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					Routine(function()
+						if
+							Remote.MakeGuiGet(v, "Notification", {
 								Title = "Teleport";
-								Text = "Click to teleport to server "..args[2]..".";
+								Text = if reservedServerInfo then string.format("Click to teleport to server %s.", args[2]) else string.format("Click to teleport to place %d.", placeId);
 								Time = 30;
 								OnClick = Core.Bytecode("return true");
 							})
-							if tp then
-								service.TeleportService:TeleportToPrivateServer(code.ID, code.Code, {v})
-							end
-						end)
-					end
-				elseif id then
-					for i, v in pairs(players) do
-						Remote.MakeGui(v, "Notification", {
-							Title = "Teleport";
-							Text = "Click to teleport to place "..args[2]..".";
-							Time = 30;
-							OnClick = Core.Bytecode("service.TeleportService:Teleport("..args[2]..")");
-						})
-					end
-				else
-					Functions.Hint("Invalid place ID/server name", {plr})
+						then
+							service.TeleportService:TeleportAsync(placeId, {v}, teleportOptions)
+						else
+							Functions.Hint(service.FormatPlayer(v).." declined to teleport", {plr})
+						end
+					end)
 				end
 			end
 		};
@@ -4537,6 +4524,7 @@ return function(Vargs, env)
 			Args = {"player"};
 			Description = "Teleports the target player(s) to the Group Recruiting Plaza to look for potential group members";
 			NoStudio = true;
+			Hidden = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do

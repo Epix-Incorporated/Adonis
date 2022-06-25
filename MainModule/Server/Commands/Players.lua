@@ -453,7 +453,9 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
+					ServerInstanceId = game.JobId
+				}))
 			end
 		};
 
@@ -472,7 +474,9 @@ return function(Vargs, env)
 					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
 					if success then
 						if found and placeId and jobId then
-							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
 							Functions.Hint("Teleporting...", {plr})
 						else
 							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
@@ -480,6 +484,37 @@ return function(Vargs, env)
 					else
 						Functions.Hint("Unexpected internal error: "..found, {plr})
 					end
+				else
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
+				end
+			end
+		};
+
+		GlobalJoin = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"joinfriend", "globaljoin"};
+			Args = {"username"};
+			Description = "Joins your friend outside/inside of the game (must be online)";
+			NoStudio = true;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
+				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					for _, v in ipairs(plr:GetFriendsOnline()) do
+						if v.VisitorId == userId then
+							if v.IsOnline and v.PlaceId and v.GameId then
+								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
+								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
+							else
+								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
+							end
+							return
+						end
+					end
+					Functions.Hint("You are not a friend of the specified user", {plr})
 				else
 					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
@@ -578,39 +613,6 @@ return function(Vargs, env)
 					Size = {300, 250};
 					RichText = true;
 				})
-			end
-		};
-
-		GlobalJoin = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend", "globaljoin"};
-			Args = {"username"};
-			Description = "Joins your friend outside/inside of the game (must be online)";
-			NoStudio = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
-				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				assert(args[1], "Argument #1 (username) is required")
-				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-				if success and userId then
-					for _, v in ipairs(plr:GetFriendsOnline()) do
-						if v.VisitorId == userId then
-							if v.IsOnline and v.PlaceId and v.GameId then
-								local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
-								new.Disabled = false
-								new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
-								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
-							else
-								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
-							end
-							return
-						end
-					end
-					Functions.Hint("You are not a friend of "..service.Players:GetNameFromUserIdAsync(userId))
-				else
-					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
-				end
 			end
 		};
 

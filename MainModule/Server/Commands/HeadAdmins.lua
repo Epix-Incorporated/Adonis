@@ -401,7 +401,7 @@ return function(Vargs, env)
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.SocialService:PromptGameInvite(v)
 				end
 			end
@@ -411,13 +411,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forcerejoin"};
 			Args = {"player"};
-			Description = "Forces target player(s) to rejoin the server, same as them running !rejoin";
+			Description = "Forces target player(s) to rejoin the server; same as them running !rejoin";
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, v)
-				end
+				local players = service.GetPlayers(plr, args[1])
+				local teleportOptions = service.New("TeleportOptions", {
+					ServerInstanceId = game.JobId
+				})
+				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
 			end
 		};
 
@@ -432,8 +434,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
-					Title = "Shutdown all running servers?";
+					Question = "Shutdown all running servers for the reason '"..tostring(args[1]).."'?";
+					Title = "Global Shutdown";
 				})
 				if ans == "Yes" then
 					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
