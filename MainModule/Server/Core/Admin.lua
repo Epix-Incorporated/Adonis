@@ -1260,11 +1260,11 @@ return function(Vargs, GetEnv)
 				--// Check if user has permission to the command
 				permAllowed = true
 			end
-			
+
 			if permAllowed and not ignoreCooldown and not isCreator and type(pDat.Player) == "userdata" then
-				local playerCooldown 			= tonumber(cmd.PlayerCooldown)
-				local serverCooldown 			= tonumber(cmd.ServerCooldown)
-				local crossCooldown 			= tonumber(cmd.CrossCooldown)
+				local playerCooldown = tonumber(cmd.PlayerCooldown)
+				local serverCooldown = tonumber(cmd.ServerCooldown)
+				local crossCooldown = tonumber(cmd.CrossCooldown)
 				
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
@@ -1295,20 +1295,20 @@ return function(Vargs, GetEnv)
 				local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
 				
 				if playerCooldown and pCooldown_playerCache then
-					local secsTillPass = os.clock()-pCooldown_playerCache
+					local secsTillPass = os.clock() - pCooldown_playerCache
 					local passCooldown = secsTillPass >= playerCooldown
 
 					if not passCooldown then
-						return false,"PlayerCooldown",math.floor(playerCooldown-secsTillPass)
+						return false, "PlayerCooldown", math.floor(playerCooldown-secsTillPass)
 					end
 				end
 
 				if serverCooldown and sCooldown_playerCache then
-					local secsTillPass = os.clock()-sCooldown_playerCache
+					local secsTillPass = os.clock() - sCooldown_playerCache
 					local passCooldown = secsTillPass >= serverCooldown
 
 					if not passCooldown then
-						return false,"ServerCooldown",math.floor(serverCooldown-secsTillPass)
+						return false, "ServerCooldown", math.floor(serverCooldown-secsTillPass)
 					end
 				end
 
@@ -1326,14 +1326,14 @@ return function(Vargs, GetEnv)
 						local passCooldown = secsTillPass >= crossCooldown
 
 						if not passCooldown then
-							return false,"CrossCooldown",math.floor(crossCooldown-secsTillPass)
+							return false, "CrossCooldown", math.floor(crossCooldown-secsTillPass)
 						end
 					end
 				end
 			end
 
 			--// If none of the checks pass it will deny permissions
-			return permAllowed,denyType
+			return permAllowed, denyType
 		end;
 		
 		UpdateCooldown = function(pDat, cmd)
