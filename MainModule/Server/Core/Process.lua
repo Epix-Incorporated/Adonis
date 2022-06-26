@@ -227,7 +227,7 @@ return function(Vargs, GetEnv)
 			Reset = 2;	
 		};
 	}
-	
+
 	local unWrap = service.unWrap
 	local function RateLimit(p, typ)
 		local isPlayer = type(p)=="userdata" and p:IsA"Player"
@@ -283,7 +283,7 @@ return function(Vargs, GetEnv)
 									keys.RemoteReady = true
 
 									AddLog("Script", string.format("%s requested client keys", p.Name))
-								--else
+									--else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
@@ -365,7 +365,9 @@ return function(Vargs, GetEnv)
 						if opts.Check then
 							Remote.MakeGui(p, "Output", {
 								Title = "Output";
-								Message = msg .. " is not a valid command.";
+								Message = if Settings.SilentCommandDenials
+									then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+									else string.format("'%s' is not a valid command.", msg);
 							})
 							return
 						end
@@ -390,7 +392,7 @@ return function(Vargs, GetEnv)
 
 						if allowed then
 							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ""
+								local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
 
 								local cmdArgs = command.Args or command.Arguments
 								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
@@ -432,10 +434,10 @@ return function(Vargs, GetEnv)
 								if noYield then
 									taskName = "Thread: " .. taskName
 								end
-								
+
 								Admin.UpdateCooldown(pDat, command)
 
-								local ran, error = TrackTask(taskName,
+								local ran, cmdError = TrackTask(taskName,
 									command.Function,
 									p,
 									args,
@@ -445,23 +447,23 @@ return function(Vargs, GetEnv)
 									}
 								)
 								if not opts.IgnoreErrors then
-									if error and type(error) == "string" then
-										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. error)
+									if cmdError and type(cmdError) == "string" then
+										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
 
-										error = (error and string.match(error, ":(.+)$")) or error or "Unknown error"
+										cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
 
 										if not isSystem then
 											Remote.MakeGui(p, "Output", {
 												Title = "",
-												Message = error,
+												Message = cmdError,
 												Color = Color3.new(1, 0, 0)
 											})
 										end
-									elseif error and type(error) ~= "string" and error ~= true then
+									elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
 										if not isSystem then
 											Remote.MakeGui(p, "Output", {
 												Title = "";
-												Message = "There was an error but the error was not a string? "..tostring(error);
+												Message = "There was an error but the error was not a string? : "..tostring(cmdError);
 												Color = Color3.new(1, 0, 0);
 											})
 										end
@@ -503,11 +505,15 @@ return function(Vargs, GetEnv)
 										CrossServerBlacklist = "This command may not be run across servers (cross-server blacklisted).",
 										CrossServerDisabled = "Cross-server features are currently disabled."
 									}
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = DENIAL_MESSAGES[denyType] or ("You are not allowed to run " .. msg);
-										Color = Color3.new(1, 0, 0);
-									})
+									if DENIAL_MESSAGES[denyType] or not Settings.SilentCommandDenials or opts.Check then
+										Remote.MakeGui(p, "Output", {
+											Title = "";
+											Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
+												then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+												else string.format("You do not have permission to run '%s'.", msg));
+											Color = Color3.new(1, 0, 0);
+										})
+									end
 								end
 							end
 
@@ -530,7 +536,7 @@ return function(Vargs, GetEnv)
 
 		CustomChat = function(p, a, b, canCross)
 			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
-			
+
 			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit)
@@ -566,7 +572,7 @@ return function(Vargs, GetEnv)
 
 					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
-					})) do
+						})) do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -1048,7 +1054,7 @@ return function(Vargs, GetEnv)
 						Desc = "Executed OnSpawn command; "..tostring(v);
 					})
 				end
-				
+
 				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
 					if trackTargets[p] and server.Commands.Track then
 						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
