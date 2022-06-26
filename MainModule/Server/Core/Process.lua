@@ -227,7 +227,7 @@ return function(Vargs, GetEnv)
 			Reset = 2;	
 		};
 	}
-	
+
 	local unWrap = service.unWrap
 	local function RateLimit(p, typ)
 		local isPlayer = type(p)=="userdata" and p:IsA"Player"
@@ -283,7 +283,7 @@ return function(Vargs, GetEnv)
 									keys.RemoteReady = true
 
 									AddLog("Script", string.format("%s requested client keys", p.Name))
-								--else
+									--else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
@@ -365,7 +365,9 @@ return function(Vargs, GetEnv)
 						if opts.Check then
 							Remote.MakeGui(p, "Output", {
 								Title = "Output";
-								Message = msg .. " is not a valid command.";
+								Message = if Settings.SilentCommandDenials
+									then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+									else string.format("'%s' is not a valid command.", msg);
 							})
 							return
 						end
@@ -432,7 +434,7 @@ return function(Vargs, GetEnv)
 								if noYield then
 									taskName = "Thread: " .. taskName
 								end
-								
+
 								Admin.UpdateCooldown(pDat, command)
 
 								local ran, error = TrackTask(taskName,
@@ -505,7 +507,9 @@ return function(Vargs, GetEnv)
 									}
 									Remote.MakeGui(p, "Output", {
 										Title = "";
-										Message = DENIAL_MESSAGES[denyType] or ("You are not allowed to run " .. msg);
+										Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
+											then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+											else string.format("You do not have permission to run '%s'.", msg));
 										Color = Color3.new(1, 0, 0);
 									})
 								end
@@ -530,7 +534,7 @@ return function(Vargs, GetEnv)
 
 		CustomChat = function(p, a, b, canCross)
 			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
-			
+
 			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit)
@@ -566,7 +570,7 @@ return function(Vargs, GetEnv)
 
 					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
-					})) do
+						})) do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -1048,7 +1052,7 @@ return function(Vargs, GetEnv)
 						Desc = "Executed OnSpawn command; "..tostring(v);
 					})
 				end
-				
+
 				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
 					if trackTargets[p] and server.Commands.Track then
 						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
