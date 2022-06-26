@@ -392,7 +392,7 @@ return function(Vargs, GetEnv)
 
 						if allowed then
 							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ""
+								local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
 
 								local cmdArgs = command.Args or command.Arguments
 								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
@@ -437,7 +437,7 @@ return function(Vargs, GetEnv)
 
 								Admin.UpdateCooldown(pDat, command)
 
-								local ran, error = TrackTask(taskName,
+								local ran, cmdError = TrackTask(taskName,
 									command.Function,
 									p,
 									args,
@@ -447,23 +447,23 @@ return function(Vargs, GetEnv)
 									}
 								)
 								if not opts.IgnoreErrors then
-									if error and type(error) == "string" then
-										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. error)
+									if cmdError and type(cmdError) == "string" then
+										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
 
-										error = (error and string.match(error, ":(.+)$")) or error or "Unknown error"
+										cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
 
 										if not isSystem then
 											Remote.MakeGui(p, "Output", {
 												Title = "",
-												Message = error,
+												Message = cmdError,
 												Color = Color3.new(1, 0, 0)
 											})
 										end
-									elseif error and type(error) ~= "string" and error ~= true then
+									elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
 										if not isSystem then
 											Remote.MakeGui(p, "Output", {
 												Title = "";
-												Message = "There was an error but the error was not a string? "..tostring(error);
+												Message = "There was an error but the error was not a string? : "..tostring(cmdError);
 												Color = Color3.new(1, 0, 0);
 											})
 										end
@@ -505,13 +505,15 @@ return function(Vargs, GetEnv)
 										CrossServerBlacklist = "This command may not be run across servers (cross-server blacklisted).",
 										CrossServerDisabled = "Cross-server features are currently disabled."
 									}
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
-											then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
-											else string.format("You do not have permission to run '%s'.", msg));
-										Color = Color3.new(1, 0, 0);
-									})
+									if DENIAL_MESSAGES[denyType] or not Settings.SilentCommandDenials or opts.Check then
+										Remote.MakeGui(p, "Output", {
+											Title = "";
+											Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
+												then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+												else string.format("You do not have permission to run '%s'.", msg));
+											Color = Color3.new(1, 0, 0);
+										})
+									end
 								end
 							end
 
