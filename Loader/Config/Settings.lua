@@ -275,7 +275,7 @@ settings.CommandCooldowns = {
 	}
 ]]	
 }
-    
+
 settings.HttpWait = 60					-- How long things that use the HttpService will wait before updating again
 settings.Trello_Enabled = false			-- Are the Trello features enabled?
 settings.Trello_Primary = ""			-- Primary Trello board
@@ -304,13 +304,14 @@ settings.Allowed_API_Calls = {
 	API_Specific = true;		-- API Specific functions
 }
 
-settings.FunCommands = true			-- Are fun commands enabled?
-settings.PlayerCommands = true		-- Are player-level utility commands enabled?
-settings.CommandFeedback = false	-- Should players be notified when commands with non-obvious effects are run on them?
-settings.CrossServerCommands = true	-- Are commands which affect more than one server enabled?
-settings.ChatCommands = true		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
-settings.CreatorPowers = true		-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
-settings.CodeExecution = true		-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
+settings.FunCommands = true				-- Are fun commands enabled?
+settings.PlayerCommands = true			-- Are player-level utility commands enabled?
+settings.CommandFeedback = false		-- Should players be notified when commands with non-obvious effects are run on them?
+settings.CrossServerCommands = true		-- Are commands which affect more than one server enabled?
+settings.ChatCommands = true			-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
+settings.CreatorPowers = true			-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
+settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
+settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -330,7 +331,7 @@ settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
 
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
-settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
+settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
 settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
 
 settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
@@ -340,9 +341,9 @@ settings.LocalCapes = false	 	-- Makes Donor capes local so only the donors see 
 settings.Detection = true			-- Attempts to detect certain known exploits
 settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-settings.ExploitNotifications = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
-settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
+settings.ExploitNotifications = true		-- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+settings.CharacterCheckLogs = false			-- If the character checks appear in exploit logs and exploit notifications
+settings.AntiNoclip = false	-- Attempts to detect noclipping and kills the player if found
 settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
@@ -432,6 +433,8 @@ descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
+descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
+
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
@@ -533,6 +536,7 @@ order = {
 	"ChatCommands";
 	"CreatorPowers";
 	"CodeExecution";
+	"SilentCommandDenials";
 	" ";
 	"BanMessage";
 	"LockMessage";
