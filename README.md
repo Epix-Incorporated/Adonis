@@ -29,7 +29,7 @@ Adonis is a community-maintained server moderation and management system created
 ### Method 1 (recommended): Official Roblox Model
 
 1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library
-2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace!)
+2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the `Workspace`!)
 
 ### Method 2: GitHub Releases
 
@@ -51,14 +51,14 @@ Adonis is a community-maintained server moderation and management system created
 
 ### ⚙️ Configuring Adonis
 
-Once you've inserted the Adonis loader into your game, open Adonis_Loader > Config > Settings, and change ``settings.DataStoreKey`` to something absolutely random (eg. `"2fgi02e)^Q"`). This is for security as it prevents serverside tampering with Adonis's datastores.
+Once you've inserted the Adonis loader into your game, open `Adonis_Loader` > `Config` > `Settings`, and change `settings.DataStoreKey` to something absolutely random (eg. `"2fgi02e)^Q"`). This is for security as it prevents serverside tampering with Adonis's datastores.
 
 You may then edit the Settings module to configure Adonis to suit your game. Instructions and elaboration are provided within the Settings module.
 
 
 ## 🛠️ Debug Mode
 
-The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the ``MainModule``, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
+The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
 
 ### Toggling debug mode
 
