@@ -151,7 +151,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for +, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
@@ -162,7 +162,7 @@ return function(Vargs, env)
 							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a head admin", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a permanent head admin", {plr})
 					else
 						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
@@ -189,7 +189,7 @@ return function(Vargs, env)
 							Icon = "rbxassetid://7536784790";
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a temp head admin", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temporary head admin", {plr})
 					else
 						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
@@ -207,7 +207,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
 				for _, v in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false})) do
-					Process.Command(v, args[2], {isSystem = true})
+					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
 			end;
 		};
