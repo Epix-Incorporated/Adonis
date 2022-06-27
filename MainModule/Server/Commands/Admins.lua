@@ -952,39 +952,54 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s", "ss", "serverscript", "sscript", "makescript", "script", "scr"};
+			Commands = {"s", "ss", "serverscript", "sscript", "script", "makescript"};
 			Args = {"code"};
-			Description = "Executes the given code on the server";
+			Description = "Executes the given Lua code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				assert(args[1], "Missing Script code")
+				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
+				assert(args[1], "Missing Script code (argument #2)")
 
-				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				Remote.RemoveGui(plr, "Prompt_MakeScript")
+				if
+					plr == false
+					or Remote.GetGui(plr, "YesNoPrompt", {
+						Name = "Prompt_MakeScript";
+						Size = {250, 200},
+						Title = "Script Confirmation";
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to execute the code directly on the server? This action is irreversible and may potentially be dangerous; only run scripts that you trust!";
+						Delay = 2;
+					}) == "Yes"
+				then
+					local bytecode = Core.Bytecode(args[1])
+					assert(string.find(bytecode, "\27Lua"), "Script unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
-				local cl = Core.NewScript("Script", args[1], true)
-				cl.Name = "[Adonis] Script"
-				cl.Parent = service.ServerScriptService
-				task.wait()
-				cl.Disabled = false
-				Functions.Hint("Ran Script", {plr})
+					local cl = Core.NewScript("Script", args[1], true)
+					cl.Name = "[Adonis] Script"
+					cl.Parent = service.ServerScriptService
+					task.wait()
+					cl.Disabled = false
+					Functions.Hint("Ran Script", {plr})
+				else
+					Functions.Hint("Operation cancelled", {plr})
+				end
 			end
 		};
 
 		MakeLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"ls", "localscript", "lscript", "makelscript", "lscr"};
+			Commands = {"ls", "localscript", "lscript"};
 			Args = {"code"};
-			Description = "Executes the given code on the client";
+			Description = "Executes the given code on your client";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing LocalScript code")
+				assert(args[1], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				assert(string.find(bytecode, "\27Lua"), "LocalScript unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
 				local cl = Core.NewScript("LocalScript", "script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
 				cl.Name = "[Adonis] LocalScript"
@@ -992,29 +1007,29 @@ return function(Vargs, env)
 				cl.Parent = plr:FindFirstChildOfClass("Backpack")
 				task.wait()
 				cl.Disabled = false
-				Functions.Hint("Ran LocalScript", {plr})
+				Functions.Hint("Ran LocalScript on your client", {plr})
 			end
 		};
 
 		LoadLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"cs", "cscr", "clientscript"};
+			Commands = {"cs", "cscript", "clientscript"};
 			Args = {"player", "code"};
 			Description = "Executes the given code on the client of the target player(s)";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[2], "Missing LocalScript code")
+				assert(args[2], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created, ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				assert(string.find(bytecode, "\27Lua"), "LocalScript unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
 				local new = Core.NewScript("LocalScript", "script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2], true)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local cl = new:Clone()
 					cl.Name = "[Adonis] LocalScript"
 					cl.Disabled = true
-					cl.Parent = v.Backpack
+					cl.Parent = v:FindFirstChildOfClass("Backpack")
 					task.wait()
 					cl.Disabled = false
 					Functions.Hint("Ran LocalScript on "..service.FormatPlayer(v), {plr})
@@ -1030,9 +1045,10 @@ return function(Vargs, env)
 			Description = "Makes a note on the target player(s) that says <note>";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Missing note (argument #2)")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local PlayerData = Core.GetPlayer(v)
-					if not PlayerData.AdminNotes then PlayerData.AdminNotes={} end
+					if not PlayerData.AdminNotes then PlayerData.AdminNotes = {} end
 					table.insert(PlayerData.AdminNotes, args[2])
 					Functions.Hint("Added "..service.FormatPlayer(v).." Note "..args[2], {plr})
 					Core.SavePlayer(v, PlayerData)
@@ -1047,6 +1063,7 @@ return function(Vargs, env)
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Missing note (argument #2)")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local PlayerData = Core.GetPlayer(v)
 					if PlayerData.AdminNotes then
