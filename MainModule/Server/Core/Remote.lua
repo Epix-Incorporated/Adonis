@@ -1177,12 +1177,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		MakeGui = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			Remote.Send(p,"UI",GUI,theme,data or {})
 		end;
 
 		MakeGuiGet = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return nil end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			return Remote.Get(p,"UI",GUI,theme,data or {})
@@ -1193,10 +1195,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		RemoveGui = function(p: Player,name: string | boolean | Instance,ignore: string)
+			if not p then return end
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
 
 		RefreshGui = function(p: Player,name: string | boolean | Instance,ignore: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})
