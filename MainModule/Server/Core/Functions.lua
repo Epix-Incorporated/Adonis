@@ -409,6 +409,7 @@ return function(Vargs, GetEnv)
 				UserId = 0;
 				userId = 0;
 				AccountAge = 0;
+				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = 0;
 				FollowUserId = 0;
 				Parent = service.Players;
@@ -427,7 +428,7 @@ return function(Vargs, GetEnv)
 			end
 
 			for i, v in pairs(data) do
-			fakePlayer:SetSpecial(i, v)
+				fakePlayer:SetSpecial(i, v)
 			end
 
 			return fakePlayer
@@ -452,10 +453,10 @@ return function(Vargs, GetEnv)
 
 		ArgsToString = function(args)
 			local str = ""
-			for i,arg in pairs(args) do
+			for i, arg in pairs(args) do
 				str ..= "Arg"..tostring(i)..": "..tostring(arg).."; "
 			end
-			return str
+			return str:sub(1, -3)
 		end;
 
 		GetPlayers = function(plr, names, data)
