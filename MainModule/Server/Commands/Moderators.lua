@@ -1711,6 +1711,7 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Window", {
 					Title = "Command Box";
 					Name = "CommandBox";
+					Icon = server.MatIcons.Code;
 					Size  = {300, 250};
 					Ready = true;
 					Content = {
