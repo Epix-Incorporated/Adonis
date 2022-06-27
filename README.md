@@ -28,8 +28,8 @@ Adonis is a community-maintained server moderation and management system created
 
 ### Method 1 (recommended): Official Roblox Model
 
-1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library
-2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the `Workspace`!)
+1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library.
+2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService`. (Do not leave it in the `Workspace`!)
 
 ### Method 2: GitHub Releases
 
