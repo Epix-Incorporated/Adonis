@@ -957,6 +957,7 @@ return function(Vargs, env)
 			Description = "Executes the given Lua code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
 				assert(args[1], "Missing Script code (argument #2)")
