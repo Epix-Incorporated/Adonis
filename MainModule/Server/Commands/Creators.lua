@@ -21,15 +21,13 @@ return function(Vargs, env)
 
 				for i in string.gmatch(args[1], "[^,]+") do
 					local UserId = service.Players:GetUserIdFromNameAsync(i)
-
 					if UserId == plr.UserId then
 						error("You cannot ban yourself or the creator of the game", 2)
 						return
 					end
-
 					if UserId then
 						Admin.AddBan({UserId = UserId, Name = i}, reason, true, plr)
-						Functions.Hint("Direct banned "..i, {plr})
+						Functions.Hint("Direct-banned "..i, {plr})
 					end
 				end
 			end
@@ -43,17 +41,14 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(args[1], "[^,]+") do
-
 					local userid = service.Players:GetUserIdFromNameAsync(i)
-
 					if userid then
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
 							Value = i..':'..userid;
 						})
-
-						Functions.Hint(i.." has been Unbanned", {plr})
+						Functions.Hint(i.." has been unbanned", {plr})
 					end
 				end
 			end
@@ -73,13 +68,16 @@ return function(Vargs, env)
 				assert(tonumber(args[1]), "Invalid PlaceId")
 
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Question = "Force all game-players to teleport to place '".. args[1].."'?";
-					Title = "Force teleport all users?";
+					Title = "Force-teleport all users?";
+					Icon = server.MatIcons.Warning;
+					Question = "Would you like to force all game-players to teleport to place '".. args[1].."'?";
 				})
 				if ans == "Yes" then
 					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..args[1]) then
-						error("CrossServer Handler Not Ready")
+						error("CrossServer handler not ready; please try again later")
 					end
+				else
+					Functions.Hint("Operation cancelled", {plr})
 				end
 			end;
 		};
@@ -120,14 +118,15 @@ return function(Vargs, env)
 			Description = "Lets you give <player> <amount> player points";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local ran, failed = pcall(function() service.PointsService:AwardPoints(v.UserId, tonumber(args[2])) end)
-					if ran and service.PointsService:GetAwardablePoints() >= tonumber(args[2]) then
-						Functions.Hint("Gave "..args[2].." points to "..service.FormatPlayer(v), {plr})
-					elseif service.PointsService:GetAwardablePoints() < tonumber(args[2]) then
-						Functions.Hint("You don't have "..args[2].." points to give to "..service.FormatPlayer(v), {plr})
+				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
+					if ran and service.PointsService:GetAwardablePoints() >= amount then
+						Functions.Hint("Gave "..amount.." points to "..service.FormatPlayer(v), {plr})
+					elseif service.PointsService:GetAwardablePoints() < amount then
+						Functions.Hint("You don't have "..amount.." points to give to "..service.FormatPlayer(v), {plr})
 					else
-						Functions.Hint("(Unknown Error) Failed to give "..args[2].." points to "..service.FormatPlayer(v), {plr})
+						Functions.Hint("(Unknown Error) Failed to give "..amount.." points to "..service.FormatPlayer(v), {plr})
 					end
 					Functions.Hint("Available Player Points: "..service.PointsService:GetAwardablePoints(), {plr})
 				end
@@ -182,7 +181,7 @@ return function(Vargs, env)
 				local sendLevel = data.PlayerData.Level
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
-					if sendLevel>targLevel then
+					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -206,8 +205,8 @@ return function(Vargs, env)
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name");
-				assert(args[2], "Missing command name");
+				assert(args[1], "Missing player name (argument #1)")
+				assert(args[2], "Missing command name (argument #2)")
 				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					Process.Command(v, args[2], {isSystem = true})
 				end
@@ -222,7 +221,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local id = tonumber(args[1])
-				assert(id, "Must supply a valid UserId")
+				assert(id, "Must supply a valid UserId (argument #1)")
 				local username = select(2, xpcall(function()
 					return service.Players:GetNameFromUserIdAsync(args[1])
 				end, function() return "[Unknown User]" end))
@@ -241,6 +240,8 @@ return function(Vargs, env)
 						Message = "Cleared data for ".. id;
 						Time = 10;
 					})
+				else
+					Functions.Hint("Operation cancelled", {plr})
 				end
 			end;
 		};
