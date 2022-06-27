@@ -249,10 +249,11 @@ return function(Vargs, GetEnv)
 						end
 
 						if foundNum == 0 then
-							local ran,name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
+							local ran, name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
 							if ran and name then
 								local fakePlayer = server.Functions.GetFakePlayer({
 									Name = name;
+									DisplayName = name;
 									ToString = name;
 									CharacterAppearanceId = tostring(matched);
 									UserId = tonumber(matched);
@@ -399,15 +400,17 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetFakePlayer = function(data2)
+		GetFakePlayer = function(options)
 			local fakePlayer = service.Wrap(service.New("Folder"))
 			local data = {
-				Name = "Fake Player";
 				ClassName = "Player";
+				Name = "Fake_Player";
+				DisplayName = "Fake_Player";
 				UserId = 0;
 				userId = 0;
 				AccountAge = 0;
 				CharacterAppearanceId = 0;
+				FollowUserId = 0;
 				Parent = service.Players;
 				Character = Instance.new("Model");
 				Backpack = Instance.new("Folder");
@@ -417,15 +420,17 @@ return function(Vargs, GetEnv)
 				IsA = function(ignore, arg) if arg == "Player" then return true end end;
 			}
 
-			data.ToString = data.Name;
+			data.ToString = data.Name
 
-			for i,v in pairs(data2) do
-				data[i] = v;
-			end;
+			for i, v in pairs(options) do
+				data[i] = v
+			end
 
-			for i,v in pairs(data) do fakePlayer:SetSpecial(i, v) end
+			for i, v in pairs(data) do
+			fakePlayer:SetSpecial(i, v)
+			end
 
-			return fakePlayer;
+			return fakePlayer
 		end;
 
 		GetChatService = function()
@@ -515,7 +520,7 @@ return function(Vargs, GetEnv)
 				return {plr}
 			else
 				if sub(lower(names), 1, 2) == "##" then
-					error("String passed to GetPlayers is filtered: ".. tostring(names))
+					error("String passed to GetPlayers is filtered: ".. tostring(names), 2)
 				else
 					for s in gmatch(names, '([^,]+)') do
 						local plrs = 0
@@ -548,7 +553,7 @@ return function(Vargs, GetEnv)
 								if ran and tonumber(userid) then
 									local fakePlayer = Functions.GetFakePlayer({
 										Name = s;
-										ToString = s;
+										DisplayName = s;
 										IsFakePlayer = true;
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
@@ -564,7 +569,7 @@ return function(Vargs, GetEnv)
 
 						if plrs == 0 and not dontError then
 							Remote.MakeGui(plr, "Output", {
-								Message = "No players matching "..s.." were found!"
+								Message = "No players matching '"..s.."' were found!"
 							})
 						end
 					end
@@ -791,10 +796,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Message = function(title,message,players,scroll,tim)
-			for _,v in ipairs(players) do
-				Remote.RemoveGui(v,"Message")
-				Remote.MakeGui(v,"Message",{
+		Message = function(title, message, players, scroll, tim)
+			for _, v in ipairs(players) do
+				Remote.RemoveGui(v, "Message")
+				Remote.MakeGui(v, "Message", {
 					Title = title;
 					Message = message;
 					Scroll = scroll;
@@ -803,10 +808,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Notify = function(title,message,players,tim)
-			for _,v in ipairs(players) do
-				Remote.RemoveGui(v,"Notify")
-				Remote.MakeGui(v,"Notify",{
+		Notify = function(title, message, players, tim)
+			for _, v in ipairs(players) do
+				Remote.RemoveGui(v, "Notify")
+				Remote.MakeGui(v, "Notify", {
 					Title = title;
 					Message = message;
 					Time = tim or (#tostring(message) / 19) + 2.5;
@@ -845,12 +850,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadEffects = function(plr)
-			for i,v in pairs(Variables.LocalEffects) do
+			for i, v in pairs(Variables.LocalEffects) do
 				if (v.Part and v.Part.Parent) or v.NoPart then
 					if v.Type == "Cape" then
-						Remote.Send(plr,"Function","NewCape",v.Data)
+						Remote.Send(plr, "Function", "NewCape", v.Data)
 					elseif v.Type == "Particle" then
-						Remote.NewParticle(plr,v.Part,v.Class,v.Props)
+						Remote.NewParticle(plr, v.Part, v.Class, v.Props)
 					end
 				else
 					Variables.LocalEffects[i] = nil
@@ -858,38 +863,38 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		NewParticle = function(target,type,props)
+		NewParticle = function(target, particleType, props)
 			local ind = Functions.GetRandom()
 			Variables.LocalEffects[ind] = {
 				Part = target;
-				Class = type;
+				Class = particleType;
 				Props = props;
 				Type = "Particle";
 			}
-			for _,v in ipairs(service.Players:GetPlayers()) do
-				Remote.NewParticle(v,target,type,props)
+			for _, v in ipairs(service.Players:GetPlayers()) do
+				Remote.NewParticle(v, target, particleType, props)
 			end
 		end;
 
 		RemoveParticle = function(target,name)
-			for i,v in pairs(Variables.LocalEffects) do
+			for i, v in pairs(Variables.LocalEffects) do
 				if v.Type == "Particle" and v.Part == target and (v.Props.Name == name or v.Class == name) then
 					Variables.LocalEffects[i] = nil
 				end
 			end
-			for _,v in ipairs(service.Players:GetPlayers()) do
-				Remote.RemoveParticle(v,target,name)
+			for _, v in ipairs(service.Players:GetPlayers()) do
+				Remote.RemoveParticle(v, target, name)
 			end
 		end;
 
 		UnCape = function(plr)
-			for i,v in pairs(Variables.LocalEffects) do
+			for i, v in pairs(Variables.LocalEffects) do
 				if v.Type == "Cape" and v.Player == plr then
 					Variables.LocalEffects[i] = nil
 				end
 			end
-			for _,v in ipairs(service.GetPlayers()) do
-				Remote.Send(v,"Function","RemoveCape",plr.Character)
+			for _, v in ipairs(service.Players:GetPlayers()) do
+				Remote.Send(v, "Function", "RemoveCape", plr.Character)
 			end
 		end;
 
@@ -903,7 +908,7 @@ return function(Vargs, GetEnv)
 			local torso = player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
 				if type(color) == "table" then
-					color = Color3.new(color[1],color[2],color[3])
+					color = Color3.new(unpack(color))
 				end
 
 				local data = {
@@ -915,7 +920,7 @@ return function(Vargs, GetEnv)
 				}
 
 				if isdon and Settings.DonorCapes and Settings.LocalCapes then
-					Remote.Send(player,"Function","NewCape",data)
+					Remote.Send(player, "Function", "NewCape", data)
 				else
 					local ind = Functions.GetRandom()
 					Variables.LocalEffects[ind] = {
@@ -924,8 +929,8 @@ return function(Vargs, GetEnv)
 						Data = data;
 						Type = "Cape";
 					}
-					for _,v in ipairs(service.GetPlayers()) do
-						Remote.Send(v,"Function","NewCape",data)
+					for _, v in ipairs(service.Players:GetPlayers()) do
+						Remote.Send(v, "Function", "NewCape", data)
 					end
 				end
 			end
