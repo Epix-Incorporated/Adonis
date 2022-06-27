@@ -28,23 +28,33 @@ Adonis is a community-maintained server moderation and management system created
 
 ### Method 1 (recommended): Official Roblox Model
 
-* [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library
-
-* Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace!)
+1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library
+2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace!)
 
 ### Method 2: GitHub Releases
 
-* Download the `rbxm` file snapshot from the [latest release](https://github.com/Sceleratis/Adonis/releases/latest)
-* Import the model file into Studio
-  * Note: By default, snapshots included in releases have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
+1. Download the `rbxm` file snapshot from the [latest release](https://github.com/Sceleratis/Adonis/releases/latest).
+2. Import the model file into Studio.
+
+ℹ️ <b>Note:</b> By default, snapshots included in releases have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
 
 ### Method 3: Filesystem
 
-* Download the repository to your computer's file system
-* Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file
-  * If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`
-* Import the compiled model file into Studio
-  * Note: By default, loaders compiled from the repository have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled. **⚠️ This method compiles the _bleeding edge_ version of Adonis, which may be not fully tested and highly unstable.**
+1. Download the repository to your computer's file system.
+2. Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file.
+  * If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`.
+3. Import the compiled model file into Studio.
+
+ℹ️ <b>Note:</b> By default, loaders compiled from the repository have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
+
+**⚠️ Method 3 compiles the _bleeding edge_ version of Adonis, which may be not fully tested and highly unstable.**
+
+### ⚙️ Configuring Adonis
+
+Once you've inserted the Adonis loader into your game, open Adonis_Loader > Config > Settings, and change ``settings.DataStoreKey`` to something absolutely random (eg. `"2fgi02e)^Q"`). This is for security as it prevents serverside tampering with Adonis's datastores.
+
+You may then edit the Settings module to configure Adonis to suit your game. Instructions and elaboration are provided within the Settings module.
+
 
 ## 🛠️ Debug Mode
 
