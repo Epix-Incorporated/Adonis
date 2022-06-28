@@ -117,20 +117,20 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end
-		
+
 		if Settings.CommandCooldowns then
 			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
 				local realCmd = Admin.GetCommand(cmdName)
-				
+
 				if realCmd then
 					if cooldownData.Player then
 						realCmd.PlayerCooldown = cooldownData.Player
 					end
-					
+
 					if cooldownData.Server then
 						realCmd.ServerCooldown = cooldownData.Server
 					end
-					
+
 					if cooldownData.Cross then
 						realCmd.CrossCooldown = cooldownData.Cross
 					end
@@ -262,14 +262,14 @@ return function(Vargs, GetEnv)
 			if not p or p.Parent ~= service.Players then
 				return {}
 			end
-			
+
 			return Admin.GetGroups(p.UserId)
 		end;
 
 		GetPlayerGroup = function(p, group)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
-			
+
 			if groups and #groups > 0 then
 				for _, g in ipairs(groups) do 
 					if (isId and g.Id == group) or (not isId and g.Name == group) then
@@ -278,7 +278,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-		
+
 		GetGroups = function(uid, updateCache)
 			uid = tonumber(uid) or nil
 
@@ -384,11 +384,11 @@ return function(Vargs, GetEnv)
 			local match = string.match
 			local sub = string.sub
 			local unWrap = service.UnWrap
-			
+
 			local plrUserId = (type(p)=="number" and p) or (type(p)=="userdata" and p.UserId)
 			local realPlayer = (typeof(unWrap(p))=="Instance" and unWrap(p):IsA"Player") or
 				(type(p)=="userdata" and service.Players:GetPlayerByUserId(p.UserId))
-			
+
 			if pType == "string" and cType == "string" then
 				if p == check or sub(lower(check), 1, #tostring(p)) == lower(p) then
 					return true
@@ -863,9 +863,9 @@ return function(Vargs, GetEnv)
 				Reason = reason;
 				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
-			
+
 			table.insert(Core.Variables.TimeBans, value)
-			
+
 			Core.DoSave({
 				Type = "TableAdd";
 				Table = {"Core", "Variables", "TimeBans"};
@@ -1192,86 +1192,69 @@ return function(Vargs, GetEnv)
 			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
 				return true;
 			elseif type(comLevel) == "table" then
-				for i,level in pairs(comLevel) do
+				for _, level in pairs(comLevel) do
 					if plrAdminLevel == level then
 						return true
 					end
 				end
 			end
+			return false
 		end;
 
 		IsBlacklisted = function(p)
 			local CheckTable = Admin.CheckTable
-			for i,list in pairs(Variables.Blacklist.Lists) do
+			for _, list in pairs(Variables.Blacklist.Lists) do
 				if CheckTable(p, list) then
 					return true
 				end
 			end
+			return false
 		end;
 
 		CheckPermission = function(pDat, cmd, ignoreCooldown, opts)
-			opts = (type(opts)=="table" and opts) or {}
-			
-			local adminLevel = pDat.Level
-			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
+			opts = opts or {}
 
+			local adminLevel = pDat.Level
 			local comLevel = cmd.AdminLevel
 
-			local funAllowed = Settings.FunCommands
-			local crossServerAllowed = Settings.CrossServerCommands
-			
-			local permAllowed,denyType = false,nil
-			
-			--// Check disabled command
 			if cmd.Disabled then
-				return false
-			end
-			
-			local isCreator = Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level
-			
-			--// Creators rank will bypass any permissions set
-			if isCreator then
-				permAllowed = true
-			elseif (comLevel == "Players" or comLevel == 0) and not Settings.PlayerCommands then
-				--// If PlayerCommands is set to false it will prevent users from using "Players" level commands
-				permAllowed = false
-				denyType = "PlayerCmdsDisabled"
-			elseif cmd.Fun and not funAllowed then
-				--// If FunCommands are disabled it will block any command Labeled "Fun"
-				permAllowed = false
-				denyType = "Fun"
-			elseif opts.Chat and cmd.Chattable == false then
-				permAllowed = false
-				denyType = "Chat"
-			elseif Variables.IsStudio and cmd.NoStudio then
-				permAllowed = false
-				denyType = "Studio"
-			elseif opts.CrossServer and cmd.CrossServerDenied then
-				permAllowed = false
-				denyType = "CrossServerBlacklist"
-			elseif cmd.IsCrossServer and not crossServerAllowed then
-				--// If CrossServerCommands is disabled it will block any command that is "CrossServer"
-				permAllowed = false
-				denyType = "CrossServerDisabled"
-			elseif cmd.Donors and isDonor then
-				--// If a command is for "Donors" it will allow anyone with Donor to use it
-				permAllowed = true
-			elseif Admin.CheckComLevel(adminLevel, comLevel) then
-				--// Check if user has permission to the command
-				permAllowed = true
+				return false, "This command has been disabled."
 			end
 
-			if permAllowed and not ignoreCooldown and not isCreator and type(pDat.Player) == "userdata" then
+			if Variables.IsStudio and cmd.NoStudio then
+				return false, "This command cannot be used in Roblox Studio."
+			end
+
+			if opts.CrossServer and cmd.CrossServerDenied then
+				return false, "This command may not be run across servers (cross-server-blacklisted)."
+			end
+
+			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
+				return true, nil
+			end
+
+			if (comLevel == 0 or comLevel == "Players") and not Settings.PlayerCommands then
+				return false, "Player commands are disabled in this game."
+			end
+
+			if opts.Chat and cmd.Chattable == false then
+				return false, "This command is not permitted as chat message (non-chattable command)."
+			end
+
+			local permAllowed = (cmd.Donors and (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors)))
+				or Admin.CheckComLevel(adminLevel, comLevel)
+
+			if permAllowed and not ignoreCooldown and type(pDat.Player) == "userdata" then
 				local playerCooldown = tonumber(cmd.PlayerCooldown)
 				local serverCooldown = tonumber(cmd.ServerCooldown)
 				local crossCooldown = tonumber(cmd.CrossCooldown)
-				
+
 				local cmdFullName = cmd._fullName or (function()
 					local aliases = cmd.Aliases or cmd.Commands or {}
 					cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
 					return cmd._fullName
 				end)()
-				
+
 				local pCooldown_Cache = cmd._playerCooldownCache or (function()
 					local tab = {}
 					cmd._playerCooldownCache = tab
@@ -1289,30 +1272,26 @@ return function(Vargs, GetEnv)
 					cmd._crossCooldownCache = tab
 					return tab
 				end)()
-				
+
 				local cooldownIndex = tostring(pDat.Player.UserId)
 				local pCooldown_playerCache = pCooldown_Cache[cooldownIndex]
 				local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
-				
+
 				if playerCooldown and pCooldown_playerCache then
 					local secsTillPass = os.clock() - pCooldown_playerCache
-					local passCooldown = secsTillPass >= playerCooldown
-
-					if not passCooldown then
-						return false, "PlayerCooldown", math.floor(playerCooldown-secsTillPass)
+					if secsTillPass < playerCooldown then
+						return false, string.format("[PlayerCooldown] You must wait %.0f seconds to run the command.", playerCooldown - secsTillPass)
 					end
 				end
 
 				if serverCooldown and sCooldown_playerCache then
 					local secsTillPass = os.clock() - sCooldown_playerCache
-					local passCooldown = secsTillPass >= serverCooldown
-
-					if not passCooldown then
-						return false, "ServerCooldown", math.floor(serverCooldown-secsTillPass)
+					if secsTillPass < serverCooldown then
+						return false, string.format("[ServerCooldown] You must wait %.0f seconds to run the command.", serverCooldown - secsTillPass)
 					end
 				end
 
-				if crossCooldown and pDat.Player then
+				if crossCooldown then
 					local playerData = Core.GetPlayer(pDat.Player) or {}
 					local crossCooldown_Cache = playerData._crossCooldownCache or (function()
 						local tab = {}
@@ -1322,26 +1301,23 @@ return function(Vargs, GetEnv)
 					local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
 
 					if crossCooldown_playerCache then
-						local secsTillPass = os.clock()-crossCooldown_playerCache
-						local passCooldown = secsTillPass >= crossCooldown
-
-						if not passCooldown then
-							return false, "CrossCooldown", math.floor(crossCooldown-secsTillPass)
+						local secsTillPass = os.clock() - crossCooldown_playerCache
+						if secsTillPass < crossCooldown then
+							return false, string.format("[CrossServerCooldown] You must wait %.0f seconds to run the command.", crossCooldown - secsTillPass)
 						end
 					end
 				end
 			end
 
-			--// If none of the checks pass it will deny permissions
-			return permAllowed, denyType
+			return permAllowed, nil
 		end;
-		
+
 		UpdateCooldown = function(pDat, cmd)
 			if pDat.Player == "SYSTEM" then return end
-			local playerCooldown 			= tonumber(cmd.PlayerCooldown)
-			local serverCooldown 			= tonumber(cmd.ServerCooldown)
-			local crossCooldown 			= tonumber(cmd.CrossCooldown)
-			
+			local playerCooldown = tonumber(cmd.PlayerCooldown)
+			local serverCooldown = tonumber(cmd.ServerCooldown)
+			local crossCooldown = tonumber(cmd.CrossCooldown)
+
 			local cmdFullName = cmd._fullName or (function()
 				local aliases = cmd.Aliases or cmd.Commands or {}
 				cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
@@ -1378,7 +1354,7 @@ return function(Vargs, GetEnv)
 			if serverCooldown then
 				sCooldown_Cache[cooldownIndex] = lastUsed
 			end
-			
+
 			--// Cross cooldown
 			do
 				local playerData = Core.GetPlayer(pDat.Player)
