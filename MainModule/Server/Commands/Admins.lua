@@ -483,7 +483,7 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
+				assert(args[1], "Missing ban message")
 				Variables.BanMessage = args[1]
 			end
 		};
