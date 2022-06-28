@@ -62,7 +62,7 @@ return function(Vargs, env)
 
 					table.insert(tab, {
 						Text = Admin.FormatCommand(v),
-						Desc = "["..cStr.."] "..v.Description,
+						Desc = string.format("[%s] %s", cStr, v.Description or "No description provided."),
 						Filter = cStr
 					})
 					cmdCount += 1
