@@ -3,7 +3,7 @@
 -------------------
 
 --// Load Order List
-local LoadingOrder = {
+local CORE_LOADING_ORDER = table.freeze {
 	--// Required by most modules
 	"Variables";
 	"Functions";
@@ -30,17 +30,17 @@ NumberSequenceKeypoint, PhysicalProperties, Region3int16,
 Vector3int16, require, table, type, wait,
 Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay, spawn, task, tick, assert =
 	_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, task.wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+getmetatable, setmetatable, loadstring, coroutine,
+rawequal, typeof, print, math, warn, error,  pcall,
+xpcall, select, rawset, rawget, ipairs, pairs,
+next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
+newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+Vector3int16, require, table, type, task.wait,
+Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.delay, task.defer, task, tick, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
 
-local ServicesWeUse = {
+local SERVICES_WE_USE = table.freeze {
 	"Workspace";
 	"Players";
 	"Lighting";
@@ -54,11 +54,11 @@ local ServicesWeUse = {
 	"StarterGui";
 	"StarterPack";
 	"StarterPlayer";
-        "GroupService";
-        "MarketplaceService";
-        "HttpService";
+	"GroupService";
+	"MarketplaceService";
+	"HttpService";
 	"TestService";
-        "RunService";
+	"RunService";
 	"NetworkClient";
 };
 
@@ -96,6 +96,7 @@ local function isModule(module)
 			return true
 		end
 	end
+	return false
 end
 
 local function logError(...)
@@ -179,8 +180,7 @@ local Kill; Kill = Immutable(function(info)
 		end) end)()
 end);
 
-local GetEnv;
-GetEnv = function(env, repl)
+local GetEnv; GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({},{
 		__index = function(tab,ind)
 			return (locals[ind] or (env or origEnv)[ind])
@@ -205,37 +205,37 @@ local GetVargTable = function()
 	}
 end
 
-local LoadModule = function(plugin, yield, envVars, noEnv)
-	local plugran, plug = pcall(require, plugin)
+local LoadModule = function(module, yield, envVars, noEnv)
+	local plugran, plug = pcall(require, module)
 
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
 				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
+				local ran, err = service.TrackTask("Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
 
 				if not ran then
-					warn("Module encountered an error while loading: "..tostring(plugin))
+					warn("Module encountered an error while loading: "..tostring(module))
 					warn(tostring(err))
 				end
 			else
-				--service.Threads.RunTask("PLUGIN: "..tostring(plugin),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-				local ran,err = service.TrackTask("Thread: Plugin: ".. tostring(plugin), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
+				--service.Threads.RunTask("PLUGIN: "..tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars)))
+				local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable(), GetEnv)
 
 				if not ran then
-					warn("Module encountered an error while loading: "..tostring(plugin))
+					warn("Module encountered an error while loading: "..tostring(module))
 					warn(tostring(err))
 				end
 			end
 		else
-			client[plugin.Name] = plug
+			client[module.Name] = plug
 		end
 	else
-		warn("Error while loading client module", plugin, plug)
+		warn("Error while loading client module", module, plug)
 	end
-end;
+end
 
-log("Client setmetatable");
+log("Client setmetatable")
 
 client = setmetatable({
 	Handlers = {};
@@ -262,17 +262,17 @@ client = setmetatable({
 }, {
 	__index = function(self, ind)
 		if ind == "Kill" then
-			local ran,func = pcall(function() return Kill() end);
+			local ran, func = pcall(function() return Kill() end);
 
 			if not ran or type(func) ~= "function" then
 				service.Players.LocalPlayer:Kick("Adonis (PlrClientIndexKlErr)");
 				while true do end
 			end
 
-			return func;
+			return func
 		end
 	end
-});
+})
 
 locals = {
 	Pcall = Pcall;
@@ -288,7 +288,7 @@ locals = {
 	dumplog = dumplog;
 }
 
-log("Create service metatable");
+log("Create service metatable")
 
 service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 	--warn(eType, msg, desc, ...)
@@ -318,7 +318,7 @@ end, function(c, parent, tab)
 end, ServiceSpecific, GetEnv(nil, {client = client}))
 
 --// Localize
-log("Localize");
+log("Localize")
 local Localize = service.Localize
 os = Localize(os)
 math = Localize(math)
@@ -354,7 +354,9 @@ log("Wrap")
 local service_Wrap = service.Wrap
 local service_UnWrap = service.UnWrap
 
-for i,val in pairs(service) do if type(val) == "userdata" then service[i] = service_Wrap(val, true) end end
+for i, val in pairs(service) do
+	if type(val) == "userdata" then service[i] = service_Wrap(val, true) end
+end
 
 --// Folder Wrap
 Folder = service_Wrap(Folder, true)
@@ -382,7 +384,7 @@ client.Module = service_Wrap(client.Module, true)
 
 --// Setting things up
 log("Setting things up")
-for ind,loc in pairs({
+for ind, loc in pairs({
 	_G = _G;
 	game = game;
 	spawn = spawn;
@@ -447,22 +449,25 @@ for ind,loc in pairs({
 	task = task;
 	tick = tick;
 	service = service;
-	}) do locals[ind] = loc end
+	})
+do
+	locals[ind] = loc
+end
 
 --// Init
-log("Return init function");
+log("Return init function")
 return service.NewProxy({
 	__call = function(self, data)
-		log("Begin init");
+		log("Begin init")
 
 		local remoteName,depsName = string.match(data.Name, "(.*)\\(.*)")
 		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
 
-		setfenv(1,setmetatable({}, {__metatable = unique}))
+		setfenv(1, setmetatable({}, {__metatable = unique}))
 
 		client.Folder = Folder;
-		client.UIFolder = Folder:WaitForChild("UI",9e9);
-		client.Shared = Folder:WaitForChild("Shared",9e9)
+		client.UIFolder = Folder:WaitForChild("UI", 9e9)
+		client.Shared = Folder:WaitForChild("Shared", 9e9)
 
 		client.Loader = data.Loader
 		client.Module = data.Module
@@ -471,6 +476,7 @@ return service.NewProxy({
 		client.LoadingTime = data.LoadingTime
 		client.RemoteName = remoteName
 
+		client.Typechecker = oldReq(service_UnWrap(client.Shared.Typechecker))
 		client.Changelog = oldReq(service_UnWrap(client.Shared.Changelog))
 		do
 			local MaterialIcons = oldReq(service_UnWrap(client.Shared.MatIcons))
@@ -478,17 +484,19 @@ return service.NewProxy({
 				__index = function(self, ind)
 					local materialIcon = MaterialIcons[ind]
 					if materialIcon then
-						self[ind] = string.format("rbxassetid://%d", materialIcon)
+						self[ind] = "rbxassetid://"..materialIcon
 						return self[ind]
 					end
 				end,
-				__metatable = "Adonis"
+				__metatable = "Adonis_MatIcons"
 			})
 		end
 
 		--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
 		log("Get dependencies")
-		for ind,obj in ipairs(Folder:WaitForChild("Dependencies",9e9):GetChildren()) do client.Deps[obj.Name] = obj end
+		for _, obj in ipairs(Folder:WaitForChild("Dependencies", 9e9):GetChildren()) do
+			client.Deps[obj.Name] = obj
+		end
 
 		--// Do this before we start hooking up events
 		log("Destroy script object")
@@ -497,21 +505,23 @@ return service.NewProxy({
 
 		--// Intial setup
 		log("Initial services caching")
-		for ind, serv in ipairs(ServicesWeUse) do local temp = service[serv] end
+		for _, serv in ipairs(SERVICES_WE_USE) do
+			local temp = service[serv]
+		end
 
 		--// Client specific service variables/functions
 		log("Add service specific")
 		ServiceSpecific.Player = service.Players.LocalPlayer or (function()
 			service.Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
 			return service.Players.LocalPlayer
-		end)();
+		end)()
 		ServiceSpecific.PlayerGui = ServiceSpecific.Player:FindFirstChildWhichIsA("PlayerGui");
 		if not ServiceSpecific.PlayerGui then
 			Routine(function()
 				local PlayerGui = ServiceSpecific.Player:WaitForChild("PlayerGui", 120)
 				if not PlayerGui then
 					logError("PlayerGui unable to be fetched? [Waited 120 Seconds]")
-					return;
+					return
 				end
 				ServiceSpecific.PlayerGui = PlayerGui
 			end)
@@ -527,33 +537,35 @@ return service.NewProxy({
 		end;
 		]]
 
-		ServiceSpecific.Filter = function(str,from,to)
-			return client.Remote.Get("Filter",str,(to and from) or service.Player,to or from)
-		end;
-		ServiceSpecific.LaxFilter = function(str,from)
-			return service.Filter(str,from or service.Player,from or service.Player)
-		end;
+		ServiceSpecific.Filter = function(str, from, to)
+			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
+		end
+		ServiceSpecific.LaxFilter = function(str, from)
+			return service.Filter(str, from or service.Player, from or service.Player)
+		end
 
-		ServiceSpecific.BroadcastFilter = function(str,from)
-			return client.Remote.Get("BroadcastFilter",str,from or service.Player)
-		end;
+		ServiceSpecific.BroadcastFilter = function(str, from)
+			return client.Remote.Get("BroadcastFilter", str, from or service.Player)
+		end
 
 		ServiceSpecific.IsMobile = function()
 			return service.UserInputService.TouchEnabled and not service.UserInputService.MouseEnabled and not service.UserInputService.KeyboardEnabled
-		end;
+		end
 
 		ServiceSpecific.LocalContainer = function()
-			if not client.Variables.LocalContainer or not client.Variables.LocalContainer.Parent then
-				client.Variables.LocalContainer = service.New("Folder")
-				client.Variables.LocalContainer.Name = "__ADONIS_LOCALCONTAINER_" .. client.Functions.GetRandom()
-				client.Variables.LocalContainer.Parent = workspace
+			local Variables = client.Variables
+			if not (Variables.LocalContainer and Variables.LocalContainer.Parent) then
+				Variables.LocalContainer = service.New("Folder", {
+					Parent = workspace;
+					Name = "__ADONIS_LOCALCONTAINER_" .. client.Functions.GetRandom();
+				})
 			end
-			return client.Variables.LocalContainer
-		end;
+			return Variables.LocalContainer
+		end
 
 		--// Load Core Modules
 		log("Loading core modules")
-		for ind,load in ipairs(LoadingOrder) do
+		for _, load in ipairs(CORE_LOADING_ORDER) do
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
 				log("~! Loading Core Module: ".. tostring(load))
@@ -573,14 +585,14 @@ return service.NewProxy({
 			if client.Core.Key then
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")
-				for i,f in pairs(runAfterLoaded) do
-					Pcall(f, data);
+				for _, f in pairs(runAfterLoaded) do
+					Pcall(f, data)
 				end
 
 				--// Stuff to run after absolutely everything else
 				log("~! Doing run last")
-				for i,f in pairs(runLast) do
-					Pcall(f, data);
+				for _, f in pairs(runLast) do
+					Pcall(f, data)
 				end
 
 				--// Finished loading
@@ -598,37 +610,37 @@ return service.NewProxy({
 		end
 
 		--// Initialize Cores
-		log("~! Init cores");
-		for i,name in ipairs(LoadingOrder) do
+		log("~! Init cores")
+		for _, name in ipairs(CORE_LOADING_ORDER) do
 			local core = client[name]
 			log("~! INIT: ".. tostring(name))
 
 			if core then
 				if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
 					if core.RunLast then
-						table.insert(runLast, core.RunLast);
-						core.RunLast = nil;
+						table.insert(runLast, core.RunLast)
+						core.RunLast = nil
 					end
 
 					if core.RunAfterInit then
-						table.insert(runAfterInit, core.RunAfterInit);
-						core.RunAfterInit = nil;
+						table.insert(runAfterInit, core.RunAfterInit)
+						core.RunAfterInit = nil
 					end
 
 					if core.RunAfterPlugins then
-						table.insert(runAfterPlugins, core.RunAfterPlugins);
-						core.RunAfterPlugins = nil;
+						table.insert(runAfterPlugins, core.RunAfterPlugins)
+						core.RunAfterPlugins = nil
 					end
 
 					if core.RunAfterLoaded then
-						table.insert(runAfterLoaded, core.RunAfterLoaded);
-						core.RunAfterLoaded = nil;
+						table.insert(runAfterLoaded, core.RunAfterLoaded)
+						core.RunAfterLoaded = nil
 					end
 
 					if core.Init then
 						log("Run init for ".. tostring(name))
-						Pcall(core.Init, data);
-						core.Init = nil;
+						Pcall(core.Init, data)
+						core.Init = nil
 					end
 				end
 			end
@@ -636,32 +648,32 @@ return service.NewProxy({
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		log("~! Running after init")
-		for i,f in pairs(runAfterInit) do
-			Pcall(f, data);
+		for _, f in pairs(runAfterInit) do
+			Pcall(f, data)
 		end
 
 		--// Load Plugins
 		log("~! Running plugins")
-		for index,plugin in ipairs(Folder.Plugins:GetChildren()) do
+		for _, module in ipairs(Folder.Plugins:GetChildren()) do
 			--// Pass example/README plugins.
-			if plugin.Name == "README" then
+			if module.Name == "README" then
 				continue
 			end
 
-			LoadModule(plugin, false, {script = plugin}); --noenv
+			LoadModule(module, false, {script = module}) --noenv
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		log("~! Running after plugins")
-		for i,f in pairs(runAfterPlugins) do
-			Pcall(f, data);
+		for _, f in pairs(runAfterPlugins) do
+			Pcall(f, data)
 		end
 
 		log("Initial loading complete")
 
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
-		client.AllModulesLoaded = true;
-		service.Events.AllModulesLoaded:Fire(os.time());
+		client.AllModulesLoaded = true
+		service.Events.AllModulesLoaded:Fire(os.time())
 
 		--[[client = service.ReadOnly(client, {
 			[client.Variables] = true;
@@ -693,12 +705,11 @@ return service.NewProxy({
 			RunAfterPlugins = true;
 		}, true)--]]
 
-		service.Events.ClientInitialized:Fire();
+		service.Events.ClientInitialized:Fire()
 
-		log("~! Return success");
+		log("~! Return success")
 		return "SUCCESS"
 	end;
 	__metatable = "Adonis";
 	__tostring = function() return "Adonis" end;
 })
-
