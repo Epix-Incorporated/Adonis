@@ -1279,23 +1279,19 @@ return function(Vargs, GetEnv)
 
 				if playerCooldown and pCooldown_playerCache then
 					local secsTillPass = os.clock() - pCooldown_playerCache
-					local passCooldown = secsTillPass >= playerCooldown
-
-					if not passCooldown then
-						return false, "PlayerCooldown", math.floor(playerCooldown-secsTillPass)
+					if secsTillPass < playerCooldown then
+						return false, string.format("[PlayerCooldown] You must wait %.0f seconds to run the command.", playerCooldown - secsTillPass)
 					end
 				end
 
 				if serverCooldown and sCooldown_playerCache then
 					local secsTillPass = os.clock() - sCooldown_playerCache
-					local passCooldown = secsTillPass >= serverCooldown
-
-					if not passCooldown then
-						return false, "ServerCooldown", math.floor(serverCooldown-secsTillPass)
+					if secsTillPass < serverCooldown then
+						return false, string.format("[ServerCooldown] You must wait %.0f seconds to run the command.", serverCooldown - secsTillPass)
 					end
 				end
 
-				if crossCooldown and pDat.Player then
+				if crossCooldown then
 					local playerData = Core.GetPlayer(pDat.Player) or {}
 					local crossCooldown_Cache = playerData._crossCooldownCache or (function()
 						local tab = {}
@@ -1305,11 +1301,9 @@ return function(Vargs, GetEnv)
 					local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
 
 					if crossCooldown_playerCache then
-						local secsTillPass = os.clock()-crossCooldown_playerCache
-						local passCooldown = secsTillPass >= crossCooldown
-
-						if not passCooldown then
-							return false, "CrossCooldown", math.floor(crossCooldown-secsTillPass)
+						local secsTillPass = os.clock() - crossCooldown_playerCache
+						if secsTillPass < crossCooldown then
+							return false, string.format("[CrossServerCooldown] You must wait %.0f seconds to run the command.", crossCooldown - secsTillPass)
 						end
 					end
 				end
