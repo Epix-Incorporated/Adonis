@@ -332,7 +332,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
-				msg = string.sub(msg, 1, Process.MsgStringLimit);
+				msg = string.sub(msg, 1, Process.MsgStringLimit)
 			end
 
 			msg = Functions.Trim(msg)
@@ -353,174 +353,141 @@ return function(Vargs, GetEnv)
 					end
 				end
 			else
-				local pData = opts.PlayerData or (p and Core.GetPlayer(p));
-				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg;
+				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
+				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg
 
 				if string.match(msg, Settings.BatchKey) then
-					Process.Command(p, msg, opts, false)
+					return Process.Command(p, msg, opts, false)
+				end
+
+				local index, command, matched = Admin.GetCommand(msg)
+
+				if not command then
+					if opts.Check then
+						Remote.MakeGui(p, "Output", {
+							Title = "Output";
+							Message = if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("'%s' is not a valid command.", msg);
+						})
+					end
+					return
+				end
+
+				local allowed, denialMessage = false, nil
+				local isSystem = false
+				local trello = HTTP.Trello.API
+
+				local pDat = {
+					Player = opts.Player or p;
+					Level = opts.AdminLevel or Admin.GetLevel(p);
+					isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+				}
+
+				if opts.isSystem or p == "SYSTEM" then
+					isSystem = true
+					allowed = not command.Disabled
+					p = p or "SYSTEM"
 				else
-					local index, command, matched = Admin.GetCommand(msg)
+					allowed, denialMessage = Admin.CheckPermission(pDat, command, false, opts)
+				end
 
-					if not command then
-						if opts.Check then
-							Remote.MakeGui(p, "Output", {
-								Title = "Output";
-								Message = if Settings.SilentCommandDenials
-									then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
-									else string.format("'%s' is not a valid command.", msg);
-							})
-							return
-						end
-					else
-						local allowed, denyType, waitForDuration = false, nil, nil
-						local isSystem = false
-						local trello = HTTP.Trello.API
+				if not allowed then
+					if not (isSystem or opts.NoOutput) and (denialMessage or not Settings.SilentCommandDenials or opts.Check) then
+						Remote.MakeGui(p, "Output", {
+							Message = denialMessage or (if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("You do not have permission to run '%s'.", msg));
+						})
+					end
+					return
+				end
 
-						local pDat = {
-							Player = opts.Player or p;
-							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
-						}
+				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
 
-						if opts.isSystem or p == "SYSTEM" then
-							isSystem = true
-							allowed = true
-							p = p or "SYSTEM"
-						else
-							allowed, denyType, waitForDuration = Admin.CheckPermission(pDat, command, false, opts)
-						end
+				local cmdArgs = command.Args or command.Arguments
+				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
-						if allowed then
-							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
+				local taskName = "Command:: ".. p.Name ..": ("..msg..")"
 
-								local cmdArgs = command.Args or command.Arguments
-								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
+				if #args > 0 and not isSystem and command.Filter or opts.Filter then
+					local safe = {
+						plr = true;
+						plrs = true;
+						username = true;
+						usernames = true;
+						players = true;
+						player = true;
+						users = true;
+						user = true;
+						brickcolor = true;
+					}
 
-								local taskName = "Command:: ".. p.Name ..": ("..msg..")"
-
-								if #args > 0 and not isSystem and command.Filter or opts.Filter then
-									local safe = {
-										plr = true;
-										plrs = true;
-										username = true;
-										usernames = true;
-										players = true;
-										player = true;
-										users = true;
-										user = true;
-										brickcolor = true;
-									}
-
-									for i, arg in pairs(args) do
-										if not (cmdArgs[i] and safe[string.lower(cmdArgs[i])]) then
-											args[i] = service.LaxFilter(arg, p)
-										end
-									end
-								end
-
-								if opts.CrossServer or (not isSystem and not opts.DontLog) then
-									AddLog("Commands", {
-										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
-										Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
-										Player = p;
-									})
-
-									if Settings.ConfirmCommands then
-										Functions.Hint("Executed Command: [ "..msg.." ]", {p})
-									end
-								end
-
-								if noYield then
-									taskName = "Thread: " .. taskName
-								end
-
-								Admin.UpdateCooldown(pDat, command)
-
-								local ran, cmdError = TrackTask(taskName,
-									command.Function,
-									p,
-									args,
-									{
-										PlayerData = pDat,
-										Options = opts
-									}
-								)
-								if not opts.IgnoreErrors then
-									if cmdError and type(cmdError) == "string" then
-										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
-
-										cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
-
-										if not isSystem then
-											Remote.MakeGui(p, "Output", {
-												Title = "",
-												Message = cmdError,
-												Color = Color3.new(1, 0, 0)
-											})
-										end
-									elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
-										if not isSystem then
-											Remote.MakeGui(p, "Output", {
-												Title = "";
-												Message = "There was an error but the error was not a string? : "..tostring(cmdError);
-												Color = Color3.new(1, 0, 0);
-											})
-										end
-									end
-								end
-
-								service.Events.CommandRan:Fire(p, {
-									Message = msg,
-									Matched = matched,
-									Args = args,
-									Command = command,
-									Index = index,
-									Success = ran,
-									Error = error,
-									Options = opts,
-									PlayerData = pDat
-								})
-							else
-								if not isSystem and not opts.NoOutput then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "This command has been disabled.";
-										Color = Color3.new(1, 0, 0);
-									})
-								end
-							end
-						else
-							if not isSystem and not opts.NoOutput then
-								if denyType and denyType:match("Cooldown$") then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "You must wait "..tostring(waitForDuration).." seconds to use the command "..matched;
-										Color = Color3.fromRGB(255, 133, 33);
-									})
-								else
-									local DENIAL_MESSAGES = {
-										Studio = "This command cannot be used in Roblox Studio.",
-										Chat = "This command is not permitted as chat message (non-chattable command).",
-										CrossServerBlacklist = "This command may not be run across servers (cross-server blacklisted).",
-										CrossServerDisabled = "Cross-server features are currently disabled."
-									}
-									if DENIAL_MESSAGES[denyType] or not Settings.SilentCommandDenials or opts.Check then
-										Remote.MakeGui(p, "Output", {
-											Title = "";
-											Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
-												then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
-												else string.format("You do not have permission to run '%s'.", msg));
-											Color = Color3.new(1, 0, 0);
-										})
-									end
-								end
-							end
-
-							return;
+					for i, arg in pairs(args) do
+						if not (cmdArgs[i] and safe[(cmdArgs[i]:lower():match("(.+)%(s%)$") or cmdArgs[i]:lower())]) then
+							args[i] = service.LaxFilter(arg, p)
 						end
 					end
 				end
+
+				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					AddLog("Commands", {
+						Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
+						Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
+						Player = p;
+					})
+
+					if Settings.ConfirmCommands then
+						Functions.Hint("Executed Command: [ "..msg.." ]", {p})
+					end
+				end
+
+				if noYield then
+					taskName = "Thread: " .. taskName
+				end
+
+				Admin.UpdateCooldown(pDat, command)
+
+				local ran, cmdError = TrackTask(taskName,
+					command.Function,
+					p,
+					args,
+					{
+						PlayerData = pDat,
+						Options = opts
+					}
+				)
+				if not opts.IgnoreErrors then
+					if cmdError and type(cmdError) == "string" then
+						AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
+
+						cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
+
+						if not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = cmdError,
+							})
+						end
+					elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
+						if not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+							})
+						end
+					end
+				end
+
+				service.Events.CommandRan:Fire(p, {
+					Message = msg,
+					Matched = matched,
+					Args = args,
+					Command = command,
+					Index = index,
+					Success = ran,
+					Error = error,
+					Options = opts,
+					PlayerData = pDat
+				})
 			end
 		end;
 
