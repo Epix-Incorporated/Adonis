@@ -254,10 +254,8 @@ return function(Vargs, GetEnv)
 								local fakePlayer = server.Functions.GetFakePlayer({
 									Name = name;
 									DisplayName = name;
-									ToString = name;
 									CharacterAppearanceId = tostring(matched);
 									UserId = tonumber(matched);
-									userId = tonumber(matched);
 								})
 
 								table.insert(players, fakePlayer)
@@ -407,17 +405,17 @@ return function(Vargs, GetEnv)
 				Name = "Fake_Player";
 				DisplayName = "Fake_Player";
 				UserId = 0;
-				userId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = 0;
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
-				Character = Instance.new("Model", {Name = options.Name or "Fake_Player"});
-				Backpack = Instance.new("Folder", {Name = "FakeBackpack"});
-				PlayerGui = Instance.new("Folder", {Name = "FakePlayerGui"});
-				PlayerScripts = Instance.new("Folder", {Name = "FakePlayerScripts"});
+				Character = service.New("Model", {Name = options.Name or "Fake_Player"});
+				Backpack = service.New("Folder", {Name = "FakeBackpack"});
+				PlayerGui = service.New("Folder", {Name = "FakePlayerGui"});
+				PlayerScripts = service.New("Folder", {Name = "FakePlayerScripts"});
+				GetJoinData = function() return {} end;
 				GetFriendsOnline = function() return {} end;
 				GetRankInGroup = function() return 0 end;
 				GetRoleInGroup = function() return "Guest" end;
@@ -430,6 +428,7 @@ return function(Vargs, GetEnv)
 				data[i] = v
 			end
 
+			data.userId = data.UserId
 			data.ToString = data.Name
 
 			for i, v in pairs(data) do
@@ -563,7 +562,6 @@ return function(Vargs, GetEnv)
 										IsFakePlayer = true;
 										CharacterAppearanceId = tostring(userid);
 										UserId = tonumber(userid);
-										userId = tonumber(userid);
 										Parent = service.New("Folder");
 									})
 
