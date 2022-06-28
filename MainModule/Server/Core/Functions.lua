@@ -401,7 +401,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetFakePlayer = function(options)
-			local fakePlayer = service.Wrap(service.New("Folder"))
+			local fakePlayer = service.Wrap(service.New("Folder", {Name = options.Name or "Fake_Player"}))
 			local data = {
 				ClassName = "Player";
 				Name = "Fake_Player";
@@ -412,20 +412,25 @@ return function(Vargs, GetEnv)
 				MembershipType = Enum.MembershipType.None;
 				CharacterAppearanceId = 0;
 				FollowUserId = 0;
+				GameplayPaused = false;
 				Parent = service.Players;
-				Character = Instance.new("Model");
-				Backpack = Instance.new("Folder");
-				PlayerGui = Instance.new("Folder");
-				PlayerScripts = Instance.new("Folder");
+				Character = Instance.new("Model", {Name = options.Name or "Fake_Player"});
+				Backpack = Instance.new("Folder", {Name = "FakeBackpack"});
+				PlayerGui = Instance.new("Folder", {Name = "FakePlayerGui"});
+				PlayerScripts = Instance.new("Folder", {Name = "FakePlayerScripts"});
+				GetFriendsOnline = function() return {} end;
+				GetRankInGroup = function() return 0 end;
+				GetRoleInGroup = function() return "Guest" end;
+				IsFriendsWith = function() return false end;
 				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-				IsA = function(ignore, arg) if arg == "Player" then return true end end;
+				IsA = function(_, className) return className == "Player" end;
 			}
-
-			data.ToString = data.Name
 
 			for i, v in pairs(options) do
 				data[i] = v
 			end
+
+			data.ToString = data.Name
 
 			for i, v in pairs(data) do
 				fakePlayer:SetSpecial(i, v)
