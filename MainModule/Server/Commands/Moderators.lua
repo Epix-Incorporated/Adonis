@@ -4301,14 +4301,18 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s WalkSpeed to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				if args[2] and args[2]:lower() == "inf" then
+					error("Speed cannot be infinite")
+				end
+				local speed = tonumber(args[2]) or 16
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
-						hum.WalkSpeed = args[2] or 16
+						hum.WalkSpeed = speed
 						if Settings.CommandFeedback then
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification";
-								Message = "Character walk speed has been set to ".. (args[2] or 16);
+								Message = "Character walk speed has been set to ".. speed;
 								Time = 15;
 							})
 						end
@@ -4720,8 +4724,19 @@ return function(Vargs, env)
 			Description = "Teleport the target(s) to you";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
+				args[1] = args[1] or Settings.SpecialPrefix.."me"
+				local players = service.GetPlayers(plr, args[1])
+				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
+					Title = "Suggestion";
+					Icon = server.MatIcons.Feedback;
+					Question = "Would you like to use "..Settings.Prefix.."massbring instead? (Arranges the "..#players.." players in rows.)";
+					}) ~= "Yes"
+				then
+					for _, v in ipairs(players) do
+						task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
+					end
+				else
+					Process.Command(plr, Settings.Prefix.."massbring"..Settings.SplitKey..args[1])
 				end
 			end
 		};
