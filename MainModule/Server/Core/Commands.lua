@@ -114,36 +114,62 @@ return function(Vargs, GetEnv)
 
 		--// Update existing permissions to new levels
 		for ind, cmd in pairs(Commands) do
-			if type(cmd) == "table" and cmd.AdminLevel then
-				local lvl = cmd.AdminLevel
-				if type(lvl) == "string" then
-					cmd.AdminLevel = Admin.StringToComLevel(lvl)
-					--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
-				elseif type(lvl) == "table" then
-					for b, v in pairs(lvl) do
-						lvl[b] = Admin.StringToComLevel(v)
-					end
-				elseif type(lvl) == "nil" then
-					cmd.AdminLevel = 0
-				end
+			if type(ind) ~= "string" then
+				warn("Non-string command index found:", typeof(ind), ind)
+				Commands[ind] = nil
+				continue
+			end
+			if type(cmd) ~= "table" then
+				warn("Non-table command definition found:", ind)
+				Commands[ind] = nil
+				continue
+			end
 
-				cmd.Prefix = cmd.Prefix or Settings.Prefix
-
-				cmd.Args = cmd.Args or cmd.Arguments or {}
-
-				cmd.Function = cmd.Function or function(plr)
+			for opt, default in pairs({
+				Prefix = Settings.Prefix;
+				Commands = {};
+				Description = "(No description)";
+				Fun = false;
+				Hidden = false;
+				Disabled = false;
+				NoStudio = false;
+				Chattable = true;
+				AllowDonors = false;
+				CrossServerDenied = false;
+				IsCrossServer = false;
+				Filter = false;
+				Function = function(plr)
 					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
 				end
+				})
+			do
+				if cmd[opt] == nil then
+					cmd[opt] = default
+				end
+			end
 
-				if cmd.ListUpdater then
-					Logs.ListUpdaters[ind] = function(plr, ...)
-						if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
-							if type(cmd.ListUpdater) == "function" then
-								return cmd.ListUpdater(plr, ...)
-							end
+			cmd.Args = cmd.Args or cmd.Arguments or {}
 
-							return Logs[cmd.ListUpdater]
+			local lvl = cmd.AdminLevel
+			if type(lvl) == "string" then
+				cmd.AdminLevel = Admin.StringToComLevel(lvl)
+				--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
+			elseif type(lvl) == "table" then
+				for b, v in pairs(lvl) do
+					lvl[b] = Admin.StringToComLevel(v)
+				end
+			elseif type(lvl) == "nil" then
+				cmd.AdminLevel = 0
+			end
+
+			if cmd.ListUpdater then
+				Logs.ListUpdaters[ind] = function(plr, ...)
+					if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
+						if type(cmd.ListUpdater) == "function" then
+							return cmd.ListUpdater(plr, ...)
 						end
+
+						return Logs[cmd.ListUpdater]
 					end
 				end
 			end
