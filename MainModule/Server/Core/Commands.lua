@@ -16,7 +16,9 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps
+	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps, t
+
+	local RegisterCommandDefinition
 
 	local function Init()
 		Functions = server.Functions;
@@ -30,6 +32,98 @@ return function(Vargs, GetEnv)
 		Variables = server.Variables;
 		Commands = server.Commands;
 		Deps = server.Deps;
+		t = server.Typechecker;
+
+		local ValidateCommandDefinition = t.interface({
+			Prefix = t.string,
+			Commands = t.array(t.string),
+			Description = t.string,
+			AdminLevel = t.union(t.string, t.number, t.nan, t.array(t.union(t.string, t.number, t.nan))),
+			Fun = t.boolean,
+			Hidden = t.boolean,
+			Disabled = t.boolean,
+			NoStudio = t.boolean,
+			Chattable = t.boolean,
+			AllowDonors = t.boolean,
+			Filter = t.boolean,
+			Function = t.callback,
+			ListUpdater = t.optional(t.union(t.string, t.callback))
+		})
+
+		function RegisterCommandDefinition(ind, cmd)
+			if type(ind) ~= "string" then
+				warn("Non-string command index found:", typeof(ind), ind)
+				Commands[ind] = nil
+				return
+			end
+			if type(cmd) ~= "table" then
+				warn("Non-table command definition found:", ind)
+				Commands[ind] = nil
+				return
+			end
+
+			for opt, default in pairs({
+				Prefix = Settings.Prefix;
+				Commands = {};
+				Description = "(No description)";
+				Fun = false;
+				Hidden = false;
+				Disabled = false;
+				NoStudio = false;
+				Chattable = true;
+				AllowDonors = false;
+				CrossServerDenied = false;
+				IsCrossServer = false;
+				Filter = false;
+				Function = function(plr)
+					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
+				end
+				})
+			do
+				if cmd[opt] == nil then
+					cmd[opt] = default
+				end
+			end
+
+			Admin.PrefixCache[cmd.Prefix] = true
+
+			for _, cmd in ipairs(cmd.Commands) do
+				Admin.CommandCache[string.lower((cmd.Prefix..cmd))] = ind
+			end
+
+			cmd.Args = cmd.Args or cmd.Arguments or {}
+
+			local lvl = cmd.AdminLevel
+			if type(lvl) == "string" then
+				cmd.AdminLevel = Admin.StringToComLevel(lvl)
+				--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
+			elseif type(lvl) == "table" then
+				for b, v in ipairs(lvl) do
+					lvl[b] = Admin.StringToComLevel(v)
+				end
+			elseif type(lvl) == "nil" then
+				cmd.AdminLevel = 0
+			end
+
+			if cmd.ListUpdater then
+				Logs.ListUpdaters[ind] = function(plr, ...)
+					if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
+						if type(cmd.ListUpdater) == "function" then
+							return cmd.ListUpdater(plr, ...)
+						end
+						return Logs[cmd.ListUpdater]
+					end
+				end
+			end
+
+			local isValid, fault = ValidateCommandDefinition(cmd)
+			if not isValid then
+				warn("Invalid command definition table for "..ind..":", fault)
+				Commands[ind] = nil
+			end
+
+			rawset(Commands, ind, cmd)
+		end
 
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {
@@ -41,12 +135,13 @@ return function(Vargs, GetEnv)
 			end;
 
 			__newindex = function(self, ind, val)
-				rawset(Commands, ind, val)
-				if val and type(val) == "table" and val.Commands and val.Prefix then
-					for i, cmd in pairs(val.Commands) do
-						Admin.PrefixCache[val.Prefix] = true
-						Admin.CommandCache[string.lower((val.Prefix..cmd))] = ind
-					end
+				if val == nil then
+					rawset(Commands, ind, nil)
+					warn("Removed command definition:", ind)
+				elseif Commands.RunAfterPlugins then
+					rawset(Commands, ind, val)
+				else
+					RegisterCommandDefinition(ind, val)
 				end
 			end;
 		})
@@ -112,67 +207,8 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		--// Update existing permissions to new levels
 		for ind, cmd in pairs(Commands) do
-			if type(ind) ~= "string" then
-				warn("Non-string command index found:", typeof(ind), ind)
-				Commands[ind] = nil
-				continue
-			end
-			if type(cmd) ~= "table" then
-				warn("Non-table command definition found:", ind)
-				Commands[ind] = nil
-				continue
-			end
-
-			for opt, default in pairs({
-				Prefix = Settings.Prefix;
-				Commands = {};
-				Description = "(No description)";
-				Fun = false;
-				Hidden = false;
-				Disabled = false;
-				NoStudio = false;
-				Chattable = true;
-				AllowDonors = false;
-				CrossServerDenied = false;
-				IsCrossServer = false;
-				Filter = false;
-				Function = function(plr)
-					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
-				end
-				})
-			do
-				if cmd[opt] == nil then
-					cmd[opt] = default
-				end
-			end
-
-			cmd.Args = cmd.Args or cmd.Arguments or {}
-
-			local lvl = cmd.AdminLevel
-			if type(lvl) == "string" then
-				cmd.AdminLevel = Admin.StringToComLevel(lvl)
-				--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
-			elseif type(lvl) == "table" then
-				for b, v in pairs(lvl) do
-					lvl[b] = Admin.StringToComLevel(v)
-				end
-			elseif type(lvl) == "nil" then
-				cmd.AdminLevel = 0
-			end
-
-			if cmd.ListUpdater then
-				Logs.ListUpdaters[ind] = function(plr, ...)
-					if not plr or Admin.CheckComLevel(Admin.GetLevel(plr), cmd.AdminLevel) then
-						if type(cmd.ListUpdater) == "function" then
-							return cmd.ListUpdater(plr, ...)
-						end
-
-						return Logs[cmd.ListUpdater]
-					end
-				end
-			end
+			RegisterCommandDefinition(ind, cmd)
 		end
 
 		Commands.RunAfterPlugins = nil
