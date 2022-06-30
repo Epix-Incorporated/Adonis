@@ -1095,16 +1095,44 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		FormatCommand = function(command, cmdn)
-			local text = command.Prefix.. command.Commands[cmdn or 1]
-			local cmdArgs = command.Args or command.Arguments
-			local splitter = Settings.SplitKey
-
-			for ind,arg in pairs(cmdArgs) do
-				text ..= splitter.."<"..arg..">"
+		FormatCommandArguments = function(command)
+			local text = ""
+			for i, arg in ipairs(command.Args) do
+				text ..= "<"..arg..">"
+				if i < #command.Args then
+					text ..= Settings.SplitKey
+				end
 			end
-
 			return text
+		end;
+
+		FormatCommand = function(command, cmdn)
+			local text = command.Prefix..command.Commands[cmdn or 1]
+			if #command.Args > 0 then
+				text ..= Settings.SplitKey .. Functions.FormatCommandArguments(command)
+			end
+			return text
+		end;
+
+		FormatCommandAdminLevel = function(command)
+			local levels = if type(command.AdminLevel) == "table"
+				then table.clone(command.AdminLevel)
+				else {command.AdminLevel}
+			local permissionDesc = ""
+			for i, lvl in ipairs(levels) do
+				if type(lvl) == "number" then
+					local list, name, data = Admin.LevelToList(lvl)
+					permissionDesc ..= (name or "No Rank") .."; Level ".. lvl
+				elseif type(lvl) == "string" then
+					local numLvl = Admin.StringToComLevel(lvl)
+					permissionDesc ..= lvl .. "; Level ".. (numLvl or "Unknown")
+				end
+
+				if i < #levels then
+					permissionDesc ..= ", "
+				end
+			end
+			return permissionDesc
 		end;
 
 		CheckTable = function(p, tab)
