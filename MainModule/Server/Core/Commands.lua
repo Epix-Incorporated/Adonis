@@ -43,7 +43,7 @@ return function(Vargs, GetEnv)
 			Hidden = t.boolean,
 			Disabled = t.boolean,
 			NoStudio = t.boolean,
-			Chattable = t.boolean,
+			NonChattable = t.boolean,
 			AllowDonors = t.boolean,
 			Filter = t.boolean,
 			Function = t.callback,
@@ -70,7 +70,7 @@ return function(Vargs, GetEnv)
 				Hidden = false;
 				Disabled = false;
 				NoStudio = false;
-				Chattable = true;
+				NonChattable = false;
 				AllowDonors = false;
 				CrossServerDenied = false;
 				IsCrossServer = false;
@@ -85,6 +85,11 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			if cmd.Chattable ~= nil then
+				cmd.NonChattable = not cmd.Chattable
+				warn("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
+			end
+
 			Admin.PrefixCache[cmd.Prefix] = true
 
 			for _, cmd in ipairs(cmd.Commands) do
@@ -96,7 +101,6 @@ return function(Vargs, GetEnv)
 			local lvl = cmd.AdminLevel
 			if type(lvl) == "string" then
 				cmd.AdminLevel = Admin.StringToComLevel(lvl)
-				--print("Changed " .. tostring(lvl) .. " to " .. tostring(cmd.AdminLevel))
 			elseif type(lvl) == "table" then
 				for b, v in ipairs(lvl) do
 					lvl[b] = Admin.StringToComLevel(v)
@@ -137,7 +141,7 @@ return function(Vargs, GetEnv)
 			__newindex = function(self, ind, val)
 				if val == nil then
 					rawset(Commands, ind, nil)
-					warn("Removed command definition:", ind)
+					Logs.AddLog("Script", "Removed command definition:", ind)
 				elseif Commands.RunAfterPlugins then
 					rawset(Commands, ind, val)
 				else
@@ -146,7 +150,7 @@ return function(Vargs, GetEnv)
 			end;
 		})
 
-		Logs:AddLog("Script", "Loading Command Modules...")
+		Logs.AddLog("Script", "Loading Command Modules...")
 
 		--// Load command modules
 		if server.CommandModules then
@@ -160,11 +164,11 @@ return function(Vargs, GetEnv)
 						Commands[ind] = cmd
 					end
 
-					Logs:AddLog("Script", "Loaded Command Module: ".. module.Name)
+					Logs.AddLog("Script", "Loaded Command Module: ".. module.Name)
 				elseif not ran then
 					warn("CMDMODULE ".. module.Name .. " failed to load:")
 					warn(tostring(tab))
-					Logs:AddLog("Script", "Loading Command Module Failed: ".. module.Name)
+					Logs.AddLog("Script", "Loading Command Module Failed: ".. module.Name)
 				end
 			end
 		end
@@ -173,8 +177,8 @@ return function(Vargs, GetEnv)
 		Admin.CacheCommands()
 
 		Commands.Init = nil
-		Logs:AddLog("Script", "Commands Module Initialized")
-	end;
+		Logs.AddLog("Script", "Commands Module Initialized")
+	end
 
 	local function RunAfterPlugins()
 		--// Load custom user-supplied commands in settings.Commands
@@ -212,7 +216,7 @@ return function(Vargs, GetEnv)
 		end
 
 		Commands.RunAfterPlugins = nil
-	end;
+	end
 
 	server.Commands = {
 		Init = Init;
