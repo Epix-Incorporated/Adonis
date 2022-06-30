@@ -13,4 +13,4 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: "👋 Welcome! It looks like this is your first time creating an issue here. Do expect a swift response from a maintainer. Make sure you've included all necessary details in your post!"
-        pr-message: "👋 Hello there! It looks like this is your first time contributing to the Adonis project. Remember to have read the Contribution Guidelines! They're super-important. Good luck!"
+        pr-message: "👋 Hello there! It looks like this is your first time contributing to the Adonis project. Remember to have read the [Contributing Guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md)! It's super-important. Anyway, good luck!"
