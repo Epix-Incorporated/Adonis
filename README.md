@@ -66,7 +66,7 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 * Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
 
 ## 🔗 Links
-* Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Loader
+* Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 * Official MainModule: https://www.roblox.com/library/7510592873/Adonis-MainModule
 * Nightly MainModule: https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
 * 📄 Documentation: https://github.com/Sceleratis/Adonis/wiki
