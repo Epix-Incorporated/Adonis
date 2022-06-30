@@ -2404,7 +2404,7 @@ return function(Vargs, env)
 					cPcall(function()
 						if v and v:FindFirstChild("leaderstats") then
 							for a, q in pairs(v.leaderstats:GetChildren()) do
-								if q:IsA("IntValue") then q.Value = 0 end
+								if q:IsA("IntValue") or q:IsA("NumberValue") then q.Value = 0 end
 							end
 						end
 					end)
