@@ -91,6 +91,12 @@ return function(Vargs, GetEnv)
 		local Ranks = Settings.Ranks
 		for rank, data in pairs(Defaults.Settings.Ranks) do
 			if not Ranks[rank] then
+				for r, d in pairs(Ranks) do
+					if d.Level == data.Level then
+						data.Hidden = true
+						break
+					end
+				end
 				Ranks[rank] = data
 			end
 		end
