@@ -37,18 +37,16 @@ return function(Vargs, GetEnv)
 		HTTP.Init = nil;
 		Logs:AddLog("Script", "HTTP Module Initialized")
 	end;
-	
-	local function TestHttp()
-		local suc,res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
-		if not suc and res:find("Http requests are not enabled.") then
-			return false
-		end
-		return true
-	end;
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = TestHttp();
+		HttpEnabled = (function()
+			local sucess, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
+			if not success and res:find("Http requests are not enabled.") then
+				return false
+			end
+			return true
+		end)();
 		LoadstringEnabled = pcall(loadstring, "");
 
 		CheckHttp = function()
