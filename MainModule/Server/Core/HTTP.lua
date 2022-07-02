@@ -39,15 +39,11 @@ return function(Vargs, GetEnv)
 	end;
 	
 	local function TestHttp()
-		local pass = false;
-		local addresses = {"https://google.com/robots.txt","https://api.github.com","https://testing.googleapis.com/$discovery/rest?version=v1"}
-		for _,addr in pairs(addresses) do
-			local suc = pcall(service.HttpService.GetAsync, service.HttpService, addr)
-			if suc then
-				pass = true
-			end
+		local suc,res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
+		if not suc and res:find("Http requests are not enabled.") then
+			return false
 		end
-		return pass
+		return true
 	end;
 
 	server.HTTP = {
