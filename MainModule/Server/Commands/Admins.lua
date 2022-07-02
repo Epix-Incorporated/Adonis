@@ -164,7 +164,7 @@ return function(Vargs, env)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v, temp, temp)
-								Functions.Hint(string.format("Removed %s from rank %s", v.Name, targRank or "[unknown rank]"), {plr})
+								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v), targRank or "[unknown rank]"), {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = string.format("You are no longer a(n) %s", targRank or "admin");
@@ -172,10 +172,10 @@ return function(Vargs, env)
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s rank", {plr})
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s rank", {plr})
 							end
 						else
-							Functions.Hint(v.Name.." does not already have any rank to remove", {plr})
+							Functions.Hint(service.FormatPlayer(v).." does not already have any rank to remove", {plr})
 						end
 					end
 				else
@@ -240,7 +240,7 @@ return function(Vargs, env)
 						if targLevel > 0 then
 							if sendLevel > targLevel then
 								Admin.RemoveAdmin(v,true)
-								Functions.Hint("Removed "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("Removed "..service.FormatPlayer(v).."'s admin powers", {plr})
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification";
 									Message = "Your admin powers have been temporarily removed";
@@ -248,10 +248,10 @@ return function(Vargs, env)
 									Time = 10;
 								})
 							else
-								Functions.Hint("You do not have permission to remove "..v.Name.."'s admin powers", {plr})
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s admin powers", {plr})
 							end
 						else
-							Functions.Hint(v.Name..' is not an admin', {plr})
+							Functions.Hint(service.FormatPlayer(v).." is not an admin", {plr})
 						end
 					end
 				end
@@ -277,9 +277,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp moderator', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temp moderator", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -304,9 +304,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a moderator', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a moderator", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -396,7 +396,7 @@ return function(Vargs, env)
 						if #plrs>0 then
 							for _, v in ipairs(plrs) do
 								table.insert(Variables.Whitelist.Lists.Settings, v.Name..":"..v.UserId)
-								Functions.Hint("Added "..v.Name.." to the whitelist", {plr})
+								Functions.Hint("Added "..service.FormatPlayer(v).." to the whitelist", {plr})
 							end
 						else
 							table.insert(Variables.Whitelist.Lists.Settings, args[2])
@@ -952,39 +952,55 @@ return function(Vargs, env)
 
 		MakeScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"s", "ss", "serverscript", "sscript", "makescript", "script", "scr"};
+			Commands = {"s", "ss", "serverscript", "sscript", "script", "makescript"};
 			Args = {"code"};
-			Description = "Executes the given code on the server";
+			Description = "Executes the given Lua code on the server";
 			AdminLevel = "Admins";
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
-				assert(args[1], "Missing Script code")
+				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
+				assert(args[1], "Missing Script code (argument #2)")
 
-				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				Remote.RemoveGui(plr, "Prompt_MakeScript")
+				if
+					plr == false
+					or Remote.GetGui(plr, "YesNoPrompt", {
+						Name = "Prompt_MakeScript";
+						Size = {250, 200},
+						Title = "Script Confirmation";
+						Icon = server.MatIcons.Warning;
+						Question = "Are you sure you want to execute the code directly on the server? This action is irreversible and may potentially be dangerous; only run scripts that you trust!";
+						Delay = 2;
+					}) == "Yes"
+				then
+					local bytecode = Core.Bytecode(args[1])
+					assert(string.find(bytecode, "\27Lua"), "Script unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
-				local cl = Core.NewScript("Script", args[1], true)
-				cl.Name = "[Adonis] Script"
-				cl.Parent = service.ServerScriptService
-				task.wait()
-				cl.Disabled = false
-				Functions.Hint("Ran Script", {plr})
+					local cl = Core.NewScript("Script", args[1], true)
+					cl.Name = "[Adonis] Script"
+					cl.Parent = service.ServerScriptService
+					task.wait()
+					cl.Disabled = false
+					Functions.Hint("Ran Script", {plr})
+				else
+					Functions.Hint("Operation cancelled", {plr})
+				end
 			end
 		};
 
 		MakeLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"ls", "localscript", "lscript", "makelscript", "lscr"};
+			Commands = {"ls", "localscript", "lscript"};
 			Args = {"code"};
-			Description = "Executes the given code on the client";
+			Description = "Executes the given code on your client";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing LocalScript code")
+				assert(args[1], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[1])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created,".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				assert(string.find(bytecode, "\27Lua"), "LocalScript unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
 				local cl = Core.NewScript("LocalScript", "script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[1], true)
 				cl.Name = "[Adonis] LocalScript"
@@ -992,32 +1008,32 @@ return function(Vargs, env)
 				cl.Parent = plr:FindFirstChildOfClass("Backpack")
 				task.wait()
 				cl.Disabled = false
-				Functions.Hint("Ran LocalScript", {plr})
+				Functions.Hint("Ran LocalScript on your client", {plr})
 			end
 		};
 
 		LoadLocalScript = {
 			Prefix = Settings.Prefix;
-			Commands = {"cs", "cscr", "clientscript"};
+			Commands = {"cs", "cscript", "clientscript"};
 			Args = {"player", "code"};
 			Description = "Executes the given code on the client of the target player(s)";
 			AdminLevel = "Admins";
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[2], "Missing LocalScript code")
+				assert(args[2], "Missing LocalScript code (argument #2)")
 
 				local bytecode = Core.Bytecode(args[2])
-				assert(string.find(bytecode, "\27Lua"), "Script unable to be created, ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				assert(string.find(bytecode, "\27Lua"), "LocalScript unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
 				local new = Core.NewScript("LocalScript", "script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; "..args[2], true)
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local cl = new:Clone()
 					cl.Name = "[Adonis] LocalScript"
 					cl.Disabled = true
-					cl.Parent = v.Backpack
+					cl.Parent = v:FindFirstChildOfClass("Backpack")
 					task.wait()
 					cl.Disabled = false
-					Functions.Hint("Ran LocalScript on "..v.Name, {plr})
+					Functions.Hint("Ran LocalScript on "..service.FormatPlayer(v), {plr})
 				end
 			end
 		};
@@ -1030,11 +1046,12 @@ return function(Vargs, env)
 			Description = "Makes a note on the target player(s) that says <note>";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Missing note (argument #2)")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local PlayerData = Core.GetPlayer(v)
-					if not PlayerData.AdminNotes then PlayerData.AdminNotes={} end
+					if not PlayerData.AdminNotes then PlayerData.AdminNotes = {} end
 					table.insert(PlayerData.AdminNotes, args[2])
-					Functions.Hint("Added "..v.Name.." Note "..args[2], {plr})
+					Functions.Hint("Added "..service.FormatPlayer(v).." Note "..args[2], {plr})
 					Core.SavePlayer(v, PlayerData)
 				end
 			end
@@ -1047,6 +1064,7 @@ return function(Vargs, env)
 			Description = "Removes a note on the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[2], "Missing note (argument #2)")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local PlayerData = Core.GetPlayer(v)
 					if PlayerData.AdminNotes then
@@ -1055,7 +1073,7 @@ return function(Vargs, env)
 						else
 							for k, m in ipairs(PlayerData.AdminNotes) do
 								if string.sub(string.lower(m), 1, #args[2]) == string.lower(args[2]) then
-									Functions.Hint("Removed "..v.Name.." Note "..m, {plr})
+									Functions.Hint("Removed "..service.FormatPlayer(v).." Note "..m, {plr})
 									table.remove(PlayerData.AdminNotes, k)
 								end
 							end
@@ -1077,10 +1095,10 @@ return function(Vargs, env)
 					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then
-						Functions.Hint("No notes on "..v.Name, {plr})
-						return
+						Functions.Hint("No notes found on "..service.FormatPlayer(v), {plr})
+						continue
 					end
-					Remote.MakeGui(plr, "List", {Title = v.Name, Table = notes})
+					Remote.MakeGui(plr, "List", {Title = service.FormatPlayer(v), Table = notes})
 				end
 			end
 		};

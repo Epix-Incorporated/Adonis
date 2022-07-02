@@ -751,7 +751,7 @@ return function(Vargs, env)
 				local chosenMat = args[2] or "Plastic"
 
 				if not args[2] then
-					Functions.Hint("Material wasn't supplied. Plastic was chosen instead")
+					Functions.Hint("Material wasn't supplied; Plastic was chosen instead")
 				elseif tonumber(args[2]) then
 					chosenMat = table.find(mats, tonumber(args[2]))
 				end
@@ -1341,16 +1341,19 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forest", "sendtotheforest", "intothewoods"};
 			Args = {"player"};
-			Description = "Sends player to The Forest for a time out";
+			Description = "Sends player to The Forest for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(209424751, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(209424751, players)
 			end
 		};
 
@@ -1358,16 +1361,19 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"maze", "sendtothemaze", "mazerunner"};
 			Args = {"player"};
-			Description = "Sends player to The Maze for a time out";
+			Description = "Sends player to The Maze for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(280846668, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(280846668, players)
 			end
 		};
 
@@ -2205,7 +2211,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
-			Description = "Gives the target player(s) hat pets, controled using the !pets command.";
+			Description = "Gives the target player(s) hat pets, controlled using the "..Settings.PlayerPrefix.."pets command.";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2297,7 +2303,7 @@ return function(Vargs, env)
 						end
 					end
 				else
-					Functions.Hint("You don't have any hat pets! If you are an admin use the :hatpets command to get some", {plr})
+					Functions.Hint("You don't have any hat pets! If you are an admin use the "..Settings.Prefix.."hatpets command to get some", {plr})
 				end
 			end
 		};
@@ -2314,7 +2320,8 @@ return function(Vargs, env)
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
-								frc:Destroy() end
+								frc:Destroy()
+							end
 						end
 					end
 				end
@@ -2412,10 +2419,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local scrapt = v.Character:FindFirstChild("HippityHopitus")
-					if scrapt then
-						scrapt.Disabled = true
-						scrapt:Destroy()
+					local scr = v.Character:FindFirstChild("HippityHopitus")
+					if scr then
+						scr.Disabled = true
+						scr:Destroy()
 					end
 				end
 			end
@@ -3678,7 +3685,7 @@ return function(Vargs, env)
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..v.Name.."'s character: humanoid and/or character doesn't exist!", {plr})
+						Functions.Hint("Cannot resize "..service.FormatPlayer(v).."'s character: humanoid and/or character doesn't exist!", {plr})
 						continue
 					end
 
@@ -3687,7 +3694,7 @@ return function(Vargs, env)
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", v.Name, num*100), {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
 						continue
 					end
 

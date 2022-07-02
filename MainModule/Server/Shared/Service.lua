@@ -1015,8 +1015,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		FormatPlayer = function(plr, withUserId)
-			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName, plr.Name)
-			if withUserId then str ..= string.format(" [%d]", plr.UserId) end
+			if not plr then return "%UNKNOWN%" end
+			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName or "???", plr.Name or "???")
+			if withUserId then str ..= string.format(" [%d]", plr.UserId or 0) end
 			return str
 		end;
 

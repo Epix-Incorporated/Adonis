@@ -20,50 +20,28 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local commands = Admin.SearchCommands(plr, "all")
 				local tab = {}
-				local cStr = ""
-
 				local cmdCount = 0
-				for _, v in pairs(commands) do
-					if v.Hidden or v.Disabled then
+
+				for _, cmd in pairs(Admin.SearchCommands(plr, "all")) do
+					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
 
-					local lvl = v.AdminLevel
-					local gotLevels = {}
-
-					if type(lvl) == "table" then
-						for _, v in pairs(lvl) do
-							table.insert(gotLevels, v)
-						end
-					elseif type(lvl) == "string" or type(lvl) == "number" then
-						table.insert(gotLevels, lvl)
-					end
-
-					for i, lvl in pairs(gotLevels) do
-						local tempStr = ""
-
-						if type(lvl) == "number" then
-							local list, name, data = Admin.LevelToList(lvl)
-							--print(tostring(list), tostring(name), tostring(data))
-							tempStr = (name or "No Rank") .."; Level ".. lvl
-						elseif type(lvl) == "string" then
-							local numLvl = Admin.StringToComLevel(lvl)
-							tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
-						end
-
-						if i > 1 then
-							tempStr = cStr.. ", ".. tempStr
-						end
-
-						cStr = tempStr
-					end
-
+					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
-						Text = Admin.FormatCommand(v),
-						Desc = "["..cStr.."] "..v.Description,
-						Filter = cStr
+						Text = Admin.FormatCommand(cmd),
+						Desc = string.format("[%s] %s", permissionDesc, cmd.Description or "(No description provided)"),
+						Filter = permissionDesc
+					})
+					cmdCount += 1
+				end
+
+				for alias, command in pairs(Core.GetPlayer(plr).Aliases or {}) do
+					table.insert(tab, {
+						Text = alias,
+						Desc = "[User Alias] "..command,
+						Filter = command
 					})
 					cmdCount += 1
 				end
@@ -72,6 +50,7 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Commands ("..cmdCount..")";
+					Icon = server.MatIcons.Description;
 					Table = tab;
 					TitleButtons = {
 						{
@@ -92,36 +71,41 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
 
-				local commands = Admin.SearchCommands(plr, "all")
 				local cmd, ind
-				for i, v in pairs(commands) do
+				for i, v in pairs(Admin.SearchCommands(plr, "all")) do
 					for _, p in ipairs(v.Commands) do
 						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
-							cmd = v
-							ind = i
+							cmd, ind = v, i
 							break
 						end
 					end
+					if ind then break end
 				end
-				assert(cmd, "Command '"..args[1].."' not found")
+				assert(cmd, "Command '"..args[1].."' is either not found or beyond your permission level")
 
 				local function formatStrForRichText(str: string): string
 					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
 				end
 
-				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
-				if cmdArgs == "" then cmdArgs = "-" end
+				local cmdArgs = Admin.FormatCommandArguments(cmd)
+
+				local cmdAttribs = {}
+				for _, key in ipairs({"Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors"}) do
+					if cmd[key] then
+						table.insert(cmdAttribs, key)
+					end
+				end
+
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
 						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
 						{Text = "<b>Commands:</b> "..formatStrForRichText(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
-						{Text = "<b>Arguments:</b> "..formatStrForRichText(cmdArgs), Desc = "Parameters taken by the command"},
-						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..formatStrForRichText(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
-						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
-						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
+						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else formatStrForRichText(cmdArgs)), Desc = "Parameters taken by the command"},
+						{Text = "<b>Admin Level:</b> "..Admin.FormatCommandAdminLevel(cmd), Desc = "Rank required to run the command"},
 						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Attributes:</b> "..(if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")), Desc = "Extra data about the command"},
 						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
@@ -453,7 +437,9 @@ return function(Vargs, env)
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
+					ServerInstanceId = game.JobId
+				}))
 			end
 		};
 
@@ -472,7 +458,9 @@ return function(Vargs, env)
 					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
 					if success then
 						if found and placeId and jobId then
-							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
 							Functions.Hint("Teleporting...", {plr})
 						else
 							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
@@ -480,6 +468,37 @@ return function(Vargs, env)
 					else
 						Functions.Hint("Unexpected internal error: "..found, {plr})
 					end
+				else
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
+				end
+			end
+		};
+
+		GlobalJoin = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"joinfriend", "globaljoin"};
+			Args = {"username"};
+			Description = "Joins your friend outside/inside of the game (must be online)";
+			NoStudio = true;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
+				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					for _, v in ipairs(plr:GetFriendsOnline()) do
+						if v.VisitorId == userId then
+							if v.IsOnline and v.PlaceId and v.GameId then
+								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
+								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
+							else
+								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
+							end
+							return
+						end
+					end
+					Functions.Hint("You are not a friend of the specified user", {plr})
 				else
 					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
 				end
@@ -578,39 +597,6 @@ return function(Vargs, env)
 					Size = {300, 250};
 					RichText = true;
 				})
-			end
-		};
-
-		GlobalJoin = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend", "globaljoin"};
-			Args = {"username"};
-			Description = "Joins your friend outside/inside of the game (must be online)";
-			NoStudio = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
-				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				assert(args[1], "Argument #1 (username) is required")
-				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-				if success and userId then
-					for _, v in ipairs(plr:GetFriendsOnline()) do
-						if v.VisitorId == userId then
-							if v.IsOnline and v.PlaceId and v.GameId then
-								local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
-								new.Disabled = false
-								new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
-								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
-							else
-								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
-							end
-							return
-						end
-					end
-					Functions.Hint("You are not a friend of "..service.Players:GetNameFromUserIdAsync(userId))
-				else
-					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
-				end
 			end
 		};
 

@@ -8,6 +8,7 @@ return function(data, env)
 	local window = client.UI.Make("Window", {
 		Name  = "Teams";
 		Title = "Teams";
+		Icon = client.MatIcons.People;
 		Size  = {300, 280};
 		AllowMultiple = false;
 	})

@@ -28,27 +28,37 @@ Adonis is a community-maintained server moderation and management system created
 
 ### Method 1 (recommended): Official Roblox Model
 
-* [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library
-
-* Insert the model into Studio using the Toolbox, and place it under `ServerScriptService` (do not leave it in the Workspace!)
+1. [Take a copy](https://www.roblox.com/library/7510622625/) of the Adonis loader model from the Roblox Library.
+2. Insert the model into Studio using the Toolbox, and place it under `ServerScriptService`. (Do not leave it in the `Workspace`!)
 
 ### Method 2: GitHub Releases
 
-* Download the `rbxm` file snapshot from the [latest release](https://github.com/Sceleratis/Adonis/releases/latest)
-* Import the model file into Studio
-  * Note: By default, snapshots included in releases have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
+1. Download the `rbxm` file snapshot from the [latest release](https://github.com/Sceleratis/Adonis/releases/latest).
+2. Import the model file into Studio.
+
+ℹ️ <b>Note:</b> By default, snapshots included in releases have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
 
 ### Method 3: Filesystem
 
-* Download the repository to your computer's file system
-* Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file
-  * If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`
-* Import the compiled model file into Studio
-  * Note: By default, loaders compiled from the repository have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled. **⚠️ This method compiles the _bleeding edge_ version of Adonis, which may be not fully tested and highly unstable.**
+1. Download the repository to your computer's file system.
+2. Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file.
+  * If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`.
+3. Import the compiled model file into Studio.
+
+ℹ️ <b>Note:</b> By default, loaders compiled from the repository have <a href="#%EF%B8%8F-debug-mode">`DebugMode`</a> enabled.
+
+**⚠️ Method 3 compiles the _bleeding edge_ version of Adonis, which may be not fully tested and highly unstable.**
+
+### ⚙️ Configuring Adonis
+
+Once you've inserted the Adonis loader into your game, open `Adonis_Loader` > `Config` > `Settings`, and change `settings.DataStoreKey` to something absolutely random (eg. `"2fgi02e)^Q"`). This is for security as it prevents serverside tampering with Adonis's datastores.
+
+You may then edit the Settings module to configure Adonis to suit your game. Instructions and elaboration are provided within the Settings module.
+
 
 ## 🛠️ Debug Mode
 
-The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the ``MainModule``, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
+The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
 
 ### Toggling debug mode
 
@@ -56,12 +66,13 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 * Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
 
 ## 🔗 Links
-* Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Loader
+* Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
 * Official MainModule: https://www.roblox.com/library/7510592873/Adonis-MainModule
 * Nightly MainModule: https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
-* Documentation: https://github.com/Sceleratis/Adonis/wiki
-* User Manual: https://github.com/Sceleratis/Adonis/wiki/User-Manual-&-Feature-Showcase
-* Discord Server: https://discord.gg/rdkgGc4
+* 📄 Documentation: https://github.com/Sceleratis/Adonis/wiki
+* 📘 User Manual: https://github.com/Sceleratis/Adonis/wiki/User-Manual-&-Feature-Showcase
+* Discord Server: https://discord.gg/H5RvTP3
+* Roblox Group: https://www.roblox.com/groups/886423
 * Plugins Repository: https://github.com/Sceleratis/Adonis-Plugins
 
 ## ⭐ Contributing
