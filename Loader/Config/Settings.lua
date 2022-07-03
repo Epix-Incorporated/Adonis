@@ -283,6 +283,10 @@ settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format:
 settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trello.com/app-key
 settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 
+settings.Webhook_API_Enabled = false					-- Adonis has a built-in Discord webhook API that plugins may use via server.HTTP.Webhooks.PostEmbed(url, embedData)
+settings.Webhook_Process_Interval = math.random(30, 45)	-- Delay between which webhook messages in queue are sent to Discord
+settings.Webhook_Global_Queues = true					-- Use game-wide batch queues to serve as an effective global ratelimit system (only works if game is published)
+
 settings.G_API = true					-- If true allows other server scripts to access certain functions described in the API module through _G.Adonis
 settings.G_Access = false				-- If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
 settings.G_Access_Key = "Example_Key"	-- Key required to use the _G access API; Example_Key will not work for obvious reasons
