@@ -669,10 +669,12 @@ return function(Vargs, GetEnv)
 					p.CanCollide = false
 					p.TopSurface = 0
 					p.BottomSurface = 0
+					p.Massless = true
 					p.Size = Vector3.new(2,4,0.1)
 					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
-					p.Parent = service.LocalContainer()
-
+					p.Parent = char --service.LocalContainer() 
+                                         --// Idk if chanching it to character may break something or not so
+					 --// I will just comment it out instead of  replacing it
 					if reflect then
 						p.Reflectance = reflect
 					end
