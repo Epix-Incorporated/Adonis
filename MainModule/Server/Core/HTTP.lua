@@ -57,16 +57,18 @@ return function(Vargs, GetEnv)
 			service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
 		end
 
-		if Settings.Webhook_Enabled then
-			if --Variables.IsStudio or
-				not pcall(function()
-					HTTP.Webhooks.EmbedQueue = service.MemoryStoreService:GetQueue(Core.DataStoreEncode("Adonis_WebhookEmbeds"))
-				end)
+		if Settings.Webhook_API_Enabled then
+			if not (
+				Settings.Webhook_Global_Queues
+					and pcall(function()
+						HTTP.Webhooks.EmbedQueue = service.MemoryStoreService:GetQueue(Core.DataStoreEncode("Adonis_WebhookEmbeds"))
+					end)
+				)
 			then
 				HTTP.Webhooks.EmbedQueue = {}
 				warn("Using local webhook embed queue")
 			end
-			service.StartLoop("WEBHOOK_PROCESSOR", math.random(30, 45), HTTP.Webhooks.ProcessEmbedQueue, true)
+			service.StartLoop("WEBHOOK_PROCESSOR", Settings.Webhook_Process_Interval, HTTP.Webhooks.ProcessEmbedQueue, true)
 			game:BindToClose(HTTP.Webhooks.ProcessEmbedQueue)
 		end
 
@@ -139,8 +141,8 @@ return function(Vargs, GetEnv)
 			end;
 
 			PostEmbed = function(url, embedData: WebhookEmbedData)
-				if not Settings.Webhook_Enabled then
-					warn("Webhook features are currently disabled in Settings.Webhook_Enabled")
+				if not Settings.Webhook_API_Enabled then
+					warn("Webhook features are currently disabled in Settings.Webhook_API_Enabled")
 					return
 				end
 
@@ -171,8 +173,8 @@ return function(Vargs, GetEnv)
 			end;
 
 			ProcessEmbedQueue = function()
-				if not Settings.Webhook_Enabled then
-					warn("Webhook features are currently disabled in Settings.Webhook_Enabled")
+				if not Settings.Webhook_API_Enabled then
+					warn("Webhook features are currently disabled in Settings.Webhook_API_Enabled")
 					return
 				end
 
