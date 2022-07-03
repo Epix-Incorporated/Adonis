@@ -670,6 +670,7 @@ return function(Vargs, GetEnv)
 					p.TopSurface = 0
 					p.BottomSurface = 0
 					p.Massless = true
+					p.CanQuery = false
 					p.Size = Vector3.new(2,4,0.1)
 					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
 					p.Parent = char --service.LocalContainer() 
