@@ -1221,18 +1221,16 @@ return function(Vargs, GetEnv)
 		CheckComLevel = function(plrAdminLevel, comLevel)
 			if type(comLevel) == "string" then
 				comLevel = Admin.StringToComLevel(comLevel)
-			end
-
-			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
-				return true;
 			elseif type(comLevel) == "table" then
-				for _, level in pairs(comLevel) do
-					if plrAdminLevel == level then
+				for _, level in ipairs(comLevel) do
+					if Admin.CheckComLevel(plrAdminLevel, level) then
 						return true
 					end
 				end
+				return false
 			end
-			return false
+
+			return type(comLevel) == "number" and plrAdminLevel >= comLevel
 		end;
 
 		IsBlacklisted = function(p)
