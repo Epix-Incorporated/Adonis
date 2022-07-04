@@ -681,7 +681,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return strs
 		end;
 
-		Filter = function(str,from,to)
+		Filter = function(str, from, to)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -722,7 +722,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		BroadcastFilter = function(str,from)
+		BroadcastFilter = function(str, from)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -977,7 +977,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		EscapeControlCharacters = function(str)
-			return str:gsub("%c", {
+			return string.gsub(str, "%c", {
 				["\a"] = "\\a",
 				["\b"] = "\\b",
 				["\f"] = "\\f",
@@ -988,9 +988,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			})
 		end;
 
-		GetTime = function()
-			return os.time();
+		SanitizeXML = function(str)
+			return string.gsub(str, "['\"<>&]", {
+				["'"] = "&apos;",
+				["\""] = "&quot;",
+				["<"] = "&lt;",
+				[">"] = "&gt;",
+				["&"] = "&amp;"
+			})
 		end;
+
+		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
