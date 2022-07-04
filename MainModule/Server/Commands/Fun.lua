@@ -4660,6 +4660,7 @@ return function(Vargs, env)
 			Commands = {"loadsky", "skybox"};
 			Args = {"front", "back", "left", "right", "up", "down", "celestialBodies? (default: true)", "starCount (default: 3000)"};
 			Description = "Change the skybox front with the provided image IDs";
+			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.Lighting:GetChildren()) do
