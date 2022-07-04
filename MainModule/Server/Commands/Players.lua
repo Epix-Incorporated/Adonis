@@ -20,50 +20,28 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local commands = Admin.SearchCommands(plr, "all")
 				local tab = {}
-				local cStr = ""
-
 				local cmdCount = 0
-				for _, v in pairs(commands) do
-					if v.Hidden or v.Disabled then
+
+				for _, cmd in pairs(Admin.SearchCommands(plr, "all")) do
+					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
 
-					local lvl = v.AdminLevel
-					local gotLevels = {}
-
-					if type(lvl) == "table" then
-						for _, v in pairs(lvl) do
-							table.insert(gotLevels, v)
-						end
-					elseif type(lvl) == "string" or type(lvl) == "number" then
-						table.insert(gotLevels, lvl)
-					end
-
-					for i, lvl in pairs(gotLevels) do
-						local tempStr = ""
-
-						if type(lvl) == "number" then
-							local list, name, data = Admin.LevelToList(lvl)
-							--print(tostring(list), tostring(name), tostring(data))
-							tempStr = (name or "No Rank") .."; Level ".. lvl
-						elseif type(lvl) == "string" then
-							local numLvl = Admin.StringToComLevel(lvl)
-							tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
-						end
-
-						if i > 1 then
-							tempStr = cStr.. ", ".. tempStr
-						end
-
-						cStr = tempStr
-					end
-
+					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
-						Text = Admin.FormatCommand(v),
-						Desc = string.format("[%s] %s", cStr, v.Description or "No description provided."),
-						Filter = cStr
+						Text = Admin.FormatCommand(cmd),
+						Desc = string.format("[%s] %s", permissionDesc, cmd.Description or "(No description provided)"),
+						Filter = permissionDesc
+					})
+					cmdCount += 1
+				end
+
+				for alias, command in pairs(Core.GetPlayer(plr).Aliases or {}) do
+					table.insert(tab, {
+						Text = alias,
+						Desc = "[User Alias] "..command,
+						Filter = command
 					})
 					cmdCount += 1
 				end
@@ -92,33 +70,39 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
 
-				local commands = Admin.SearchCommands(plr, "all")
 				local cmd, ind
-				for i, v in pairs(commands) do
+				for i, v in pairs(Admin.SearchCommands(plr, "all")) do
 					for _, p in ipairs(v.Commands) do
 						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
-							cmd = v
-							ind = i
+							cmd, ind = v, i
 							break
 						end
 					end
+					if ind then break end
 				end
-				assert(cmd, "Command '"..args[1].."' not found")
+				assert(cmd, "Command '"..args[1].."' is either not found or beyond your permission level")
 
 				local SanitizeXML = service.SanitizeXML
-				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
-				if cmdArgs == "" then cmdArgs = "-" end
+
+				local cmdArgs = Admin.FormatCommandArguments(cmd)
+
+				local cmdAttribs = {}
+				for _, key in ipairs({"Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors"}) do
+					if cmd[key] then
+						table.insert(cmdAttribs, key)
+					end
+				end
+
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
 						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
 						{Text = "<b>Commands:</b> "..SanitizeXML(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
-						{Text = "<b>Arguments:</b> "..SanitizeXML(cmdArgs), Desc = "Parameters taken by the command"},
-						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..SanitizeXML(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
-						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
-						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
+						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)), Desc = "Parameters taken by the command"},
+						{Text = "<b>Admin Level:</b> "..Admin.FormatCommandAdminLevel(cmd), Desc = "Rank required to run the command"},
 						{Text = "<b>Description:</b> "..SanitizeXML(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Attributes:</b> "..(if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")), Desc = "Extra data about the command"},
 						{Text = "<b>Index:</b> "..SanitizeXML(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
