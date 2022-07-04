@@ -91,6 +91,12 @@ return function(Vargs, GetEnv)
 		local Ranks = Settings.Ranks
 		for rank, data in pairs(Defaults.Settings.Ranks) do
 			if not Ranks[rank] then
+				for r, d in pairs(Ranks) do
+					if d.Level == data.Level then
+						data.Hidden = true
+						break
+					end
+				end
 				Ranks[rank] = data
 			end
 		end
@@ -1095,16 +1101,44 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		FormatCommand = function(command, cmdn)
-			local text = command.Prefix.. command.Commands[cmdn or 1]
-			local cmdArgs = command.Args or command.Arguments
-			local splitter = Settings.SplitKey
-
-			for ind,arg in pairs(cmdArgs) do
-				text ..= splitter.."<"..arg..">"
+		FormatCommandArguments = function(command)
+			local text = ""
+			for i, arg in ipairs(command.Args) do
+				text ..= "<"..arg..">"
+				if i < #command.Args then
+					text ..= Settings.SplitKey
+				end
 			end
-
 			return text
+		end;
+
+		FormatCommand = function(command, cmdn)
+			local text = command.Prefix..command.Commands[cmdn or 1]
+			if #command.Args > 0 then
+				text ..= Settings.SplitKey .. Functions.FormatCommandArguments(command)
+			end
+			return text
+		end;
+
+		FormatCommandAdminLevel = function(command)
+			local levels = if type(command.AdminLevel) == "table"
+				then table.clone(command.AdminLevel)
+				else {command.AdminLevel}
+			local permissionDesc = ""
+			for i, lvl in ipairs(levels) do
+				if type(lvl) == "number" then
+					local list, name, data = Admin.LevelToList(lvl)
+					permissionDesc ..= (name or "No Rank") .."; Level ".. lvl
+				elseif type(lvl) == "string" then
+					local numLvl = Admin.StringToComLevel(lvl)
+					permissionDesc ..= lvl .. "; Level ".. (numLvl or "Unknown")
+				end
+
+				if i < #levels then
+					permissionDesc ..= ", "
+				end
+			end
+			return permissionDesc
 		end;
 
 		CheckTable = function(p, tab)
@@ -1187,18 +1221,16 @@ return function(Vargs, GetEnv)
 		CheckComLevel = function(plrAdminLevel, comLevel)
 			if type(comLevel) == "string" then
 				comLevel = Admin.StringToComLevel(comLevel)
-			end
-
-			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
-				return true;
 			elseif type(comLevel) == "table" then
-				for _, level in pairs(comLevel) do
-					if plrAdminLevel == level then
+				for _, level in ipairs(comLevel) do
+					if Admin.CheckComLevel(plrAdminLevel, level) then
 						return true
 					end
 				end
+				return false
 			end
-			return false
+
+			return type(comLevel) == "number" and plrAdminLevel >= comLevel
 		end;
 
 		IsBlacklisted = function(p)

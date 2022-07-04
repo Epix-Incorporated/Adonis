@@ -2391,7 +2391,7 @@ return function(Vargs, env)
 					cPcall(function()
 						if v and v:FindFirstChild("leaderstats") then
 							for a, q in pairs(v.leaderstats:GetChildren()) do
-								if q:IsA("IntValue") then q.Value = 0 end
+								if q:IsA("IntValue") or q:IsA("NumberValue") then q.Value = 0 end
 							end
 						end
 					end)
@@ -3610,7 +3610,7 @@ return function(Vargs, env)
 								end
 
 
-							-- If "all" is specified
+								-- If "all" is specified
 							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
@@ -4288,14 +4288,18 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s WalkSpeed to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				if args[2] and args[2]:lower() == "inf" then
+					error("Speed cannot be infinite")
+				end
+				local speed = tonumber(args[2]) or 16
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
-						hum.WalkSpeed = args[2] or 16
+						hum.WalkSpeed = speed
 						if Settings.CommandFeedback then
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification";
-								Message = "Character walk speed has been set to ".. (args[2] or 16);
+								Message = "Character walk speed has been set to ".. speed;
 								Time = 15;
 							})
 						end
@@ -4707,8 +4711,19 @@ return function(Vargs, env)
 			Description = "Teleport the target(s) to you";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
+				args[1] = args[1] or Settings.SpecialPrefix.."me"
+				local players = service.GetPlayers(plr, args[1])
+				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
+					Title = "Suggestion";
+					Icon = server.MatIcons.Feedback;
+					Question = "Would you like to use "..Settings.Prefix.."massbring instead? (Arranges the "..#players.." players in rows.)";
+					}) ~= "Yes"
+				then
+					for _, v in ipairs(players) do
+						task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
+					end
+				else
+					Process.Command(plr, Settings.Prefix.."massbring"..Settings.SplitKey..args[1])
 				end
 			end
 		};
@@ -4786,19 +4801,28 @@ return function(Vargs, env)
 
 		Change = {
 			Prefix = Settings.Prefix;
-			Commands = {"change", "leaderstat", "stat"};
+			Commands = {"change", "leaderstat", "stat", "changestat"};
 			Args = {"player", "stat", "value"};
 			Filter = true;
-			Description = "Change the target player(s)'s leader stat <stat> value to <value>";
+			Description = "Change the target player(s)'s leaderstat <stat> value to <value>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 then
-								st.Value = args[3]
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and absoluteMatch:IsA("ValueBase") then
+							absoluteMatch.Value = args[3]
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if st:IsA("ValueBase") and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value = args[3]
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
@@ -4811,13 +4835,23 @@ return function(Vargs, env)
 			Description = "Add <value> to <stat>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
+				local valueToAdd = assert(tonumber(args[3]), "Missing/invalid numerical value to add (argument #3)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 and tonumber(st.Value) then
-								st.Value = tonumber(st.Value)+tonumber(args[3])
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch.Value += valueToAdd
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value += valueToAdd
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
@@ -4830,13 +4864,23 @@ return function(Vargs, env)
 			Description = "Subtract <value> from <stat>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
+				local valueToSubtract = assert(tonumber(args[3]), "Missing/invalid numerical value to subtract (argument #3)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 and tonumber(st.Value) then
-								st.Value = tonumber(st.Value)-tonumber(args[3])
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch.Value -= valueToSubtract
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value -= valueToSubtract
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
@@ -6147,7 +6191,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Exploit Logs";
-					Tab = Logs.Exploit;
+					Tab = Logs.ListUpdaters.ExploitLogs(plr);
 					Dots = true;
 					Update = "ExploitLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6167,7 +6211,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Join Logs";
-					Tab = Logs.Joins;
+					Tab = Logs.ListUpdaters.JoinLogs(plr);
 					Dots = true;
 					Update = "JoinLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6185,7 +6229,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Leave Logs";
-					Tab = Logs.Leaves;
+					Tab = Logs.ListUpdaters.LeaveLogs(plr);
 					Dots = true;
 					Update = "LeaveLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6203,7 +6247,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Chat Logs";
-					Tab = Logs.Chats;
+					Tab = Logs.ListUpdaters.ChatLogs(plr);
 					Dots = true;
 					Update = "ChatLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6223,7 +6267,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Remote Logs";
-					Table = Logs.RemoteFires;
+					Table = Logs.ListUpdaters.RemoteLogs(plr);
 					Dots = true;
 					Update = "RemoteLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6243,7 +6287,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Script Logs";
-					Table = Logs.Script;
+					Table = Logs.ListUpdaters.ScriptLogs(plr);
 					Dots = true;
 					Update = "ScriptLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;

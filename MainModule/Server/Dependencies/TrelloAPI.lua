@@ -187,14 +187,21 @@ return function(AppKey, Token)
 	
 	local CheckHttp = function()
 		local enabled, err = pcall(function()
-			HttpService:GetAsync(GetUrl("members/me?fields=id"))
+			HttpService:GetAsync(GetUrl("members/trello?fields=id"))
 		end)
-
+		
 		return enabled
 	end;
-
+	
+	local HttpEnabled = pcall(HttpService.GetAsync, HttpService, "http://www.google.com/robots.txt");
+	
+	if not HttpEnabled then
+		error("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
+		return
+	end
+	
 	if not CheckHttp() then
-		error("Could not connect to Trello! Make sure HTTP is enabled")
+		error("Could not connect to Trello! Please check if your app-key/token are valid.")
 		return
 	end;
 
