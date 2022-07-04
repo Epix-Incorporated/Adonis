@@ -6544,7 +6544,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Exploit Logs";
-					Tab = Logs.Exploit;
+					Tab = Logs.ListUpdaters.ExploitLogs(plr);
 					Dots = true;
 					Update = "ExploitLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6566,7 +6566,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Join Logs";
-					Tab = Logs.Joins;
+					Tab = Logs.ListUpdaters.JoinLogs(plr);
 					Dots = true;
 					Update = "JoinLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6586,7 +6586,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Leave Logs";
-					Tab = Logs.Leaves;
+					Tab = Logs.ListUpdaters.LeaveLogs(plr);
 					Dots = true;
 					Update = "LeaveLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6604,7 +6604,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Chat Logs";
-					Tab = Logs.Chats;
+					Tab = Logs.ListUpdaters.ChatLogs(plr);
 					Dots = true;
 					Update = "ChatLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6624,7 +6624,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Remote Logs";
-					Table = Logs.RemoteFires;
+					Table = Logs.ListUpdaters.RemoteLogs(plr);
 					Dots = true;
 					Update = "RemoteLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
@@ -6644,7 +6644,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Script Logs";
-					Table = Logs.Script;
+					Table = Logs.ListUpdaters.ScriptLogs(plr);
 					Dots = true;
 					Update = "ScriptLogs";
 					AutoUpdate = if args[1] and (args[1]:lower() == "true" or args[1]:lower() == "yes") then 1 else nil;
