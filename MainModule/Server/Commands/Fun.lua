@@ -4655,6 +4655,33 @@ return function(Vargs, env)
 			end
 		};
 
+		LoadSky = {
+			Prefix = Settings.Prefix;
+			Commands = {"loadsky", "skybox"};
+			Args = {"front", "back", "left", "right", "up", "down", "celestialBodies? (default: true)", "starCount (default: 3000)"};
+			Description = "Change the skybox front with the provided image IDs";
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in ipairs(service.Lighting:GetChildren()) do
+					if v:IsA("Sky") then v:Destroy() end
+				end
+				local sky = service.New("Sky", service.Lighting)
+				for i, v in ipairs({"Ft", "Bk", "Lf", "Rt", "Up", "Dn"}) do
+					local img = args[i] or args[1]
+					if img --[[and (v ~= "Dn" or args[6])]] then
+						sky["Skybox"..v] = tonumber(img) and ("rbxassetid://"..img) or img
+					end
+				end
+				if args[7] and args[7]:lower() == "false" then
+					sky.CelestialBodiesShown = false
+				end
+				if tonumber(args[8]) then
+					sky.StarCount = tonumber(args[8])
+				end
+				Functions.Hint("Created new sky", {plr})
+			end
+		};
+
 		StarterGear = {
 			Prefix = Settings.Prefix;
 			Commands = {"startergear", "givestartergear"};
