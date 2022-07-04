@@ -3623,7 +3623,7 @@ return function(Vargs, env)
 								end
 
 
-							-- If "all" is specified
+								-- If "all" is specified
 							elseif partInput == "all" then
 								for k, p in pairs(player.Character:GetChildren()) do
 									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
@@ -4814,19 +4814,28 @@ return function(Vargs, env)
 
 		Change = {
 			Prefix = Settings.Prefix;
-			Commands = {"change", "leaderstat", "stat"};
+			Commands = {"change", "leaderstat", "stat", "changestat"};
 			Args = {"player", "stat", "value"};
 			Filter = true;
-			Description = "Change the target player(s)'s leader stat <stat> value to <value>";
+			Description = "Change the target player(s)'s leaderstat <stat> value to <value>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 then
-								st.Value = args[3]
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and absoluteMatch:IsA("ValueBase") then
+							absoluteMatch.Value = args[3]
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if st:IsA("ValueBase") and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value = args[3]
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
@@ -4839,13 +4848,23 @@ return function(Vargs, env)
 			Description = "Add <value> to <stat>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
+				local valueToAdd = assert(tonumber(args[3]), "Missing/invalid numerical value to add (argument #3)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 and tonumber(st.Value) then
-								st.Value = tonumber(st.Value)+tonumber(args[3])
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch.Value += valueToAdd
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value += valueToAdd
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
@@ -4858,13 +4877,23 @@ return function(Vargs, env)
 			Description = "Subtract <value> from <stat>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local statName = assert(args[2], "Missing stat name (argument #2)")
+				local valueToSubtract = assert(tonumber(args[3]), "Missing/invalid numerical value to subtract (argument #3)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v:FindFirstChild("leaderstats") then
-						for a, st in pairs(v.leaderstats:GetChildren()) do
-							if string.find(string.lower(st.Name), string.lower(args[2])) == 1 and tonumber(st.Value) then
-								st.Value = tonumber(st.Value)-tonumber(args[3])
+					local leaderstats = v:FindFirstChild("leaderstats")
+					if leaderstats then
+						local absoluteMatch = leaderstats:FindFirstChild(statName)
+						if absoluteMatch and (absoluteMatch:IsA("IntValue") or absoluteMatch:IsA("NumberValue")) then
+							absoluteMatch.Value -= valueToSubtract
+						else
+							for _, st in ipairs(leaderstats:GetChildren()) do
+								if (st:IsA("IntValue") or st:IsA("NumberValue")) and string.match(st.Name:lower(), "^"..statName:lower()) then
+									st.Value -= valueToSubtract
+								end
 							end
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v).." doesn't have a leaderstats folder", {plr})
 					end
 				end
 			end
