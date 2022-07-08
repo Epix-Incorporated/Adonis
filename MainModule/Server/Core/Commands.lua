@@ -52,12 +52,12 @@ return function(Vargs, GetEnv)
 
 		function RegisterCommandDefinition(ind, cmd)
 			if type(ind) ~= "string" then
-				warn("Non-string command index found:", typeof(ind), ind)
+				logError("Non-string command index:", typeof(ind), ind)
 				Commands[ind] = nil
 				return
 			end
 			if type(cmd) ~= "table" then
-				warn("Non-table command definition found:", ind)
+				logError("Non-table command definition:", ind)
 				Commands[ind] = nil
 				return
 			end
@@ -87,7 +87,8 @@ return function(Vargs, GetEnv)
 
 			if cmd.Chattable ~= nil then
 				cmd.NonChattable = not cmd.Chattable
-				warn("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
+				cmd.Chattable = nil
+				logError("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
 			end
 
 			Admin.PrefixCache[cmd.Prefix] = true
@@ -122,7 +123,7 @@ return function(Vargs, GetEnv)
 
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
-				warn("Invalid command definition table for "..ind..":", fault)
+				logError("Invalid command definition table "..ind..":", fault)
 				Commands[ind] = nil
 			end
 
@@ -131,20 +132,24 @@ return function(Vargs, GetEnv)
 
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {
-			__index = function(self, ind)
+			__index = function(_, ind)
+				if type(ind) ~= "string" then return nil end
 				local targInd = Admin.CommandCache[string.lower(ind)]
-				if targInd then
-					return rawget(Commands, targInd)
-				end
+				return if targInd then rawget(Commands, targInd) else rawget(Commands, ind)
 			end;
 
-			__newindex = function(self, ind, val)
+			__newindex = function(_, ind, val)
 				if val == nil then
-					rawset(Commands, ind, nil)
-					Logs.AddLog("Script", "Removed command definition:", ind)
+					if rawget(Commands, ind) ~= nil then
+						rawset(Commands, ind, nil)
+						Logs.AddLog("Script", "Removed command definition:", ind)
+					end
 				elseif Commands.RunAfterPlugins then
 					rawset(Commands, ind, val)
 				else
+					if rawget(Commands, ind) ~= nil then
+						Logs.AddLog("Script", "Overwriting command definition:", ind)
+					end
 					RegisterCommandDefinition(ind, val)
 				end
 			end;
