@@ -56,24 +56,40 @@ Once you've inserted the Adonis loader into your game, open `Adonis_Loader` > `C
 You may then edit the Settings module to configure Adonis to suit your game. Instructions and elaboration are provided within the Settings module.
 
 
-## 🛠️ Debug Mode
+### 🔧 Debug Mode
 
 The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
 
-### Toggling debug mode
+#### Toggling debug mode
 
 * Open `Adonis_Loader` > `Loader` > `Loader`
 * Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
 
+## 🧪 Nightly Builds
+
+Every time a commit is pushed to the `master` branch of the Adonis repository, a canary/"nightly" version of Adonis is automatically generated, containing the bleeding-edge changes. This will be published to the [Nightly MainModule](https://www.roblox.com/library/8612978896) in the form of the loadable MainModule, and to the #nightly-builds channel in our Discord server in the form of the nightly Loader and MainModule assets for download, available for both public and internal testing.
+
+Note that nightly builds should never be used in a production environment or live game as they are often unstable and may break entirely from time to time. Nightly builds are purely intended for testing and development.
+
 ## 🔗 Links
+
+### Assets
 * Official Adonis Loader: https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
 * Official MainModule: https://www.roblox.com/library/7510592873/Adonis-MainModule
 * Nightly MainModule: https://www.roblox.com/library/8612978896/Nightlies-Adonis-MainModule
+
+### Reference
 * 📄 Documentation: https://github.com/Sceleratis/Adonis/wiki
 * 📘 User Manual: https://github.com/Sceleratis/Adonis/wiki/User-Manual-&-Feature-Showcase
-* Discord Server: https://discord.gg/H5RvTP3
+* 📜 Contributing Guide: https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md
+
+### Social
+* Discord Server: https://discord.gg/H5RvTP3 or https://dvr.cx/discord
 * Roblox Group: https://www.roblox.com/groups/886423
+
+### Misc.
 * Plugins Repository: https://github.com/Sceleratis/Adonis-Plugins
+* Donor Perks Pass: https://www.roblox.com/game-pass/1348327
 
 ## ⭐ Contributing
 
