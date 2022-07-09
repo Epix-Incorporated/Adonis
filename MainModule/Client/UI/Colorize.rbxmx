@@ -135,7 +135,7 @@ return function(gui, guiData, gTable)
 		for i2,v in ipairs(contents) do
 			local orgcolor = OrgColors[v]
 			if v.Name ~= "CapeColor" and v.Name ~= "Color" then
-				if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+				if orgcolor.Image then
 					service.TweenService:Create(v, Info, {
 						BackgroundColor3 = color2:lerp(orgcolor.BackgroundColor3, 0.75),
 						ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
