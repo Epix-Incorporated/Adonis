@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX2C174377BB564F409DFC4D0D3E6E0C5D">
+	<Item class="ModuleScript" referent="RBXD71C70FBDF4B49F086AAF6446BE520D8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Colorize</string>
-			<string name="ScriptGuid">{7516B38F-0A29-4861-92EE-58A5CE2A1325}</string>
+			<string name="ScriptGuid">{DEDB902C-524D-428E-960D-26616B5E97ED}</string>
 			<ProtectedString name="Source"><![CDATA[--// You can use modules like this to alter guis without making a new theme
 --// This makes it so you don't need to make an entire gui folder n all that
 --// If the theme is set to this module, it will use the default guis
@@ -58,12 +58,12 @@
 				waiting = false
 			end
 			
-			yes.MouseButton1Click:Connect(function()
+			yes.MouseButton1Click:connect(function()
 				ans = "Yes"
 				gTable:Destroy()
 			end)
 			
-			no.MouseButton1Click:Connect(function()
+			no.MouseButton1Click:connect(function()
 				ans = "No"
 				gTable:Destroy()
 			end)
@@ -79,16 +79,9 @@ service = nil
 Routine = nil
 client = nil
 
-return function(gui, guiData, gTable, env)
-	if env then
-		setfenv(1, env)
-	end
-
+return function(gui, guiData, gTable)
 	local contents = {}
-	local lerper = 0.5
-	local switch = false
-	local targetColor = Color3.new(math.random(),math.random(),math.random())
-
+	local OrgColors = {}
 	local classes = {
 		Frame = true;
 		TextBox = true;
@@ -100,9 +93,15 @@ return function(gui, guiData, gTable, env)
 	}
 	
 	local function getCont(obj)
-		for i,v in pairs(obj:GetChildren()) do 
+		for i,v in ipairs(obj:GetChildren()) do 
 			if classes[v.ClassName] then
 				table.insert(contents,v)
+				local OrgColor = {}
+				OrgColor.Background = v.BackgroundColor3
+				if v:IsA("ImageLabel") or v:IsA("ImageButton") then 
+					OrgColor.Image = v.ImageColor3 
+				end
+				OrgColors[v] = OrgColor
 				getCont(v)
 			end
 		end
@@ -110,6 +109,12 @@ return function(gui, guiData, gTable, env)
 	
 	if classes[gui.ClassName] then
 		table.insert(contents,gui)
+		local OrgColor = {}
+		OrgColor.Background = gui.BackgroundColor3
+		if gui:IsA("ImageLabel") or gui:IsA("ImageButton") then 
+			OrgColor.Image = gui.ImageColor3 
+		end
+		OrgColors[gui] = OrgColor
 	end
 	
 	getCont(gui)
@@ -118,44 +123,39 @@ return function(gui, guiData, gTable, env)
 		gui.Drag.Main.BackgroundTransparency = 0
 	end
 	
-	local increment = 0.001
-	local max = 0.7
-	local min = 0.1
-	local r,g,b = 0.1,0.5,0.8
-	local rt,gt,bt = true,true,true 
+	local tweenTime = 2
 	local sequence = {
 		Color3.fromRGB(255, 85, 88), 
 		Color3.fromRGB(78, 140, 255), 
 		Color3.fromRGB(78, 255, 149)
 	}
-
-	local function lerpToColor(color1, color2, inc, time)
-		local inc = inc or 0.1
-		for i = 0, 1, inc do
-			for i2,v in pairs(contents) do
-				if v.Name ~= "CapeColor" and v.Name ~= "Color" then
-					v.BackgroundColor3 = color1:lerp(color2, i)
-					if v:IsA("ImageLabel") or v:IsA("ImageButton") then
-						v.ImageColor3 = color1:lerp(color2, i)
-					end
+	
+	local function tweenToColor(color1, color2, time)
+		local Info = TweenInfo.new(time)
+		for i2,v in ipairs(contents) do
+			local orgcolor = OrgColors[v]
+			if v.Name ~= "CapeColor" and v.Name ~= "Color" then
+				if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+					service.TweenService:Create(v, Info, {
+						BackgroundColor3 = color2:lerp(orgcolor.BackgroundColor3, 0.75),
+						ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
+					}):Play()
+				else
+					service.TweenService:Create(v, Info, {
+						BackgroundColor3 = color2:lerp(orgcolor.BackgroundColor3, 0.75)
+					}):Play()
 				end
 			end
-			wait(time/(1/inc))
 		end
+		task.wait(time)
 	end
-
-	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name), function()
-		while ((gTable.Active and wait()) or wait(1)) and not gTable.Destroyed do
+	
+	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
+		while ((gTable.Active and task.wait()) or task.wait(1)) and not gTable.Destroyed do
 			for i,v in ipairs(sequence) do
-				local one, two = sequence[i], sequence[1]
+				local one, two = sequence[i], sequence[i+1] or sequence[1]
 				
-				if i == #sequence then
-					two = sequence[1]
-				else
-					two = sequence[i+1]
-				end
-				
-				lerpToColor(one, two, 0.01, 2)
+				tweenToColor(one, two, tweenTime)
 			end
 		end
 	end)
@@ -163,22 +163,13 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="StringValue" referent="RBX448BCF59659145D59117BA53516D4F56">
+		<Item class="StringValue" referent="RBX37E05A28E4254A29A2D1C2A3769B245B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<string name="Value">Hydris</string>
-			</Properties>
-		</Item>
-		<Item class="BoolValue" referent="RBX1E2A8F4966B6430CB5325548EC0B0D2A">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">NoEnv</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<bool name="Value">false</bool>
+				<string name="Value">Default</string>
 			</Properties>
 		</Item>
 	</Item>
