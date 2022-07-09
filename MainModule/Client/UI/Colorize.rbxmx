@@ -131,7 +131,7 @@ return function(gui, guiData, gTable)
 	}
 	
 	local function tweenToColor(color1, color2, time)
-		local Info = TweenInfo.new(time)
+		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
 		for i2,v in ipairs(contents) do
 			local orgcolor = OrgColors[v]
 			if v.Name ~= "CapeColor" and v.Name ~= "Color" then
