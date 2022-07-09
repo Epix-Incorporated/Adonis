@@ -80,9 +80,13 @@ Routine = nil
 client = nil
 
 return function(gui, guiData, gTable)
-	local contents = {}
-	local OrgColors = {}
-	local classes = {
+	local TWEEN_TIME = 2
+	local SEQUENCE = {
+		Color3.fromRGB(255, 85, 88), 
+		Color3.fromRGB(78, 140, 255), 
+		Color3.fromRGB(78, 255, 149)
+	}
+	local CLASSES = {
 		Frame = true;
 		TextBox = true;
 		TextLabel = true;
@@ -92,10 +96,13 @@ return function(gui, guiData, gTable)
 		ScrollingFrame = true;
 	}
 	
+	local contents = {}
+	local OrgColors = {}
+	
 	local function getCont(obj)
 		for i,v in ipairs(obj:GetChildren()) do 
-			if classes[v.ClassName] then
-				table.insert(contents,v)
+			if CLASSES[v.ClassName] then
+				table.insert(contents, v)
 				local OrgColor = {}
 				OrgColor.Background = v.BackgroundColor3
 				if v:IsA("ImageLabel") or v:IsA("ImageButton") then 
@@ -107,8 +114,8 @@ return function(gui, guiData, gTable)
 		end
 	end
 	
-	if classes[gui.ClassName] then
-		table.insert(contents,gui)
+	if CLASSES[gui.ClassName] then
+		table.insert(contents, gui)
 		local OrgColor = {}
 		OrgColor.Background = gui.BackgroundColor3
 		if gui:IsA("ImageLabel") or gui:IsA("ImageButton") then 
@@ -122,13 +129,6 @@ return function(gui, guiData, gTable)
 	if gTable.Name == "List" then
 		gui.Drag.Main.BackgroundTransparency = 0
 	end
-	
-	local tweenTime = 2
-	local sequence = {
-		Color3.fromRGB(255, 85, 88), 
-		Color3.fromRGB(78, 140, 255), 
-		Color3.fromRGB(78, 255, 149)
-	}
 	
 	local function tweenToColor(color1, color2, time)
 		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
@@ -152,10 +152,10 @@ return function(gui, guiData, gTable)
 	
 	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
 		while ((gTable.Active and task.wait()) or task.wait(1)) and not gTable.Destroyed do
-			for i,v in ipairs(sequence) do
-				local one, two = sequence[i], sequence[i+1] or sequence[1]
+			for i,v in ipairs(SEQUENCE) do
+				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]
 				
-				tweenToColor(one, two, tweenTime)
+				tweenToColor(one, two, TWEEN_TIME)
 			end
 		end
 	end)
