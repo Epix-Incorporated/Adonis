@@ -114,16 +114,6 @@ return function(gui, guiData, gTable)
 		end
 	end
 	
-	if CLASSES[gui.ClassName] then
-		table.insert(contents, gui)
-		local OrgColor = {}
-		OrgColor.Background = gui.BackgroundColor3
-		if gui:IsA("ImageLabel") or gui:IsA("ImageButton") then 
-			OrgColor.Image = gui.ImageColor3 
-		end
-		OrgColors[gui] = OrgColor
-	end
-	
 	getCont(gui)
 	
 	if gTable.Name == "List" then
@@ -135,14 +125,17 @@ return function(gui, guiData, gTable)
 		for i2,v in ipairs(contents) do
 			local orgcolor = OrgColors[v]
 			if v.Name ~= "CapeColor" and v.Name ~= "Color" then
+				local v = service.UnWrap(v)
+				v.BackgroundColor3 = color1:lerp(orgcolor.Background, 0.75)
 				if orgcolor.Image then
+					v.ImageColor3 = color1:lerp(orgcolor.Image, 0.75)
 					service.TweenService:Create(v, Info, {
-						BackgroundColor3 = color2:lerp(orgcolor.BackgroundColor3, 0.75),
+						BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75),
 						ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
 					}):Play()
 				else
 					service.TweenService:Create(v, Info, {
-						BackgroundColor3 = color2:lerp(orgcolor.BackgroundColor3, 0.75)
+						BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75)
 					}):Play()
 				end
 			end
@@ -151,13 +144,13 @@ return function(gui, guiData, gTable)
 	end
 	
 	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
-		while ((gTable.Active and task.wait()) or task.wait(1)) and not gTable.Destroyed do
-			for i,v in ipairs(SEQUENCE) do
+		repeat 
+			for i in ipairs(SEQUENCE) do
 				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]
 				
 				tweenToColor(one, two, TWEEN_TIME)
 			end
-		end
+		until not (((gTable.Active and task.wait()) or task.wait(1))) and gTable.Destroyed
 	end)
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
