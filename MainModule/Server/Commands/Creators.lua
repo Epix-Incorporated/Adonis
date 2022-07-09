@@ -13,21 +13,22 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
 			Args = {"username(s)", "reason (optional)"};
-			Description = "Directly bans the specified user (Saves)";
+			Description = "Directly adds the specified user(s) to the global ban list (Saves)";
 			AdminLevel = "Creators";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local UserId = service.Players:GetUserIdFromNameAsync(i)
-					if UserId == plr.UserId then
-						error("You cannot ban yourself or the creator of the game", 2)
-						return
-					end
-					if UserId then
-						Admin.AddBan({UserId = UserId, Name = i}, reason, true, plr)
-						Functions.Hint("Direct-banned "..i, {plr})
+					local userId = service.Players:GetUserIdFromNameAsync(i)
+					assert(userId ~= plr.UserId, "You cannot ban yourself")
+					if userId then
+						local success, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						if not success then username = i end
+						Admin.AddBan({UserId = userId, Name = username}, reason, true, plr)
+						Functions.Hint("Direct-banned "..username, {plr})
+					else
+						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error.)", {plr})
 					end
 				end
 			end
@@ -37,7 +38,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"undirectban"};
 			Args = {"username(s)"};
-			Description = "Un-direct-bans the specified user (Saves)";
+			Description = "Removes the specified user(s) from the global ban list (Saves)";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(args[1], "[^,]+") do
@@ -46,7 +47,7 @@ return function(Vargs, env)
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = i..':'..userid;
+							Value = i..":"..userid;
 						})
 						Functions.Hint(i.." has been unbanned", {plr})
 					end
@@ -200,7 +201,7 @@ return function(Vargs, env)
 		Sudo = {
 			Prefix = Settings.Prefix;
 			Commands = {"sudo"};
-			Arguments = {"player", "command"};
+			Args = {"player", "command"};
 			Description = "Runs a command as the target player(s)";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -209,13 +210,13 @@ return function(Vargs, env)
 				for _, v in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false})) do
 					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
-			end;
+			end
 		};
 
 		ClearPlayerData = {
 			Prefix = Settings.Prefix;
 			Commands = {"clearplayerdata", "clrplrdata", "clearplrdata", "clrplayerdata"};
-			Arguments = {"UserId"};
+			Args = {"UserId"};
 			Description = "Clears PlayerData linked to the specified UserId";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
@@ -228,7 +229,7 @@ return function(Vargs, env)
 					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with them, such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
 					Title = "Clear PlayerData for "..username.."?";
 					Icon = server.MatIcons.Info;
-					Size = {281.25, 187.5};
+					Size = {300, 200};
 				})
 				if ans == "Yes" then
 					Core.RemoveData(tostring(id))
@@ -243,13 +244,12 @@ return function(Vargs, env)
 				else
 					Functions.Hint("Operation cancelled", {plr})
 				end
-			end;
+			end
 		};
 
 		Terminal = {
 			Prefix = "";
 			Commands = {Settings.Prefix.."terminal", Settings.Prefix.."console", ":terminal", ":console"};
-			Args = {};
 			Description = "Opens the debug terminal";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
