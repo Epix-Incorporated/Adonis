@@ -297,8 +297,8 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = p.Name.." fired "..tostring(comString).."; Arg1: "..tostring(args[1]),
-									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args),
+									Text = string.format("%s fired %s; Arg1: %s", comString, tostring(args[1])),
+									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args)),
 									Player = p;
 								})
 
@@ -343,9 +343,9 @@ return function(Vargs, GetEnv)
 
 					local waiter = Settings.PlayerPrefix.."wait"
 					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
-						local num = string.sub(cmd, #waiter + 1)
+						local num = tonumber(string.sub(cmd, #waiter + 1))
 
-						if num and tonumber(num) then
+						if num then
 							wait(tonumber(num))
 						end
 					else
@@ -361,7 +361,6 @@ return function(Vargs, GetEnv)
 				end
 
 				local index, command, matched = Admin.GetCommand(msg)
-
 				if not command then
 					if opts.Check then
 						Remote.MakeGui(p, "Output", {
@@ -376,7 +375,6 @@ return function(Vargs, GetEnv)
 
 				local allowed, denialMessage = false, nil
 				local isSystem = false
-				local trello = HTTP.Trello.API
 
 				local pDat = {
 					Player = opts.Player or p;
@@ -403,29 +401,20 @@ return function(Vargs, GetEnv)
 					return
 				end
 
-				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
-
 				local cmdArgs = command.Args or command.Arguments
+				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
 				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
-				local taskName = "Command:: ".. p.Name ..": ("..msg..")"
+				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
 				if #args > 0 and not isSystem and command.Filter or opts.Filter then
-					local safe = {
-						plr = true;
-						plrs = true;
-						username = true;
-						usernames = true;
-						players = true;
-						player = true;
-						users = true;
-						user = true;
-						brickcolor = true;
-					}
-
-					for i, arg in pairs(args) do
+					for i, arg in ipairs(args) do
 						local cmdArg = cmdArgs[i]
-						if not (cmdArg and safe[(string.match(string.lower(cmdArg), "(.+)%(s%)$") or string.lower(cmdArg))]) then
+						if cmdArg then
+							if Admin.IsLax(cmdArg) == false then
+								args[i] = service.LaxFilter(arg, p)
+							end
+						else
 							args[i] = service.LaxFilter(arg, p)
 						end
 					end
@@ -448,16 +437,11 @@ return function(Vargs, GetEnv)
 				end
 
 				Admin.UpdateCooldown(pDat, command)
+				local ran, cmdError = TrackTask(taskName, command.Function, p, args, {
+					PlayerData = pDat,
+					Options = opts
+				})
 
-				local ran, cmdError = TrackTask(taskName,
-					command.Function,
-					p,
-					args,
-					{
-						PlayerData = pDat,
-						Options = opts
-					}
-				)
 				if not opts.IgnoreErrors then
 					if cmdError and type(cmdError) == "string" then
 						AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
