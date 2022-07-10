@@ -142,7 +142,7 @@ local descs = {};			--// Contains settings descriptions
 
 	settings.HideScript = true						 -- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 	settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
-	settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
+	settings.DataStoreKey = "isdhfoijsdgihetoppsbpasf"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 	settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 
 	settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
@@ -171,7 +171,55 @@ local descs = {};			--// Contains settings descriptions
 	NOTE: Changing the level of built in ranks (Moderators, Admins, HeadAdmins, Creators)
 				will also change the permission level for any built-in commands associated with that rank. 																																				-			-]]
 
-	settings.Ranks = {
+settings.Ranks = {
+	
+	["Охранник"] = {
+		Level = 20;
+		Users = {
+			"Sasha_Syshenko"
+			--// Add users here
+		};
+	};
+	
+	["Учитель"] = {
+		Level = 30;
+		Users = {
+			"Sasha_Syshenko1"
+			--// Add users here
+		};
+	};
+	
+	["Завуч"] = {
+		Level = 37;
+		Users = {
+			"Sasha_Syshenko1"
+			--// Add users here
+		};
+	};
+	
+	["Директор"] = {
+		Level = 43;
+		Users = {
+			"Sasha_Syshenko1"
+			--// Add users here
+		};
+	};
+	
+	["Администратор"] = {
+		Level = 50;
+		Users = {
+			"Sasha_Syshenko1"
+			--// Add users here
+		};
+	};
+	
+	["Гл. Администратор"] = {
+		Level = 60;
+		Users = {
+			--// Add users here
+		};
+	};
+
 		["Moderators"] = {
 			Level = 100;
 			Users = {
@@ -196,13 +244,18 @@ local descs = {};			--// Contains settings descriptions
 		["Creators"] = {
 			Level = 900; --// Anything 900 or higher will be considered a creator and will bypass all perms & be allowed to edit settings in-game.
 			Users = {
-				--// Add users here (Also, don't forget quotations and all that)
+				"Sasha_Syshenko1" --// Add users here (Also, don't forget quotations and all that)
 			};
 		};
 	};
 
 	--// Use the below table to set command permissions; Commented commands are included for example purposes
-	settings.Permissions = {
+settings.Permissions = {
+	"track:20"; "untrack:20"; "cmds:20";
+	"m:30"; "music:30"; "warn:30";
+	"logs:37"; "chatlogs:37"; "kickwarn:37";
+	"ban:50"; "gameban:50"; "view:50"; "to:50"; "kick:50"; "mute:50"; "unban:50"; "unmute:50";
+	
 		-- "ff:HeadAdmins"; --// Changes :ff to HeadAdmins and higher (HeadAdmins = Level 300 by default)
 		-- "kill:300"; --// Changes :kill to level 300 and higher (Level 300 = HeadAdmins by default)
 		-- "ban:200,300" --// Makes it so :ban is only usable by levels 200 and 300 specifically (nothing higher or lower or in between)
@@ -230,7 +283,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
 	settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
-	settings.Prefix = ":"				-- The : in :kill me
+	settings.Prefix = "/"				-- The : in :kill me
 	settings.PlayerPrefix = "!"			-- The ! in !donate; Mainly used for commands that any player can run; Do not make it the same as settings.Prefix
 	settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me)
 	settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
@@ -259,7 +312,8 @@ local descs = {};			--// Contains settings descriptions
 				print("This is 'etc'(arg 3):", tostring(args[3]))
 				error("this is an example error :o !") --// Errors raised in the function during command execution will be displayed to the user.
 			end
-		};
+	};
+	
 	}
 
 	settings.HttpWait = 60;					  -- How long things that use the HttpService will wait before updating again
@@ -291,7 +345,7 @@ local descs = {};			--// Contains settings descriptions
 	}
 
 	settings.FunCommands = true			-- Are fun commands enabled?
-	settings.PlayerCommands = true 	-- Are players commands enabled?
+	settings.PlayerCommands = false 	-- Are players commands enabled?
 	settings.CommandFeedback = false -- Should players be notified when commands with non-obvious effects are run on them?
 	settings.CrossServerCommands = true -- Are commands which affect more than one server enabled?
 	settings.ChatCommands = true 		-- If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands
@@ -306,7 +360,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 	settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
 	settings.TopBarShift = false	-- By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region.
-	settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
+
 	settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 	settings.AutoCleanDelay = 60	-- Time between auto cleans
 	settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
@@ -315,7 +369,7 @@ local descs = {};			--// Contains settings descriptions
 	settings.Console_AdminsOnly = false -- Makes it so if the console is enabled, only admins will see it
 
 	settings.HelpSystem = true		-- Allows players to call admins for help using !help
-	settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
+	settings.HelpButton = false    -- Shows a little help button in the bottom right corner.
 	settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
 
 	settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
@@ -334,9 +388,8 @@ local descs = {};			--// Contains settings descriptions
 	settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
 	settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 	settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
-	settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
 	settings.AntiLeak = false			-- (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves
-	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
+	settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means.
 
 	---------------------
 	-- END OF SETTINGS --
@@ -417,10 +470,8 @@ local descs = {};			--// Contains settings descriptions
 	descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 	descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 	descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-	descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
+	descs.TopBarHint = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
-	descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
-	
 	descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
 	descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
 	descs.AutoCleanDelay = [[ Time between auto cleans ]]
@@ -437,7 +488,6 @@ local descs = {};			--// Contains settings descriptions
 
 	descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 	descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
-	descs.HelpButtonImage = [[ Change this to change the help button's image ]]
 
 	descs.Detection = [[ Attempts to detect certain known exploits ]]
 	descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
@@ -451,7 +501,6 @@ local descs = {};			--// Contains settings descriptions
 	descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
 	descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 	descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-	descs.AntiClientIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
 	descs.AntiLeak = [[ (Client-Sided) Attempts to prevent place downloading/saving; Do not use if game saves ]]
 	descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
 
@@ -466,22 +515,17 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"Theme";
 		"MobileTheme";
-		"DefaultTheme";
 		" ";
 		"Ranks";
 		" ";
 		"Permissions";
-		"Aliases";
 		" ";
-		"Commands";
 		"Banned";
 		"Muted";
 		"Blacklist";
 		"Whitelist";
 		"MusicList";
 		"CapeList";
-		"InsertList";
-		"CustomRanks";
 		" ";
 		"OnStartup";
 		"OnJoin";
@@ -529,7 +573,6 @@ local descs = {};			--// Contains settings descriptions
 		"";
 		"AutoClean";
 		"AutoCleanDelay";
-		"AutoBackup";
 		" ";
 		"CustomChat";
 		"PlayerList";
@@ -539,7 +582,6 @@ local descs = {};			--// Contains settings descriptions
 		" ";
 		"HelpSystem";
 		"HelpButton";
-		"HelpButtonImage";
 		" ";
 		"DonorCommands";
 		"DonorCapes";
@@ -557,7 +599,6 @@ local descs = {};			--// Contains settings descriptions
 		"AntiGod";
 		"AntiSpeed";
 		"AntiBuildingTools";
-		"AntiClientIdle";
 		"AntiLeak";
 		"ProtectHats";
 	}
