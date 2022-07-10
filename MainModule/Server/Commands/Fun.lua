@@ -1111,131 +1111,143 @@ return function(Vargs, env)
 			Fun = true;
 			Hidden = true;
 			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string})
-				local data = server.Core.GetPlayer(plr)
-				local forYou = {
-					'"Who are you?"';
-					'"I am Death," said the creature. "I thought that was obvious."';
-					'"But you\'re so small!"';
-					'"Only because you are small."';
-					'"You are young and far from your Death, September, ..."';
-					'"... so I seem as anything would seem if you saw it from a long way off ..."';
-					'"... very small, very harmless."';
-					'"But I am always closer than I appear."';
-					'"As you grow, I shall grow with you ..."';
-					'"... until at the end, I shall loom huge and dark over your bed ..."';
-					'"... and you will shut your eyes so as not to see me."';
-
-					'Find me.';
-					'Fear me.';
-					'Love me.';
-				}
-
+			Function = function(plr: Player, args: {string}, data)
 				if not args[1] then
-					local ind = data.SleepInParadise or 1
-					data.SleepInParadise = ind+1
+					local plrData = server.Core.GetPlayer(plr)
+					local forYou = {
+						'"Who are you?"';
+						'"I am Death," said the creature. "I thought that was obvious."';
+						'"But you\'re so small!"';
+						'"Only because you are small."';
+						'"You are young and far from your Death, September, ..."';
+						'"... so I seem as anything would seem if you saw it from a long way off ..."';
+						'"... very small, very harmless."';
+						'"But I am always closer than I appear."';
+						'"As you grow, I shall grow with you ..."';
+						'"... until at the end, I shall loom huge and dark over your bed ..."';
+						'"... and you will shut your eyes so as not to see me."';
+
+						'Find me.';
+						'Fear me.';
+						'Love me.';
+					}
+
+					local ind = plrData.SleepInParadise or 1
+					plrData.SleepInParadise = ind + 1
 
 					if ind == 14 then
-						data.SleepInParadise = 12
+						plrData.SleepInParadise = 12
 					end
 
 					error(forYou[ind])
 				end
 
-				for i, p in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
+						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+						continue
+					end
+					local char = p.Character
+					if not char then
+						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						continue
+					end
+					local torso = char:FindFirstChild("HumanoidRootPart")
+					local humanoid = char:FindFirstChildOfClass("Humanoid")
+					if not (torso and humanoid) then
+						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						continue
+					end
+					if char:FindFirstChild("ADONIS_UFO") then
+						continue
+					end
+
 					service.TrackTask("Thread: UFO", function()
-						local char = p.Character
-						local torso = p.Character:FindFirstChild("HumanoidRootPart")
-						local humanoid = p.Character:FindFirstChild("Humanoid")
+						local ufo = server.Deps.Assets.UFO:Clone()
+						local function check()
+							if not ufo.Parent or p.Parent ~= service.Players or not torso.Parent or not humanoid.Parent or not char.Parent then
+								return false
+							end
+							return true
+						end
 
-						if torso and humanoid and not char:FindFirstChild("ADONIS_UFO") then
-							local ufo = server.Deps.Assets.UFO:Clone()
-							if ufo then
-								local function check()
-									if not ufo.Parent or p.Parent ~= service.Players or not torso.Parent or not humanoid.Parent or not char.Parent then
-										return false
-									else
-										return true
-									end
+						local light = ufo.Light
+						local rotScript = ufo.Rotator
+						local beam = ufo.BeamPart
+						local spotLight = light.SpotLight
+						local particles = light.ParticleEmitter
+						local primary = ufo.Primary
+						local bay = ufo.Bay
+
+						local hum = light.Humming
+						local leaving = light.Leaving
+						local idle = light.Idle
+						local beamSound = light.Beam
+
+						local origBeamTrans = beam.Transparency
+
+						local tPos = torso.CFrame
+						local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
+
+						humanoid.Name = "NoResetForYou"
+						humanoid.WalkSpeed = 0
+
+						ufo.Name = "ADONIS_UFO"
+						ufo.PrimaryPart = primary
+						ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
+
+						spotLight.Enabled = false
+						particles.Enabled = false
+						beam.Transparency = 1
+
+						ufo.Parent = p.Character
+
+						wait()
+						rotScript.Disabled = false
+
+						for i = 1, 200 do
+							if not check() then
+								break
+							else
+								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
+								wait(0.001*(i/5))
+							end
+						end
+
+						if check() then
+							wait(1)
+							spotLight.Enabled = true
+							particles.Enabled = true
+							beam.Transparency = origBeamTrans
+							beamSound:Play()
+
+							local tween = service.TweenService:Create(torso, info, {
+								CFrame = bay.CFrame*CFrame.new(0, 0, 0)
+							})
+
+							torso.Anchored = true
+							tween:Play()
+
+							for i, v in ipairs(p.Character:GetChildren()) do
+								if v:IsA("BasePart") then
+									service.TweenService:Create(v, TweenInfo.new(1), {
+										Transparency = 1
+									}):Play()
+									--v:ClearAllChildren()
 								end
+							end
 
-								local light = ufo.Light
-								local rotScript = ufo.Rotator
-								local beam = ufo.BeamPart
-								local spotLight = light.SpotLight
-								local particles = light.ParticleEmitter
-								local primary = ufo.Primary
-								local bay = ufo.Bay
+							wait(5)
 
-								local hum = light.Humming
-								local leaving = light.Leaving
-								local idle = light.Idle
-								local beamSound = light.Beam
+							spotLight.Enabled = false
+							particles.Enabled = false
+							beam.Transparency = 1
+							beamSound:Stop()
 
-								local origBeamTrans = beam.Transparency
+							--idle:Stop()
+							--leaving:Play()
 
-								local tPos = torso.CFrame
-								local info = TweenInfo.new(5, Enum.EasingStyle.Quart,  Enum.EasingDirection.Out, -1, true, 0)
-
-								humanoid.Name = "NoResetForYou"
-								humanoid.WalkSpeed = 0
-
-								ufo.Name = "ADONIS_UFO"
-								ufo.PrimaryPart = primary
-								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
-
-								spotLight.Enabled = false
-								particles.Enabled = false
-								beam.Transparency = 1
-
-								ufo.Parent = p.Character
-
-								wait()
-								rotScript.Disabled = false
-
-								for i = 1, 200 do
-									if not check() then
-										break
-									else
-										ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
-										wait(0.001*(i/5))
-									end
-								end
-
-								if check() then
-									wait(1)
-									spotLight.Enabled = true
-									particles.Enabled = true
-									beam.Transparency = origBeamTrans
-									beamSound:Play()
-
-									local tween = service.TweenService:Create(torso, info, {
-										CFrame = bay.CFrame*CFrame.new(0, 0, 0)
-									})
-
-									torso.Anchored = true
-									tween:Play()
-
-									for i, v in ipairs(p.Character:GetChildren()) do
-										if v:IsA("BasePart") then
-											service.TweenService:Create(v, TweenInfo.new(1), {
-												Transparency = 1
-											}):Play()
-											--v:ClearAllChildren()
-										end
-									end
-
-									wait(5)
-
-									spotLight.Enabled = false
-									particles.Enabled = false
-									beam.Transparency = 1
-									beamSound:Stop()
-
-									--idle:Stop()
-									--leaving:Play()
-
-									Remote.LoadCode(p,[[
+							Remote.LoadCode(p,[[
 										local cam = workspace.CurrentCamera
 										local player = service.Players.LocalPlayer
 										local ufo = player.Character:FindFirstChild("ADONIS_UFO")
@@ -1248,50 +1260,48 @@ return function(Vargs, env)
 										end
 									]])
 
-									for i, v in ipairs(p.Character:GetChildren()) do
-										if v:IsA("BasePart") then
-											v.Anchored = true
-											v.Transparency = 1
-											pcall(function() v:FindFirstChildOfClass("Decal"):Destroy() end)
-										elseif v:IsA("Accoutrement") then
-											v:Destroy()
-										end
-									end
-
-									wait(1)
-
-									server.Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
-
-									for i = 1, 260 do
-										if not check() then
-											break
-										else
-											ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
-											--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
-											wait(0.001*(i/5))
-										end
-									end
-
-									if check() then
-										p.CameraMaxZoomDistance = 0.5
-
-										local gui = Instance.new("ScreenGui")
-										gui.Parent = service.ReplicatedStorage
-										local bg = Instance.new("Frame")
-										bg.BackgroundTransparency = 0
-										bg.BackgroundColor3 = Color3.new(0, 0, 0)
-										bg.Size = UDim2.new(2, 0, 2, 0)
-										bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
-										bg.Parent = gui
-										if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
-										wait(0.5)
-										pcall(function() gui:Destroy() end)
-									end
+							for i, v in ipairs(p.Character:GetChildren()) do
+								if v:IsA("BasePart") then
+									v.Anchored = true
+									v.Transparency = 1
+									pcall(function() v:FindFirstChildOfClass("Decal"):Destroy() end)
+								elseif v:IsA("Accoutrement") then
+									v:Destroy()
 								end
+							end
 
-								pcall(function() ufo:Destroy() end)
+							wait(1)
+
+							server.Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
+
+							for i = 1, 260 do
+								if not check() then
+									break
+								else
+									ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
+									--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
+									wait(0.001*(i/5))
+								end
+							end
+
+							if check() then
+								p.CameraMaxZoomDistance = 0.5
+
+								local gui = Instance.new("ScreenGui")
+								gui.Parent = service.ReplicatedStorage
+								local bg = Instance.new("Frame")
+								bg.BackgroundTransparency = 0
+								bg.BackgroundColor3 = Color3.new(0, 0, 0)
+								bg.Size = UDim2.new(2, 0, 2, 0)
+								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Parent = gui
+								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
+								wait(0.5)
+								pcall(function() gui:Destroy() end)
 							end
 						end
+
+						pcall(function() ufo:Destroy() end)
 					end)
 				end
 			end;
@@ -1401,159 +1411,176 @@ return function(Vargs, env)
 		};
 
 		ClownYoink = {
-			Prefix = Settings.Prefix; 							-- Someone's always watching me
+			Prefix = Settings.Prefix; 								-- Someone's always watching me
 			Commands = {"clown", "yoink", "youloveme", "van"};   	-- Someone's always there
-			Args = {"player"}; 									-- When I'm sleeping he just waits
-			Description = "Clowns."; 							-- And he stares
-			Fun = true; 										-- Someone's always standing in the
-			Hidden = true; 										-- Darkest corner of my room
-			AdminLevel = "Admins"; 								-- He's tall and wears a suit of black,
-			Function = function(plr: Player, args: {string}) 						-- Dressed like the perfect groom
-				local data = server.Core.GetPlayer(plr)
-				local forYou = {
-					'"Who are you?"';
-					'"I am Death," said the creature. "I thought that was obvious."';
-					'"But you\'re so small!"';
-					'"Only because you are small."';
-					'"You are young and far from your Death, September, ..."';
-					'"... so I seem as anything would seem if you saw it from a long way off ..."';
-					'"... very small, very harmless."';
-					'"But I am always closer than I appear."';
-					'"As you grow, I shall grow with you ..."';
-					'"... until at the end, I shall loom huge and dark over your bed ..."';
-					'"... and you will shut your eyes so as not to see me."';
-
-					'Find me.';
-					'Fear me.';
-					'Love me.';
-				}
-
+			Args = {"player"}; 										-- When I'm sleeping he just waits
+			Description = "Clowns."; 								-- And he stares
+			Fun = true; 											-- Someone's always standing in the
+			Hidden = true; 											-- Darkest corner of my room
+			AdminLevel = "Admins"; 									-- He's tall and wears a suit of black,
+			Function = function(plr: Player, args: {string}, data) 	-- Dressed like the perfect groom
 				if not args[1] then
-					local ind = data.SleepInParadise or 1
-					data.SleepInParadise = ind+1
+					local plrData = server.Core.GetPlayer(plr)
+					local forYou = {
+						'"Who are you?"';
+						'"I am Death," said the creature. "I thought that was obvious."';
+						'"But you\'re so small!"';
+						'"Only because you are small."';
+						'"You are young and far from your Death, September, ..."';
+						'"... so I seem as anything would seem if you saw it from a long way off ..."';
+						'"... very small, very harmless."';
+						'"But I am always closer than I appear."';
+						'"As you grow, I shall grow with you ..."';
+						'"... until at the end, I shall loom huge and dark over your bed ..."';
+						'"... and you will shut your eyes so as not to see me."';
+
+						'Find me.';
+						'Fear me.';
+						'Love me.';
+					}
+
+					local ind = plrData.SleepInParadise or 1
+					plrData.SleepInParadise = ind + 1
 
 					if ind == 14 then
-						data.SleepInParadise = 12
+						plrData.SleepInParadise = 12
 					end
 
 					error(forYou[ind])
 				end
 
-				for i, p in ipairs(service.GetPlayers(plr, args[1])) do
-					spawn(function()
-						local char = p.Character
-						local torso = p.Character:FindFirstChild("HumanoidRootPart")
-						local humanoid = p.Character:FindFirstChild("Humanoid")
-						if torso and humanoid and not char:FindFirstChild("ADONIS_VAN") then
-							local van = server.Deps.Assets.Van:Clone()
-							if van then
-								local function check()
-									if not van or not van.Parent or not p or p.Parent ~= service.Players or not torso or not humanoid or not torso.Parent or not humanoid.Parent or not char or not char.Parent then
-										return false
-									else
-										return true
-									end
-								end
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
+						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+						continue
+					end
+					local char = p.Character
+					if not char then
+						Functions.Hint(service.FormatPlayer(p).." does not have a character", {plr})
+						continue
+					end
+					local torso = char:FindFirstChild("HumanoidRootPart")
+					local humanoid = char:FindFirstChildOfClass("Humanoid")
+					if not (torso and humanoid) then
+						Functions.Hint(service.FormatPlayer(p).." does not have a HumanoidRootPart/Humanoid", {plr})
+						continue
+					end
+					if char:FindFirstChild("ADONIS_VAN") then
+						continue
+					end
 
-								local driver = van.Driver
-								local grabber = van.Clown
-								local primary = van.Primary
-								local door = van.Door
-								local tPos = torso.CFrame
+					service.TrackTask("Thread: Clowns", function()
+						local van = server.Deps.Assets.Van:Clone()
 
-								local sound = Instance.new("Sound")
-								sound.SoundId = "rbxassetid://258529216"
-								sound.Looped = true
-								sound.Parent = primary
-								sound:Play()
+						local function check()
+							if not van or not van.Parent or not p or p.Parent ~= service.Players or not torso or not humanoid or not torso.Parent or not humanoid.Parent or not char or not char.Parent then
+								return false
+							end
+							return true
+						end
 
-								local chuckle = Instance.new("Sound")
-								chuckle.SoundId = "rbxassetid://164516281"
-								chuckle.Looped = true
-								chuckle.Volume = 0.25
-								chuckle.Parent = primary
-								chuckle:Play()
+						local driver = van.Driver
+						local grabber = van.Clown
+						local primary = van.Primary
+						local door = van.Door
+						local tPos = torso.CFrame
 
-								van.PrimaryPart = van.Primary
-								van.Name = "ADONIS_VAN"
-								van.Parent = workspace
-								humanoid.Name = "NoResetForYou"
-								humanoid.WalkSpeed = 0
-								sound.Pitch = 1.3
+						local sound = service.New("Sound", {
+							Parent = primary;
+							SoundId = "rbxassetid://258529216";
+							Looped = true;
+						})
+						sound:Play()
 
-								server.Remote.PlayAudio(p, 421358540, 0.2, 1, true)
+						local chuckle = service.New("Sound", {
+							Parent = primary;
+							SoundId = "rbxassetid://164516281";
+							Volume = 0.25;
+							Looped = true;
+						})
+						chuckle:Play()
 
-								for i = 1, 200 do
-									if not check() then
-										break
-									else
-										van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
-										wait(0.001*(i/5))
-									end
-								end
+						van.PrimaryPart = van.Primary
+						van.Name = "ADONIS_VAN"
+						van.Parent = workspace
+						humanoid.Name = "NoResetForYou"
+						humanoid.WalkSpeed = 0
+						sound.Pitch = 1.3
 
-								sound.Pitch = 0.9
+						server.Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
-								wait(0.5)
-								if check() then
-									door.Transparency = 1
-								end
-								wait(0.5)
-
-								if check() then
-									torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
-								end
-
-								wait(0.5)
-								if check() then
-									door.Transparency = 0
-								end
-								wait(0.5)
-
-								sound.Pitch = 1.3
-								server.Remote.MakeGui(p, "Effect", {
-									Mode = "FadeOut";
-								})
-
-								p.CameraMaxZoomDistance = 0.5
-
-								for i = 1, 400 do
-									if not check() then
-										break
-									else
-										van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
-										torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
-										wait(0.1/(i*5))
-
-										if i == 270 then
-											server.Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
-										end
-									end
-								end
-
-								local gui = Instance.new("ScreenGui")
-								gui.Parent = service.ReplicatedStorage
-								local bg = Instance.new("Frame")
-								bg.BackgroundTransparency = 0
-								bg.BackgroundColor3 = Color3.new(0, 0, 0)
-								bg.Size = UDim2.new(2, 0, 2, 0)
-								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
-								bg.Parent = gui
-								if p and p.Parent == service.Players then
-									if service.RunService:IsStudio() then
-										p:Kick("You were saved by the Studio environment.")
-									else
-										service.TeleportService:Teleport(527443962, p, nil, bg)
-									end
-								end
-								wait(0.5)
-								pcall(function() van:Destroy() end)
-								pcall(function() gui:Destroy() end)
+						for i = 1, 200 do
+							if not check() then
+								break
+							else
+								van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
+								wait(0.001*(i/5))
 							end
 						end
+
+						sound.Pitch = 0.9
+
+						wait(0.5)
+						if check() then
+							door.Transparency = 1
+						end
+						wait(0.5)
+
+						if check() then
+							torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
+						end
+
+						wait(0.5)
+						if check() then
+							door.Transparency = 0
+						end
+						wait(0.5)
+
+						sound.Pitch = 1.3
+						server.Remote.MakeGui(p, "Effect", {
+							Mode = "FadeOut";
+						})
+
+						p.CameraMaxZoomDistance = 0.5
+
+						for i = 1, 400 do
+							if not check() then
+								break
+							else
+								van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
+								torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
+								wait(0.1/(i*5))
+
+								if i == 270 then
+									server.Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
+								end
+							end
+						end
+
+						local gui = service.New("ScreenGui", {
+							Parent = service.ReplicatedStorage;
+							IgnoreGuiInset = true;
+						})
+						local bg = service.New("Frame", {
+							Parent = gui;
+							BackgroundTransparency = 0;
+							BackgroundColor3 = Color3.new(0, 0, 0);
+							Size = UDim2.fromScale(1, 1);
+							Position = UDim2.fromScale(0, 0);
+						})
+						if p and p.Parent == service.Players then
+							if service.RunService:IsStudio() then
+								p:Kick("You were saved by the Studio environment.")
+							else
+								service.TeleportService:Teleport(527443962, p, nil, bg)
+							end
+						end
+						wait(0.5)
+						pcall(function() van:Destroy() end)
+						pcall(function() gui:Destroy() end)
 					end)
 				end
-			end;
+			end
 		};
 
 		Chik3n = {
