@@ -6238,7 +6238,7 @@ return function(Vargs, env)
 			Args = {"autoupdate? (default: false)"};
 			Description = "Displays the current leave logs for the server";
 			AdminLevel = "Moderators";
-			ListUpdater = "LeaveLogs";
+			ListUpdater = "Leaves";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Leave Logs";
