@@ -6582,7 +6582,7 @@ return function(Vargs, env)
 			Description = "Displays the current leave logs for the server";
 			Fun = false;
 			AdminLevel = "Moderators";
-			ListUpdater = "LeaveLogs";
+			ListUpdater = "Leaves";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Leave Logs";
