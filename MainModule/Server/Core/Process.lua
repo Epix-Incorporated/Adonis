@@ -411,20 +411,21 @@ return function(Vargs, GetEnv)
 				local taskName = "Command:: ".. p.Name ..": ("..msg..")"
 
 				if #args > 0 and not isSystem and command.Filter or opts.Filter then
-					local safe = {
-						plr = true;
-						plrs = true;
-						username = true;
-						usernames = true;
-						players = true;
-						player = true;
-						users = true;
-						user = true;
-						brickcolor = true;
-					}
+					local SAFE = {"plr", "user", "player", "brickcolor"}
 
-					for i, arg in pairs(args) do
-						if not (cmdArgs[i] and safe[(cmdArgs[i]:lower():match("(.+)%(s%)$") or cmdArgs[i]:lower())]) then
+					for i, arg in ipairs(args) do
+						if cmdArgs[i] then
+							local safe = false
+							for _, v in ipairs(SAFE) do
+								if cmdArgs[i]:lower():match(v) then
+									safe = true
+									break
+								end
+							end
+							if not safe then
+								args[i] = service.LaxFilter(arg, p)
+							end
+						else
 							args[i] = service.LaxFilter(arg, p)
 						end
 					end
