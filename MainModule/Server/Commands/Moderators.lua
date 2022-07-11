@@ -2133,9 +2133,9 @@ return function(Vargs, env)
 
 		ToolList = {
 			Prefix = Settings.Prefix;
-			Commands = {"tools", "toollist", "toolcenter", "savedtools", "addedtools"};
+			Commands = {"tools", "toollist", "toolcenter", "savedtools", "addedtools", "toolpanel", "toolspanel"};
 			Args = {};
-			Description = "Shows you a list of tools that can be obtained via the "..Settings.Prefix.."give command";
+			Description = "Shows you a list of tools that can be obtained via the "..Settings.Prefix.."give command, and other useful utilities";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local data = {
@@ -2156,7 +2156,7 @@ return function(Vargs, env)
 				return data
 			end;
 			Function = function(plr: Player, args: {string})
-				Remote.MakeGui(plr, "ToolCenter", Logs.ListUpdaters.ToolList(plr))
+				Remote.MakeGui(plr, "ToolPanel", Logs.ListUpdaters.ToolList(plr))
 			end
 		};
 
