@@ -23,11 +23,11 @@ return function(Vargs, GetEnv)
 		Hidden = true;
 		Prefix = ":";
 		Commands = {"debugtesterror"};
-		Args = {"type","msg"};
+		Args = {"optional type (error/assert)", "optional message"};
 		Description = "Test Error";
 		NoFilter = true;
 		AdminLevel = "Creators";
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			--assert(args[1] and args[2],"Argument missing or nil")
 			Remote.Send(plr, "TestError")
 			Routine(function() plr.Bobobobobobobo.Hi = 1 end)
@@ -36,7 +36,7 @@ return function(Vargs, GetEnv)
 			elseif args[1]:lower() == "error" then
 				error(args[2])
 			elseif args[1]:lower() == "assert" then
-				assert(false,args[2])
+				assert(false, args[2])
 			end
 		end;
 	};
@@ -48,11 +48,11 @@ return function(Vargs, GetEnv)
 		Args = {};
 		Description = "Test Big List";
 		AdminLevel = "Creators";
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			local list = {}
 
 			for i = 1, 5000 do
-				table.insert(list, {Text = i});
+				table.insert(list, {Text = i})
 			end
 
 			Remote.MakeGui(plr,"List",{
@@ -85,10 +85,10 @@ return function(Vargs, GetEnv)
 		Prefix = ":";
 		Commands = {"debugtestget"};
 		Args = {};
-		Description = "Test Error";
+		Description = "Remote Test";
 		Hidden = true;
 		AdminLevel = "Creators";
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			local tack = time()
 			print(tack)
 			print(Remote.Get(plr,"Test"))
@@ -116,16 +116,17 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-			print(time()-tack)
+			print(time() - tack)
 			print("TESTING EVENT")
-			Remote.MakeGui(plr,"Settings",{
+			Remote.MakeGui(plr, "Settings", {
 				IsOwner = true
 			})
-			local testColor = Remote.GetGui(plr,"ColorPicker",{Color = Color3.new(1,1,1)})
+			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
 			print(testColor)
-			local ans,event = Remote.GetGui(plr,"YesNoPrompt",{
+			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
+				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
-			}), Remote.NewPlayerEvent(plr,"TestEvent",function(...)
+			}), Remote.NewPlayerEvent(plr, "TestEvent", function(...)
 				print("EVENT WAS FIRED; WE GOT:")
 				print(...)
 				print("THAT'D BE ALL")
@@ -133,7 +134,7 @@ return function(Vargs, GetEnv)
 			print("PLAYER ANSWER: "..tostring(ans))
 			wait(0.5)
 			print("SENDING REMOTE EVENT TEST")
-			Remote.Send(plr,"TestEvent","TestEvent","hi mom I went thru the interwebs")
+			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
 			print("SENT")
 		end;
 	};
@@ -147,7 +148,7 @@ return function(Vargs, GetEnv)
 		Hidden = true;
 		NoFilter = true;
 		AdminLevel = "Creators";
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			--error("Disabled", 0)
 			local ans = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons.Warning;

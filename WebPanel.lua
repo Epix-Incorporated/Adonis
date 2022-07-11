@@ -31,7 +31,7 @@ return function(Vargs)
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
 	if not ownerId then
-		local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+		local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
 		if success and type(creator) == "table" then
 			ownerId = creator.Owner.Id
 		end

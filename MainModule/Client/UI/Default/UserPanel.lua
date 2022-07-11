@@ -20,6 +20,7 @@ local canEditTables = {
 	OnSpawn = true;
 
 	Allowed_API_Calls = false;
+	HideScript = false;
 }
 
 local function tabToString(tab)
@@ -38,10 +39,14 @@ local function tabToString(tab)
 	end
 end
 
-return function(data, Vargs)
-	local client: table = Vargs.client
-	local service: table = Vargs.service
-	local gui = Vargs.gui
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
+	local client: table = env.client
+	local service: table = env.service
+	local gui = env.gui
 
 	local UI = client.UI
 	local Remote = client.Remote
@@ -70,7 +75,7 @@ return function(data, Vargs)
 			Size = {380, 160};
 			SizeLocked = true;
 		})
-		
+
 		if purchaseWindow then
 			purchaseWindow:Add("TextLabel", {
 				Size = UDim2.new(1, -20, 1, -55);
@@ -101,7 +106,7 @@ return function(data, Vargs)
 			createPurchaseWindow(isGamepass, id)
 		else
 			local logEvent, finishEvent
-			
+
 			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
 				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
 					client.Variables.AllowThirdPartyPurchases = false

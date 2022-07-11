@@ -40,7 +40,7 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 	local client = Vargs.Client
 
-	local GetEnv = GetEnv
+	local GetEnv = env.GetEnv
 
 	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
 	local CloneTable, TrackTask
@@ -150,6 +150,8 @@ return function(Vargs, GetEnv)
 			local ran, func = pcall(require, module)
 			local newEnv = GetEnv(env, {
 				script = module,
+				client = CloneTable(client),
+				service = CloneTable(service)
 			})
 
 			if newEnv.service.Threads then
@@ -192,10 +194,13 @@ return function(Vargs, GetEnv)
 			local foundConfigs = {}
 			local endConfig = {}
 			local endConfValues = {}
+
 			local confFolder = Instance.new("Folder")
 			local debounce = false
+
 			local function func(theme, name, depth)
 				local depth = (depth or 11) - 1
+
 				local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
@@ -275,9 +280,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		Make = function(name, data, themeData)
-			local data = data or {}
-			local defaults = {Desktop = "Default"; Mobile = "Mobilius"}
-			local themeData = themeData or Variables.LastServerTheme or defaults
+			data = data or {}
+			themeData = themeData or Variables.LastServerTheme or {Desktop = "Default"; Mobile = "Mobilius"}
+
 			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
 			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 
@@ -312,29 +317,28 @@ return function(Vargs, GetEnv)
 					end
 
 					local mult = foundConf.AllowMultiple
-					local keep = foundConf.CanKeepAlive
+					--local keep = foundConf.CanKeepAlive
 
 					local allowMult = mult and mult.Value or true
 					local found, num = UI.Get(name)
 
 					if not found or ((num and num>0) and allowMult) then
 						local gTable,gIndex = UI.Register(newGui)
-						local newEnv = {}
 
 						if folder:IsA("ModuleScript") then
-							local folderNoEnv = string.sub(folder.Name, 1, 5) == "NoEnv"
+							local folderNoEnv = string.sub(folder.Name, 1, 5) == "NoEnv" or folder:FindFirstChild("NoEnv")
 
-							newEnv.script = folder
-							newEnv.gTable = gTable
+							local newEnv = GetEnv{{
+								script = folder,
+								gTable = gTable
+							}}
 
 							local ran, func = pcall(require, folder)
-							local newEnv = GetEnv(newEnv)
 							local rets = {
-								folderNoEnv and pcall(func, newGui, gTable, data, newEnv) or pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
 							}
-							local ran = rets[1]
-							local ret = rets[2]
 
+							local ran, ret = rets[1], rets[2]
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code

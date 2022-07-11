@@ -717,41 +717,6 @@ return function(Vargs, env)
 			end
 		};
 
-		PlayerColor = {
-			Prefix = Settings.Prefix;
-			Commands = {"color", "playercolor", "bodycolor"};
-			Args = {"player", "brickcolor or RGB"};
-			Description = "Recolors the target character(s) with the given color, or random if none is given";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				local color
-
-				local BodyColorProperties = {"HeadColor", "LeftArmColor", "RightArmColor", "RightLegColor", "LeftLegColor", "TorsoColor"}
-
-				if not args[2] then
-					color = BrickColor.random().Color
-					Functions.Hint("A color wasn't supplied. A random color will be used instead.", {plr})
-				else
-					color = Functions.ParseColor3(args[2])
-					assert(color, "Invalid color provided")
-				end
-
-				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
-					local humanoid: Humanoid? = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
-
-						for _, property in ipairs(BodyColorProperties) do
-							humanoidDesc[property] = color
-						end
-
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
-					end
-				end
-			end
-		};
-
 		Material = {
 			Prefix = Settings.Prefix;
 			Commands = {"mat", "material"};
@@ -786,7 +751,7 @@ return function(Vargs, env)
 				local chosenMat = args[2] or "Plastic"
 
 				if not args[2] then
-					Functions.Hint("Material wasn't supplied. Plastic was chosen instead")
+					Functions.Hint("Material wasn't supplied; Plastic was chosen instead")
 				elseif tonumber(args[2]) then
 					chosenMat = table.find(mats, tonumber(args[2]))
 				end
@@ -1386,16 +1351,19 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forest", "sendtotheforest", "intothewoods"};
 			Args = {"player"};
-			Description = "Sends player to The Forest for a time out";
+			Description = "Sends player to The Forest for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(209424751, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(209424751, players)
 			end
 		};
 
@@ -1403,16 +1371,19 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"maze", "sendtothemaze", "mazerunner"};
 			Args = {"player"};
-			Description = "Sends player to The Maze for a time out";
+			Description = "Sends player to The Maze for a timeout";
 			Fun = true;
 			NoStudio = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if data.PlayerData.Level>Admin.GetLevel(v) then
-						service.TeleportService:Teleport(280846668, v)
+				local players = service.GetPlayers(plr, args[1])
+				for i, p in ipairs(players) do
+					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+						table.remove(players, i)
+						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
 					end
 				end
+				service.TeleportService:TeleportAsync(280846668, players)
 			end
 		};
 
@@ -2267,7 +2238,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hatpets"};
 			Args = {"player", "number[50 MAX]/destroy"};
-			Description = "Gives the target player(s) hat pets, controled using the !pets command.";
+			Description = "Gives the target player(s) hat pets, controlled using the "..Settings.PlayerPrefix.."pets command.";
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -2359,7 +2330,7 @@ return function(Vargs, env)
 						end
 					end
 				else
-					Functions.Hint("You don't have any hat pets! If you are an admin use the :hatpets command to get some", {plr})
+					Functions.Hint("You don't have any hat pets! If you are an admin use the "..Settings.Prefix.."hatpets command to get some", {plr})
 				end
 			end
 		};
@@ -2376,7 +2347,8 @@ return function(Vargs, env)
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
-								frc:Destroy() end
+								frc:Destroy()
+							end
 						end
 					end
 				end
@@ -2474,10 +2446,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					local scrapt = v.Character:FindFirstChild("HippityHopitus")
-					if scrapt then
-						scrapt.Disabled = true
-						scrapt:Destroy()
+					local scr = v.Character:FindFirstChild("HippityHopitus")
+					if scr then
+						scr.Disabled = true
+						scr:Destroy()
 					end
 				end
 			end
@@ -3740,7 +3712,7 @@ return function(Vargs, env)
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
 					if not human then
-						Functions.Hint("Cannot resize "..v.Name.."'s character: humanoid and/or character doesn't exist!", {plr})
+						Functions.Hint("Cannot resize "..service.FormatPlayer(v).."'s character: humanoid and/or character doesn't exist!", {plr})
 						continue
 					end
 
@@ -3749,7 +3721,7 @@ return function(Vargs, env)
 					elseif Variables.SizedCharacters[char] and Variables.SizedCharacters[char]*num < sizeLimit then
 						Variables.SizedCharacters[char] = Variables.SizedCharacters[char]*num
 					else
-						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", v.Name, num*100), {plr})
+						Functions.Hint(string.format("Cannot resize %s's character by %f%%: size limit exceeded.", service.FormatPlayer(v), num*100), {plr})
 						continue
 					end
 
@@ -4148,314 +4120,6 @@ return function(Vargs, env)
 					if v.Character then
 						clear(v.Character)
 						apply(v.Character)
-					end
-				end
-			end
-		};
-
-		Transparency = {
-			Prefix = Settings.Prefix;
-			Commands = {"transparency", "trans"};
-			Args = {"player", "value (0-1)"};
-			Description = "Set the transparency of the target's character";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					if v.Character then
-						for k, p in pairs(v.Character:GetChildren()) do
-							if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
-								p.Transparency = args[2]
-								if p.Name == "Head" then
-									for _, v2 in pairs(p:GetChildren()) do
-										if v2:IsA("Decal") then
-											v2.Transparency = args[2]
-										end
-									end
-								end
-							elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
-								for _, v2 in pairs(p:GetChildren()) do
-									if v2:IsA("BasePart") then
-										v2.Transparency = args[2]
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-		};
-
-		TransparentPart = {
-			Prefix = Settings.Prefix;
-			Commands = {"transparentpart"};
-			Args = {"player", "parts", "value (0-1)"};
-			Description = "Set the transparency of the target's character's parts, including accessories. Supports comma separated list of parts.";
-			Fun = true;
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				for i, player in pairs(service.GetPlayers(plr, args[1])) do
-					if player.Character then
-						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-						if humanoid then
-							local rigType =  humanoid.RigType
-							local GroupPartInputs = {"LeftArm", "RightArm", "RightLeg", "LeftLeg", "Torso"}
-							local PartInputs = {"Head", "UpperTorso", "LowerTorso", "LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand", "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "RightUpperLeg", "RightLowerLeg", "RightFoot"}
-
-							local usageText = {
-								"Possible inputs are:",
-								"R6: Head, LeftArm, RightArm, RightLeg, LeftLeg, Torso",
-								"R15: Head, UpperTorso, LowerTorso, LeftUpperArm, LeftLowerArm, LeftHand, RightUpperArm, RightLowerArm, RightHand, LeftUpperLeg, LeftLowerLeg, LeftFoot, RightUpperLeg, RightLowerLeg, RightFoot",
-								"",
-								"If the input is 'LeftArm' on a R15 rig, it will select the entire Left Arm for R15.",
-								"Special Inputs: all, accessories",
-								"all: All limbs including accessories. If this is specified it will ignore all other specified parts.",
-								"limbs: Changes the transparency of all limbs",
-								"face: Changes the transparency of the face",
-								"accessories: Changes transparency of accessories"
-							}
-
-							if not (args[2]) then
-								--assert(args[2], "No parts specified. See developer console for possible inputs.")
-								local tab = {}
-								for _,v in pairs(usageText) do
-									table.insert(tab, {
-										Text = v;
-										Desc = v;
-									})
-								end
-								--// Generate the UI for this player
-								server.Remote.MakeGui(plr, "List", {
-									Tab = tab;
-									Title = "Command Usage";
-								})
-								return
-							end
-
-							local partInput = {}
-							local inputs = string.split(args[2], ",")
-
-							for _, v in pairs(inputs) do
-								if v ~= "" then
-									if v == "all" then
-										partInput = "all"
-										break -- break if "all" is found.
-									end
-
-									-- Validate inputs
-									if v == "limbs" or v == "face" or v == "accessories" then
-										table.insert(partInput, v)
-									else
-										local found = false
-										while found ~= true do
-											for _,v2 in pairs(GroupPartInputs) do
-												if v == v2 then
-													table.insert(partInput, v)
-													found = true
-													break
-												end
-											end
-
-											for _,v2 in pairs(PartInputs) do
-												if v == v2 then
-													table.insert(partInput, v)
-													found = true
-													break
-												end
-											end
-
-											if not (found) then
-												assert(nil, "'"..v.."'".." is not a valid input. Run command with no arguments to see possible inputs.")
-											end
-										end
-									end
-								else
-									assert(nil, "Part argument contains empty value.")
-								end
-							end
-
-
-							-- Check if partInput is a table
-							if typeof(partInput) == "table" then
-								local hash = {}
-
-								-- Check for duplicates
-								for i,v in pairs(partInput) do
-									if not (hash[v]) then
-										hash[v] = i -- Store into table to check for duplicates.
-									else
-										assert(nil, "Duplicate '"..v.."'".." found in input. Specify each input once only.")
-									end
-								end
-
-
-								-- Clean up the parts we don't need, depending on rigType, to allow this command to be more dynamic
-
-								if rigType == Enum.HumanoidRigType.R15 then
-									for i = #partInput, 1, -1 do
-										if partInput[i] == "RightArm" then
-											local foundKeys = {}
-											for k2, v2 in pairs(partInput) do
-												if v2 == "RightUpperArm" or v2 == "RightLowerArm" or v2 == "RightHand" then
-													table.insert(foundKeys, k2)
-												end
-											end
-											-- If not all keys were found just remove all keys and add them manually
-											if #foundKeys ~= 3 then
-												for _, foundKey in pairs(foundKeys) do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "RightUpperArm")
-												table.insert(partInput, "RightLowerArm")
-												table.insert(partInput, "RightHand")
-											end
-											table.remove(partInput, i) -- Remove the group part input
-
-										elseif partInput[i] == "LeftArm" then
-											local foundKeys = {}
-											for k2, v2 in pairs(partInput) do
-												if v2 == "LeftUpperArm" or v2 == "LeftLowerArm" or v2 == "LeftHand" then
-													table.insert(foundKeys, k2)
-												end
-											end
-
-											if #foundKeys ~= 3 then
-												for _, foundKey in pairs(foundKeys) do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "LeftUpperArm")
-												table.insert(partInput, "LeftLowerArm")
-												table.insert(partInput, "LeftHand")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "RightLeg" then
-											local foundKeys = {}
-											for i = #partInput, 1, -1 do
-												if partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
-													table.insert(foundKeys, partInput[i])
-												end
-											end
-											if #foundKeys ~= 3 then
-												for _, foundKey in pairs(foundKeys) do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "RightUpperLeg")
-												table.insert(partInput, "RightLowerLeg")
-												table.insert(partInput, "RightFoot")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftLeg" then
-											local foundKeys = {}
-											for k2, v2 in pairs(partInput) do
-												if v2 == "LeftUpperLeg" or v2 == "LeftLowerLeg" or v2 == "LeftFoot" then
-													table.insert(foundKeys, k2)
-												end
-											end
-
-											if #foundKeys ~= 3 then
-												for _, foundKey in pairs(foundKeys) do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "LeftUpperLeg")
-												table.insert(partInput, "LeftLowerLeg")
-												table.insert(partInput, "LeftFoot")
-											end
-											table.remove(partInput, i)
-										elseif partInput[i] == "Torso" then
-											local foundKeys = {}
-											for k2, v2 in pairs(partInput) do
-												if v2 == "UpperTorso" or v2 == "LowerTorso" then
-													table.insert(foundKeys, k2)
-												end
-											end
-											if #foundKeys ~= 2 then
-												for _, foundKey in pairs(foundKeys) do
-													table.remove(partInput, foundKey)
-												end
-												table.insert(partInput, "UpperTorso")
-												table.insert(partInput, "LowerTorso")
-											end
-											table.remove(partInput, i)
-										end
-									end
-								end
-
-								if rigType == Enum.HumanoidRigType.R6 then
-									for i = #partInput, 1, -1 do
-										if partInput[i] == "RightUpperArm" or partInput[i] == "RightLowerArm" or partInput[i] == "RightHand" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftUpperArm" or partInput[i] == "LeftLowerArm" or partInput[i] == "LeftHand" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "RightUpperLeg" or partInput[i] == "RightLowerLeg" or partInput[i] == "RightFoot" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "LeftUpperLeg" or partInput[i] == "LeftLowerLeg" or partInput[i] == "LeftFoot" then
-											table.remove(partInput, i)
-										elseif partInput[i] == "UpperTorso" or partInput[i] == "LowerTorso" then
-											table.remove(partInput, i)
-										end
-									end
-								end
-
-
-								-- Make chosen parts transparent
-								for k, v in pairs(partInput) do
-									if not (v == "limbs" or v == "face" or v == "accessories") then
-										local part = player.Character:FindFirstChild(v)
-										if part ~= nil and part:IsA("BasePart") then
-											part.Transparency = args[3]
-										end
-
-									elseif v == "limbs" then
-										for key, part in pairs(player.Character:GetChildren()) do
-											if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-												part.Transparency = args[3]
-											end
-										end
-
-									elseif v == "face" then
-										local headPart = player.Character:FindFirstChild("Head")
-										for _, v2 in pairs(headPart:GetChildren()) do
-											if v2:IsA("Decal") then
-												v2.Transparency = args[3]
-											end
-										end
-
-									elseif v == "accessories" then
-										for key, part in pairs(player.Character:GetChildren()) do
-											if part:IsA("Accessory") then
-												for _, v2 in pairs(part:GetChildren()) do
-													if v2:IsA("BasePart") then
-														v2.Transparency = args[3]
-													end
-												end
-											end
-										end
-									end
-								end
-
-
-								-- If "all" is specified
-							elseif partInput == "all" then
-								for k, p in pairs(player.Character:GetChildren()) do
-									if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
-										p.Transparency = args[3]
-										if p.Name == "Head" then
-											for _, v2 in pairs(p:GetChildren()) do
-												if v2:IsA("Decal") then
-													v2.Transparency = args[3]
-												end
-											end
-										end
-									elseif p:IsA("Accessory") and #p:GetChildren() ~= 0 then
-										for _, v2 in pairs(p:GetChildren()) do
-											if v2:IsA("BasePart") then
-												v2.Transparency = args[3]
-											end
-										end
-									end
-								end
-							end
-						end
 					end
 				end
 			end
@@ -5015,6 +4679,34 @@ return function(Vargs, env)
 					Functions.SetLighting("FogColor", Color3.new(tonumber(num1), tonumber(num2), tonumber(num3)))
 					Functions.SetLighting("FogEnd", 9e9) --Thanks go to Janthran for another neat glitch
 				end
+			end
+		};
+
+		LoadSky = {
+			Prefix = Settings.Prefix;
+			Commands = {"loadsky", "skybox"};
+			Args = {"front", "back", "left", "right", "up", "down", "celestialBodies? (default: true)", "starCount (default: 3000)"};
+			Description = "Change the skybox front with the provided image IDs";
+			Fun = true;
+			AdminLevel = "Admins";
+			Function = function(plr: Player, args: {string})
+				for _, v in ipairs(service.Lighting:GetChildren()) do
+					if v:IsA("Sky") then v:Destroy() end
+				end
+				local sky = service.New("Sky", service.Lighting)
+				for i, v in ipairs({"Ft", "Bk", "Lf", "Rt", "Up", "Dn"}) do
+					local img = args[i] or args[1]
+					if img --[[and (v ~= "Dn" or args[6])]] then
+						sky["Skybox"..v] = tonumber(img) and ("rbxassetid://"..img) or img
+					end
+				end
+				if args[7] and args[7]:lower() == "false" then
+					sky.CelestialBodiesShown = false
+				end
+				if tonumber(args[8]) then
+					sky.StarCount = tonumber(args[8])
+				end
+				Functions.Hint("Created new sky", {plr})
 			end
 		};
 

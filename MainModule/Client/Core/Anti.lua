@@ -455,14 +455,15 @@ return function(Vargs, GetEnv)
 				end
 			end
 
+			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq. 
 			local function checkServ()
-				if not pcall(function()
-						if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
-							--Detected("crash", "Disallowed Services Detected")
-						end
-					end) then
-					--Detected("kick", "Disallowed Services Finding Error")
-				end
+				--[[if not pcall(function()
+					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
+						Detected("crash", "Disallowed Services Detected")
+					end
+				end) then
+					Detected("kick", "Disallowed Services Finding Error")
+				end--]]
 			end
 
 			local function soundIdCheck(Sound)

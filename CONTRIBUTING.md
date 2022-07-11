@@ -1,12 +1,33 @@
-# 📜 Contribution Guidelines
-*Updated on 2022-06-22 15:23 UTC by Expertcoderz*
+<div align="center">
+
+# 📜 Adonis Contribution Guidelines
+*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
+
+<img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
 
 Adonis is an ever expanding, frequently updated, slightly complicated, system. In order to keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs. When a PR is opened, relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) may first be assigned to it for the purpose of organization.
-Anyone in the community may submit code reviews for PRs and make discussions on the PR's page.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+
+Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
+
+Maintainers may manage PR labels, or edit PR titles and descriptions where beneficial to conform to the standards described below.
+
+## Q: How should PRs be titled and formatted?
+
+**A:** **Title:** The title of a PR should be in present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"9
+
+A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
+
+Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
+
+**Description:** The description of a PR should be comprehensive and either describe, or list and describe, the specific additions, changes and/or removals made by the PR, and their full rationale.
+  
+ℹ️ **The above rules do not apply for individual commit names and descriptions.**
+
+You may optionally include relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
 
 ## Q: What can I contribute?
 
@@ -20,12 +41,24 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 ## Q: Is there a style guide for writing code?
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. Generally, however, here are a few things to note:
-- Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
-- Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
-- No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
-- Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
-- Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
+  
+<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
+<hr>
+
+  Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
+
+  Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
+
+  No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
+
+  Don't overwrite builtin globals unnecessarily when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
+
+  Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
+  
+  Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
+<hr>
+</details>
 
 ## Q: What are some things I should watch out for when submitting my changes?
 
@@ -56,3 +89,7 @@ Discord server: https://discord.com/invite/H5RvTP3
 ### That's all, folks!
 
 Feel free to make enquiries in our Discord server.
+  
+<sub>Adonis Contribution Guide 2022</sub>
+
+</div>
