@@ -4301,10 +4301,9 @@ return function(Vargs, env)
 			Description = "Set the target player(s)'s WalkSpeed to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if args[2] and args[2]:lower() == "inf" then
-					error("Speed cannot be infinite")
-				end
+				assert(not args[2] or args[2]:lower() ~= "inf", "Speed cannot be infinite")
 				local speed = tonumber(args[2]) or 16
+				assert(speed >= 0, "Speed cannot be negative")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 					if hum then
