@@ -548,7 +548,7 @@ return function(Vargs, GetEnv)
 								Icon = server.MatIcons.Warning;
 								Question = "Are you sure you want to load this script into the server env?";
 								Title = "Adonis DebugLoadstring";
-								Delay = 5;
+								Delay = 3;
 							})
 
 							if ans == "Yes" then
@@ -674,22 +674,12 @@ return function(Vargs, GetEnv)
 
 		};
 
-		UnEncrypted = {
-			--[[TrustCheck = function(p)
-				local keys = Remote.Clients[tostring(p.UserId)]
-				Remote.Fire(p, "TrustCheck", keys.Special)
-			end;--]]
-
-			ProcessChat = function(p: Player,msg: string)
-				Process.Chat(p,msg)
-			end;
-
-			ExplorerAction = function(p: Player, ...)
-				--if Admin.CheckAdmin(p) then
-				--// Handle stuff like Dex calls(?)
-				--end
-			end;
-		};
+		UnEncrypted = setmetatable({}, {
+			__newindex = function(_, ind, val)
+				warn("Unencrypted remote commands are deprecated; moving", ind, "to Remote.Commands")
+				Remote.Commands[ind] = val
+			end
+		});
 
 		Commands = {
 			GetReturn = function(p: Player,args: {[number]: any})
@@ -1189,12 +1179,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		MakeGui = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			Remote.Send(p,"UI",GUI,theme,data or {})
 		end;
 
 		MakeGuiGet = function(p: Player,GUI: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return nil end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			return Remote.Get(p,"UI",GUI,theme,data or {})
@@ -1205,10 +1197,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		RemoveGui = function(p: Player,name: string | boolean | Instance,ignore: string)
+			if not p then return end
 			Remote.Send(p,"RemoveUI",name,ignore)
 		end;
 
 		RefreshGui = function(p: Player,name: string | boolean | Instance,ignore: string,data: {[any]: any},themeData: {[string]: any})
+			if not p then return end
 			local theme = {Desktop = Settings.Theme; Mobile = Settings.MobileTheme}
 			if themeData then for ind,dat in pairs(themeData) do theme[ind] = dat end end
 			Remote.Send(p,"RefreshUI",name,ignore,themeData,data or {})

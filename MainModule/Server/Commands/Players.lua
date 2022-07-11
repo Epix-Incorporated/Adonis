@@ -7,7 +7,7 @@ return function(Vargs, env)
 		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
 
 	if env then setfenv(1, env) end
-	
+
 	local Routine = env.Routine
 	local Pcall = env.Pcall
 	local cPcall = env.cPcall
@@ -20,54 +20,36 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local commands = Admin.SearchCommands(plr, "all")
 				local tab = {}
-				local cStr = ""
-
 				local cmdCount = 0
-				for i, v in pairs(commands) do
-					if not v.Hidden and not v.Disabled then
-						local lvl = v.AdminLevel;
-						local gotLevels = {};
-
-						if type(lvl) == "table" then
-							for i, v in pairs(lvl) do
-								table.insert(gotLevels, v);
-							end
-						elseif type(lvl) == "string" or type(lvl) == "number" then
-							table.insert(gotLevels, lvl);
-						end
-
-						for i, lvl in pairs(gotLevels) do
-							local tempStr = "";
-
-							if type(lvl) == "number" then
-								local list, name, data = Admin.LevelToList(lvl);
-								--print(tostring(list), tostring(name), tostring(data))
-								tempStr = (name or "No Rank") .."; Level ".. lvl;
-							elseif type(lvl) == "string" then
-								local numLvl = Admin.StringToComLevel(lvl);
-								tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
-							end
-
-							if i > 1 then
-								tempStr = cStr.. ", ".. tempStr;
-							end
-
-							cStr = tempStr;
-						end
-
-						table.insert(tab, {
-							Text = Admin.FormatCommand(v),
-							Desc = "["..cStr.."] "..v.Description,
-							Filter = cStr
-						})
-						cmdCount += 1
+				for _, cmd in pairs(Admin.SearchCommands(plr, "all")) do
+					if cmd.Hidden or cmd.Disabled then
+						continue
 					end
+
+					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
+					table.insert(tab, {
+						Text = Admin.FormatCommand(cmd),
+						Desc = string.format("[%s] %s", permissionDesc, cmd.Description or "(No description provided)"),
+						Filter = permissionDesc
+					})
+					cmdCount += 1
 				end
+
+				for alias, command in pairs(Core.GetPlayer(plr).Aliases or {}) do
+					table.insert(tab, {
+						Text = alias,
+						Desc = "[User Alias] "..command,
+						Filter = command
+					})
+					cmdCount += 1
+				end
+
+				table.sort(tab, function(a, b) return a.Text < b.Text end)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Commands ("..cmdCount..")";
+					Icon = server.MatIcons.Description;
 					Table = tab;
 					TitleButtons = {
 						{
@@ -88,36 +70,41 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
 
-				local commands = Admin.SearchCommands(plr, "all")
 				local cmd, ind
-				for i, v in pairs(commands) do
+				for i, v in pairs(Admin.SearchCommands(plr, "all")) do
 					for _, p in ipairs(v.Commands) do
 						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
-							cmd = v
-							ind = i
+							cmd, ind = v, i
 							break
 						end
 					end
+					if ind then break end
 				end
-				assert(cmd, "Command '"..args[1].."' not found")
+				assert(cmd, "Command '"..args[1].."' is either not found or beyond your permission level")
 
 				local function formatStrForRichText(str: string): string
 					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
 				end
 
-				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
-				if cmdArgs == "" then cmdArgs = "-" end
+				local cmdArgs = Admin.FormatCommandArguments(cmd)
+
+				local cmdAttribs = {}
+				for _, key in ipairs({"Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors"}) do
+					if cmd[key] then
+						table.insert(cmdAttribs, key)
+					end
+				end
+
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
 						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
 						{Text = "<b>Commands:</b> "..formatStrForRichText(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
-						{Text = "<b>Arguments:</b> "..formatStrForRichText(cmdArgs), Desc = "Parameters taken by the command"},
-						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..formatStrForRichText(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
-						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
-						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
+						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else formatStrForRichText(cmdArgs)), Desc = "Parameters taken by the command"},
+						{Text = "<b>Admin Level:</b> "..Admin.FormatCommandAdminLevel(cmd), Desc = "Rank required to run the command"},
 						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Attributes:</b> "..(if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")), Desc = "Extra data about the command"},
 						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
@@ -182,7 +169,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"notifications", "comms", "nc"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the communications panel, showing you all the Adonis messages you have recieved in a timeline";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -286,7 +272,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"client", "clientsettings", "playersettings"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the client settings panel";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -298,7 +283,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donate", "change", "changecape", "donorperks"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the donation panel";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -310,7 +294,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"getscript", "getadonis"};
 			Args = {};
-			Hidden = false;
 			Description = "Prompts you to take a copy of the script";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -322,7 +305,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"ping", "latency"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows you your current ping (latency)";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -345,7 +327,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"donors", "donorlist", "donatorlist", "donators"};
 			Args = {"autoupdate? (default: true)"};
-			Hidden = false;
 			Description = "Shows a list of Adonis donators who are currently in the server";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
@@ -374,7 +355,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"help", "requesthelp", "gethelp", "lifealert", "sos"};
 			Args = {"reason"};
-			Hidden = false;
 			Description = "Calls admins for help";
 			Filter = true;
 			AdminLevel = "Players";
@@ -452,12 +432,13 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"rejoin"};
 			Args = {};
-			Hidden = false;
 			Description = "Makes you rejoin the server";
 			NoStudio = true; -- Commands which cannot be used in Roblox Studio (e.g. commands which use TeleportService)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, plr)
+				service.TeleportService:TeleportAsync(game.PlaceId, {plr}, service.New("TeleportOptions", {
+					ServerInstanceId = game.JobId
+				}))
 			end
 		};
 
@@ -465,7 +446,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"join", "follow", "followplayer"};
 			Args = {"username"};
-			Hidden = false;
 			Description = "Makes you follow the player you gave the username of to the server they are in";
 			NoStudio = true; -- TeleportService cannot be used in Roblox Studio
 			AdminLevel = "Players";
@@ -477,7 +457,9 @@ return function(Vargs, env)
 					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
 					if success then
 						if found and placeId and jobId then
-							service.TeleportService:TeleportToPlaceInstance(placeId, jobId, plr)
+							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
+								ServerInstanceId = jobId
+							}))
 							Functions.Hint("Teleporting...", {plr})
 						else
 							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
@@ -491,11 +473,41 @@ return function(Vargs, env)
 			end
 		};
 
+		GlobalJoin = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"joinfriend", "globaljoin"};
+			Args = {"username"};
+			Description = "Joins your friend outside/inside of the game (must be online)";
+			NoStudio = true;
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
+				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+				assert(args[1], "Argument #1 (username) is required")
+				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
+				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+				if success and userId then
+					for _, v in ipairs(plr:GetFriendsOnline()) do
+						if v.VisitorId == userId then
+							if v.IsOnline and v.PlaceId and v.GameId then
+								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
+								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
+							else
+								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
+							end
+							return
+						end
+					end
+					Functions.Hint("You are not a friend of the specified user", {plr})
+				else
+					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
+				end
+			end
+		};
+
 		Credits = {
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"credit", "credits"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows you Adonis development credits";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -535,7 +547,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"usage", "usermanual"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows you how to use some syntax related things";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
@@ -555,7 +566,7 @@ return function(Vargs, env)
 					"<i>"..Settings.SpecialPrefix.."nonadmins</i> - Non-admins (normal players) in the server";
 					"<i>"..Settings.SpecialPrefix.."others</i> - Everyone except yourself";
 					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server";
-					"<i>@USERNAME</i> - Targets a specific player with that exact username";
+					"<i>@USERNAME</i> - Targets a specific player with that exact username Ex: <i>"..Settings.Prefix.."god @Sceleratis </i> would give a player with the username 'Sceleratis' god powers";
 					"<i>#NUM</i> - NUM random players in the server <i>"..Settings.Prefix.."ff #5</i> will ff 5 random players.";
 					"<i>"..Settings.SpecialPrefix.."friends</i> - Your friends who are in the server";
 					"<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: "..Settings.Prefix.."kill %raiders";
@@ -585,40 +596,6 @@ return function(Vargs, env)
 					Size = {300, 250};
 					RichText = true;
 				})
-			end
-		};
-
-		GlobalJoin = {
-			Prefix = Settings.PlayerPrefix;
-			Commands = {"joinfriend", "globaljoin"};
-			Args = {"username"};
-			Hidden = false;
-			Description = "Joins your friend outside/inside of the game (must be online)";
-			NoStudio = true;
-			AdminLevel = "Players";
-			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
-				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
-				assert(args[1], "Argument #1 (username) is required")
-				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-				if success and userId then
-					for _, v in ipairs(plr:GetFriendsOnline()) do
-						if v.VisitorId == userId then
-							if v.IsOnline and v.PlaceId and v.GameId then
-								local new = Core.NewScript("LocalScript", "service.TeleportService:TeleportToPlaceInstance("..v.PlaceId..", "..v.GameId..", "..plr:GetFullName()..")")
-								new.Disabled = false
-								new.Parent = plr:FindFirstChildOfClass("Backpack") or plr:WaitForChild("Backpack")
-								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
-							else
-								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
-							end
-							return
-						end
-					end
-					Functions.Hint("You are not a friend of "..service.Players:GetNameFromUserIdAsync(userId))
-				else
-					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
-				end
 			end
 		};
 
@@ -661,9 +638,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"info", "about", "userpanel"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows info about the admin system (Adonis)";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Info";})
@@ -674,9 +649,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"aliases", "addalias", "removealias", "newalias"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the alias manager";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "Aliases";})
@@ -687,9 +660,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"keybinds", "binds", "bind", "keybind", "clearbinds", "removebind"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens the keybind manager";
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "UserPanel", {Tab = "KeyBinds";})
@@ -701,8 +672,6 @@ return function(Vargs, env)
 			Commands = {"invite", "invitefriends"};
 			Args = {};
 			Description = "Invite your friends into the game";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.SocialService:PromptGameInvite(plr)
@@ -714,8 +683,6 @@ return function(Vargs, env)
 			Commands = {"onlinefriends", "friendsonline", "friends"};
 			Args = {};
 			Description = "Shows a list of your friends who are currently online";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Friends")
@@ -727,8 +694,6 @@ return function(Vargs, env)
 			Commands = {"blockedusers", "blockedplayers", "blocklist"};
 			Args = {};
 			Description = "Shows a list of people you've blocked on Roblox";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "BlockedUsers")
@@ -740,8 +705,6 @@ return function(Vargs, env)
 			Commands = {"getpremium", "purchasepremium", "robloxpremium"};
 			Args = {};
 			Description = "Prompts you to purchase Roblox Premium";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				service.MarketplaceService:PromptPremiumPurchase(plr)
@@ -785,7 +748,6 @@ return function(Vargs, env)
 			Commands = {"inspectavatar", "avatarinspect", "viewavatar", "examineavatar"};
 			Args = {"player"};
 			Description = "Opens the Roblox avatar inspect menu for the specified player";
-			Hidden = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
@@ -799,7 +761,6 @@ return function(Vargs, env)
 			Commands = {"devconsole", "developerconsole", "opendevconsole"};
 			Args = {};
 			Description = "Opens the Roblox developer console";
-			Hidden = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				Remote.Send(plr, "Function", "SetCore", "DevConsoleVisible", true)
@@ -834,7 +795,6 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"timedate", "date", "datetime"};
 			Args = {};
-			Hidden = false;
 			Description = "Shows you the current time and date.";
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
@@ -896,7 +856,6 @@ return function(Vargs, env)
 			Commands = {"profile", "inspect", "playerinfo", "whois", "viewprofile"};
 			Args = {"player"};
 			Description = "Shows comphrehensive information about a player";
-			Hidden = false;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
@@ -948,7 +907,6 @@ return function(Vargs, env)
 			Commands = {"serverinfo", "server", "serverdetails", "gameinfo", "gamedetails"};
 			Args = {};
 			Description = "Shows you details about the current server";
-			Hidden = false;
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local elevated = Admin.CheckAdmin(plr)
@@ -1114,7 +1072,6 @@ return function(Vargs, env)
 			Args = {"soundId?"};
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
-			Hidden = false;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Music", {
 					Song = args[1]

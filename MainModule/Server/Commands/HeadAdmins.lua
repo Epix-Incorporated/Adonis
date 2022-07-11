@@ -13,9 +13,8 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempban", "timedban", "timeban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
-			Hidden = false;
 			Description = "Bans the target player(s) for the supplied amount of time; Data Persistent; Undone using :untimeban";
-			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
@@ -48,8 +47,10 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddTimeBan(v, tonumber(time), reason)
-						Functions.Hint("Banned "..tostring(v.Name).." for ".. args[2], {plr})
+						Admin.AddTimeBan(v, tonumber(time), reason, plr)
+						Functions.Hint("Time-banned "..service.FormatPlayer(v).." for ".. args[2], {plr})
+					else
+						Functions.Hint("Unable to time-ban "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -59,9 +60,8 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
 			Args = {"username", "number<s/m/h/d>", "reason"};
-			Hidden = false;
 			Description = "Bans the username for the supplied amount of time; Data Persistent; Undone using :untimeban";
-			Fun = false;
+			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing player name")
@@ -87,16 +87,16 @@ return function(Vargs, env)
 				local reason = args[3] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local UserId = service.Players:GetUserIdFromNameAsync(i)
+					local userId = service.Players:GetUserIdFromNameAsync(i)
 
-					if UserId == plr.UserId then
+					if userId == plr.UserId then
 						error("You cannot ban yourself or the creator of the game", 2)
 						return
 					end
 
-					if UserId then
-						Admin.AddTimeBan({UserId = UserId, Name = i}, tonumber(time), reason)
-						Functions.Hint("Banned "..tostring(i).." for ".. args[2], {plr})
+					if userId then
+						Admin.AddTimeBan({UserId = userId, Name = i}, tonumber(time), reason, plr)
+						Functions.Hint("Time-banned '"..tostring(i).."' for ".. args[2], {plr})
 					end
 				end
 			end
@@ -106,9 +106,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"untimeban", "untimedban", "untban", "untempban", "untemporaryban"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Removes specified player from Timebans list";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
@@ -127,8 +125,6 @@ return function(Vargs, env)
 			Description = "Bans the player from the game permenantly. If they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
-			Hidden = false;
-			Fun = false;
 			Function = function(plr: Player, args: {string}, data: {})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
@@ -140,8 +136,10 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})) do
 					if level > Admin.GetLevel(v) then
-						Admin.AddBan(v, reason, true)
+						Admin.AddBan(v, reason, true, plr)
 						Functions.Hint("Game banned "..tostring(v), {plr})
+					else
+						Functions.Hint("Unable to game-ban "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -154,9 +152,17 @@ return function(Vargs, env)
 			Description = "UnBans the player from game (Saves)";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				local ret = Admin.RemoveBan(args[1], true)
-				if ret then
-					Functions.Hint(tostring(ret)..' has been Unbanned', {plr})
+				assert(args[1], "Argument #1 (player) is required")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local ret = Admin.RemoveBan(v.Name, true)
+					if ret then
+						if type(ret) == "table" then
+							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
+						else
+							ret = tostring(ret)
+						end
+						Functions.Hint(ret.." has been unbanned from the game", {plr})
+					end
 				end
 			end
 		};
@@ -165,9 +171,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"admin", "permadmin", "pa", "padmin", "fulladmin"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) an admin; Saves";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
@@ -182,9 +186,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now an admin', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now an admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -194,9 +198,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempadmin", "ta"};
 			Args = {"player"};
-			Hidden = false;
 			Description = "Makes the target player(s) a temporary admin; Does not save";
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local sendLevel = data.PlayerData.Level
@@ -211,9 +213,9 @@ return function(Vargs, env)
 							Icon = server.MatIcons["Admin panel settings"];
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(v.Name..' is now a temp admin', {plr})
+						Functions.Hint(service.FormatPlayer(v).." is now a temporary admin", {plr})
 					else
-						Functions.Hint(v.Name.." is the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -229,10 +231,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
-
-				if not Core.CrossServer("Message", plr.Name, args[1]) then
-					error("CrossServer Handler Not Ready");
+				if not Core.CrossServer("Message", plr.Name, assert(args[1], "Missing message")) then
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -247,12 +247,8 @@ return function(Vargs, env)
 			IsCrossServer = true;
 			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing time amount")
-				assert(args[2], "Missing message")
-
-
-				if not Core.CrossServer("Message", plr.Name, args[2], args[1]) then
-					error("CrossServer Handler Not Ready");
+				if not Core.CrossServer("Message", plr.Name, assert(args[2], "Missing message"), assert(args[1], "Missing time amount")) then
+					error("CrossServer handler not ready; please try again later")
 				end
 			end;
 		};
@@ -261,9 +257,8 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"makelist", "newlist", "newtrellolist", "maketrellolist"};
 			Args = {"name"};
-			Hidden = false;
 			Description = "Adds a list to the Trello board set in Settings. AppKey and Token MUST be set and have write perms for this to work.";
-			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "You need to supply a list name.")
@@ -280,9 +275,8 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"viewlist", "viewtrellolist"};
 			Args = {"name"};
-			Hidden = false;
 			Description = "Views the specified Trello list from the primary board set in Settings.";
-			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local trello = HTTP.Trello.API
@@ -292,8 +286,8 @@ return function(Vargs, env)
 
 				local cards = trello.Lists.GetCards(list.id)
 				local temp = table.create(#cards)
-				for i, v in pairs(cards) do
-					table.insert(temp, {Text=v.name,Desc=v.desc})
+				for _, v in pairs(cards) do
+					table.insert(temp, {Text = v.name, Desc = v.desc})
 				end
 				Remote.MakeGui(plr, "List", {Title = list.name; Tab = temp})
 			end
@@ -303,9 +297,8 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"makecard", "maketrellocard", "createcard"};
 			Args = {};
-			Hidden = false;
 			Description = "Opens a gui to make new Trello cards. AppKey and Token MUST be set and have write perms for this to work.";
-			Fun = false;
+			TrelloRequired = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "CreateCard")
@@ -338,7 +331,7 @@ return function(Vargs, env)
 			Description = "Changes the backup for the restore map command to the map's current state";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				local plr_name = plr and plr.Name
+				local plr_name = if plr then service.FormatPlayer(plr) else "%SYSTEM%"
 
 				if plr then
 					Functions.Hint("Updating Map Backup...", {plr})
@@ -382,7 +375,7 @@ return function(Vargs, env)
 
 				Logs.AddLog(Logs.Script, {
 					Text = "Backup Complete";
-					Desc = (plr_name or "<SERVER>").." has successfully backed up the map.";
+					Desc = plr_name.." has successfully backed up the map.";
 				})
 			end
 		};
@@ -391,9 +384,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"explore", "explorer"};
 			Args = {};
-			Hidden = false;
-			Description = "Lets you explore the game, kinda like a file browser";
-			Fun = false;
+			Description = "Lets you explore the game, kinda like a file browser (alternative to "..Settings.Prefix.."dex)";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Explorer")
@@ -405,11 +396,9 @@ return function(Vargs, env)
 			Commands = {"promptinvite", "inviteprompt", "forceinvite"};
 			Args = {"player"};
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
-			Hidden = false;
-			Fun = false;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.SocialService:PromptGameInvite(v)
 				end
 			end
@@ -419,15 +408,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forcerejoin"};
 			Args = {"player"};
-			Description = "Forces target player(s) to rejoin the server, same as them running !rejoin";
-			Hidden = false;
-			Fun = false;
+			Description = "Forces target player(s) to rejoin the server; same as them running "..Settings.PlayerPrefix.."rejoin";
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				for i, v in pairs(service.GetPlayers(plr, args[1])) do
-					service.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, v)
-				end
+				local players = service.GetPlayers(plr, args[1])
+				local teleportOptions = service.New("TeleportOptions", {
+					ServerInstanceId = game.JobId
+				})
+				service.TeleportService:TeleportAsync(game.PlaceId, players, teleportOptions)
 			end
 		};
 
@@ -442,8 +431,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Reason must be supplied for this command!")
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Question = "Shutdown all running servers for the reason "..tostring(args[1]).."?";
-					Title = "Shutdown all running servers?";
+					Question = "Shutdown all running servers for the reason '"..tostring(args[1]).."'?";
+					Title = "Global Shutdown";
 				})
 				if ans == "Yes" then
 					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then

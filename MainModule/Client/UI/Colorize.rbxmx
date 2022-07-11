@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX3337BF2B478A430295C950CCAB643098">
+	<Item class="ModuleScript" referent="RBX2C174377BB564F409DFC4D0D3E6E0C5D">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
@@ -79,11 +79,16 @@ service = nil
 Routine = nil
 client = nil
 
-return function(gui, guiData, gTable)
+return function(gui, guiData, gTable, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local contents = {}
 	local lerper = 0.5
 	local switch = false
 	local targetColor = Color3.new(math.random(),math.random(),math.random())
+
 	local classes = {
 		Frame = true;
 		TextBox = true;
@@ -123,11 +128,11 @@ return function(gui, guiData, gTable)
 		Color3.fromRGB(78, 140, 255), 
 		Color3.fromRGB(78, 255, 149)
 	}
-	
+
 	local function lerpToColor(color1, color2, inc, time)
 		local inc = inc or 0.1
 		for i = 0, 1, inc do
-			for i2,v in next,contents do
+			for i2,v in pairs(contents) do
 				if v.Name ~= "CapeColor" and v.Name ~= "Color" then
 					v.BackgroundColor3 = color1:lerp(color2, i)
 					if v:IsA("ImageLabel") or v:IsA("ImageButton") then
@@ -138,10 +143,10 @@ return function(gui, guiData, gTable)
 			wait(time/(1/inc))
 		end
 	end
-	
-	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
+
+	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name), function()
 		while ((gTable.Active and wait()) or wait(1)) and not gTable.Destroyed do
-			for i,v in next,sequence do
+			for i,v in ipairs(sequence) do
 				local one, two = sequence[i], sequence[1]
 				
 				if i == #sequence then
@@ -158,13 +163,22 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="StringValue" referent="RBXF693CD1F715E4AC790A5F2CE38B3EC61">
+		<Item class="StringValue" referent="RBX448BCF59659145D59117BA53516D4F56">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<string name="Value">Hydris</string>
+			</Properties>
+		</Item>
+		<Item class="BoolValue" referent="RBX1E2A8F4966B6430CB5325548EC0B0D2A">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">NoEnv</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Value">false</bool>
 			</Properties>
 		</Item>
 	</Item>

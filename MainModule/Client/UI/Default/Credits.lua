@@ -19,7 +19,6 @@ return function(data, env)
 		Position = UDim2.new(0, 5, 0, 5);
 	})
 
-
 	for _, tab in ipairs({
 		[1] = tabFrame:NewTab("Main", {Text = "Main"}),
 		[2] = tabFrame:NewTab("GitHub", {Text = "Contributors"}),
@@ -56,14 +55,14 @@ return function(data, env)
 			local i = 1
 			local filter = search.Text
 			scroller:ClearAllChildren()
-			for _,credit in ipairs(require(client.Shared.Credits)[tab.Name]) do
+			for _, credit in ipairs(require(client.Shared.Credits)[tab.Name]) do
 				if (credit.Text:sub(1, #filter):lower() == filter:lower()) or (tab.Name == "GitHub" and credit.Text:sub(9, 8+#filter):lower() == filter:lower()) then
 					scroller:Add("TextLabel", {
 						Text = "  "..credit.Text.." ";
 						ToolTip = credit.Desc;
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-						Size = UDim2.new(1, 0, 0, 30);
-						Position = UDim2.new(0, 0, 0, (30*(i-1)));
+						Size = UDim2.new(1, 0, 0, 26);
+						Position = UDim2.new(0, 0, 0, (26*(i-1)));
 						TextXAlignment = "Left";
 					})
 					i += 1

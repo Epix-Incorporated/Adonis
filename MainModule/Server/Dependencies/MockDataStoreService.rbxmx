@@ -26,12 +26,14 @@ elseif game:GetService("RunService"):IsStudio() then -- Published file in Studio
 	end
 end
 
--- Return the mock or actual service depending on environment:
-if shouldUseMock then
-	warn(":: Adonis :: Using MockDataStoreService instead of DataStoreService")
-	return require(MockDataStoreServiceModule)
-else
-	return game:GetService("DataStoreService")
+return function(forceMockDatastore)
+	-- Return the mock or actual service depending on environment:
+	if shouldUseMock or forceMockDatastore then
+		warn(":: Adonis :: Using MockDataStoreService instead of DataStoreService")
+		return require(MockDataStoreServiceModule)
+	else
+		return game:GetService("DataStoreService")
+	end
 end
 ]]></string>
     </Properties>

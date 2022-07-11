@@ -1,5 +1,5 @@
 return {
-	"Version: 236";
+	"Version: 237";
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";

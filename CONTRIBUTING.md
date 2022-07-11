@@ -1,41 +1,95 @@
-# Contribution Guidelines
+<div align="center">
 
-Adonis is an ever expanding, frequently updated, slightly complicated, system. In order to keep Adonis functional and somewhat readabled rather than a tangled mess, here are some guidelines to consider before submitting a pull request, in the form of a FAQ:
+# 📜 Adonis Contribution Guidelines
+*Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
-## What can I contribute?
+<img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
 
-Anything within reason! Contributions can be to Adonis itself or the wiki (or both!) As long as your addition is useful and doesn't break something, and makes sense (while not violating ROBLOX's rules) it will *probably* be merged, however occasionally I might deem something unneccessary or incomplete, at which point I'll *probably* comment on the request for you to respond (or just so you know my reasoning.)
+Adonis is an ever expanding, frequently updated, slightly complicated, system. In order to keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
-## What can't I contribute?
+## Q: Who's in charge of handling pull requests (PRs)?
 
-Anything that violates ROBLOX's rules (as in, anything that could get me/Adonis in trouble) is not allowed for obvious reasons. Also, please do not submit obfuscated code. If I cannot see/read/understand your contribution, I can't be sure it's not doing anything malicious (and can't debug it later if something happens) and will just close the request.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
 
-There is a very clear/obvious difference between unavoidably complex code and intentionally complicated code. I check all file changes before merging and can *usually* spot something abnormal quickly.
+Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
 
-## Is there anything that will *probably* get declined?
+Maintainers may manage PR labels, or edit PR titles and descriptions where beneficial to conform to the standards described below.
 
-It depends. If it's something really stupid or that just doesn't make sense, then yeah. If for some reason I think the contribution is not worth adding in its current state I will make that known in the form of a comment for your review. If it's something that can be changed, you can always change it and I'll review it again after you do.
+## Q: How should PRs be titled and formatted?
 
-## What are some things I should watch out for when submitting my changes?
+**A:** **Title:** The title of a PR should be in present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"9
 
-Bugs! If you are submitting code changes, please be sure to TEST THEM BEFORE SUBMITTING THEM! I don't want to spend an hour debugging your contribution when merging changes into the model.
+A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
 
-Also, try to double check any text for spelling issues. I frequently make typos/mistakes, so it's not a huge deal if you miss something, but a wholly incoherent string of letters and words is not acceptable.
+Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
 
-## What can I contribute to the Wiki?
+**Description:** The description of a PR should be comprehensive and either describe, or list and describe, the specific additions, changes and/or removals made by the PR, and their full rationale.
+  
+ℹ️ **The above rules do not apply for individual commit names and descriptions.**
 
-Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when creating plugins. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.)
+You may optionally include relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
 
-## My contribution was accepted. Now what?
+## Q: What can I contribute?
 
-When I merge contributions, I open studio and manually update each changed file as well as the changelog. Due to some issue with the (current) size of the Commands module (I think(?)) automating this process (currently) runs into some issues.
+**A:** Anything within reason! Contributions can be to Adonis itself or the wiki (or both!) As long as your addition or change is useful and doesn't break something, and makes sense (while not violating ROBLOX's rules) it will *probably* be merged. However, something may occasionally be deemed unneccessary or incomplete, at which point a comment will be made on the PR for you to respond or amend your code (or just so you know the maintainers' reasoning.)
 
-When I handle the merge, I will also add you to the credits as "@GitHub YourGitHubUsernameHere" if it's your first contribution. If I forget to do this, and you notice, just let me know and I'll fix it.
+## Q: What *can't* I contribute?
 
-Once I finish merging changes, I'll do some quick minor testing to make sure everything still works correctly. Once that's done, I'll upload the updated models, after which all new servers will be running the latest version.
+**A:** Anything that violates ROBLOX's rules (as in, anything that could get Adonis or games using Adonis in trouble) is not allowed for obvious reasons. Additionally, please do not submit any form of obfuscated code as they have no place in the open-source project that Adonis is.
 
-## How do I get the "GitHub Contributor" roles?
+There is a very clear/obvious difference between unavoidably complex code and intentionally complicated code. Maintainers are certain to check all file changes before merging and can *usually* spot something abnormal quickly.
 
-After your contribution is accepted, post your Discord & Roblox usernames in the discussion thread (<https://github.com/Sceleratis/Adonis/discussions/433>) and message me on Discord (Sceleratis#0001) and I'll give you the roles. Group: <https://www.roblox.com/groups/886423/Epix-Incorporated#!/about>
+## Q: Is there a style guide for writing code?
 
-### That's all, folks
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
+  
+<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
+<hr>
+
+  Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
+
+  Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
+
+  No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
+
+  Don't overwrite builtin globals unnecessarily when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
+
+  Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
+  
+  Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
+<hr>
+</details>
+
+## Q: What are some things I should watch out for when submitting my changes?
+
+**A:** Bugs! 🐛 If you are submitting code changes, please be sure to TEST THEM BEFORE SUBMITTING THEM! No one would be quite happy to spend an hour debugging your contribution when merging changes into the model.
+
+Also, try to double check any text for spelling issues. Some of us frequently make typos/mistakes, so it's not a huge deal if you miss something, but a wholly incoherent string of letters and words is not acceptable.
+
+## Q: What can I contribute to the Wiki?
+
+**A:** Wiki contributions should focus on technical information, such as what various functions and variables do/are for and how to use them correctly when developing plugins for Adonis. Information about Adonis and useful tutorials for new or inexperienced users is also acceptable (and much welcomed.)
+
+## Q: My contribution was accepted. Now what?
+
+**A:** After handling the merge, a maintainer will also add you to the credits list as "@GitHub YourGitHubUsernameHere" if it's your first contribution. If we forget to do this, and you notice, just us me know (via Discord or a comment on the PR itself) and we'll fix it.
+
+Once in a while after changes are merged, some quick testing will be done by a maintainer to make sure everything works correctly. Once that's done, the updated models will be published to ROBLOX by an automated process, after which all new servers will be running the latest version of Adonis.
+
+## Q: How do I get the "GitHub Contributor" role and group rank?
+
+**A:** After your contribution is accepted, post your Discord & ROBLOX usernames into the discussion thread (<https://github.com/Sceleratis/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the ROBLOX group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
+
+ROBLOX group: https://www.roblox.com/groups/886423
+
+Discord server: https://discord.com/invite/H5RvTP3
+
+<hr>
+
+### That's all, folks!
+
+Feel free to make enquiries in our Discord server.
+  
+<sub>Adonis Contribution Guide 2022</sub>
+
+</div>

@@ -1,7 +1,10 @@
 server = nil;
 service = nil;
 
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 

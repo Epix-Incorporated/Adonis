@@ -31,7 +31,7 @@ return function(Vargs)
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
 	if not ownerId then
-		local success, creator = pcall(service.GroupService, service.GroupService.GetGroupInfoAsync, game.CreatorId)
+		local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
 		if success and type(creator) == "table" then
 			ownerId = creator.Owner.Id
 		end
@@ -46,6 +46,7 @@ return function(Vargs)
 	local fakePlayer = service.Wrap(service.New("Folder"))
 	for i,v in pairs({
 		Name = "Server";
+		DisplayName = "Server";
 		ToString = "Server";
 		ClassName = "Player";
 		AccountAge = 0;
@@ -128,7 +129,7 @@ return function(Vargs)
 		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
 		stats.MaxPlayers = game.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
-		stats.ServerSpeed = math.min(frames/60, 1)*100
+		stats.ServerSpeed = math.min(frames/60, 1) * 100
 		stats.Admins = admins
 		stats.JobId = game.JobId
 		stats.PrivateServer = game.PrivateServerOwnerId > 0
@@ -229,7 +230,7 @@ return function(Vargs)
 
 	local function UpdateCommands(data)
 		local didrun = false
-		for i,v in pairs(data.CommandOverrides) do
+		for i, v in pairs(data.CommandOverrides) do
 			didrun = true
 
 			local index, command = Admin.GetCommand(Settings.Prefix..i)
@@ -294,13 +295,13 @@ return function(Vargs)
 
 			for _, music in pairs(data.Levels.Musiclist or {}) do
 				if string.match(music, '^(.*):(.*)') then
-					local a,b = string.match(music, '^(.*):(.*)')
+					local name, id = string.match(music, '^(.*):(.*)')
 
 					if Variables.MusicList then
 						table.insert(Variables.MusicList, {
-							Name = a,
-							ID = tonumber(b),
-							WebPanel=true
+							Name = name,
+							ID = tonumber(id),
+							WebPanel = true
 						})
 					end
 				end

@@ -14,7 +14,7 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local Commands, Decrypt, Encrypt, UnEncrypted, AddLog, TrackTask, Pcall
+	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local function Init()
 		Functions = server.Functions;
@@ -32,7 +32,6 @@ return function(Vargs, GetEnv)
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
 		Encrypt = Remote.Encrypt
-		UnEncrypted = Remote.UnEncrypted
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -86,40 +85,157 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
+	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
+		-- Ratelimit: table
+		-- Ratekey: string or number
 
+		local rateData = (type(rateLimit)=="table" and rateLimit) or nil
 
-	local RateLimiter, limitViolations = {
-		Remote = {};
-		Command = {};
-		Chat = {};
-		CustomChat = {};
-		RateLog = {};
-	}, {
-		Remote = {};
-		Command = {};
-		Chat = {};
-		CustomChat = {};
-		RateLog = {};
-	}
+		if not rateData then
+			error("Rate data doesn't exist (unable to check)")
+		else
+			-- RATELIMIT TABLE
+		--[[
+			
+			Table:
+				{
+					Rates = 100; 	-- Max requests per traffic
+					Reset = 1; 		-- Interval seconds since the cache last updated to reset
+					
+					ThrottleEnabled = false/true; -- Whether throttle can be enabled
+					ThrottleReset = 10; -- Interval seconds since the cache last throttled to reset
+					ThrottleMax = 10; -- Max interval count of throttles
+					
+					Caches = {}; -- DO NOT ADD THIS. IT WILL AUTOMATICALLY BE CREATED ONCE RATELIMIT TABLE IS CHECKING-
+					--... FOR RATE PASS AND THROTTLE CHECK.
+				}
+			
+		]]
 
-	local function RateLimit(p, typ)
-		if p and type(p) == "userdata" and p:IsA("Player") then
-			local RateLimit_Type = RateLimiter[typ]
-			local LimitViolation_Type = limitViolations[typ]
+			-- RATECACHE TABLE
+		--[[
+			
+			Table:
+				{
+					Rate = 0;
+					Throttle = 0; 		-- Interval seconds since the cache last updated to reset
+					
+					LastUpdated = 0; -- Last checked for rate limit
+					LastThrottled = nil or 0; -- Last checked for throttle (only changes if rate limit failed)
+				}
+			
+		]]
+			local maxRate: number = math.abs(rateData.Rates) -- Max requests per traffic
+			local resetInterval: number = math.floor(math.abs(rateData.Reset or 1)) -- Interval seconds since the cache last updated to reset
 
-			if not RateLimit_Type[p.UserId] then
-				RateLimit_Type[p.UserId] = os.clock()
+			local rateExceeded: boolean? = rateLimit.Exceeded or rateLimit.exceeded
+			local ratePassed: boolean? = rateLimit.Passed or rateLimit.passed
 
-				LimitViolation_Type[p.UserId] = 1
-			elseif RateLimit_Type[p.UserId] < (os.clock() + Process.RateLimits[typ] * Process.RatelimitSampleMultiplier) then
-				RateLimit_Type[p.UserId] = os.clock()
+			local canThrottle: boolean? = rateLimit.ThrottleEnabled
+			local throttleReset: number? = rateLimit.ThrottleReset
+			local throttleMax: number? = math.floor(math.abs(rateData.ThrottleMax or 1))
 
-				LimitViolation_Type[p.UserId] = 0
-			else
-				LimitViolation_Type[p.UserId] += 1
+			-- Ensure minimum requirement is followed
+			maxRate = (maxRate>1 and maxRate) or 1
+			-- Max rate must have at least one rate else anything below 1 returns false for all rate checks
+
+			local cacheLib = rateData.Caches
+
+			if not cacheLib then
+				cacheLib = {}
+				rateData.Caches = cacheLib
 			end
 
-			return LimitViolation_Type[p.UserId] < server.Process.RatelimitSampleMultiplier
+			-- Check cache
+			local rateCache: table = cacheLib[rateKey]
+			local throttleCache
+			if not rateCache then
+				rateCache = {
+					Rate = 0;
+					Throttle = 0;
+					LastUpdated = tick();
+					LastThrottled = nil;
+				}
+
+				cacheLib[rateKey] = rateCache
+			end
+
+			local nowOs = tick()
+
+			if nowOs-rateCache.LastUpdated > resetInterval then
+				rateCache.LastUpdated = nowOs
+				rateCache.Rate = 0
+			end
+
+			local ratePass: boolean = rateCache.Rate+1<=maxRate
+
+			local didThrottle: boolean = canThrottle and rateCache.Throttle+1<=throttleMax
+			local throttleResetOs: number? = rateCache.ThrottleReset
+			local canResetThrottle: boolean = throttleResetOs and nowOs-throttleResetOs <= 0
+
+			rateCache.Rate += 1
+
+			-- Check can throttle and whether throttle could be reset
+			if canThrottle and canResetThrottle then
+				rateCache.Throttle = 0
+			end
+
+			-- If rate failed and can also throttle, count tick
+			if canThrottle and (not ratePass and didThrottle) then
+				rateCache.Throttle += 1
+				rateCache.LastThrottled = nowOs
+
+				-- Check whether cache time expired and replace it with a new one or set a new one			
+				if not throttleResetOs or canResetThrottle then				
+					rateCache.ThrottleReset = nowOs
+				end
+			elseif canThrottle and ratePass then
+				rateCache.Throttle = 0
+			end
+
+			if rateExceeded and not ratePass then
+				rateExceeded:fire(rateKey, rateCache.Rate, maxRate)
+			end
+
+			if ratePassed and ratePass then
+				ratePassed:fire(rateKey, rateCache.Rate, maxRate)
+			end
+
+			return ratePass, didThrottle, canThrottle, rateCache.Rate, maxRate, throttleResetOs
+		end
+	end
+
+	local RateLimiter = {
+		Remote = {
+			Rates = 120;
+			Reset = 60;
+		};
+		Command = {
+			Rates = 20;
+			Reset = 40;	
+		};
+		Chat = {
+			Rates = 10;
+			Reset = 1;
+		};
+		CustomChat = {
+			Rates = 10;
+			Reset = 1;	
+		};
+		RateLog = {
+			Rates = 10;
+			Reset = 2;	
+		};
+	}
+
+	local unWrap = service.unWrap
+	local function RateLimit(p, typ)
+		local isPlayer = type(p)=="userdata" and p:IsA"Player"
+		if isPlayer then
+			local rateData = RateLimiter[typ]
+			assert(rateData, "No rate limit data available for the given type "..typ)
+			local ratePass, didThrottle, canThrottle, curRate, maxRate = newRateLimit(rateData, p.UserId)
+			return ratePass, didThrottle, canThrottle, curRate, maxRate
 		else
 			return true
 		end
@@ -129,9 +245,9 @@ return function(Vargs, GetEnv)
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
 		RateLimit = RateLimit;
+		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
-		RatelimitSampleMultiplier = 4; --// What is the multiplication for the violations count, lower levels can be false fired (like it currently does), but higher levels have issues with not detecting at all, so its good to have between 2 and 10
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -153,7 +269,7 @@ return function(Vargs, GetEnv)
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
 					local args = {...}
-					local rateLimitCheck = RateLimit(p, "Remote")
+					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
 
 					if keys then
 						keys.LastUpdate = os.time()
@@ -162,12 +278,12 @@ return function(Vargs, GetEnv)
 						if type(com) == "string" then
 							if com == keys.Special.."GET_KEY" then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p,keys.Special.."GIVE_KEY",keys.Key)
+									Remote.Fire(p, keys.Special.."GIVE_KEY", keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
 									AddLog("Script", string.format("%s requested client keys", p.Name))
-								--else
+									--else
 									--Anti.Detected(p, "kick","Communication Key Error (r10003)")
 								end
 
@@ -176,14 +292,6 @@ return function(Vargs, GetEnv)
 									Desc = "Player requested key from server",
 									Player = p;
 								})
-							elseif UnEncrypted[com] then
-								AddLog("RemoteFires", {
-									Text = p.Name.." fired "..tostring(com),
-									Desc = "Player fired unencrypted remote command "..com,
-									Player = p;
-								})
-
-								return {UnEncrypted[com](p,...)}
 							elseif rateLimitCheck and string.len(com) <= Remote.MaxLen then
 								local comString = Decrypt(com, keys.Key, keys.Cache)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
@@ -205,8 +313,8 @@ return function(Vargs, GetEnv)
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")
 								end
 							elseif rateLimitCheck and RateLimit(p, "RateLog") then
-								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Remote));
-								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Remote));
+								Anti.Detected(p, "Log", string.format("Firing RemoteEvent too quickly (>Rate: %s/sec)", curRemoteRate));
+								warn(string.format("%s is firing Adonis's RemoteEvent too quickly (>Rate: %s/sec)", p.Name, curRemoteRate));
 							end
 						else
 							Anti.Detected(p, "Log", "Out of Sync (r10005)")
@@ -224,7 +332,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
-				msg = string.sub(msg, 1, Process.MsgStringLimit);
+				msg = string.sub(msg, 1, Process.MsgStringLimit)
 			end
 
 			msg = Functions.Trim(msg)
@@ -245,174 +353,142 @@ return function(Vargs, GetEnv)
 					end
 				end
 			else
-				local pData = opts.PlayerData or (p and Core.GetPlayer(p));
-				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg;
+				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
+				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg
 
 				if string.match(msg, Settings.BatchKey) then
-					Process.Command(p, msg, opts, false)
+					return Process.Command(p, msg, opts, false)
+				end
+
+				local index, command, matched = Admin.GetCommand(msg)
+
+				if not command then
+					if opts.Check then
+						Remote.MakeGui(p, "Output", {
+							Title = "Output";
+							Message = if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("'%s' is not a valid command.", msg);
+						})
+					end
+					return
+				end
+
+				local allowed, denialMessage = false, nil
+				local isSystem = false
+				local trello = HTTP.Trello.API
+
+				local pDat = {
+					Player = opts.Player or p;
+					Level = opts.AdminLevel or Admin.GetLevel(p);
+					isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+				}
+
+				if opts.isSystem or p == "SYSTEM" then
+					isSystem = true
+					allowed = not command.Disabled
+					p = p or "SYSTEM"
 				else
-					local index, command, matched = Admin.GetCommand(msg)
+					allowed, denialMessage = Admin.CheckPermission(pDat, command, false, opts)
+				end
 
-					if not command then
-						if opts.Check then
-							Remote.MakeGui(p, "Output", {
-								Title = "Output";
-								Message = msg .. " is not a valid command.";
-							})
-							return
-						end
-					else
-						local allowed = false
-						local isSystem = false
+				if not allowed then
+					if not (isSystem or opts.NoOutput) and (denialMessage or not Settings.SilentCommandDenials or opts.Check) then
+						Remote.MakeGui(p, "Output", {
+							Message = denialMessage or (if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("You do not have permission to run '%s'.", msg));
+						})
+					end
+					return
+				end
 
-						local pDat = {
-							Player = opts.Player or p;
-							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
-						}
+				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
 
-						if opts.isSystem or p == "SYSTEM" then
-							isSystem = true
-							allowed = true
-							p = p or "SYSTEM"
-						else
-							allowed = Admin.CheckPermission(pDat, command)
-						end
+				local cmdArgs = command.Args or command.Arguments
+				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
-						if opts.CrossServer and command.CrossServerDenied then
-							allowed = false;
-						end
+				local taskName = "Command:: ".. p.Name ..": ("..msg..")"
 
-						if allowed and Variables.IsStudio and command.NoStudio then
-							Remote.MakeGui(p, "Output", {
-								Title = "";
-								Message = "This command cannot be used in Roblox Studio.";
-								Color = Color3.new(1, 0, 0);
-							})
-							return
-						end
+				if #args > 0 and not isSystem and command.Filter or opts.Filter then
+					local SAFE = {"plr", "user", "player", "brickcolor"}
 
-						if allowed and opts.Chat and command.Chattable == false then
-							Remote.MakeGui(p, "Output", {
-								Title = "";
-								Color = Color3.new(1, 0, 0);
-								Message = "Specified command not permitted as chat message (Command not chattable)";
-							})
-
-							return
-						end
-
-						if allowed then
-							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ""
-
-								local cmdArgs = command.Args or command.Arguments
-								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-
-								local taskName = "Command:: ".. p.Name ..": ("..msg..")"
-
-								if #args > 0 and not isSystem and command.Filter or opts.Filter then
-									local safe = {
-										plr = true;
-										plrs = true;
-										username = true;
-										usernames = true;
-										players = true;
-										player = true;
-										users = true;
-										user = true;
-										brickcolor = true;
-									}
-
-									for i, arg in pairs(args) do
-										if not (cmdArgs[i] and safe[string.lower(cmdArgs[i])]) then
-											args[i] = service.LaxFilter(arg, p)
-										end
-									end
-								end
-
-								if opts.CrossServer or (not isSystem and not opts.DontLog) then
-									AddLog("Commands", {
-										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
-										Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
-										Player = p;
-									})
-
-									if Settings.ConfirmCommands then
-										Functions.Hint("Executed Command: [ "..msg.." ]", {p})
-									end
-								end
-
-								if noYield then
-									taskName = "Thread: " .. taskName
-								end
-
-								local ran, error = TrackTask(taskName,
-									command.Function,
-									p,
-									args,
-									{
-										PlayerData = pDat,
-										Options = opts
-									}
-								)
-								if not opts.IgnoreErrors then
-									if error and type(error) == "string" then
-										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. error)
-
-										error = (error and string.match(error, ":(.+)$")) or error or "Unknown error"
-
-										if not isSystem then
-											Remote.MakeGui(p, 'Output', {
-												Title = '',
-												Message = error,
-												Color = Color3.new(1, 0, 0)
-											})
-										end
-									elseif error and type(error) ~= "string" and error ~= true then
-										if not isSystem then
-											Remote.MakeGui(p,"Output", {
-												Title = "";
-												Message = "There was an error but the error was not a string? "..tostring(error);
-												Color = Color3.new(1, 0, 0);
-											})
-										end
-									end
-								end
-
-								service.Events.CommandRan:Fire(p, {
-									Message = msg,
-									Matched = matched,
-									Args = args,
-									Command = command,
-									Index = index,
-									Success = ran,
-									Error = error,
-									Options = opts,
-									PlayerData = pDat
-								})
-							else
-								if not isSystem and not opts.NoOutput then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "This command has been disabled.";
-										Color = Color3.new(1, 0, 0);
-									})
+					for i, arg in ipairs(args) do
+						if cmdArgs[i] then
+							local safe = false
+							for _, v in ipairs(SAFE) do
+								if cmdArgs[i]:lower():match(v) then
+									safe = true
+									break
 								end
 							end
-						else
-							if not isSystem and not opts.NoOutput then
-								Remote.MakeGui(p, "Output", {
-									Title = "";
-									Message = "You are not allowed to run " .. msg;
-									Color = Color3.new(1, 0, 0);
-								})
+							if not safe then
+								args[i] = service.LaxFilter(arg, p)
 							end
-
-							return;
+						else
+							args[i] = service.LaxFilter(arg, p)
 						end
 					end
 				end
+
+				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					AddLog("Commands", {
+						Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
+						Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
+						Player = p;
+					})
+
+					if Settings.ConfirmCommands then
+						Functions.Hint("Executed Command: [ "..msg.." ]", {p})
+					end
+				end
+
+				if noYield then
+					taskName = "Thread: " .. taskName
+				end
+
+				Admin.UpdateCooldown(pDat, command)
+
+				local ran, cmdError = TrackTask(taskName,
+					command.Function,
+					p,
+					args,
+					{
+						PlayerData = pDat,
+						Options = opts
+					}
+				)
+				if not opts.IgnoreErrors then
+					if cmdError and type(cmdError) == "string" then
+						AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
+
+						cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
+
+						if not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = cmdError,
+							})
+						end
+					elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
+						if not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+							})
+						end
+					end
+				end
+
+				service.Events.CommandRan:Fire(p, {
+					Message = msg,
+					Matched = matched,
+					Args = args,
+					Command = command,
+					Index = index,
+					Success = ran,
+					Error = error,
+					Options = opts,
+					PlayerData = pDat
+				})
 			end
 		end;
 
@@ -427,7 +503,9 @@ return function(Vargs, GetEnv)
 		end;
 
 		CustomChat = function(p, a, b, canCross)
-			if RateLimit(p, "CustomChat") and not Admin.IsMuted(p) then
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
+
+			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
 					a = string.sub(a, 1, Process.MsgStringLimit)
 				end
@@ -462,7 +540,7 @@ return function(Vargs, GetEnv)
 
 					for _, v in pairs(service.GetPlayers(p, target, {
 						DontError = true;
-					})) do
+						})) do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -487,14 +565,15 @@ return function(Vargs, GetEnv)
 				end
 
 				service.Events.CustomChat:Fire(p,a,b)
-			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
-				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
+			elseif not didPassRate and RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("CustomChatting too quickly (>Rate: %s/sec)", curRate))
+				warn(string.format("%s is CustomChatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
 
 		Chat = function(p, msg)
-			if RateLimit(p, "Chat") then
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
+			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
@@ -512,11 +591,11 @@ return function(Vargs, GetEnv)
 						if Admin.DoHideChatCmd(p, msg) then
 							Remote.Send(p,"Function","ChatMessage","> "..msg,Color3.new(1, 1, 1))
 							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 3)=="/e " then
+						elseif string.sub(msg, 1, 3) == "/e " then
 							service.Events.PlayerChatted:Fire(p, msg)
 							msg = string.sub(msg, 4)
 							Process.Command(p, msg, {Chat = true;})
-						elseif string.sub(msg, 1, 8)=="/system " then
+						elseif string.sub(msg, 1, 8) == "/system " then
 							service.Events.PlayerChatted:Fire(p, msg)
 							msg = string.sub(msg, 9)
 							Process.Command(p, msg, {Chat = true;})
@@ -536,9 +615,9 @@ return function(Vargs, GetEnv)
 						Player = p;
 					})
 				end
-			elseif RateLimit(p, "RateLog") then
-				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Chat))
-				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Chat))
+			elseif not didPassRate and RateLimit(p, "RateLog") then
+				Anti.Detected(p, "Log", string.format("Chatting too quickly (>Rate: %s/sec)", curRate))
+				warn(string.format("%s is chatting too quickly (>Rate: %s/sec)", p.Name, curRate))
 			end
 		end;
 
@@ -770,10 +849,10 @@ return function(Vargs, GetEnv)
 
 				if Settings.Detection then
 					Remote.Send(p, "LaunchAnti", "MainDetection")
+				end
 
-					Remote.Send(p, "LaunchAnti", "AntiAntiIdle", {
-						Enabled = (Settings.AntiClientIdle ~= false)
-					})
+				if Settings.AntiBuildingTools then
+					Remote.Send(p, "LaunchAnti", "AntiTools", {BTools = true})
 				end
 			end
 
@@ -793,6 +872,7 @@ return function(Vargs, GetEnv)
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
+						wait(2)
 
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
@@ -801,22 +881,41 @@ return function(Vargs, GetEnv)
 							Time = 15;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						
-						if oldVer and newVer and newVer > oldVer and level > 100 then
+
+						wait(1)
+
+						if oldVer and newVer and newVer > oldVer and level > 300 then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
 								Icon = server.MatIcons.Description;
-								Time = 15;
+								Time = 10;
 								OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."changelog')");
 							})
 						end
 
-						if level > 300 then
-							for i,v in pairs(server.Messages) do
-								v.Icon = v.Icon or server.MatIcons.Description;
-								Remote.MakeGui(p, "Notification", v)
-							end
+						wait(1)
+
+						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
+							Remote.MakeGui(p, "Notification", {
+								Title = "Warning!";
+								Message = "Using default datastore key!";
+								Icon = server.MatIcons.Description;
+								Time = 10;
+								OnClick = Core.Bytecode([[
+									local window = client.UI.Make("Window", {
+										Title = "How to change the DataStore key";
+										Size = {700,300};
+										Icon = "rbxassetid://7510994359";
+									})
+
+									window:Add("ImageLabel", {
+										Image = "rbxassetid://1059543904";
+									})
+
+									window:Ready()
+								]]);
+							})
 						end
 					end
 
@@ -923,7 +1022,7 @@ return function(Vargs, GetEnv)
 						Desc = "Executed OnSpawn command; "..tostring(v);
 					})
 				end
-				
+
 				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
 					if trackTargets[p] and server.Commands.Track then
 						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
