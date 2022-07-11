@@ -1183,7 +1183,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			if groupId > 0 then
 				local groupInfo = service.GetGroupInfo(groupId)
 
-				if groupInfo and groupInfo.Created then
+				if groupInfo and groupInfo.Owner then
 					return groupInfo.Owner.Id
 				end
 			end
