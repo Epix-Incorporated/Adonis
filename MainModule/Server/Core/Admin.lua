@@ -1125,7 +1125,7 @@ return function(Vargs, GetEnv)
 		FormatCommand = function(command, cmdn)
 			local text = command.Prefix..command.Commands[cmdn or 1]
 			if #command.Args > 0 then
-				text ..= Settings.SplitKey .. Functions.FormatCommandArguments(command)
+				text ..= Settings.SplitKey .. Admin.FormatCommandArguments(command)
 			end
 			return text
 		end;
