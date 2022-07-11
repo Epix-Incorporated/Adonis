@@ -13,25 +13,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local UIFolder = client.UIFolder
 
@@ -91,8 +91,8 @@ return function(Vargs, GetEnv)
 				RunAfterLoaded = true;
 				RunAfterPlugins = true;
 			}, true)--]]
-			UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
-			UI.RunLast = nil;
+		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
+		UI.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -165,15 +165,17 @@ return function(Vargs, GetEnv)
 			end
 
 			if ran then
-				if data.isModifier and not data.modNoEnv then
+				--// Temporarily disabled NoEnv; it seems to be causing some issues(?)
+				--// ~ Expertcoderz
+				
+				--[[if (data.isModifier and not data.modNoEnv) or (not data.isModifier and data.isCode and not data.NoEnv) then
 					setfenv(func, env)
-				elseif not data.isModifier and data.isCode and not data.NoEnv then
-					setfenv(func, env)
-				end
+				end]]
 
 				local rets = {
 					TrackTask("UI: ".. module:GetFullName(),
-						func,
+						--func, 
+						setfenv(func, newEnv),
 						data,
 						newEnv
 					)
@@ -335,7 +337,8 @@ return function(Vargs, GetEnv)
 
 							local ran, func = pcall(require, folder)
 							local rets = {
-								if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								--// NoEnv temporarily disabled ~ Expertcoderz
+								--[[if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else]] pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
 							}
 
 							local ran, ret = rets[1], rets[2]
@@ -558,8 +561,8 @@ return function(Vargs, GetEnv)
 		end
 	}
 
-	client.UI.RegisterGui 	= client.UI.Register
-	client.UI.GetGui 		= client.UI.Get
-	client.UI.PrepareGui 	= client.UI.Prepare
-	client.UI.MakeGui 		= client.UI.Make
+	client.UI.RegisterGui = client.UI.Register
+	client.UI.GetGui = client.UI.Get
+	client.UI.PrepareGui = client.UI.Prepare
+	client.UI.MakeGui = client.UI.Make
 end
