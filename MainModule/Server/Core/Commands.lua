@@ -45,6 +45,7 @@ return function(Vargs, GetEnv)
 			NoStudio = t.boolean,
 			NonChattable = t.boolean,
 			AllowDonors = t.boolean,
+			Donors = t.boolean,
 			Filter = t.boolean,
 			Function = t.callback,
 			ListUpdater = t.optional(t.union(t.string, t.callback))
@@ -72,6 +73,7 @@ return function(Vargs, GetEnv)
 				NoStudio = false;
 				NonChattable = false;
 				AllowDonors = false;
+				Donors = false;
 				CrossServerDenied = false;
 				IsCrossServer = false;
 				Filter = false;
@@ -88,7 +90,7 @@ return function(Vargs, GetEnv)
 			if cmd.Chattable ~= nil then
 				cmd.NonChattable = not cmd.Chattable
 				cmd.Chattable = nil
-				logError("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
+				warn("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
 			end
 
 			Admin.PrefixCache[cmd.Prefix] = true
@@ -100,7 +102,7 @@ return function(Vargs, GetEnv)
 			cmd.Args = cmd.Args or cmd.Arguments or {}
 
 			local lvl = cmd.AdminLevel
-			if type(lvl) == "string" then
+			if type(lvl) == "string" and lvl ~= "Donors" then
 				cmd.AdminLevel = Admin.StringToComLevel(lvl)
 			elseif type(lvl) == "table" then
 				for b, v in ipairs(lvl) do
