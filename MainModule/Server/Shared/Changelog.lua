@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Hotfix v237a 2022-07-11 08:35 EST] @Expertcoderz";
+	"NoEnv for client UIs has been temporarily disabled in view of unexpected issues";
+	"";
 	"[v237 2022-07-11 06:30 EST] @Expertcoderz";
 	"Changelog will now use the ISO 8601 standard format for dates";
 	"Added warning when loading the Nightly MainModule (ID: 8612978896)";
