@@ -989,7 +989,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		GetTime = function()
-			return os.time();
+			return os.time()
 		end;
 
 		FormatTime = function(optTime, options)
@@ -998,7 +998,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			local formatString = options.FormatString
 			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
+				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
 			end
 
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
