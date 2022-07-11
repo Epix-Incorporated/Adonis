@@ -93,8 +93,8 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache[cmd.Prefix] = true
 
-			for _, cmd in ipairs(cmd.Commands) do
-				Admin.CommandCache[string.lower((cmd.Prefix..cmd))] = ind
+			for _, v in ipairs(cmd.Commands) do
+				Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
 			end
 
 			cmd.Args = cmd.Args or cmd.Arguments or {}
