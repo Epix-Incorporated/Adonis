@@ -334,7 +334,7 @@ return function(Vargs, GetEnv)
 			if groupId then
 				local groups = Admin.GetGroups(uid) or {}
 
-				for i,group in pairs(groups) do
+				for _, group in pairs(groups) do
 					if group.Id == groupId then
 						return group.Rank
 					end
@@ -414,7 +414,7 @@ return function(Vargs, GetEnv)
 					local groupId, rank = tonumber(sGroup), tonumber(sRank)
 					if groupId and rank then
 						local playerRank = Admin.GetGroupLevel(plrUserId, groupId)
-						if playerRank >= math.abs(rank) then
+						if playerRank == rank or (rank < 0 and playerRank >= math.abs(rank)) then
 							return true
 						end
 					end
@@ -473,6 +473,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
+			return false
 		end;
 
 		LevelToList = function(lvl)
