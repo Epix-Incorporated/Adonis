@@ -3,8 +3,12 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Hotfix v237c 2022-07-11 20:15 EST] @Expertcoderz";
+	"Fixed permissions based on specific group ranks";
+	"Added some missing items to v237 changelog";
+	"";
 	"[Hotfix v237b 2022-07-11 11:05 EST] @Expertcoderz";
-	"Fixed group-owner-based creator permissions (caused by typo in service.lua)";
+	"Fixed group-owner-based creator permissions (issue caused by typo in service.lua)";
 	"";
 	"[Hotfix v237a 2022-07-11 08:35 EST] @Expertcoderz";
 	"NoEnv for client UIs has been temporarily disabled in view of unexpected issues";
@@ -29,7 +33,10 @@ return {
 	" - :bring now recommends :massbring when attempting to bring more than 9 players";
 	" - More commands now make use of service.FormatPlayer";
 	"(Git/nestenes) Set ReplicationFocus back to Player (#727)";
+	"(Git/h0nzz) some command updates (updated insert, musiclist, unban and ungameban) (#782)";
 	"(Git/TheLegendarySpark) Command cooldowns and ratelimit system + misc. improvements (#790)";
+	"(Git/Quantify-RBLX) Add date to old server logs (#796)";
+	"(Git/coasterteam) Load Admins from DS setting (#797)";
 	"(Git/fxeP1) Fix trello-based commands (#799)";
 	"(Git/GalacticInspired) Fixed :dogg for R15 characters (#800)";
 	"(Git/LolloDev5123) [FIX] Remove Debug Messages from Unity theme, small design fixes (#801)";
@@ -46,6 +53,7 @@ return {
 	"(Git/ccuser44) Reduce debugloadstring prompt delay (#819)";
 	"(Git/fxeP1) Remove redundant command definition data (#820)";
 	"(Git/karl-police) Reclassify :color as not fun (#821)";
+	"(Git/fxeP1) Fixing commands bugs and service warning (#824)";
 	"(Git/fxeP1) Partial fixes for Window` (#825)";
 	"(Git/Expertcoderz) Ban moderator information (#830)";
 	" > Entries in banlist now specify the moderator/admin who issued the ban";
@@ -58,7 +66,7 @@ return {
 	"(Git/fxeP1) No Description commands fix for :cmds (#839)";
 	"(Git/Expertcoderz) Create Typechecker (#842)";
 	"(Git/xhayper) Fix for :resetstats not resetting NumberValues (#843)";
-	"(Git/policetonyR) Update TrelloAPI.lua (#846)";
+	"(Git/policetonyR) Fix TrelloAPI requiring Token (#846)";
 	"(Git/chexburger) Check for specific http-enabled error for HTTP check (#848)";
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
