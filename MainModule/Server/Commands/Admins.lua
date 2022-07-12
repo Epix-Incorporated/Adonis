@@ -962,7 +962,7 @@ return function(Vargs, env)
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
 				assert(args[1], "Missing Script code (argument #2)")
 
-				Remote.RemoveGui(plr, "Prompt_MakeScript")
+				--[[Remote.RemoveGui(plr, "Prompt_MakeScript")
 				if
 					plr == false
 					or Remote.GetGui(plr, "YesNoPrompt", {
@@ -973,19 +973,19 @@ return function(Vargs, env)
 						Question = "Are you sure you want to execute the code directly on the server? This action is irreversible and may potentially be dangerous; only run scripts that you trust!";
 						Delay = 2;
 					}) == "Yes"
-				then
-					local bytecode = Core.Bytecode(args[1])
-					assert(string.find(bytecode, "\27Lua"), "Script unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
+				then]]
+				local bytecode = Core.Bytecode(args[1])
+				assert(string.find(bytecode, "\27Lua"), "Script unable to be created; ".. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", ""))
 
-					local cl = Core.NewScript("Script", args[1], true)
-					cl.Name = "[Adonis] Script"
-					cl.Parent = service.ServerScriptService
-					task.wait()
-					cl.Disabled = false
-					Functions.Hint("Ran Script", {plr})
-				else
+				local cl = Core.NewScript("Script", args[1], true)
+				cl.Name = "[Adonis] Script"
+				cl.Parent = service.ServerScriptService
+				task.wait()
+				cl.Disabled = false
+				Functions.Hint("Ran Script", {plr})
+				--[[else
 					Functions.Hint("Operation cancelled", {plr})
-				end
+				end]]
 			end
 		};
 
