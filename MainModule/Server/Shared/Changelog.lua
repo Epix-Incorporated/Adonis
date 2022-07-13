@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Patch v237e 2022-07-13 19:00 EST] @Expertcoderz";
+	"Fixed issue with fun commands still being allowed when Settings.FunCommands is off";
+	"";
 	"[Patch v237d 2022-07-11 20:25 EST] @Expertcoderz";
 	"Removed confirmation prompt for :s (no longer needed for security)";
 	"";
