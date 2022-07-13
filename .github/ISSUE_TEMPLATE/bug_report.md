@@ -4,7 +4,7 @@ about: Create a report to help us understand and fix broken features or function
   within Adonis.
 title: ''
 labels: bug
-assignees: Expertcoderz
+assignees: ''
 
 ---
 
