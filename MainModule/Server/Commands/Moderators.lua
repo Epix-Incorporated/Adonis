@@ -4053,36 +4053,61 @@ return function(Vargs, env)
 		Give = {
 			Prefix = Settings.Prefix;
 			Commands = {"give", "tool"};
-			Args = {"player", "tool"};
-			Description = "Gives the target player(s) the desired tool(s)";
+			Args = {"player", "tool names(s) or 'all' or 'random'"};
+			Description = "Gives the target player(s) the desired tool(s) (refer to "..Settings.Prefix.."tools for a list of available tools)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local found = {}
-				local temp = service.New("Folder")
-				for _, tool in pairs(if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren()) do
+				assert(args[2], "Missing tool name(s) (argument #2)")
+
+				local players = service.GetPlayers(plr, args[1])
+
+				local tools = {}
+				for _, tool in if Settings.RecursiveTools then Settings.Storage:GetDescendants() else Settings.Storage:GetChildren() do
 					if tool:IsA("BackpackItem") then
-						if string.lower(args[2]) == "all" or string.sub(string.lower(tool.Name), 1, #args[2])==string.lower(args[2]) then
-							tool.Archivable = true
-							local parent = tool.Parent
-							if not parent.Archivable then
-								tool.Parent = temp
-							end
-							table.insert(found, tool:Clone())
-							tool.Parent = parent
-						end
+						table.insert(tools, tool)
 					end
 				end
-				if #found > 0 then
-					for _, v in pairs(service.GetPlayers(plr, args[1])) do
-						for k, t in pairs(found) do
-							t:Clone().Parent = v.Backpack
-						end
-					end
+
+				local found
+				if args[2]:lower() == "all" then
+					found = tools
+				elseif args[2]:lower() == "random" then
+					found = {tools[math.random(1, #tools)]}
 				else
-					error("Couldn't find anything to give")
+					found = {}
+					for _, toolName in args[2]:split(",") do
+						local didFind = false
+						for _, tool in tools do
+							if tool.Name == toolName then
+								table.insert(found, tool)
+								didFind = true
+								break --// Break on absolute match
+							elseif tool.Name:lower():match("^"..toolName:lower()) then
+								table.insert(found, tool)
+								didFind = true
+							end
+						end
+						if not didFind then
+							Functions.Hint("No tools matching the name '"..toolName.."' were found in storage", {plr})
+						end
+					end
 				end
-				if temp then
-					temp:Destroy()
+
+				assert(#found > 0, "Couldn't find anything to give")
+
+				for _, v in players do
+					local backpack = v:FindFirstChildOfClass("Backpack")
+					if not backpack then
+						continue
+					end
+					for _, tool in found do
+						local toolArchivable = tool.Archivable
+						if not toolArchivable then
+							tool.Archivable = true
+						end
+						tool:Clone().Parent = backpack
+						tool.Archivable = toolArchivable
+					end
 				end
 			end
 		};
