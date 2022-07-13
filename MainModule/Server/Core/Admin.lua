@@ -1287,6 +1287,10 @@ return function(Vargs, GetEnv)
 				return false, "Player commands are disabled in this game."
 			end
 
+			if cmd.Fun and not Settings.FunCommands then
+				return false, "Fun commands are disabled in this game."
+			end
+
 			if opts.Chat and cmd.Chattable == false then
 				return false, "This command is not permitted as chat message (non-chattable command)."
 			end
@@ -1428,9 +1432,9 @@ return function(Vargs, GetEnv)
 				isDonor = Admin.CheckDonor(p);
 			}
 
-			for index, command in pairs(Commands) do
-				if checkPerm(pDat, command, true) then
-					tab[index] = command
+			for ind, cmd in pairs(Commands) do
+				if checkPerm(pDat, cmd, true) then
+					tab[ind] = cmd
 				end
 			end
 
