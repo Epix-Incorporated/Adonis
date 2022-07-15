@@ -49,11 +49,5 @@ jobs:
         if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
-          filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
-          
-      - name: Ping those with the Nightly Builds Ping role in Discord
-        uses: tsickert/discord-webhook@v3.0.0
-        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
-        with:
-          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           content: "<@&997491909293518939>"
+          filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
