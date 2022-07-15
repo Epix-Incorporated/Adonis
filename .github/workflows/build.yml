@@ -50,3 +50,4 @@ jobs:
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+          content: "<@&997491909293518939>"
