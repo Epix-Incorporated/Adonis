@@ -6132,8 +6132,6 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			NoFilter = true;
 			ListUpdater = function(plr: Player)
-			local temp = {}
-			ListUpdater = function(plr: Player)
 				local temp = {}
 				local function toTab(str, desc, color, timestamp)
 					for _, v in pairs(service.ExtractLines(str)) do
