@@ -216,7 +216,7 @@ return function(Vargs, env)
 										})
 
 										if ans == "Yes" then
-											table.remove(data.Users, i);
+											table.remove(data.Users, i)
 											if not temp and Settings.SaveAdmins then
 												service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
 													Type = "TableRemove";
