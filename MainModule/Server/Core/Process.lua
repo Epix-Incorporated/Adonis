@@ -96,34 +96,34 @@ return function(Vargs, GetEnv)
 		else
 			-- RATELIMIT TABLE
 		--[[
-			
+
 			Table:
 				{
 					Rates = 100; 	-- Max requests per traffic
 					Reset = 1; 		-- Interval seconds since the cache last updated to reset
-					
+
 					ThrottleEnabled = false/true; -- Whether throttle can be enabled
 					ThrottleReset = 10; -- Interval seconds since the cache last throttled to reset
 					ThrottleMax = 10; -- Max interval count of throttles
-					
+
 					Caches = {}; -- DO NOT ADD THIS. IT WILL AUTOMATICALLY BE CREATED ONCE RATELIMIT TABLE IS CHECKING-
 					--... FOR RATE PASS AND THROTTLE CHECK.
 				}
-			
+
 		]]
 
 			-- RATECACHE TABLE
 		--[[
-			
+
 			Table:
 				{
 					Rate = 0;
 					Throttle = 0; 		-- Interval seconds since the cache last updated to reset
-					
+
 					LastUpdated = 0; -- Last checked for rate limit
 					LastThrottled = nil or 0; -- Last checked for throttle (only changes if rate limit failed)
 				}
-			
+
 		]]
 			local maxRate: number = math.abs(rateData.Rates) -- Max requests per traffic
 			local resetInterval: number = math.floor(math.abs(rateData.Reset or 1)) -- Interval seconds since the cache last updated to reset
@@ -185,8 +185,8 @@ return function(Vargs, GetEnv)
 				rateCache.Throttle += 1
 				rateCache.LastThrottled = nowOs
 
-				-- Check whether cache time expired and replace it with a new one or set a new one			
-				if not throttleResetOs or canResetThrottle then				
+				-- Check whether cache time expired and replace it with a new one or set a new one
+				if not throttleResetOs or canResetThrottle then
 					rateCache.ThrottleReset = nowOs
 				end
 			elseif canThrottle and ratePass then
@@ -212,7 +212,7 @@ return function(Vargs, GetEnv)
 		};
 		Command = {
 			Rates = 20;
-			Reset = 40;	
+			Reset = 40;
 		};
 		Chat = {
 			Rates = 10;
@@ -220,11 +220,11 @@ return function(Vargs, GetEnv)
 		};
 		CustomChat = {
 			Rates = 10;
-			Reset = 1;	
+			Reset = 1;
 		};
 		RateLog = {
 			Rates = 10;
-			Reset = 2;	
+			Reset = 2;
 		};
 	}
 
@@ -517,7 +517,7 @@ return function(Vargs, GetEnv)
 					end
 				else
 					local target = Settings.SpecialPrefix..'all'
-					if not b then 
+					if not b then
 						b = 'Global'
 					end
 					if not service.Players:FindFirstChild(p.Name) then
@@ -789,9 +789,9 @@ return function(Vargs, GetEnv)
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
-			for otherPlrName, tab in pairs(Variables.TrackingTable) do
-				if tab[p] then
-					tab[p] = nil
+			for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+				if trackTargets[p] then
+					trackTargets[p] = nil
 					local otherPlr = service.Players:FindFirstChild(otherPlrName)
 					if otherPlr then
 						task.defer(Remote.RemoveLocal, otherPlr, p.Name.."Tracker")
@@ -951,7 +951,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CharacterAdded = function(p, Character, ...)
+		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
 
@@ -960,7 +960,7 @@ return function(Vargs, GetEnv)
 			end
 
 			wait()
-			if Character and keyData and keyData.FinishedLoading then
+			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Wait for UI stuff to finish
@@ -1018,7 +1018,7 @@ return function(Vargs, GetEnv)
 				task.spawn(Functions.Donor, p)
 
 				--// Fire added event
-				service.Events.CharacterAdded:Fire(p, Character, ...)
+				service.Events.CharacterAdded:Fire(p, char, ...)
 
 				--// Run OnSpawn commands
 				for _, v in pairs(Settings.OnSpawn) do
@@ -1029,9 +1029,16 @@ return function(Vargs, GetEnv)
 					})
 				end
 
-				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
-					if trackTargets[p] and server.Commands.Track then
-						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+				if
+					server.Commands.Track
+					and char:WaitForChild("Humanoid", 6)
+					and char:WaitForChild("Head", 2)
+					and char:WaitForChild("HumanoidRootPart", 2)
+				then
+					for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+						if trackTargets[p] then
+							server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+						end
 					end
 				end
 			end
