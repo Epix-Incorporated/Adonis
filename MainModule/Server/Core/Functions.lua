@@ -4,6 +4,7 @@ cPcall = nil
 
 --// Function stuff
 return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local logError
@@ -21,7 +22,7 @@ return function(Vargs, GetEnv)
 		Settings = server.Settings;
 		logError = server.logError;
 
-		Functions.Init = nil;
+		Functions.Init = nil
 		Logs:AddLog("Script", "Functions Module Initialized")
 	end;
 
@@ -31,8 +32,8 @@ return function(Vargs, GetEnv)
 			service.StartLoop("AUTO_CLEAN", Settings.AutoCleanDelay, Functions.CleanWorkspace, true)
 		end
 
-		Functions.RunAfterPlugins = nil;
-		Logs:AddLog("Script", "Functions Module RunAfterPlugins Finished");
+		Functions.RunAfterPlugins = nil
+		Logs:AddLog("Script", "Functions Module RunAfterPlugins Finished")
 	end
 
 	server.Functions = {
