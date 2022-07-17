@@ -327,9 +327,9 @@ return function(Vargs, GetEnv)
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
-			if Admin.IsBlacklisted(p) then
+			--[[if Admin.IsBlacklisted(p) then
 				return false
-			end
+			end]]
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit)
