@@ -2809,12 +2809,12 @@ return function(Vargs, env)
 							Parent = gui,
 							Part = rootPart,
 							Humanoid = plrHum,
-							Color3 = v.TeamColor.Color,
+							Color3 = v.TeamColor.Color
 						})
 						local frame = service.New("Frame", {
-							Parent = gui;
-							BackgroundTransparency = 1;
-							Size = UDim2.fromScale(1, 1);
+							Parent = gui,
+							BackgroundTransparency = 1,
+							Size = UDim2.fromScale(1, 1)
 						})
 						local name = service.New("TextLabel", {
 							Parent = frame,
@@ -2826,7 +2826,7 @@ return function(Vargs, env)
 							TextStrokeTransparency = 0,
 							Size = UDim2.new(1, 0, 0, 20),
 							TextScaled = true,
-							TextWrapped = true,
+							TextWrapped = true
 						})
 						local arrow = name:Clone()
 						arrow.Position = UDim2.fromOffset(0, 20)
@@ -2838,9 +2838,16 @@ return function(Vargs, env)
 						local teamChangeConn = v:GetPropertyChangedSignal("TeamColor"):Connect(function()
 							beam.Color3 = v.TeamColor.Color
 						end)
-						v.CharacterRemoving:Once(function()
+						local charRemovingConn
+						local plrCharRemovingConn = plr.CharacterRemoving:Once(function()
 							Remote.RemoveLocal(plr, v.Name.."Tracker")
 							teamChangeConn:Disconnect()
+							if charRemovingConn then charRemovingConn:Disconnect() end
+						end)
+						charRemovingConn = v.CharacterRemoving:Once(function()
+							Remote.RemoveLocal(plr, v.Name.."Tracker")
+							teamChangeConn:Disconnect()
+							plrCharRemovingConn:Disconnect()
 						end)
 					end)
 				end
