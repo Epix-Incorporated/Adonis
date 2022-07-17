@@ -146,7 +146,7 @@ return function(Vargs, GetEnv)
 						rawset(Commands, ind, nil)
 						Logs.AddLog("Script", "Removed command definition:", ind)
 					end
-				elseif rawget(Commands, RunAfterPlugins) then
+				elseif rawget(Commands, "RunAfterPlugins") then
 					rawset(Commands, ind, val)
 				else
 					if rawget(Commands, ind) ~= nil then
