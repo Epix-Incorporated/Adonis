@@ -1031,8 +1031,7 @@ return function(Vargs, GetEnv)
 
 				if
 					server.Commands.Track
-					and char:WaitForChild("Humanoid", 6)
-					and char:WaitForChild("Head", 2)
+					and char:WaitForChild("Head", 5)
 					and char:WaitForChild("HumanoidRootPart", 2)
 				then
 					for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
