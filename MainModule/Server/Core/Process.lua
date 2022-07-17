@@ -789,8 +789,14 @@ return function(Vargs, GetEnv)
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
-			for otherPlrName in pairs(Variables.TrackingTable) do
-				Variables.TrackingTable[otherPlrName][p] = nil
+			for otherPlrName, tab in pairs(Variables.TrackingTable) do
+				if tab[p] then
+					tab[p] = nil
+					local otherPlr = service.Players:FindFirstChild(otherPlrName)
+					if otherPlr then
+						task.defer(Remote.RemoveLocal, otherPlr, p.Name.."Tracker")
+					end
+				end
 			end
 
 			if Commands.UnDisguise then
