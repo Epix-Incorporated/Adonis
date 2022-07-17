@@ -4,7 +4,6 @@ cPcall = nil
 
 --// Function stuff
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
 	local logError
@@ -1260,9 +1259,11 @@ return function(Vargs, GetEnv)
 			return Clothing
 		end;
 
-		ParseColor3 = function(str: string)
-			-- Handles BrickColor and Color3
-			if not str then return end
+		ParseColor3 = function(str: string?)
+			if not str then return nil end
+			if str:lower() == "random" then
+				return Color.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
+			end
 
 			local color = {}
 			for s in string.gmatch(str, "[%d]+") do
@@ -1283,8 +1284,13 @@ return function(Vargs, GetEnv)
 			return color
 		end;
 
-		ParseBrickColor = function(str: string)
-			if not str then return end
+		ParseBrickColor = function(str: string, allowNil: boolean?)
+			if not str and allowNil then
+				return nil
+			end
+			if not str or str:lower() == "random" then
+				return BrickColor.random()
+			end
 
 			local brickColor = BrickColor.new(str)
 			if str == tostring(brickColor) then
@@ -1296,6 +1302,7 @@ return function(Vargs, GetEnv)
 					return BrickColor.new(color)
 				end
 			end
+			return if allowNil then nil else BrickColor.random()
 		end;
 	};
 end
