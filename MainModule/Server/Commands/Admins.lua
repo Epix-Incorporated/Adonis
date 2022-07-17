@@ -703,13 +703,17 @@ return function(Vargs, env)
 			Description = "Make a new team with the specified name and color";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local colorCode = tonumber(args[1])
-				local color = BrickColor.new((colorCode and math.clamp(colorCode, 1, 227)) or math.random(1, 227))
-				local team = service.New("Team")
-				team.Name = args[1]
-				team.AutoAssignable = false
-				team.TeamColor = color
-				team.Parent = service.Teams
+				local teamName = assert(args[1], "Missing team name (argument #1)")
+				local teamColor = Functions.ParseBrickColor(args[2])
+				service.New("Team", {
+					Parent = service.Teams;
+					Name = teamName;
+					TeamColor = teamColor;
+					AutoAssignable = false;
+				})
+				if Settings.CommandFeedback then
+					Functions.Hint(string.format("Created new team '%s' (%s)", teamName, teamColor.Name), {plr})
+				end
 			end
 		};
 
