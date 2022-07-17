@@ -46,19 +46,27 @@ return function(Vargs, env)
 			Description = "Sets the target player(s) admin rank; THIS SAVES!";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				local senderLevel = data.PlayerData.Level;
-				local rankName = args[2];
-				local newRank = assert(Settings.Ranks[rankName], "Rank not found");
-				local newLevel = newRank and newRank.Level;
+				local rankName = assert(args[2], "Missing rank name (argument #2)")
 
-				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
+				local newRank = Settings.Ranks[rankName]
+				if not newRank then
+					for thisRankName, thisRank in pairs(Settings.Ranks) do
+						if thisRankName:lower() == rankName:lower() then
+							rankName = thisRankName
+							newRank = thisRank
+							break
+						end
+					end
+				end
+				assert(newRank, "No rank named '"..rankName.."' exists")
 
-				for _,p in ipairs(Functions.GetPlayers(plr, args[1], {UseFakePlayer = true}))do
-					local targetLevel = Admin.GetLevel(p);
+				local newLevel = newRank.Level
+				local senderLevel = data.PlayerData.Level
 
-					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
+				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-					if targetLevel < senderLevel then
+				for _, p in ipairs(Functions.GetPlayers(plr, args[1], {UseFakePlayer = true}))do
+					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
@@ -68,7 +76,9 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(p.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
+					else
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p), {plr})
 					end
 				end
 			end;
@@ -78,22 +88,30 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"settemprank", "settempadminrank", "tempsetrank"};
 			Args = {"player", "rank"};
-			Description = "Identical to :setrank except doesn't save";
+			Description = "Identical to "..Settings.Prefix.."setrank, but doesn't save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				local senderLevel = data.PlayerData.Level;
-				local rankName = args[2];
-				local newRank = assert(Settings.Ranks[rankName], "Rank not found");
-				local newLevel = newRank and newRank.Level;
+				local rankName = assert(args[2], "Missing rank name (argument #2)")
 
-				assert(newLevel < senderLevel, "Rank level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
+				local newRank = Settings.Ranks[rankName]
+				if not newRank then
+					for thisRankName, thisRank in pairs(Settings.Ranks) do
+						if thisRankName:lower() == rankName:lower() then
+							rankName = thisRankName
+							newRank = thisRank
+							break
+						end
+					end
+				end
+				assert(newRank, "No rank named '"..rankName.."' exists")
 
-				for _,p in ipairs(service.GetPlayers(plr, args[1]))do
-					local targetLevel = Admin.GetLevel(p);
+				local newLevel = newRank.Level
+				local senderLevel = data.PlayerData.Level
 
-					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
+				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-					if targetLevel < senderLevel then
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
+					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName, true)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
@@ -103,7 +121,9 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(p.Name..' is now rank '.. args[2] .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
+					else
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p), {plr})
 					end
 				end
 			end;
@@ -119,14 +139,10 @@ return function(Vargs, env)
 				local senderLevel = data.PlayerData.Level;
 				local newLevel = assert(tonumber(args[2]), "Level must be a number");
 
-				assert(newLevel < senderLevel, "Level cannot be equal to or greater than your own permission level (".. senderLevel ..")");
+				assert(newLevel < senderLevel, "Level cannot be equal to or above your own permission level (".. senderLevel ..")");
 
-				for _,p in ipairs(service.GetPlayers(plr, args[1]))do
-					local targetLevel = Admin.GetLevel(p);
-
-					assert(targetLevel < senderLevel, "Target player's permission level is greater than or equal to your permission level");
-
-					if targetLevel < senderLevel then
+				for _, p in ipairs(service.GetPlayers(plr, args[1]))do
+					if senderLevel > Admin.GetLevel(p) then
 						Admin.SetLevel(p, newLevel)--, args[3] == "true")
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
@@ -136,7 +152,9 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(p.Name..' is now permission level '.. newLevel, {plr})
+						Functions.Hint(service.FormatPlayer(p).." is now permission level ".. newLevel, {plr})
+					else
+						Functions.Hint("You do not have permission to set the permission level of "..service.FormatPlayer(p), {plr})
 					end
 				end
 			end;
@@ -146,11 +164,11 @@ return function(Vargs, env)
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
-			Args = {"player", "temp (true/false) (Default: false)"};
-			Description = "Removes the target players' admin/moderator powers; Saves unless <temp> is 'true'";
+			Args = {"player", "temp? (true/false) (default: false)"};
+			Description = "Removes the target players' admin/moderator rank; saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing player name")
+				assert(args[1], "Missing target player (argument #1)")
 
 				local temp = args[2] ~= "true";
 				local sendLevel = data.PlayerData.Level
@@ -180,14 +198,14 @@ return function(Vargs, env)
 					end
 				else
 					if sendLevel < 900 then
-						error("Player not found. Try the full username or use id-USERSIDHERE");
+						error("Player not found; try the full username or use id-USERSIDHERE")
 					else
 						local checkThis = args[1];
 						local found = false;
 
-						for rank,data in pairs(Settings.Ranks) do
+						for rank, data in pairs(Settings.Ranks) do
 							if sendLevel > data.Level then
-								for i,user in ipairs(data.Users) do
+								for _, user in ipairs(data.Users) do
 									if Admin.DoCheck(checkThis, user) then
 										local ans = Remote.GetGui(plr, "YesNoPrompt", {
 											Question = "Remove '"..tostring(user).."' from '".. rank .."'?";
@@ -206,16 +224,13 @@ return function(Vargs, env)
 
 											Functions.Hint("Removed ".. tostring(user) .." from ".. rank, {plr})
 											Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rank))
-											found = true
 										end
+										found = true
 									end
 								end
 							end
 						end
-
-						if not found then
-							error("No table entries matching '".. checkThis .."' found");
-						end
+						assert(found, "No table entries matching '".. checkThis .."' were found")
 					end
 				end
 			end
@@ -225,16 +240,14 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"tempunadmin", "untempadmin", "tunadmin", "untadmin"};
 			Args = {"player"};
-			Description = "Removes the target players' admin powers for this server; Does not save";
+			Description = "Removes the target players' admin powers for this server; does not save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing player name")
+				assert(args[1], "Missing target player (argument #1)")
 
 				local sendLevel = data.PlayerData.Level
-				local plrs = service.GetPlayers(plr, args[1], {
-					DontError = true;
-				})
-				if plrs and #plrs>0 then
+				local plrs = service.GetPlayers(plr, args[1], {DontError = true;})
+				if plrs and #plrs > 0 then
 					for _, v in ipairs(plrs) do
 						local targLevel = Admin.GetLevel(v)
 						if targLevel > 0 then
@@ -260,15 +273,15 @@ return function(Vargs, env)
 
 		TempModerator = {
 			Prefix = Settings.Prefix;
-			Commands = {"tempmod", "tmod", "temp", "helper"};
+			Commands = {"tempmod", "tmod", "tempmoderator", "tmoderator"};
 			Args = {"player"};
-			Description = "Makes the target player(s) a temporary moderator; Does not save";
+			Description = "Makes the target player(s) a temporary moderator; does not save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				assert(args[1], "Missing target player (argument #1)")
 				local sendLevel = data.PlayerData.Level
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local targLevel = Admin.GetLevel(v)
-					if sendLevel>targLevel then
+					if sendLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -287,15 +300,15 @@ return function(Vargs, env)
 
 		Moderator = {
 			Prefix = Settings.Prefix;
-			Commands = {"mod", "moderator"};
+			Commands = {"permmod", "pmod", "mod", "moderator"};
 			Args = {"player"};
-			Description = "Makes the target player(s) a moderator; Saves";
+			Description = "Makes the target player(s) a moderator; saves";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				assert(args[1], "Missing target player (argument #1)")
 				local sendLevel = data.PlayerData.Level
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local targLevel = Admin.GetLevel(v)
-					if sendLevel>targLevel then
+					if sendLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators")
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -335,12 +348,12 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local logs = Core.GetData("ShutdownLogs") or {}
 				local tab = {}
-				for i, v in pairs(logs) do
-					if v.Restart then v.Time ..= " [SOFT]" end
-					table.insert(tab, {
+				for i, v in ipairs(logs) do
+					if v.Restart then v.Time ..= " [RESTART]" end
+					tab[i] = {
 						Text = v.Time..": "..v.User;
 						Desc = "Reason: "..v.Reason;
-					})
+					}
 				end
 				return tab
 			end;
