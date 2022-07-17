@@ -205,14 +205,14 @@ return function(Vargs, env)
 
 						for rank, data in pairs(Settings.Ranks) do
 							if sendLevel > data.Level then
-								for _, user in ipairs(data.Users) do
+								for i, user in ipairs(data.Users) do
 									if Admin.DoCheck(checkThis, user) then
 										local ans = Remote.GetGui(plr, "YesNoPrompt", {
 											Question = "Remove '"..tostring(user).."' from '".. rank .."'?";
 										})
 
 										if ans == "Yes" then
-											table.remove(data.Users, i);
+											table.remove(data.Users, i)
 
 											if not temp and Settings.SaveAdmins then
 												service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
