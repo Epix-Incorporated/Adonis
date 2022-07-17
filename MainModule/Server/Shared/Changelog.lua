@@ -6,7 +6,7 @@ return {
 	"[Patch v237f 2022-07-17 05:45 EST] @Expertcoderz";
 	"(Hopefully) resolved some bugs that have been plaguing :track (such as tracking nametags not being properly removed)";
 	"Fixed :newteam's <BrickColor> argument being ignored";
-	":chatcolor now supports the 'white' color";
+	":bchat now supports the 'white' color";
 	"Minor improvements to BrickColor and Color3 command argument parsing";
 	"";
 	"An error message is now shown when a blacklisted player tries to run a command";
