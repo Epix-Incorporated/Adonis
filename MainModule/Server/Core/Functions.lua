@@ -1263,7 +1263,7 @@ return function(Vargs, GetEnv)
 		ParseColor3 = function(str: string?)
 			if not str then return nil end
 			if str:lower() == "random" then
-				return Color.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
+				return Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
 			end
 
 			local color = {}
