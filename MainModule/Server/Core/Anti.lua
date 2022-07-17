@@ -274,10 +274,10 @@ return function(Vargs, GetEnv)
 					table.insert(connections, connection)
 				end
 
-				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
-
 				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
+					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+
 					makeConnection(rootJoint.AncestryChanged)
 
 					if humanoid.RigType == Enum.HumanoidRigType.R15 then
