@@ -1257,6 +1257,10 @@ return function(Vargs, GetEnv)
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
 				return true, nil
 			end
+					
+			if Admin.IsBlacklisted(pDat.Player) then
+				return false, "You are blacklisted from running commands."
+			end
 
 			if (comLevel == 0 or comLevel == "Players") and not Settings.PlayerCommands then
 				return false, "Player commands are disabled in this game."
