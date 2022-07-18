@@ -2322,17 +2322,18 @@ return function(Vargs, env)
 
 		ClearGUIs = {
 			Prefix = Settings.Prefix;
-			Commands = {"clearguis", "clearmessages", "clearhints", "clrguis", "clrgui", "clearscriptguis", "removescriptguis"};
-			Args = {"player", "deleteAll?"};
-			Description = "Remove script GUIs such as :m and :hint";
+			Commands = {"clearadonisguis", "clearguis", "clearmessages", "clearhints", "clrguis"};
+			Args = {"player", "delete all? (default: false)"};
+			Description = "Removes Adonis on-screen GUIs for the target player(s); if <delete all> is false, wil, only clear "..Settings.Prefix.."m, "..Settings.Prefix.."n, "..Settings.Prefix.."h, "..Settings.Prefix.."alert and screen effect GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1] or "all")) do
-					if string.lower(tostring(args[2])) == "yes" or string.lower(tostring(args[2])) == "true" then
+				local deleteAll = args[2] and (args[2]:lower == "true" or args[2]:lower() == "yes")
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					if deleteAll then
 						Routine(Remote.RemoveGui, v, true)
 					else
 						Routine(function()
-							for _, guiName in ipairs({"Message", "Hint", "Notification", "PM", "Output", "Effect", "Alert"}) do
+							for _, guiName in ipairs({"Message", "Hint", "Notify", "Effect", "Alert"}) do
 								Remote.RemoveGui(v, guiName)
 							end
 						end)
@@ -4152,13 +4153,13 @@ return function(Vargs, env)
 
 		RemoveGuis = {
 			Prefix = Settings.Prefix;
-			Commands = {"removeguis", "noguis"};
+			Commands = {"clearscreenguis", "clrscreenguis", "removeguis", "noguis"};
 			Args = {"player"};
-			Description = "Remove the target player(s)'s screen guis";
+			Description = "Removes all of the target player(s)'s on-screen GUIs except Adonis GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.LoadCode(v, [[for i, v in pairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then v:Destroy() end end]])
+					Remote.LoadCode(v, [[for i, v in pairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
@@ -4224,7 +4225,7 @@ return function(Vargs, env)
 			Description = "Shows you what rank the target player(s) are in the specified group";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[2], "Argument #2 missing or nil")
+				assert(args[2], "Missing group name (argument #2)")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local groupInfo = Admin.GetPlayerGroup(v, args[2])
 					if groupInfo then
@@ -4252,12 +4253,11 @@ return function(Vargs, env)
 			end
 		};
 
-
 		SetHealth = {
 			Prefix = Settings.Prefix;
 			Commands = {"health", "sethealth"};
 			Args = {"player", "number"};
-			Description = "Set the target player(s)'s health to <number>";
+			Description = "Set the target player(s)'s health and max health to <number>";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
