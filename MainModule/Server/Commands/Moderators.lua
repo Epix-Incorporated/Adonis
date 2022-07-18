@@ -2327,7 +2327,7 @@ return function(Vargs, env)
 			Description = "Removes Adonis on-screen GUIs for the target player(s); if <delete all> is false, wil, only clear "..Settings.Prefix.."m, "..Settings.Prefix.."n, "..Settings.Prefix.."h, "..Settings.Prefix.."alert and screen effect GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local deleteAll = args[2] and (args[2]:lower == "true" or args[2]:lower() == "yes")
+				local deleteAll = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if deleteAll then
 						Routine(Remote.RemoveGui, v, true)
