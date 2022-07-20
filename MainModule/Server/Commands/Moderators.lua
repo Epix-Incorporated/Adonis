@@ -1876,7 +1876,7 @@ return function(Vargs, env)
 				local temptable = {}
 				local unsorted = {}
 
-				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>==== Admins In-Game ====</font></b>")
+				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>Admins In-Game:</font></b>")
 
 				for _, v in ipairs(service.GetPlayers()) do
 					local level, rankName = Admin.GetLevel(v);
@@ -1901,7 +1901,7 @@ return function(Vargs, env)
 				table.clear(unsorted)
 
 				table.insert(temptable, "")
-				table.insert(temptable, "<b><font color='rgb(180, 60, 0)'>==== All Admins ====</font></b>")
+				table.insert(temptable, "<b><font color='rgb(180, 60, 0)'>All Admins:</font></b>")
 
 				for rank, data in pairs(Settings.Ranks) do
 					if not data.Hidden then
@@ -1911,12 +1911,12 @@ return function(Vargs, env)
 							Level = data.Level;
 							Users = data.Users;
 							Rank = rank;
-						});
+						})
 					end
-				end;
+				end
 
 				table.sort(unsorted, function(one, two)
-					return one.Level > two.Level;
+					return one.Level > two.Level
 				end)
 
 				for _, v in ipairs(unsorted) do
@@ -1924,9 +1924,9 @@ return function(Vargs, env)
 					local Level = v.Level or 0;
 					local Rank = v.Rank or "Unknown";
 
-					v.Users = nil;
-					v.Level = nil;
-					v.Rank = nil;
+					v.Users = nil
+					v.Level = nil
+					v.Rank = nil
 
 					table.insert(temptable, v)
 
@@ -1935,7 +1935,7 @@ return function(Vargs, env)
 							Text = "  ".. user;
 							Desc = string.format(RANK_DESCRIPTION_FORMAT, Rank, Level);
 							--SortLevel = data.Level;
-						});
+						})
 					end
 				end
 
@@ -1944,6 +1944,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
 					Title = "Admin List";
+					Icon = server.MatIcons["Admin panel settings"];
 					Table = Logs.ListUpdaters.AdminList(plr);
 					Update = "AdminList";
 					RichText = true;
@@ -6274,10 +6275,10 @@ return function(Vargs, env)
 				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
 				for i = #logHistory, 1, -1 do
 					local log = logHistory[i]
-					for _, v in ipairs(service.ExtractLines(log.message)) do
+					for i, v in ipairs(service.ExtractLines(log.message)) do
 						table.insert(tab, {
 							Text = v;
-							Time = log.timestamp;
+							Time = if i == 1 then log.timestamp else nil;
 							Desc = log.messageType.Name:match("^Message(.+)$");
 							Color = MESSAGE_TYPE_COLORS[log.messageType];
 						})
