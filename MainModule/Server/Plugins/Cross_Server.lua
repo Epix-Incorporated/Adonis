@@ -140,7 +140,7 @@ return function(Vargs, GetEnv)
 				Name = plr.Name;
 				DisplayName = plr.DisplayName;
 				AccountAge = plr.AccountAge;
-				MembershipType = plr.MembershipType;
+				--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
 				FollowUserId = plr.FollowUserId;
 				AdminLevel = Admin.GetLevel(plr);
 				}, args[1])
