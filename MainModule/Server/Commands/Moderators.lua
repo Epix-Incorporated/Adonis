@@ -28,8 +28,7 @@ return function(Vargs, env)
 					IsKicking = true;
 					UseFakePlayer = true;
 					})) do
-					local targLevel = Admin.GetLevel(v)
-					if plrLevel > targLevel then
+					if plrLevel > Admin.GetLevel(v) then
 						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
 							Remote.Send(v, "Function", "Kill")
@@ -6222,7 +6221,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"loopheal"};
 			Args = {"player"};
-			Description = "Loop heals the target player(s)";
+			Description = "Continuously heals the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -6249,7 +6248,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unloopheal"};
 			Args = {"player"};
-			Description = "UnLoop Heal";
+			Description = "Undoes "..Settings.Prefix.."loopheal";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -6266,17 +6265,25 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			NoFilter = true;
 			ListUpdater = function(plr: Player)
-				local temp = {}
-				local function toTab(str, desc, color, timestamp)
-					for _, v in pairs(service.ExtractLines(str)) do
-						table.insert(temp, {Text = v; Desc = desc..v; Color = color; Time = timestamp})
+				local MESSAGE_TYPE_COLORS = {
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+				}
+				local tab = {}
+				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
+				for i = #logHistory, 1, -1 do
+					local log = logHistory[i]
+					for _, v in ipairs(service.ExtractLines(log.message)) do
+						table.insert(tab, {
+							Text = v;
+							Time = log.timestamp;
+							Desc = log.messageType.Name:match("^Message(.+)$");
+							Color = MESSAGE_TYPE_COLORS[log.messageType];
+						})
 					end
 				end
-				for _, v in pairs(service.LogService:GetLogHistory()) do
-					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902), v.timestamp)
-				end
-				return temp
+				return tab
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6299,11 +6306,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			NoFilter = true;
 			ListUpdater = function(plr: Player, target: Player)
-				local temp = {"Player is currently unreachable"}
-				if target and target.Parent then
-					temp = Remote.Get(target, "ClientLog")
-				end
-				return temp
+				return if target and target.Parent then Remote.Get(target, "ClientLog") else {"Player is currently unreachable"}
 			end;
 			Function = function(plr: Player, args: {string})
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
@@ -6329,12 +6332,12 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
 				local tab = {}
-				for _, v in pairs(Logs.Errors) do
-					table.insert(tab, {
+				for i, v in ipairs(Logs.Errors) do
+					tab[i] = {
 						Time = v.Time;
 						Text = v.Text..": "..tostring(v.Desc);
 						Desc = tostring(v.Desc);
-					})
+					}
 				end
 				return tab
 			end;
@@ -6430,7 +6433,7 @@ return function(Vargs, env)
 
 		RemoteLogs = {
 			Prefix = Settings.Prefix;
-			Commands = {"remotelogs", "rlogs", "remotefires", "remoterequests"};
+			Commands = {"remotelogs", "remotelog", "rlogs", "remotefires", "remoterequests"};
 			Args = {"autoupdate? (default: false)"};
 			Description = "View the remote logs for the server";
 			AdminLevel = "Moderators";
@@ -6475,11 +6478,15 @@ return function(Vargs, env)
 			Description = "View the command logs for the server";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local temp = {}
-				for _, m in pairs(Logs.Commands) do
-					table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
+				local tab = {}
+				for i, v in ipairs(Logs.Commands) do
+					tab[i] = {
+						Time = v.Time;
+						Text = v.Text..": "..v.Desc;
+						Desc = v.Desc;
+					}
 				end
-				return temp
+				return tab
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
@@ -6501,16 +6508,21 @@ return function(Vargs, env)
 			Description = "View the command logs for previous servers ordered by time";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player)
-				local temp = {}
 				if Core.DataStore then
+					local tab = {}
 					local data = Core.GetData("OldCommandLogs")
 					if data then
-						for i, m in pairs(data) do
-							table.insert(temp, {Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc;})
+						for i, v in ipairs(data) do
+							tab[i] = {
+								Time = v.Time;
+								Text = v.Text..": "..v.Desc;
+								Desc = v.Desc;
+							}
 						end
 					end
+					return tab
 				end
-				return temp
+				return {"DataStore is not available in game"}
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
