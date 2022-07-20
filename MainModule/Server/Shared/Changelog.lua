@@ -3,6 +3,14 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Patch v237g 2022-07-20 09:10 EST] @Expertcoderz";
+	"* We are aware of an ongoing issue regarding some data failing to save; this is currently being investigated.*";
+	"(Git/TwinOneHOST) Added timestamps to serverlogs (#856)";
+	"Renamed :clearguis to :clearadonisguis; now clears :n GUIs as well but not normal notifications and PMs";
+	"Renamed :removeguis to :clearscreenguis";
+	"Very minor code/UX improvements for several commands";
+	"Increased the default window size for some list UIs";
+	"";
 	"[Patch v237f 2022-07-17 05:45 EST] @Expertcoderz";
 	"(Hopefully) resolved some bugs that have been plaguing :track (such as tracking nametags not being properly removed)";
 	"Fixed :newteam's <BrickColor> argument being ignored";
