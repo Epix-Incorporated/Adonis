@@ -146,7 +146,7 @@ return function(Vargs, GetEnv)
 						rawset(Commands, ind, nil)
 						Logs.AddLog("Script", "Removed command definition:", ind)
 					end
-				elseif Commands.RunAfterPlugins then
+				elseif rawget(Commands, "RunAfterPlugins") then
 					rawset(Commands, ind, val)
 				else
 					if rawget(Commands, ind) ~= nil then
@@ -183,7 +183,7 @@ return function(Vargs, GetEnv)
 		--// Cache commands
 		Admin.CacheCommands()
 
-		Commands.Init = nil
+		rawset(Commands, "Init", nil)
 		Logs.AddLog("Script", "Commands Module Initialized")
 	end
 
@@ -222,7 +222,7 @@ return function(Vargs, GetEnv)
 			RegisterCommandDefinition(ind, cmd)
 		end
 
-		Commands.RunAfterPlugins = nil
+		rawset(Commands, "RunAfterPlugins", nil)
 	end
 
 	server.Commands = {

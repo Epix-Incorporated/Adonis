@@ -8,4 +8,4 @@ assignees: ''
 
 ---
 
-[Type your question here. Remember to specify what exactly you want to achieve, if applicable!]
+[Type your question here. Remember to specify the context and what exactly you want to achieve, if applicable!]

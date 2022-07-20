@@ -327,9 +327,9 @@ return function(Vargs, GetEnv)
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
-			if Admin.IsBlacklisted(p) then
+			--[[if Admin.IsBlacklisted(p) then
 				return false
-			end
+			end]]
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
 				msg = string.sub(msg, 1, Process.MsgStringLimit)
@@ -773,8 +773,14 @@ return function(Vargs, GetEnv)
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
-			for otherPlrName in pairs(Variables.TrackingTable) do
-				Variables.TrackingTable[otherPlrName][p] = nil
+			for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+				if trackTargets[p] then
+					trackTargets[p] = nil
+					local otherPlr = service.Players:FindFirstChild(otherPlrName)
+					if otherPlr then
+						task.defer(Remote.RemoveLocal, otherPlr, p.Name.."Tracker")
+					end
+				end
 			end
 
 			if Commands.UnDisguise then
@@ -929,7 +935,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CharacterAdded = function(p, Character, ...)
+		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
 
@@ -938,7 +944,7 @@ return function(Vargs, GetEnv)
 			end
 
 			wait()
-			if Character and keyData and keyData.FinishedLoading then
+			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Wait for UI stuff to finish
@@ -996,7 +1002,7 @@ return function(Vargs, GetEnv)
 				task.spawn(Functions.Donor, p)
 
 				--// Fire added event
-				service.Events.CharacterAdded:Fire(p, Character, ...)
+				service.Events.CharacterAdded:Fire(p, char, ...)
 
 				--// Run OnSpawn commands
 				for _, v in pairs(Settings.OnSpawn) do
@@ -1007,9 +1013,15 @@ return function(Vargs, GetEnv)
 					})
 				end
 
-				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
-					if trackTargets[p] and server.Commands.Track then
-						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+				if
+					server.Commands.Track
+					and char:WaitForChild("Head", 5)
+					and char:WaitForChild("HumanoidRootPart", 2)
+				then
+					for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+						if trackTargets[p] then
+							server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+						end
 					end
 				end
 			end

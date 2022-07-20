@@ -1,6 +1,6 @@
 ---
 name: GitHub-related problem report or suggestion
-about: Documentation errors go under this category.
+about: Documentation errors or oversights go under this category.
 title: ''
 labels: github
 assignees: ''

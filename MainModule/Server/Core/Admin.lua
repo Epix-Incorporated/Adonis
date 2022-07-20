@@ -66,10 +66,10 @@ return function(Vargs, GetEnv)
 					end
 
 					if speakerPlayer and Admin.IsMuted(speakerPlayer) then
-						speaker:SendSystemMessage("[Adonis] :: You are muted!", channelName)
+						speaker:SendSystemMessage("[Adonis] :: You are muted and cannot speak!", channelName)
 						return true
 					elseif speakerPlayer and Admin.SlowMode and not Admin.CheckAdmin(speakerPlayer) and slowCache[speakerPlayer] and os.time() - slowCache[speakerPlayer] < Admin.SlowMode then
-						speaker:SendSystemMessage(string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
+						speaker:SendSystemMessage(string.format("[Adonis] :: Chat slow-mode enabled! (%g s remaining)", Admin.SlowMode - (os.time() - slowCache[speakerPlayer])), channelName)
 						return true
 					end
 
@@ -82,7 +82,7 @@ return function(Vargs, GetEnv)
 
 				AddLog("Script", "ChatService Handler Loaded")
 			else
-				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
+				warn("Place is missing ChatService; vanilla Roblox chat related features may not work")
 				AddLog("Script", "ChatService Handler Not Found")
 			end
 		end)
@@ -91,7 +91,7 @@ return function(Vargs, GetEnv)
 		local Ranks = Settings.Ranks
 		for rank, data in pairs(Defaults.Settings.Ranks) do
 			if not Ranks[rank] then
-				for r, d in pairs(Ranks) do
+				for _, d in pairs(Ranks) do
 					if d.Level == data.Level then
 						data.Hidden = true
 						break
@@ -247,21 +247,10 @@ return function(Vargs, GetEnv)
 		AdminLevelCacheTimeout = 30;
 
 		DoHideChatCmd = function(p: Player, message: string, data: {[string]: any}?)
-			local pData = data or Core.GetPlayer(p)
-			if pData.Client.HideChatCommands then
-				if Variables.BlankPrefix and
-					(string.sub(message,1,1) ~= Settings.Prefix or string.sub(message,1,1) ~= Settings.PlayerPrefix) then
-					local isCMD = Admin.GetCommand(message)
-					if isCMD then
-						return true
-					else
-						return false
-					end
-				elseif (string.sub(message,1,1) == Settings.Prefix or string.sub(message,1,1) == Settings.PlayerPrefix)
-					and string.sub(message,2,2) ~= string.sub(message,1,1) then
-					return true;
-				end
+			if (data or Core.GetPlayer(p)).Client.HideChatCommands then
+				return if Admin.GetCommand(message) then true else false
 			end
+			return false
 		end;
 
 		GetPlayerGroups = function(p: Player)
@@ -1038,7 +1027,7 @@ return function(Vargs, GetEnv)
 			local tempPrefix = {}
 			for ind, data in pairs(Commands) do
 				if type(data) == "table" then
-					for i,cmd in pairs(data.Commands) do
+					for _, cmd in pairs(data.Commands) do
 						if data.Prefix == "" then Variables.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
 						tempTable[string.lower(data.Prefix..cmd)] = ind
@@ -1062,11 +1051,12 @@ return function(Vargs, GetEnv)
 					if found then
 						local real = Commands[found]
 						if real then
-							return found,real,matched
+							return found, real, matched
 						end
 					end
 				end
 			end
+			return nil, nil, nil
 		end;
 
 		FindCommands = function(Command)
@@ -1088,7 +1078,7 @@ return function(Vargs, GetEnv)
 				local foundCmds = {}
 				matched = string.lower(matched)
 
-				for ind,cmd in pairs(Commands) do
+				for ind, cmd in pairs(Commands) do
 					if type(cmd) == "table" and ((checkPrefix and prefixChar == cmd.Prefix) or not checkPrefix) then
 						for _, alias in pairs(cmd.Commands) do
 							if string.lower(alias) == matched then
@@ -1101,6 +1091,7 @@ return function(Vargs, GetEnv)
 
 				return foundCmds
 			end
+			return nil
 		end;
 
 		SetPermission = function(comString, newLevel)
@@ -1154,11 +1145,12 @@ return function(Vargs, GetEnv)
 
 		CheckTable = function(p, tab)
 			local doCheck = Admin.DoCheck
-			for i,v in pairs(tab) do
+			for _, v in pairs(tab) do
 				if doCheck(p, v) then
 					return true
 				end
 			end
+			return false
 		end;
 
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
@@ -1275,9 +1267,17 @@ return function(Vargs, GetEnv)
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
 				return true, nil
 			end
+					
+			if Admin.IsBlacklisted(pDat.Player) then
+				return false, "You are blacklisted from running commands."
+			end
 
 			if (comLevel == 0 or comLevel == "Players") and not Settings.PlayerCommands then
 				return false, "Player commands are disabled in this game."
+			end
+
+			if cmd.Fun and not Settings.FunCommands then
+				return false, "Fun commands are disabled in this game."
 			end
 
 			if opts.Chat and cmd.Chattable == false then
@@ -1421,9 +1421,9 @@ return function(Vargs, GetEnv)
 				isDonor = Admin.CheckDonor(p);
 			}
 
-			for index, command in pairs(Commands) do
-				if checkPerm(pDat, command, true) then
-					tab[index] = command
+			for ind, cmd in pairs(Commands) do
+				if checkPerm(pDat, cmd, true) then
+					tab[ind] = cmd
 				end
 			end
 
