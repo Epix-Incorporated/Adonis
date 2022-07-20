@@ -3,6 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Patch v237i 2022-07-20 10:55 EST] @Expertcoderz";
+	"Fixed data not saving correctly (issue addressed in v237g)";
+	"Fixed data taking a long time to load";
+	"Fixed :crossserver";
+	"";
 	"[Patch v237h 2022-07-20 09:30 EST] @Expertcoderz";
 	"Improved clarity in :serverlogs";
 	"Visually improved :adminlist";
