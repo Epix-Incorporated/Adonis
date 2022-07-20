@@ -6267,14 +6267,14 @@ return function(Vargs, env)
 			NoFilter = true;
 			ListUpdater = function(plr: Player)
 				local temp = {}
-				local function toTab(str, desc, color)
+				local function toTab(str, desc, color, timestamp)
 					for _, v in pairs(service.ExtractLines(str)) do
-						table.insert(temp, {Text = v; Desc = desc..v; Color = color})
+						table.insert(temp, {Text = v; Desc = desc..v; Color = color; Time = timestamp})
 					end
 				end
 				for _, v in pairs(service.LogService:GetLogHistory()) do
 					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902), v.timestamp)
 				end
 				return temp
 			end;
