@@ -974,9 +974,9 @@ return function(Vargs, GetEnv)
 
 				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value})
 			elseif data.Type == "TableRemove" then
-				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
-				local value = data.Value
+				local val = data.Value
+				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
@@ -990,23 +990,21 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					for i, v in pairs(sets) do
-						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
+						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
 							table.remove(sets, i)
 						end
 					end
 
-					--// Check that the real table actually has the item to remove, do not create if it does not have it
-					--// Prevents snowballing
-					local indList = tab
+					--// Check that the real table actually has the item to remove; do not create if it does not have it
+					--// (prevents snowballing)
 					local continueOperation = false
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-
-						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for _, v in pairs(realTable) do
-							if CheckMatch(v, value) then
+						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+							if CheckMatch(v, val) then
 								continueOperation = true
+								break
 							end
 						end
 					else
@@ -1014,7 +1012,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if continueOperation then
-						table.insert(sets, data)
+						table.insert(sets, tab)
 					end
 
 					return sets
@@ -1022,9 +1020,9 @@ return function(Vargs, GetEnv)
 
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			elseif data.Type == "TableAdd" then
-				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
-				local value = data.Value
+				local val = data.Value
+				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
@@ -1038,28 +1036,27 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					for i, v in pairs(sets) do
-						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
+						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
 							table.remove(sets, i)
 						end
 					end
 
-					--// Check that the real table does not have the item to add, do not create if it has it
-					--// Prevents snowballing
-					local indList = tab
+					--// Check that the real table does not have the item to add; do not create if it has it
+					--// (prevents snowballing)
 					local continueOperation = true
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for _, v in pairs(realTable) do
-							if CheckMatch(v, value) then
+						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+							if CheckMatch(v, val) then
 								continueOperation = false
+								break
 							end
 						end
 					end
 
 					if continueOperation then
-						table.insert(sets, data)
+						table.insert(sets, tab)
 					end
 
 					return sets
@@ -1080,8 +1077,7 @@ return function(Vargs, GetEnv)
 			local Blacklist = Core.DS_BLACKLIST
 			local CheckMatch = Functions.CheckMatch;
 			if key == "TableUpdate" then
-				local tab = data;
-				local indList = tab.Table;
+				local indList = data.Table
 				local nameRankComp = {--// Old settings backwards compatability
 					Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
 					Creators = {"Settings", "Ranks", "Creators", "Users"};
@@ -1097,31 +1093,37 @@ return function(Vargs, GetEnv)
 				local realTable, tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
-					--// warn("Stopped " .. displayName .. " from being set!")
-					--// Debugging --Coasterteam
-					return
+				if displayName and type(displayName) == "string" then
+					if Blacklist[displayName] then
+						return
+					end
+					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
+						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
+							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
+							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+					end
 				end
 
-				if realTable and tab.Action == "Add" then
+				if realTable and data.Action == "Add" then
 					for i, v in pairs(realTable) do
-						if CheckMatch(v, tab.Value) then
+						if CheckMatch(v, data.Value) then
 							table.remove(realTable, i)
 						end
 					end
 
 					AddLog("Script", {
 						Text = "Added value to ".. displayName;
-						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+						Desc = "Added "..tostring(data.Value).." to ".. displayName .." from datastore";
 					})
 
-					table.insert(realTable, tab.Value)
-				elseif realTable and tab.Action == "Remove" then
+					table.insert(realTable, data.Value)
+				elseif realTable and data.Action == "Remove" then
 					for i, v in pairs(realTable) do
-						if CheckMatch(v, tab.Value) then
+						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
 								Text = "Removed value from ".. displayName;
-								Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
+								Desc = "Removed "..tostring(data.Value).." from ".. displayName .." from datastore";
 							})
 
 							table.remove(realTable, i)
