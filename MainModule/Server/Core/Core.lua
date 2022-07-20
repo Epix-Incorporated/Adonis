@@ -1012,7 +1012,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if continueOperation then
-						table.insert(sets, tab)
+						table.insert(sets, data)
 					end
 
 					return sets
@@ -1056,7 +1056,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if continueOperation then
-						table.insert(sets, tab)
+						table.insert(sets, data)
 					end
 
 					return sets
