@@ -3,10 +3,15 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Patch v237h 2022-07-20 09:30 EST] @Expertcoderz";
+	"Improved clarity in :serverlogs";
+	"Visually improved :adminlist";
+	"";
 	"[Patch v237g 2022-07-20 09:10 EST] @Expertcoderz";
-	"* We are aware of an ongoing issue regarding some data failing to save; this is currently being investigated.*";
+	"*We are aware of an ongoing issue regarding some data failing to save; this is currently being investigated.*";
 	"(Git/TwinOneHOST) Added timestamps to serverlogs (#856)";
-	"Renamed :clearguis to :clearadonisguis; now clears :n GUIs as well but not normal notifications and PMs";
+	":serverlogs now displays logs sorted by newest";
+	"Renamed :clearguis to :clearadonisguis; now also clears :n GUIs but not normal notifications and PMs";
 	"Renamed :removeguis to :clearscreenguis";
 	"Very minor code/UX improvements for several commands";
 	"Increased the default window size for some list UIs";
