@@ -863,7 +863,7 @@ return function(Vargs, GetEnv)
 			local DataStore = Core.DataStore
 			if DataStore then
 				local ran2, err2 = Queue("DataStoreReadData", function()
-					wait(Core.DS_GetRequestDelay("Read"))
+					--wait(Core.DS_GetRequestDelay("Read")) -- TODO: re-implement this effectively and without an unnecessary delay
 					local ran, ret = pcall(DataStore.GetAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = ret
