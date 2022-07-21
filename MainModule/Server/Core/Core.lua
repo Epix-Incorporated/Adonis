@@ -157,6 +157,11 @@ return function(Vargs, GetEnv)
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
 
+			LoadAdminsFromDS = true;
+
+			WebPanel_ApiKey = true;
+			WebPanel_Enabled = true;
+
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
@@ -281,7 +286,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-	 	MakeClient = function(parent)
+		MakeClient = function(parent)
 			if not parent and Core.ClientLoader then
 				local loader = Core.ClientLoader;
 				loader.Removing = true;
@@ -700,7 +705,7 @@ return function(Vargs, GetEnv)
 		end;
 		GetDataStore = function()
 			local ran,store = pcall(function()
-				
+
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
@@ -891,27 +896,34 @@ return function(Vargs, GetEnv)
 		IndexPathToTable = function(tableAncestry)
 			local Blacklist = Core.DS_BLACKLIST
 			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
-				return Settings[tableAncestry], tableAncestry;
+				return Settings[tableAncestry], tableAncestry
 			elseif type(tableAncestry) == "table" then
-				local curTable = server;
-				local curName = "Server";
+				local curTable = server
+				local curName = "Server"
 
 				for _, ind in ipairs(tableAncestry) do
-					curTable = curTable[ind];
-					curName = ind;
+					curTable = curTable[ind]
+					curName = ind
+
+					if curName and type(curName) == "string" then
+						--// Admins do NOT load from the DataStore with this setting
+						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
+							return nil
+						end
+					end
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
 						--// Not allowed or table is not found
-						return nil;
+						return nil
 					end
 				end
 
-				if curName and type(curName) == 'string' and Blacklist[curName] then
+				if curName and type(curName) == "string" and Blacklist[curName] then
 					return nil
 				end
 
-				return curTable, curName;
+				return curTable, curName
 			end
 			return nil
 		end;
@@ -932,7 +944,7 @@ return function(Vargs, GetEnv)
 
 		GetTableKey = function(indList)
 			local tabs = Core.GetData("SavedTables") or {};
-			local realTable,tableName = Core.IndexPathToTable(indList);
+			local realTable, tableName = Core.IndexPathToTable(indList)
 
 			local foundTable = nil;
 
