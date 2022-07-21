@@ -50,7 +50,6 @@ return function(Vargs, env)
 
 				Remote.MakeGui(plr, "List", {
 					Title = "Commands ("..cmdCount..")";
-					Icon = server.MatIcons.Description;
 					Table = tab;
 					TitleButtons = {
 						{
@@ -83,9 +82,7 @@ return function(Vargs, env)
 				end
 				assert(cmd, "Command '"..args[1].."' is either not found or beyond your permission level")
 
-				local function formatStrForRichText(str: string): string
-					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
-				end
+				local SanitizeXML = service.SanitizeXML
 
 				local cmdArgs = Admin.FormatCommandArguments(cmd)
 
@@ -101,12 +98,12 @@ return function(Vargs, env)
 					Icon = server.MatIcons.Info;
 					Table = {
 						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
-						{Text = "<b>Commands:</b> "..formatStrForRichText(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
-						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else formatStrForRichText(cmdArgs)), Desc = "Parameters taken by the command"},
+						{Text = "<b>Commands:</b> "..SanitizeXML(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
+						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)), Desc = "Parameters taken by the command"},
 						{Text = "<b>Admin Level:</b> "..Admin.FormatCommandAdminLevel(cmd), Desc = "Rank required to run the command"},
-						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Description:</b> "..SanitizeXML(cmd.Description), Desc = "Command description"},
 						{Text = "<b>Attributes:</b> "..(if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")), Desc = "Extra data about the command"},
-						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
+						{Text = "<b>Index:</b> "..SanitizeXML(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
 					Size = {400, 225};
