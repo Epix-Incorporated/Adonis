@@ -791,34 +791,40 @@ return function(Vargs, GetEnv)
 			end))
 		end;
 
-		Hint = function(message,players,time)
-			for _,v in ipairs(players) do
-				Remote.MakeGui(v,"Hint",{
+		Hint = function(message, players, time)
+			time = time or (#tostring(message) / 19 + 2.5);
+
+			for _, v in ipairs(players) do
+				Remote.MakeGui(v, "Hint", {
 					Message = message;
-					Time = time or (#tostring(message) / 19) + 2.5; -- Should make longer messages not dissapear too quickly
+					Time = time;
 				})
 			end
 		end;
 
-		Message = function(title, message, players, scroll, tim)
+		Message = function(title, message, players, scroll, time)
+			time = time or (#tostring(message) / 19) + 2.5;
+
 			for _, v in ipairs(players) do
 				Remote.RemoveGui(v, "Message")
 				Remote.MakeGui(v, "Message", {
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = tim or (#tostring(message) / 19) + 2.5;
+					Time = time
 				})
 			end
 		end;
 
-		Notify = function(title, message, players, tim)
+		Notify = function(title, message, players, time)
+			time = time or (#tostring(message) / 19) + 2.5;
+
 			for _, v in ipairs(players) do
 				Remote.RemoveGui(v, "Notify")
 				Remote.MakeGui(v, "Notify", {
 					Title = title;
 					Message = message;
-					Time = tim or (#tostring(message) / 19) + 2.5;
+					Time = time;
 				})
 			end
 		end;

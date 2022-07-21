@@ -295,7 +295,7 @@ return function(Vargs, GetEnv)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
 			if groups and #groups > 0 then
-				for _, g in ipairs(groups) do 
+				for _, g in ipairs(groups) do
 					if (isId and g.Id == group) or (not isId and g.Name == group) then
 						return g
 					end
@@ -335,7 +335,7 @@ return function(Vargs, GetEnv)
 
 					if suc and type(groups) == "table" then
 						cacheTab.Groups = groups
-						return cacheTab.Groups						
+						return cacheTab.Groups
 					end
 
 					Admin.GroupsCache[uid] = cacheTab
@@ -371,6 +371,16 @@ return function(Vargs, GetEnv)
 					if group.Id == groupId then
 						return true
 					end
+				end
+			end
+
+			return false
+		end,
+
+		IsLax = function(str)
+			for _, v in ipairs({"plr", "user", "player", "brickcolor"}) do
+				if string.match(string.lower(str), v) then
+					return true
 				end
 			end
 
