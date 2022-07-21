@@ -363,29 +363,30 @@ return function(Vargs, env)
 			Description = "Warns players";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
-				assert(args[2], "You forgot to supply a reason")
+				assert(args[1], "Missing target player(s) (argument #1)")
+				local reason = assert(args[2], "Missing reason (argument #2)")
 				local plrLevel = data.PlayerData.Level
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					})) do
-					local targLevel = Admin.GetLevel(v)
-					if plrLevel > targLevel then
+					})
+				do
+					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
-							From = plr.Name,
-							Message = args[2],
-							Time = os.time()
+							From = plr.Name;
+							Message = reason;
+							Time = os.time();
 						})
 						service.Events.WarningAdded:Fire(v, args[2], plr)
 
 						Remote.RemoveGui(v, "Notify")
 						Remote.MakeGui(v, "Notify", {
 							Title = "Warning from ".. plr.Name;
-							Message = args[2];
+							Message = reason;
 						})
 
 						Remote.MakeGui(plr, "Notification", {
@@ -402,48 +403,6 @@ return function(Vargs, env)
 			end
 		};
 
-		RemoveWarning = {
-			Prefix = Settings.Prefix;
-			Commands = {"removewarning"};
-			Args = {"player", "warning"};
-			Description = "Removes the specified warning from the target player";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1] and args[2], "Argument missing or incorrect")
-
-				local plrLevel = data.PlayerData.Level
-				local warning = args[2]
-
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = false;
-					UseFakePlayer = true;
-					})) do
-					local targLevel = Admin.GetLevel(v)
-					if plrLevel > targLevel then
-						local playerData = Core.GetPlayer(v)
-						local playerWarnings = playerData.Warnings
-
-						for i, playerWarning in ipairs(playerWarnings) do
-							if string.sub(string.lower(playerWarning.Message), 1, #warning) == string.lower(warning) then
-								service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
-								table.remove(playerWarnings, i)
-							end
-						end
-
-						Remote.MakeGui(plr, "Notification", {
-							Title = "Notification";
-							Icon = server.MatIcons.Shield;
-							Message = "Removed warning(s) from ".. service.FormatPlayer(v);
-							Time = 5;
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
-						})
-					end
-				end
-			end
-		};
-
 		KickWarn = {
 			Prefix = Settings.Prefix;
 			Commands = {"kickwarn", "kwarn", "kickwarning"};
@@ -452,26 +411,28 @@ return function(Vargs, env)
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				assert(args[1], "Missing player name")
-				assert(args[2], "A reason is required for this command")
+				assert(args[1], "Missing target player(s) (argument #1)")
+				local reason = assert(args[2], "Missing reason (argument #2)")
+
 				local plrLevel = data.PlayerData.Level
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = false;
-					})) do
-					local targLevel = Admin.GetLevel(v)
-					if plrLevel > targLevel then
+					}))
+				do
+					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
-							From = plr.Name,
-							Message = args[2],
-							Time = os.time()
+							From = plr.Name;
+							Message = reason;
+							Time = os.time();
 						})
 
-						service.Events.WarningAdded:Fire(v, args[2], plr)
-						v:Kick(string.format("\n[Warning from %s]\nReason: %s", plr.Name, args[2]))
+						service.Events.WarningAdded:Fire(v, reason, plr)
+						v:Kick(string.format("\n[Warning from %s]\nReason: %s", plr.Name, reason))
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
@@ -487,20 +448,88 @@ return function(Vargs, env)
 			end
 		};
 
-		ShowWarnings = {
+		RemoveWarning = {
 			Prefix = Settings.Prefix;
-			Commands = {"warnings", "showwarnings"};
-			Args = {"player"};
-			Description = "Shows a list of warnings a player has";
+			Commands = {"removewarning", "unwarn"};
+			Args = {"player", "warning reason"};
+			Description = "Removes the specified warning from the target player";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
+			Function = function(plr: Player, args: {string}, data: {})
+				assert(args[1], "Missing target player(s) (argument #1)")
+				local reason = string.lower(assert(args[2], "Missing warning reason (argument #2)"))
+
+				local plrLevel = data.PlayerData.Level
+
 				for _, v in ipairs(service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					})) do
+					}))
+				do
+					if plrLevel > Admin.GetLevel(v) then
+						local playerData = Core.GetPlayer(v)
+						local playerWarnings = playerData.Warnings
+
+						local count = 0
+						for i, playerWarning in ipairs(playerWarnings) do
+							if string.match(string.lower(playerWarning.Message), "^"..reason) then
+								service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
+								table.remove(playerWarnings, i)
+								count += 1
+							end
+						end
+
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Notification";
+							Icon = server.MatIcons.Shield;
+							Message = string.format("Removed %d warning%s from %s.", count, count == 1 and "" or "s", service.FormatPlayer(v));
+							Time = 5;
+							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
+						})
+					else
+						Functions.Hint("Unable to remove warning(s) from "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
+					end
+				end
+			end
+		};
+
+		ClearWarnings = {
+			Prefix = Settings.Prefix;
+			Commands = {"clearwarnings", "clearwarns"};
+			Args = {"player"};
+			Description = "Clears any warnings on a player";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
+					local data = Core.GetPlayer(v)
+					table.clear(data.Warnings)
+
+					Remote.MakeGui(plr, "Notification", {
+						Title = "Notification";
+						Icon = server.MatIcons.Shield;
+						Message = "Cleared warning(s) for ".. service.FormatPlayer(v);
+						Time = 5;
+						OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
+					})
+				end
+			end
+		};
+
+		ShowWarnings = {
+			Prefix = Settings.Prefix;
+			Commands = {"warnings", "showwarnings", "warns", "showwarns"};
+			Args = {"player"};
+			Description = "Shows a list of warnings a player has";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+					DontError = false;
+					IsServer = false;
+					IsKicking = false;
+					UseFakePlayer = true;
+					}))
+				do
 					local data = Core.GetPlayer(v)
 					local tab = {}
 
@@ -515,35 +544,12 @@ return function(Vargs, env)
 					end
 
 					Remote.MakeGui(plr, "List", {
-						Title = service.FormatPlayer(v);
+						Title = "Warnings - "..service.FormatPlayer(v);
 						Icon = server.MatIcons.Gavel;
 						Table = tab;
 						TimeOptions = {
 							WithDate = true;
 						}
-					})
-				end
-			end
-		};
-
-		ClearWarnings = {
-			Prefix = Settings.Prefix;
-			Commands = {"clearwarnings"};
-			Args = {"player"};
-			Description = "Clears any warnings on a player";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					local data = Core.GetPlayer(v)
-					table.clear(data.Warnings)
-
-					Remote.MakeGui(plr, "Notification", {
-						Title = "Notification";
-						Icon = server.MatIcons.Shield;
-						Message = "Cleared warnings for ".. service.FormatPlayer(v);
-						Time = 5;
-						OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 					})
 				end
 			end
@@ -558,7 +564,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.new(1, 64/255, 77/255))
+					Remote.Send(v, "Function", "ChatMessage", service.Filter(args[2], plr, v), Color3.fromRGB(255, 64, 77))
 				end
 			end
 		};
