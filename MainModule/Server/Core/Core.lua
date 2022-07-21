@@ -907,7 +907,7 @@ return function(Vargs, GetEnv)
 
 					if curName and type(curName) == "string" then
 						--// Admins do NOT load from the DataStore with this setting
-						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then 
+						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
 							return nil
 						end
 					end
