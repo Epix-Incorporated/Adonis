@@ -253,16 +253,10 @@ return function(Vargs, env)
 			Description = "Make a message and makes it stay for the amount of time (in seconds) you supply";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing or invalid time amount")
+				assert(tonumber(args[1]), "Invalid time amount (must be number)")
 				assert(args[2], "Missing message")
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = "Message from "..service.FormatPlayer(plr);
-						Message = args[2];
-						Time = tonumber(args[1]);
-					})
-				end
+
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr), service.GetPlayers(), true, args[1])
 			end
 		};
 
@@ -275,15 +269,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.RemoveGui(v, "Message")
-					Remote.MakeGui(v, "Message", {
-						Title = "Message from "..service.FormatPlayer(plr);
-						Message = args[1]; --service.Filter(args[1], plr, v);
-						Time = (#tostring(args[1]) / 19) + 2.5;
-						Scroll = true;
-					})
-				end
+
+				Functions.Message("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers(), true)
 			end
 		};
 
@@ -297,8 +284,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing message")
+
+				local Sender = string.format("Message from %s", service.FormatPlayer(plr))
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
-					Functions.Message("Message from "..service.FormatPlayer(plr), service.Filter(args[2], plr, v), {v}, true, (#tostring(args[1]) / 19) + 2.5)
+					Functions.Message(Sender, service.Filter(args[2], plr, v), {v}, true)
 				end
 			end
 		};
@@ -312,13 +301,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.RemoveGui(v, "Notify")
-					Remote.MakeGui(v, "Notify", {
-						Title = "Message from "..service.FormatPlayer(plr);
-						Message = service.Filter(args[1], plr, v);
-					})
-				end
+
+				Functions.Notify("Message from ".. service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr), service.GetPlayers())
 			end
 		};
 
@@ -351,13 +335,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing message")
-				local hintFormat = string.format("%s: %s", service.FormatPlayer(plr), args[1])
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.MakeGui(v, "Hint", {
-						Message = hintFormat; --service.Filter(args[1], plr, v)
-						Time = (#tostring(args[1]) / 19) + 2.5;
-					})
-				end
+
+				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[1], plr)), service.GetPlayers())
 			end
 		};
 
@@ -369,15 +348,10 @@ return function(Vargs, env)
 			Description = "Makes a hint and make it stay on the screen for the specified amount of time";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				assert(tonumber(args[1]), "Invalid time amount (must be a number)")
 				assert(args[2], "Missing message")
-				assert(args[1], "Missing time amount (in seconds)")
-				local hintFormat = string.format("%s: %s", service.FormatPlayer(plr), args[1])
-				for _, v in ipairs(service.GetPlayers()) do
-					Remote.MakeGui(v, "Hint", {
-						Message = hintFormat; --service.Filter(args[1], plr, v)
-						Time = tonumber(args[1]);
-					})
-				end
+
+				Functions.Hint(string.format("%s: %s", service.FormatPlayer(plr), service.BroadcastFilter(args[2], plr)), service.GetPlayers(), tonumber(args[1]))
 			end
 		};
 
@@ -400,12 +374,17 @@ return function(Vargs, env)
 					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
-						local data = Core.GetPlayer(v)
-						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
+						local playerData = Core.GetPlayer(v)
+						table.insert(playerData.Warnings, {
+							From = plr.Name,
+							Message = args[2],
+							Time = os.time()
+						})
+						service.Events.WarningAdded:Fire(v, args[2], plr)
 
 						Remote.RemoveGui(v, "Notify")
 						Remote.MakeGui(v, "Notify", {
-							Title = "Warning from "..tostring(plr);
+							Title = "Warning from ".. plr.Name;
 							Message = args[2];
 						})
 
@@ -443,18 +422,20 @@ return function(Vargs, env)
 					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
-						local data = Core.GetPlayer(v)
+						local playerData = Core.GetPlayer(v)
+						local playerWarnings = playerData.Warnings
 
-						for i, w in ipairs(data.Warnings) do
-							if w.Message:lower():sub(1, #warning) == warning:lower() then
-								table.remove(data.Warnings, i)
+						for i, playerWarning in ipairs(playerWarnings) do
+							if string.sub(string.lower(playerWarning.Message), 1, #warning) == string.lower(warning) then
+								service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
+								table.remove(playerWarnings, i)
 							end
 						end
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Shield;
-							Message = "Removed warning from ".. service.FormatPlayer(v);
+							Message = "Removed warning(s) from ".. service.FormatPlayer(v);
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
@@ -482,10 +463,15 @@ return function(Vargs, env)
 					})) do
 					local targLevel = Admin.GetLevel(v)
 					if plrLevel > targLevel then
-						local data = Core.GetPlayer(v)
+						local playerData = Core.GetPlayer(v)
+						table.insert(playerData.Warnings, {
+							From = plr.Name,
+							Message = args[2],
+							Time = os.time()
+						})
 
-						table.insert(data.Warnings, {From = tostring(plr), Message = args[2], Time = os.time()})
-						v:Kick(tostring("\n[Warning from "..tostring(plr).."]\n"..args[2]))
+						service.Events.WarningAdded:Fire(v, args[2], plr)
+						v:Kick(string.format("\n[Warning from %s]\nReason: %s", plr.Name, args[2]))
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
@@ -550,7 +536,8 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local data = Core.GetPlayer(v)
-					data.Warnings = {}
+					table.clear(data.Warnings)
+
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
 						Icon = server.MatIcons.Shield;
