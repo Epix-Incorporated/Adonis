@@ -1272,7 +1272,7 @@ return function(Vargs, GetEnv)
 				return false, "You are blacklisted from running commands."
 			end
 
-			if (comLevel == 0 or comLevel == "Players") and not Settings.PlayerCommands then
+			if (comLevel == 0 or comLevel == "Players") and adminLevel <= 0 and not Settings.PlayerCommands then
 				return false, "Player commands are disabled in this game."
 			end
 
