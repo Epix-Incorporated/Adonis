@@ -681,7 +681,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return strs
 		end;
 
-		Filter = function(str,from,to)
+		Filter = function(str, from, to)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -722,7 +722,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		BroadcastFilter = function(str,from)
+		BroadcastFilter = function(str, from)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -977,7 +977,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		EscapeControlCharacters = function(str)
-			return str:gsub("%c", {
+			return string.gsub(str, "%c", {
 				["\a"] = "\\a",
 				["\b"] = "\\b",
 				["\f"] = "\\f",
@@ -988,9 +988,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			})
 		end;
 
-		GetTime = function()
-			return os.time();
+		SanitizeXML = function(str)
+			return string.gsub(str, "['\"<>&]", {
+				["'"] = "&apos;",
+				["\""] = "&quot;",
+				["<"] = "&lt;",
+				[">"] = "&gt;",
+				["&"] = "&amp;"
+			})
 		end;
+
+		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
@@ -998,7 +1006,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			local formatString = options.FormatString
 			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
+				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
 			end
 
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
@@ -1183,7 +1191,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			if groupId > 0 then
 				local groupInfo = service.GetGroupInfo(groupId)
 
-				if groupInfo and groupInfo.Created then
+				if groupInfo and groupInfo.Owner then
 					return groupInfo.Owner.Id
 				end
 			end

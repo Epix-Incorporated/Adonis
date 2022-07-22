@@ -325,7 +325,7 @@ settings.TopBarShift = false	-- By default hints and notifs will appear from the
 settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
 settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	-- Time between auto cleans
-settings.AutoBackup = false 	-- (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap
+settings.AutoBackup = false 	-- Run :backupmap automatically when the server starts. To restore the map, run :restoremap
 
 settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
