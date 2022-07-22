@@ -154,7 +154,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target user (argument #1)")
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local ret = Admin.RemoveBan(v.Name, true)
 					if ret then
 						if type(ret) == "table" then
@@ -177,7 +177,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player (argument #1)")
 				local senderLevel = data.PlayerData.Level
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins", true)
 						Remote.MakeGui(v, "Notification", {
@@ -204,7 +204,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player (argument #1)")
 				local senderLevel = data.PlayerData.Level
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Admins")
 						Remote.MakeGui(v, "Notification", {
@@ -287,7 +287,7 @@ return function(Vargs, env)
 
 				local cards = trello.Lists.GetCards(list.id)
 				local temp = table.create(#cards)
-				for _, v in pairs(cards) do
+				for _, v in cards do
 					table.insert(temp, {Text = v.name, Desc = v.desc})
 				end
 				Remote.MakeGui(plr, "List", {Title = list.name; Tab = temp})
@@ -314,12 +314,12 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				local objects = service.GetAdonisObjects()
-				for i, v in pairs(objects) do
+				for i, v in objects do
 					v:Destroy()
 				end
 				table.clear(objects)
 
-				--for i, v in pairs(Functions.GetPlayers()) do
+				--for i, v in Functions.GetPlayers() do
 				--	Remote.Send(v, "Function", "ClearAllInstances")
 				--end
 			end
@@ -352,7 +352,7 @@ return function(Vargs, env)
 				local tempmodel = service.New("Model", {
 					Name = "BACKUP_MAP_MODEL"
 				})
-				for _, v in ipairs(workspace:GetChildren()) do
+				for _, v in workspace:GetChildren() do
 					if v.ClassName ~= "Terrain" and not service.Players:GetPlayerFromCharacter(v) then
 						local archive = v.Archivable
 						v.Archivable = true
@@ -399,7 +399,7 @@ return function(Vargs, env)
 			Description = "Opens the friend invitation popup for the target player(s), same as them running !invite";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					service.SocialService:PromptGameInvite(v)
 				end
 			end
@@ -409,7 +409,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forcerejoin"};
 			Args = {"player"};
-			Description = "Forces target player(s) to rejoin the server; same as them running !rejoin";
+			Description = "Forces target player(s) to rejoin the server; same as them running "..Settings.PlayerPrefix.."rejoin";
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -451,17 +451,17 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
-				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					if Variables.IncognitoPlayers[v] then
 						Functions.Hint(service.FormatPlayer(v).." is already incognito.", {plr})
 						continue
 					end
 					Variables.IncognitoPlayers[v] = os.time()
 					local n = 0
-					for _, otherPlr: Player in ipairs(service.Players:GetPlayers()) do
+					for _, otherPlr: Player in service.Players:GetPlayers() do
 						if otherPlr == v then continue end
 						Remote.LoadCode(otherPlr, [[
-					for _, p in pairs(service.Players:GetPlayers()) do
+					for _, p in service.Players:GetPlayers() do
 						if p.UserId == ]]..v.UserId..[[ then
 							if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
 							p:Destroy()
@@ -507,7 +507,7 @@ return function(Vargs, env)
 					Variables.BadgeInfoCache[tostring(badgeId)] = assert(success and badgeInfo, "Unable to retrieve badge information; please try again")
 				end
 
-				for _, v: Player in ipairs(service.GetPlayers(plr, args[1])) do
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					local success, hasBadge = nil, nil
 					local tries = 0
 					repeat
