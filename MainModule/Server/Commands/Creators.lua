@@ -119,7 +119,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
 					if ran and service.PointsService:GetAwardablePoints() >= amount then
 						Functions.Hint("Gave "..amount.." points to "..service.FormatPlayer(v), {plr})
@@ -152,7 +152,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
@@ -179,7 +179,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
@@ -207,7 +207,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
-				for _, v in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false})) do
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = false}) do
 					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
 			end

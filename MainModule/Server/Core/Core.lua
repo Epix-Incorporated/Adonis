@@ -58,7 +58,7 @@ return function(Vargs, GetEnv)
 		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
 
 		local function disableAllGuis(folder: Folder)
-			for _, v in ipairs(folder:GetChildren()) do
+			for _, v in folder:GetChildren() do
 				if v:IsA("ScreenGui") then
 					v.Enabled = false
 				elseif v:IsA("Folder") or v:IsA("Model") then
@@ -200,7 +200,7 @@ return function(Vargs, GetEnv)
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true
 
-				for name,event in pairs(Core.RemoteEvent.Events) do
+				for name,event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
@@ -271,7 +271,7 @@ return function(Vargs, GetEnv)
 
 		UpdateConnections = function()
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") then
 						Core.Connections[cli] = cli:GetPlayer()
 					end
@@ -281,7 +281,7 @@ return function(Vargs, GetEnv)
 
 		UpdateConnection = function(p)
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						Core.Connections[cli] = p
 					end
@@ -291,7 +291,7 @@ return function(Vargs, GetEnv)
 
 		GetNetworkClient = function(p)
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						return cli
 					end
@@ -304,7 +304,7 @@ return function(Vargs, GetEnv)
 				local loader = Core.ClientLoader
 				loader.Removing = true
 
-				for _, v in pairs(loader.Events) do
+				for _, v in loader.Events do
 					v:Disconnect()
 				end
 
@@ -354,7 +354,7 @@ return function(Vargs, GetEnv)
 					end
 				end)
 
-				for _, child in ipairs(folder:GetDescendants()) do
+				for _, child in folder:GetDescendants() do
 					local oParent = child.Parent
 					local oName = child.Name
 
@@ -503,7 +503,7 @@ return function(Vargs, GetEnv)
 		ExecutePermission = function(scr, code, isLocal)
 			local fixscr = service.UnWrap(scr)
 
-			for _, val in pairs(Core.ExecuteScripts) do
+			for _, val in Core.ExecuteScripts do
 				if not isLocal or (isLocal and val.Type == "LocalScript") then
 					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
 						val.Executions += 1
@@ -520,7 +520,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetScript = function(scr, code)
-			for i, val in pairs(Core.ExecuteScripts) do
+			for i, val in Core.ExecuteScripts do
 				if val.Script == scr or code == val.Code then
 					return val, i
 				end
@@ -528,7 +528,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		UnRegisterScript = function(scr)
-			for i, dat in pairs(Core.ExecuteScripts) do
+			for i, dat in Core.ExecuteScripts do
 				if dat.Script == scr or dat == scr then
 					table.remove(Core.ExecuteScripts, i)
 					return dat
@@ -551,7 +551,7 @@ return function(Vargs, GetEnv)
 				})
 			end)
 
-			for ind,scr in pairs(Core.ExecuteScripts) do
+			for ind,scr in Core.ExecuteScripts do
 				if scr.Script == data.Script then
 					return scr.Wrapped or scr.Script
 				end
@@ -652,7 +652,7 @@ return function(Vargs, GetEnv)
 						data.Warnings = if data.Warnings then Functions.DSKeyNormalize(data.Warnings, true) else {}
 
 						local BLOCKED_SETTINGS = Core.PlayerDataKeyBlacklist
-						for i, v in pairs(data) do
+						for i, v in data do
 							if not BLOCKED_SETTINGS[i] then
 								PlayerData[i] = v
 							end
@@ -700,7 +700,7 @@ return function(Vargs, GetEnv)
 
 		SaveAllPlayerData = function(queueWaitTime)
 			local TrackTask = service.TrackTask
-			for key,pdata in pairs(Core.PlayerData) do
+			for key,pdata in Core.PlayerData do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
@@ -952,7 +952,7 @@ return function(Vargs, GetEnv)
 		ClearAllData = function()
 			local tabs = Core.GetData("SavedTables") or {}
 
-			for _, v in pairs(tabs) do
+			for _, v in tabs do
 				if v.TableKey then
 					Core.RemoveData(v.TableKey)
 				end
@@ -969,7 +969,7 @@ return function(Vargs, GetEnv)
 
 			local foundTable = nil
 
-			for _, v in pairs(tabs) do
+			for _, v in tabs do
 				if type(v) == "table" and v.TableName and v.TableName == tableName then
 					foundTable = v
 					break
@@ -1024,7 +1024,7 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					local index = 1
-					for i, v in pairs(sets) do
+					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
@@ -1040,7 +1040,7 @@ return function(Vargs, GetEnv)
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+						for _, v in Core.IndexPathToTable(indClone) or {} do
 							if CheckMatch(v, val) then
 								continueOperation = true
 								break
@@ -1076,7 +1076,7 @@ return function(Vargs, GetEnv)
 					sets = sets or {}
 
 					local index = 1
-					for i, v in pairs(sets) do
+					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
@@ -1092,7 +1092,7 @@ return function(Vargs, GetEnv)
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+						for _, v in Core.IndexPathToTable(indClone) or {} do
 							if CheckMatch(v, val) then
 								continueOperation = false
 								break
@@ -1159,7 +1159,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if realTable and data.Action == "Add" then
-					for i, v in pairs(realTable) do
+					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
 							table.remove(realTable, i)
 						end
@@ -1173,7 +1173,7 @@ return function(Vargs, GetEnv)
 					table.insert(realTable, data.Value)
 					service.Events["DataStoreAdd_" .. displayName]:Fire(data.Value)
 				elseif realTable and data.Action == "Remove" then
-					for i, v in pairs(realTable) do
+					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
 								Text = "Removed value from ".. displayName;
@@ -1241,11 +1241,11 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedSettings then
-						for setting,value in pairs(SavedSettings) do
+						for setting,value in SavedSettings do
 							if not ds_blacklist[setting] then
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
-									for _, cmd in pairs(server.Commands) do
+									for _, cmd in server.Commands do
 										if cmd.Prefix == orig then
 											cmd.Prefix = value
 										end
@@ -1258,11 +1258,11 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedTables then
-						for _, tData in pairs(SavedTables) do
+						for _, tData in SavedTables do
 							if tData.TableName and tData.TableKey and not ds_blacklist[tData.tableName] then
 								local data = GetData(tData.TableKey)
 								if data then
-									for _, v in ipairs(data) do
+									for _, v in data do
 										LoadData("TableUpdate", v)
 									end
 								end
@@ -1272,7 +1272,7 @@ return function(Vargs, GetEnv)
 						end
 
 						if Core.Variables.TimeBans then
-							for i, v in pairs(Core.Variables.TimeBans) do
+							for i, v in Core.Variables.TimeBans do
 								if v.EndTime - os.time() <= 0 then
 									table.remove(Core.Variables.TimeBans, i)
 									DoSave({
@@ -1396,7 +1396,7 @@ return function(Vargs, GetEnv)
 					ExecutePermission = MetaFunc(function(srcScript, code)
 						local exists;
 
-						for _, v in pairs(Core.ScriptCache) do
+						for _, v in Core.ScriptCache do
 							if v.Script == srcScript then
 								exists = v
 							end
