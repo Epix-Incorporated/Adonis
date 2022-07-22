@@ -587,9 +587,9 @@ return function(Vargs, GetEnv)
 					First = Logs[1]
 					hasPrinted = true
 
-					if (lastLogOutput + 3) > startTime then
-						--Detected("kick", "Log event not outputting to console")
-					end
+					--[[if (lastLogOutput + 3) > startTime then
+						Detected("kick", "Log event not outputting to console")
+					end]]
 				else
 					if not First then
 						--Detected("kick", "Suspicious log amount detected 5435345")
