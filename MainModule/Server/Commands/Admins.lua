@@ -1199,12 +1199,13 @@ return function(Vargs, env)
 			Description = "Crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "Crash")
 					else
@@ -1221,12 +1222,13 @@ return function(Vargs, env)
 			Description = "Hard crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "HardCrash")
 					else
@@ -1243,12 +1245,13 @@ return function(Vargs, env)
 			Description = "RAM crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "RAMCrash")
 					else
@@ -1265,12 +1268,13 @@ return function(Vargs, env)
 			Description = "GPU crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "GPUCrash")
 					else
@@ -1319,12 +1323,13 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided";
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, false, plr)
 						Functions.Hint("Server-banned "..tostring(v), {plr})
@@ -1376,13 +1381,13 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
 
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
-
+					})
+				do
 					if level > Admin.GetLevel(v) then
 						trello.makeCard(
 							list.id,
