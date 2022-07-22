@@ -297,8 +297,8 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = string.format("%s fired %s; Arg1: %s", comString, tostring(args[1])),
-									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args)),
+									Text = string.format("%s fired %s; Arg1: %s", tostring(p), comString, tostring(args[1]));
+									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
 									Player = p;
 								})
 
