@@ -2942,51 +2942,50 @@ return function(Vargs, env)
 
 		Clone = {
 			Prefix = Settings.Prefix;
-			Commands = {"clone", "cloneplayer", "clonecharacter"};
-			Args = {"player", "copies (max: 50)"};
-			Description = "Clones the target player(s)";
+			Commands = {"clone", "cloneplayer", "duplicate"};
+			Args = {"player", "copies (max: 50 | default: 1)"};
+			Description = "Clones the character of the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if tonumber(args[2]) and tonumber(args[2]) > 50 then
-					error("Cannot make more than 50 clones.")
-				end
+				local num = tonumber(args[2] or 1)
+				assert(num <= 50, "Cannot make more than 50 clones")
+
 				for _, v in pairs(service.GetPlayers(plr, args[1])) do
+					local char = v.Character
+					local hum = char and char:FindFirstChildOfClass("Humanoid")
+					if not hum then
+						continue
+					end
 					Routine(function()
-						local Character = v.Character
-						local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+						char.Archivable = true
+						local charPivot = char:GetPivot()
+						for _ = 1, num do
+							local clone = char:Clone()
+							table.insert(Variables.Objects, clone)
 
-						if Humanoid then
-							Character.Archivable = true
-							for _ = 1, tonumber(args[2]) or 1 do
-								local cl = Character:Clone()
-								table.insert(Variables.Objects, cl)
-
-								local animate
-								local anim = cl:FindFirstChild("Animate")
-								if anim then
-									animate = Humanoid.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
-									animate:ClearAllChildren()
-									for _, v in ipairs(anim:GetChildren()) do
-										v.Parent = animate
-									end
-									anim:Destroy()
-
-									animate.Parent = cl
+							local animate
+							local anim = clone:FindFirstChild("Animate")
+							if anim then
+								animate = hum.RigType == Enum.HumanoidRigType.R15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+								animate:ClearAllChildren()
+								for _, v in ipairs(anim:GetChildren()) do
+									v.Parent = animate
 								end
-
-								if Character.PrimaryPart then
-									cl:SetPrimaryPartCFrame(Character.PrimaryPart.CFrame)
-								end
-								if animate then
-									animate.Disabled = false
-								end
-								cl:FindFirstChild("Humanoid").Died:Connect(function()
-									cl:Destroy()
-								end)
-
-								cl.Archivable = false
-								cl.Parent = workspace
+								anim:Destroy()
+								animate.Parent = clone
 							end
+
+							clone:PivotTo(charPivot)
+
+							if animate then
+								animate.Disabled = false
+							end
+							clone:FindFirstChildOfClass("Humanoid").Died:Once(function()
+								service.Debris:AddItem(clone, service.Players.RespawnTime)
+							end)
+
+							clone.Archivable = false
+							clone.Parent = workspace
 						end
 					end)
 				end
