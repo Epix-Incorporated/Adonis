@@ -372,7 +372,7 @@ return function(Vargs, env)
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					})
+					}))
 				do
 					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
@@ -4790,51 +4790,67 @@ return function(Vargs, env)
 			Description = "Brings the target players and positions them evenly in specified lines";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				assert(plr.Character, "Your character is missing.")
+				local plrRootPart = assert(
+					assert(plr.Character,"Your character is missing"):FindFirstChild("HumanoidRootPart"),
+					"Your HumanoidRootPart is missing"
+				)
 				local players = service.GetPlayers(plr, args[1])
-				local lines = tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, #players) or 3
+				local numPlayers = #players
+				local lines = math.clamp(tonumber(args[2]) or 3, 1, numPlayers)
+
 				for l = 1, lines do
-					local offsetX = 0
-					if l == 1 then
-						offsetX = 0
-					elseif l % 2 == 1 then
-						offsetX = -(math.ceil((l - 2)/2)*4)
-					else
-						offsetX = (math.ceil(l / 2))*4
-					end
-					for i = (l-1)*math.floor(#players/lines)+1, l*math.floor(#players/lines) do
-						local player = players[i]
-						if not player.Character then continue end
-						player.Character:FindFirstChildOfClass("Humanoid").Jump = true
+					local offsetX = if l == 1 then 0
+						elseif l % 2 == 1 then -(math.ceil((l - 2) / 2) * 4)
+						else math.ceil(l / 2) * 4
+
+					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
+						local char = players[i].Character
+						if not char then continue end
+
+						local hum = char:FindFirstChildOfClass("Humanoid")
+						if hum then
+							hum.Jump = true
+						end
 						task.wait()
-						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
-							local offsetZ = ((i-1) - (l-1)*math.floor(#players/lines))*2
-							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+
+						local rootPart = char:FindFirstChild("HumanoidRootPart")
+						if rootPart then
+							rootPart.CFrame = (
+								plrRootPart.CFrame
+									* CFrame.Angles(0, math.rad(90), 0)
+									*CFrame.new(5 + ((i-1) - (l-1)*math.floor(numPlayers/lines))*2, 0, offsetX)
+							) * CFrame.Angles(0, math.rad(90), 0)
 						end
 					end
 				end
-				if #players%lines ~= 0 then
-					for i = lines*math.floor(#players/lines)+1, lines*math.floor(#players/lines) + #players%lines do
-						local player = players[i]
-						if not player.Character then continue end
-						local r = i % (lines*math.floor(#players/lines))
-						local offsetX = 0
-						if r == 1 then
-							offsetX = 0
-						elseif r % 2 == 1 then
-							offsetX = -(math.ceil((r - 2)/2)*4)
-						else
-							offsetX = (math.ceil(r / 2))*4
-						end
+				if numPlayers%lines ~= 0 then
+					for i = lines*math.floor(numPlayers/lines)+1, lines*math.floor(numPlayers/lines) + numPlayers%lines do
+						local char = players[i].Character
+						if not char then continue end
+
+						local r = i % (lines*math.floor(numPlayers/lines))
+						local offsetX = if r == 1 then 0
+							elseif r % 2 == 1 then -(math.ceil((r - 2) / 2) * 4)
+							else math.ceil(r / 2) * 4
+
 						--[[if n.Character.Humanoid.Sit then
 							n.Character.Humanoid.Sit = false
 							wait(0.5)
 						end]]
-						player.Character:FindFirstChildOfClass("Humanoid").Jump = true
+
+						local hum = char:FindFirstChildOfClass("Humanoid")
+						if hum then
+							hum.Jump = true
+						end
 						task.wait()
-						if player.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("HumanoidRootPart") then
-							local offsetZ = (math.floor(#players/lines))*2
-							player.Character.HumanoidRootPart.CFrame = (plr.Character.HumanoidRootPart.CFrame*CFrame.Angles(0,math.rad(90),0)*CFrame.new(5+offsetZ,0,offsetX))*CFrame.Angles(0,math.rad(90),0)
+
+						local rootPart = char:FindFirstChild("HumanoidRootPart")
+						if rootPart then
+							rootPart.CFrame = (
+								plrRootPart.CFrame
+									* CFrame.Angles(0, math.rad(90), 0)
+									* CFrame.new(5 + (math.floor(numPlayers/lines)) * 2, 0, offsetX)
+							) * CFrame.Angles(0, math.rad(90), 0)
 						end
 					end
 				end
