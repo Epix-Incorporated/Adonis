@@ -30,12 +30,12 @@ jobs:
           path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
           
       - name: Build Nightly MainModule
-        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
       - name: Publish Nightly MainModule
         uses: fjogeleit/http-request-action@v1
-        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
           url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
           method: "POST"
@@ -46,7 +46,7 @@ jobs:
 
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
-        if: github.repository == 'Sceleratis/Adonis' && github.event_name == 'push'
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
