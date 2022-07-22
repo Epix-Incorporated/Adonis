@@ -3,6 +3,13 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
 	"";
+	"[Patch v237j 2022-07-22 06:50 EST] @Expertcoderz";
+	"Fixed admins not being able to run player-level commands such as :cmds when Settings.PlayerCommands is off";
+	"Code improvements; any issues pertaining data saving should be resolved by now";
+	"Fixed :massbring potentially sending players into the void";
+	"(Git/fxeP1) New warning events and QoL changes. (#851)";
+	"(Git/autodoorsdev) Fixed typo on Keybinds settings description (#869)";
+	"";
 	"[Patch v237i 2022-07-20 10:55 EST] @Expertcoderz";
 	"Fixed data not saving correctly (issue addressed in v237g)";
 	"Fixed data taking a long time to load";
