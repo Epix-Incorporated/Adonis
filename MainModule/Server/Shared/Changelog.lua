@@ -1,7 +1,7 @@
 return {
 	"Version: 237";
 	"*Drag edges to expand*";
-	"*Report bugs/issues on our GitHub repository (https://github.com/Sceleratis/Adonis)*";
+	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
 	"[Patch v237j 2022-07-22 06:50 EST] @Expertcoderz";
 	"Fixed admins not being able to run player-level commands such as :cmds when Settings.PlayerCommands is off";
@@ -110,7 +110,7 @@ return {
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
 	"[v236 6.12.2022 12:30 EST]";
-	"*Refer to GitHub repository for more information. (https://github.com/Sceleratis/Adonis)";
+	"*Refer to GitHub repository for more information. (https://github.com/Epix-Incorporated/Adonis)";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
@@ -905,7 +905,7 @@ return {
 	"*+Added :nocollide to disable player to player character collisions";
 	"";
 	"[6.24.2020 10:31 EST]";
-	"*Git merges (Refer to GitHub repo /Sceleratis/Adonis for changes)";
+	"*Git merges (Refer to GitHub repo /Epix-Incorporated/Adonis for changes)";
 	"";
 	"[6.23.2020 7:49 EST]";
 	"*Git merges";
@@ -1105,7 +1105,7 @@ return {
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
-	"*Also Adonis is now on Github https://github.com/Sceleratis/Adonis";
+	"*Also Adonis is now on Github https://github.com/Epix-Incorporated/Adonis";
 	"";
 	"1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";
