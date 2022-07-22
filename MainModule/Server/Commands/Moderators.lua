@@ -4936,19 +4936,19 @@ return function(Vargs, env)
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
 
-						if (humanoid) then
+						if humanoid then
 							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
+							if humanoidAppliedDesc then
 								-- Check if the player already has a specified clothing instance.
 								local prePlayerShirtGraphic = v.Character:FindFirstChildOfClass("ShirtGraphic")
 
 								-- If the character has the specified clothing.
-								if (prePlayerShirtGraphic) then
+								if prePlayerShirtGraphic then
 									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.GraphicTShirt == 0) then
+									if humanoidAppliedDesc.GraphicTShirt == 0 then
 										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in v.Character:GetChildren() do
-											if (v:IsA("ShirtGraphic")) then
+										for _, v in v.Character:GetChildren() do
+											if v:IsA("ShirtGraphic") then
 												v:Destroy()
 											end
 										end
@@ -4956,7 +4956,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.GraphicTShirt == 0) then
+									if humanoidAppliedDesc.GraphicTShirt == 0 then
 										bCreateNewDefaultClothing = true
 									else
 										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
@@ -4966,7 +4966,7 @@ return function(Vargs, env)
 								end
 
 
-								if (bCreateNewDefaultClothing) then
+								if bCreateNewDefaultClothing then
 									-- Set a new specified clothing.
 									local humDescClone = humanoidAppliedDesc:Clone()
 
@@ -4978,7 +4978,7 @@ return function(Vargs, env)
 								-- Set the specified clothing.
 								local playerShirtGraphicInstance = v.Character:FindFirstChildOfClass("ShirtGraphic")
 
-								if (playerShirtGraphicInstance) then
+								if playerShirtGraphicInstance then
 									playerShirtGraphicInstance.Graphic = clothingTemplate
 								else
 									-- Incase something went wrong
@@ -5013,19 +5013,19 @@ return function(Vargs, env)
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
 
-						if (humanoid) then
+						if humanoid then
 							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
+							if humanoidAppliedDesc then
 								-- Check if the player already has a specified clothing instance.
 								local prePlayerShirt = v.Character:FindFirstChildOfClass("Shirt")
 
 								-- If the character has the specified clothing.
-								if (prePlayerShirt) then
+								if prePlayerShirt then
 									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.Shirt == 0) then
+									if humanoidAppliedDesc.Shirt == 0 then
 										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in v.Character:GetChildren() do
-											if (v:IsA("Shirt")) then
+										for _, v in v.Character:GetChildren() do
+											if v:IsA("Shirt") then
 												v:Destroy()
 											end
 										end
@@ -5033,7 +5033,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.Shirt == 0) then
+									if humanoidAppliedDesc.Shirt == 0 then
 										bCreateNewDefaultClothing = true
 									else
 										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
@@ -5043,7 +5043,7 @@ return function(Vargs, env)
 								end
 
 
-								if (bCreateNewDefaultClothing) then
+								if bCreateNewDefaultClothing then
 									-- Set a new specified clothing.
 									local humDescClone = humanoidAppliedDesc:Clone()
 
@@ -5056,7 +5056,7 @@ return function(Vargs, env)
 								-- Set the specified clothing.
 								local playerShirtInstance = v.Character:FindFirstChildOfClass("Shirt")
 
-								if (playerShirtInstance) then
+								if playerShirtInstance then
 									playerShirtInstance.ShirtTemplate = clothingTemplate
 								else
 									-- Incase something went wrong
@@ -5091,19 +5091,19 @@ return function(Vargs, env)
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						local bCreateNewDefaultClothing = false
 
-						if (humanoid) then
+						if humanoid then
 							local humanoidAppliedDesc = humanoid:GetAppliedDescription()
-							if (humanoidAppliedDesc) then
+							if humanoidAppliedDesc then
 								-- Check if the player already has a specified clothing instance.
 								local prePlayerPants = v.Character:FindFirstChildOfClass("Pants")
 
 								-- If the character has the specified clothing.
-								if (prePlayerPants) then
+								if prePlayerPants then
 									-- Check the humanoid description for clothing ID.
-									if (humanoidAppliedDesc.Pants == 0) then
+									if humanoidAppliedDesc.Pants == 0 then
 										-- Remove all the specified clothings, assuming it was manually created.
-										for k,v in v.Character:GetChildren() do
-											if (v:IsA("Pants")) then
+										for _, v in v.Character:GetChildren() do
+											if v:IsA("Pants") then
 												v:Destroy()
 											end
 										end
@@ -5111,7 +5111,7 @@ return function(Vargs, env)
 										bCreateNewDefaultClothing = true
 									end
 								else -- If the specified clothing was not found.
-									if (humanoidAppliedDesc.Pants == 0) then
+									if humanoidAppliedDesc.Pants == 0 then
 										bCreateNewDefaultClothing = true
 									else
 										-- If there was ment to be a specified clothing, but it doesn't exist anymore,
@@ -5121,7 +5121,7 @@ return function(Vargs, env)
 								end
 
 
-								if (bCreateNewDefaultClothing) then
+								if bCreateNewDefaultClothing then
 									-- Set a new specified clothing.
 									local humDescClone = humanoidAppliedDesc:Clone()
 
@@ -5134,7 +5134,7 @@ return function(Vargs, env)
 								-- Set the specified clothing.
 								local playerPantsInstance = v.Character:FindFirstChildOfClass("Pants")
 
-								if (playerPantsInstance) then
+								if playerPantsInstance then
 									playerPantsInstance.PantsTemplate = clothingTemplate
 								else
 									-- Incase something went wrong
