@@ -22,12 +22,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 				local plrLevel = data.PlayerData.Level
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if plrLevel > Admin.GetLevel(v) then
 						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
@@ -367,12 +368,12 @@ return function(Vargs, env)
 				local reason = assert(args[2], "Missing reason (argument #2)")
 				local plrLevel = data.PlayerData.Level
 
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					}))
+					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
@@ -416,12 +417,12 @@ return function(Vargs, env)
 
 				local plrLevel = data.PlayerData.Level
 
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = false;
-					}))
+					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
@@ -460,12 +461,12 @@ return function(Vargs, env)
 
 				local plrLevel = data.PlayerData.Level
 
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					}))
+					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
 						local playerData = Core.GetPlayer(v)
@@ -523,12 +524,12 @@ return function(Vargs, env)
 			Description = "Shows a list of warnings a player has";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in ipairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
 					UseFakePlayer = true;
-					}))
+					})
 				do
 					local data = Core.GetPlayer(v)
 					local tab = {}
