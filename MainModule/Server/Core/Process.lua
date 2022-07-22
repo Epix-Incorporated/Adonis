@@ -55,7 +55,7 @@ return function(Vargs, GetEnv)
 
 		--// Load client onto existing players
 		if existingPlayers then
-			for i, p in ipairs(existingPlayers) do
+			for i, p in existingPlayers do
 				Core.LoadExistingPlayer(p)
 			end
 		end
@@ -408,7 +408,7 @@ return function(Vargs, GetEnv)
 				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
 				if #args > 0 and not isSystem and command.Filter or opts.Filter then
-					for i, arg in ipairs(args) do
+					for i, arg in args do
 						local cmdArg = cmdArgs[i]
 						if cmdArg then
 							if Admin.IsLax(cmdArg) == false then
@@ -478,7 +478,7 @@ return function(Vargs, GetEnv)
 
 		CrossServerChat = function(data)
 			if data then
-				for _, v in pairs(service.GetPlayers()) do
+				for _, v in service.GetPlayers() do
 					if Admin.GetLevel(v) > 0 then
 						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
@@ -522,9 +522,10 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for _, v in pairs(service.GetPlayers(p, target, {
+					for _, v in service.GetPlayers(p, target, {
 						DontError = true;
-						})) do
+						})
+					do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -680,7 +681,7 @@ return function(Vargs, GetEnv)
 					local listed = false
 
 					local CheckTable = Admin.CheckTable
-					for listName, list in pairs(Variables.Whitelist.Lists) do
+					for listName, list in Variables.Whitelist.Lists do
 						if CheckTable(p, list) then
 							listed = true
 							break;
@@ -773,7 +774,7 @@ return function(Vargs, GetEnv)
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
-			for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+			for otherPlrName, trackTargets in Variables.TrackingTable do
 				if trackTargets[p] then
 					trackTargets[p] = nil
 					local otherPlr = service.Players:FindFirstChild(otherPlrName)
@@ -805,7 +806,7 @@ return function(Vargs, GetEnv)
 			})
 
 			--// Run OnJoin commands
-			for i,v in pairs(Settings.OnJoin) do
+			for i,v in Settings.OnJoin do
 				TrackTask("Thread: OnJoin_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 				AddLog("Script", {
 					Text = "OnJoin: Executed "..tostring(v);
@@ -922,10 +923,10 @@ return function(Vargs, GetEnv)
 				--// [-150x261x247x316x246x243x238x248x302x316x261x247x316x246x234x247x247x302]
 				--// END_ReF - 100392_659
 
-				for v: Player in pairs(Variables.IncognitoPlayers) do
+				for v: Player in Variables.IncognitoPlayers do
 					if v == p then continue end
 					server.Remote.LoadCode(p, [[
-						for _, p in pairs(service.Players:GetPlayers()) do
+						for _, p in service.Players:GetPlayers() do
 							if p.UserId == ]]..v.UserId..[[ then
 								if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
 								p:Destroy()
@@ -993,7 +994,7 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Check muted
-				--[=[for ind,admin in pairs(Settings.Muted) do
+				--[=[for ind,admin in Settings.Muted do
 					if Admin.DoCheck(p, admin) then
 						Remote.LoadCode(p, [[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 					end
@@ -1005,7 +1006,7 @@ return function(Vargs, GetEnv)
 				service.Events.CharacterAdded:Fire(p, char, ...)
 
 				--// Run OnSpawn commands
-				for _, v in pairs(Settings.OnSpawn) do
+				for _, v in Settings.OnSpawn do
 					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
@@ -1018,7 +1019,7 @@ return function(Vargs, GetEnv)
 					and char:WaitForChild("Head", 5)
 					and char:WaitForChild("HumanoidRootPart", 2)
 				then
-					for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
+					for otherPlrName, trackTargets in Variables.TrackingTable do
 						if trackTargets[p] then
 							server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
 						end
