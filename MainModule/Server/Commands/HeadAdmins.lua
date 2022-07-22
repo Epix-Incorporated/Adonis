@@ -40,12 +40,13 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = args[3] or "No reason provided"
 
-				for _, v in pairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if level > Admin.GetLevel(v) then
 						Admin.AddTimeBan(v, tonumber(time), reason, plr)
 						Functions.Hint("Time-banned "..service.FormatPlayer(v).." for ".. args[2], {plr})
@@ -130,12 +131,13 @@ return function(Vargs, env)
 				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided"
 
-				for _, v in pairs(service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, args[1], {
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
-					})) do
+					})
+				do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true, plr)
 						Functions.Hint("Game-banned "..tostring(v), {plr})
