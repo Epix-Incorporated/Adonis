@@ -63,7 +63,7 @@ return function(Vargs, GetEnv)
 				DateTime = "DateTime";
 			}
 
-			for ind, t in pairs(server.Logs) do
+			for ind, t in server.Logs do
 				if t == tab then
 					return indToName[ind] or ind
 				end
@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 			end
 
 			warn("Saving command logs...")
-			
+
 			if Settings.SaveCommandLogs ~= true or Settings.DataStoreEnabled ~= true then
 				warn("Skipped saving command logs.")
 				return
@@ -122,7 +122,7 @@ return function(Vargs, GetEnv)
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				local temp = {}
 
-				for _, m in ipairs(logsToSave) do
+				for _, m in logsToSave do
 					local newTab = type(m) == "table" and service.CloneTable(m) or m
 					if type(m) == "table" and newTab.Player then
 						local p = newTab.Player
@@ -135,7 +135,7 @@ return function(Vargs, GetEnv)
 				end
 
 				if oldLogs then
-					for _, m in ipairs(oldLogs) do
+					for _, m in oldLogs do
 						table.insert(temp, m)
 					end
 				end
