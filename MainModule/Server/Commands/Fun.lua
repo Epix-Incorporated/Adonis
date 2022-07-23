@@ -372,7 +372,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Description = "Turns the target player into a doll which can be picked up";
-			Function = function(runner, args)
+			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local char = v.Character
 					if not char then
