@@ -25,7 +25,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -51,7 +51,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -77,7 +77,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -101,7 +101,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						local scr = torso:FindFirstChild("Glitchify")
@@ -121,11 +121,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				assert(args[2], "Missing FPS value")
-				assert(tonumber(args[2]), tostring(args[2]).." is not a valid number")
-				for i, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "SetFPS", tonumber(args[2]))
+				local value = assert(tonumber(args[2]), "Missing/invalid FPS value (argument #2)")
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.Send(v, "Function", "SetFPS", value)
 				end
 			end
 		};
@@ -138,7 +136,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "RestoreFPS")
 				end
 			end
@@ -161,13 +159,13 @@ return function(Vargs, env)
 				local rAssets = require(7679952474) --// This apparently caches, so don't delete anything else future usage breaks
 				local gerald = rAssets.Gerald
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
 						local human = v.Character:FindFirstChildOfClass("Humanoid");
 						if human then
-							local clone = gerald:Clone();
-							clone.Name = "__ADONIS_GERALD";
-							human:AddAccessory(clone);
+							local clone = gerald:Clone()
+							clone.Name = "__ADONIS_GERALD"
+							human:AddAccessory(clone)
 						end
 					end
 				end
@@ -182,11 +180,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character then
-						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD");
+						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD")
 						if gerald then
-							gerald:Destroy();
+							gerald:Destroy()
 						end
 					end
 				end
@@ -202,8 +200,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local wot = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
-				Remote.Send(plr, "Function", "PlayAudio", wot[math.random(1,#wot)])
+				local WOT = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
+				Remote.Send(plr, "Function", "PlayAudio", WOT[math.random(1, #WOT)])
 			end
 		};
 
@@ -308,58 +306,61 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
-				local function generate(userId)
-					local tool = Instance.new("Tool")
-					local targetName = service.Players:GetNameFromUserIdAsync(userId)
-					if service.Players:GetPlayerByUserId(userId) then
-						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
-					else
-						tool.ToolTip = "@"..targetName.." as a tool"
-					end
-					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
-					local handle = Instance.new("Part")
-					handle.Name = "Handle"
-					handle.CanCollide = false
-					handle.Transparency = 1
-					handle.Parent = tool
-					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
-					model.Name = targetName
-					local hum = model:WaitForChild("Humanoid")
-					local bHeight = hum:WaitForChild("BodyHeightScale")
-					local bDepth = hum:WaitForChild("BodyDepthScale")
-					local bWidth = hum:WaitForChild("BodyWidthScale")
-					bHeight.Value = bHeight.Value / 2
-					bDepth.Value = bDepth.Value / 2
-					bWidth.Value = bWidth.Value / 2
-					local cfr = (plr.Character:FindFirstChild("Right Arm") or plr.Character:FindFirstChild("RightFoot")).CFrame
-					handle.CFrame = cfr
-					model:FindFirstChild("Animate").Disabled = true
-					for _, obj in model:GetDescendants() do
-						if obj:IsA("BasePart") then
-							obj.Massless = true
-							obj.CanCollide = false
-						end
-					end
-					model.Parent = tool
-					model:SetPrimaryPartCFrame(cfr)
-					local weld = Instance.new("WeldConstraint")
-					weld.Part0 = handle
-					weld.Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot")
-					weld.Parent = tool
-					tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
-				end
+				local plrChar = assert(plr.Character, "You don't have a character")
+				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
 
-				if pcall(function() service.GetPlayers(plr, args[1]) end) then
-					for _, v in service.GetPlayers(plr, args[1]) do
-						generate(v.UserId)
-					end
-				else
-					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-					if success then
-						generate(id)
-					else
-						error("Unable to find target user")
-					end
+				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
+					Routine(function()
+						local targetName = service.Players:GetNameFromUserIdAsync(v.UserId)
+
+						local tool = service.New("Tool", {
+							Name = targetName;
+							ToolTip = "@"..targetName.." as a tool";
+						})
+						local handle = service.New("Part", {
+							Parent = tool;
+							Name = "Handle";
+							CanCollide = false;
+							Transparency = 1;
+						})
+
+						local model = service.Players:CreateHumanoidModelFromDescription(
+							service.Players:GetHumanoidDescriptionFromUserId(v.UserId),
+							Enum.HumanoidRigType.R15
+						)
+						model.Name = targetName
+
+						local hum = model:WaitForChild("Humanoid")
+						hum:WaitForChild("BodyHeightScale").Value /= 2
+						hum:WaitForChild("BodyDepthScale").Value /= 2
+						hum:WaitForChild("BodyWidthScale").Value /= 2
+
+						if v ~= plr then
+							handle.CFrame = cfr
+						end
+
+						model.Animate.Disabled = true
+
+						for _, obj in model:GetDescendants() do
+							if obj:IsA("BasePart") then
+								obj.Massless = true
+								obj.CanCollide = false
+							end
+						end
+
+						model.Parent = tool
+						if v ~= plr then
+							model:PivotTo(cfr)
+						end
+
+						service.New("WeldConstraint", {
+							Parent = tool;
+							Part0 = handle;
+							Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot");
+						})
+
+						tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
+					end)
 				end
 			end
 		};
@@ -370,48 +371,66 @@ return function(Vargs, env)
 			Args = {"player"};
 			Fun = true;
 			AdminLevel = "Moderators";
-			Description = "Turns a player into a doll which can be picked up";
-			Function = function(runner, args)
-				for _, plr in service.GetPlayers(runner, args[1]) do
-					if plr.Character.Parent:IsA("Tool") ~= true then
-						local tool = Instance.new("Tool")
-						tool.ToolTip = plr.DisplayName .. " as a tool, converted with Adonis."
-						tool.Name = plr.Name
-						local handle = Instance.new("Part")
-						handle.Name = "Handle"
-						handle.Transparency = 1
-						handle.Parent = tool
-						local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
-						model.Name = plr.DisplayName
-						local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
-						plr.Character:Destroy()
-						plr.Character = model
-						model:SetPrimaryPartCFrame(oldcframe)
-						local hum = model:WaitForChild("Humanoid") -- U forgot that variable
-						local bHeight = hum:WaitForChild("BodyHeightScale")
-						local bDepth = hum:WaitForChild("BodyDepthScale")
-						local bWidth = hum:WaitForChild("BodyWidthScale")
-						bHeight.Value = bHeight.Value / 2
-						bDepth.Value = bDepth.Value / 2
-						bWidth.Value = bWidth.Value / 2
-						local cfr = (plr.Character:FindFirstChild("HumanoidRootPart")).CFrame
-						handle.CFrame = cfr
+			Description = "Turns the target player into a doll which can be picked up";
+			Function = function(plr: Player, args: {string})
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local char = v.Character
+					if not char then
+						Functions.Hint(service.FormatPlayer(v).." has no character", {plr})
+						continue
+					end
+					if char.Parent and char.Parent:IsA("Tool") then
+						Functions.Hint(service.FormatPlayer(v).." is already a doll", {plr})
+						continue
+					end
+
+					Routine(function()
+						local tool = service.New("Tool", {
+							Name = v.Name;
+							ToolTip = service.FormatPlayer(v).." as a tool; converted using Adonis";
+						})
+						local handle = service.New("Part", {
+							Parent = tool;
+							Name = "Handle";
+							Transparency = 1;
+						})
+
+						local charHum = char:FindFirstChildOfClass("Humanoid")
+						local model = service.Players:CreateHumanoidModelFromDescription(
+							service.Players:GetHumanoidDescriptionFromUserId(plr.UserId),
+							if charHum then charHum.RigType else Enum.HumanoidRigType.R15
+						)
+						model.Name = v.DisplayName
+						model.PrimaryPart = model:WaitForChild("HumanoidRootPart", 1)
+
+						local pivot = char:GetPivot()
+						char:Destroy()
+						v.Character = model
+						model:PivotTo(pivot)
+
+						local hum = model:WaitForChild("Humanoid")
+						hum:WaitForChild("BodyHeightScale").Value /= 2
+						hum:WaitForChild("BodyDepthScale").Value /= 2
+						hum:WaitForChild("BodyWidthScale").Value /= 2
+
+						handle.CFrame = pivot
 						handle.CanCollide = false
 						for _, v in model:GetDescendants() do
 							if v:IsA("BasePart") then
 								v.Massless = true
 							end
 						end
+
 						model.Parent = tool
-						model:SetPrimaryPartCFrame(cfr)
-						local weld = Instance.new("WeldConstraint")
-						weld.Part0 = handle
-						weld.Part1 = model:FindFirstChild("HumanoidRootPart")
-						weld.Parent = tool
+
+						service.New("WeldConstraint", {
+							Parent = tool;
+							Part0 = handle;
+							Part1 = model.PrimaryPart;
+						})
+
 						tool.Parent = workspace
-					else
-						error("That user is already a doll!")
-					end
+					end)
 				end
 			end
 		};
@@ -1171,7 +1190,7 @@ return function(Vargs, env)
 
 						ufo.Name = "ADONIS_UFO"
 						ufo.PrimaryPart = primary
-						ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
+						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
 
 						spotLight.Enabled = false
 						particles.Enabled = false
@@ -1186,7 +1205,7 @@ return function(Vargs, env)
 							if not check() then
 								break
 							else
-								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
+								ufo:PivotTo(tPos*CFrame.new(0, 200-i, 0))
 								wait(0.001*(i/5))
 							end
 						end
@@ -1249,13 +1268,13 @@ return function(Vargs, env)
 
 							wait(1)
 
-							server.Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
+							Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
 
 							for i = 1, 260 do
 								if not check() then
 									break
 								else
-									ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
+									ufo:PivotTo(tPos*CFrame.new(0, i, 0))
 									--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
 									wait(0.001*(i/5))
 								end
@@ -1484,13 +1503,13 @@ return function(Vargs, env)
 						humanoid.WalkSpeed = 0
 						sound.Pitch = 1.3
 
-						server.Remote.PlayAudio(p, 421358540, 0.2, 1, true)
+						Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
 						for i = 1, 200 do
 							if not check() then
 								break
 							else
-								van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
+								van:PivotTo(tPos * (CFrame.new(-200+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
 								wait(0.001*(i/5))
 							end
 						end
@@ -1504,7 +1523,7 @@ return function(Vargs, env)
 						wait(0.5)
 
 						if check() then
-							torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
+							torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
 						end
 
 						wait(0.5)
@@ -1514,7 +1533,7 @@ return function(Vargs, env)
 						wait(0.5)
 
 						sound.Pitch = 1.3
-						server.Remote.MakeGui(p, "Effect", {
+						Remote.MakeGui(p, "Effect", {
 							Mode = "FadeOut";
 						})
 
@@ -1524,12 +1543,12 @@ return function(Vargs, env)
 							if not check() then
 								break
 							else
-								van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
-								torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
+								van:PivotTo(tPos * (CFrame.new(0+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
+								torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
 								wait(0.1/(i*5))
 
 								if i == 270 then
-									server.Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
+									Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
 								end
 							end
 						end
