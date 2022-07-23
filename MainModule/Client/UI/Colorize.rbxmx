@@ -58,12 +58,12 @@
 				waiting = false
 			end
 			
-			yes.MouseButton1Click:connect(function()
+			yes.MouseButton1Click:Connect(function()
 				ans = "Yes"
 				gTable:Destroy()
 			end)
 			
-			no.MouseButton1Click:connect(function()
+			no.MouseButton1Click:Connect(function()
 				ans = "No"
 				gTable:Destroy()
 			end)
@@ -76,7 +76,6 @@
 --]]
 
 service = nil
-Routine = nil
 client = nil
 
 return function(gui, guiData, gTable)
@@ -100,7 +99,7 @@ return function(gui, guiData, gTable)
 	local OrgColors = {}
 	
 	local function getCont(obj)
-		for i,v in ipairs(obj:GetChildren()) do 
+		for _, v in obj:GetChildren() do 
 			if CLASSES[v.ClassName] then
 				table.insert(contents, v)
 				local OrgColor = {}
@@ -122,9 +121,9 @@ return function(gui, guiData, gTable)
 	
 	local function tweenToColor(color1, color2, time)
 		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
-		for i2,v in ipairs(contents) do
+		for _, v in contents do
 			local orgcolor = OrgColors[v]
-			if v.Name ~= "CapeColor" and v.Name ~= "Color" then
+			if not string.match(v.Name, "Color") then
 				local v = service.UnWrap(v)
 				v.BackgroundColor3 = color1:lerp(orgcolor.Background, 0.75)
 				if orgcolor.Image then
@@ -145,12 +144,13 @@ return function(gui, guiData, gTable)
 	
 	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
 		repeat 
-			for i in ipairs(SEQUENCE) do
+			for i in SEQUENCE do
 				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]
 				
 				tweenToColor(one, two, TWEEN_TIME)
 			end
-		until not (((gTable.Active and task.wait()) or task.wait(1))) and gTable.Destroyed
+		until not task.wait(if gTable.Active then 0 else 1) and gTable.Destroyed
+		
 	end)
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
