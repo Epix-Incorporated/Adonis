@@ -78,7 +78,7 @@
 service = nil
 client = nil
 
-return function(gui, guiData, gTable)
+return function(gui: ScreenGui, guiData, gTable)
 	local TWEEN_TIME = 2
 	local SEQUENCE = {
 		Color3.fromRGB(255, 85, 88), 
@@ -101,13 +101,13 @@ return function(gui, guiData, gTable)
 	local function getCont(obj)
 		for _, v in obj:GetChildren() do 
 			if CLASSES[v.ClassName] then
-				table.insert(contents, v)
 				local OrgColor = {}
 				OrgColor.Background = v.BackgroundColor3
 				if v:IsA("ImageLabel") or v:IsA("ImageButton") then 
 					OrgColor.Image = v.ImageColor3 
 				end
 				OrgColors[v] = OrgColor
+				table.insert(contents, v)
 				getCont(v)
 			end
 		end
@@ -123,20 +123,17 @@ return function(gui, guiData, gTable)
 		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
 		for _, v in contents do
 			local orgcolor = OrgColors[v]
-			if not string.match(v.Name, "Color") then
-				local v = service.UnWrap(v)
-				v.BackgroundColor3 = color1:lerp(orgcolor.Background, 0.75)
-				if orgcolor.Image then
-					v.ImageColor3 = color1:lerp(orgcolor.Image, 0.75)
-					service.TweenService:Create(v, Info, {
-						BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75),
-						ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
-					}):Play()
-				else
-					service.TweenService:Create(v, Info, {
-						BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75)
-					}):Play()
-				end
+			v.BackgroundColor3 = color1:lerp(orgcolor.Background, 0.75)
+			if orgcolor.Image then
+				v.ImageColor3 = color1:lerp(orgcolor.Image, 0.75)
+				service.TweenService:Create(v, Info, {
+					BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75),
+					ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
+				}):Play()
+			else
+				service.TweenService:Create(v, Info, {
+					BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75)
+				}):Play()
 			end
 		end
 		task.wait(time)
