@@ -527,13 +527,15 @@ return function(Vargs, GetEnv)
 				if sub(lower(names), 1, 2) == "##" then
 					error("String passed to GetPlayers is filtered: ".. tostring(names), 2)
 				else
-					for s in gmatch(names, '([^,]+)') do
+					for s in gmatch(names, "([^,]+)") do
 						local plrs = 0
 						local function plus() plrs += 1 end
 
-						local matchFunc = checkMatch(s)
-						if matchFunc and not noSelectors then
-							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
+						if not noSelectors then
+							local matchFunc = checkMatch(s)
+							if matchFunc then
+								matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
+							end
 						else
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
@@ -554,14 +556,14 @@ return function(Vargs, GetEnv)
 							end
 
 							if plrs == 0 and useFakePlayer then
-								local ran, userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
-								if ran and tonumber(userid) then
+								local ran, userId = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
+								if ran and tonumber(userId) then
 									local fakePlayer = Functions.GetFakePlayer({
 										Name = s;
 										DisplayName = s;
+										UserId = tonumber(userId);
 										IsFakePlayer = true;
-										CharacterAppearanceId = tostring(userid);
-										UserId = tonumber(userid);
+										CharacterAppearanceId = tostring(userId);
 										Parent = service.New("Folder");
 									})
 
@@ -603,12 +605,11 @@ return function(Vargs, GetEnv)
 			local random = math.random
 			local format = string.format
 
-			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-			local Res = {};
-			for Idx = 1, Len do
-				Res[Idx] = format('%02x', random(126));
-			end;
-			return table.concat(Res)
+			local res = {}
+			for i = 1, if type(pLen) == "number" then pLen else random(5, 10) do
+				res[i] = format("%02x", random(126))
+			end
+			return table.concat(res)
 		end;
 
 
@@ -792,7 +793,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Hint = function(message, players, time)
-			time = time or (#tostring(message) / 19 + 2.5);
+			time = time or (#tostring(message) / 19 + 2.5)
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
@@ -803,7 +804,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Message = function(title, message, players, scroll, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+			time = time or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Message")
@@ -817,7 +818,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		Notify = function(title, message, players, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+			time = time or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Notify")
@@ -850,7 +851,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
 				for _, p in service.GetPlayers() do
@@ -1250,7 +1251,7 @@ return function(Vargs, GetEnv)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.
-			for _=1,2 do
+			for _ = 1, 2 do
 				if Animate then
 					Animate.Disabled = not Animate.Disabled
 				end
@@ -1259,11 +1260,15 @@ return function(Vargs, GetEnv)
 			return newCharacterModel
 		end;
 
-		CreateClothingFromImageId = function(clothingtype, Id)
-			local Clothing = Instance.new(clothingtype)
-			Clothing.Name = clothingtype
-			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
-			return Clothing
+		CreateClothingFromImageId = function(clothingType, id)
+			return service.New(clothingType, {
+				Name = clothingType;
+				[assert(if clothingType == "Shirt" then "ShirtTemplate"
+					elseif clothingType == "Pants" then "PantsTemplate"
+					elseif clothingType == "ShirtGraphic" then "Graphic"
+					else nil, "Invalid clothing type")
+				] = "rbxassetid://"..id;
+			})
 		end;
 
 		ParseColor3 = function(str: string?)
