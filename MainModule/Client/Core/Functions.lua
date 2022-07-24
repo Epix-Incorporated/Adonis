@@ -649,94 +649,101 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		NewCape = function(data)
-			local char = data.Parent
-			local material = data.Material or "Neon"
-			local color = data.Color or "White"
-			local reflect = data.Reflectance or 0
-			local decal = tonumber(data.Decal or "")
-			if char then
-				Functions.RemoveCape(char)
-				local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
-				local isR15 = (torso.Name == "UpperTorso")
-				if torso then
-					local p = service.New("Part")
-					p.Name = "ADONIS_CAPE"
-					p.Anchored = false
-					p.Position = torso.Position
-					p.Transparency = 0
-					p.Material = material
-					p.CanCollide = false
-					p.TopSurface = 0
-					p.BottomSurface = 0
-					p.Size = Vector3.new(2,4,0.1)
-					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
-					p.Parent = service.LocalContainer()
-
-					if reflect then
-						p.Reflectance = reflect
-					end
-
-					local motor1 = service.New("Motor", p)
-					motor1.Part0 = p
-					motor1.Part1 = torso
-					motor1.MaxVelocity = .01
-					motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
-					motor1.C1 = CFrame.new(0,1-((isR15 and 0.2) or 0),(torso.Size.Z/2))*CFrame.Angles(0,math.rad(90),0)
-
-					local msh = service.New("BlockMesh", p)
-					msh.Scale = Vector3.new(0.9,0.87,0.1)
-
-					local dec
-					if decal and decal ~= 0 then
-						dec = service.New("Decal", {
-							Name = "Decal";
-							Face = 2;
-							Texture = "rbxassetid://"..decal;
-							Transparency = 0;
-
-							Parent = p;
-						})
-					end
-
-					local index = Functions.GetRandom()
-					Variables.Capes[index] = {
-						Part = p;
-						Motor = motor1;
-						Enabled = true;
-						Parent = data.Parent;
-						Torso = torso;
-						Decal = dec;
-						Data = data;
-						Wave = true;
-						isR15 = isR15;
-					}
-
-					local p = service.Players:GetPlayerFromCharacter(data.Parent)
-					if p and p == service.Player then
-						Variables.Capes[index].isPlayer = true
-					end
-
-					if not Variables.CapesEnabled then
-						p.Transparency = 1
-						if dec then
-							dec.Transparency = 1
-						end
-						Variables.Capes[index].Enabled = false
-					end
-
-					Functions.MoveCapes()
-				end
+		NewCape = function(options)
+			local char = options.Parent
+			if not char then
+				return
 			end
+
+			local material = options.Material or "Neon"
+			local color = options.Color or "White"
+			local reflect = options.Reflectance or 0
+			local decalId = tonumber(options.Decal or "")
+
+			local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
+			if not (torso and torso:IsA("BasePart")) then
+				return
+			end
+
+			Functions.RemoveCape(char)
+
+			local isR15 = torso.Name == "UpperTorso"
+
+			local p = service.New("Part", {
+				Parent = service.LocalContainer();
+				Name = "ADONIS_CAPE";
+				Anchored = false;
+				CanCollide = false;
+				Size = Vector3.new(2, 4, 0.1);
+				Position = torso.Position;
+				BrickColor = BrickColor.new(color);
+				Transparency = 0;
+				Reflectance = reflect;
+				Material = material;
+				TopSurface = 0;
+				BottomSurface = 0;
+			})
+
+			service.New("BlockMesh", {
+				Parent = p;
+				Scale = Vector3.new(0.9, 0.87, 0.1);
+			})
+
+			local motor1 = service.New("Motor", {
+				Parent = p;
+				Part0 = p;
+				Part1 = torso;
+				MaxVelocity = 0.1;
+				C0 = CFrame.new(0, 1.75, 0) * CFrame.Angles(0, math.rad(90), 0);
+				C1 = CFrame.new(0, 1 - (if isR15 then 0.2 else 0), (torso.Size.Z/2)) * CFrame.Angles(0, math.rad(90), 0);
+			})
+
+			local decal = if decalId and decalId ~= 0 then service.New("Decal", {
+				Parent = p;
+				Name = "Decal";
+				Face = 2;
+				Texture = "rbxassetid://"..decalId;
+				Transparency = 0;
+			}) else nil
+
+			local capeData = {
+				Part = p;
+				Motor = motor1;
+				Enabled = true;
+				Parent = char;
+				Torso = torso;
+				Decal = decal;
+				Data = options;
+				Wave = true;
+				isR15 = isR15;
+			}
+			Variables.Capes[Functions.GetRandom()] = capeData
+
+			local p = service.Players:GetPlayerFromCharacter(char)
+			if p and p == service.Player then
+				capeData.isPlayer = true
+			end
+
+			if not Variables.CapesEnabled then
+				p.Transparency = 1
+				if decal then
+					decal.Transparency = 1
+				end
+				capeData.Enabled = false
+			end
+
+			Functions.MoveCapes()
 		end;
+
 		RemoveCape = function(parent)
-			for i,v in Variables.Capes do
+			for i, v in Variables.Capes do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
-					pcall(v.Part.Destroy,v.Part)
+					pcall(v.Part.Destroy, v.Part)
 					Variables.Capes[i] = nil
 				end
 			end
 		end;
+
 		HideCapes = function(hide)
 			for i,v in Variables.Capes do
 				local torso = v.Torso
