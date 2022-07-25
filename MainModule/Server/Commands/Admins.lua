@@ -1333,9 +1333,9 @@ return function(Vargs, env)
 				do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, false, plr)
-						Functions.Hint("Server-banned "..tostring(v), {plr})
+						Functions.Hint("Server-banned "..service.FormatPlayer(v, true), {plr})
 					else
-						Functions.Hint("Unable to ban "..tostring(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1343,21 +1343,17 @@ return function(Vargs, env)
 
 		UnBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"unban"};
+			Commands = {"unban", "unserverban"};
 			Args = {"player"};
-			Description = "Un-bans the target player(s)";
+			Description = "Un-bans the target player(s) from the server";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Argument #1 (player) is required")
+				assert(args[1], "Missing user (argument #1)")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local ret = Admin.RemoveBan(v.Name)
-					if ret then
-						if type(ret) == "table" then
-							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
-						else
-							ret = tostring(ret)
-						end
-						Functions.Hint(ret.. " has been unbanned", {plr})
+					if Admin.RemoveBan(v.Name) then
+						Functions.Hint(service.FormatPlayer(v, true).." has been unbanned", {plr})
+					else
+						Functions.Hint(service.FormatPlayer(v, true).." is not currently banned", {plr})
 					end
 				end
 			end
@@ -1419,8 +1415,8 @@ return function(Vargs, env)
 			Description = "Same as message but says whatever you want upper message to be instead of your name.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message title")
-				assert(args[2], "Missing message")
+				assert(args[1], "Missing message title (argument #1)")
+				assert(args[2], "Missing message (argument #2)")
 				for _, v in service.Players:GetPlayers() do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
