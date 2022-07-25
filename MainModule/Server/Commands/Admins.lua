@@ -499,8 +499,7 @@ return function(Vargs, env)
 			Description = "Sets the ban message banned players see";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing player name")
-				Variables.BanMessage = args[1]
+				Variables.BanMessage = assert(args[1], "Missing message (argument #1)")
 			end
 		};
 
@@ -512,8 +511,7 @@ return function(Vargs, env)
 			Description = "Sets the lock message unwhitelisted players see if :whitelist or :slock is on";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing unwhitelisted message")
-				Variables.LockMessage = args[1]
+				Variables.LockMessage = assert(args[1], "Missing message (argument #1)")
 			end
 		};
 
@@ -525,7 +523,7 @@ return function(Vargs, env)
 			Description = "Same as message but says SYSTEM MESSAGE instead of your name, or whatever system message title is server to...";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message")
+				assert(args[1], "Missing message (argument #1)")
 				for _, v in service.Players:GetPlayers() do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
@@ -539,10 +537,13 @@ return function(Vargs, env)
 		SetCoreGuiEnabled = {
 			Prefix = Settings.Prefix;
 			Commands = {"setcoreguienabled", "setcoreenabled", "showcoregui", "setcoregui", "setcgui", "setcore", "setcge"};
-			Args = {"player", "element", "true/false"};
+			Args = {"player", "All/Backpack/Chat/EmotesMenu/Health/PlayerList", "true/false"};
 			Description = "Enables or disables CoreGui elements for the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
+				assert(args[3], "Missing state (argument #3)")
+				local enable = if args[3]:lower() == "on" or args[3]:lower() == "true" then true elseif args[3]:lower() == "off" or args[3]:lower() == "false" then false else nil
+				assert(enable ~= nil, "Invalid state '"..args[3].."'; please supply 'true' or 'false' (argument #3)")
 				for _,v in service.GetPlayers(plr, args[1]) do
 					if string.lower(args[3]) == "on" or string.lower(args[3]) == "true" then
 						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], true)
@@ -574,9 +575,9 @@ return function(Vargs, env)
 			Description = "Locks the map";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, Obj in workspace:GetDescendants()do
-					if Obj:IsA("BasePart")then
-						Obj.Locked = true
+				for _, obj in workspace:GetDescendants()do
+					if obj:IsA("BasePart")then
+						obj.Locked = true
 					end
 				end
 			end
@@ -589,9 +590,9 @@ return function(Vargs, env)
 			Description = "Unlocks the map";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, Obj in workspace:GetDescendants()do
-					if Obj:IsA("BasePart")then
-						Obj.Locked = false
+				for _, obj in workspace:GetDescendants()do
+					if obj:IsA("BasePart")then
+						obj.Locked = false
 					end
 				end
 			end
