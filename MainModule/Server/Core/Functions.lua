@@ -45,7 +45,7 @@ return function(Vargs, GetEnv)
 				Prefix = true;
 				Absolute = true;
 				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					table.insert(players,plr)
+					table.insert(players, plr)
 					plus()
 				end;
 			};
@@ -64,7 +64,7 @@ return function(Vargs, GetEnv)
 							local p = getplr(v)
 							if p and sub(lower(p.Name), 1, #msg)==lower(msg) then
 								everyone = false
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -74,7 +74,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -99,7 +99,7 @@ return function(Vargs, GetEnv)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and p ~= plr then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -119,7 +119,7 @@ return function(Vargs, GetEnv)
 					for _,v in players do
 						if v.Name == p.Name then
 							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
-							return;
+							return
 						end
 					end
 
@@ -151,7 +151,7 @@ return function(Vargs, GetEnv)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and not Admin.CheckAdmin(p,false) then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -166,7 +166,7 @@ return function(Vargs, GetEnv)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and p:IsFriendsWith(plr.UserId) then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -184,7 +184,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.Name == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
@@ -207,7 +207,7 @@ return function(Vargs, GetEnv)
 								for _,m in parent:GetChildren() do
 									local p = getplr(m)
 									if p and p.TeamColor == v.TeamColor then
-										table.insert(players,p)
+										table.insert(players, p)
 										plus()
 									end
 								end
@@ -225,7 +225,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p:IsInGroup(tonumber(matched)) then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -242,7 +242,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.UserId == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
@@ -276,7 +276,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.DisplayName == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
@@ -318,7 +318,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p:IsInGroup(matched) then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -338,7 +338,7 @@ return function(Vargs, GetEnv)
 						for i,v in players do
 							for k,p in removes do
 								if p and v.Name == p.Name then
-									table.remove(players,i)
+									table.remove(players, i)
 									plus()
 								end
 							end
@@ -372,7 +372,7 @@ return function(Vargs, GetEnv)
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr, "Output", {Message = "Invalid number!"})
 							return;
 						end
 
@@ -428,6 +428,11 @@ return function(Vargs, GetEnv)
 				data[i] = v
 			end
 
+			local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
+			if success then
+				data.Name = actualName
+			end
+
 			data.userId = data.UserId
 			data.ToString = data.Name
 
@@ -439,12 +444,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
 
 			if chatMod then
-				return require(chatMod);
+				return require(chatMod)
 			end
+			return nil
 		end;
 
 		IsClass = function(obj, classList)
@@ -453,6 +459,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
+			return false
 		end;
 
 		ArgsToString = function(args)
@@ -792,19 +799,19 @@ return function(Vargs, GetEnv)
 			end))
 		end;
 
-		Hint = function(message, players, time)
-			time = time or (#tostring(message) / 19 + 2.5)
+		Hint = function(message, players, duration)
+			duration = duration or (#tostring(message) / 19 + 2.5)
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Message = function(title, message, players, scroll, time)
-			time = time or (#tostring(message) / 19) + 2.5
+		Message = function(title, message, players, scroll, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Message")
@@ -812,30 +819,30 @@ return function(Vargs, GetEnv)
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = time
+					Time = duration;
 				})
 			end
 		end;
 
-		Notify = function(title, message, players, time)
-			time = time or (#tostring(message) / 19) + 2.5
+		Notify = function(title, message, players, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Notify")
 				Remote.MakeGui(v, "Notify", {
 					Title = title;
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Notification = function(title, message, players, tim, icon)
+		Notification = function(title, message, players, duration, icon)
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
-					Time = tim;
+					Time = duration;
 					Icon = server.MatIcons[icon or "Info"];
 				})
 			end
