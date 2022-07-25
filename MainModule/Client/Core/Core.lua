@@ -346,7 +346,7 @@ return function(Vargs, GetEnv)
 							if table.isfrozen and not table.isfrozen(_G) or not table.isfrozen then
 								rawset(_G, "Adonis", AdonisGTable)
 							else
-								warn("ADONIS CRITICAL WARNING! MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND IT CAN'T BE SET BACK! PLEASE SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE IF POSSIBLE!")
+								warn("::ADONIS CRITICAL:: MALICIOUS CODE IS TRYING TO CHANGE THE ADONIS _G API AND CANNOT BE SET BACK! SHUTDOWN THE SERVER AND REMOVE THE MALICIOUS CODE!")
 							end
 						end
 					end, true)
