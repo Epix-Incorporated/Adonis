@@ -407,7 +407,7 @@ return function(Vargs, GetEnv)
 				UserId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
-				CharacterAppearanceId = 0;
+				CharacterAppearanceId = if options.UserId then tostring(options.UserId) else "0";
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
@@ -477,7 +477,7 @@ return function(Vargs, GetEnv)
 			local isServer = data and data.IsServer
 			local isKicking = data and data.IsKicking
 			--local noID = data and data.NoID;
-			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true
+			local useFakePlayer = data and data.UseFakePlayer
 
 			local players = {}
 			--local prefix = (data and data.Prefix) or Settings.SpecialPrefix
@@ -582,7 +582,8 @@ return function(Vargs, GetEnv)
 
 						if plrs == 0 and not dontError then
 							Remote.MakeGui(plr, "Output", {
-								Message = "No players matching '"..s.."' were found!"
+								Message = if useFakePlayer then "No user named '"..s.."' exists"
+									else "No players matching '"..s.."' were found!";
 							})
 						end
 					end
