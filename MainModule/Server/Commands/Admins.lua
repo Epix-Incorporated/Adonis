@@ -41,11 +41,12 @@ return function(Vargs, env)
 
 		SetRank = {
 			Prefix = Settings.Prefix;
-			Commands = {"setrank", "setadminrank"};
-			Args = {"player", "rank"};
-			Description = "Sets the target player(s) admin rank; THIS SAVES!";
+			Commands = {"setrank", "permrank", "permsetrank"};
+			Args = {"player/user", "rank"};
+			Description = "Sets the admin rank of the target user(s); THIS SAVES!";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				assert(args[1], "Missing target user (argument #1)")
 				local rankName = assert(args[2], "Missing rank name (argument #2)")
 
 				local newRank = Settings.Ranks[rankName]
@@ -65,10 +66,13 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-				for _, p in Functions.GetPlayers(plr, args[1], {UseFakePlayer = true})do
-					if senderLevel > Admin.GetLevel(p) then
-						Admin.AddAdmin(p, rankName)
-						Remote.MakeGui(p, "Notification", {
+				for _, v in service.GetPlayers(plr, args[1], {
+					UseFakePlayer = true;
+					})
+				do
+					if senderLevel > Admin.GetLevel(v) then
+						Admin.AddAdmin(v, rankName)
+						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = string.format("You are %s%s. Click to view commands.", if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
@@ -76,9 +80,9 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
 					else
-						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p), {plr})
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v), {plr})
 					end
 				end
 			end;
@@ -86,11 +90,12 @@ return function(Vargs, env)
 
 		SetTempRank = {
 			Prefix = Settings.Prefix;
-			Commands = {"settemprank", "settempadminrank", "tempsetrank"};
+			Commands = {"settemprank", "temprank", "tempsetrank"};
 			Args = {"player", "rank"};
 			Description = "Identical to "..Settings.Prefix.."setrank, but doesn't save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				assert(args[1], "Missing target player (argument #1)")
 				local rankName = assert(args[2], "Missing rank name (argument #2)")
 
 				local newRank = Settings.Ranks[rankName]
@@ -110,20 +115,19 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-				for _, p in service.GetPlayers(plr, args[1]) do
-					if senderLevel > Admin.GetLevel(p) then
-						Admin.AddAdmin(p, rankName, true)
-						Remote.MakeGui(p, "Notification", {
+				for _, v in service.GetPlayers(plr, args[1]) do
+					if senderLevel > Admin.GetLevel(v) then
+						Admin.AddAdmin(v, rankName, true)
+						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = "You are a temp "..rankName..". Click to view commands.";
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-
-						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
 					else
-						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p), {plr})
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v, true), {plr})
 					end
 				end
 			end;
@@ -133,108 +137,103 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"setlevel", "setadminlevel"};
 			Args = {"player", "level"};
-			Description = "Sets the target player(s) permission level for the current server; Does not save";
+			Description = "Sets the target player(s) permission level for the current server; does not save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				local senderLevel = data.PlayerData.Level;
-				local newLevel = assert(tonumber(args[2]), "Level must be a number");
+				local senderLevel = data.PlayerData.Level
+				local newLevel = assert(tonumber(args[2]), "Level must be a number")
 
 				assert(newLevel < senderLevel, "Level cannot be equal to or above your own permission level (".. senderLevel ..")");
 
-				for _, p in service.GetPlayers(plr, args[1])do
-					if senderLevel > Admin.GetLevel(p) then
-						Admin.SetLevel(p, newLevel)--, args[3] == "true")
-						Remote.MakeGui(p, "Notification", {
+				for _, v in service.GetPlayers(plr, args[1])do
+					if senderLevel > Admin.GetLevel(v) then
+						Admin.SetLevel(v, newLevel)--, args[3] == "true")
+						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
 							Message = "Your admin permission level was set to "..newLevel.." for this server only. Click to view commands.";
 							Icon = server.MatIcons.Shield;
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-
-						Functions.Hint(service.FormatPlayer(p).." is now permission level ".. newLevel, {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is now permission level "..newLevel, {plr})
 					else
-						Functions.Hint("You do not have permission to set the permission level of "..service.FormatPlayer(p), {plr})
+						Functions.Hint("You do not have permission to set the permission level of "..service.FormatPlayer(v, true), {plr})
 					end
 				end
 			end;
 		};
 
-
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
-			Args = {"player", "temp? (true/false) (default: false)"};
-			Description = "Removes the target players' admin/moderator rank; saves unless <temp> is 'true'";
+			Args = {"player/user", "temp? (true/false) (default: false)"};
+			Description = "Removes admin/moderator ranks from the target player(s); saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing target player (argument #1)")
+				local temp = args[2] and args[2]:lower() == "true"
+				local senderLevel = data.PlayerData.Level
 
-				local temp = args[2] ~= "true";
-				local sendLevel = data.PlayerData.Level
-				local plrs = service.GetPlayers(plr, args[1], {
+				local userFound = false
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
 					UseFakePlayer = true;
-				})
-
-				if plrs and #plrs > 0 then
-					for _, v in plrs do
-						local targLevel, targRank = Admin.GetLevel(v)
-						if targLevel > 0 then
-							if sendLevel > targLevel then
-								Admin.RemoveAdmin(v, temp, temp)
-								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v), targRank or "[unknown rank]"), {plr})
-								Remote.MakeGui(v, "Notification", {
-									Title = "Notification";
-									Message = string.format("You are no longer a(n) %s", targRank or "admin");
-									Icon = server.MatIcons["Remove moderator"];
-									Time = 10;
-								})
-							else
-								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s rank", {plr})
-							end
+					AllowUnknownUsers = true;
+					DontError = true;
+					})
+				do
+					userFound = true
+					local targLevel, targRank = Admin.GetLevel(v)
+					if targLevel > 0 then
+						if senderLevel > targLevel then
+							Admin.RemoveAdmin(v, temp, temp)
+							Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = string.format("You are no longer a(n) %s", targRank or "admin");
+								Icon = server.MatIcons["Remove moderator"];
+								Time = 10;
+							})
 						else
-							Functions.Hint(service.FormatPlayer(v).." does not already have any rank to remove", {plr})
+							Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s rank", {plr})
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v, true).." does not already have any rank to remove", {plr})
 					end
 				end
 
-				if sendLevel < 900 then
-					error("Player not found. Try the full username or use id-USERSIDHERE");
+				if userFound then return end
+
+				if senderLevel < 900 then
+					error("User not found; try the full username or use id-USERSIDHERE");
 				else
-					if sendLevel < 900 then
-						error("Player not found; try the full username or use id-USERSIDHERE")
-					else
-						local checkThis = args[1];
-						local found = false;
+					local checkThis = args[1]
 
-						for rank, data in Settings.Ranks do
-							if sendLevel > data.Level then
-								for i, user in data.Users do
-									if Admin.DoCheck(checkThis, user) then
-										local ans = Remote.GetGui(plr, "YesNoPrompt", {
-											Question = "Remove '"..tostring(user).."' from '".. rank .."'?";
-										})
+					for rankName, rankData in Settings.Ranks do
+						if senderLevel > rankData.Level then
+							for i, user in rankData.Users do
+								if Admin.DoCheck(checkThis, user) then
+									local ans = Remote.GetGui(plr, "YesNoPrompt", {
+										Question = "Remove '"..tostring(user).."' from '".. rankName .."'?";
+									})
 
-										if ans == "Yes" then
-											table.remove(data.Users, i)
-											if not temp and Settings.SaveAdmins then
-												service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
-													Type = "TableRemove";
-													Table = {"Settings", "Ranks", rank, "Users"};
-													Value = user;
-												});
-												Functions.Hint("Removed ".. tostring(user) .." from ".. rank, {plr})
-												Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rank))
+									if ans == "Yes" then
+										table.remove(rankData.Users, i)
+										if not temp and Settings.SaveAdmins then
+											service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+												Type = "TableRemove";
+												Table = {"Settings", "Ranks", rankName, "Users"};
+												Value = user;
+											});
+											Functions.Hint("Removed entry '"..tostring(user).."'' from "..rankName, {plr})
+											Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
 
-											end
 										end
-										found = true
 									end
+									userFound = true
 								end
 							end
 						end
-						assert(found, "No table entries matching '".. checkThis .."' were found")
 					end
+					assert(userFound, "No table entries matching '".. checkThis .."' were found")
 				end
 			end
 		};
@@ -246,29 +245,25 @@ return function(Vargs, env)
 			Description = "Removes the target players' admin powers for this server; does not save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing target player (argument #1)")
+				local senderLevel = data.PlayerData.Level
 
-				local sendLevel = data.PlayerData.Level
-				local plrs = service.GetPlayers(plr, args[1], {DontError = true;})
-				if plrs and #plrs > 0 then
-					for _, v in plrs do
-						local targLevel = Admin.GetLevel(v)
-						if targLevel > 0 then
-							if sendLevel > targLevel then
-								Admin.RemoveAdmin(v,true)
-								Functions.Hint("Removed "..service.FormatPlayer(v).."'s admin powers", {plr})
-								Remote.MakeGui(v, "Notification", {
-									Title = "Notification";
-									Message = "Your admin powers have been temporarily removed";
-									Icon = server.MatIcons["Remove moderator"];
-									Time = 10;
-								})
-							else
-								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v).."'s admin powers", {plr})
-							end
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+					local targetLevel = Admin.GetLevel(v)
+					if targetLevel > 0 then
+						if senderLevel > targetLevel then
+							Admin.RemoveAdmin(v, true)
+							Functions.Hint("Removed "..service.FormatPlayer(v).."'s admin powers", {plr})
+							Remote.MakeGui(v, "Notification", {
+								Title = "Notification";
+								Message = "Your admin powers have been temporarily removed";
+								Icon = server.MatIcons["Remove moderator"];
+								Time = 10;
+							})
 						else
-							Functions.Hint(service.FormatPlayer(v).." is not an admin", {plr})
+							Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s admin powers", {plr})
 						end
+					else
+						Functions.Hint(service.FormatPlayer(v, true).." is not an admin", {plr})
 					end
 				end
 			end
@@ -281,10 +276,10 @@ return function(Vargs, env)
 			Description = "Makes the target player(s) a temporary moderator; does not save";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing target player (argument #1)")
-				local sendLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if sendLevel > Admin.GetLevel(v) then
+				local senderLevel = data.PlayerData.Level
+
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)")) do
+					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators", true)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -293,9 +288,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a temp moderator", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is now a temp moderator", {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -303,15 +298,18 @@ return function(Vargs, env)
 
 		Moderator = {
 			Prefix = Settings.Prefix;
-			Commands = {"permmod", "pmod", "mod", "moderator"};
-			Args = {"player"};
+			Commands = {"permmod", "pmod", "mod", "moderator", "pmoderator"};
+			Args = {"player/user"};
 			Description = "Makes the target player(s) a moderator; saves";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
-				assert(args[1], "Missing target player (argument #1)")
-				local sendLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if sendLevel > Admin.GetLevel(v) then
+				local senderLevel = data.PlayerData.Level
+
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
+					UseFakePlayer = true;
+					})
+				do
+					if senderLevel > Admin.GetLevel(v) then
 						Admin.AddAdmin(v, "Moderators")
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification";
@@ -320,9 +318,9 @@ return function(Vargs, env)
 							Time = 10;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a moderator", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is now a moderator", {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(service.FormatPlayer(v, true).." is already the same admin level as you or higher", {plr})
 					end
 				end
 			end
@@ -1201,10 +1199,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1224,10 +1219,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1247,10 +1239,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1270,10 +1259,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1316,26 +1302,25 @@ return function(Vargs, env)
 
 		ServerBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"ban", "serverban"};
-			Args = {"player", "reason"};
-			Description = "Bans the player from the server";
+			Commands = {"serverban", "ban"};
+			Args = {"player/user", "reason"};
+			Description = "Bans the target player(s) from the server";
 			AdminLevel = "Admins";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local level = data.PlayerData.Level
-				local reason = args[2] or "No reason provided";
+				local reason = args[2] or "No reason provided"
+
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
 					})
 				do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, false, plr)
-						Functions.Hint("Server-banned "..tostring(v), {plr})
+						Functions.Hint("Server-banned "..service.FormatPlayer(v, true), {plr})
 					else
-						Functions.Hint("Unable to ban "..tostring(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1343,21 +1328,17 @@ return function(Vargs, env)
 
 		UnBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"unban"};
-			Args = {"player"};
-			Description = "Un-bans the target player(s)";
+			Commands = {"unserverban", "unban"};
+			Args = {"user"};
+			Description = "Un-bans the target user(s) from the server";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Argument #1 (player) is required")
+				assert(args[1], "Missing user (argument #1)")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local ret = Admin.RemoveBan(v.Name)
-					if ret then
-						if type(ret) == "table" then
-							ret = tostring(ret.Name) .. ":" .. tostring(ret.UserId)
-						else
-							ret = tostring(ret)
-						end
-						Functions.Hint(ret.. " has been unbanned", {plr})
+					if Admin.RemoveBan(v.Name) then
+						Functions.Hint(service.FormatPlayer(v, true).." has been unbanned", {plr})
+					else
+						Functions.Hint(service.FormatPlayer(v, true).." is not currently banned", {plr})
 					end
 				end
 			end
@@ -1366,7 +1347,7 @@ return function(Vargs, env)
 		TrelloBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"trelloban"};
-			Args = {"player", "reason"};
+			Args = {"player/user", "reason"};
 			Description = "Adds a user to the Trello ban list (Trello needs to be configured)";
 			Filter = true;
 			CrossServerDenied = true;
@@ -1383,8 +1364,6 @@ return function(Vargs, env)
 				local reason = string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
 					UseFakePlayer = true;
 					})
@@ -1401,7 +1380,7 @@ return function(Vargs, env)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
 							Icon = server.MatIcons.Gavel;
-							Message = "Trello banned ".. (v and tostring(v.Name) or tostring(v));
+							Message = "Trello-banned ".. service.FormatPlayer(v, true);
 							Time = 5;
 						})
 					end
@@ -1419,8 +1398,8 @@ return function(Vargs, env)
 			Description = "Same as message but says whatever you want upper message to be instead of your name.";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Missing message title")
-				assert(args[2], "Missing message")
+				assert(args[1], "Missing message title (argument #1)")
+				assert(args[2], "Missing message (argument #2)")
 				for _, v in service.Players:GetPlayers() do
 					Remote.RemoveGui(v, "Message")
 					Remote.MakeGui(v, "Message", {
