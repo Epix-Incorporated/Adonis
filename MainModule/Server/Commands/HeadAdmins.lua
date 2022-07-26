@@ -48,7 +48,7 @@ return function(Vargs, env)
 
 		DirectTimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
+			Commands = {"directtimeban", "directtimedban", "directtempban", "directtban", "directtemporaryban"};
 			Args = {"username(s)", "number<s/m/h/d>", "reason"};
 			Description = "Bans the target user(s) from the game for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
