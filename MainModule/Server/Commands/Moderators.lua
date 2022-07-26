@@ -23,10 +23,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local plrLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -359,7 +356,7 @@ return function(Vargs, env)
 		Warn = {
 			Prefix = Settings.Prefix;
 			Commands = {"warn", "warning"};
-			Args = {"player", "reason"};
+			Args = {"player/user", "reason"};
 			Filter = true;
 			Description = "Warns players";
 			AdminLevel = "Moderators";
@@ -369,9 +366,6 @@ return function(Vargs, env)
 				local plrLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = false;
 					UseFakePlayer = true;
 					})
 				do
@@ -386,7 +380,7 @@ return function(Vargs, env)
 
 						Remote.RemoveGui(v, "Notify")
 						Remote.MakeGui(v, "Notify", {
-							Title = "Warning from ".. plr.Name;
+							Title = "Warning from "..service.FormatPlayer(plr);
 							Message = reason;
 						})
 
@@ -407,7 +401,7 @@ return function(Vargs, env)
 		KickWarn = {
 			Prefix = Settings.Prefix;
 			Commands = {"kickwarn", "kwarn", "kickwarning"};
-			Args = {"player", "reason"};
+			Args = {"player/user", "reason"};
 			Filter = true;
 			Description = "Warns & kicks a player";
 			AdminLevel = "Moderators";
@@ -418,10 +412,8 @@ return function(Vargs, env)
 				local plrLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = false;
+					UseFakePlayer = true;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -433,7 +425,12 @@ return function(Vargs, env)
 						})
 
 						service.Events.WarningAdded:Fire(v, reason, plr)
-						v:Kick(string.format("\n[Warning from %s]\nReason: %s", plr.Name, reason))
+
+						if typeof(v) == "Instance" then
+							v:Kick(string.format("\n[Warning from %s]\nReason: %s", service.FormatPlayer(plr), reason))
+						else
+							Core.CrossServer("RemovePlayer", v.Name, "Warning from "..service.FormatPlayer(plr), reason)
+						end
 
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
@@ -452,7 +449,7 @@ return function(Vargs, env)
 		RemoveWarning = {
 			Prefix = Settings.Prefix;
 			Commands = {"removewarning", "unwarn"};
-			Args = {"player", "warning reason"};
+			Args = {"player/user", "warning reason"};
 			Description = "Removes the specified warning from the target player";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -462,9 +459,6 @@ return function(Vargs, env)
 				local plrLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = false;
 					UseFakePlayer = true;
 					})
 				do
@@ -2756,7 +2750,7 @@ return function(Vargs, env)
 					off = "off"
 				}
 				local chatColor = args[2] and CHAT_COLORS[args[2]:lower()] or CHAT_COLORS.red
-				for _, v in service.GetPlayers(plr,(args[1] or plr.Name)) do
+				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.MakeGui(v, "BubbleChat", {Color = chatColor;})
 				end
 			end
@@ -4556,164 +4550,74 @@ return function(Vargs, env)
 		Teleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"tp", "teleport", "transport"};
-			Args = {"player1", "player2"};
-			Description = "Teleport player1(s) to player2, a waypoint, or specific coords, use :tp player1 waypoint-WAYPOINTNAME to use waypoints, x,y,z for coords";
+			Args = {"player", "destination ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>'')"};
+			Description = "Teleports the target player(s) to the specified player, waypoint or coordinates";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				if string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)") then
-					local m = string.match(args[2], "^waypoint%-(.*)") or string.match(args[2], "wp%-(.*)")
-					local point
+				assert(args[1], "Missing player (argument #1)")
+				assert(args[2], "Missing destination (argument #2)")
 
-					for i, v in Variables.Waypoints do
-						if string.sub(string.lower(i), 1, #m)==string.lower(m) then
-							point=v
-						end
-					end
-
+				local function teleportPlayers(destination: Vector3)
 					for _, v in service.GetPlayers(plr, args[1]) do
-						if point then
-							if not v.Character then
-								continue
-							end
-							if workspace.StreamingEnabled == true then
-								v:RequestStreamAroundAsync(point)
-							end
-							local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-							local root = (Humanoid and Humanoid.RootPart or v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
-							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
-							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
-							if Humanoid then
-								if Humanoid.SeatPart~=nil then
-									Functions.RemoveSeatWelds(Humanoid.SeatPart)
-								end
-								if Humanoid.Sit then
-									Humanoid.Sit = false
-									Humanoid.Jump = true
-								end
-							end
-							if FlightPos and FlightGyro then
-								FlightPos.Position = root.Position
-								FlightGyro.CFrame = root.CFrame
-							end
+						local rootPart = v.Character and (v.Character.PrimaryPart or v.Character:FindFirstChild("HumanoidRootPart"))
+						if not (rootPart and rootPart:IsA("BasePart")) then
+							continue
+						end
 
-							wait()
-							if root then
-								root.CFrame = CFrame.new(point)
-								if FlightPos and FlightGyro then
-									FlightPos.Position = root.Position
-									FlightGyro.CFrame = root.CFrame
-								end
-							end
+						if workspace.StreamingEnabled then
+							v:RequestStreamAroundAsync(destination)
 						end
-					end
 
-					if not point then Functions.Hint("Waypoint "..m.." was not found.", {plr}) end
-				elseif string.find(args[2], ",") then
-					local x, y, z = string.match(args[2], "(.*),(.*),(.*)")
-					for _, v in service.GetPlayers(plr, args[1]) do
-						if not v.Character or not v.Character:FindFirstChild("HumanoidRootPart") then continue end
+						local hum = v.Character:FindFirstChildOfClass("Humanoid")
+						if hum then
+							if hum.SeatPart then
+								Functions.RemoveSeatWelds(hum.SeatPart)
+							end
+							if hum.Sit then
+								hum.Sit = false
+								hum.Jump = true
+							end
+						end
 
-						if workspace.StreamingEnabled == true then
-							v:RequestStreamAroundAsync(Vector3.new(x,y,z))
+						local flightPosObject = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local flightGyroObject = rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+							flightPosObject.Position = rootPart.Position
 						end
-						local Humanoid = v.Character:FindFirstChildOfClass("Humanoid")
-						local root = v.Character:FindFirstChild('HumanoidRootPart')
-						local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
-						local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
-						if Humanoid then
-							if Humanoid.SeatPart~=nil then
-								Functions.RemoveSeatWelds(Humanoid.SeatPart)
-							end
-							if Humanoid.Sit then
-								Humanoid.Sit = false
-								Humanoid.Jump = true
-							end
+						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+							flightGyroObject.CFrame = rootPart.CFrame
 						end
-						if FlightPos and FlightGyro then
-							FlightPos.Position = root.Position
-							FlightGyro.CFrame = root.CFrame
-						end
+
 						wait()
-						root.CFrame = CFrame.new(Vector3.new(tonumber(x), tonumber(y), tonumber(z)))
-						if FlightPos and FlightGyro then
-							FlightPos.Position = root.Position
-							FlightGyro.CFrame = root.CFrame
+						--rootPart.Position = destination
+						v.Character:MoveTo(destination)
+
+						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+							flightPosObject.Position = rootPart.Position
+						end
+						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+							flightGyroObject.CFrame = rootPart.CFrame
 						end
 					end
+				end
+
+				local waypointName = args[2]:lower():match("^waypoint%-(.*)")
+				if waypointName then
+					for name, pos in Variables.Waypoints do
+						if name:lower() == waypointName:lower() then
+							teleportPlayers(pos)
+							return
+						end
+					end
+					error("No waypoint named '"..waypointName.."' exists", 2)
 				else
-					local target = service.GetPlayers(plr, args[2])[1]
-					local players = service.GetPlayers(plr, args[1])
-					if #players == 1 and players[1] == target then
-						local n = players[1]
-						if n.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
-							local Humanoid = n.Character:FindFirstChildOfClass("Humanoid")
-							local root = n.Character:FindFirstChild('HumanoidRootPart')
-							local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
-							local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
-
-							if workspace.StreamingEnabled == true then
-								n:RequestStreamAroundAsync((target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
-							end
-
-							if Humanoid then
-								if Humanoid.SeatPart~=nil then
-									Functions.RemoveSeatWelds(Humanoid.SeatPart)
-								end
-								if Humanoid.Sit then
-									Humanoid.Sit = false
-									Humanoid.Jump = true
-								end
-							end
-							if FlightPos and FlightGyro then
-								FlightPos.Position = root.Position
-								FlightGyro.CFrame = root.CFrame
-							end
-							wait()
-							root.CFrame = (target.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, math.rad(90/#players*1), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
-							if FlightPos and FlightGyro then
-								FlightPos.Position = root.Position
-								FlightGyro.CFrame = root.CFrame
-							end
-						end
+					local x, y, z = args[2]:match("^(%d+),(%d+),(%d+)$")
+					if x then
+						teleportPlayers(Vector3.new(x, y, z))
 					else
-						local targ_root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-						if targ_root then
-							for k, n in players do
-								if n ~= target then
-									local Character = n.Character
-									if not Character then continue end
-									if workspace.StreamingEnabled == true then
-										n:RequestStreamAroundAsync((targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0).Position)
-									end
-
-									local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
-									local root = Character:FindFirstChild('HumanoidRootPart')
-									local FlightPos = root:FindFirstChild("ADONIS_FLIGHT_POSITION")
-									local FlightGyro = root:FindFirstChild("ADONIS_FLIGHT_GYRO")
-									if Humanoid then
-										if Humanoid.SeatPart ~= nil then
-											Functions.RemoveSeatWelds(Humanoid.SeatPart)
-										end
-										if Humanoid.Sit then
-											Humanoid.Sit = false
-											Humanoid.Jump = true
-										end
-									end
-									if FlightPos and FlightGyro then
-										FlightPos.Position = root.Position
-										FlightGyro.CFrame = root.CFrame
-									end
-									wait()
-									if root and targ_root then
-										root.CFrame = (targ_root.CFrame*CFrame.Angles(0, math.rad(90/#players*k), 0)*CFrame.new(5+.2*#players, 0, 0))*CFrame.Angles(0, math.rad(90), 0)
-										if FlightPos and FlightGyro then
-											FlightPos.Position = root.Position
-											FlightGyro.CFrame = root.CFrame
-										end
-									end
-								end
-							end
-						end
+						local target = service.GetPlayers(plr, args[2])[1]
+						assert(target.Character, "Destination player has no character")
+						teleportPlayers(Vector3.new(target.Character:GetPivot()))
 					end
 				end
 			end
@@ -4721,22 +4625,19 @@ return function(Vargs, env)
 
 		Bring = {
 			Prefix = Settings.Prefix;
-			Commands = {"bring", "tptome"};
+			Commands = {"bring"};
 			Args = {"player"};
-			Description = "Teleport the target(s) to you";
+			Description = "Teleports the target player(s) to your position";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				args[1] = args[1] or Settings.SpecialPrefix.."me"
-				local players = service.GetPlayers(plr, args[1])
+				local players = service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"))
 				if #players < 10 or not Commands.MassBring or Remote.GetGui(plr, "YesNoPrompt", {
 					Title = "Suggestion";
 					Icon = server.MatIcons.Feedback;
 					Question = "Would you like to use "..Settings.Prefix.."massbring instead? (Arranges the "..#players.." players in rows.)";
 					}) ~= "Yes"
 				then
-					for _, v in players do
-						task.defer(Commands.Teleport.Function, plr, {v.Name, plr.Name})
-					end
+					Commands.Teleport.Function(plr, {args[1], "@"..plr.Name})
 				else
 					Process.Command(plr, Settings.Prefix.."massbring"..Settings.SplitKey..args[1])
 				end
@@ -4745,14 +4646,12 @@ return function(Vargs, env)
 
 		To = {
 			Prefix = Settings.Prefix;
-			Commands = {"to", "tpmeto"};
-			Args = {"player"};
-			Description = "Teleport you to the target";
+			Commands = {"to", "goto"};
+			Args = {"destination  ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>'')"};
+			Description = "Teleports you to the target player, waypoint or coordinates";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					task.defer(Commands.Teleport.Function, plr, {plr.Name, v.Name})
-				end
+				Commands.Teleport.Function(plr, {"@"..plr.Name, assert(args[1], "Missing destination (argument #1)")})
 			end
 		};
 
@@ -4760,7 +4659,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"massbring", "bringrows", "bringlines"};
 			Args = {"player(s)", "lines (default: 3)"};
-			Description = "Brings the target players and positions them evenly in specified lines";
+			Description = "Teleports the target player(s) to you; positioning them evenly in specified lines";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local plrRootPart = assert(
