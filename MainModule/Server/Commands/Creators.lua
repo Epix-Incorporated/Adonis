@@ -12,23 +12,30 @@ return function(Vargs, env)
 		DirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
-			Args = {"username(s)", "reason (optional)"};
-			Description = "Directly adds the specified user(s) to the global ban list; saves";
+			Args = {"username(s)", "reason"};
+			Description = "Adds the specified user(s) to the global ban list; saves";
 			AdminLevel = "Creators";
 			Filter = true;
+			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
-				for i in string.gmatch(args[1], "[^,]+") do
-					local userId = service.Players:GetUserIdFromNameAsync(i)
-					assert(userId ~= plr.UserId, "You cannot ban yourself")
-					if userId then
-						local success, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
-						if not success then
+				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
+					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
+					if userExists then
+						if userId == plr.UserId then
+							Functions.Hint("You cannot ban yourself", {plr})
+							continue
+						end
+
+						local getNameSuccess, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						if not getNameSuccess then
 							username = i
 						end
+
 						Admin.AddBan({UserId = userId, Name = username}, reason, true, plr)
-						Functions.Hint("Direct-banned "..(if success then "@"..username else "'"..username.."'").." from the game", {plr})
+
+						Functions.Hint("Direct-banned "..(if getNameSuccess then "@"..username else "'"..username.."'").." from the game", {plr})
 					else
 						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
 					end
@@ -42,24 +49,27 @@ return function(Vargs, env)
 			Args = {"username(s)"};
 			Description = "Removes the specified user(s) from the global ban list; saves";
 			AdminLevel = "Creators";
+			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
-				for i in string.gmatch(args[1], "[^,]+") do
-					local userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userId then
-						local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
+					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
+					if userExists then
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = (if success then actualName else i)..":"..userId;
+							Value = i..":"..userId;
 						})
-						if success then
+
+						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						if getNameSuccess then
 							Core.DoSave({
 								Type = "TableRemove";
 								Table = "Banned";
-								Value = i..":"..userId;
+								Value = i..":"..actualName;
 							})
 						end
-						Functions.Hint((if success then "@"..actualName else "'"..i.."'").." has been unbanned from the game", {plr})
+
+						Functions.Hint((if getNameSuccess then "@"..actualName else "'"..i.."'").." has been unbanned from the game", {plr})
 					else
 						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
 					end
