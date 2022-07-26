@@ -1181,14 +1181,15 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckMatch = function(check,match)
+		CheckMatch = function(check, match)
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				local good = false
 				local num = 0
-				for k,m in check do
-					if m == match[k] then
+
+				for k, v in check do
+					if v == match[k] then
 						good = true
 					else
 						good = false
@@ -1197,10 +1198,23 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				if good and num == Functions.CountTable(check) then
-					return true
-				end
+				return good and num == Functions.CountTable(match)
 			end
+			return false
+		end;
+
+		LaxCheckMatch = function(check, match)
+			if check == match then
+				return true
+			elseif type(check) == "table" and type(match) == "table" then
+				for k, v in match do
+					if check[k] ~= v then
+						return false
+					end
+				end
+				return true
+			end
+			return false
 		end;
 
 		DSKeyNormalize = function(intab, reverse)
