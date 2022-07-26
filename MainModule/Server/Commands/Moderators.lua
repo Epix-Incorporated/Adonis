@@ -4616,8 +4616,10 @@ return function(Vargs, env)
 						teleportPlayers(Vector3.new(x, y, z))
 					else
 						local target = service.GetPlayers(plr, args[2])[1]
-						assert(target.Character, "Destination player has no character")
-						teleportPlayers(Vector3.new(target.Character:GetPivot()))
+						if target then
+							assert(target.Character, "Destination player has no character")
+							teleportPlayers(Vector3.new(target.Character:GetPivot()))
+						end
 					end
 				end
 			end
@@ -4666,7 +4668,7 @@ return function(Vargs, env)
 					assert(plr.Character,"Your character is missing"):FindFirstChild("HumanoidRootPart"),
 					"Your HumanoidRootPart is missing"
 				)
-				local players = service.GetPlayers(plr, args[1])
+				local players = service.GetPlayers(plr, assert(args[1], "Missing target players (argument #1)"))
 				local numPlayers = #players
 				local lines = math.clamp(tonumber(args[2]) or 3, 1, numPlayers)
 
