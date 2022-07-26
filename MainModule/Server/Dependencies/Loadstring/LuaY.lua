@@ -1382,6 +1382,9 @@ function luaY:continuestat(ls)
 	if not bl then
 		luaX:syntaxerror(ls, "no loop to continue")
 	end
+	if upval then
+		luaK:codeABC(fs, "OP_CLOSE", bl.nactvar, 0, 0)
+	end
 	luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
 end
 
