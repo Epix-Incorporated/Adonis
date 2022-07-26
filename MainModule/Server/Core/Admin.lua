@@ -961,6 +961,7 @@ return function(Vargs, GetEnv)
 							Type = "TableRemove";
 							Table = "Banned";
 							Value = v;
+							LaxCheck = true;
 						})
 					end
 				end
@@ -978,6 +979,7 @@ return function(Vargs, GetEnv)
 						Type = "TableRemove";
 						Table = {"Core", "Variables", "TimeBans"};
 						Value = v;
+						LaxCheck = true;
 					})
 				end
 			end
