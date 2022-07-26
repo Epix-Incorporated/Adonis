@@ -11,9 +11,9 @@ return function(Vargs, env)
 	return {
 		TimeBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"tempban", "timedban", "timeban", "tban", "temporaryban"};
+			Commands = {"timeban", "tempban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
-			Description = "Bans the target player(s) for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
+			Description = "Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -50,9 +50,10 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
 			Args = {"username(s)", "number<s/m/h/d>", "reason"};
-			Description = "Bans the target user(s) for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
+			Description = "Bans the target user(s) from the game for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
+			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target user (argument #1)")
 				assert(args[2], "Missing duration (argument #2)")
@@ -69,19 +70,18 @@ return function(Vargs, env)
 
 				for i in string.gmatch(args[1], "[^,]+") do
 					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-
-					if userExists and userId then
+					if userExists then
 						if userId == plr.UserId then
 							Functions.Hint("You cannot ban yourself", {plr})
 							continue
 						end
 
-						local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
 
-						Admin.AddTimeBan({UserId = userId, Name = i}, duration, reason, plr)
+						Admin.AddTimeBan({UserId = userId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
 
 						Functions.Hint(
-							"Time-banned "..(if success then "@"..actualName else "'"..i.."'").." for "..args[2],
+							"Time-banned "..(if getNameSuccess then "@"..actualName else "'"..i.."'").." for "..args[2],
 							{plr}
 						)
 					else
@@ -95,7 +95,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"untimeban", "untimedban", "untban", "untempban", "untemporaryban"};
 			Args = {"user"};
-			Description = "Removes the target user from Timebans list";
+			Description = "Removes the target user(s) from the timebans list";
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
@@ -115,9 +115,9 @@ return function(Vargs, env)
 
 		PermanentBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"permban", "permanentban", "pban", "gameban"};
+			Commands = {"globalban", "permban", "permanentban", "pban", "gameban", "gban"};
 			Args = {"player/user", "reason"};
-			Description = "Bans the target player(s) from the game permenantly; if they join a different server they will be banned there too";
+			Description = "Bans the target player(s) from the game permanently; if they join a different server they will be banned there too";
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {})
@@ -141,7 +141,7 @@ return function(Vargs, env)
 
 		UnGameBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"unpermban", "unpermanentban", "unpban", "ungameban"};
+			Commands = {"unglobalban", "unpermban", "unpermanentban", "unpban", "ungameban", "ungban"};
 			Args = {"user"};
 			Description = "Unbans the target user(s) from the game; saves";
 			AdminLevel = "HeadAdmins";
