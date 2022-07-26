@@ -12,7 +12,7 @@ return function(Vargs, env)
 		TimeBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"tempban", "timedban", "timeban", "tban", "temporaryban"};
-			Args = {"player/user", "number<s/m/h/d>", "reason"};
+			Args = {"player", "number<s/m/h/d>", "reason"};
 			Description = "Bans the target player(s) for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
@@ -76,19 +76,16 @@ return function(Vargs, env)
 							continue
 						end
 
-						local success, realName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
 
 						Admin.AddTimeBan({UserId = userId, Name = i}, duration, reason, plr)
 
 						Functions.Hint(
-							"Time-banned '"..service.FormatPlayer({
-								UserId = userId;
-								Name = if success then realName else "[Unknown User]";
-							}, true).."' for "..args[2],
+							"Time-banned "..(if success then "@"..actualName else "'"..i.."'").." for "..args[2],
 							{plr}
 						)
 					else
-						Functions.Hint("No user named '"..i.."' exists; try again later if this is a mistake", {plr})
+						Functions.Hint("No user named '"..i.."' exists (Please try again if you think this is an internal error)", {plr})
 					end
 				end
 			end
