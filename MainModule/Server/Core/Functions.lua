@@ -549,7 +549,9 @@ return function(Vargs, GetEnv)
 								options.AllowUnknownUsers
 							)
 						end
-					else
+					end
+
+					if plrCount == 0 then
 						--// Check for display names
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
@@ -568,27 +570,29 @@ return function(Vargs, GetEnv)
 									plus()
 								end
 							end
-						end
 
-						if plrCount == 0 and options.UseFakePlayer then
-							--// Attempt to retrieve non-ingame user
-							local ran, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, s)
-							if ran or options.AllowUnknownUsers then
-								table.insert(players, Functions.GetFakePlayer({
-									Name = s;
-									DisplayName = s;
-									UserId = if ran then userId else -1;
-								}))
-								plus()
+							if plrCount == 0 then
+								if options.UseFakePlayer then
+									--// Attempt to retrieve non-ingame user
+									local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, s)
+									if userExists or options.AllowUnknownUsers then
+										table.insert(players, Functions.GetFakePlayer({
+											Name = s;
+											DisplayName = s;
+											UserId = if userExists then userId else -1;
+										}))
+										plus()
+									end
+
+									if plrCount == 0 and not options.DontError then
+										Remote.MakeGui(plr, "Output", {
+											Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
+												else "No players matching '"..s.."' were found!";
+										})
+									end
+								end
 							end
 						end
-					end
-
-					if plrCount == 0 and not options.DontError then
-						Remote.MakeGui(plr, "Output", {
-							Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
-								else "No players matching '"..s.."' were found!";
-						})
 					end
 				end
 			end
