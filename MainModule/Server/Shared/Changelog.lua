@@ -4,11 +4,13 @@ return {
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
 	"[Patch v237k 2022-07-25 22:35 EST] @Expertcoderz";
+	"*The Adonis GitHub repository has been moved to the Epix Incorporated organization; Sceleratis/Adonis will now redirect to Epix-Incorporated/Adonis*";
 	"Fixed :unpermban not saving";
 	"General improvements for some ban/admin-related commands";
 	":permban renamed to :globalban by default";
 	":tempban renamed to :timeban by default";
 	":directban, :directtimeban and :undirectban are now hidden to minimize confusion";
+	"Improved :chargear and :plrgear";
 	"(Git/Expertcoderz) Remove all instances of pairs()/ipairs() in core modules (#870)";
 	"(Git/Expertcoderz) Avoid reloading Console and HelpButton GUIs upon respawn (#871)";
 	"(Git/pbstFusion) Theming Info update (#873)";
