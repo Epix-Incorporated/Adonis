@@ -12,6 +12,7 @@ type TableData = {
 	Table: {string}|string,
 	Setting: string?,
 	Value: any?,
+	LaxCheck: boolean?,
 
 	Action: string?,
 	Time: number?
@@ -999,36 +1000,21 @@ return function(Vargs, GetEnv)
 				data.Action = "Remove"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
-				Core.UpdateData(key, function(sets)
+				local CheckMatch = if data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
+				Core.UpdateData(key, function(sets: {TableData})
 					sets = sets or {}
 
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						elseif CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-							table.remove(sets, i)
-						end
-					end
-
-					--// Check that the real table actually has the item to remove; do not create if it does not have it
-					--// (prevents snowballing)
-					local continueOperation = false
-					if tab[1] == "Settings" or tab[2] == "Settings" then
-						local indClone = table.clone(tab)
-						indClone[1] = "OriginalSettings"
-						for _, v in Core.IndexPathToTable(indClone) or {} do
-							if CheckMatch(v, val) then
-								continueOperation = true
-								break
+						else
+							if type(v.Table) == "string" then
+								v.Table = {"Settings", v.Table}
+							end
+							if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
+								table.remove(sets, i)
 							end
 						end
-					else
-						continueOperation = true
-					end
-
-					if continueOperation then
-						table.insert(sets, data)
 					end
 
 					return sets
@@ -1054,8 +1040,13 @@ return function(Vargs, GetEnv)
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						elseif CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-							table.remove(sets, i)
+						else
+							if type(v.Table) == "string" then
+								v.Table = {"Settings", v.Table}
+							end
+							if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
+								table.remove(sets, i)
+							end
 						end
 					end
 
