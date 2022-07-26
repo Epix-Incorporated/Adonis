@@ -3,6 +3,16 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v237k 2022-07-25 22:35 EST] @Expertcoderz";
+	"Fixed :unpermban not saving";
+	"General improvements for some ban/admin-related commands";
+	":permban renamed to :globalban by default";
+	":tempban renamed to :timeban by default";
+	":directban, :directtimeban and :undirectban are now hidden to minimize confusion";
+	"(Git/Expertcoderz) Remove all instances of pairs()/ipairs() in core modules (#870)";
+	"(Git/Expertcoderz) Avoid reloading Console and HelpButton GUIs upon respawn (#871)";
+	"(Git/pbstFusion) Theming Info update (#873)";
+	"";
 	"[Patch v237j 2022-07-22 06:50 EST] @Expertcoderz";
 	"Fixed admins not being able to run player-level commands such as :cmds when Settings.PlayerCommands is off";
 	"Code improvements; any issues pertaining data saving should be resolved by now";
