@@ -22,7 +22,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 				local plrLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1], {
+				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
 					IsKicking = true;
 					})
 				do
@@ -4550,7 +4550,7 @@ return function(Vargs, env)
 		Teleport = {
 			Prefix = Settings.Prefix;
 			Commands = {"tp", "teleport", "transport"};
-			Args = {"player", "destination ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>'')"};
+			Args = {"player", "destination ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>')"};
 			Description = "Teleports the target player(s) to the specified player, waypoint or coordinates";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4649,7 +4649,7 @@ return function(Vargs, env)
 		To = {
 			Prefix = Settings.Prefix;
 			Commands = {"to", "goto"};
-			Args = {"destination  ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>'')"};
+			Args = {"destination  ('<player>'/'waypoint-<name>'/'<x>,<y>,<z>')"};
 			Description = "Teleports you to the target player, waypoint or coordinates";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
