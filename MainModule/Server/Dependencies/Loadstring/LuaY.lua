@@ -158,6 +158,18 @@ luaY.VARARG_NEEDSARG = 4
 
 luaY.LUA_MULTRET = -1  -- (lua.h)
 
+-- // Luau compound operator translation
+-- Also the concat operator is an odd one out, concatting uses a different type of operation
+-- because concatting concats a range of operators, I guess its an optimisation or something
+luaY.COMPOUND_OP_TRANSLATE = {
+	TK_ASSIGN_ADD = "OP_ADD",
+	TK_ASSIGN_SUB = "OP_SUB",
+	TK_ASSIGN_MUL = "OP_MUL",
+	TK_ASSIGN_DIV = "OP_DIV",
+	TK_ASSIGN_MOD = "OP_MOD",
+	TK_ASSIGN_POW = "OP_POW",
+}
+
 --[[--------------------------------------------------------------------
 -- other functions
 ----------------------------------------------------------------------]]
@@ -1359,18 +1371,18 @@ end
 -- * used in statements()
 ------------------------------------------------------------------------
 function luaY:continuestat(ls)
-  -- stat -> CONTINUE
-  local fs = ls.fs
-  local bl = fs.bl
-  local upval = false
-  while bl and not bl.isbreakable do
-    if bl.upval then upval = true end
-    bl = bl.previous
-  end
-  if not bl then
-    luaX:syntaxerror(ls, "no loop to continue")
-  end
-  luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
+	-- stat -> CONTINUE
+	local fs = ls.fs
+	local bl = fs.bl
+	local upval = false
+	while bl and not bl.isbreakable do
+		if bl.upval then upval = true end
+		bl = bl.previous
+	end
+	if not bl then
+		luaX:syntaxerror(ls, "no loop to continue")
+	end
+	luaK:codeAsBx(fs, "OP_JMP", 0, INSERTTHELOOPINSTRUCTIONOFFSETHERE) -- // Is bl.breaklist.previous the loop instruction? I have to test
 end
 
 ------------------------------------------------------------------------
