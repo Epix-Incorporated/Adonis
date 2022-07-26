@@ -13,7 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
 			Args = {"username(s)", "reason (optional)"};
-			Description = "Directly adds the specified user(s) to the global ban list (Saves)";
+			Description = "Directly adds the specified user(s) to the global ban list; saves";
 			AdminLevel = "Creators";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {any})
@@ -24,11 +24,13 @@ return function(Vargs, env)
 					assert(userId ~= plr.UserId, "You cannot ban yourself")
 					if userId then
 						local success, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
-						if not success then username = i end
+						if not success then
+							username = i
+						end
 						Admin.AddBan({UserId = userId, Name = username}, reason, true, plr)
-						Functions.Hint("Direct-banned "..username, {plr})
+						Functions.Hint("Direct-banned "..(if success then "@"..username else "'"..username.."'").." from the game", {plr})
 					else
-						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error.)", {plr})
+						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
 					end
 				end
 			end
@@ -36,20 +38,30 @@ return function(Vargs, env)
 
 		UnDirectBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"undirectban"};
+			Commands = {"directunban", "undirectban"};
 			Args = {"username(s)"};
-			Description = "Removes the specified user(s) from the global ban list (Saves)";
+			Description = "Removes the specified user(s) from the global ban list; saves";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(args[1], "[^,]+") do
-					local userid = service.Players:GetUserIdFromNameAsync(i)
-					if userid then
+					local userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
+					if userId then
+						local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = i..":"..userid;
+							Value = (if success then actualName else i)..":"..userId;
 						})
-						Functions.Hint(i.." has been unbanned", {plr})
+						if success then
+							Core.DoSave({
+								Type = "TableRemove";
+								Table = "Banned";
+								Value = i..":"..userId;
+							})
+						end
+						Functions.Hint((if success then "@"..actualName else "'"..i.."'").." has been unbanned from the game", {plr})
+					else
+						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
 					end
 				end
 			end
