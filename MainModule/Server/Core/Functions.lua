@@ -583,13 +583,13 @@ return function(Vargs, GetEnv)
 										}))
 										plus()
 									end
-								end
 
-								if plrCount == 0 and not options.DontError then
-									Remote.MakeGui(plr, "Output", {
-										Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
-											else "No players matching '"..s.."' were found!";
-									})
+									if plrCount == 0 and not options.DontError then
+										Remote.MakeGui(plr, "Output", {
+											Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
+												else "No players matching '"..s.."' were found!";
+										})
+									end
 								end
 							end
 						end

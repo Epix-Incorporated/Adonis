@@ -3,10 +3,6 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
-	"[Patch v237l 2022-07-26 11:10 EST] @Expertcoderz";
-	"Fixed/improved :tp, :bring and :to";
-	"Implemented 'No players matching XXX were found' errors";
-	"";
 	"[Patch v237k 2022-07-25 22:35 EST] @Expertcoderz";
 	"*The Adonis GitHub repository has been moved to the Epix Incorporated organization; Sceleratis/Adonis will now redirect to Epix-Incorporated/Adonis*";
 	"Fixed :unpermban not saving";
