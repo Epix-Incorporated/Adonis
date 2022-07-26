@@ -1330,11 +1330,14 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"unserverban", "unban"};
 			Args = {"user"};
-			Description = "Un-bans the target user(s) from the server";
+			Description = "Unbans the target user(s) from the server";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing user (argument #1)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {
+					UseFakePlayer = true;
+					})
+				do
 					if Admin.RemoveBan(v.Name) then
 						Functions.Hint(service.FormatPlayer(v, true).." has been unbanned", {plr})
 					else
