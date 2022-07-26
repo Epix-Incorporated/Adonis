@@ -209,7 +209,7 @@ return function(Vargs, GetEnv)
 					while true do end
 				end
 
-				for method, detector in detectors do
+				for method, detector in pairs(detectors) do
 					local action, callback = detector[1],  detector[2]
 
 					local success, value = pcall(callback)
@@ -245,7 +245,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if #service.Players:GetPlayers() > 1 then
-						for _, v in service.Players:GetPlayers() do
+						for _, v in ipairs(service.Players:GetPlayers()) do
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
@@ -448,14 +448,14 @@ return function(Vargs, GetEnv)
 			}
 
 			local function check(Message)
-				for _,v in lookFor do
+				for _,v in pairs(lookFor) do
 					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
 						return true
 					end
 				end
 			end
 
-			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq.
+			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq. 
 			local function checkServ()
 				--[[if not pcall(function()
 					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
@@ -467,7 +467,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in soundIds do
+				for _,v in pairs(soundIds) do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -541,7 +541,7 @@ return function(Vargs, GetEnv)
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
 					if Script then
-						for i, v in tab do
+						for i, v in pairs(tab) do
 							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
 								continue = true
 							end
@@ -587,9 +587,9 @@ return function(Vargs, GetEnv)
 					First = Logs[1]
 					hasPrinted = true
 
-					--[[if (lastLogOutput + 3) > startTime then
-						Detected("kick", "Log event not outputting to console")
-					end]]
+					if (lastLogOutput + 3) > startTime then
+						--Detected("kick", "Log event not outputting to console")
+					end
 				else
 					if not First then
 						--Detected("kick", "Suspicious log amount detected 5435345")
@@ -605,7 +605,7 @@ return function(Vargs, GetEnv)
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
-					for _, v in Logs do
+					for _, v in ipairs(Logs) do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
@@ -630,7 +630,7 @@ return function(Vargs, GetEnv)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				--[=[for _, v in {"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"} do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+				--[=[for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
 						Detected("kick", "Malicious Object?: " .. v)
@@ -640,7 +640,7 @@ return function(Vargs, GetEnv)
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
-					for _, _ in dictionary do
+					for _, _ in pairs(dictionary) do
 						len += 1
 					end
 

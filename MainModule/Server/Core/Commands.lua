@@ -63,7 +63,7 @@ return function(Vargs, GetEnv)
 				return
 			end
 
-			for opt, default in {
+			for opt, default in pairs({
 				Prefix = Settings.Prefix;
 				Commands = {};
 				Description = "(No description)";
@@ -80,7 +80,7 @@ return function(Vargs, GetEnv)
 				Function = function(plr)
 					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
 				end
-				}
+				})
 			do
 				if cmd[opt] == nil then
 					cmd[opt] = default
@@ -95,7 +95,7 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache[cmd.Prefix] = true
 
-			for _, v in cmd.Commands do
+			for _, v in ipairs(cmd.Commands) do
 				Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
 			end
 
@@ -105,7 +105,7 @@ return function(Vargs, GetEnv)
 			if type(lvl) == "string" and lvl ~= "Donors" then
 				cmd.AdminLevel = Admin.StringToComLevel(lvl)
 			elseif type(lvl) == "table" then
-				for b, v in lvl do
+				for b, v in ipairs(lvl) do
 					lvl[b] = Admin.StringToComLevel(v)
 				end
 			elseif type(lvl) == "nil" then
@@ -162,12 +162,12 @@ return function(Vargs, GetEnv)
 		--// Load command modules
 		if server.CommandModules then
 			local env = GetEnv()
-			for i, module in server.CommandModules:GetChildren() do
+			for i, module in ipairs(server.CommandModules:GetChildren()) do
 				local func = require(module)
 				local ran, tab = pcall(func, Vargs, env)
 
 				if ran and tab and type(tab) == "table" then
-					for ind, cmd in tab do
+					for ind, cmd in pairs(tab) do
 						Commands[ind] = cmd
 					end
 
@@ -193,7 +193,7 @@ return function(Vargs, GetEnv)
 		local commandEnv = GetEnv(nil, {
 			script = server.Config and server.Config:FindFirstChild("Settings") or script;
 		})
-		for ind, cmd in Settings.Commands or {} do
+		for ind, cmd in pairs(Settings.Commands or {}) do
 			if type(cmd) == "table" and cmd.Function then
 				setfenv(cmd.Function, commandEnv)
 				Commands[ind] = cmd
@@ -202,7 +202,7 @@ return function(Vargs, GetEnv)
 
 		--// Change command permissions based on settings
 		local Trim = service.Trim
-		for ind, cmd in Settings.Permissions or {} do
+		for ind, cmd in pairs(Settings.Permissions or {}) do
 			local com, level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
 				if string.find(level, ",") then
@@ -218,7 +218,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		for ind, cmd in Commands do
+		for ind, cmd in pairs(Commands) do
 			RegisterCommandDefinition(ind, cmd)
 		end
 

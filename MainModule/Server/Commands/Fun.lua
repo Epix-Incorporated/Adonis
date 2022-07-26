@@ -25,7 +25,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "trippy"
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -51,7 +51,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "ghost"
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -77,7 +77,7 @@ return function(Vargs, env)
 				local scr = Deps.Assets.Glitcher:Clone()
 				scr.Num.Value = num
 				scr.Type.Value = "vibrate"
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local new = scr:Clone()
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
@@ -101,7 +101,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						local scr = torso:FindFirstChild("Glitchify")
@@ -121,9 +121,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				local value = assert(tonumber(args[2]), "Missing/invalid FPS value (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "SetFPS", value)
+				assert(args[1], "Missing player name")
+				assert(args[2], "Missing FPS value")
+				assert(tonumber(args[2]), tostring(args[2]).." is not a valid number")
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					Remote.Send(v, "Function", "SetFPS", tonumber(args[2]))
 				end
 			end
 		};
@@ -136,7 +138,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.Send(v, "Function", "RestoreFPS")
 				end
 			end
@@ -159,13 +161,13 @@ return function(Vargs, env)
 				local rAssets = require(7679952474) --// This apparently caches, so don't delete anything else future usage breaks
 				local gerald = rAssets.Gerald
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local human = v.Character:FindFirstChildOfClass("Humanoid");
 						if human then
-							local clone = gerald:Clone()
-							clone.Name = "__ADONIS_GERALD"
-							human:AddAccessory(clone)
+							local clone = gerald:Clone();
+							clone.Name = "__ADONIS_GERALD";
+							human:AddAccessory(clone);
 						end
 					end
 				end
@@ -180,11 +182,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD")
+						local gerald = v.Character:FindFirstChild("__ADONIS_GERALD");
 						if gerald then
-							gerald:Destroy()
+							gerald:Destroy();
 						end
 					end
 				end
@@ -200,8 +202,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local WOT = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
-				Remote.Send(plr, "Function", "PlayAudio", WOT[math.random(1, #WOT)])
+				local wot = {3657191505, 754995791, 160715357, 4881542521, 227499602, 217714490, 130872377, 142633540, 259702986, 6884041159}
+				Remote.Send(plr, "Function", "PlayAudio", wot[math.random(1,#wot)])
 			end
 		};
 
@@ -226,7 +228,7 @@ return function(Vargs, env)
 			Description = "Makes the target player really angry";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v: Player in service.GetPlayers(plr, args[1]) do
+				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
 					task.defer(function()
 						local char = v.Character
 						local head = char and char:FindFirstChild("Head")
@@ -266,7 +268,7 @@ return function(Vargs, env)
 			Fun = true;
 			Description = "You're going to";
 			Function = function (plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local root = v.Character:FindFirstChild("HumanoidRootPart")
 					local sound = Instance.new("Sound")
 					sound.SoundId = "rbxassetid://5816432987"
@@ -306,61 +308,58 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Description = "Gives you a doll of a player";
 			Function = function(plr: Player, args: {string})
-				local plrChar = assert(plr.Character, "You don't have a character")
-				local cfr = assert(plrChar:FindFirstChild("RightHand") or plrChar:FindFirstChild("Right Arm"), "You don't have a right hand/arm").CFrame
-
-				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = true}) do
-					Routine(function()
-						local targetName = service.Players:GetNameFromUserIdAsync(v.UserId)
-
-						local tool = service.New("Tool", {
-							Name = targetName;
-							ToolTip = "@"..targetName.." as a tool";
-						})
-						local handle = service.New("Part", {
-							Parent = tool;
-							Name = "Handle";
-							CanCollide = false;
-							Transparency = 1;
-						})
-
-						local model = service.Players:CreateHumanoidModelFromDescription(
-							service.Players:GetHumanoidDescriptionFromUserId(v.UserId),
-							Enum.HumanoidRigType.R15
-						)
-						model.Name = targetName
-
-						local hum = model:WaitForChild("Humanoid")
-						hum:WaitForChild("BodyHeightScale").Value /= 2
-						hum:WaitForChild("BodyDepthScale").Value /= 2
-						hum:WaitForChild("BodyWidthScale").Value /= 2
-
-						if v ~= plr then
-							handle.CFrame = cfr
+				local function generate(userId)
+					local tool = Instance.new("Tool")
+					local targetName = service.Players:GetNameFromUserIdAsync(userId)
+					if service.Players:GetPlayerByUserId(userId) then
+						tool.ToolTip = service.Players:GetPlayerByUserId(userId).DisplayName.." as a tool"
+					else
+						tool.ToolTip = "@"..targetName.." as a tool"
+					end
+					tool.Name = service.Players:GetNameFromUserIdAsync(userId)
+					local handle = Instance.new("Part")
+					handle.Name = "Handle"
+					handle.CanCollide = false
+					handle.Transparency = 1
+					handle.Parent = tool
+					local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(userId), Enum.HumanoidRigType.R15)
+					model.Name = targetName
+					local hum = model:WaitForChild("Humanoid")
+					local bHeight = hum:WaitForChild("BodyHeightScale")
+					local bDepth = hum:WaitForChild("BodyDepthScale")
+					local bWidth = hum:WaitForChild("BodyWidthScale")
+					bHeight.Value = bHeight.Value / 2
+					bDepth.Value = bDepth.Value / 2
+					bWidth.Value = bWidth.Value / 2
+					local cfr = (plr.Character:FindFirstChild("Right Arm") or plr.Character:FindFirstChild("RightFoot")).CFrame
+					handle.CFrame = cfr
+					model:FindFirstChild("Animate").Disabled = true
+					for _, obj in pairs(model:GetDescendants()) do
+						if obj:IsA("BasePart") then
+							obj.Massless = true
+							obj.CanCollide = false
 						end
+					end
+					model.Parent = tool
+					model:SetPrimaryPartCFrame(cfr)
+					local weld = Instance.new("WeldConstraint")
+					weld.Part0 = handle
+					weld.Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot")
+					weld.Parent = tool
+					tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
+				end
 
-						model.Animate.Disabled = true
-
-						for _, obj in model:GetDescendants() do
-							if obj:IsA("BasePart") then
-								obj.Massless = true
-								obj.CanCollide = false
-							end
-						end
-
-						model.Parent = tool
-						if v ~= plr then
-							model:PivotTo(cfr)
-						end
-
-						service.New("WeldConstraint", {
-							Parent = tool;
-							Part0 = handle;
-							Part1 = model:FindFirstChild("Left Leg") or model:FindFirstChild("LeftFoot");
-						})
-
-						tool.Parent = plr:FindFirstChildWhichIsA("Backpack")
-					end)
+				if pcall(function() service.GetPlayers(plr, args[1]) end) then
+					for _, v in pairs(service.GetPlayers(plr, args[1])) do
+						generate(v.UserId)
+					end
+				else
+					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
+					if success then
+						generate(id)
+					else
+						error("Unable to find target user")
+					end
 				end
 			end
 		};
@@ -371,66 +370,48 @@ return function(Vargs, env)
 			Args = {"player"};
 			Fun = true;
 			AdminLevel = "Moderators";
-			Description = "Turns the target player into a doll which can be picked up";
-			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
-					local char = v.Character
-					if not char then
-						Functions.Hint(service.FormatPlayer(v).." has no character", {plr})
-						continue
-					end
-					if char.Parent and char.Parent:IsA("Tool") then
-						Functions.Hint(service.FormatPlayer(v).." is already a doll", {plr})
-						continue
-					end
-
-					Routine(function()
-						local tool = service.New("Tool", {
-							Name = v.Name;
-							ToolTip = service.FormatPlayer(v).." as a tool; converted using Adonis";
-						})
-						local handle = service.New("Part", {
-							Parent = tool;
-							Name = "Handle";
-							Transparency = 1;
-						})
-
-						local charHum = char:FindFirstChildOfClass("Humanoid")
-						local model = service.Players:CreateHumanoidModelFromDescription(
-							service.Players:GetHumanoidDescriptionFromUserId(plr.UserId),
-							if charHum then charHum.RigType else Enum.HumanoidRigType.R15
-						)
-						model.Name = v.DisplayName
-						model.PrimaryPart = model:WaitForChild("HumanoidRootPart", 1)
-
-						local pivot = char:GetPivot()
-						char:Destroy()
-						v.Character = model
-						model:PivotTo(pivot)
-
-						local hum = model:WaitForChild("Humanoid")
-						hum:WaitForChild("BodyHeightScale").Value /= 2
-						hum:WaitForChild("BodyDepthScale").Value /= 2
-						hum:WaitForChild("BodyWidthScale").Value /= 2
-
-						handle.CFrame = pivot
+			Description = "Turns a player into a doll which can be picked up";
+			Function = function(runner, args)
+				for _, plr in pairs(service.GetPlayers(runner, args[1])) do
+					if plr.Character.Parent:IsA("Tool") ~= true then
+						local tool = Instance.new("Tool")
+						tool.ToolTip = plr.DisplayName .. " as a tool, converted with Adonis."
+						tool.Name = plr.Name
+						local handle = Instance.new("Part")
+						handle.Name = "Handle"
+						handle.Transparency = 1
+						handle.Parent = tool
+						local model = service.Players:CreateHumanoidModelFromDescription(service.Players:GetHumanoidDescriptionFromUserId(plr.UserId), Enum.HumanoidRigType.R15)
+						model.Name = plr.DisplayName
+						local oldcframe = plr.Character:FindFirstChild("HumanoidRootPart").CFrame
+						plr.Character:Destroy()
+						plr.Character = model
+						model:SetPrimaryPartCFrame(oldcframe)
+						local hum = model:WaitForChild("Humanoid") -- U forgot that variable
+						local bHeight = hum:WaitForChild("BodyHeightScale")
+						local bDepth = hum:WaitForChild("BodyDepthScale")
+						local bWidth = hum:WaitForChild("BodyWidthScale")
+						bHeight.Value = bHeight.Value / 2
+						bDepth.Value = bDepth.Value / 2
+						bWidth.Value = bWidth.Value / 2
+						local cfr = (plr.Character:FindFirstChild("HumanoidRootPart")).CFrame
+						handle.CFrame = cfr
 						handle.CanCollide = false
-						for _, v in model:GetDescendants() do
+						for _, v in pairs(model:GetDescendants()) do
 							if v:IsA("BasePart") then
 								v.Massless = true
 							end
 						end
-
 						model.Parent = tool
-
-						service.New("WeldConstraint", {
-							Parent = tool;
-							Part0 = handle;
-							Part1 = model.PrimaryPart;
-						})
-
+						model:SetPrimaryPartCFrame(cfr)
+						local weld = Instance.new("WeldConstraint")
+						weld.Part0 = handle
+						weld.Part1 = model:FindFirstChild("HumanoidRootPart")
+						weld.Parent = tool
 						tool.Parent = workspace
-					end)
+					else
+						error("That user is already a doll!")
+					end
 				end
 			end
 		};
@@ -445,7 +426,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local size = tonumber(args[2]) or 19
 				local dist = tonumber(args[3]) or 100
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "Pixelize";
 						Resolution = size;
@@ -469,7 +450,7 @@ return function(Vargs, env)
 						table.insert(Variables.FrozenObjects, obj)
 					end
 
-					for i, v in obj:GetChildren() do
+					for i, v in pairs(obj:GetChildren()) do
 						doPause(v)
 					end
 				end
@@ -483,7 +464,7 @@ return function(Vargs, env)
 						audio.Volume = 0.5
 						audio:Play()
 						wait(2)
-						for i, part in Variables.FrozenObjects do
+						for i, part in pairs(Variables.FrozenObjects) do
 							part.Anchored = false
 						end
 
@@ -552,7 +533,7 @@ return function(Vargs, env)
 				if not speed or not tonumber(speed) then
 					speed = 1000
 				end
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.Send(v, "Function", "Dizzy", tonumber(speed))
 				end
 			end
@@ -566,7 +547,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.Send(v, "Function", "Dizzy", false)
 				end
 			end
@@ -580,7 +561,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-698712377")
 				end
 			end
@@ -597,7 +578,7 @@ return function(Vargs, env)
 				local gear = service.Insert(tonumber(212641536))
 				if gear:IsA("BackpackItem") then
 					service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-					for i, v in service.GetPlayers(plr, args[1]) do
+					for i, v in pairs(service.GetPlayers(plr, args[1])) do
 						if v:FindFirstChild("Backpack") then
 							gear:Clone().Parent = v.Backpack
 						end
@@ -621,7 +602,7 @@ return function(Vargs, env)
 						cl.Name = "Infected"
 						cl.Parent = char
 
-						for _, prt in char:GetChildren() do
+						for _, prt in pairs(char:GetChildren()) do
 							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = 0
@@ -651,7 +632,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					infect(v)
 				end
 			end
@@ -670,7 +651,7 @@ return function(Vargs, env)
 						wait(0.1)
 						local char = script.Parent.Parent
 						local clr = BrickColor.random()
-						for i, v in char:GetChildren() do
+						for i, v in pairs(char:GetChildren()) do
 							if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" and (v.Name ~= "Head" or not v.Parent:FindFirstChild("NameTag", true)) then
 								v.BrickColor = clr
 								v.Reflectance = 0
@@ -686,7 +667,7 @@ return function(Vargs, env)
 				]])
 				scr.Name = "Effectify"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
@@ -721,9 +702,9 @@ return function(Vargs, env)
 					TorsoColor = BrickColor.new("Bright blue")
 				})
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for _, p in v.Character:GetChildren() do
+						for _, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") or p:IsA("BodyColors") then
 								p:Destroy()
 							end
@@ -780,9 +761,9 @@ return function(Vargs, env)
 					return
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for _, p in v.Character:GetChildren() do
+						for _, p in pairs(v.Character:GetChildren()) do
 							if p:IsA"BasePart" then
 								p.Material = chosenMat
 							end
@@ -800,9 +781,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for _, p in v.Character:GetChildren() do
+						for _, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Shirt") or p:IsA("Pants") or p:IsA("ShirtGraphic") or p:IsA("CharacterMesh") or p:IsA("Accoutrement") then
 								p:Destroy()
 							elseif p:IsA("Part") then
@@ -832,7 +813,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						Admin.RunCommand(Settings.Prefix.."noclip", v.Name)
 
@@ -844,7 +825,7 @@ return function(Vargs, env)
 							v.Character.Pants:Destroy()
 						end
 
-						for _, prt in v.Character:GetChildren() do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = .5
 								prt.Reflectance = 0
@@ -871,7 +852,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt.Parent = v.Character.HumanoidRootPart
@@ -881,7 +862,7 @@ return function(Vargs, env)
 							v.Character.Pants.Parent = v.Character.HumanoidRootPart
 						end
 
-						for _, prt in v.Character:GetChildren() do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = .4
@@ -905,7 +886,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						if v.Character:FindFirstChild("Shirt") then
 							v.Character.Shirt:Destroy()
@@ -914,7 +895,7 @@ return function(Vargs, env)
 							v.Character.Pants:Destroy()
 						end
 
-						for _, prt in v.Character:GetChildren() do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") and prt.Name ~= "HumanoidRootPart" and (prt.Name ~= "Head" or not prt.Parent:FindFirstChild("NameTag", true)) then
 								prt.Transparency = 0
 								prt.Reflectance = 1
@@ -938,7 +919,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {Mode = "Spooky";})
 				end
 			end
@@ -1005,7 +986,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, p in players do
+				for i, p in pairs(players) do
 					service.TrackTask("Thread: Thanos", function()
 						for t = 0.1, 1.1, 0.05 do
 							if p.Character then
@@ -1017,7 +998,7 @@ return function(Vargs, env)
 									human.NameOcclusion = "OccludeAll"
 								end
 
-								for k, v in p.Character:GetChildren() do
+								for k, v in ipairs(p.Character:GetChildren()) do
 									if v:IsA("BasePart") then
 										local decal = v:FindFirstChildOfClass("Decal")
 										local foundDust = v:FindFirstChild("Thanos_Emitter")
@@ -1138,7 +1119,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
 						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
 						continue
@@ -1190,7 +1171,7 @@ return function(Vargs, env)
 
 						ufo.Name = "ADONIS_UFO"
 						ufo.PrimaryPart = primary
-						ufo:PivotTo(tPos*CFrame.new(0, 500, 0))
+						ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 500, 0))
 
 						spotLight.Enabled = false
 						particles.Enabled = false
@@ -1205,7 +1186,7 @@ return function(Vargs, env)
 							if not check() then
 								break
 							else
-								ufo:PivotTo(tPos*CFrame.new(0, 200-i, 0))
+								ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, 200-i, 0))
 								wait(0.001*(i/5))
 							end
 						end
@@ -1224,7 +1205,7 @@ return function(Vargs, env)
 							torso.Anchored = true
 							tween:Play()
 
-							for i, v in p.Character:GetChildren() do
+							for i, v in ipairs(p.Character:GetChildren()) do
 								if v:IsA("BasePart") then
 									service.TweenService:Create(v, TweenInfo.new(1), {
 										Transparency = 1
@@ -1256,7 +1237,7 @@ return function(Vargs, env)
 										end
 									]])
 
-							for i, v in p.Character:GetChildren() do
+							for i, v in ipairs(p.Character:GetChildren()) do
 								if v:IsA("BasePart") then
 									v.Anchored = true
 									v.Transparency = 1
@@ -1268,13 +1249,13 @@ return function(Vargs, env)
 
 							wait(1)
 
-							Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
+							server.Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
 
 							for i = 1, 260 do
 								if not check() then
 									break
 								else
-									ufo:PivotTo(tPos*CFrame.new(0, i, 0))
+									ufo:SetPrimaryPartCFrame(tPos*CFrame.new(0, i, 0))
 									--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
 									wait(0.001*(i/5))
 								end
@@ -1311,7 +1292,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {Mode = "Blind";})
 				end
 			end
@@ -1327,7 +1308,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
 				if not img then error(args[2].." is not a valid ID") end
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {
 						Mode = "ScreenImage";
 						Image = args[2];
@@ -1346,7 +1327,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local img = tostring(args[2])
 				if not img then error(args[2].." is not a valid ID") end
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {Mode = "ScreenVideo"; video = args[2];})
 				end
 			end
@@ -1360,7 +1341,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Remote.MakeGui(v, "Effect", {Mode = "Off";})
 				end
 			end
@@ -1376,7 +1357,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
-				for i, p in players do
+				for i, p in ipairs(players) do
 					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
 						table.remove(players, i)
 						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
@@ -1396,7 +1377,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
-				for i, p in players do
+				for i, p in ipairs(players) do
 					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
 						table.remove(players, i)
 						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
@@ -1445,7 +1426,7 @@ return function(Vargs, env)
 					error(forYou[ind])
 				end
 
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
 						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
 						continue
@@ -1503,13 +1484,13 @@ return function(Vargs, env)
 						humanoid.WalkSpeed = 0
 						sound.Pitch = 1.3
 
-						Remote.PlayAudio(p, 421358540, 0.2, 1, true)
+						server.Remote.PlayAudio(p, 421358540, 0.2, 1, true)
 
 						for i = 1, 200 do
 							if not check() then
 								break
 							else
-								van:PivotTo(tPos * (CFrame.new(-200+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
+								van:SetPrimaryPartCFrame(tPos*(CFrame.new(-200+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
 								wait(0.001*(i/5))
 							end
 						end
@@ -1523,7 +1504,7 @@ return function(Vargs, env)
 						wait(0.5)
 
 						if check() then
-							torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
+							torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
 						end
 
 						wait(0.5)
@@ -1533,7 +1514,7 @@ return function(Vargs, env)
 						wait(0.5)
 
 						sound.Pitch = 1.3
-						Remote.MakeGui(p, "Effect", {
+						server.Remote.MakeGui(p, "Effect", {
 							Mode = "FadeOut";
 						})
 
@@ -1543,12 +1524,12 @@ return function(Vargs, env)
 							if not check() then
 								break
 							else
-								van:PivotTo(tPos * (CFrame.new(0+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
-								torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
+								van:SetPrimaryPartCFrame(tPos*(CFrame.new(0+i,-1,-7)*CFrame.Angles(0, math.rad(270), 0)))
+								torso.CFrame = primary.CFrame*(CFrame.new(0, 2.3, 0)*CFrame.Angles(0, math.rad(90), 0))
 								wait(0.1/(i*5))
 
 								if i == 270 then
-									Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
+									server.Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
 								end
 							end
 						end
@@ -1606,7 +1587,7 @@ return function(Vargs, env)
 				service.StopLoop("ChickenSpam")
 				service.StartLoop("ChickenSpam", 5, function()
 					tempHats = {}
-					for i, v in hats do
+					for i, v in pairs(hats) do
 						wait(0.5)
 						if not hat or not hat.Parent or not scr or not scr.Parent then
 							break
@@ -1621,11 +1602,11 @@ return function(Vargs, env)
 					end
 					hats = tempHats
 				end)
-				for i, v in tempHats do
+				for i, v in pairs(tempHats) do
 					pcall(function() v:Destroy() end)
 					table.remove(tempHats, i)
 				end
-				for i, v in hats do
+				for i, v in pairs(hats) do
 					pcall(function() v:Destroy() end)
 					table.remove(hats, i)
 				end
@@ -1640,7 +1621,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Fun = true;
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local p = service.New("Part", workspace)
 					table.insert(Variables.Objects, p)
 					p.Transparency = 1
@@ -1696,7 +1677,7 @@ return function(Vargs, env)
 							if obj ~= main and obj:IsA("Part") then
 								table.insert(parts, 1, obj)
 							elseif obj:IsA("Model") or obj:IsA("Accoutrement") or obj:IsA("Tool") or obj == workspace then
-								for i, v in obj:GetChildren() do
+								for i, v in pairs(obj:GetChildren()) do
 									Pcall(get, v)
 								end
 								obj.ChildAdded:Connect(function(p)Pcall(get, p)end)
@@ -1706,7 +1687,7 @@ return function(Vargs, env)
 						get(workspace)
 
 						repeat
-							for i, v in parts do
+							for i, v in pairs(parts) do
 								if (((main.Position - v.Position).Magnitude * 250 * 20) < (5000 * 40)) and v and v:IsDescendantOf(workspace) then
 									coroutine.wrap(fling, v)
 								elseif not v or not v:IsDescendantOf(workspace) then
@@ -1742,7 +1723,7 @@ return function(Vargs, env)
 				local nukes = {}
 				local partsHit = {}
 
-				for i, v in Functions.GetPlayers(plr, args[1]) do
+				for i, v in ipairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -1782,7 +1763,7 @@ return function(Vargs, env)
 				end
 
 				for i = 1, 333 do
-					for i, v in nukes do
+					for i, v in pairs(nukes) do
 						local curPos = v.CFrame
 						v.Size = v.Size + Vector3.new(3, 3, 3)
 						v.CFrame = curPos
@@ -1790,7 +1771,7 @@ return function(Vargs, env)
 					wait(1/44)
 				end
 
-				for i, v in nukes do
+				for i, v in pairs(nukes) do
 					v:Destroy()
 				end
 
@@ -1831,7 +1812,7 @@ return function(Vargs, env)
 						partsHit = nil
 						finished = true
 					elseif partsHit and objs and Variables.WildFire ~= partsHit then
-						for i, v in objs do
+						for i, v in pairs(objs) do
 							v:Destroy()
 						end
 
@@ -1881,7 +1862,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in Functions.GetPlayers(plr, args[1]) do
+				for i, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChild("HumanoidRootPart")
 					if human then
@@ -1902,9 +1883,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for _, v in v.Character:GetChildren() do
+						for _, v in pairs(v.Character:GetChildren()) do
 							if v.Name == "Shirt" then local cl = v:Clone() cl.Parent = v.Parent cl.ShirtTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 							if v.Name == "Pants" then local cl = v:Clone() cl.Parent = v.Parent cl.PantsTemplate = "http://www.roblox.com/asset/?id=109163376" v:Destroy() end
 						end
@@ -1922,13 +1903,13 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							Admin.RunCommand(Settings.Prefix.."pants", v.Name, "233373970")
 							Admin.RunCommand(Settings.Prefix.."shirt", v.Name, "133078195")
 
-							for _, v in v.Character:GetChildren() do
+							for _, v in pairs(v.Character:GetChildren()) do
 								if v:IsA("Accoutrement") or v:IsA("CharacterMesh") then
 									v:Destroy()
 								end
@@ -1954,7 +1935,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 							local knownchar = v.Character
@@ -2007,7 +1988,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 						local human = v.Character:FindFirstChildOfClass("Humanoid")
 						local rigType = human and (human.RigType == Enum.HumanoidRigType.R6 and "R6" or "R15") or nil
@@ -2025,7 +2006,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						local color
 						local num = math.random(1, 7)
@@ -2066,7 +2047,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("Epix Puke") then return end
 						local run = true
@@ -2137,7 +2118,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						if not v:IsA("Player") or not v or not v.Character or not v.Character:FindFirstChild("Head") or v.Character:FindFirstChild("ADONIS_BLEED") then return end
 						local run = true
@@ -2208,7 +2189,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						local larm=v.Character:FindFirstChild("Left Arm")
@@ -2261,7 +2242,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if args[2] and args[2]:lower() == "destroy" then
 						local hats = v.Character:FindFirstChild("ADONIS_HAT_PETS")
 						if hats then hats:Destroy() end
@@ -2292,7 +2273,7 @@ return function(Vargs, env)
 								obj = m.Target
 							end
 
-							for _, h in v.Character:GetChildren() do
+							for _, h in pairs(v.Character:GetChildren()) do
 								if h:IsA("Accessory") then
 									hat = h
 									break
@@ -2331,7 +2312,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local hats = plr.Character:FindFirstChild("ADONIS_HAT_PETS")
 				if hats then
-					for i, v in service.GetPlayers(plr, args[2]) do
+					for i, v in pairs(service.GetPlayers(plr, args[2])) do
 						if v.Character:FindFirstChild("HumanoidRootPart") and v.Character.HumanoidRootPart:IsA("Part") then
 							if args[1]:lower() == "follow" then
 								hats.Mode.Value = "Follow"
@@ -2362,9 +2343,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy()
 							end
@@ -2382,9 +2363,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy()
 							end
@@ -2393,7 +2374,7 @@ return function(Vargs, env)
 						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.force = Vector3.new(0, 0, 0)
-						for _, prt in v.Character:GetChildren() do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") then
 								frc.force = frc.force - Vector3.new(0, prt:GetMass()*tonumber(args[2]), 0)
 							elseif prt:IsA("Accoutrement") then
@@ -2413,9 +2394,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
+						for _, frc in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if frc.Name == "ADONIS_GRAVITY" then
 								frc:Destroy()
 							end
@@ -2424,7 +2405,7 @@ return function(Vargs, env)
 						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
 						frc.force = Vector3.new(0, 0, 0)
-						for _, prt in v.Character:GetChildren() do
+						for _, prt in pairs(v.Character:GetChildren()) do
 							if prt:IsA("BasePart") then
 								frc.force = frc.force + Vector3.new(0, prt:GetMass()*196.25, 0)
 							elseif prt:IsA("Accoutrement") then
@@ -2447,7 +2428,7 @@ return function(Vargs, env)
 				local bunnyScript = Deps.Assets.BunnyHop
 				bunnyScript.Name = "HippityHopitus"
 				local hat = service.Insert(110891941)
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					hat:Clone().Parent = v.Character
 					local clone = bunnyScript:Clone()
 					clone.Parent = v.Character
@@ -2464,7 +2445,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local scr = v.Character:FindFirstChild("HippityHopitus")
 					if scr then
 						scr.Disabled = true
@@ -2482,7 +2463,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character:FindFirstChild("HumanoidRootPart") then
 						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame+Vector3.new(0, tonumber(args[2]), 0)
 					end
@@ -2498,9 +2479,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for kay, player in service.GetPlayers(plr, args[1]) do
+				for kay, player in pairs(service.GetPlayers(plr, args[1])) do
 					local m = player.Character
-					for i, v in m:GetChildren() do
+					for i, v in pairs(m:GetChildren()) do
 						if v:IsA("Part") then
 							local s = service.New("SelectionPartLasso")
 							s.Parent = m.HumanoidRootPart
@@ -2529,7 +2510,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for kay, player in service.GetPlayers(plr, args[1]) do
+				for kay, player in pairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						local torso = player.Character:FindFirstChild("HumanoidRootPart")
 						if torso then
@@ -2566,7 +2547,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						Admin.RunCommand(Settings.Prefix.."freeze", v.Name)
 						local char = v.Character
@@ -2679,9 +2660,9 @@ return function(Vargs, env)
 				bg.maxTorque = Vector3.new(0, math.huge, 0)
 				bg.P = 11111
 				bg.D = 0
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, q in v.Character.HumanoidRootPart:GetChildren() do
+						for _, q in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
@@ -2705,9 +2686,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, q in v.Character.HumanoidRootPart:GetChildren() do
+						for _, q in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
 								q:Destroy()
 							end
@@ -2725,7 +2706,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(p, args)
-				for _, plr in service.GetPlayers(p, args[1]) do
+				for _, plr in ipairs(service.GetPlayers(p, args[1])) do
 					if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 						local human = plr.Character:FindFirstChildOfClass("Humanoid")
 
@@ -2746,7 +2727,7 @@ return function(Vargs, env)
 
 							torso.Transparency = 1
 
-							for _, v in torso:GetChildren() do
+							for _, v in ipairs(torso:GetChildren()) do
 								if v:IsA("Motor6D") then
 									local lc0 = service.New("CFrameValue", {Name = "LastC0";Value = v.C0;Parent = v})
 								end
@@ -2773,7 +2754,7 @@ return function(Vargs, env)
 
 							local weld = service.New("Weld", {Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, .5, 0)})
 
-							for _, v in char:GetDescendants() do
+							for _, v in ipairs(char:GetDescendants()) do
 								if v:IsA("BasePart") then
 									v.BrickColor = BrickColor.new("Brown")
 								end
@@ -2811,9 +2792,9 @@ return function(Vargs, env)
 				sound.SoundId = "rbxassetid://137545053"
 				sound.Looped = true
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local character = v.Character
-					for k, p in character.HumanoidRootPart:GetChildren() do
+					for k, p in pairs(character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -2833,7 +2814,7 @@ return function(Vargs, env)
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
 						character.Head.Transparency = 1
-						for _, c in character.Head:GetChildren() do
+						for _, c in ipairs(character.Head:GetChildren()) do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
@@ -2883,8 +2864,8 @@ return function(Vargs, env)
 				sound.SoundId = "rbxassetid://174270407"
 				sound.Looped = true
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -2904,7 +2885,7 @@ return function(Vargs, env)
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
 						v.Character.Head.Transparency = 1
-						for _, c in v.Character.Head:GetChildren() do
+						for _, c in ipairs(v.Character.Head:GetChildren()) do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
@@ -2954,8 +2935,8 @@ return function(Vargs, env)
 				sound.SoundId = "rbxassetid://179393562"
 				sound.Looped = true
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -2975,7 +2956,7 @@ return function(Vargs, env)
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
 						v.Character.Head.Transparency = 1
-						for _, c in v.Character.Head:GetChildren() do
+						for _, c in ipairs(v.Character.Head:GetChildren()) do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
@@ -3029,8 +3010,8 @@ return function(Vargs, env)
 				sound.SoundId = "rbxassetid://265125691"
 				sound.Looped = true
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -3089,8 +3070,8 @@ return function(Vargs, env)
 				sound.SoundId = "rbxassetid://149690685"
 				sound.Looped = true
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -3150,8 +3131,8 @@ return function(Vargs, env)
 
 				cl.Name = "Animator"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for k, p in pairs(v.Character.HumanoidRootPart:GetChildren()) do
 						if p:IsA("Decal") or p:IsA("Sound") then
 							p:Destroy()
 						end
@@ -3210,9 +3191,9 @@ return function(Vargs, env)
 					}
 				end
 
-				for _, v in Functions.GetPlayers(plr, args[1]) do
+				for _, v in pairs(Functions.GetPlayers(plr, args[1])) do
 					local char = v.Character
-					for _, p in char:GetChildren() do
+					for _, p in pairs(char:GetChildren()) do
 						if p:IsA("BasePart") then
 							Functions.RemoveParticle(p, "ADONIS_CMD_TRAIL")
 
@@ -3248,7 +3229,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.RemoveParticle(torso, "PARTICLE")
@@ -3291,7 +3272,7 @@ return function(Vargs, env)
 					endc = Color3.new(endColor[1], endColor[2], endColor[3])
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.NewParticle(torso, "ParticleEmitter", {
@@ -3348,14 +3329,14 @@ return function(Vargs, env)
 						torso.BottomSurface = 0
 						torso.TopSurface = 0
 
-						for _, v in char:GetChildren() do
+						for _, v in ipairs(char:GetChildren()) do
 							if v:IsA("BasePart") then
 								v.Anchored = true
 							end
 						end
 
 						local function size(part)
-							for _, v in part:GetChildren() do
+							for _, v in ipairs(part:GetChildren()) do
 								if (v:IsA("Weld") or v:IsA("Motor") or v:IsA("Motor6D")) and v.Part1 and v.Part1:IsA("Part") then
 									local p1 = v.Part1
 									local c0 = {v.C0:components()}
@@ -3375,7 +3356,7 @@ return function(Vargs, env)
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 									elseif p1.Name ~= "Torso" then
 										p1.Anchored = true
-										for _, m in p1:GetChildren() do
+										for _, m in pairs(p1:GetChildren()) do
 											if m:IsA("Weld") then
 												m.Part0 = nil
 												m.Part1.Anchored = true
@@ -3385,7 +3366,7 @@ return function(Vargs, env)
 										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 
-										for _, m in p1:GetChildren() do
+										for _, m in pairs(p1:GetChildren()) do
 											if m:IsA("Weld") then
 												m.Part0 = p1
 												m.Part1.Anchored = false
@@ -3421,12 +3402,12 @@ return function(Vargs, env)
 						torso.formFactor = 3
 						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
 
-						for i, v in welds do
+						for i, v in pairs(welds) do
 							v.Part0 = torso
 							v.Part1.Anchored = false
 						end
 
-						for i, v in char:GetChildren() do
+						for i, v in pairs(char:GetChildren()) do
 							if v:IsA("BasePart") then
 								v.Anchored = false
 							end
@@ -3443,7 +3424,7 @@ return function(Vargs, env)
 					end
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					sizePlayer(v)
 				end
 			end
@@ -3457,9 +3438,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
-						for _, p in v.Character:GetChildren() do
+						for _, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("Part") then
 								if p:FindFirstChild("Mesh") then p.Mesh:Destroy() end
 								service.New("BlockMesh", p).Scale = Vector3.new(1, 1, args[2] or 0.1)
@@ -3486,7 +3467,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					local event
 					local torso = v.Character.HumanoidRootPart
 					event = v.Character.HumanoidRootPart.Touched:Connect(function(p)
@@ -3508,7 +3489,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					cPcall(function()
 						if v.Character then
 							local head = v.Character.Head
@@ -3517,9 +3498,7 @@ return function(Vargs, env)
 							local rarm = v.Character["Right Arm"]
 							local lleg = v.Character["Left Leg"]
 							local rleg = v.Character["Right Leg"]
-							for _, v in v.Character:GetChildren() do
-								if v:IsA("Part") then v.Anchored = true end
-							end
+							for _, v in pairs(v.Character:GetChildren()) do if v:IsA("Part") then v.Anchored = true end end
 							torso.FormFactor = "Custom"
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
@@ -3557,9 +3536,7 @@ return function(Vargs, env)
 							weld.Part1=rleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5, 0)
 							wait()
-							for _, v in v.Character:GetChildren() do
-								if v:IsA("Part") then v.Anchored = false end
-							end
+							for _, v in pairs(v.Character:GetChildren()) do if v:IsA("Part") then v.Anchored = false end end
 						end
 					end)
 				end
@@ -3576,8 +3553,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local hat = service.Insert(36883367)
 				local players = service.GetPlayers(plr, args[1])
-				for _, v in players do
-					for _, m in v.Character:GetChildren() do
+				for _, v in pairs(players) do
+					for _, m in pairs(v.Character:GetChildren()) do
 						if m:IsA("CharacterMesh") or m:IsA("Accoutrement") then
 							m:Destroy()
 						end
@@ -3588,7 +3565,7 @@ return function(Vargs, env)
 					-- This is done outside of the for loop above as the Package command inserts all package items each time the command is run
 					-- By only running it once, it's only inserting the items once and therefore reducing overhead
 					local t = {}
-					for _, v in players do
+					for _, v in pairs(players) do
 						table.insert(t, v.Name)
 					end
 					Admin.RunCommand(Settings.Prefix.."package "..table.concat(t, ",").." 295")
@@ -3604,7 +3581,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
 						if humanoid then
@@ -3638,7 +3615,7 @@ return function(Vargs, env)
 								lleg.C0 = isR15 and (CFrame.new(0.5,-0.5, 0.5) * CFrame.Angles(0, math.rad(180), 0)) or (CFrame.new(0,-1,.5) * CFrame.Angles(0, math.rad(-90), 0))
 							end
 
-							for _, part in v.Character:GetChildren() do
+							for _, part in pairs(v.Character:GetChildren()) do
 								if part:IsA("BasePart") then
 									part.BrickColor = BrickColor.new("Bright green")
 									if part.Name == "FAKETORSO" then
@@ -3662,7 +3639,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid")
@@ -3691,7 +3668,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local char = v.Character;
 						local human = char and char:FindFirstChildOfClass("Humanoid")
@@ -3730,7 +3707,7 @@ return function(Vargs, env)
 					Functions.Hint("Size changed to the maximum "..tostring(num).." [Argument #2 (size multiplier) went over the size limit]", {plr})
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local char = v.Character
 					local human = char and char:FindFirstChildOfClass("Humanoid")
 
@@ -3749,7 +3726,7 @@ return function(Vargs, env)
 					end
 
 					if human and human.RigType == Enum.HumanoidRigType.R15 then
-						for _, val in human:GetChildren() do
+						for _, val in pairs(human:GetChildren()) do
 							if val:IsA("NumberValue") and val.Name:match(".*Scale") then
 								val.Value *= num
 							end
@@ -3757,15 +3734,15 @@ return function(Vargs, env)
 					elseif human and human.RigType == Enum.HumanoidRigType.R6 then
 						local motors = {}
 						table.insert(motors, char.HumanoidRootPart:FindFirstChild("RootJoint"))
-						for _, motor in char.Torso:GetChildren() do
+						for _, motor in pairs(char.Torso:GetChildren()) do
 							if motor:IsA("Motor6D") then table.insert(motors, motor) end
 						end
-						for _, motor in motors do
+						for _, motor in pairs(motors) do
 							motor.C0 = CFrame.new((motor.C0.Position * num)) * (motor.C0 - motor.C0.Position)
 							motor.C1 = CFrame.new((motor.C1.Position * num)) * (motor.C1 - motor.C1.Position)
 						end
 
-						for _, v in char:GetDescendants() do
+						for _, v in ipairs(char:GetDescendants()) do
 							if v:IsA("BasePart") then
 								v.Size *= num
 							elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
@@ -3795,7 +3772,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Deps.Assets.Seize
 				scr.Name = "Seize"
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character:FindFirstChild("HumanoidRootPart") then
 						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(math.rad(90), 0, 0)
 						local new = scr:Clone()
@@ -3814,7 +3791,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("HumanoidRootPart") then
 						local old = v.Character.HumanoidRootPart:FindFirstChild("Seize")
 						if old then old:Destroy() end
@@ -3832,9 +3809,9 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
-						for a, obj in v.Character:GetChildren() do
+						for a, obj in pairs(v.Character:GetChildren()) do
 							if obj:IsA("BasePart") and (obj.Name:find("Leg") or obj.Name:find("Arm")) then
 								obj:Destroy()
 							end
@@ -3852,7 +3829,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.StartLoop(v.UserId.."LOOPFLING", 2, function()
 						Admin.RunCommand(Settings.Prefix.."fling", v.Name)
 					end)
@@ -3868,7 +3845,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					service.StopLoop(v.UserId.."LOOPFLING")
 				end
 			end
@@ -3883,7 +3860,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local dist = 1000000 * (tonumber(args[2]) or 1.5)
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						if torso then
@@ -3904,7 +3881,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local torso = v.Character:FindFirstChild("HumanoidRootPart")
 						local pTorso = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -3929,8 +3906,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				assert(args[1] and args[2], "Missing player names (must specify two)")
-				for i, player1 in service.GetPlayers(plr, args[1]) do
-					for i2, player2 in service.GetPlayers(plr, args[2]) do
+				for i, player1 in pairs(service.GetPlayers(plr, args[1])) do
+					for i2, player2 in pairs(service.GetPlayers(plr, args[2])) do
 						local torso1 = player1.Character:FindFirstChild("HumanoidRootPart")
 						local torso2 = player2.Character:FindFirstChild("HumanoidRootPart")
 						if torso1 and torso2 then
@@ -3960,10 +3937,10 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, p in service.GetPlayers(plr, args[1]) do
+				for i, p in pairs(service.GetPlayers(plr, args[1])) do
 					local torso = p.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
-						for i, v in torso:GetChildren() do
+						for i, v in pairs(torso:GetChildren()) do
 							if v.Name == "Adonis_Rope_Attachment" or v.Name == "Adonis_Rope_Constraint" then
 								v:Destroy()
 							end
@@ -4100,7 +4077,7 @@ return function(Vargs, env)
 				}
 
 				local function clear(char)
-					for i, v in char:GetChildren() do
+					for i, v in pairs(char:GetChildren()) do
 						if v:IsA("CharacterMesh") or v:IsA("Accoutrement") or v:IsA("ShirtGraphic") or v:IsA("Pants") or v:IsA("Shirt") then
 							v:Destroy()
 						end
@@ -4139,7 +4116,7 @@ return function(Vargs, env)
 					service.Insert(face).Parent = char
 				end
 
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						clear(v.Character)
 						apply(v.Character)
@@ -4158,7 +4135,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local message = args[2]
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					service.ChatService:Chat(v.Character.Head, message, Enum.ChatColor.Blue)
 				end
 			end
@@ -4172,10 +4149,10 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Routine(function()
 						if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-							for _, obj in v.Character:GetChildren() do
+							for _, obj in ipairs(v.Character:GetChildren()) do
 								if obj:IsA("BasePart") and obj.Name ~= "HumanoidRootPart" then obj.Anchored = true end
 							end
 							local ice = service.New("Part", v.Character)
@@ -4219,7 +4196,7 @@ return function(Vargs, env)
 					secondary = str
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.NewParticle(torso, "Fire", {
@@ -4246,7 +4223,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.RemoveParticle(torso, "FIRE")
@@ -4277,7 +4254,7 @@ return function(Vargs, env)
 					color = str
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.NewParticle(torso, "Smoke", {
@@ -4297,7 +4274,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.RemoveParticle(torso, "SMOKE")
@@ -4327,7 +4304,7 @@ return function(Vargs, env)
 					color = str
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.NewParticle(torso, "Sparkles", {
@@ -4353,7 +4330,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					local torso = v.Character:FindFirstChild("HumanoidRootPart")
 					if torso then
 						Functions.RemoveParticle(torso, "SPARKLES")
@@ -4375,7 +4352,7 @@ return function(Vargs, env)
 
 				assert(tonumber(args[2]), tostring(args[2]).." is not a valid ID")
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Functions.PlayAnimation(v , args[2])
 				end
 			end
@@ -4402,12 +4379,12 @@ return function(Vargs, env)
 					animId = "180426354"
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
 						if animateScript then
 							local found = false
-							for _, v2 in animateScript:GetDescendants() do
+							for _, v2 in pairs(animateScript:GetDescendants()) do
 								if v2.Name == "walk" then
 									found = true
 									local walkAnimation = v2:FindFirstChildOfClass("Animation")
@@ -4454,12 +4431,12 @@ return function(Vargs, env)
 					animId = "180426354"
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
 						if animateScript then
 							local found = false
-							for _,v2 in animateScript:GetDescendants() do
+							for _,v2 in pairs(animateScript:GetDescendants()) do
 								if v2.Name == "run" then
 									found = true
 									local runAnimation = v2:FindFirstChildOfClass("Animation")
@@ -4506,12 +4483,12 @@ return function(Vargs, env)
 					animId = "125750702"
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
 						if animateScript then
 							local found = false
-							for _, v2 in animateScript:GetDescendants() do
+							for _, v2 in pairs(animateScript:GetDescendants()) do
 								if v2.Name == "jump" then
 									found = true
 									local jumpAnimation = v2:FindFirstChildOfClass("Animation")
@@ -4558,12 +4535,12 @@ return function(Vargs, env)
 					animId = "180436148"
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character then
 						local animateScript = v.Character:FindFirstChild("Animate")
 						if animateScript then
 							local found = false
-							for _,v2 in animateScript:GetDescendants() do
+							for _,v2 in pairs(animateScript:GetDescendants()) do
 								if v2.Name == "fall" then
 									found = true
 									local fallAnimation = v2:FindFirstChildOfClass("Animation")
@@ -4599,7 +4576,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local moder = tonumber(args[2]) or 0.5
 				if moder > 5 then moder = 5 end
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(v, "BlurEffect", {
 						Name = "WINDOW_BLUR",
 						Size = tonumber(args[2]) or 24,
@@ -4617,7 +4594,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(v, "BloomEffect", {
 						Name = "WINDOW_BLOOM",
 						Intensity = tonumber(args[2]) or 0.4,
@@ -4637,7 +4614,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(v, "SunRaysEffect", {
 						Name = "WINDOW_SUNRAYS",
 						Intensity = tonumber(args[2]) or 0.25,
@@ -4662,7 +4639,7 @@ return function(Vargs, env)
 				end
 				r, g, b = tonumber(r), tonumber(g), tonumber(b)
 				if not r or not g or not b then error("Invalid Input") end
-				for _, p in service.GetPlayers(plr, args[1]) do
+				for _, p in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(p, "ColorCorrectionEffect", {
 						Name = "WINDOW_COLORCORRECTION",
 						Brightness = tonumber(args[2]) or 0,
@@ -4694,7 +4671,7 @@ return function(Vargs, env)
 				num2 = "-"..num2.."00000"
 				num3 = "-"..num3.."00000"
 				if args[2] then
-					for i, v in service.GetPlayers(plr, args[2]) do
+					for i, v in pairs(service.GetPlayers(plr, args[2])) do
 						Remote.SetLighting(v, "FogColor", Color3.new(tonumber(num1), tonumber(num2), tonumber(num3)))
 						Remote.SetLighting(v, "FogEnd", 9e9)
 					end
@@ -4713,11 +4690,11 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.Lighting:GetChildren() do
+				for _, v in ipairs(service.Lighting:GetChildren()) do
 					if v:IsA("Sky") then v:Destroy() end
 				end
 				local sky = service.New("Sky", service.Lighting)
-				for i, v in {"Ft", "Bk", "Lf", "Rt", "Up", "Dn"} do
+				for i, v in ipairs({"Ft", "Bk", "Lf", "Rt", "Up", "Dn"}) do
 					local img = args[i] or args[1]
 					if img --[[and (v ~= "Dn" or args[6])]] then
 						sky["Skybox"..v] = tonumber(img) and ("rbxassetid://"..img) or img
@@ -4749,7 +4726,7 @@ return function(Vargs, env)
 
 					if gear:IsA("BackpackItem") then
 						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							if v:FindFirstChild("StarterGear") then
 								gear:Clone().Parent = v.StarterGear
 							end
@@ -4777,7 +4754,7 @@ return function(Vargs, env)
 
 					if gear:IsA("BackpackItem") then
 						service.New("StringValue", gear).Name = Variables.CodeName..gear.Name
-						for i, v in service.GetPlayers(plr, args[1]) do
+						for i, v in pairs(service.GetPlayers(plr, args[1])) do
 							if v:FindFirstChild("Backpack") then
 								gear:Clone().Parent = v.Backpack
 							end
@@ -4804,7 +4781,7 @@ return function(Vargs, env)
 
 				scr.Name = "ADONIS_IceSkates"
 
-				for i, v in service.GetPlayers(plr, args[1]:lower()) do
+				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local vel = vel:Clone()
 						vel.Parent = v.Character.HumanoidRootPart
@@ -4826,7 +4803,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]:lower()) do
+				for i, v in pairs(service.GetPlayers(plr, args[1]:lower())) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						local scr = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceSkates")
 						local vel = v.Character.HumanoidRootPart:FindFirstChild("ADONIS_IceVelocity")
@@ -4845,8 +4822,8 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for i2, v2 in service.GetPlayers(plr, args[2]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
+					for i2, v2 in pairs(service.GetPlayers(plr, args[2])) do
 						local temptools = service.New("Model")
 						local tempcloths = service.New("Model")
 						local vpos = v.Character.HumanoidRootPart.CFrame
@@ -4855,30 +4832,30 @@ return function(Vargs, env)
 						local v2face = v2.Character.Head.face
 						vface.Parent = v2.Character.Head
 						v2face.Parent = v.Character.Head
-						for k, p in v.Character:GetChildren() do
+						for k, p in pairs(v.Character:GetChildren()) do
 							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
 								p.Parent = tempcloths
 							elseif p:IsA("Tool") then
 								p.Parent = temptools
 							end
 						end
-						for k, p in v.Backpack:GetChildren() do
+						for k, p in pairs(v.Backpack:GetChildren()) do
 							p.Parent = temptools
 						end
-						for k, p in v2.Character:GetChildren() do
+						for k, p in pairs(v2.Character:GetChildren()) do
 							if p:IsA("BodyColors") or p:IsA("CharacterMesh") or p:IsA("Pants") or p:IsA("Shirt") or p:IsA("Accessory") then
 								p.Parent = v.Character
 							elseif p:IsA("Tool") then
 								p.Parent = v.Backpack
 							end
 						end
-						for k, p in tempcloths:GetChildren() do
+						for k, p in pairs(tempcloths:GetChildren()) do
 							p.Parent = v2.Character
 						end
-						for k, p in v2.Backpack:GetChildren() do
+						for k, p in pairs(v2.Backpack:GetChildren()) do
 							p.Parent = v.Backpack
 						end
-						for k, p in temptools:GetChildren() do
+						for k, p in pairs(temptools:GetChildren()) do
 							p.Parent = v2.Backpack
 						end
 						v2.Character.HumanoidRootPart.CFrame = vpos
@@ -4896,12 +4873,12 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v1 in service.GetPlayers(plr, args[1]) do
+				for _, v1 in pairs(service.GetPlayers(plr, args[1])) do
 					if not v1.Character then continue end
 					local v1hum = v1.Character:FindFirstChildOfClass("Humanoid")
 					local v1desc = v1hum:GetAppliedDescription()
 
-					for _, v2 in service.GetPlayers(plr, args[2]) do
+					for _, v2 in pairs(service.GetPlayers(plr, args[2])) do
 						if not v2.Character then continue end
 						local v2hum = v1.Character:FindFirstChildOfClass("Humanoid")
 						local v2desc = v2hum:GetAppliedDescription()
@@ -4912,12 +4889,12 @@ return function(Vargs, env)
 						v2hum:UnequipTools()
 						local v1tools, v2tools = v1.Backpack:GetChildren(), v2.Backpack:GetChildren()
 
-						for _, t in v1tools do
+						for _, t in ipairs(v1tools) do
 							if t:IsA("Tool") then
 								t.Parent = v2.Backpack
 							end
 						end
-						for _, t in v2tools do
+						for _, t in pairs(v2tools) do
 							if t:IsA("Tool") then
 								t.Parent = v1.Backpack
 							end
@@ -4941,7 +4918,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character.PrimaryPart then
 						service.New("Explosion", {
 							Archivable = false;
@@ -4965,7 +4942,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local angle = 130 or args[2]
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						v.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, 0, math.rad(angle))
 					end
@@ -4981,7 +4958,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Admin.RunCommand(Settings.Prefix.."char", v.Name, "51310503")
 				end
 			end
@@ -4995,7 +4972,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in service.GetPlayers(plr, args[1]) do
+				for i, v in pairs(service.GetPlayers(plr, args[1])) do
 					Admin.RunCommand(Settings.Prefix.."char", v.Name, "userid-1237666")
 				end
 			end
@@ -5009,7 +4986,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.NewLocal(v, "ColorCorrectionEffect", {
 						Name = "WINDOW_THERMAL",
 						Brightness = 1,
@@ -5035,7 +5012,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr, args)
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in ipairs(service.GetPlayers(plr, args[1])) do
 					Remote.RemoveLocal(v, "WINDOW_THERMAL", "Camera")
 				end
 			end
@@ -5073,7 +5050,7 @@ return function(Vargs, env)
 					if args[1] then
 						local nam = args[1]
 
-						for i, v in Variables.MusicList do
+						for i, v in pairs(server.Variables.MusicList)do
 							if string.lower(v.Name) == string.lower(nam)then
 								return v.ID
 							end

@@ -128,7 +128,7 @@ return function(Vargs, GetEnv)
 				new.Active = true
 				new.Text = ""
 
-				for ind,child in gui:GetChildren() do
+				for ind,child in ipairs(gui:GetChildren()) do
 					child.Parent = new
 				end
 
@@ -158,7 +158,7 @@ return function(Vargs, GetEnv)
 				newEnv.service.Threads = CloneTable(service.Threads)
 			end
 
-			for i,v in newEnv.client do
+			for i,v in pairs(newEnv.client) do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
 					newEnv.client[i] = CloneTable(v)
 				end
@@ -174,7 +174,7 @@ return function(Vargs, GetEnv)
 
 				local rets = {
 					TrackTask("UI: ".. module:GetFullName(),
-						--func,
+						--func, 
 						setfenv(func, newEnv),
 						data,
 						newEnv
@@ -244,9 +244,9 @@ return function(Vargs, GetEnv)
 
 			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for i,v in foundConfigs do
+				for i,v in pairs(foundConfigs) do
 					if v.Config then
-						for k,m in v.Config:GetChildren() do
+						for k,m in ipairs(v.Config:GetChildren()) do
 							if not endConfig[m.Name] then
 								if string.sub(m.Name, 1, 5) == "NoEnv" then
 									endConfig["Code"] = m
@@ -259,7 +259,7 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Load all config values into the new Config folder
-				for i,v in endConfig do
+				for i,v in pairs(endConfig) do
 					v:Clone().Parent = confFolder;
 				end
 
@@ -394,7 +394,7 @@ return function(Vargs, GetEnv)
 			local found = {}
 			local num = 0
 			if obj then
-				for ind,g in client.GUIs do
+				for ind,g in pairs(client.GUIs) do
 					if g.Name ~= ignore and g.Object ~= ignore and g ~= ignore then
 						if type(obj) == "string" then
 							if g.Name == obj then
@@ -426,7 +426,7 @@ return function(Vargs, GetEnv)
 		Remove = function(name, ignore)
 			local gui = UI.Get(name, ignore)
 			if gui then
-				for i,v in gui do
+				for i,v in pairs(gui) do
 					v.Destroy()
 				end
 			end
@@ -474,7 +474,7 @@ return function(Vargs, GetEnv)
 					local Events = gTable.Events
 					local disc = function()
 						origDisc(signal)
-						for i,v in Events do
+						for i,v in pairs(Events) do
 							if v.Signal == signal then
 								table.remove(Events, i)
 							end
@@ -494,7 +494,7 @@ return function(Vargs, GetEnv)
 				end,
 
 				ClearEvents = function()
-					for i,v in gTable.Events do
+					for i,v in pairs(gTable.Events) do
 						v:Remove()
 					end
 				end,
@@ -532,13 +532,13 @@ return function(Vargs, GetEnv)
 					end
 
 					gTable.AncestryEvent = new.AncestryChanged:Connect(function(c, parent)
-						if client.GUIs[gIndex] and rawequal(c, gTable.Object) then
-							if gTable.Class == "TextLabel" and parent == service.PlayerGui then
+						if client.GUIs[gIndex] then
+							if rawequal(c, gTable.Object) and gTable.Class == "TextLabel" and parent == service.PlayerGui then
 								wait()
 								gTable.Object.Parent = UI.GetHolder()
-							elseif parent == nil and not gTable.KeepAlive then
+							elseif rawequal(c, gTable.Object) and parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()
-							elseif parent ~= nil then
+							elseif rawequal(c, gTable.Object) and parent ~= nil then
 								gTable.Active = true
 								client.GUIs[gIndex] = gTable
 							end
@@ -549,7 +549,7 @@ return function(Vargs, GetEnv)
 			}
 
 			if data then
-				for i,v in data do
+				for i,v in pairs(data) do
 					gTable[i] = v
 				end
 			end

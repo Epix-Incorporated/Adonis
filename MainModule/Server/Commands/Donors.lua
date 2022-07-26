@@ -42,7 +42,7 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {[number]:string})
 				if plr.Character then
-					for _, v in plr.Character:GetChildren() do
+					for _, v in pairs(plr.Character:GetChildren()) do
 						if v:IsA("ShirtGraphic") then v:Destroy() end
 					end
 					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -64,7 +64,7 @@ return function(Vargs, env)
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
 				if plr.Character then
-					for _,p in plr.Character:GetChildren() do
+					for _,p in pairs(plr.Character:GetChildren()) do
 						if p:IsA("BasePart") then
 							if args[1] then
 								p.BrickColor = BrickColor.new(args[1])
@@ -357,7 +357,7 @@ return function(Vargs, env)
 			Donors = true;
 			AdminLevel = "Donors";
 			Function = function(plr: Player, args: {string})
-				for _, v in plr.Character:GetChildren() do
+				for _, v in pairs(plr.Character:GetChildren()) do
 					if v:IsA("Accoutrement") then
 						v:Destroy()
 					end

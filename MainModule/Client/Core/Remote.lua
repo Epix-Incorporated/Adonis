@@ -14,25 +14,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, require, table, type, wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, require, table, type, wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
 	local service = Vargs.Service
@@ -109,7 +109,7 @@ return function(Vargs, GetEnv)
 				RunAfterPlugins = true;
 			}, true)--]]
 
-		Remote.RunLast = nil;
+			Remote.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -219,7 +219,7 @@ return function(Vargs, GetEnv)
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
-				for i,v in objects do
+				for i,v in pairs(objects) do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -247,7 +247,7 @@ return function(Vargs, GetEnv)
 			LocallyFormattedTime = function(args)
 				if type(args[1]) == "table" then
 					local results = {}
-					for i, t in args[1] do
+					for i, t in ipairs(args[1]) do
 						results[i] = service.FormatTime(t, select(2, unpack(args)))
 					end
 					return results
@@ -298,7 +298,7 @@ return function(Vargs, GetEnv)
 
 			SetVariables = function(args)
 				local vars = args[1]
-				for var, val in vars do
+				for var, val in pairs(vars) do
 					Variables[var] = val
 				end
 			end;
@@ -347,13 +347,13 @@ return function(Vargs, GetEnv)
 			RemoveUI = function(args)
 				UI.Remove(args[1],args[2])
 			end;
-
+				
 			RefreshUI = function(args)
 				local guiName = args[1]
 				local ignore = args[2]
-
+				
 				UI.Remove(guiName,ignore)
-
+				
 				local themeData = args[3]
 				local guiData = args[4]
 
@@ -522,7 +522,7 @@ return function(Vargs, GetEnv)
 				local sub = string.sub
 				local char = string.char
 
-				local keyCache = cache[key] or {}
+				local keyCache = cache[key] or {}				
 				local endStr = {}
 
 				for i = 1, #str do

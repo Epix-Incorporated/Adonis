@@ -23,15 +23,15 @@ return function(Vargs, GetEnv)
 	Vector3int16, require, table, type, wait,
 	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+		getmetatable, setmetatable, loadstring, coroutine,
+		rawequal, typeof, print, math, warn, error,  pcall,
+		xpcall, select, rawset, rawget, ipairs, pairs,
+		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+		Vector3int16, require, table, type, wait,
+		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local script = script
 	local service = Vargs.Service
@@ -81,7 +81,7 @@ return function(Vargs, GetEnv)
 				RunAfterPlugins = true;
 			}, true)--]]
 
-		Functions.RunLast = nil;
+			Functions.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -100,7 +100,7 @@ return function(Vargs, GetEnv)
 
 			local LocalPlayer = service.UnWrap(service.Player)
 
-			for i, part in obj:GetChildren() do
+			for i, part in ipairs(obj:GetChildren()) do
 				if part:IsA("BasePart") then
 					if part.Name == "Head" and not part:FindFirstChild("__ADONIS_NAMETAG") then
 						local player = service.Players:GetPlayerFromCharacter(part.Parent)
@@ -143,7 +143,7 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for _, surface in Functions.ESPFaces do
+					for _, surface in ipairs(Functions.ESPFaces) do
 						local gui = New("SurfaceGui", {
 							AlwaysOnTop = true,
 							ResetOnSpawn = false,
@@ -163,7 +163,7 @@ return function(Vargs, GetEnv)
 							if obj == gui and parent == nil then
 								tempConnection:Disconnect()
 								Debris:AddItem(gui,0)
-								for i,v in Variables.ESPObjects do
+								for i,v in ipairs(Variables.ESPObjects) do
 									if v == gui then
 										table.remove(Variables.ESPObjects, i)
 										break;
@@ -189,7 +189,7 @@ return function(Vargs, GetEnv)
 				Variables.ESPEvent = nil;
 			end
 
-			for obj in Variables.ESPObjects do
+			for obj in pairs(Variables.ESPObjects) do
 				if not mode or not target or (target and obj:IsDescendantOf(target)) then
 					local __ADONIS_NAMETAG = obj.Parent and obj.Parent:FindFirstChild("__ADONIS_NAMETAG")
 					if __ADONIS_NAMETAG then
@@ -213,7 +213,7 @@ return function(Vargs, GetEnv)
 						end
 					end)
 
-					for i, Player in service.Players:GetPlayers() do
+					for i, Player in ipairs(service.Players:GetPlayers()) do
 						if Player.Character then
 							task.spawn(Functions.ESPify, UnWrap(Player.Character), color);
 						end
@@ -447,7 +447,7 @@ return function(Vargs, GetEnv)
 			local add; add = function(tab,child)
 				local good = false
 
-				for i,v in classes do
+				for i,v in pairs(classes) do
 					if child:IsA(v) then
 						good = true
 					end
@@ -459,19 +459,19 @@ return function(Vargs, GetEnv)
 						Children = {};
 					}
 
-					for i,v in props do
+					for i,v in pairs(props) do
 						pcall(function()
 							new.Properties[v] = child[v]
 						end)
 					end
 
-					for _, v in child:GetChildren() do
+					for _, v in ipairs(child:GetChildren()) do
 						add(new,v)
 					end
 					table.insert(tab.Children, new)
 				end
 			end
-			for _, v in service.PlayerGui:GetChildren() do
+			for _, v in ipairs(service.PlayerGui:GetChildren()) do
 				pcall(add, guis, v)
 			end
 			return guis
@@ -519,14 +519,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		UnLoadGuiData = function()
-			for i,v in service.PlayerGui:GetChildren() do
+			for i,v in ipairs(service.PlayerGui:GetChildren()) do
 				if v.Name == "LoadedGuis" then
 					v:Destroy()
 				end
 			end
 
 			if Variables.GuiViewFolder then
-				for i,v in Variables.GuiViewFolder:GetChildren() do
+				for i,v in ipairs(Variables.GuiViewFolder:GetChildren()) do
 					v.Parent = service.PlayerGui
 				end
 				Variables.GuiViewFolder:Destroy()
@@ -536,7 +536,7 @@ return function(Vargs, GetEnv)
 
 		GetParticleContainer = function(target)
 			if target then
-				for i,v in service.LocalContainer():GetChildren() do
+				for i,v in ipairs(service.LocalContainer():GetChildren()) do
 					if v.Name == target:GetFullName().."PARTICLES" then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
@@ -569,7 +569,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		RemoveParticle = function(target, name)
-			for i,effect in Variables.Particles do
+			for i,effect in pairs(Variables.Particles) do
 				if effect.Parent == target and effect.Name == name then
 					effect:Destroy();
 					Variables.Particles[i] = nil;
@@ -578,7 +578,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		EnableParticles = function(enabled)
-			for i,effect in Variables.Particles do
+			for i,effect in pairs(Variables.Particles) do
 				if enabled then
 					effect.Enabled = true
 				else
@@ -625,7 +625,7 @@ return function(Vargs, GetEnv)
 			elseif parent == "PlayerGui" then
 				par = service.PlayerGui
 			end
-			for ind,obj in par:GetChildren() do
+			for ind,obj in ipairs(par:GetChildren()) do
 				if obj.Name == object or obj == obj then
 					obj.Parent = newParent
 				end
@@ -642,110 +642,103 @@ return function(Vargs, GetEnv)
 				par = service.PlayerGui
 			end
 
-			for ind, obj in par:GetChildren() do
+			for ind, obj in ipairs(par:GetChildren()) do
 				if match and string.match(obj.Name,object) or obj.Name == object or object == obj then
 					obj:Destroy()
 				end
 			end
 		end;
 
-		NewCape = function(options)
-			local char = options.Parent
-			if not char then
-				return
-			end
+		NewCape = function(data)
+			local char = data.Parent
+			local material = data.Material or "Neon"
+			local color = data.Color or "White"
+			local reflect = data.Reflectance or 0
+			local decal = tonumber(data.Decal or "")
+			if char then
+				Functions.RemoveCape(char)
+				local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
+				local isR15 = (torso.Name == "UpperTorso")
+				if torso then
+					local p = service.New("Part")
+					p.Name = "ADONIS_CAPE"
+					p.Anchored = false
+					p.Position = torso.Position
+					p.Transparency = 0
+					p.Material = material
+					p.CanCollide = false
+					p.TopSurface = 0
+					p.BottomSurface = 0
+					p.Size = Vector3.new(2,4,0.1)
+					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
+					p.Parent = service.LocalContainer()
 
-			local material = options.Material or "Neon"
-			local color = options.Color or "White"
-			local reflect = options.Reflectance or 0
-			local decalId = tonumber(options.Decal or "")
+					if reflect then
+						p.Reflectance = reflect
+					end
 
-			local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
-			if not (torso and torso:IsA("BasePart")) then
-				return
-			end
+					local motor1 = service.New("Motor", p)
+					motor1.Part0 = p
+					motor1.Part1 = torso
+					motor1.MaxVelocity = .01
+					motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
+					motor1.C1 = CFrame.new(0,1-((isR15 and 0.2) or 0),(torso.Size.Z/2))*CFrame.Angles(0,math.rad(90),0)
 
-			Functions.RemoveCape(char)
+					local msh = service.New("BlockMesh", p)
+					msh.Scale = Vector3.new(0.9,0.87,0.1)
 
-			local isR15 = torso.Name == "UpperTorso"
+					local dec
+					if decal and decal ~= 0 then
+						dec = service.New("Decal", {
+							Name = "Decal";
+							Face = 2;
+							Texture = "rbxassetid://"..decal;
+							Transparency = 0;
 
-			local p = service.New("Part", {
-				Parent = service.LocalContainer();
-				Name = "ADONIS_CAPE";
-				Anchored = false;
-				CanCollide = false;
-				Size = Vector3.new(2, 4, 0.1);
-				Position = torso.Position;
-				BrickColor = BrickColor.new(color);
-				Transparency = 0;
-				Reflectance = reflect;
-				Material = material;
-				TopSurface = 0;
-				BottomSurface = 0;
-			})
+							Parent = p;
+						})
+					end
 
-			service.New("BlockMesh", {
-				Parent = p;
-				Scale = Vector3.new(0.9, 0.87, 0.1);
-			})
+					local index = Functions.GetRandom()
+					Variables.Capes[index] = {
+						Part = p;
+						Motor = motor1;
+						Enabled = true;
+						Parent = data.Parent;
+						Torso = torso;
+						Decal = dec;
+						Data = data;
+						Wave = true;
+						isR15 = isR15;
+					}
 
-			local motor1 = service.New("Motor", {
-				Parent = p;
-				Part0 = p;
-				Part1 = torso;
-				MaxVelocity = 0.1;
-				C0 = CFrame.new(0, 1.75, 0) * CFrame.Angles(0, math.rad(90), 0);
-				C1 = CFrame.new(0, 1 - (if isR15 then 0.2 else 0), (torso.Size.Z/2)) * CFrame.Angles(0, math.rad(90), 0);
-			})
+					local p = service.Players:GetPlayerFromCharacter(data.Parent)
+					if p and p == service.Player then
+						Variables.Capes[index].isPlayer = true
+					end
 
-			local decal = if decalId and decalId ~= 0 then service.New("Decal", {
-				Parent = p;
-				Name = "Decal";
-				Face = 2;
-				Texture = "rbxassetid://"..decalId;
-				Transparency = 0;
-			}) else nil
+					if not Variables.CapesEnabled then
+						p.Transparency = 1
+						if dec then
+							dec.Transparency = 1
+						end
+						Variables.Capes[index].Enabled = false
+					end
 
-			local capeData = {
-				Part = p;
-				Motor = motor1;
-				Enabled = true;
-				Parent = char;
-				Torso = torso;
-				Decal = decal;
-				Data = options;
-				Wave = true;
-				isR15 = isR15;
-			}
-			Variables.Capes[Functions.GetRandom()] = capeData
-
-			local p = service.Players:GetPlayerFromCharacter(char)
-			if p and p == service.Player then
-				capeData.isPlayer = true
-			end
-
-			if not Variables.CapesEnabled then
-				p.Transparency = 1
-				if decal then
-					decal.Transparency = 1
+					Functions.MoveCapes()
 				end
-				capeData.Enabled = false
 			end
-
-			Functions.MoveCapes()
 		end;
-
 		RemoveCape = function(parent)
-			for i, v in Variables.Capes do
+			for i,v in pairs(Variables.Capes) do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
-					pcall(v.Part.Destroy, v.Part)
+					pcall(v.Part.Destroy,v.Part)
 					Variables.Capes[i] = nil
 				end
 			end
 		end;
-
 		HideCapes = function(hide)
-			for i,v in Variables.Capes do
+			for i,v in pairs(Variables.Capes) do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -782,7 +775,7 @@ return function(Vargs, GetEnv)
 				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i,v in Variables.Capes do
+					for i,v in pairs(Variables.Capes) do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -836,13 +829,13 @@ return function(Vargs, GetEnv)
 
 		CountTable = function(tab)
 			local count = 0
-			for _ in tab do count += 1 end
+			for _ in pairs(tab) do count += 1 end
 			return count
 		end;
 
 		ClearAllInstances = function()
 			local objects = service.GetAdonisObjects()
-			for i in objects do
+			for i in pairs(objects) do
 				i:Destroy()
 			end
 			table.clear(objects)
@@ -856,7 +849,7 @@ return function(Vargs, GetEnv)
 			local animator = human and human:FindFirstChildOfClass("Animator") or human and human:WaitForChild("Animator", 9e9)
 			if not animator then return end
 
-			for _, v in animator:GetPlayingAnimationTracks() do v:Stop() end
+			for _, v in ipairs(animator:GetPlayingAnimationTracks()) do v:Stop() end
 			local anim = service.New('Animation', {
 				AnimationId = 'rbxassetid://'..animId,
 				Name = "ADONIS_Animation"
@@ -1037,7 +1030,7 @@ return function(Vargs, GetEnv)
 		KeyCodeToName = function(keyVal)
 			local keyVal = tonumber(keyVal);
 			if keyVal then
-				for i,e in Enum.KeyCode:GetEnumItems() do
+				for i,e in ipairs(Enum.KeyCode:GetEnumItems()) do
 					if e.Value == keyVal then
 						return e.Name;
 					end
@@ -1110,7 +1103,7 @@ return function(Vargs, GetEnv)
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
-				for i,v in workspace.CurrentCamera:GetChildren() do
+				for i,v in ipairs(workspace.CurrentCamera:GetChildren()) do
 					if v.Name == "ADONIS_WINDOW_FUNC_BLUR" then
 						v:Destroy()
 					end
@@ -1141,7 +1134,7 @@ return function(Vargs, GetEnv)
 				Variables.localSounds[tostring(audioId)]:Destroy()
 				Variables.localSounds[tostring(audioId)] = nil
 			elseif audioId == "all" then
-				for i,v in Variables.localSounds do
+				for i,v in pairs(Variables.localSounds) do
 					Variables.localSounds[i]:Stop()
 					Variables.localSounds[i]:Destroy()
 					Variables.localSounds[i] = nil
@@ -1173,7 +1166,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		KillAllLocalAudio = function()
-			for i,v in Variables.localSounds do
+			for i,v in pairs(Variables.localSounds) do
 				v:Stop()
 				v:Destroy()
 				table.remove(Variables.localSounds,i)
@@ -1181,7 +1174,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		RemoveGuis = function()
-			for i,v in service.PlayerGui:GetChildren() do
+			for i,v in ipairs(service.PlayerGui:GetChildren()) do
 				if not UI.Get(v) then
 					v:Destroy()
 				end
@@ -1594,7 +1587,7 @@ return function(Vargs, GetEnv)
 				local tab = {}
 				local str = str
 				local function getNext()
-					for i,v in phonemes do
+					for i,v in ipairs(phonemes) do
 						local occ,pos = string.find(string.lower(str),"^"..v.str)
 						if occ then
 							if v.capture then
@@ -1638,12 +1631,12 @@ return function(Vargs, GetEnv)
 
 			audio:Play()
 			audio2:Play()
-			for i,v in phos do
+			for i,v in ipairs(phos) do
 				--print(i,v.str)
 				if type(v.func)=="string" then--v.func=="wait" then
 					wait(0.5)
 				elseif type(v)=="table" then
-					for l,p in v.func do
+					for l,p in ipairs(v.func) do
 						--[[--]]
 						if swap then
 							swap=false
@@ -1697,7 +1690,7 @@ return function(Vargs, GetEnv)
 				"TouchEnabled";
 				"VREnabled";
 			}
-			for i, p in props do
+			for i, p in pairs(props) do
 				data[p] = service.UserInputService[p]
 			end
 			return data

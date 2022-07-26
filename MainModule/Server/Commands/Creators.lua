@@ -12,32 +12,23 @@ return function(Vargs, env)
 		DirectBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directban"};
-			Args = {"username(s)", "reason"};
-			Description = "Adds the specified user(s) to the global ban list; saves";
+			Args = {"username(s)", "reason (optional)"};
+			Description = "Directly adds the specified user(s) to the global ban list (Saves)";
 			AdminLevel = "Creators";
 			Filter = true;
-			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				local reason = args[2] or "No reason provided"
 
-				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
-						if userId == plr.UserId then
-							Functions.Hint("You cannot ban yourself", {plr})
-							continue
-						end
-
-						local getNameSuccess, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
-						if not getNameSuccess then
-							username = i
-						end
-
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userId = service.Players:GetUserIdFromNameAsync(i)
+					assert(userId ~= plr.UserId, "You cannot ban yourself")
+					if userId then
+						local success, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						if not success then username = i end
 						Admin.AddBan({UserId = userId, Name = username}, reason, true, plr)
-
-						Functions.Hint("Direct-banned "..(if getNameSuccess then "@"..username else "'"..username.."'").." from the game", {plr})
+						Functions.Hint("Direct-banned "..username, {plr})
 					else
-						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
+						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error.)", {plr})
 					end
 				end
 			end
@@ -45,33 +36,20 @@ return function(Vargs, env)
 
 		UnDirectBan = {
 			Prefix = Settings.Prefix;
-			Commands = {"directunban", "undirectban"};
+			Commands = {"undirectban"};
 			Args = {"username(s)"};
-			Description = "Removes the specified user(s) from the global ban list; saves";
+			Description = "Removes the specified user(s) from the global ban list (Saves)";
 			AdminLevel = "Creators";
-			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
-				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
+				for i in string.gmatch(args[1], "[^,]+") do
+					local userid = service.Players:GetUserIdFromNameAsync(i)
+					if userid then
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = i..":"..userId;
+							Value = i..":"..userid;
 						})
-
-						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
-						if getNameSuccess then
-							Core.DoSave({
-								Type = "TableRemove";
-								Table = "Banned";
-								Value = i..":"..actualName;
-							})
-						end
-
-						Functions.Hint((if getNameSuccess then "@"..actualName else "'"..i.."'").." has been unbanned from the game", {plr})
-					else
-						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
+						Functions.Hint(i.." has been unbanned", {plr})
 					end
 				end
 			end
@@ -141,7 +119,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})
 				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
 					if ran and service.PointsService:GetAwardablePoints() >= amount then
 						Functions.Hint("Gave "..amount.." points to "..service.FormatPlayer(v), {plr})
@@ -174,7 +152,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins")
@@ -201,7 +179,7 @@ return function(Vargs, env)
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string}, data: {any})
 				local sendLevel = data.PlayerData.Level
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in pairs(service.GetPlayers(plr, args[1])) do
 					local targLevel = Admin.GetLevel(v)
 					if sendLevel > targLevel then
 						Admin.AddAdmin(v, "HeadAdmins", true)
@@ -229,7 +207,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = false}) do
+				for _, v in pairs(service.GetPlayers(plr, args[1], {UseFakePlayer = false})) do
 					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
 			end
