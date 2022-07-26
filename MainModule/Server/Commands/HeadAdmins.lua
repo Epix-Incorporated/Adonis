@@ -12,7 +12,7 @@ return function(Vargs, env)
 		TimeBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"tempban", "timedban", "timeban", "tban", "temporaryban"};
-			Args = {"player", "number<s/m/h/d>", "reason"};
+			Args = {"player/user", "number<s/m/h/d>", "reason"};
 			Description = "Bans the target player(s) for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
@@ -49,7 +49,7 @@ return function(Vargs, env)
 		DirectTimeBan = {
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtimeban", "directtban", "directtemporaryban"};
-			Args = {"username", "number<s/m/h/d>", "reason"};
+			Args = {"username(s)", "number<s/m/h/d>", "reason"};
 			Description = "Bans the target user(s) for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
 			Filter = true;
 			AdminLevel = "HeadAdmins";
