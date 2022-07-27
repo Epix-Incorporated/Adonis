@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for a new feature, or a way to improve an existing feature
   within Adonis.
 title: ''
-labels: enhancement
+labels: "✨ enhancement"
 assignees: ''
 
 ---

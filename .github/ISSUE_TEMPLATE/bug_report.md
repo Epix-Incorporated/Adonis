@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us understand and fix broken features or functionality
   within Adonis.
 title: ''
-labels: bug
+labels: "\U0001F41B bug"
 assignees: ''
 
 ---
