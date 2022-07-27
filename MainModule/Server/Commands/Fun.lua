@@ -122,8 +122,10 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local value = assert(tonumber(args[2]), "Missing/invalid FPS value (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.Send(v, "Function", "SetFPS", value)
+				if value > 60 then assert("2520 FPS cannot exceed 60!") else
+					for _, v in service.GetPlayers(plr, args[1]) do
+						Remote.Send(v, "Function", "SetFPS", value)
+					end
 				end
 			end
 		};
