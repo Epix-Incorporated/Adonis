@@ -1,7 +1,7 @@
 ---
 name: Report a bug
 about: Create a report to help us understand and fix broken features or functionality
-  within Adonis.
+  within Adonis
 title: ''
 labels: "\U0001F41B bug"
 assignees: ''
