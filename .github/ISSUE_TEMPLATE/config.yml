@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Discord Server
+  - name: 💬 Discord Server
     url: https://discord.gg/H5RvTP3
-    about: Join for in-depth discussions.
+    about: Join our community for in-depth discussions and to easily contact Adonis maintainers.
+  - name: 📄 Security Policy
+    url: https://github.com/Epix-Incorporated/Adonis/blob/master/SECURITY.md
+    about: Read this before submitting any vulnerability-related report!
