@@ -309,6 +309,17 @@ return function(Vargs, env)
 				Remote.MakeGui(plr, "Ping")
 			end
 		};
+																		
+		FPS = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"fps", "framespersecond"};
+			Args = {};
+			Description = "Shows you your current framerate";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				Remote.MakeGui(plr, "FPS")
+			end
+		};
 
 		ServerSpeed = {
 			Prefix = Settings.PlayerPrefix;
