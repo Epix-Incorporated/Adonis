@@ -446,7 +446,7 @@ return function(Vargs, GetEnv)
 					if type(cmdError) == "string" then
 						AddLog("Errors", "["..matched.."] "..cmdError)
 
-						cmdError = cmdError:match("^[%d]+: (.+)$") or cmdError
+						cmdError = cmdError:match("%d: (.+)$") or cmdError
 
 						if not isSystem then
 							Remote.MakeGui(p, "Output", {
