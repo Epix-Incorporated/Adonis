@@ -144,6 +144,10 @@ return function(Vargs, GetEnv)
 			Ping = function(args)
 				return Remote.Ping()
 			end;
+			
+			FPS = function(args)
+				return Remote.FPS()
+			end;
 
 			ClientHooked = function(args)
 				return Core.Special
@@ -504,6 +508,29 @@ return function(Vargs, GetEnv)
 			local mult = 10^3
 			local ms = ((math.floor((t2-t)*mult+0.5)/mult)*1000)
 			return ms
+		end;
+				
+		FPS = function()
+			local FPS = Remote.Get("FPS")
+			if not FPS then return false end			
+			local startTime = os.clock() 
+			local X = 1 
+			local FPS_Counter = 0
+			
+			local RenderStepped = service.RunService.RenderStepped
+			local Heartbeat = service.RunService.Heartbeat
+
+			local function GetFPS()
+				FPS_Counter+=1
+				if (os.clock() - startTime) >= X  then 
+					local fps = math.floor(FPS_Counter / (os.clock() - startTime))
+					return fps
+					FPS_Counter = 0
+					startTime = os.clock()
+				end
+			end
+			local FPS = Heartbeat:Connect(GetFPS)
+			return FPS
 		end;
 
 		PlayerEvent = function(event,...)
