@@ -1169,7 +1169,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if data.PlayerData.Level >= Admin.GetLevel(v) then
+					if v == plr or data.PlayerData.Level > Admin.GetLevel(v) then
 						Remote.Send(v, "Function", "SetFPS", 5.6)
 					else
 						Functions.Hint("Unable to lag "..tostring(v).." (insufficient permission level)", {plr})
