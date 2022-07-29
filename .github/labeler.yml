@@ -4,8 +4,8 @@ github:
 loader:
 - Loader/**/*
 
-anti-exploit:
+🛡️ anti-exploit:
 - any: ['MainModule/Client/Core/Anti.lua', 'MainModule/Server/Core/Anti.lua']
 
-command:
+⚡ command:
 - MainModule/Server/Commands/*
