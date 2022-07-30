@@ -690,12 +690,11 @@ return function(Vargs, GetEnv)
 			local random = math.random
 			local format = string.format
 
-			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-			local Res = {};
-			for Idx = 1, Len do
-				Res[Idx] = format('%02x', random(126));
-			end;
-			return table.concat(Res)
+			local res = {}
+			for i = 1, if type(pLen) == "number" then pLen else random(5, 10) do
+				res[i] = format("%02x", random(126))
+			end
+			return table.concat(res)
 		end;
 
 
@@ -878,50 +877,50 @@ return function(Vargs, GetEnv)
 			end))
 		end;
 
-		Hint = function(message, players, time)
-			time = time or (#tostring(message) / 19 + 2.5);
+		Hint = function(message, players, duration)
+			duration = duration or (#tostring(message) / 19 + 2.5)
 
-			for _, v in ipairs(players) do
+			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Message = function(title, message, players, scroll, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Message = function(title, message, players, scroll, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
-			for _, v in ipairs(players) do
+			for _, v in players do
 				Remote.RemoveGui(v, "Message")
 				Remote.MakeGui(v, "Message", {
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = time
+					Time = duration;
 				})
 			end
 		end;
 
-		Notify = function(title, message, players, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Notify = function(title, message, players, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
-			for _, v in ipairs(players) do
+			for _, v in players do
 				Remote.RemoveGui(v, "Notify")
 				Remote.MakeGui(v, "Notify", {
 					Title = title;
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Notification = function(title, message, players, tim, icon)
-			for _, v in ipairs(players) do
+		Notification = function(title, message, players, duration, icon)
+			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
-					Time = tim;
+					Time = duration;
 					Icon = server.MatIcons[icon or "Info"];
 				})
 			end
@@ -937,17 +936,17 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
-				for _, p in ipairs(service.GetPlayers()) do
+				for _, p in service.GetPlayers() do
 					Remote.SetLighting(p, prop, value)
 				end
 			end
 		end;
 
 		LoadEffects = function(plr)
-			for i, v in pairs(Variables.LocalEffects) do
+			for i, v in Variables.LocalEffects do
 				if (v.Part and v.Part.Parent) or v.NoPart then
 					if v.Type == "Cape" then
 						Remote.Send(plr, "Function", "NewCape", v.Data)
@@ -968,29 +967,29 @@ return function(Vargs, GetEnv)
 				Props = props;
 				Type = "Particle";
 			}
-			for _, v in ipairs(service.Players:GetPlayers()) do
+			for _, v in service.Players:GetPlayers() do
 				Remote.NewParticle(v, target, particleType, props)
 			end
 		end;
 
 		RemoveParticle = function(target,name)
-			for i, v in pairs(Variables.LocalEffects) do
+			for i, v in Variables.LocalEffects do
 				if v.Type == "Particle" and v.Part == target and (v.Props.Name == name or v.Class == name) then
 					Variables.LocalEffects[i] = nil
 				end
 			end
-			for _, v in ipairs(service.Players:GetPlayers()) do
+			for _, v in service.Players:GetPlayers() do
 				Remote.RemoveParticle(v, target, name)
 			end
 		end;
 
 		UnCape = function(plr)
-			for i, v in pairs(Variables.LocalEffects) do
+			for i, v in Variables.LocalEffects do
 				if v.Type == "Cape" and v.Player == plr then
 					Variables.LocalEffects[i] = nil
 				end
 			end
-			for _, v in ipairs(service.Players:GetPlayers()) do
+			for _, v in service.Players:GetPlayers() do
 				Remote.Send(v, "Function", "RemoveCape", plr.Character)
 			end
 		end;
@@ -1026,7 +1025,7 @@ return function(Vargs, GetEnv)
 						Data = data;
 						Type = "Cape";
 					}
-					for _, v in ipairs(service.Players:GetPlayers()) do
+					for _, v in service.Players:GetPlayers() do
 						Remote.Send(v, "Function", "NewCape", data)
 					end
 				end
@@ -1045,7 +1044,7 @@ return function(Vargs, GetEnv)
 
 		GetEnumValue = function(enum, item)
 			local valid = false
-			for _,v in ipairs(enum:GetEnumItems()) do
+			for _,v in enum:GetEnumItems() do
 				if v.Name == item then
 					valid = v.Value
 					break
@@ -1069,8 +1068,8 @@ return function(Vargs, GetEnv)
 				if part then
 					if rigType == "R6" then
 						local children = character:GetChildren()
-						for _,v in ipairs(part:GetChildren()) do
-							for _,x in ipairs(children) do
+						for _,v in part:GetChildren() do
+							for _,x in children do
 								if x:IsA("CharacterMesh") and x.BodyPart == v.BodyPart then
 									x:Destroy()
 								end
@@ -1078,7 +1077,7 @@ return function(Vargs, GetEnv)
 							v:Clone().Parent = character
 						end
 					elseif rigType == "R15" then
-						for _,v in ipairs(part:GetChildren()) do
+						for _,v in part:GetChildren() do
 							local value = Functions.GetEnumValue(Enum.BodyPartR15, v.Name)
 							if value then
 								humanoid:ReplaceBodyPartR15(value, v:Clone())
@@ -1091,7 +1090,7 @@ return function(Vargs, GetEnv)
 
 		GetJoints = function(character)
 			local temp = {}
-			for _,v in ipairs(character:GetDescendants()) do
+			for _,v in character:GetDescendants() do
 				if v:IsA("Motor6D") then
 					temp[v.Name] = v -- assumes no 2 joints have the same name, hopefully this wont cause issues
 				end
@@ -1149,7 +1148,7 @@ return function(Vargs, GetEnv)
 
 		CountTable = function(tab)
 			local num = 0
-			for i in pairs(tab) do
+			for i in tab do
 				num += 1
 			end
 			return num
@@ -1188,7 +1187,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		CleanWorkspace = function()
-			for _, v in ipairs(workspace:GetChildren()) do
+			for _, v in workspace:GetChildren() do
 				if v:IsA("BackpackItem") or v:IsA("Accoutrement") then
 					v:Destroy()
 				end
@@ -1197,7 +1196,7 @@ return function(Vargs, GetEnv)
 
 		RemoveSeatWelds = function(seat)
 			if seat then
-				for _,v in ipairs(seat:GetChildren()) do
+				for _,v in seat:GetChildren() do
 					if v:IsA("Weld") then
 						if v.Part1 and v.Part1.Name == "HumanoidRootPart" then
 							v:Destroy()
@@ -1209,7 +1208,7 @@ return function(Vargs, GetEnv)
 
 		GrabNilPlayers = function(name)
 			local AllGrabbedPlayers = {}
-			for _,v in ipairs(service.NetworkServer:GetChildren()) do
+			for _,v in service.NetworkServer:GetChildren() do
 				pcall(function()
 					if v:IsA("NetworkReplicator") then
 						if string.sub(string.lower(v:GetPlayer().Name),1,#name)==string.lower(name) or name=='all' then
@@ -1229,7 +1228,7 @@ return function(Vargs, GetEnv)
 				player:Kick("Server Shutdown\n\n".. tostring(reason or "No Reason Given"))
 			end)
 
-			for _, v in ipairs(service.Players:GetPlayers()) do
+			for _, v in service.Players:GetPlayers() do
 				v:Kick("Server Shutdown\n\n" .. tostring(reason or "No Reason Given"))
 			end
 		end;
@@ -1252,14 +1251,15 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckMatch = function(check,match)
+		CheckMatch = function(check, match)
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				local good = false
 				local num = 0
-				for k,m in pairs(check) do
-					if m == match[k] then
+
+				for k, v in check do
+					if v == match[k] then
 						good = true
 					else
 						good = false
@@ -1268,23 +1268,36 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				if good and num == Functions.CountTable(check) then
-					return true
-				end
+				return good and num == Functions.CountTable(match)
 			end
+			return false
+		end;
+
+		LaxCheckMatch = function(check, match)
+			if check == match then
+				return true
+			elseif type(check) == "table" and type(match) == "table" then
+				for k, v in match do
+					if check[k] ~= v then
+						return false
+					end
+				end
+				return true
+			end
+			return false
 		end;
 
 		DSKeyNormalize = function(intab, reverse)
 			local tab = {}
 
 			if reverse then
-				for i,v in pairs(intab) do
+				for i,v in intab do
 					if tonumber(i) then
 						tab[tonumber(i)] = v;
 					end
 				end
 			else
-				for i,v in pairs(intab) do
+				for i,v in intab do
 					tab[tostring(i)] = v;
 				end
 			end
@@ -1293,12 +1306,12 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetIndex = function(tab,match)
-			for i,v in pairs(tab) do
+			for i,v in tab do
 				if v==match then
 					return i
 				elseif type(v)=="table" and type(match)=="table" then
 					local good = false
-					for k,m in pairs(v) do
+					for k,m in v do
 						if m == match[k] then
 							good = true
 						else
@@ -1337,7 +1350,7 @@ return function(Vargs, GetEnv)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.
-			for _=1,2 do
+			for _ = 1, 2 do
 				if Animate then
 					Animate.Disabled = not Animate.Disabled
 				end
@@ -1346,11 +1359,15 @@ return function(Vargs, GetEnv)
 			return newCharacterModel
 		end;
 
-		CreateClothingFromImageId = function(clothingtype, Id)
-			local Clothing = Instance.new(clothingtype)
-			Clothing.Name = clothingtype
-			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
-			return Clothing
+		CreateClothingFromImageId = function(clothingType, id)
+			return service.New(clothingType, {
+				Name = clothingType;
+				[assert(if clothingType == "Shirt" then "ShirtTemplate"
+					elseif clothingType == "Pants" then "PantsTemplate"
+					elseif clothingType == "ShirtGraphic" then "Graphic"
+					else nil, "Invalid clothing type")
+				] = "rbxassetid://"..id;
+			})
 		end;
 
 		ParseColor3 = function(str: string?)
