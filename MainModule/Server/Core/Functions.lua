@@ -319,7 +319,7 @@ server.Functions = {
 						DontError = true;
 					})
 
-					for k,p in pairs(removes) do
+					for k,p in removes do
 						if p then
 							table.insert(delplayers,p)
 							plus()
@@ -338,7 +338,7 @@ server.Functions = {
 						DontError = true;
 					})
 
-					for k,p in pairs(adds) do
+					for k,p in adds do
 						if p then
 							table.insert(addplayers,p)
 							plus()
@@ -615,7 +615,7 @@ server.Functions = {
 		local filteredList = {}
 		local checkList = {}
 
-		for _, v in pairs(players) do
+		for _, v in players do
 			if not checkList[v] then
 				table.insert(filteredList, v)
 				checkList[v] = true
@@ -625,7 +625,7 @@ server.Functions = {
 		local delFilteredList = {}
 		local delCheckList = {}
 
-		for _, v in pairs(delplayers) do
+		for _, v in delplayers do
 			if not delCheckList[v] then
 				table.insert(delFilteredList, v)
 				delCheckList[v] = true
@@ -635,7 +635,7 @@ server.Functions = {
 		local addFilteredList = {}
 		local addCheckList = {}
 
-		for _, v in pairs(addplayers) do
+		for _, v in addplayers do
 			if not addCheckList[v] then
 				table.insert(addFilteredList, v)
 				addCheckList[v] = true
@@ -645,24 +645,24 @@ server.Functions = {
 		local finalFilteredList = filteredList
 		local removalSuccessList = {}
 
-		for i, v in pairs(filteredList) do
-			for j, w in pairs(delFilteredList) do
+		for i, v in filteredList do
+			for j, w in delFilteredList do
 				if v.Name == w.Name then
 					table.remove(finalFilteredList,i)
 					table.insert(removalSuccessList, w)
 				end
 			end
-			for j, w in pairs(addFilteredList) do
+			for j, w in addFilteredList do
 				table.insert(finalFilteredList, w)
 			end
 		end
 
 		local comboTableCheck = {}
 
-		for _, v in pairs(finalFilteredList) do
+		for _, v in finalFilteredList do
 			table.insert(comboTableCheck, v)
 		end
-		for _, v in pairs(delFilteredList) do
+		for _, v in delFilteredList do
 			table.insert(comboTableCheck, v)
 		end
 
@@ -674,7 +674,7 @@ server.Functions = {
 				local rand = children[math.random(#children)]
 				local rp = getplr(rand)
 
-				for _, v in pairs(comboTableCheck) do
+				for _, v in comboTableCheck do
 					if v.Name == rp.Name then
 						rplrsort()
 						return
@@ -684,16 +684,16 @@ server.Functions = {
 				table.insert(finalFilteredList, rp)
 
 				table.clear(comboTableCheck)
-				for _, v in pairs(finalFilteredList) do
+				for _, v in finalFilteredList do
 					table.insert(comboTableCheck, v)
 				end
-				for _, v in pairs(delFilteredList) do
+				for _, v in delFilteredList do
 					table.insert(comboTableCheck, v)
 				end
 			end
 		end
 
-		for i, v in pairs(randplayers) do
+		for i, v in randplayers do
 			rplrsort()
 		end
 
