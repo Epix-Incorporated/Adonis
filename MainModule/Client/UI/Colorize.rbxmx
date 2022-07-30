@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX2C174377BB564F409DFC4D0D3E6E0C5D">
+	<Item class="ModuleScript" referent="RBXD71C70FBDF4B49F086AAF6446BE520D8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Colorize</string>
-			<string name="ScriptGuid">{7516B38F-0A29-4861-92EE-58A5CE2A1325}</string>
+			<string name="ScriptGuid">{DEDB902C-524D-428E-960D-26616B5E97ED}</string>
 			<ProtectedString name="Source"><![CDATA[--// You can use modules like this to alter guis without making a new theme
 --// This makes it so you don't need to make an entire gui folder n all that
 --// If the theme is set to this module, it will use the default guis
@@ -76,20 +76,16 @@
 --]]
 
 service = nil
-Routine = nil
 client = nil
 
-return function(gui, guiData, gTable, env)
-	if env then
-		setfenv(1, env)
-	end
-
-	local contents = {}
-	local lerper = 0.5
-	local switch = false
-	local targetColor = Color3.new(math.random(),math.random(),math.random())
-
-	local classes = {
+return function(gui: ScreenGui, guiData, gTable)
+	local TWEEN_TIME = 2
+	local SEQUENCE = {
+		Color3.fromRGB(255, 85, 88), 
+		Color3.fromRGB(78, 140, 255), 
+		Color3.fromRGB(78, 255, 149)
+	}
+	local CLASSES = {
 		Frame = true;
 		TextBox = true;
 		TextLabel = true;
@@ -99,17 +95,22 @@ return function(gui, guiData, gTable, env)
 		ScrollingFrame = true;
 	}
 	
+	local contents = {}
+	local OrgColors = {}
+	
 	local function getCont(obj)
-		for i,v in pairs(obj:GetChildren()) do 
-			if classes[v.ClassName] then
-				table.insert(contents,v)
+		for _, v in obj:GetChildren() do 
+			if CLASSES[v.ClassName] then
+				local OrgColor = {}
+				OrgColor.Background = v.BackgroundColor3
+				if v:IsA("ImageLabel") or v:IsA("ImageButton") then 
+					OrgColor.Image = v.ImageColor3 
+				end
+				OrgColors[v] = OrgColor
+				table.insert(contents, v)
 				getCont(v)
 			end
 		end
-	end
-	
-	if classes[gui.ClassName] then
-		table.insert(contents,gui)
 	end
 	
 	getCont(gui)
@@ -118,67 +119,47 @@ return function(gui, guiData, gTable, env)
 		gui.Drag.Main.BackgroundTransparency = 0
 	end
 	
-	local increment = 0.001
-	local max = 0.7
-	local min = 0.1
-	local r,g,b = 0.1,0.5,0.8
-	local rt,gt,bt = true,true,true 
-	local sequence = {
-		Color3.fromRGB(255, 85, 88), 
-		Color3.fromRGB(78, 140, 255), 
-		Color3.fromRGB(78, 255, 149)
-	}
-
-	local function lerpToColor(color1, color2, inc, time)
-		local inc = inc or 0.1
-		for i = 0, 1, inc do
-			for i2,v in pairs(contents) do
-				if v.Name ~= "CapeColor" and v.Name ~= "Color" then
-					v.BackgroundColor3 = color1:lerp(color2, i)
-					if v:IsA("ImageLabel") or v:IsA("ImageButton") then
-						v.ImageColor3 = color1:lerp(color2, i)
-					end
-				end
+	local function tweenToColor(color1, color2, time)
+		local Info = TweenInfo.new(time, Enum.EasingStyle.Linear)
+		for _, v in contents do
+			local orgcolor = OrgColors[v]
+			v.BackgroundColor3 = color1:lerp(orgcolor.Background, 0.75)
+			if orgcolor.Image then
+				v.ImageColor3 = color1:lerp(orgcolor.Image, 0.75)
+				service.TweenService:Create(v, Info, {
+					BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75),
+					ImageColor3 = color2:lerp(orgcolor.Image, 0.75)
+				}):Play()
+			else
+				service.TweenService:Create(v, Info, {
+					BackgroundColor3 = color2:lerp(orgcolor.Background, 0.75)
+				}):Play()
 			end
-			wait(time/(1/inc))
 		end
+		task.wait(time)
 	end
-
-	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name), function()
-		while ((gTable.Active and wait()) or wait(1)) and not gTable.Destroyed do
-			for i,v in ipairs(sequence) do
-				local one, two = sequence[i], sequence[1]
+	
+	service.TrackTask("Thread: Colorize_"..tostring(gTable.Name),function()
+		repeat 
+			for i in SEQUENCE do
+				local one, two = SEQUENCE[i], SEQUENCE[i+1] or SEQUENCE[1]
 				
-				if i == #sequence then
-					two = sequence[1]
-				else
-					two = sequence[i+1]
-				end
-				
-				lerpToColor(one, two, 0.01, 2)
+				tweenToColor(one, two, TWEEN_TIME)
 			end
-		end
+		until not task.wait(if gTable.Active then 0 else 1) and gTable.Destroyed
+		
 	end)
 end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="StringValue" referent="RBX448BCF59659145D59117BA53516D4F56">
+		<Item class="StringValue" referent="RBX37E05A28E4254A29A2D1C2A3769B245B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Base_Theme</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<string name="Value">Hydris</string>
-			</Properties>
-		</Item>
-		<Item class="BoolValue" referent="RBX1E2A8F4966B6430CB5325548EC0B0D2A">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">NoEnv</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<bool name="Value">false</bool>
+				<string name="Value">Default</string>
 			</Properties>
 		</Item>
 	</Item>
