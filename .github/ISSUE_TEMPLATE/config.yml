@@ -1,1 +1,6 @@
 blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discord Server
+    url: https://discord.gg/H5RvTP3
+    about: Join our community for in-depth discussions and to easily contact Adonis maintainers.
+    

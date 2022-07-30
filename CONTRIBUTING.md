@@ -9,8 +9,25 @@ Adonis is an ever expanding, frequently updated, slightly complicated, system. I
 
 ## Q: Who's in charge of handling pull requests (PRs)?
 
-**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs. When a PR is opened, relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) may first be assigned to it for the purpose of organization.
-Anyone in the community may submit code reviews for PRs and make discussions on the PR's page.
+**A:** [@Sceleratis](https://github.com/Sceleratis), as well as our community maintainers (viz. [@Coasterteam](https://github.com/Coasterteam), [@joritochip](https://github.com/joritochip) and [@Expertcoderz](https://github.com/Expertcoderz)) are responsible for the final approval and merging of PRs, and the publishing of releases from time to time.
+
+Anyone in the community may submit code reviews for PRs and make discussions on the PR's page (or in the Discord server).
+
+Maintainers may manage PR labels, or edit PR titles and descriptions where beneficial to conform to the standards described below.
+
+## Q: How should PRs be titled and formatted?
+
+**A:** **Title:** The title of a PR should be in present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"9
+
+A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
+
+Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
+
+**Description:** The description of a PR should be comprehensive and either describe, or list and describe, the specific additions, changes and/or removals made by the PR, and their full rationale.
+  
+ℹ️ **The above rules do not apply for individual commit names and descriptions.**
+
+You may optionally include relevant [label(s)](https://github.com/Sceleratis/Adonis/labels) in your PR to classify it. (Maintainers will add the labels otherwise after reviewing your PR.)
 
 ## Q: What can I contribute?
 
@@ -48,6 +65,8 @@ There is a very clear/obvious difference between unavoidably complex code and in
 **A:** Bugs! 🐛 If you are submitting code changes, please be sure to TEST THEM BEFORE SUBMITTING THEM! No one would be quite happy to spend an hour debugging your contribution when merging changes into the model.
 
 Also, try to double check any text for spelling issues. Some of us frequently make typos/mistakes, so it's not a huge deal if you miss something, but a wholly incoherent string of letters and words is not acceptable.
+
+Finally, ***be sure to make file changes based on the latest version of the ``master`` branch, not ``release``!*** Outdated and conflicting code is often a pain to deal with.
 
 ## Q: What can I contribute to the Wiki?
 

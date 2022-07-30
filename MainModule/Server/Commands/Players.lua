@@ -20,50 +20,28 @@ return function(Vargs, env)
 			Description = "Lists all available commands";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local commands = Admin.SearchCommands(plr, "all")
 				local tab = {}
-				local cStr = ""
-
 				local cmdCount = 0
-				for _, v in pairs(commands) do
-					if v.Hidden or v.Disabled then
+
+				for _, cmd in Admin.SearchCommands(plr, "all") do
+					if cmd.Hidden or cmd.Disabled then
 						continue
 					end
 
-					local lvl = v.AdminLevel
-					local gotLevels = {}
-
-					if type(lvl) == "table" then
-						for _, v in pairs(lvl) do
-							table.insert(gotLevels, v)
-						end
-					elseif type(lvl) == "string" or type(lvl) == "number" then
-						table.insert(gotLevels, lvl)
-					end
-
-					for i, lvl in pairs(gotLevels) do
-						local tempStr = ""
-
-						if type(lvl) == "number" then
-							local list, name, data = Admin.LevelToList(lvl)
-							--print(tostring(list), tostring(name), tostring(data))
-							tempStr = (name or "No Rank") .."; Level ".. lvl
-						elseif type(lvl) == "string" then
-							local numLvl = Admin.StringToComLevel(lvl)
-							tempStr = lvl .. "; Level: ".. (numLvl or "Unknown Level")
-						end
-
-						if i > 1 then
-							tempStr = cStr.. ", ".. tempStr
-						end
-
-						cStr = tempStr
-					end
-
+					local permissionDesc = Admin.FormatCommandAdminLevel(cmd)
 					table.insert(tab, {
-						Text = Admin.FormatCommand(v),
-						Desc = "["..cStr.."] "..v.Description,
-						Filter = cStr
+						Text = Admin.FormatCommand(cmd),
+						Desc = string.format("[%s] %s", permissionDesc, cmd.Description or "(No description provided)"),
+						Filter = permissionDesc
+					})
+					cmdCount += 1
+				end
+
+				for alias, command in Core.GetPlayer(plr).Aliases or {} do
+					table.insert(tab, {
+						Text = alias,
+						Desc = "[User Alias] "..command,
+						Filter = command
 					})
 					cmdCount += 1
 				end
@@ -92,37 +70,40 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "No command provided")
 
-				local commands = Admin.SearchCommands(plr, "all")
 				local cmd, ind
-				for i, v in pairs(commands) do
-					for _, p in ipairs(v.Commands) do
+				for i, v in Admin.SearchCommands(plr, "all") do
+					for _, p in v.Commands do
 						if (v.Prefix or "")..string.lower(p) == string.lower(args[1]) then
-							cmd = v
-							ind = i
+							cmd, ind = v, i
 							break
 						end
 					end
+					if ind then break end
 				end
-				assert(cmd, "Command '"..args[1].."' not found")
+				assert(cmd, "Command '"..args[1].."' is either not found or beyond your permission level")
 
-				local function formatStrForRichText(str: string): string
-					return string.gsub(string.gsub(string.gsub(string.gsub(string.gsub(str, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;"), "'", "&apos;")
+				local SanitizeXML = service.SanitizeXML
+
+				local cmdArgs = Admin.FormatCommandArguments(cmd)
+
+				local cmdAttribs = {}
+				for _, key in {"Disabled", "Fun", "Hidden", "NoStudio", "NonChattable", "CrossServerDenied", "AllowDonors"} do
+					if cmd[key] then
+						table.insert(cmdAttribs, key)
+					end
 				end
 
-				local cmdArgs = string.sub(Admin.FormatCommand(cmd), (#cmd.Commands[1]+2))
-				if cmdArgs == "" then cmdArgs = "-" end
 				Remote.MakeGui(plr, "List", {
 					Title = "Command Info";
 					Icon = server.MatIcons.Info;
 					Table = {
 						{Text = "<b>Prefix:</b> "..cmd.Prefix, Desc = "Prefix used to run the command"},
-						{Text = "<b>Commands:</b> "..formatStrForRichText(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
-						{Text = "<b>Arguments:</b> "..formatStrForRichText(cmdArgs), Desc = "Parameters taken by the command"},
-						{Text = "<b>Admin Level:</b> "..cmd.AdminLevel.." ("..formatStrForRichText(Admin.LevelToListName(cmd.AdminLevel))..")", Desc = "Rank required to run the command"},
-						{Text = "<b>Fun:</b> "..if cmd.Fun then "Yes" else "No", Desc = "Is the command fun?"},
-						{Text = "<b>Hidden:</b> "..if cmd.Hidden then "Yes" else "No", Desc = "Is the command hidden from the command list?"},
-						{Text = "<b>Description:</b> "..formatStrForRichText(cmd.Description), Desc = "Command description"},
-						{Text = "<b>Index:</b> "..formatStrForRichText(tostring(ind)), Desc = "The internal command index/identifier"},
+						{Text = "<b>Commands:</b> "..SanitizeXML(table.concat(cmd.Commands, ", ")), Desc = "Valid default aliases for the command"},
+						{Text = "<b>Arguments:</b> "..(if cmdArgs == "" then "-" else SanitizeXML(cmdArgs)), Desc = "Parameters taken by the command"},
+						{Text = "<b>Admin Level:</b> "..Admin.FormatCommandAdminLevel(cmd), Desc = "Rank required to run the command"},
+						{Text = "<b>Description:</b> "..SanitizeXML(cmd.Description), Desc = "Command description"},
+						{Text = "<b>Attributes:</b> "..(if #cmdAttribs == 0 then "-" else table.concat(cmdAttribs, "; ")), Desc = "Extra data about the command"},
+						{Text = "<b>Index:</b> "..SanitizeXML(tostring(ind)), Desc = "The internal command index/identifier"},
 					};
 					RichText = true;
 					Size = {400, 225};
@@ -231,7 +212,7 @@ return function(Vargs, env)
 				end
 				table.sort(brickColorNames)
 
-				for i, bc in ipairs(brickColorNames) do
+				for i, bc in brickColorNames do
 					bc = BrickColor.new(bc)
 					table.insert(children, {
 						Class = "TextLabel";
@@ -278,7 +259,7 @@ return function(Vargs, env)
 					--, "Rock", "Glacier", "Snow", "Sandstone", "Mud", "Basalt", "Ground", "CrackedLava", "Asphalt", "LeafyGrass", "Salt", "Limestone", "Pavement"
 					--Beta Features Materials
 				}
-				for i, mat in ipairs(mats) do
+				for i, mat in mats do
 					mats[i] = {Text = mat; Desc = "Enum value: "..Enum.Material[mat].Value}
 				end
 				Remote.MakeGui(plr, "List", {Title = "Materials"; Tab = mats;})
@@ -348,7 +329,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			ListUpdater = function(plr: Player)
 				local tab = {}
-				for _, v in ipairs(service.Players:GetPlayers()) do
+				for _, v in service.Players:GetPlayers() do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(tab, service.FormatPlayer(v))
 					end
@@ -398,7 +379,7 @@ return function(Vargs, env)
 
 							Variables.HelpRequests[plr.Name] = pending;
 
-							for ind, p in ipairs(service.Players:GetPlayers()) do
+							for ind, p in service.Players:GetPlayers() do
 								Routine(function()
 									if Admin.CheckAdmin(p) then
 										local ret = Remote.MakeGuiGet(p, "Notification", {
@@ -503,7 +484,7 @@ return function(Vargs, env)
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
 				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
 				if success and userId then
-					for _, v in ipairs(plr:GetFriendsOnline()) do
+					for _, v in plr:GetFriendsOnline() do
 						if v.VisitorId == userId then
 							if v.IsOnline and v.PlaceId and v.GameId then
 								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
@@ -736,7 +717,7 @@ return function(Vargs, env)
 			Hidden = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					assert(v ~= plr, "Cannot friend yourself!")
 					assert(not plr:IsFriendsWith(v.UserId), "You are already friends with "..v.Name)
 					Remote.Send(plr, "Function", "SetCore", "PromptSendFriendRequest", v)
@@ -752,7 +733,7 @@ return function(Vargs, env)
 			Hidden = true;
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for i, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+				for i, v: Player in service.GetPlayers(plr, args[1]) do
 					assert(v ~= plr, "Cannot unfriend yourself!")
 					assert(plr:IsFriendsWith(v.UserId), "You are not currently friends with "..v.Name)
 					Remote.Send(plr, "Function", "SetCore", "PromptUnfriend", v)
@@ -767,7 +748,7 @@ return function(Vargs, env)
 			Description = "Opens the Roblox avatar inspect menu for the specified player";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				for _, v: Player in pairs(service.GetPlayers(plr, args[1])) do
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					Remote.LoadCode(plr, "service.GuiService:InspectPlayerFromUserId("..v.UserId..")")
 				end
 			end
@@ -793,7 +774,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local num = 0
 				local nilNum = 0
-				for _, v in ipairs(service.GetPlayers()) do
+				for _, v in service.GetPlayers() do
 					if v.Parent ~= service.Players then
 						nilNum += 1
 					end
@@ -834,7 +815,7 @@ return function(Vargs, env)
 					{"Day of the month"; os.date("%d", ostime)},
 					{Text = "―――――――――――――――――――――――"},
 				}
-				for i, v in ipairs(tab) do
+				for i, v in tab do
 					if not v[2] then continue end
 					tab[i] = {Text = "<b>"..v[1]..":</b> "..v[2]; Desc = v[2];}
 				end
@@ -882,7 +863,7 @@ return function(Vargs, env)
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})
 				end
 
-				for _, v: Player in pairs(players) do
+				for _, v: Player in players do
 					task.defer(function()
 						local gameData
 
@@ -893,7 +874,7 @@ return function(Vargs, env)
 								AdminLevel = "[".. level .."] ".. (rank or "Unknown");
 								SourcePlaceId = v:GetJoinData().SourcePlaceId or "N/A";
 							}
-							for k, d in pairs(Remote.Get(v, "Function", "GetUserInputServiceData")) do
+							for k, d in Remote.Get(v, "Function", "GetUserInputServiceData") do
 								gameData[k] = d
 							end
 						end
@@ -930,7 +911,7 @@ return function(Vargs, env)
 				local data = {}
 
 				local donorList = {}
-				for _, v in ipairs(service.GetPlayers()) do
+				for _, v in service.GetPlayers() do
 					if not Variables.IncognitoPlayers[v] and Admin.CheckDonor(v) then
 						table.insert(donorList, v.Name)
 					end
@@ -939,14 +920,14 @@ return function(Vargs, env)
 				local adminDictionary, workspaceInfo
 				if elevated then
 					adminDictionary = {}
-					for _, v in ipairs(service.GetPlayers()) do
+					for _, v in service.GetPlayers() do
 						local level, rank = Admin.GetLevel(v)
 						if level > 0 then
 							adminDictionary[v.Name] = rank or "Unknown"
 						end
 					end
 					local nilPlayers = 0
-					for _, v in ipairs(service.NetworkServer:GetChildren()) do
+					for _, v in service.NetworkServer:GetChildren() do
 						if v and v:GetPlayer() and not service.Players:FindFirstChild(v:GetPlayer().Name) then
 							nilPlayers += 1
 						end
@@ -1008,13 +989,13 @@ return function(Vargs, env)
 					if groupInfo.Owner then string.format("Owner: %s [%d]", groupInfo.Owner.Name or "???", groupInfo.Owner.Id) else "[No Owner]",
 					{Text = string.format("――― Roles (%d): ―――――――――――――――――", #groupInfo.Roles)},
 				}
-				for _, role in ipairs(groupInfo.Roles) do
+				for _, role in groupInfo.Roles do
 					table.insert(tab, string.format("[%d] %s", role.Rank, role.Name))
 				end
 
 				local function getPageItems(pages: StandardPages, res: {any})
 					res = res or {}
-					for _, item in ipairs(pages:GetCurrentPage()) do
+					for _, item in pages:GetCurrentPage() do
 						table.insert(res, item)
 					end
 					if not pages.IsFinished then
@@ -1031,12 +1012,12 @@ return function(Vargs, env)
 					table.insert(tab, {Text = string.format("――― Allies (%d): ―――――――――――――――――", #allies)})
 					if #allies > 0 then
 						local names, refs = {}, {}
-						for _, grp in ipairs(allies) do
+						for _, grp in allies do
 							table.insert(names, grp.Name)
 							refs[grp.Name] = grp
 						end
 						table.sort(names)
-						for _, name in ipairs(names) do
+						for _, name in names do
 							local grp = refs[name]
 							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
 						end
@@ -1048,12 +1029,12 @@ return function(Vargs, env)
 					table.insert(tab, {Text = string.format("――― Enemies (%d): ―――――――――――――――――", #enemies)})
 					if #enemies > 0 then
 						local names, refs = {}, {}
-						for _, grp in ipairs(enemies) do
+						for _, grp in enemies do
 							table.insert(names, grp.Name)
 							refs[grp.Name] = grp
 						end
 						table.sort(names)
-						for _, name in ipairs(names) do
+						for _, name in names do
 							local grp = refs[name]
 							table.insert(tab, {Text = string.format("[#%d] %s", grp.Id, name), Desc = "Owner: "..if grp.Owner then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id) else "[No Owner]"})
 						end
@@ -1105,7 +1086,7 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
 				local list = {}
-				for code, name in pairs(require(server.Shared.CountryRegionCodes)) do
+				for code, name in require(server.Shared.CountryRegionCodes) do
 					table.insert(list, code.." - "..name)
 				end
 				table.sort(list)

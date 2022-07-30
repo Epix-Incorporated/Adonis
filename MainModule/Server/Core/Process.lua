@@ -55,7 +55,7 @@ return function(Vargs, GetEnv)
 
 		--// Load client onto existing players
 		if existingPlayers then
-			for i, p in ipairs(existingPlayers) do
+			for i, p in existingPlayers do
 				Core.LoadExistingPlayer(p)
 			end
 		end
@@ -96,34 +96,34 @@ return function(Vargs, GetEnv)
 		else
 			-- RATELIMIT TABLE
 		--[[
-			
+
 			Table:
 				{
 					Rates = 100; 	-- Max requests per traffic
 					Reset = 1; 		-- Interval seconds since the cache last updated to reset
-					
+
 					ThrottleEnabled = false/true; -- Whether throttle can be enabled
 					ThrottleReset = 10; -- Interval seconds since the cache last throttled to reset
 					ThrottleMax = 10; -- Max interval count of throttles
-					
+
 					Caches = {}; -- DO NOT ADD THIS. IT WILL AUTOMATICALLY BE CREATED ONCE RATELIMIT TABLE IS CHECKING-
 					--... FOR RATE PASS AND THROTTLE CHECK.
 				}
-			
+
 		]]
 
 			-- RATECACHE TABLE
 		--[[
-			
+
 			Table:
 				{
 					Rate = 0;
 					Throttle = 0; 		-- Interval seconds since the cache last updated to reset
-					
+
 					LastUpdated = 0; -- Last checked for rate limit
 					LastThrottled = nil or 0; -- Last checked for throttle (only changes if rate limit failed)
 				}
-			
+
 		]]
 			local maxRate: number = math.abs(rateData.Rates) -- Max requests per traffic
 			local resetInterval: number = math.floor(math.abs(rateData.Reset or 1)) -- Interval seconds since the cache last updated to reset
@@ -185,8 +185,8 @@ return function(Vargs, GetEnv)
 				rateCache.Throttle += 1
 				rateCache.LastThrottled = nowOs
 
-				-- Check whether cache time expired and replace it with a new one or set a new one			
-				if not throttleResetOs or canResetThrottle then				
+				-- Check whether cache time expired and replace it with a new one or set a new one
+				if not throttleResetOs or canResetThrottle then
 					rateCache.ThrottleReset = nowOs
 				end
 			elseif canThrottle and ratePass then
@@ -212,7 +212,7 @@ return function(Vargs, GetEnv)
 		};
 		Command = {
 			Rates = 20;
-			Reset = 40;	
+			Reset = 40;
 		};
 		Chat = {
 			Rates = 10;
@@ -220,11 +220,11 @@ return function(Vargs, GetEnv)
 		};
 		CustomChat = {
 			Rates = 10;
-			Reset = 1;	
+			Reset = 1;
 		};
 		RateLog = {
 			Rates = 10;
-			Reset = 2;	
+			Reset = 2;
 		};
 	}
 
@@ -297,8 +297,8 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = p.Name.." fired "..tostring(comString).."; Arg1: "..tostring(args[1]),
-									Desc = "Player fired remote command "..comString.."; "..Functions.ArgsToString(args),
+									Text = string.format("%s fired %s; Arg1: %s", tostring(p), comString, tostring(args[1]));
+									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
 									Player = p;
 								})
 
@@ -327,12 +327,12 @@ return function(Vargs, GetEnv)
 		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
-			if Admin.IsBlacklisted(p) then
+			--[[if Admin.IsBlacklisted(p) then
 				return false
-			end
+			end]]
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
-				msg = string.sub(msg, 1, Process.MsgStringLimit);
+				msg = string.sub(msg, 1, Process.MsgStringLimit)
 			end
 
 			msg = Functions.Trim(msg)
@@ -343,9 +343,9 @@ return function(Vargs, GetEnv)
 
 					local waiter = Settings.PlayerPrefix.."wait"
 					if string.sub(string.lower(cmd), 1, #waiter) == waiter then
-						local num = string.sub(cmd, #waiter + 1)
+						local num = tonumber(string.sub(cmd, #waiter + 1))
 
-						if num and tonumber(num) then
+						if num then
 							wait(tonumber(num))
 						end
 					else
@@ -353,180 +353,130 @@ return function(Vargs, GetEnv)
 					end
 				end
 			else
-				local pData = opts.PlayerData or (p and Core.GetPlayer(p));
-				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg;
+				local pData = opts.PlayerData or (p and Core.GetPlayer(p))
+				msg = (pData and Admin.AliasFormat(pData.Aliases, msg)) or msg
 
 				if string.match(msg, Settings.BatchKey) then
-					Process.Command(p, msg, opts, false)
+					return Process.Command(p, msg, opts, false)
+				end
+
+				local index, command, matched = Admin.GetCommand(msg)
+				if not command then
+					if opts.Check then
+						Remote.MakeGui(p, "Output", {
+							Title = "Output";
+							Message = if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("'%s' is not a valid command.", msg);
+						})
+					end
+					return
+				end
+
+				local allowed, denialMessage = false, nil
+				local isSystem = false
+
+				local pDat = {
+					Player = opts.Player or p;
+					Level = opts.AdminLevel or Admin.GetLevel(p);
+					isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
+				}
+
+				if opts.isSystem or p == "SYSTEM" then
+					isSystem = true
+					allowed = not command.Disabled
+					p = p or "SYSTEM"
 				else
-					local index, command, matched = Admin.GetCommand(msg)
+					allowed, denialMessage = Admin.CheckPermission(pDat, command, false, opts)
+				end
 
-					if not command then
-						if opts.Check then
-							Remote.MakeGui(p, "Output", {
-								Title = "Output";
-								Message = if Settings.SilentCommandDenials
-									then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
-									else string.format("'%s' is not a valid command.", msg);
-							})
-							return
-						end
-					else
-						local allowed, denyType, waitForDuration = false, nil, nil
-						local isSystem = false
-						local trello = HTTP.Trello.API
+				if not allowed then
+					if not (isSystem or opts.NoOutput) and (denialMessage or not Settings.SilentCommandDenials or opts.Check) then
+						Remote.MakeGui(p, "Output", {
+							Message = denialMessage or (if Settings.SilentCommandDenials
+								then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
+								else string.format("You do not have permission to run '%s'.", msg));
+						})
+					end
+					return
+				end
 
-						local pDat = {
-							Player = opts.Player or p;
-							Level = opts.AdminLevel or Admin.GetLevel(p);
-							isDonor = opts.IsDonor or (Admin.CheckDonor(p) and (Settings.DonorCommands or command.AllowDonors));
-						}
+				local cmdArgs = command.Args or command.Arguments
+				local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
+				local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
 
-						if opts.isSystem or p == "SYSTEM" then
-							isSystem = true
-							allowed = true
-							p = p or "SYSTEM"
-						else
-							allowed, denyType, waitForDuration = Admin.CheckPermission(pDat, command, false, opts)
-						end
+				local taskName = string.format("Command :: %s : (%s)", p.Name, msg)
 
-						if allowed then
-							if not command.Disabled then
-								local argString = string.match(msg, "^.-"..Settings.SplitKey.."(.+)") or ""
-
-								local cmdArgs = command.Args or command.Arguments
-								local args = (opts.Args or opts.Arguments) or (#cmdArgs > 0 and Functions.Split(argString, Settings.SplitKey, #cmdArgs)) or {}
-
-								local taskName = "Command:: ".. p.Name ..": ("..msg..")"
-
-								if #args > 0 and not isSystem and command.Filter or opts.Filter then
-									local safe = {
-										plr = true;
-										plrs = true;
-										username = true;
-										usernames = true;
-										players = true;
-										player = true;
-										users = true;
-										user = true;
-										brickcolor = true;
-									}
-
-									for i, arg in pairs(args) do
-										if not (cmdArgs[i] and safe[string.lower(cmdArgs[i])]) then
-											args[i] = service.LaxFilter(arg, p)
-										end
-									end
-								end
-
-								if opts.CrossServer or (not isSystem and not opts.DontLog) then
-									AddLog("Commands", {
-										Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
-										Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
-										Player = p;
-									})
-
-									if Settings.ConfirmCommands then
-										Functions.Hint("Executed Command: [ "..msg.." ]", {p})
-									end
-								end
-
-								if noYield then
-									taskName = "Thread: " .. taskName
-								end
-
-								Admin.UpdateCooldown(pDat, command)
-
-								local ran, cmdError = TrackTask(taskName,
-									command.Function,
-									p,
-									args,
-									{
-										PlayerData = pDat,
-										Options = opts
-									}
-								)
-								if not opts.IgnoreErrors then
-									if cmdError and type(cmdError) == "string" then
-										AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
-
-										cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
-
-										if not isSystem then
-											Remote.MakeGui(p, "Output", {
-												Title = "",
-												Message = cmdError,
-												Color = Color3.new(1, 0, 0)
-											})
-										end
-									elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
-										if not isSystem then
-											Remote.MakeGui(p, "Output", {
-												Title = "";
-												Message = "There was an error but the error was not a string? : "..tostring(cmdError);
-												Color = Color3.new(1, 0, 0);
-											})
-										end
-									end
-								end
-
-								service.Events.CommandRan:Fire(p, {
-									Message = msg,
-									Matched = matched,
-									Args = args,
-									Command = command,
-									Index = index,
-									Success = ran,
-									Error = error,
-									Options = opts,
-									PlayerData = pDat
-								})
-							else
-								if not isSystem and not opts.NoOutput then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "This command has been disabled.";
-										Color = Color3.new(1, 0, 0);
-									})
-								end
+				if #args > 0 and not isSystem and command.Filter or opts.Filter then
+					for i, arg in args do
+						local cmdArg = cmdArgs[i]
+						if cmdArg then
+							if Admin.IsLax(cmdArg) == false then
+								args[i] = service.LaxFilter(arg, p)
 							end
 						else
-							if not isSystem and not opts.NoOutput then
-								if denyType and denyType:match("Cooldown$") then
-									Remote.MakeGui(p, "Output", {
-										Title = "";
-										Message = "You must wait "..tostring(waitForDuration).." seconds to use the command "..matched;
-										Color = Color3.fromRGB(255, 133, 33);
-									})
-								else
-									local DENIAL_MESSAGES = {
-										Studio = "This command cannot be used in Roblox Studio.",
-										Chat = "This command is not permitted as chat message (non-chattable command).",
-										CrossServerBlacklist = "This command may not be run across servers (cross-server blacklisted).",
-										CrossServerDisabled = "Cross-server features are currently disabled."
-									}
-									if DENIAL_MESSAGES[denyType] or not Settings.SilentCommandDenials or opts.Check then
-										Remote.MakeGui(p, "Output", {
-											Title = "";
-											Message = DENIAL_MESSAGES[denyType] or (if Settings.SilentCommandDenials
-												then string.format("'%s' is either not a valid command, or you do not have permission to run it.", msg)
-												else string.format("You do not have permission to run '%s'.", msg));
-											Color = Color3.new(1, 0, 0);
-										})
-									end
-								end
-							end
-
-							return;
+							args[i] = service.LaxFilter(arg, p)
 						end
 					end
 				end
+
+				if opts.CrossServer or (not isSystem and not opts.DontLog) then
+					AddLog("Commands", {
+						Text = ((opts.CrossServer and "[CRS_SERVER] ") or "") .. p.Name;
+						Desc = matched .. Settings.SplitKey .. table.concat(args, Settings.SplitKey);
+						Player = p;
+					})
+
+					if Settings.ConfirmCommands then
+						Functions.Hint("Executed Command: [ "..msg.." ]", {p})
+					end
+				end
+
+				if noYield then
+					taskName = "Thread: " .. taskName
+				end
+
+				Admin.UpdateCooldown(pDat, command)
+				local ran, cmdError = TrackTask(taskName, command.Function, p, args, {
+					PlayerData = pDat,
+					Options = opts
+				})
+
+				if not opts.IgnoreErrors then
+					if type(cmdError) == "string" then
+						AddLog("Errors", "["..matched.."] "..cmdError)
+
+						cmdError = cmdError:match("%d: (.+)$") or cmdError
+
+						if not isSystem then
+							Remote.MakeGui(p, "Output", {
+								Message = cmdError,
+							})
+						end
+					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+						Remote.MakeGui(p, "Output", {
+							Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+						})
+					end
+				end
+
+				service.Events.CommandRan:Fire(p, {
+					Message = msg,
+					Matched = matched,
+					Args = args,
+					Command = command,
+					Index = index,
+					Success = ran,
+					Error = if type(cmdError) == "string" then cmdError else nil,
+					Options = opts,
+					PlayerData = pDat
+				})
 			end
 		end;
 
 		CrossServerChat = function(data)
 			if data then
-				for _, v in pairs(service.GetPlayers()) do
+				for _, v in service.GetPlayers() do
 					if Admin.GetLevel(v) > 0 then
 						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
@@ -549,7 +499,7 @@ return function(Vargs, GetEnv)
 					end
 				else
 					local target = Settings.SpecialPrefix..'all'
-					if not b then 
+					if not b then
 						b = 'Global'
 					end
 					if not service.Players:FindFirstChild(p.Name) then
@@ -570,9 +520,10 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					for _, v in pairs(service.GetPlayers(p, target, {
+					for _, v in service.GetPlayers(p, target, {
 						DontError = true;
-						})) do
+						})
+					do
 						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
@@ -728,7 +679,7 @@ return function(Vargs, GetEnv)
 					local listed = false
 
 					local CheckTable = Admin.CheckTable
-					for listName, list in pairs(Variables.Whitelist.Lists) do
+					for listName, list in Variables.Whitelist.Lists do
 						if CheckTable(p, list) then
 							listed = true
 							break;
@@ -821,8 +772,14 @@ return function(Vargs, GetEnv)
 			Core.SavePlayerData(p, data)
 
 			Variables.TrackingTable[p.Name] = nil
-			for otherPlrName in pairs(Variables.TrackingTable) do
-				Variables.TrackingTable[otherPlrName][p] = nil
+			for otherPlrName, trackTargets in Variables.TrackingTable do
+				if trackTargets[p] then
+					trackTargets[p] = nil
+					local otherPlr = service.Players:FindFirstChild(otherPlrName)
+					if otherPlr then
+						task.defer(Remote.RemoveLocal, otherPlr, p.Name.."Tracker")
+					end
+				end
 			end
 
 			if Commands.UnDisguise then
@@ -847,7 +804,7 @@ return function(Vargs, GetEnv)
 			})
 
 			--// Run OnJoin commands
-			for i,v in pairs(Settings.OnJoin) do
+			for i,v in Settings.OnJoin do
 				TrackTask("Thread: OnJoin_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 				AddLog("Script", {
 					Text = "OnJoin: Executed "..tostring(v);
@@ -898,14 +855,20 @@ return function(Vargs, GetEnv)
 						logError(err)
 					end
 				end
+	
+				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
+					Remote.MakeGui(p, "Console")
+				end
+
+				if Settings.HelpButton then
+					Remote.MakeGui(p, "HelpButton")
+				end
 
 				if level > 0 then
 					local oldVer = Core.GetData("VersionNumber")
 					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						wait(2)
-
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
 							Message = "Click here for commands.";
@@ -964,10 +927,10 @@ return function(Vargs, GetEnv)
 				--// [-150x261x247x316x246x243x238x248x302x316x261x247x316x246x234x247x247x302]
 				--// END_ReF - 100392_659
 
-				for v: Player in pairs(Variables.IncognitoPlayers) do
+				for v: Player in Variables.IncognitoPlayers do
 					if v == p then continue end
 					server.Remote.LoadCode(p, [[
-						for _, p in pairs(service.Players:GetPlayers()) do
+						for _, p in service.Players:GetPlayers() do
 							if p.UserId == ]]..v.UserId..[[ then
 								if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
 								p:Destroy()
@@ -977,7 +940,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CharacterAdded = function(p, Character, ...)
+		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
 
@@ -986,7 +949,7 @@ return function(Vargs, GetEnv)
 			end
 
 			wait()
-			if Character and keyData and keyData.FinishedLoading then
+			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Wait for UI stuff to finish
@@ -996,28 +959,14 @@ return function(Vargs, GetEnv)
 				end
 				Remote.Get(p,"UIKeepAlive")
 
-				--//GUI loading
-				local MakeGui = Remote.MakeGui
-				local Refresh = Remote.RefreshGui
-				local RefreshGui = function(gui, ignore, ...)
-					Refresh(p, gui, ignore, ...)
-				end
+				--// GUI loading
 				if Variables.NotifMessage then
-					MakeGui(p, "Notif", {
+					Remote.MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
 				end
-
-				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
-					RefreshGui("Console")
-				end
-
-				if Settings.HelpButton then
-					MakeGui(p, "HelpButton")
-				end
-
 				if Settings.TopBarShift then
-					MakeGui(p, "TopBar")
+					Remote.MakeGui(p, "TopBar")
 				end
 
 				--if Settings.CustomChat then
@@ -1035,7 +984,7 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Check muted
-				--[=[for ind,admin in pairs(Settings.Muted) do
+				--[=[for ind,admin in Settings.Muted do
 					if Admin.DoCheck(p, admin) then
 						Remote.LoadCode(p, [[service.StarterGui:SetCoreGuiEnabled("Chat",false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 					end
@@ -1044,10 +993,10 @@ return function(Vargs, GetEnv)
 				task.spawn(Functions.Donor, p)
 
 				--// Fire added event
-				service.Events.CharacterAdded:Fire(p, Character, ...)
+				service.Events.CharacterAdded:Fire(p, char, ...)
 
 				--// Run OnSpawn commands
-				for _, v in pairs(Settings.OnSpawn) do
+				for _, v in Settings.OnSpawn do
 					TrackTask("Thread: OnSpawn_Cmd: ".. tostring(v), Admin.RunCommandAsPlayer, v, p)
 					AddLog("Script", {
 						Text = "OnSpawn: Executed "..tostring(v);
@@ -1055,9 +1004,15 @@ return function(Vargs, GetEnv)
 					})
 				end
 
-				for otherPlrName, trackTargets in pairs(Variables.TrackingTable) do
-					if trackTargets[p] and server.Commands.Track then
-						server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+				if
+					server.Commands.Track
+					and char:WaitForChild("Head", 5)
+					and char:WaitForChild("HumanoidRootPart", 2)
+				then
+					for otherPlrName, trackTargets in Variables.TrackingTable do
+						if trackTargets[p] then
+							server.Commands.Track.Function(service.Players[otherPlrName], {"@"..p.Name, "true"})
+						end
 					end
 				end
 			end
