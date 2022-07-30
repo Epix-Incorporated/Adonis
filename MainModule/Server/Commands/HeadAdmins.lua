@@ -28,7 +28,6 @@ return function(Vargs, env)
 				end)
 				assert(valid > 0, "Invalid duration value (argument #2)")
 
-				local level = data.PlayerData.Level
 				local reason = args[3] or "No reason provided"
 
 				for _, v in service.GetPlayers(plr, args[1], {
@@ -36,11 +35,9 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "time-ban", false) then
 						Admin.AddTimeBan(v, duration, reason, plr)
 						Functions.Hint("Time-banned "..service.FormatPlayer(v, true).." for ".. args[2], {plr})
-					else
-						Functions.Hint("Unable to time-ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -121,7 +118,6 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {})
-				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided"
 
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
@@ -129,11 +125,9 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "game-ban", false) then
 						Admin.AddBan(v, reason, true, plr)
 						Functions.Hint("Game-banned "..service.FormatPlayer(v, true), {plr})
-					else
-						Functions.Hint("Unable to game-ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -426,15 +420,26 @@ return function(Vargs, env)
 			Filter = true;
 			IsCrossServer = true;
 			Function = function(plr: Player, args: {string})
-				assert(args[1], "Reason must be supplied for this command!")
-				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Question = "Shutdown all running servers for the reason '"..tostring(args[1]).."'?";
-					Title = "Global Shutdown";
-				})
-				if ans == "Yes" then
-					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]") then
-						error("An error has occured")
-					end
+				assert(args[1], "Reason (argument #1) must be supplied for this command!")
+
+				if
+					Remote.GetGui(plr, "YesNoPrompt", {
+						Question = "Shutdown all running servers for the reason '"..tostring(args[1]).."'?";
+						Title = "Global Shutdown";
+					}) == "Yes"
+				then
+					assert(
+						Core.CrossServer(
+							"NewRunCommand",
+							{
+								Name = plr.Name,
+								UserId = plr.UserId,
+								AdminLevel = Admin.GetLevel(plr)
+							},
+							Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]"
+						),
+						"An error has occured"
+					)
 				end
 			end;
 		};
