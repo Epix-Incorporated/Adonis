@@ -4,11 +4,11 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
+
 	local measuring = true
 	local gTable
-	
-	local window = client.UI.Make("Window",{
+
+	local window = client.UI.Make("Window", {
 		Name  = "FPS";
 		Title = "FPS";
 		Icon = client.MatIcons.Leaderboard;
@@ -20,23 +20,23 @@ return function(data, env)
 			measuring = false
 		end
 	})
-	
+
 	if window then
-		local label = window:Add("TextLabel",{
+		local label = window:Add("TextLabel", {
 			Text = "...";
 			BackgroundTransparency = 1;
 			TextSize = 20;
-			Size = UDim2.new(1, 0, 1, 0);
+			Size = UDim2.fromScale(1, 1);
 			Position = UDim2.new(0, 0, 0, 0);
 			--TextScaled = true;
 			--TextWrapped = true;
 		})
-		
+
 		gTable = window.gTable
 		window:Ready()
-		
+
 		repeat
-			label.Text = client.Remote.FPS().." Frames"
+			label.Text = tostring(client.Remote.FPS())
 			wait(2)
 		until not measuring or not gTable.Active
 	end
