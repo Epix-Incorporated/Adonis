@@ -319,7 +319,7 @@ return function(Vargs, GetEnv)
 							DontError = true;
 						})
 
-						for k,p in pairs(removes) do
+						for k,p in removes do
 							if p then
 								table.insert(delplayers,p)
 								plus()
@@ -338,7 +338,7 @@ return function(Vargs, GetEnv)
 							DontError = true;
 						})
 
-						for k,p in pairs(adds) do
+						for k,p in adds do
 							if p then
 								table.insert(addplayers,p)
 								plus()
@@ -615,7 +615,7 @@ return function(Vargs, GetEnv)
 			local filteredList = {}
 			local checkList = {}
 
-			for _, v in pairs(players) do
+			for _, v in players do
 				if not checkList[v] then
 					table.insert(filteredList, v)
 					checkList[v] = true
@@ -625,7 +625,7 @@ return function(Vargs, GetEnv)
 			local delFilteredList = {}
 			local delCheckList = {}
 
-			for _, v in pairs(delplayers) do
+			for _, v in delplayers do
 				if not delCheckList[v] then
 					table.insert(delFilteredList, v)
 					delCheckList[v] = true
@@ -644,8 +644,8 @@ return function(Vargs, GetEnv)
 
 			local removalSuccessList = {}
 
-			for i, v in pairs(filteredList) do
-				for j, w in pairs(delFilteredList) do
+			for i, v in filteredList do
+				for j, w in delFilteredList do
 					if v.Name == w.Name then
 						table.remove(filteredList,i)
 						table.insert(removalSuccessList, w)
@@ -654,14 +654,14 @@ return function(Vargs, GetEnv)
 			end
 
 
-			for j, w in pairs(addFilteredList) do
+			for j, w in addFilteredList do
 				table.insert(filteredList, w)
 			end
 
 			local checkList2 = {}
 			local finalFilteredList = {}
 
-			for _, v in pairs(filteredList) do
+			for _, v in filteredList do
 				if not checkList2[v] then
 					table.insert(finalFilteredList, v)
 					checkList2[v] = true
@@ -671,10 +671,10 @@ return function(Vargs, GetEnv)
 
 			local comboTableCheck = {}
 
-			for _, v in pairs(finalFilteredList) do
+			for _, v in finalFilteredList do
 				table.insert(comboTableCheck, v)
 			end
-			for _, v in pairs(delFilteredList) do
+			for _, v in delFilteredList do
 				table.insert(comboTableCheck, v)
 			end
 
@@ -696,16 +696,16 @@ return function(Vargs, GetEnv)
 					table.insert(finalFilteredList, rp)
 
 					local comboTableCheck = {}
-					for _, v in pairs(finalFilteredList) do
+					for _, v in finalFilteredList do
 						table.insert(comboTableCheck, v)
 					end
-					for _, v in pairs(delFilteredList) do
+					for _, v in delFilteredList do
 						table.insert(comboTableCheck, v)
 					end
 				end
 			end
 
-			for i, v in pairs(randplayers) do
+			for i, v in randplayers do
 				rplrsort()
 			end
 
