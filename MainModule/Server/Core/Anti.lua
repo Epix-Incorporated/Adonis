@@ -307,8 +307,10 @@ return function(Vargs, GetEnv)
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
 						if client and client.LastUpdate and client.PlayerLoaded then
-							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+							if RunService:IsStudio() then end else
+								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
+									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+								end							
 							end
 						end
 					end
