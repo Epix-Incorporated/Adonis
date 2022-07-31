@@ -310,7 +310,8 @@ return function(Vargs, GetEnv)
 							if RunService:IsStudio() then end else
 								if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
 									Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
-								end							
+								end
+							end
 							end
 						end
 					end
