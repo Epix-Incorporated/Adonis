@@ -1458,5 +1458,24 @@ return function(Vargs, GetEnv)
 
 			return tab
 		end;
+			
+		CheckAuthority = function(p, target, actionName, allowSelf)
+			if p == target then
+				if allowSelf == false then
+					Functions.Hint("You cannot "..actionName.." yourself", {p})
+					return false
+				end
+
+				return allowSelf or Remote.GetGui(p, "YesNoPrompt", {
+					Question = "Are you sure you want to "..actionName.." yourself?";
+				}) == "Yes"
+
+			elseif Admin.GetLevel(p) > Admin.GetLevel(target) then
+				return true
+			end
+
+			Functions.Hint("You don't have permission to "..actionName.." "..service.FormatPlayer(target), {p})
+			return false
+		end;
 	}
 end

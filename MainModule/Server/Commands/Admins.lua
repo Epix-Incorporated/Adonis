@@ -1169,10 +1169,8 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if v == plr or data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "lag") then
 						Remote.Send(v, "Function", "SetFPS", 5.6)
-					else
-						Functions.Hint("Unable to lag "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1202,10 +1200,8 @@ return function(Vargs, env)
 					IsKicking = true;
 					})
 				do
-					if data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "crash") then
 						Remote.Send(v, "Function", "Crash")
-					else
-						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1215,17 +1211,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"hardcrash"};
 			Args = {"player"};
-			Description = "Hard crashes the target player(s)";
+			Description = "Hard-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
 					})
 				do
-					if data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "hard-crash") then
 						Remote.Send(v, "Function", "HardCrash")
-					else
-						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1235,17 +1229,15 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"ramcrash", "memcrash"};
 			Args = {"player"};
-			Description = "RAM crashes the target player(s)";
+			Description = "RAM-crashes the target player(s)";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
 					})
 				do
-					if data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "RAM-crash") then
 						Remote.Send(v, "Function", "RAMCrash")
-					else
-						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1262,10 +1254,8 @@ return function(Vargs, env)
 					IsKicking = true;
 					})
 				do
-					if data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "GPU-crash") then
 						Remote.Send(v, "Function", "GPUCrash")
-					else
-						Functions.Hint("Unable to crash "..tostring(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -1308,7 +1298,6 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Filter = true;
 			Function = function(plr: Player, args: {string}, data: {any})
-				local level = data.PlayerData.Level
 				local reason = args[2] or "No reason provided"
 
 				for _, v in service.GetPlayers(plr, args[1], {
@@ -1316,11 +1305,9 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "server-ban", false) then
 						Admin.AddBan(v, reason, false, plr)
 						Functions.Hint("Server-banned "..service.FormatPlayer(v, true), {plr})
-					else
-						Functions.Hint("Unable to ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end
