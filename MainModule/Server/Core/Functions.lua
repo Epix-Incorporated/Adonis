@@ -635,7 +635,7 @@ return function(Vargs, GetEnv)
 			local addFilteredList = {}
 			local addCheckList = {}
 
-			for _, v in pairs(addplayers) do
+			for _, v in addplayers do
 				if not addCheckList[v] then
 					table.insert(addFilteredList, v)
 					addCheckList[v] = true
@@ -686,7 +686,7 @@ return function(Vargs, GetEnv)
 					local rand = children[math.random(#children)]
 					local rp = getplr(rand)
 
-					for _, v in pairs(comboTableCheck) do
+					for _, v in comboTableCheck do
 						if v.Name == rp.Name then
 							rplrsort()
 							return
