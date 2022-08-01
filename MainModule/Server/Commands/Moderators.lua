@@ -6828,5 +6828,101 @@ return function(Vargs, env)
 			end
 		};
 
+		HealthList = {
+			Prefix = Settings.Prefix;
+			Commands = {"healthlist", "healthlogs", "healths", "hlist","hlogs"};
+			Args = {"autoupdate? (default: true)"};
+			Description = "Shows a list of all players' current and max healths.";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, args: {string})
+				local rawTable = {}
+				for _, v in Functions.GetPlayers(plr, "all") do
+					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+						table.insert(rawTable, {service.FormatPlayer(v), v.Character:FindFirstChildOfClass("Humanoid").Health, v.Character:FindFirstChildOfClass("Humanoid").MaxHealth})
+					else
+						table.insert(rawTable, {service.FormatPlayer(v), 0, 0})
+					end
+				end
+				
+				table.sort(rawTable, function(a,b)
+					if a[3] == b[3] then
+						if a[2] == b[2] then
+							return(a[1] < b[1])
+						else
+							return(a[2] > b[2])
+						end
+					else
+						return(a[3] > b[3])
+					end
+				end)
+				
+				local goddedCheck = false
+				local normalCheck = false
+				local godTable = {}
+				local zeroTable = {}
+				local normalTable = {}
+				
+				for _, v in rawTable do
+					if tostring(v[3]) == "inf" then
+						table.insert(godTable, v)
+						goddedCheck = true
+					else
+						if v[3] <= 0 then
+							table.insert(zeroTable, v)
+							normalCheck = true
+						else
+							table.insert(normalTable, v)
+							normalCheck = true
+						end
+					end
+				end
+				
+				local logTable = {}
+				
+				if goddedCheck == true then
+					table.insert(logTable, "<b><u>Godded Players: </u></b>")
+				end
+				
+				for _, v in godTable do
+					local color = "100, 175, 255"
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				end
+				
+				if normalCheck == true then
+					table.insert(logTable, "<b><u>Normal Players: </u></b>")
+				end
+				
+				for _, v in normalTable do
+					local color
+					if v[2]/v[3] >= .5 then
+						color =  math.round(100 + 155 * (v[2]/v[3] * -2 + 2)) .. ", 255, 100"
+					else
+						color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
+					end
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				end
+				
+				for _, v in zeroTable do
+					local color = "255, 100, 100"
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[N/A]</font>')
+				end
+				
+				return logTable
+			end;
+			
+			Function = function(plr: Player, args: {string})
+				Functions.Hint("Fetching player healths.", {plr})
+				Remote.MakeGui(plr, "List", {
+					Title = "Player Healths";
+					Tab = Logs.ListUpdaters.HealthList(plr);
+					Dots = true;
+					Update = "HealthList";
+					AutoUpdate = if args[1] and (args[1]:lower() == "false" or args[1]:lower() == "no") then nil else 1;
+					Sanitize = false;
+					Stacking = true;
+					RichText = true;
+				})
+			end
+		};
 	}
 end
