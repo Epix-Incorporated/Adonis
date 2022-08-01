@@ -6837,36 +6837,43 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player, args: {string})
 				local RawTable = {}
 				for _, v in Functions.GetPlayers(plr, "all") do
-					table.insert(RawTable, {v.DisplayName, v.Name, v.Character.Humanoid.Health, v.Character.Humanoid.MaxHealth})
+					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+						table.insert(RawTable, {service.FormatPlayer(v), v.Character:FindFirstChildOfClass("Humanoid").Health, v.Character:FindFirstChildOfClass("Humanoid").MaxHealth})
+					else
+						table.insert(RawTable, {service.FormatPlayer(v), 0, 0})
+					end
 				end
 				
 				table.sort(RawTable, function(a,b)
-					if a[4] == b[4] then
-						if a[3] == b[3] then
-							if a[1] == b[1] then
-								return(a[2] < b[2])
-							else
-								return(a[1] < b[1])
-							end
+					if a[3] == b[3] then
+						if a[1] == b[1] then
+							return(a[2] < b[2])
 						else
-							return(a[3] > b[3])
+							return(a[1] < b[1])
 						end
 					else
-						return(a[4] > b[4])
+						return(a[3] > b[3])
 					end
 				end)
 				
 				local GoddedCheck = false
-				local GodTable = {}
 				local NormalCheck = false
+				local GodTable = {}
+				local ZeroTable = {}
 				local NormalTable = {}
+				
 				for _, v in RawTable do
-					if tostring(v[4]) == "inf" then
+					if tostring(v[3]) == "inf" then
 						table.insert(GodTable, v)
 						GoddedCheck = true
 					else
-						table.insert(NormalTable, v)
-						NormalCheck = true
+						if v[3] <= 0 then
+							table.insert(ZeroTable, v)
+							NormalCheck = true
+						else
+							table.insert(NormalTable, v)
+							NormalCheck = true
+						end
 					end
 				end
 				
@@ -6877,8 +6884,8 @@ return function(Vargs, env)
 				end
 				
 				for _, v in GodTable do
-					local Color = "100,175,255"
-					table.insert(LogTable, v[1] .. ' (@' .. v[2] .. ') :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[3]) .. '/' .. math.round(v[4]) .. ']</font>')
+					local Color = "100, 175, 255"
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
 				end
 				
 				if NormalCheck == true then
@@ -6887,12 +6894,17 @@ return function(Vargs, env)
 				
 				for _, v in NormalTable do
 					local Color
-					if v[3]/v[4] >= .5 then
-						Color =  math.round(100 + (155 * ((v[3]/v[4]) * -2 + 2))) .."," .. 255 ..  "," .. 100
+					if v[2]/v[3] >= .5 then
+						Color =  math.round(100 + 155 * (v[2]/v[3] * -2 + 2)) .. ", 255, 100"
 					else
-						Color =  255 .."," .. math.round(100 + 155 * (v[3]/v[4]) * 2) ..  "," .. 100
+						Color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
 					end
-					table.insert(LogTable, v[1] .. ' (@' .. v[2] .. ') :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[3]) .. '/' .. math.round(v[4]) .. ']</font>')
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				end
+				
+				for _, v in ZeroTable do
+					local Color = "255, 100, 100"
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[N/A]</font>')
 				end
 				
 				return LogTable
@@ -6913,4 +6925,5 @@ return function(Vargs, env)
 			end
 		};
 	}
+end
 end
