@@ -41,24 +41,7 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 ## Q: Is there a style guide for writing code?
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
-  
-<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
-<hr>
-
-  Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
-
-  Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
-
-  No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
-
-  Don't overwrite builtin globals unnecessarily when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
-
-  Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
-  
-  Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
-<hr>
-</details>
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing, as well as the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) where applicable. Also, be sure to use US English spellings for both code variable names and user-facing text.
 
 ## Q: What are some things I should watch out for when submitting my changes?
 
