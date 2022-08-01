@@ -6835,16 +6835,16 @@ return function(Vargs, env)
 			Description = "Shows a list of all players' current and max healths.";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, args: {string})
-				local RawTable = {}
+				local rawTable = {}
 				for _, v in Functions.GetPlayers(plr, "all") do
 					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-						table.insert(RawTable, {service.FormatPlayer(v), v.Character:FindFirstChildOfClass("Humanoid").Health, v.Character:FindFirstChildOfClass("Humanoid").MaxHealth})
+						table.insert(rawTable, {service.FormatPlayer(v), v.Character:FindFirstChildOfClass("Humanoid").Health, v.Character:FindFirstChildOfClass("Humanoid").MaxHealth})
 					else
-						table.insert(RawTable, {service.FormatPlayer(v), 0, 0})
+						table.insert(rawTable, {service.FormatPlayer(v), 0, 0})
 					end
 				end
 				
-				table.sort(RawTable, function(a,b)
+				table.sort(rawTable, function(a,b)
 					if a[3] == b[3] then
 						if a[2] == b[2] then
 							return(a[1] < b[1])
@@ -6856,55 +6856,55 @@ return function(Vargs, env)
 					end
 				end)
 				
-				local GoddedCheck = false
-				local NormalCheck = false
-				local GodTable = {}
-				local ZeroTable = {}
-				local NormalTable = {}
+				local goddedCheck = false
+				local normalCheck = false
+				local godTable = {}
+				local zeroTable = {}
+				local normalTable = {}
 				
-				for _, v in RawTable do
+				for _, v in rawTable do
 					if tostring(v[3]) == "inf" then
-						table.insert(GodTable, v)
-						GoddedCheck = true
+						table.insert(godTable, v)
+						goddedCheck = true
 					else
 						if v[3] <= 0 then
-							table.insert(ZeroTable, v)
-							NormalCheck = true
+							table.insert(zeroTable, v)
+							normalCheck = true
 						else
-							table.insert(NormalTable, v)
-							NormalCheck = true
+							table.insert(normalTable, v)
+							normalCheck = true
 						end
 					end
 				end
 				
 				local LogTable = {}
 				
-				if GoddedCheck == true then
+				if goddedCheck == true then
 					table.insert(LogTable, "<b><u>Godded Players: </u></b>")
 				end
 				
-				for _, v in GodTable do
-					local Color = "100, 175, 255"
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				for _, v in godTable do
+					local color = "100, 175, 255"
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
 				end
 				
-				if NormalCheck == true then
+				if normalCheck == true then
 					table.insert(LogTable, "<b><u>Normal Players: </u></b>")
 				end
 				
-				for _, v in NormalTable do
-					local Color
+				for _, v in normalTable do
+					local color
 					if v[2]/v[3] >= .5 then
-						Color =  math.round(100 + 155 * (v[2]/v[3] * -2 + 2)) .. ", 255, 100"
+						color =  math.round(100 + 155 * (v[2]/v[3] * -2 + 2)) .. ", 255, 100"
 					else
-						Color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
+						color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
 					end
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
 				end
 				
-				for _, v in ZeroTable do
-					local Color = "255, 100, 100"
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. Color .. ')">[N/A]</font>')
+				for _, v in zeroTable do
+					local color = "255, 100, 100"
+					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[N/A]</font>')
 				end
 				
 				return LogTable
@@ -6925,5 +6925,4 @@ return function(Vargs, env)
 			end
 		};
 	}
-end
 end
