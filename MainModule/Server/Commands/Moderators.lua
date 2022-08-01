@@ -6828,5 +6828,81 @@ return function(Vargs, env)
 			end
 		};
 
+		HealthList = {
+			Prefix = Settings.Prefix;
+			Commands = {"healthlist", "healthlogs", "healths", "hlist","hlogs"};
+			Args = {"autoupdate? (default: true)"};
+			Description = "Shows a list of all players' current and max healths.";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, args: {string})
+				local RawTable = {}
+				for _, v in Functions.GetPlayers(plr, "all") do
+					table.insert(RawTable, {v.DisplayName, v.Name, v.Character.Humanoid.Health, v.Character.Humanoid.MaxHealth})
+				end
+				
+				table.sort(RawTable, function(a,b)
+					if a[4] == b[4] then
+						return a[3] > b[3]
+					else
+						return(a[4] > b[4])
+					end
+				end)
+				
+				local GoddedCheck = false
+				local GodTable = {}
+				local NormalCheck = false
+				local NormalTable = {}
+				for _, v in RawTable do
+					if tostring(v[4]) == "inf" then
+						table.insert(GodTable, v)
+						GoddedCheck = true
+					else
+						table.insert(NormalTable, v)
+						NormalCheck = true
+					end
+				end
+				
+				local LogTable = {}
+				
+				if GoddedCheck == true then
+					table.insert(LogTable, "<b><u>Godded Players: </u></b>")
+				end
+				
+				for _, v in GodTable do
+					local Color = "100,175,255"
+					table.insert(LogTable, v[1] .. ' (@' .. v[2] .. ') :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[3]) .. '/' .. math.round(v[4]) .. ']</font>')
+				end
+				
+				if NormalCheck == true then
+					table.insert(LogTable, "<b><u>Normal Players: </u></b>")
+				end
+				
+				for _, v in NormalTable do
+					local Color
+					if v[3]/v[4] >= .5 then
+						Color =  math.round(100 + (155 * ((v[3]/v[4]) * -2 + 2))) .."," .. 255 ..  "," .. 100
+					else
+						Color =  255 .."," .. math.round(100 + 155 * (v[3]/v[4]) * 2) ..  "," .. 100
+					end
+					table.insert(LogTable, v[1] .. ' (@' .. v[2] .. ') :: <font color = "rgb(' .. Color .. ')">[' .. math.round(v[3]) .. '/' .. math.round(v[4]) .. ']</font>')
+				end
+				
+				return LogTable
+			end;
+			
+			Function = function(plr: Player, args: {string})
+				Functions.Hint("Fetching player healths.", {plr})
+				Remote.MakeGui(plr, "List", {
+					Title = "Player Healths";
+					Tab = Logs.ListUpdaters.HealthList(plr);
+					Dots = true;
+					Update = "HealthList";
+					AutoUpdate = if args[1] and (args[1]:lower() == "false" or args[1]:lower() == "no") then nil else 1;
+					Sanitize = false;
+					Stacking = true;
+					RichText = true;
+				})
+			end
+		};
 	}
 end
