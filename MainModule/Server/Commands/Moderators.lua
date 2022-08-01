@@ -6877,19 +6877,19 @@ return function(Vargs, env)
 					end
 				end
 				
-				local LogTable = {}
+				local logTable = {}
 				
 				if goddedCheck == true then
-					table.insert(LogTable, "<b><u>Godded Players: </u></b>")
+					table.insert(logTable, "<b><u>Godded Players: </u></b>")
 				end
 				
 				for _, v in godTable do
 					local color = "100, 175, 255"
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
 				end
 				
 				if normalCheck == true then
-					table.insert(LogTable, "<b><u>Normal Players: </u></b>")
+					table.insert(logTable, "<b><u>Normal Players: </u></b>")
 				end
 				
 				for _, v in normalTable do
@@ -6899,15 +6899,15 @@ return function(Vargs, env)
 					else
 						color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
 					end
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
 				end
 				
 				for _, v in zeroTable do
 					local color = "255, 100, 100"
-					table.insert(LogTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[N/A]</font>')
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[N/A]</font>')
 				end
 				
-				return LogTable
+				return logTable
 			end;
 			
 			Function = function(plr: Player, args: {string})
