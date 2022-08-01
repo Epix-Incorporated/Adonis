@@ -6842,7 +6842,15 @@ return function(Vargs, env)
 				
 				table.sort(RawTable, function(a,b)
 					if a[4] == b[4] then
-						return a[3] > b[3]
+						if a[3] == b[3] then
+							if a[1] == b[1] then
+								return(a[2] > b[2])
+							else
+								return(a[1] > b[1])
+							end
+						else
+							return(a[3] > b[3])
+						end
 					else
 						return(a[4] > b[4])
 					end
