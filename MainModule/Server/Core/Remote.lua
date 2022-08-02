@@ -374,7 +374,7 @@ return function(Vargs, GetEnv)
 					local data = Core.GetPlayer(p)
 
 					--// check for stupid stuff
-					for i,v in next, aliases do
+					for i,v in aliases do
 						if type(i) ~= "string" or type(v) ~= "string" then
 							aliases[i] = nil
 						end
@@ -502,7 +502,7 @@ return function(Vargs, GetEnv)
 					Description = "Shows a list of available commands and their usage";
 					Function = function(p,args,data)
 						local output = {}
-						for i,v in next,Remote.Terminal.Commands do
+						for i,v in Remote.Terminal.Commands do
 							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
 							table.insert(output, "- ".. tostring(v.Description))
 						end
@@ -999,7 +999,7 @@ return function(Vargs, GetEnv)
 
 				SendToUsers = function(self, ...)
 					if not self.Ended then
-						for p in next,self.Users do
+						for p in self.Users do
 							Remote.Send(p, "SessionData", self.SessionKey, ...);
 						end;
 					end
@@ -1019,7 +1019,7 @@ return function(Vargs, GetEnv)
 
 				End = function(self)
 					if not self.Ended then
-						for t,event in next,self.Events do
+						for t,event in self.Events do
 							event:Disconnect();
 						end
 						table.clear(self.Events)

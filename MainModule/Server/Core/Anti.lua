@@ -331,7 +331,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else
-						for i,user in next,userInfo do
+						for i,user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
