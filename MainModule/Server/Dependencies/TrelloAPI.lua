@@ -11,7 +11,7 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local print = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: INFO: "..tostring(v)) end end
-local error = function(...) for i,v in {...}) do warn("[Adonis TrelloAPI]: ERROR: "..tostring(v)) end end
+local error = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: ERROR: "..tostring(v)) end end
 local warn = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: WARN: "..tostring(v)) end end
 
 local HttpService = game:GetService("HttpService")
