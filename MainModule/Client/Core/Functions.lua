@@ -483,13 +483,13 @@ return function(Vargs, GetEnv)
 				local children = dat.Children
 				local gui = service.New(props.ClassName)
 
-				for i,v in next,props do
+				for i,v in props do
 					pcall(function()
 						gui[i] = v
 					end)
 				end
 
-				for i,v in next,children do
+				for i,v in children do
 					pcall(function()
 						local g = make(v)
 						if g then
@@ -501,14 +501,14 @@ return function(Vargs, GetEnv)
 			end
 
 			local temp = Instance.new("Folder")
-			for i,v in next,service.PlayerGui:GetChildren()do
+			for i,v in service.PlayerGui:GetChildren()do
 				if not UI.Get(v) then
 					v.Parent = temp
 				end
 			end
 			Variables.GuiViewFolder = temp
 			local folder = service.New("Folder",{Parent = service.PlayerGui; Name = "LoadedGuis"})
-			for i,v in next,data.Children do
+			for i,v in data.Children do
 				pcall(function()
 					local g = make(v)
 					if g then
@@ -589,7 +589,7 @@ return function(Vargs, GetEnv)
 
 		NewLocal = function(class, props, parent)
 			local obj = service.New(class)
-			for prop,value in next,props do
+			for prop,value in props do
 				obj[prop] = value
 			end
 

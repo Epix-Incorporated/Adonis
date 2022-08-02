@@ -191,7 +191,7 @@ return function(Vargs, GetEnv)
 
 			UIKeepAlive = function(args)
 				if Variables.UIKeepAlive then
-					for ind,g in next,client.GUIs do
+					for ind,g in client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
 								g.Object.Parent = service.Player.PlayerGui
@@ -231,12 +231,12 @@ return function(Vargs, GetEnv)
 			ClientLog = function(args)
 				local temp={}
 				local function toTab(str, desc, color)
-					for i,v in next,service.ExtractLines(str) do
+					for i,v in service.ExtractLines(str) do
 						table.insert(temp, {Text = v; Desc = desc..v; Color = color;})
 					end
 				end
 
-				for i,v in next,service.LogService:GetLogHistory() do
+				for i,v in service.LogService:GetLogHistory() do
 					local mType = v.messageType
 					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 				end

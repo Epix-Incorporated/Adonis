@@ -195,7 +195,7 @@ end
 local function scan(folder)
 	warn("Scanning for client...")
 	if not doPcall(function()
-		for i,child in next,folder:GetChildren() do
+		for i,child in folder:GetChildren() do
 			if child.Name == "Adonis_Container" then
 				local client = child:FindFirstChildOfClass("Folder") or child:WaitForChild("Adonis_Client", 5);
 				if client then
