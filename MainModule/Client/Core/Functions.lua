@@ -1047,7 +1047,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyBindListener = function(keybinds)
-			if not Variables then wait() end;
+			if not Variables then task.wait() end;
 			local timer = 0
 			local data = (not keybinds) and Remote.Get("PlayerData");
 
