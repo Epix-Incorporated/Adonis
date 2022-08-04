@@ -229,25 +229,25 @@ return function(Vargs, GetEnv)
 			end;
 
 			ClientLog = function(args)
-				local temp={}
-				local function toTab(str, desc, color)
-					for _, v in service.ExtractLines(str) do
-						table.insert(temp, {Text = v; Desc = desc..v; Color = color;})
+				local MESSAGE_TYPE_COLORS = {
+					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
+					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
+					[Enum.MessageType.MessageInfo] = Color3.fromRGB(14, 78, 255)
+				}
+				local tab = {}
+				local logHistory: {{message: string, messageType: Enum.MessageType, timestamp: number}} = service.LogService:GetLogHistory()
+				for i = #logHistory, 1, -1 do
+					local log = logHistory[i]
+					for i, v in service.ExtractLines(log.message) do
+						table.insert(tab, {
+							Text = v;
+							Time = if i == 1 then log.timestamp else nil;
+							Desc = log.messageType.Name:match("^Message(.+)$");
+							Color = MESSAGE_TYPE_COLORS[log.messageType];
+						})
 					end
 				end
-
-				for _, v in service.LogService:GetLogHistory() do
-					local mType = v.messageType
-					toTab(v.message, (mType == Enum.MessageType.MessageWarning and "Warning" or 
-							  mType == Enum.MessageType.MessageInfo and "Info" or 
-							  mType == Enum.MessageType.MessageError and "Error" or
-							  "Output").." - ", 
-							  mType == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or 
-							  mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or 
-							  mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
-				end
-
-				return temp
+				return tab
 			end;
 
 			LocallyFormattedTime = function(args)
