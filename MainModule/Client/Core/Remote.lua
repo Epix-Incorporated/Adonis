@@ -153,7 +153,7 @@ return function(Vargs, GetEnv)
 				local action = args[1]
 				if action == "GetTasks" then
 					local tab = {}
-					for i,v in next,service.GetTasks() do
+					for _, v in service.GetTasks() do
 						local new = {}
 						new.Status = v.Status
 						new.Name = v.Name
@@ -191,7 +191,7 @@ return function(Vargs, GetEnv)
 
 			UIKeepAlive = function(args)
 				if Variables.UIKeepAlive then
-					for ind,g in client.GUIs do
+					for _, g in client.GUIs do
 						if g.KeepAlive then
 							if g.Class == "ScreenGui" or g.Class == "GuiMain" then
 								g.Object.Parent = service.Player.PlayerGui
@@ -219,7 +219,7 @@ return function(Vargs, GetEnv)
 			InstanceList = function(args)
 				local objects = service.GetAdonisObjects()
 				local temp = {}
-				for i,v in pairs(objects) do
+				for _, v in objects do
 					table.insert(temp, {
 						Text = v:GetFullName();
 						Desc = v.ClassName;
@@ -231,14 +231,20 @@ return function(Vargs, GetEnv)
 			ClientLog = function(args)
 				local temp={}
 				local function toTab(str, desc, color)
-					for i,v in service.ExtractLines(str) do
+					for _, v in service.ExtractLines(str) do
 						table.insert(temp, {Text = v; Desc = desc..v; Color = color;})
 					end
 				end
 
-				for i,v in service.LogService:GetLogHistory() do
+				for _, v in service.LogService:GetLogHistory() do
 					local mType = v.messageType
-					toTab(v.message, (mType  == Enum.MessageType.MessageWarning and "Warning" or mType  == Enum.MessageType.MessageInfo and "Info" or mType  == Enum.MessageType.MessageError and "Error" or "Output").." - ", mType  == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or mType  == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or mType  == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
+					toTab(v.message, (mType == Enum.MessageType.MessageWarning and "Warning" or 
+							  mType == Enum.MessageType.MessageInfo and "Info" or 
+							  mType == Enum.MessageType.MessageError and "Error" or
+							  "Output").." - ", 
+							  mType == Enum.MessageType.MessageWarning and Color3.new(0.866667, 0.733333, 0.0509804) or 
+							  mType == Enum.MessageType.MessageInfo and Color3.new(0.054902, 0.305882, 1) or 
+							  mType == Enum.MessageType.MessageError and Color3.new(1, 0.196078, 0.054902))
 				end
 
 				return temp
@@ -400,7 +406,7 @@ return function(Vargs, GetEnv)
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
 					RemoteEvent.Object:FireServer({Mode = "Fire", Module = client.Module, Loader = client.Loader, Sent = Remote.Sent, Received = Remote.Received}, unpack(extra));
-					wait(limit);
+					task.wait(limit);
 				end)
 			end
 		end;
@@ -422,7 +428,7 @@ return function(Vargs, GetEnv)
 
 				service.Queue("REMOTE_SEND", function()
 					Remote.Sent = Remote.Sent+1;
-					delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
+					task.delay(0, function() -- Wait for return in new thread; We don't want to hold the entire fire queue up while waiting for one thing to return since we just want to limit fire speed;
 						returns = {
 							RemoteEvent.Function:InvokeServer({
 								Mode = "Get",
@@ -436,7 +442,7 @@ return function(Vargs, GetEnv)
 						Yield:Release(returns);
 					end)
 
-					wait(limit)
+					task.wait(limit)
 				end)
 
 				if not returns then
@@ -474,7 +480,7 @@ return function(Vargs, GetEnv)
 			local returns
 			local key = Functions:GetRandom()
 			local waiter = service.New("BindableEvent");
-			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() wait() waiter:Fire() waiter:Destroy() end)
+			local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") returns = {...} waiter:Fire() task.wait() waiter:Fire() waiter:Destroy() end)
 
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)

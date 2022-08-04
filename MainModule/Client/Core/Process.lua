@@ -169,7 +169,7 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(...)
 			service.Events.CharacterAdded:Fire(...)
 
-			wait()
+			task.wait()
 			UI.GetHolder()
 		end;
 
