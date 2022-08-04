@@ -1106,7 +1106,7 @@ return function(Vargs, GetEnv)
 				pa.Anchored = true
 				pa.FormFactor = "Custom"
 				pa.Size=Vector3.new(100,100,0)
-				while pa and pa.Parent and wait(1/40) do
+				while pa and pa.Parent and task.wait(1/40) do
 					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
