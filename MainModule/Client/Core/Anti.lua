@@ -80,7 +80,7 @@ return function(Vargs, GetEnv)
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "Detected", action, info)
-			wait(0.5)
+			task.wait(0.5)
 			if action == "kick" then
 				if not isStudio then
 					if nocrash then
@@ -204,7 +204,7 @@ return function(Vargs, GetEnv)
 		}
 
 		Routine(function()
-			while wait(5) do
+			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
@@ -215,7 +215,7 @@ return function(Vargs, GetEnv)
 					local success, value = pcall(callback)
 					if not success or value ~= false and value ~= true then
 						Detected("crash", "Tamper Protection 906287")
-						wait(1)
+						task.wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -300,7 +300,7 @@ return function(Vargs, GetEnv)
 				end
 				hasActivated = true
 				Detected("crash", "Tamper Protection 790438; "..tostring(message).."; ")
-				wait(1)
+				task.wait(1)
 				pcall(Disconnect, "Adonis_790438")
 				pcall(Kill, "Adonis_790438")
 				pcall(Kick, Player, "Adonis_790438")
@@ -387,7 +387,7 @@ return function(Vargs, GetEnv)
 		--Detected('log','Client-Side Tool Detected')
 
 		HumanoidState = function()
-			wait(1)
+			task.wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
@@ -494,7 +494,7 @@ return function(Vargs, GetEnv)
 					if soundIdCheck(child) then
 						Detected("crash", "CMDx Detected; "..tostring(child))
 					else
-						wait()
+						task.wait()
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
@@ -717,7 +717,7 @@ return function(Vargs, GetEnv)
 		local meta = service.MetaFunc
 		local track = meta(service.TrackTask)
 		local opcall = meta(pcall)
-		local oWait = meta(wait)
+		local oWait = meta(task.wait)
 		local time = meta(time)
 
 		track("Thread: TableCheck", meta(function()
