@@ -1131,6 +1131,7 @@ return function(Vargs, GetEnv)
 					})
 
 					table.insert(realTable, data.Value)
+					service.Events["DataStoreAdd_" .. displayName]:Fire(data.Value)
 				elseif realTable and data.Action == "Remove" then
 					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
