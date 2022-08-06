@@ -534,7 +534,7 @@ return function(Vargs, GetEnv)
 					gTable.AncestryEvent = new.AncestryChanged:Connect(function(c, parent)
 						if client.GUIs[gIndex] and rawequal(c, gTable.Object) then
 							if gTable.Class == "TextLabel" and parent == service.PlayerGui then
-								wait()
+								task.wait()
 								gTable.Object.Parent = UI.GetHolder()
 							elseif parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()

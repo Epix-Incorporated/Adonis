@@ -21,12 +21,11 @@ return function(Vargs, env)
 			Description = "Disconnects the target player from the server";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				local plrLevel = data.PlayerData.Level
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
 					IsKicking = true;
 					})
 				do
-					if plrLevel > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "kick") then
 						local playerName = service.FormatPlayer(v)
 						if not service.Players:FindFirstChild(v.Name) then
 							Remote.Send(v, "Function", "Kill")
@@ -34,8 +33,6 @@ return function(Vargs, env)
 							v:Kick(args[2])
 						end
 						Functions.Hint("Kicked "..playerName, {plr})
-					else
-						Functions.Hint("Unable to kick "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -363,13 +360,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = assert(args[2], "Missing reason (argument #2)")
-				local plrLevel = data.PlayerData.Level
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					UseFakePlayer = true;
 					})
 				do
-					if plrLevel > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "warn", false) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
 							From = plr.Name;
@@ -391,8 +387,6 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
-					else
-						Functions.Hint("Unable to warn "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -409,14 +403,12 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = assert(args[2], "Missing reason (argument #2)")
 
-				local plrLevel = data.PlayerData.Level
-
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
 					UseFakePlayer = true;
 					})
 				do
-					if plrLevel > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "kick-warn", false) then
 						local playerData = Core.GetPlayer(v)
 						table.insert(playerData.Warnings, {
 							From = plr.Name;
@@ -439,8 +431,6 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
-					else
-						Functions.Hint("Unable to kick-warn "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -456,13 +446,11 @@ return function(Vargs, env)
 				assert(args[1], "Missing target player(s) (argument #1)")
 				local reason = string.lower(assert(args[2], "Missing warning reason (argument #2)"))
 
-				local plrLevel = data.PlayerData.Level
-
 				for _, v in service.GetPlayers(plr, args[1], {
 					UseFakePlayer = true;
 					})
 				do
-					if plrLevel > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "remove warning(s) from") then
 						local playerData = Core.GetPlayer(v)
 						local playerWarnings = playerData.Warnings
 
@@ -482,8 +470,6 @@ return function(Vargs, env)
 							Time = 5;
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."warnings "..v.Name.."')")
 						})
-					else
-						Functions.Hint("Unable to remove warning(s) from "..service.FormatPlayer(v).." (insufficient permission level)", {plr})
 					end
 				end
 			end
@@ -513,35 +499,32 @@ return function(Vargs, env)
 
 		ShowWarnings = {
 			Prefix = Settings.Prefix;
-			Commands = {"warnings", "showwarnings", "warns", "showwarns"};
+			Commands = {"warnings", "showwarnings", "warns", "showwarns", "warnlist"};
 			Args = {"player"};
 			Description = "Shows a list of warnings a player has";
 			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, target: Player)
+				local tab = {}
+				for k, m in Core.GetPlayer(target).Warnings or {} do
+					table.insert(tab, {
+						Text = "["..k.."] "..m.Message;
+						Desc = "Issued by: "..m.From.."; "..m.Message;
+						Time = m.Time;
+					})
+				end
+				return tab
+			end,
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1], {
-					DontError = false;
-					IsServer = false;
-					IsKicking = false;
 					UseFakePlayer = true;
 					})
 				do
-					local data = Core.GetPlayer(v)
-					local tab = {}
-
-					if data.Warnings then
-						for k, m in data.Warnings do
-							table.insert(tab, {
-								Text = "["..k.."] "..m.Message;
-								Desc = "Given by: "..m.From.."; "..m.Message;
-								Time = m.Time;
-							})
-						end
-					end
-
 					Remote.MakeGui(plr, "List", {
 						Title = "Warnings - "..service.FormatPlayer(v);
 						Icon = server.MatIcons.Gavel;
-						Table = tab;
+						Table = Logs.ListUpdaters.ShowWarnings(plr, v);
+						Update = "ShowWarnings";
+						UpdateArg = v;
 						TimeOptions = {
 							WithDate = true;
 						}
@@ -6473,7 +6456,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					if data.PlayerData.Level > Admin.GetLevel(v) then
+					if Admin.CheckAuthority(plr, v, "mute", false) then
 						--Remote.LoadCode(v,[[service.StarterGui:SetCoreGuiEnabled("Chat", false) client.Variables.ChatEnabled = false client.Variables.Muted = true]])
 						local check = true
 						for _, m in Settings.Muted do
@@ -6845,5 +6828,101 @@ return function(Vargs, env)
 			end
 		};
 
+		HealthList = {
+			Prefix = Settings.Prefix;
+			Commands = {"healthlist", "healthlogs", "healths", "hlist","hlogs"};
+			Args = {"autoupdate? (default: true)"};
+			Description = "Shows a list of all players' current and max healths.";
+			AdminLevel = "Moderators";
+			ListUpdater = function(plr: Player, args: {string})
+				local rawTable = {}
+				for _, v in Functions.GetPlayers(plr, "all") do
+					if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+						table.insert(rawTable, {service.FormatPlayer(v), v.Character:FindFirstChildOfClass("Humanoid").Health, v.Character:FindFirstChildOfClass("Humanoid").MaxHealth})
+					else
+						table.insert(rawTable, {service.FormatPlayer(v), 0, 0})
+					end
+				end
+				
+				table.sort(rawTable, function(a,b)
+					if a[3] == b[3] then
+						if a[2] == b[2] then
+							return(a[1] < b[1])
+						else
+							return(a[2] > b[2])
+						end
+					else
+						return(a[3] > b[3])
+					end
+				end)
+				
+				local goddedCheck = false
+				local normalCheck = false
+				local godTable = {}
+				local zeroTable = {}
+				local normalTable = {}
+				
+				for _, v in rawTable do
+					if tostring(v[3]) == "inf" then
+						table.insert(godTable, v)
+						goddedCheck = true
+					else
+						if v[3] <= 0 then
+							table.insert(zeroTable, v)
+							normalCheck = true
+						else
+							table.insert(normalTable, v)
+							normalCheck = true
+						end
+					end
+				end
+				
+				local logTable = {}
+				
+				if goddedCheck == true then
+					table.insert(logTable, "<b><u>Godded Players: </u></b>")
+				end
+				
+				for _, v in godTable do
+					local color = "100, 175, 255"
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				end
+				
+				if normalCheck == true then
+					table.insert(logTable, "<b><u>Normal Players: </u></b>")
+				end
+				
+				for _, v in normalTable do
+					local color
+					if v[2]/v[3] >= .5 then
+						color =  math.round(100 + 155 * (v[2]/v[3] * -2 + 2)) .. ", 255, 100"
+					else
+						color =  "255, " .. math.round(100 + 155 * v[2]/v[3] * 2) ..  ", 100"
+					end
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[' .. math.round(v[2]) .. '/' .. math.round(v[3]) .. ']</font>')
+				end
+				
+				for _, v in zeroTable do
+					local color = "255, 100, 100"
+					table.insert(logTable, v[1] .. ' :: <font color = "rgb(' .. color .. ')">[N/A]</font>')
+				end
+				
+				return logTable
+			end;
+			
+			Function = function(plr: Player, args: {string})
+				Functions.Hint("Fetching player healths.", {plr})
+				Remote.MakeGui(plr, "List", {
+					Title = "Player Healths";
+					Tab = Logs.ListUpdaters.HealthList(plr);
+					Dots = true;
+					Update = "HealthList";
+					AutoUpdate = if args[1] and (args[1]:lower() == "false" or args[1]:lower() == "no") then nil else 1;
+					Sanitize = false;
+					Stacking = true;
+					RichText = true;
+				})
+			end
+		};
 	}
 end

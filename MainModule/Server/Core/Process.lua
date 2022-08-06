@@ -454,22 +454,20 @@ return function(Vargs, GetEnv)
 				})
 
 				if not opts.IgnoreErrors then
-					if cmdError and type(cmdError) == "string" then
-						AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
+					if type(cmdError) == "string" then
+						AddLog("Errors", "["..matched.."] "..cmdError)
 
-						cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
+						cmdError = cmdError:match("%d: (.+)$") or cmdError
 
 						if not isSystem then
 							Remote.MakeGui(p, "Output", {
 								Message = cmdError,
 							})
 						end
-					elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
-						if not isSystem then
-							Remote.MakeGui(p, "Output", {
-								Message = "There was an error but the error was not a string? : "..tostring(cmdError);
-							})
-						end
+					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+						Remote.MakeGui(p, "Output", {
+							Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+						})
 					end
 				end
 
@@ -480,7 +478,7 @@ return function(Vargs, GetEnv)
 					Command = command,
 					Index = index,
 					Success = ran,
-					Error = error,
+					Error = if type(cmdError) == "string" then cmdError else nil,
 					Options = opts,
 					PlayerData = pDat
 				})

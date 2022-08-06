@@ -1,9 +1,9 @@
 ---
-name: Feature request
+name: Request a feature
 about: Suggest an idea for a new feature, or a way to improve an existing feature
-  within Adonis.
+  within Adonis
 title: ''
-labels: enhancement
+labels: "✨ enhancement"
 assignees: ''
 
 ---

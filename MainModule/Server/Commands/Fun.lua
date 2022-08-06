@@ -122,6 +122,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				local value = assert(tonumber(args[2]), "Missing/invalid FPS value (argument #2)")
+				assert(value <= 60, "FPS cannot exceed 60!")
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Remote.Send(v, "Function", "SetFPS", value)
 				end
@@ -977,8 +978,8 @@ return function(Vargs, env)
 				audio:Destroy()
 
 				if #playerList == 1 then
-					local player = playerList[1];
-					local tLevel = Admin.GetLevel(player);
+					local player = playerList[1]
+					local tLevel = Admin.GetLevel(player)
 
 					if tLevel < plrLevel then
 						deliverUs[player] = true
@@ -1139,8 +1140,7 @@ return function(Vargs, env)
 				end
 
 				for _, p in service.GetPlayers(plr, args[1]) do
-					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
-						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+					if not Admin.CheckAuthority(plr, p, string.rep("\u{2588}", 6), true) then
 						continue
 					end
 					local char = p.Character
@@ -1377,9 +1377,8 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
 				for i, p in players do
-					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
-						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Forest (insufficient permission level)", {plr})
 					end
 				end
 				service.TeleportService:TeleportAsync(209424751, players)
@@ -1397,7 +1396,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				local players = service.GetPlayers(plr, args[1])
 				for i, p in players do
-					if p ~= plr and data.PlayerData.Level <= Admin.GetLevel(p) then
+					if not Admin.CheckAuthority(plr, p, "timeout") then
 						table.remove(players, i)
 						Functions.Hint("Unable to send "..service.FormatPlayer(p).." to The Maze (insufficient permission level)", {plr})
 					end
@@ -1446,8 +1445,7 @@ return function(Vargs, env)
 				end
 
 				for _, p in service.GetPlayers(plr, args[1]) do
-					if p ~= plr and Admin.GetLevel(p) >= data.PlayerData.Level then
-						Functions.Hint("You don't have permission to do this to "..service.FormatPlayer(p), {plr})
+					if not Admin.CheckAuthority(plr, p, "clown", true) then
 						continue
 					end
 					local char = p.Character

@@ -64,7 +64,7 @@ local SERVICES_WE_USE = table.freeze {
 
 --// Logging
 local clientLog = {};
-local dumplog = function() warn(":: Adonis :: Dumping client log...") for i,v in ipairs(clientLog) do warn(":: Adonis ::", v) end end;
+local dumplog = function() warn(":: Adonis :: Dumping client log...") for _, v in clientLog do warn(":: Adonis ::", v) end end;
 local log = function(...) table.insert(clientLog, table.concat({...}, " ")) end;
 
 --// Dump log on disconnect
@@ -91,7 +91,7 @@ local service = {}
 local ServiceSpecific = {}
 
 local function isModule(module)
-	for ind, modu in pairs(client.Modules) do
+	for _, modu in client.Modules do
 		if rawequal(module, modu) then
 			return true
 		end
@@ -165,15 +165,15 @@ local Kill; Kill = Immutable(function(info)
 		end) end)()
 
 	wrap(function() pcall(function()
-			wait(1)
+			task.wait(1)
 			service.Player:Kick(info)
 		end) end)()
 
 	wrap(function() pcall(function()
-			wait(5)
+			task.wait(5)
 			while true do
-				pcall(spawn,function()
-					spawn(Kill())
+				pcall(task.spawn,function()
+					task.spawn(Kill())
 					-- memes
 				end)
 			end
@@ -190,7 +190,7 @@ local GetEnv; GetEnv = function(env, repl)
 	})
 
 	if repl and type(repl)=="table" then
-		for ind, val in pairs(repl) do
+		for ind, val in repl do
 			scriptEnv[ind] = val
 		end
 	end
@@ -354,7 +354,7 @@ log("Wrap")
 local service_Wrap = service.Wrap
 local service_UnWrap = service.UnWrap
 
-for i, val in pairs(service) do
+for i, val in service do
 	if type(val) == "userdata" then service[i] = service_Wrap(val, true) end
 end
 
@@ -384,7 +384,7 @@ client.Module = service_Wrap(client.Module, true)
 
 --// Setting things up
 log("Setting things up")
-for ind, loc in pairs({
+for ind, loc in {
 	_G = _G;
 	game = game;
 	spawn = spawn;
@@ -449,7 +449,7 @@ for ind, loc in pairs({
 	task = task;
 	tick = tick;
 	service = service;
-	})
+	}
 do
 	locals[ind] = loc
 end
@@ -494,7 +494,7 @@ return service.NewProxy({
 
 		--// Toss deps into a table so we don't need to directly deal with the Folder instance they're in
 		log("Get dependencies")
-		for _, obj in ipairs(Folder:WaitForChild("Dependencies", 9e9):GetChildren()) do
+		for _, obj in Folder:WaitForChild("Dependencies", 9e9):GetChildren() do
 			client.Deps[obj.Name] = obj
 		end
 
@@ -505,7 +505,7 @@ return service.NewProxy({
 
 		--// Intial setup
 		log("Initial services caching")
-		for _, serv in ipairs(SERVICES_WE_USE) do
+		for _, serv in SERVICES_WE_USE do
 			local temp = service[serv]
 		end
 
@@ -565,7 +565,7 @@ return service.NewProxy({
 
 		--// Load Core Modules
 		log("Loading core modules")
-		for _, load in ipairs(CORE_LOADING_ORDER) do
+		for _, load in CORE_LOADING_ORDER do
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
 				log("~! Loading Core Module: ".. tostring(load))
@@ -585,13 +585,13 @@ return service.NewProxy({
 			if client.Core.Key then
 				--// Run anything from core modules that needs to be done after the client has finished loading
 				log("~! Doing run after loaded")
-				for _, f in pairs(runAfterLoaded) do
+				for _, f in runAfterLoaded do
 					Pcall(f, data)
 				end
 
 				--// Stuff to run after absolutely everything else
 				log("~! Doing run last")
-				for _, f in pairs(runLast) do
+				for _, f in runLast do
 					Pcall(f, data)
 				end
 
@@ -611,7 +611,7 @@ return service.NewProxy({
 
 		--// Initialize Cores
 		log("~! Init cores")
-		for _, name in ipairs(CORE_LOADING_ORDER) do
+		for _, name in CORE_LOADING_ORDER do
 			local core = client[name]
 			log("~! INIT: ".. tostring(name))
 
@@ -648,13 +648,13 @@ return service.NewProxy({
 
 		--// Load any afterinit functions from modules (init steps that require other modules to have finished loading)
 		log("~! Running after init")
-		for _, f in pairs(runAfterInit) do
+		for _, f in runAfterInit do
 			Pcall(f, data)
 		end
 
 		--// Load Plugins
 		log("~! Running plugins")
-		for _, module in ipairs(Folder.Plugins:GetChildren()) do
+		for _, module in Folder.Plugins:GetChildren() do
 			--// Pass example/README plugins.
 			if module.Name == "README" then
 				continue
@@ -665,7 +665,7 @@ return service.NewProxy({
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
 		log("~! Running after plugins")
-		for _, f in pairs(runAfterPlugins) do
+		for _, f in runAfterPlugins do
 			Pcall(f, data)
 		end
 
