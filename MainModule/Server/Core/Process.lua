@@ -42,6 +42,24 @@ return function(Vargs, GetEnv)
 			service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
 		end
 
+		--// Necessary check to prevent first time users from bypassing bans.
+		service.Events.DataStoreAdd_Banned:Connect(function(data: table|string)
+			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
+					elseif type(data) == "table" then data.UserId
+					else nil
+
+			local plr = userId and service.Players:GetPlayerByUserId(userId)
+			if plr then
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+						else "No reason provided"
+				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
+				AddLog("Script", {
+					Text = "Applied ban on "..plr.Name;
+					Desc = "Ban reason: "..reason;
+				})
+			end
+		end)
+
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
 	end;
@@ -855,7 +873,7 @@ return function(Vargs, GetEnv)
 						logError(err)
 					end
 				end
-	
+
 				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 					Remote.MakeGui(p, "Console")
 				end
