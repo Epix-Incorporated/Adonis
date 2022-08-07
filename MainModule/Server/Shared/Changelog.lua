@@ -3,6 +3,11 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v237m 2022-08-06 22:30 EST] @Expertcoderz";
+	"(Git/fxeP1) Fixed ban system (#894)";
+	" - Banned players will now be kicked even if they join before the ban data loads";
+	" - Added new service events (service.Events.DataStoreAdd_<NAME>) when certain settings are loaded from the datastore";
+	"";
 	"[Patch v237l 2022-07-26 11:10 EST] @Expertcoderz";
 	"Fixed/improved :tp, :bring and :to";
 	"Implemented 'No players matching XXX were found' errors";
