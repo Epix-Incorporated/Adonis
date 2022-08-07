@@ -43,18 +43,20 @@ return function(Vargs, GetEnv)
 		end
 
 		--// Necessary check to prevent first time users from bypassing bans.
-		local onDSBanned
-		onDSBanned = service.Events["DataStoreAdd_Banned"]:Connect(function(data: table | string)
-			if type(data) == "string" then
-				local Name, UserId = string.match(data, "(.*):(.*)")
-				data = {
-					UserId = tonumber(UserId)
-				}
-			end
+		service.Events.DataStoreAdd_Banned:Connect(function(data: table|string)
+			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
+					elseif type(data) == "table" then data.UserId
+					else nil
 
-			local plr = type(data) == "table" and data.UserId and service.Players:GetPlayerByUserId(data.UserId)
+			local plr = userId and service.Players:GetPlayerByUserId(userId)
 			if plr then
-				plr:Kick(string.format("%s | Reason: %s", Variables.BanMessage, data.Reason or "No reason specified"))
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+						else "No reason provided"
+				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
+				AddLog("Script", {
+					Text = "Applied ban on "..plr.Name;
+					Desc = "Ban reason: "..reason;
+				})
 			end
 		end)
 
