@@ -1548,10 +1548,12 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local tab = {}
 				for p: Player, t: number in Variables.IncognitoPlayers do
-					table.insert(tab, {
-						Text = service.FormatPlayer(p);
-						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
-					})
+					if p.Parent == service.Players then
+						table.insert(tab, {
+							Text = service.FormatPlayer(p);
+							Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+						})
+					end
 				end
 				return tab
 			end;
