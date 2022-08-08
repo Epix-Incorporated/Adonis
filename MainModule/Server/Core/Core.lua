@@ -903,7 +903,13 @@ return function(Vargs, GetEnv)
 				local curTable = server
 				local curName = "Server"
 
-				for _, ind in ipairs(tableAncestry) do
+				for index, ind in tableAncestry do
+									
+					--// Prevent stuff like {t1 = "Settings", t2 = ...} from bypassing datastore blocks
+					if type(index) ~= 'number' then
+						return nil
+					end
+									
 					curTable = curTable[ind]
 					curName = ind
 
