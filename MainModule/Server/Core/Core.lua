@@ -1130,6 +1130,10 @@ return function(Vargs, GetEnv)
 							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
 						end
+						--// No adding to Trello or WebPanel rank users list via Datastore
+						if (indList[3] and type(indList[3]) == 'string') and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+							return
+						end
 					end
 				end
 
