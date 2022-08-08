@@ -903,7 +903,13 @@ return function(Vargs, GetEnv)
 				local curTable = server
 				local curName = "Server"
 
-				for _, ind in ipairs(tableAncestry) do
+				for index, ind in ipairs(tableAncestry) do
+									
+					--// Prevent stuff like {t1 = "Settings", t2 = ...} from bypassing datastore blocks
+					if type(index) ~= 'number' then
+						return nil
+					end
+									
 					curTable = curTable[ind]
 					curName = ind
 
@@ -1123,6 +1129,10 @@ return function(Vargs, GetEnv)
 						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
 							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+						--// No adding to Trello or WebPanel rank users list via Datastore
+						if (indList[3] and type(indList[3]) == 'string') and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+							return
 						end
 					end
 				end
