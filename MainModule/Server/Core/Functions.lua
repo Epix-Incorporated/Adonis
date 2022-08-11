@@ -1018,6 +1018,70 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		makeRobot = function(player, num, health, speed, damage, walk, attack, friendly)
+			local Deps = server.Deps
+
+			local char = player.Character
+			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
+			local pos = torso.CFrame
+
+			local clone
+			char.Archivable = true
+			clone = char:Clone()
+			char.Archivable = false
+
+			for i = 1, num do
+				local new = clone:Clone()
+				local hum = new:FindFirstChildOfClass("Humanoid")
+
+				local brain = Deps.Assets.BotBrain:Clone()
+				local event = brain.Event
+
+				local oldAnim = new:FindFirstChild("Animate")
+				local isR15 = hum.RigType == "R15"
+				local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+
+				new.Name = player.Name
+				new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0)
+
+				hum.WalkSpeed = speed
+				hum.MaxHealth = health
+				hum.Health = health
+
+				if oldAnim then
+					oldAnim:Destroy()
+				end
+
+				anim.Parent = new
+				brain.Parent = new
+
+				anim.Disabled = false
+				brain.Disabled = false
+				new.Parent = workspace
+
+				wait()
+
+				event:Fire("SetSetting", {
+					Creator = player;
+					Friendly = friendly;
+					TeamColor = player.TeamColor;
+					Attack = attack;
+					Swarm = attack;
+					Walk = walk;
+					Damage = damage;
+					Health = health;
+					WalkSpeed = speed;
+					SpecialKey = math.random();
+				})
+
+				if walk then
+					event:Fire("Init")
+				end
+
+				table.insert(Variables.Objects, new)
+			end
+		end,
+
 		GetJoints = function(character)
 			local temp = {}
 			for _,v in character:GetDescendants() do
