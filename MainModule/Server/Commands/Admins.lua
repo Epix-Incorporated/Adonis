@@ -1457,9 +1457,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Argument missing or nil")
-				local userId = select(2, xpcall(function()
-					return service.Players:GetUserIdFromNameAsync(args[2])
-				end, function() return end))
+				local userId = Functions.GetUserIdFromNameAsync(args[2])
 				assert(userId, "Invalid username supplied/user not found")
 
 				local username = select(2, xpcall(function()

@@ -6056,17 +6056,7 @@ return function(Vargs, env)
 				assert(args[1], "Missing player name")
 				assert(args[2], "Missing username or UserId")
 
-				local target = tonumber(string.match(args[2], "^userid%-(%d*)"))
-				if not target then
-					-- Grab id from name
-					local success, id = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[2])
-					if success then
-						target = id
-					else
-						error("Unable to find target user")
-					end
-				end
-
+				local target = tonumber(string.match(args[2], "^userid%-(%d*)")) or assert(Functions.GetUserIdFromNameAsync(i), "Unable to fetch user.")
 				if target then
 					local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, target)
 

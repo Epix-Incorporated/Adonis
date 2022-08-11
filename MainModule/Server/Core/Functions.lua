@@ -1,11 +1,12 @@
-server = nil
-service = nil
-cPcall = nil
-
 --// Function stuff
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
+
+	local server = Vargs.Server
+	local service = Vargs.Service
+
+	local cPcall = env.cPcall
 
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
@@ -574,12 +575,13 @@ return function(Vargs, GetEnv)
 							if plrCount == 0 then
 								if options.UseFakePlayer then
 									--// Attempt to retrieve non-ingame user
-									local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, s)
-									if userExists or options.AllowUnknownUsers then
+
+									local UserId = Functions.GetUserIdFromNameAsync(s)
+									if UserId or options.AllowUnknownUsers then
 										table.insert(players, Functions.GetFakePlayer({
 											Name = s;
 											DisplayName = s;
-											UserId = if userExists then userId else -1;
+											UserId = UserId or -1;
 										}))
 										plus()
 									end
@@ -1212,6 +1214,20 @@ return function(Vargs, GetEnv)
 				end)
 			end
 			return AllGrabbedPlayers
+		end;
+
+		GetUserIdFromNameAsync = function(name)
+			local cache = Admin.UserIdCache[name]
+			if not cache then
+				local success, UserId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, name)
+
+				if success then
+					Admin.UserIdCache[name] = UserId
+					return UserId
+				end
+			end
+
+			return cache
 		end;
 
 		Shutdown = function(reason)

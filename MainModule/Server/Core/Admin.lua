@@ -473,20 +473,10 @@ return function(Vargs, GetEnv)
 				elseif p.Name == check then
 					return true
 				elseif not banCheck and type(check) == "string" and not string.find(check, ":") then
-					local cache = Admin.UserIdCache[check]
+					local cache = Functions.GetUserIdFromNameAsync(check)
 
 					if cache and p.UserId == cache then
 						return true
-					elseif not cache then
-						local suc, userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
-
-						if suc and userId then
-							Admin.UserIdCache[check] = userId
-
-							if p.UserId == userId then
-								return true
-							end
-						end
 					end
 				end
 			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
@@ -1458,7 +1448,7 @@ return function(Vargs, GetEnv)
 
 			return tab
 		end;
-			
+
 		CheckAuthority = function(p, target, actionName, allowSelf)
 			if p == target then
 				if allowSelf == false then

@@ -950,15 +950,15 @@ return function(Vargs, GetEnv)
 					end
 
 					Remote.LoadCode(p, [[
-local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-if plr then
-	if not table.find(service.IncognitoPlayers, plr) then
-		table.insert(service.IncognitoPlayers, plr)
-	end
+						local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+						if plr then
+							if not table.find(service.IncognitoPlayers, plr) then
+								table.insert(service.IncognitoPlayers, plr)
+							end
 
-	plr:Remove()
-end
-]])
+							plr:Remove()
+						end
+					]])
 				end
 			end
 		end;

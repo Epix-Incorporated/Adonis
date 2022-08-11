@@ -66,16 +66,16 @@ return function(Vargs, env)
 				local reason = args[3] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
-						if userId == plr.UserId then
+					local UserId = Functions.GetUserIdFromNameAsync(i)
+					if UserId then
+						if UserId == plr.UserId then
 							Functions.Hint("You cannot ban yourself", {plr})
 							continue
 						end
 
-						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
-						Admin.AddTimeBan({UserId = userId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
+						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
 
 						Functions.Hint(
 							"Time-banned "..(if getNameSuccess then "@"..actualName else "'"..i.."'").." for "..args[2],

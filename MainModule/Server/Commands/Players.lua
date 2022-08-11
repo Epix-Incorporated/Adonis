@@ -450,9 +450,10 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument #1 (username) is required")
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-				if success and userId then
-					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, userId)
+
+				local UserId = Functions.GetUserIdFromNameAsync(args[1])
+				if UserId then
+					local success, found, _, placeId, jobId = pcall(service.TeleportService.GetPlayerPlaceInstanceAsync, service.TeleportService, UserId)
 					if success then
 						if found and placeId and jobId then
 							service.TeleportService:TeleportAsync(placeId, {plr}, service.New("TeleportOptions", {
@@ -460,7 +461,7 @@ return function(Vargs, env)
 							}))
 							Functions.Hint("Teleporting...", {plr})
 						else
-							Functions.Hint(service.Players:GetNameFromUserIdAsync(userId).." was not found playing this game", {plr})
+							Functions.Hint(service.Players:GetNameFromUserIdAsync(UserId).." was not found playing this game", {plr})
 						end
 					else
 						Functions.Hint("Unexpected internal error: "..found, {plr})
@@ -480,21 +481,25 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string}) -- uses Player:GetFriendsOnline()
 				--// NOTE: MAY NOT WORK IF "ALLOW THIRD-PARTY GAME TELEPORTS" (GAME SECURITY PERMISSION) IS DISABLED
+
 				assert(args[1], "Argument #1 (username) is required")
 				assert(#args[1] <= 20 and args[1]:match("^[%a%d_]+$"), "Invalid username provided")
-				local success, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, args[1])
-				if success and userId then
+
+				local UserId = Functions.Functions.GetUserIdFromNameAsync(args[1])
+				if UserId then
 					for _, v in plr:GetFriendsOnline() do
-						if v.VisitorId == userId then
+						if v.VisitorId == UserId then
 							if v.IsOnline and v.PlaceId and v.GameId then
 								service.TeleportService:TeleportAsync(v.PlaceId, {plr})
 								Functions.Hint(string.format("Joining %s (%s)...", v.UserName, v.LastLocation or "unknown game"), {plr})
 							else
 								Functions.Hint(v.UserName.." is not currently playing a game", {plr})
 							end
+
 							return
 						end
 					end
+
 					Functions.Hint("You are not a friend of the specified user", {plr})
 				else
 					Functions.Hint("'"..args[1].."' is not a valid Roblox user", {plr})
