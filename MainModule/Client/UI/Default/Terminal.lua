@@ -73,7 +73,7 @@ return function(data, env)
 				--textbox.Text = "Enter command"
 			end
 			
-			wait(0.1)
+			task.wait(0.1)
 		end)
 	end)
 	
@@ -81,7 +81,7 @@ return function(data, env)
 	window:Ready()
 	
 	local last = 0
-	while gTable.Active and wait(0.5) do
+	while gTable.Active and task.wait(0.5) do
 		if #termLines > last then
 			last = #termLines
 			scroller:GenerateList(termLines, nil, true)

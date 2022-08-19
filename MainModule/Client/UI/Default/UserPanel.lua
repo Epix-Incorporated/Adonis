@@ -217,7 +217,7 @@ return function(data, env)
 										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
-									wait(0.5)
+									task.wait(0.5)
 									entryBox.Visible = false
 									inputBlock = false
 									showItems()
@@ -262,7 +262,7 @@ return function(data, env)
 							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
-							wait(0.5)
+							task.wait(0.5)
 							inputBlock = false
 						end
 					end
@@ -464,7 +464,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				wait(0.5)
+				task.wait(0.5)
 				dStatus.Text = "Donated"
 			end
 
@@ -626,7 +626,7 @@ return function(data, env)
 
 										lastChange = lastVal;
 
-										delay(0.5, function()
+										task.delay(0.5, function()
 											if lastChange == lastVal then --// So we only do the update when they finish typing
 												local num = tonumber(text)
 												if num then
@@ -1356,7 +1356,7 @@ return function(data, env)
 								end
 							end)
 
-							repeat wait() until gotKey
+							repeat task.wait() until gotKey
 
 							Variables.CustomConsoleKey = gotKey
 							event:Disconnect()

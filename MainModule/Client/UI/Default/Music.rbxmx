@@ -422,7 +422,7 @@ return function(data, env)
 
 							while not success do --2
 								if count >= 1 then
-									wait(1) --4
+									task.wait(1) --4
 								end
 
 								success, product_info = pcall(service.MarketplaceService.GetProductInfo, service.MarketplaceService, toPlay.ID, Enum.InfoType.Asset) --5

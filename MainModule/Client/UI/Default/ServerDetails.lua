@@ -153,8 +153,8 @@ return function(data, env)
 
 		overviewtab:ResizeCanvas(false, true, false, false, 5, 5)
 
-		spawn(function()
-			while wait(0.5) do
+		task.spawn(function()
+			while task.wait(0.5) do
 				local timeNow = os.time()
 				if not displays["Server Speed"] or not displays["Server Age"] then break end
 				displays["Server Speed"].Text = math.round(service.Workspace:GetRealPhysicsFPS())
@@ -334,7 +334,7 @@ return function(data, env)
 					playerCount += 1
 				end
 
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(service.Players[playerName].UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48);
 						BackgroundTransparency = 1;

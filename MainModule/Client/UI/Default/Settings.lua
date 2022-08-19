@@ -108,7 +108,7 @@ return function(data, env)
 					end
 				end)
 
-				repeat wait() until gotKey
+				repeat task.wait() until gotKey
 
 				Variables.CustomConsoleKey = gotKey
 				event:Disconnect()

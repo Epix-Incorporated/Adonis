@@ -78,7 +78,7 @@ return function(data, env)
 						end
 					})
 				end
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 						BackgroundTransparency = 1;

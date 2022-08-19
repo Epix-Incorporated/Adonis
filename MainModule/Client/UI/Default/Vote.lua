@@ -57,6 +57,6 @@ return function(data, env)
 	gTable = window.gTable
 	window:Ready()
 	
-	repeat wait() until selected or not gTable.Active
+	repeat task.wait() until selected or not gTable.Active
 	return selected
 end

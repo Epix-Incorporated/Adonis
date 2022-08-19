@@ -88,7 +88,7 @@ return function(data, env)
 				client.Remote.Send("ProcessCommand", string.format("%snewteam%s%s%s%s", data.CmdPrefix, data.CmdSplitKey, teamName.Text, data.CmdSplitKey, teamColor.Text));
 				teamName.Text = ""
 				teamColor.Text = ""
-				wait(1.2)
+				task.wait(1.2)
 				if self then
 					self.Active = true
 					self.AutoButtonColor = true
@@ -157,7 +157,7 @@ return function(data, env)
 							self.AutoButtonColor = false
 							self.Text = "..."
 							client.Remote.Send("ProcessCommand", string.format("%steam%s%sme%s%s", data.CmdPrefix, data.CmdSplitKey, data.CmdSpecialPrefix, data.CmdSplitKey, team.Name));
-							wait(1.2)
+							task.wait(1.2)
 							if self then
 								self.Active = true
 								self.AutoButtonColor = true
@@ -175,7 +175,7 @@ return function(data, env)
 						OnClick = function(self)
 							self.Visible = false
 							client.Remote.Send("ProcessCommand", string.format("%sremoveteam%s%s", data.CmdPrefix, data.CmdSplitKey, team.Name));
-							wait(1.2)
+							task.wait(1.2)
 							if self then
 								self.Visible = true
 							end
