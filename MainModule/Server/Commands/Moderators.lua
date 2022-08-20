@@ -1850,7 +1850,7 @@ return function(Vargs, env)
 
 				table.insert(temptable, "<b><font color='rgb(60, 180, 0)'>Admins In-Game:</font></b>")
 
-				for _, v in service.GetPlayers() do
+				for _, v in service.Players:GetPlayers() do
 					local level, rankName = Admin.GetLevel(v);
 					if level > 0 then
 						table.insert(unsorted, {

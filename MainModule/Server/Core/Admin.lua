@@ -949,7 +949,7 @@ return function(Vargs, GetEnv)
 					if doSave then
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = "Banned";
+							Table = {"Settings", "Banned"};
 							Value = v;
 							LaxCheck = true;
 						})
