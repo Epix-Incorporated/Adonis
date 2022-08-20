@@ -870,7 +870,7 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else 
+				else
 					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 						Remote.MakeGui(p, "Console")
 					end
@@ -880,7 +880,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				
+
 
 				if level > 0 then
 					local oldVer = Core.GetData("VersionNumber")

@@ -465,14 +465,14 @@ return function(Vargs, env)
 							end
 
 							Remote.LoadCode(plrs, [[
-for index, plr in ipairs(service.IncognitoPlayers) do
-	if plr.UserId == ]] .. v.UserId .. [[ then
-		plr.Parent = service.Players
-		table.remove(service.IncognitoPlayers, index)
-		return
-	end
-end
-]])
+								for index, plr in ipairs(service.IncognitoPlayers) do
+									if plr.UserId == ]] .. v.UserId .. [[ then
+										plr.Parent = service.Players
+										table.remove(service.IncognitoPlayers, index)
+										return
+									end
+								end
+							]])
 						end
 
 					end
@@ -504,15 +504,15 @@ end
 					for _, otherPlr: Player in service.Players:GetPlayers() do
 						if otherPlr == v then continue end
 						Remote.LoadCode(otherPlr, [[
-local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
-if plr then
-	if not table.find(service.IncognitoPlayers, plr) then
-		table.insert(service.IncognitoPlayers, plr)
-	end
+							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+							if plr then
+								if not table.find(service.IncognitoPlayers, plr) then
+									table.insert(service.IncognitoPlayers, plr)
+								end
 
-	plr:Remove()
-end
-]])
+								plr:Remove()
+							end
+						]])
 						n += 1
 					end
 
