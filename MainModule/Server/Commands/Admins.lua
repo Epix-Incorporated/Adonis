@@ -1487,9 +1487,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[2], "Argument missing or nil")
-				local userId = select(2, xpcall(function()
-					return service.Players:GetUserIdFromNameAsync(args[2])
-				end, function() return end))
+				local userId = Functions.GetUserIdFromNameAsync(args[2])
 				assert(userId, "Invalid username supplied/user not found")
 
 				local username = select(2, xpcall(function()
@@ -1578,10 +1576,12 @@ return function(Vargs, env)
 			ListUpdater = function(plr: Player)
 				local tab = {}
 				for p: Player, t: number in Variables.IncognitoPlayers do
-					table.insert(tab, {
-						Text = service.FormatPlayer(p);
-						Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
-					})
+					if p.Parent == service.Players then
+						table.insert(tab, {
+							Text = service.FormatPlayer(p);
+							Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t));
+						})
+					end
 				end
 				return tab
 			end;
