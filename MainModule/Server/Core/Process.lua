@@ -805,8 +805,6 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.IncognitoPlayers[p] = nil
-
-			return
 		end;
 
 		FinishLoading = function(p)
@@ -872,7 +870,7 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else 
+				else
 					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 						Remote.MakeGui(p, "Console")
 					end
@@ -882,7 +880,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				
+
 
 				if level > 0 then
 					local oldVer = Core.GetData("VersionNumber")
@@ -948,14 +946,21 @@ return function(Vargs, GetEnv)
 				--// END_ReF - 100392_659
 
 				for v: Player in Variables.IncognitoPlayers do
-					if v == p then continue end
-					server.Remote.LoadCode(p, [[
-						for _, p in service.Players:GetPlayers() do
-							if p.UserId == ]]..v.UserId..[[ then
-								if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
-								p:Destroy()
+					--// Check if the Player still exists before doing incognito to prevent LoadCode spam.
+					if v == p or v.Parent == service.Players then
+						continue
+					end
+
+					Remote.LoadCode(p, [[
+						local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+						if plr then
+							if not table.find(service.IncognitoPlayers, plr) then
+								table.insert(service.IncognitoPlayers, plr)
 							end
-						end]])
+
+							plr:Remove()
+						end
+					]])
 				end
 			end
 		end;

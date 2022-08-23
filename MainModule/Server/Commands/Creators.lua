@@ -21,19 +21,22 @@ return function(Vargs, env)
 				local reason = args[2] or "No reason provided"
 
 				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
-						if userId == plr.UserId then
+					local UserId = Functions.GetUserIdFromNameAsync(i)
+					if UserId then
+						if UserId == plr.UserId then
 							Functions.Hint("You cannot ban yourself", {plr})
 							continue
 						end
 
-						local getNameSuccess, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local getNameSuccess, username = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 						if not getNameSuccess then
 							username = i
 						end
 
-						Admin.AddBan({UserId = userId, Name = username}, reason, true, plr)
+						Admin.AddBan({
+							UserId = UserId,
+							Name = username
+						}, reason, true, plr)
 
 						Functions.Hint("Direct-banned "..(if getNameSuccess then "@"..username else "'"..username.."'").." from the game", {plr})
 					else
@@ -52,15 +55,15 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string}, data: {any})
 				for i in string.gmatch(assert(args[1], "Missing target username (argument #1)"), "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
+					local UserId = Functions.GetUserIdFromNameAsync(i)
+					if UserId then
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = i..":"..userId;
+							Value = i..":"..UserId;
 						})
 
-						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 						if getNameSuccess then
 							Core.DoSave({
 								Type = "TableRemove";

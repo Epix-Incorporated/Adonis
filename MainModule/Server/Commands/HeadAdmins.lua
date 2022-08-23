@@ -66,16 +66,16 @@ return function(Vargs, env)
 				local reason = args[3] or "No reason provided"
 
 				for i in string.gmatch(args[1], "[^,]+") do
-					local userExists, userId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, i)
-					if userExists then
-						if userId == plr.UserId then
+					local UserId = Functions.GetUserIdFromNameAsync(i)
+					if UserId then
+						if UserId == plr.UserId then
 							Functions.Hint("You cannot ban yourself", {plr})
 							continue
 						end
 
-						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, userId)
+						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
 
-						Admin.AddTimeBan({UserId = userId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
+						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
 
 						Functions.Hint(
 							"Time-banned "..(if getNameSuccess then "@"..actualName else "'"..i.."'").." for "..args[2],
@@ -444,6 +444,47 @@ return function(Vargs, env)
 			end;
 		};
 
+		UnIncognito = {
+			Prefix = Settings.Prefix,
+			Commands = {"unincognito"},
+			Args = {"Player"},
+			Description = "Removes user out of Incognito to other players while ingame",
+			AdminLevel = "HeadAdmins",
+			Hidden = true,
+			Function = function(plr: Player, args: {string})
+				local visible = 0
+
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
+					if Variables.IncognitoPlayers[v] then
+						visible += 1
+						Variables.IncognitoPlayers[v] = nil
+
+						for _, plrs in service.Players:GetPlayers() do
+							if plrs == v then
+								continue
+							end
+
+							Remote.LoadCode(plrs, [[
+								for index, plr in ipairs(service.IncognitoPlayers) do
+									if plr.UserId == ]] .. v.UserId .. [[ then
+										plr.Parent = service.Players
+										table.remove(service.IncognitoPlayers, index)
+										return
+									end
+								end
+							]])
+						end
+
+					end
+
+				end
+
+				if visible ~= 0 then
+					Functions.Hint(string.format("Removed %d player(s) from Incognito.", visible), {plr})
+				end
+			end
+		},
+
 		Incognito = {
 			Prefix = Settings.Prefix;
 			Commands = {"incognito"};
@@ -458,23 +499,29 @@ return function(Vargs, env)
 						continue
 					end
 					Variables.IncognitoPlayers[v] = os.time()
+
 					local n = 0
 					for _, otherPlr: Player in service.Players:GetPlayers() do
 						if otherPlr == v then continue end
 						Remote.LoadCode(otherPlr, [[
-					for _, p in service.Players:GetPlayers() do
-						if p.UserId == ]]..v.UserId..[[ then
-							if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
-							p:Destroy()
-						end
-					end]])
+							local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+							if plr then
+								if not table.find(service.IncognitoPlayers, plr) then
+									table.insert(service.IncognitoPlayers, plr)
+								end
+
+								plr:Remove()
+							end
+						]])
 						n += 1
 					end
+
 					if n == 0 then
 						Functions.Hint(string.format("Placed %s on the incognito list.", service.FormatPlayer(v)), {plr})
 					else
 						Functions.Hint(string.format("Hidden %s from %d other player%s.", service.FormatPlayer(v), n, n == 1 and "" or "s"), {plr})
 					end
+
 					Remote.MakeGui(v, "Notification", {
 						Title = "Incognito Mode";
 						Icon = server.MatIcons["Privacy tip"];
