@@ -460,14 +460,25 @@ return function(Vargs, env)
 						local playerWarnings = playerData.Warnings
 
 						local count = 0
-						for i, playerWarning in playerWarnings do
-							if string.match(string.lower(playerWarning.Message), "^"..reason) then
-								service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
-								table.remove(playerWarnings, i)
 
-								count += 1
+						--// remove warnings by index
+						local indexReason = tonumber(reason)
+						if indexReason and playerWarnings[indexReason] then
+							service.Events.PlayerWarningRemoved:Fire(v, playerWarnings[indexReason].Message, plr)
+							table.remove(playerWarnings, indexReason)
+
+							count += 1
+						else
+							for i, playerWarning in playerWarnings do
+								if string.match(string.lower(playerWarning.Message), "^"..reason) then
+									service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
+									table.remove(playerWarnings, i)
+
+									count += 1
+								end
 							end
 						end
+
 
 						--// Check if its a fake player, this should allow it to save.
 						if service.Wrapped(v) then
