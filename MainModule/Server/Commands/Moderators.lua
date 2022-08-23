@@ -374,6 +374,11 @@ return function(Vargs, env)
 						})
 						service.Events.WarningAdded:Fire(v, args[2], plr)
 
+						--// Check if its a fake player, this should allow it to save.
+						if service.Wrapped(v) then
+							task.defer(Core.SavePlayerData, v, playerData)
+						end
+
 						Remote.RemoveGui(v, "Notify")
 						Remote.MakeGui(v, "Notify", {
 							Title = "Warning from "..service.FormatPlayer(plr);
@@ -459,8 +464,14 @@ return function(Vargs, env)
 							if string.match(string.lower(playerWarning.Message), "^"..reason) then
 								service.Events.PlayerWarningRemoved:Fire(v, playerWarning.Message, plr)
 								table.remove(playerWarnings, i)
+
 								count += 1
 							end
+						end
+
+						--// Check if its a fake player, this should allow it to save.
+						if service.Wrapped(v) then
+							task.defer(Core.SavePlayerData, v, playerData)
 						end
 
 						Remote.MakeGui(plr, "Notification", {
@@ -483,8 +494,13 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local data = Core.GetPlayer(v)
-					table.clear(data.Warnings)
+					local playerData = Core.GetPlayer(v)
+					table.clear(playerData.Warnings)
+
+					--// Check if its a fake player, this should allow it to save.
+					if service.Wrapped(v) then
+						task.defer(Core.SavePlayerData, v, playerData)
+					end
 
 					Remote.MakeGui(plr, "Notification", {
 						Title = "Notification";
@@ -520,12 +536,19 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
+
+					--// For fake players
+					local fake_data
+					if service.Wrapped(v) then
+						fake_data = {UserId = v.UserId, Nmae = v.Name}
+					end
+
 					Remote.MakeGui(plr, "List", {
 						Title = "Warnings - "..service.FormatPlayer(v);
 						Icon = server.MatIcons.Gavel;
 						Table = Logs.ListUpdaters.ShowWarnings(plr, v);
 						Update = "ShowWarnings";
-						UpdateArg = v;
+						UpdateArg = fake_data or v;
 						TimeOptions = {
 							WithDate = true;
 						}

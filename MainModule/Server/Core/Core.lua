@@ -1,12 +1,4 @@
 --!nonstrict
-server = nil
-service = nil
-cPcall = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
-
 type TableData = {
 	Type: string,
 	Table: {string}|string,
@@ -28,6 +20,7 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
 	local AddLog, Queue, TrackTask
+	local logError = env.logError
 	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -44,6 +37,7 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 		Queue = service.Queue;
 		TrackTask = service.TrackTask;
+		logError = logError or env.logError;
 
 		--// Core variables
 		Core.Themes = data.Themes or {}
@@ -1017,9 +1011,7 @@ return function(Vargs, GetEnv)
 							if type(v.Table) == "string" then
 								v.Table = {"Settings", v.Table}
 							end
-
 							if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-
 								table.remove(sets, i)
 							end
 						end
@@ -1273,8 +1265,8 @@ return function(Vargs, GetEnv)
 			local tostring = tostring
 			local server = server
 			local service = service
-			local Routine = Routine
-			local cPcall = cPcall
+			local Routine = env.Routine
+			local cPcall = env.cPcall
 			local MetaFunc = service.MetaFunc
 			local StartLoop = service.StartLoop
 			local API_Special = {

@@ -253,7 +253,8 @@ return function(Vargs, GetEnv)
 							local ran, name = pcall(service.Players.GetNameFromUserIdAsync, service.Players, matched)
 							if ran or allowUnknownUsers then
 								local fakePlayer = Functions.GetFakePlayer({
-									UserId = matched;
+									UserId = matched,
+									Name = name,
 								})
 								table.insert(players, fakePlayer)
 								plus()
