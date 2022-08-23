@@ -672,14 +672,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		ExtractLines = function(str)
-			local strs = {}
+			local strs = table.create(#str+1)
 			local new = ""
 			for i=1,#str+1 do
-				if string.byte(str:sub(i,i)) == 10 or i == #str+1 then
+				if string.byte(string.sub(str, i,i)) == 10 or i == #str+1 then
 					table.insert(strs,new)
 					new = ""
 				else
-					local char = str:sub(i,i)
+					local char = string.sub(str,i,i)
 					if string.byte(char) < 32 then
 						char = ""
 					end
@@ -1078,8 +1078,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return (if num < 0 then "-" else "") .. newInt:reverse() .. if dec then "."..dec else ""
 		end;
 
-		OwnsAsset = function(p,id)
-			return service.CheckAssetOwnership(p, id)
+		OwnsAsset = function(...)
+			return service.CheckAssetOwnership(...)
 		end;
 
 		GetProductInfo = function(assetId, infoType)
