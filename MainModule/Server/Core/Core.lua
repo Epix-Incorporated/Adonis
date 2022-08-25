@@ -76,8 +76,9 @@ return function(Vargs, GetEnv)
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
+			task.wait(1/60)
+
 			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in Core.RemoteEvent do if c == v then return true end end end)() then
-				wait();
 				Core.MakeEvent()
 			end
 		end)
@@ -86,14 +87,15 @@ return function(Vargs, GetEnv)
 		Core.DataStore = Core.GetDataStore()
 		if Core.DataStore then
 			TrackTask("Thread: DSLoadAndHook", function()
-				pcall(Core.LoadData)
+				--// Catch any errors and print it to the console; allow for debugging.
+				task.defer(env.Pcall, Core.LoadData)
 			end)
 		end
 
 		--// Save all data on server shutdown & set GAME_CLOSING
 		game:BindToClose(function()
 			Core.GAME_CLOSING = true;
-			Core.SaveAllPlayerData();
+			task.defer(Core.SaveAllPlayerData);
 		end);
 
 		--// Start API
@@ -439,17 +441,27 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+
+						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						container.Parent = nil
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							task.wait()
 							if p.Parent == nil then
-								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								pcall(function()
+									container:Destroy()
+								end)
 							end
 						end)
+
+						leaveEvent:Disconnect()
+						leaveEvent = nil
 						event:Disconnect();
+						event = nil
 					end
 				end)
 
-				local ok,err = pcall(function()
+				local ok, err = pcall(function()
 					container.Parent = parentObj
 				end)
 
@@ -1000,7 +1012,7 @@ return function(Vargs, GetEnv)
 				data.Action = "Remove"
 				data.Time = os.time()
 
-				local CheckMatch = if data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets: {TableData})
 					sets = sets or {}
 
