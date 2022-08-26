@@ -82,8 +82,9 @@ return function(Vargs, GetEnv)
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
-			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in pairs(Core.RemoteEvent) do if c == v then return true end end end)() then
-				wait();
+			task.wait(1/60)
+
+			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in Core.RemoteEvent do if c == v then return true end end end)() then
 				Core.MakeEvent()
 			end
 		end)
@@ -92,14 +93,15 @@ return function(Vargs, GetEnv)
 		Core.DataStore = Core.GetDataStore()
 		if Core.DataStore then
 			TrackTask("Thread: DSLoadAndHook", function()
-				pcall(Core.LoadData)
+				--// Catch any errors and print it to the console; allow for debugging.
+				task.defer(env.Pcall, Core.LoadData)
 			end)
 		end
 
 		--// Save all data on server shutdown & set GAME_CLOSING
 		game:BindToClose(function()
 			Core.GAME_CLOSING = true;
-			Core.SaveAllPlayerData();
+			task.defer(Core.SaveAllPlayerData);
 		end);
 
 		--// Start API
@@ -445,17 +447,27 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+
+						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						container.Parent = nil
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							task.wait()
 							if p.Parent == nil then
-								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								pcall(function()
+									container:Destroy()
+								end)
 							end
 						end)
+
+						leaveEvent:Disconnect()
+						leaveEvent = nil
 						event:Disconnect();
+						event = nil
 					end
 				end)
 
-				local ok,err = pcall(function()
+				local ok, err = pcall(function()
 					container.Parent = parentObj
 				end)
 
@@ -635,7 +647,7 @@ return function(Vargs, GetEnv)
 
 				if Core.DataStore then
 					local data = Core.GetData(key)
-					if data and type(data) == "table" then
+					if type(data) == "table" then
 						data.AdminNotes = if data.AdminNotes then Functions.DSKeyNormalize(data.AdminNotes, true) else {}
 						data.Warnings = if data.Warnings then Functions.DSKeyNormalize(data.Warnings, true) else {}
 
@@ -914,7 +926,7 @@ return function(Vargs, GetEnv)
 					curTable = curTable[ind]
 					curName = ind
 
-					if curName and type(curName) == "string" then
+					if type(curName) == "string" then
 						--// Admins do NOT load from the DataStore with this setting
 						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
 							return nil
@@ -928,7 +940,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if curName and type(curName) == "string" and ds_blacklist[curName] then
+				if type(curName) == "string" and ds_blacklist[curName] then
 					return nil
 				end
 
@@ -1008,7 +1020,7 @@ return function(Vargs, GetEnv)
 				data.Time = os.time()
 
 				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
-				Core.UpdateData(key, function(sets)
+				Core.UpdateData(key, function(sets: {TableData})
 					sets = sets or {}
 
 					local index = 1
@@ -1130,7 +1142,7 @@ return function(Vargs, GetEnv)
 				local realTable, tableName = Core.IndexPathToTable(indList);
 				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
 
-				if displayName and type(displayName) == "string" then
+				if type(displayName) == "string" then
 					if ds_blacklist[displayName] then
 						return
 					end
@@ -1140,7 +1152,7 @@ return function(Vargs, GetEnv)
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
 						end
 						--// No adding to Trello or WebPanel rank users list via Datastore
-						if (indList[3] and type(indList[3]) == 'string') and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+						if type(indList[3]) == 'string' and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
 							return
 						end
 					end

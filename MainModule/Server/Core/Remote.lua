@@ -858,8 +858,8 @@ return function(Vargs, GetEnv)
 						local listName = data.List
 						local name = data.Name
 						local desc = data.Desc
-						
-						for _, overrideList in ipairs(HTTP.Trello.GetOverrideLists()) do 
+
+						for _, overrideList in HTTP.Trello.GetOverrideLists() do
 							if service.Trim(string.lower(overrideList)) == service.Trim(string.lower(listName)) then
 								Functions.Hint("You cannot create a card in that list", {p})
 								return
@@ -893,7 +893,7 @@ return function(Vargs, GetEnv)
 					client.LoadingStatus = "READY"
 
 					service.Events.ClientLoaded:Fire(p)
-					Process.FinishLoading(p)
+					task.defer(Process.FinishLoading, p)
 				else
 					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
 					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
