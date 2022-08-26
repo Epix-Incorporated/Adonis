@@ -1,11 +1,3 @@
-server = nil
-service = nil
-cPcall = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
-
 --// Processing
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
@@ -16,6 +8,8 @@ return function(Vargs, GetEnv)
 
 	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
+	local logError = env.logError
+	local Routine = env.Routine
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -27,8 +21,10 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Defaults = server.Defaults
+		Defaults = server.Defaults;
 
+		logError = logError or env.logError;
+		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
 		Encrypt = Remote.Encrypt
@@ -832,7 +828,7 @@ return function(Vargs, GetEnv)
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
 			--// Load some playerdata stuff
-			if PlayerData.Client and type(PlayerData.Client) == "table" then
+			if type(PlayerData.Client) == "table" then
 				if PlayerData.Client.CapesEnabled == true or PlayerData.Client.CapesEnabled == nil then
 					Remote.Send(p, "Function", "MoveCapes")
 				end
@@ -870,21 +866,19 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else
-					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
-						Remote.MakeGui(p, "Console")
-					end
-
-					if Settings.HelpButton then
-						Remote.MakeGui(p, "HelpButton")
-					end
 				end
 
+				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
+					Remote.MakeGui(p, "Console")
+				end
 
+				if Settings.HelpButton then
+					Remote.MakeGui(p, "HelpButton")
+				end
 
 				if level > 0 then
-					local oldVer = Core.GetData("VersionNumber")
-					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
+					local oldVer = (level > 300) and Core.GetData("VersionNumber")
+					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
 						Remote.MakeGui(p, "Notification", {
@@ -897,7 +891,7 @@ return function(Vargs, GetEnv)
 
 						wait(1)
 
-						if oldVer and newVer and newVer > oldVer and level > 300 then
+						if oldVer and newVer and newVer > oldVer then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
@@ -973,7 +967,7 @@ return function(Vargs, GetEnv)
 				keyData.PlayerLoaded = true
 			end
 
-			wait()
+			wait(1 / 60)
 			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
