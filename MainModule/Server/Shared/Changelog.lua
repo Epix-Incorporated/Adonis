@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v237n 2022-08-28 00:20 EST] @Coasterteam";
+	"(Git/Coasterteam) Unbans save properly once again (#902)";
+	"";
 	"[Patch v237m 2022-08-06 22:30 EST] @Expertcoderz";
 	"(Git/fxeP1) Fixed ban system (#894)";
 	" - Banned players will now be kicked even if they join before the ban data loads";
