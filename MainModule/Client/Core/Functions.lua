@@ -908,8 +908,8 @@ return function(Vargs, GetEnv)
 			local fps = tonumber(fps)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
-					local ender = time()+1/fps
-					repeat until time()>=ender
+					local fpslockint = time() +1 /fps
+					repeat until time()>=fpslockint
 				end)
 			end
 		end;
