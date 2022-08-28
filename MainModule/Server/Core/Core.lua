@@ -1013,18 +1013,30 @@ return function(Vargs, GetEnv)
 				data.Time = os.time()
 
 				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
-				Core.UpdateData(key, function(sets: {TableData})
+				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
+					local index = 1
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						else
-							if type(v.Table) == "string" then
-								v.Table = {"Settings", v.Table}
-							end
-							if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-								table.remove(sets, i)
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
+						end
+					end
+
+					--// Check that the real table actually has the item to remove; do not create if it does not have it
+					--// (prevents snowballing)
+					local continueOperation = false
+					if tab[1] == "Settings" or tab[2] == "Settings" then
+						local indClone = table.clone(tab)
+						indClone[1] = "OriginalSettings"
+						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+							if CheckMatch(v, val) then
+								continueOperation = true
+								break
 							end
 						end
 					end
@@ -1035,6 +1047,7 @@ return function(Vargs, GetEnv)
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			elseif data.Type == "TableAdd" then
 				local tab = data.Table
+				local originalTable = tab
 				local val = data.Value
 				local key = Core.GetTableKey(tab)
 
@@ -1045,20 +1058,18 @@ return function(Vargs, GetEnv)
 				data.Action = "Add"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
+					local index = 1
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						else
-							if type(v.Table) == "string" then
-								v.Table = {"Settings", v.Table}
-							end
-							if CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-								table.remove(sets, i)
-							end
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
 						end
 					end
 
