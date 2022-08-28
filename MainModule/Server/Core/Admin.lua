@@ -936,6 +936,8 @@ return function(Vargs, GetEnv)
 					elseif id and cId and id == cId then
 						return true
 					end
+				else 
+					return string.lower(tostring(check)) == string.lower(tostring(name))
 				end
 			end
 
