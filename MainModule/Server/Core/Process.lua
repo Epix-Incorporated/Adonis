@@ -38,7 +38,7 @@ return function(Vargs, GetEnv)
 			service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
 		end
 
-		--// Necessary check to prevent first time users from bypassing bans.
+		--// Necessary checks to prevent first time users from bypassing bans.
 		service.Events.DataStoreAdd_Banned:Connect(function(data: table|string)
 			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
 					elseif type(data) == "table" then data.UserId
@@ -52,6 +52,31 @@ return function(Vargs, GetEnv)
 				AddLog("Script", {
 					Text = "Applied ban on "..plr.Name;
 					Desc = "Ban reason: "..reason;
+				})
+			end
+		end)
+		service.Events["DataStoreAdd_Core.Variables.TimeBans"]:Connect(function(data)
+			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
+				elseif type(data) == "table" then data.UserId
+				else nil
+
+			local plr = userId and service.Players:GetPlayerByUserId(userId)
+			if plr then
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+					else "No reason provided"
+
+				pcall(
+					plr.Kick,
+					plr,
+					string.format(
+						"\n Reason: %s\n Banned until %s",
+						(reason or "(No reason provided."),
+						service.FormatTime(data.EndTime, { WithWrittenDate = true })
+					)
+				)
+				AddLog("Script", {
+					Text = "Applied TimeBan on ".. plr.Name;
+					Desc = "Ban reason: ".. reason;
 				})
 			end
 		end)
