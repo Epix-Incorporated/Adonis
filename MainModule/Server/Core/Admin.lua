@@ -416,8 +416,8 @@ return function(Vargs, GetEnv)
 
 			local pUnWrapped = service.UnWrap(pObj)
 
-			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(p)
-				elseif pType == "string" then service.Players:FindFirstChild(p)
+			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(plr)
+				elseif pType == "string" then service.Players:FindFirstChild(plr)
 				elseif typeof(pUnWrapped) == "Instance" and pUnWrapped:IsA("Player") then pUnWrapped
 				elseif pType == "userdata" then service.Players:GetPlayerByUserId(p.UserId)
 				else nil
