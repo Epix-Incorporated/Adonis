@@ -1,17 +1,10 @@
 --!nonstrict
-server = nil
-service = nil
-cPcall = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
-
 type TableData = {
 	Type: string,
 	Table: {string}|string,
 	Setting: string?,
 	Value: any?,
+	LaxCheck: boolean?,
 
 	Action: string?,
 	Time: number?
@@ -27,6 +20,7 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
 	local AddLog, Queue, TrackTask
+	local logError = env.logError
 	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -43,6 +37,7 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 		Queue = service.Queue;
 		TrackTask = service.TrackTask;
+		logError = logError or env.logError;
 
 		--// Core variables
 		Core.Themes = data.Themes or {}
@@ -81,8 +76,9 @@ return function(Vargs, GetEnv)
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
+			task.wait(1/60)
+
 			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in Core.RemoteEvent do if c == v then return true end end end)() then
-				wait();
 				Core.MakeEvent()
 			end
 		end)
@@ -91,14 +87,15 @@ return function(Vargs, GetEnv)
 		Core.DataStore = Core.GetDataStore()
 		if Core.DataStore then
 			TrackTask("Thread: DSLoadAndHook", function()
-				pcall(Core.LoadData)
+				--// Catch any errors and print it to the console; allow for debugging.
+				task.defer(env.Pcall, Core.LoadData)
 			end)
 		end
 
 		--// Save all data on server shutdown & set GAME_CLOSING
 		game:BindToClose(function()
 			Core.GAME_CLOSING = true;
-			Core.SaveAllPlayerData();
+			task.defer(Core.SaveAllPlayerData);
 		end);
 
 		--// Start API
@@ -444,17 +441,27 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+
+						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						container.Parent = nil
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							task.wait()
 							if p.Parent == nil then
-								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								pcall(function()
+									container:Destroy()
+								end)
 							end
 						end)
+
+						leaveEvent:Disconnect()
+						leaveEvent = nil
 						event:Disconnect();
+						event = nil
 					end
 				end)
 
-				local ok,err = pcall(function()
+				local ok, err = pcall(function()
 					container.Parent = parentObj
 				end)
 
@@ -634,7 +641,7 @@ return function(Vargs, GetEnv)
 
 				if Core.DataStore then
 					local data = Core.GetData(key)
-					if data and type(data) == "table" then
+					if type(data) == "table" then
 						data.AdminNotes = if data.AdminNotes then Functions.DSKeyNormalize(data.AdminNotes, true) else {}
 						data.Warnings = if data.Warnings then Functions.DSKeyNormalize(data.Warnings, true) else {}
 
@@ -903,11 +910,17 @@ return function(Vargs, GetEnv)
 				local curTable = server
 				local curName = "Server"
 
-				for _, ind in tableAncestry do
+				for index, ind in tableAncestry do
+
+					--// Prevent stuff like {t1 = "Settings", t2 = ...} from bypassing datastore blocks
+					if type(index) ~= 'number' then
+						return nil
+					end
+
 					curTable = curTable[ind]
 					curName = ind
 
-					if curName and type(curName) == "string" then
+					if type(curName) == "string" then
 						--// Admins do NOT load from the DataStore with this setting
 						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
 							return nil
@@ -921,7 +934,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if curName and type(curName) == "string" and ds_blacklist[curName] then
+				if type(curName) == "string" and ds_blacklist[curName] then
 					return nil
 				end
 
@@ -990,6 +1003,7 @@ return function(Vargs, GetEnv)
 			elseif data.Type == "TableRemove" then
 				local tab = data.Table
 				local val = data.Value
+				local originalTable = tab
 				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
@@ -999,15 +1013,18 @@ return function(Vargs, GetEnv)
 				data.Action = "Remove"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
+					local index = 1
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						elseif CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-							table.remove(sets, i)
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
 						end
 					end
 
@@ -1017,18 +1034,12 @@ return function(Vargs, GetEnv)
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						for _, v in Core.IndexPathToTable(indClone) or {} do
+						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
 							if CheckMatch(v, val) then
 								continueOperation = true
 								break
 							end
 						end
-					else
-						continueOperation = true
-					end
-
-					if continueOperation then
-						table.insert(sets, data)
 					end
 
 					return sets
@@ -1037,6 +1048,7 @@ return function(Vargs, GetEnv)
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			elseif data.Type == "TableAdd" then
 				local tab = data.Table
+				local originalTable = tab
 				local val = data.Value
 				local key = Core.GetTableKey(tab)
 
@@ -1047,15 +1059,18 @@ return function(Vargs, GetEnv)
 				data.Action = "Add"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
+					local index = 1
 					for i, v in sets do
 						if type(i) ~= "number" then
 							sets[i] = nil
-						elseif CheckMatch(tab, v.Table) and CheckMatch(v.Value, val) then
-							table.remove(sets, i)
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
 						end
 					end
 
@@ -1096,33 +1111,46 @@ return function(Vargs, GetEnv)
 				return
 			end
 
+			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST
-			local CheckMatch = Functions.CheckMatch
+
 			if key == "TableUpdate" then
 				local indList = data.Table
-				local nameRankComp = {--// Old settings backwards compatability
-					Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
-					Creators = {"Settings", "Ranks", "Creators", "Users"};
-					HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
-					Admins = {"Settings", "Ranks", "Admins", "Users"};
-					Moderators = {"Settings", "Ranks", "Moderators", "Users"};
+				local nameRankComp = { --// Old settings backwards compatability
+					Owners = { "Settings", "Ranks", "HeadAdmins", "Users" },
+					Creators = { "Settings", "Ranks", "Creators", "Users" },
+					HeadAdmins = { "Settings", "Ranks", "HeadAdmins", "Users" },
+					Admins = { "Settings", "Ranks", "Admins", "Users" },
+					Moderators = { "Settings", "Ranks", "Moderators", "Users" },
 				}
 
 				if type(indList) == "string" and nameRankComp[indList] then
-					indList = nameRankComp[indList];
+					indList = nameRankComp[indList]
 				end
 
-				local realTable, tableName = Core.IndexPathToTable(indList);
-				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
+				local realTable, tableName = Core.IndexPathToTable(indList)
+				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
-				if displayName and type(displayName) == "string" then
+				if type(displayName) == "string" then
 					if ds_blacklist[displayName] then
 						return
 					end
+
 					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
-						if not Settings.SaveAdmins and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff and not Settings.SaveAdminsWarning and Settings.LoadAdminsFromDS then
-							warn("Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting \"SaveAdminsWarning\" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false")
+						if
+							not Settings.SaveAdmins
+							and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff
+							and not Settings.SaveAdminsWarning
+							and Settings.LoadAdminsFromDS
+						then
+							warn(
+								'Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting "SaveAdminsWarning" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false'
+							)
 							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+						--// No adding to Trello or WebPanel rank users list via Datastore
+						if type(indList[3]) == 'string' and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+							return
 						end
 					end
 				end
@@ -1135,17 +1163,18 @@ return function(Vargs, GetEnv)
 					end
 
 					AddLog("Script", {
-						Text = "Added value to ".. displayName;
-						Desc = "Added "..tostring(data.Value).." to ".. displayName .." from datastore";
+						Text = "Added value to " .. displayName,
+						Desc = "Added " .. tostring(data.Value) .. " to " .. displayName .. " from datastore",
 					})
 
 					table.insert(realTable, data.Value)
+					service.Events["DataStoreAdd_" .. displayName]:Fire(data.Value)
 				elseif realTable and data.Action == "Remove" then
 					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
-								Text = "Removed value from ".. displayName;
-								Desc = "Removed "..tostring(data.Value).." from ".. displayName .." from datastore";
+								Text = "Removed value from " .. displayName,
+								Desc = "Removed " .. tostring(data.Value) .. " from " .. displayName .. " from datastore",
 							})
 
 							table.remove(realTable, i)
@@ -1155,30 +1184,10 @@ return function(Vargs, GetEnv)
 			else
 				local SavedSettings
 				local SavedTables
+
 				if Core.DataStore and Settings.DataStoreEnabled then
-					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey and not Settings.LocalDatastore then
-						table.insert(server.Messages, {
-							Title = "Warning!";
-							Message = "Using default datastore key!";
-							Icon = server.MatIcons.Description;
-							Time = 15;
-							OnClick = Core.Bytecode([[
-								local window = client.UI.Make("Window", {
-									Title = "How to change the DataStore key";
-									Size = {700,300};
-									Icon = "rbxassetid://7510994359";
-								})
 
-								window:Add("ImageLabel", {
-									Image = "rbxassetid://1059543904";
-								})
-
-								window:Ready()
-							]]);
-						})
-					end
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
-
 					if not key then
 						SavedSettings = GetData("SavedSettings")
 						SavedTables = GetData("SavedTables")
@@ -1209,8 +1218,9 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedSettings then
-						for setting,value in SavedSettings do
+						for setting, value in SavedSettings do
 							if not ds_blacklist[setting] then
+
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
 									for _, cmd in server.Commands do
@@ -1227,7 +1237,7 @@ return function(Vargs, GetEnv)
 
 					if SavedTables then
 						for _, tData in SavedTables do
-							if tData.TableName and tData.TableKey and not ds_blacklist[tData.tableName] then
+							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
 								local data = GetData(tData.TableKey)
 								if data then
 									for _, v in data do
@@ -1244,9 +1254,10 @@ return function(Vargs, GetEnv)
 								if v.EndTime - os.time() <= 0 then
 									table.remove(Core.Variables.TimeBans, i)
 									DoSave({
-										Type = "TableRemove";
-										Table = {"Core", "Variables", "TimeBans"};
-										Value = v;
+										Type = "TableRemove",
+										Table = { "Core", "Variables", "TimeBans" },
+										Value = v,
+										LaxCheck = true,
 									})
 								end
 							end
@@ -1254,12 +1265,12 @@ return function(Vargs, GetEnv)
 					end
 
 					AddLog(Logs.Script, {
-						Text = "Loaded saved data";
-						Desc = "Data was retrieved from the datastore and loaded successfully";
+						Text = "Loaded saved data",
+						Desc = "Data was retrieved from the datastore and loaded successfully",
 					})
 				end
 			end
-		end;
+		end,
 
 		StartAPI = function()
 			local _G = _G
@@ -1279,8 +1290,8 @@ return function(Vargs, GetEnv)
 			local tostring = tostring
 			local server = server
 			local service = service
-			local Routine = Routine
-			local cPcall = cPcall
+			local Routine = env.Routine
+			local cPcall = env.cPcall
 			local MetaFunc = service.MetaFunc
 			local StartLoop = service.StartLoop
 			local API_Special = {

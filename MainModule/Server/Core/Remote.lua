@@ -374,7 +374,7 @@ return function(Vargs, GetEnv)
 					local data = Core.GetPlayer(p)
 
 					--// check for stupid stuff
-					for i,v in next, aliases do
+					for i,v in aliases do
 						if type(i) ~= "string" or type(v) ~= "string" then
 							aliases[i] = nil
 						end
@@ -502,7 +502,7 @@ return function(Vargs, GetEnv)
 					Description = "Shows a list of available commands and their usage";
 					Function = function(p,args,data)
 						local output = {}
-						for i,v in next,Remote.Terminal.Commands do
+						for i,v in Remote.Terminal.Commands do
 							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
 							table.insert(output, "- ".. tostring(v.Description))
 						end
@@ -859,7 +859,7 @@ return function(Vargs, GetEnv)
 						local name = data.Name
 						local desc = data.Desc
 
-						for _, overrideList in HTTP.Trello.GetOverrideLists() do 
+						for _, overrideList in HTTP.Trello.GetOverrideLists() do
 							if service.Trim(string.lower(overrideList)) == service.Trim(string.lower(listName)) then
 								Functions.Hint("You cannot create a card in that list", {p})
 								return
@@ -893,7 +893,7 @@ return function(Vargs, GetEnv)
 					client.LoadingStatus = "READY"
 
 					service.Events.ClientLoaded:Fire(p)
-					Process.FinishLoading(p)
+					task.defer(Process.FinishLoading, p)
 				else
 					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
 					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
@@ -999,7 +999,7 @@ return function(Vargs, GetEnv)
 
 				SendToUsers = function(self, ...)
 					if not self.Ended then
-						for p in next,self.Users do
+						for p in self.Users do
 							Remote.Send(p, "SessionData", self.SessionKey, ...);
 						end;
 					end
@@ -1019,7 +1019,7 @@ return function(Vargs, GetEnv)
 
 				End = function(self)
 					if not self.Ended then
-						for t,event in next,self.Events do
+						for t,event in self.Events do
 							event:Disconnect();
 						end
 						table.clear(self.Events)

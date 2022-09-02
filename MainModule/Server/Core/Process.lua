@@ -1,11 +1,3 @@
-server = nil
-service = nil
-cPcall = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
-
 --// Processing
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
@@ -16,6 +8,8 @@ return function(Vargs, GetEnv)
 
 	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
+	local logError = env.logError
+	local Routine = env.Routine
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -27,8 +21,10 @@ return function(Vargs, GetEnv)
 		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
-		Defaults = server.Defaults
+		Defaults = server.Defaults;
 
+		logError = logError or env.logError;
+		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
 		Encrypt = Remote.Encrypt
@@ -41,6 +37,49 @@ return function(Vargs, GetEnv)
 			service.RbxEvent(service.NetworkServer.ChildAdded, server.Process.NetworkAdded)
 			service.RbxEvent(service.NetworkServer.DescendantRemoving, server.Process.NetworkRemoved)
 		end
+
+		--// Necessary checks to prevent first time users from bypassing bans.
+		service.Events.DataStoreAdd_Banned:Connect(function(data: table|string)
+			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
+					elseif type(data) == "table" then data.UserId
+					else nil
+
+			local plr = userId and service.Players:GetPlayerByUserId(userId)
+			if plr then
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+						else "No reason provided"
+				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
+				AddLog("Script", {
+					Text = "Applied ban on "..plr.Name;
+					Desc = "Ban reason: "..reason;
+				})
+			end
+		end)
+		service.Events["DataStoreAdd_Core.Variables.TimeBans"]:Connect(function(data)
+			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
+				elseif type(data) == "table" then data.UserId
+				else nil
+
+			local plr = userId and service.Players:GetPlayerByUserId(userId)
+			if plr then
+				local reason = if type(data) == "table" and data.Reason then data.Reason
+					else "No reason provided"
+
+				pcall(
+					plr.Kick,
+					plr,
+					string.format(
+						"\n Reason: %s\n Banned until %s",
+						(reason or "(No reason provided."),
+						service.FormatTime(data.EndTime, { WithWrittenDate = true })
+					)
+				)
+				AddLog("Script", {
+					Text = "Applied TimeBan on ".. plr.Name;
+					Desc = "Ban reason: ".. reason;
+				})
+			end
+		end)
 
 		Process.Init = nil
 		AddLog("Script", "Processing Module Initialized")
@@ -443,22 +482,20 @@ return function(Vargs, GetEnv)
 				})
 
 				if not opts.IgnoreErrors then
-					if cmdError and type(cmdError) == "string" then
-						AddLog("Errors", (command.Commands[1] or "Unknown command?") .. " " .. cmdError)
+					if type(cmdError) == "string" then
+						AddLog("Errors", "["..matched.."] "..cmdError)
 
-						cmdError = (cmdError and string.match(cmdError, ":(.+)$")) or cmdError or "Unknown error"
+						cmdError = cmdError:match("%d: (.+)$") or cmdError
 
 						if not isSystem then
 							Remote.MakeGui(p, "Output", {
 								Message = cmdError,
 							})
 						end
-					elseif cmdError and type(cmdError) ~= "string" and cmdError ~= true then
-						if not isSystem then
-							Remote.MakeGui(p, "Output", {
-								Message = "There was an error but the error was not a string? : "..tostring(cmdError);
-							})
-						end
+					elseif cmdError ~= nil and cmdError ~= true and not isSystem then
+						Remote.MakeGui(p, "Output", {
+							Message = "There was an error but the error was not a string? : "..tostring(cmdError);
+						})
 					end
 				end
 
@@ -469,7 +506,7 @@ return function(Vargs, GetEnv)
 					Command = command,
 					Index = index,
 					Success = ran,
-					Error = error,
+					Error = if type(cmdError) == "string" then cmdError else nil,
 					Options = opts,
 					PlayerData = pDat
 				})
@@ -789,8 +826,6 @@ return function(Vargs, GetEnv)
 			end
 
 			Variables.IncognitoPlayers[p] = nil
-
-			return
 		end;
 
 		FinishLoading = function(p)
@@ -818,7 +853,7 @@ return function(Vargs, GetEnv)
 			Remote.Send(p, "Function", "KeyBindListener", PlayerData.Keybinds or {})
 
 			--// Load some playerdata stuff
-			if PlayerData.Client and type(PlayerData.Client) == "table" then
+			if type(PlayerData.Client) == "table" then
 				if PlayerData.Client.CapesEnabled == true or PlayerData.Client.CapesEnabled == nil then
 					Remote.Send(p, "Function", "MoveCapes")
 				end
@@ -858,13 +893,19 @@ return function(Vargs, GetEnv)
 					end
 				end
 
+				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
+					Remote.MakeGui(p, "Console")
+				end
+
+				if Settings.HelpButton then
+					Remote.MakeGui(p, "HelpButton")
+				end
+
 				if level > 0 then
-					local oldVer = Core.GetData("VersionNumber")
-					local newVer = tonumber(string.match(server.Changelog[1], "Version: (.*)"))
+					local oldVer = (level > 300) and Core.GetData("VersionNumber")
+					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
-						wait(2)
-
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
 							Message = "Click here for commands.";
@@ -875,7 +916,7 @@ return function(Vargs, GetEnv)
 
 						wait(1)
 
-						if oldVer and newVer and newVer > oldVer and level > 300 then
+						if oldVer and newVer and newVer > oldVer then
 							Remote.MakeGui(p, "Notification", {
 								Title = "Updated!";
 								Message = "Click to view the changelog.";
@@ -924,14 +965,21 @@ return function(Vargs, GetEnv)
 				--// END_ReF - 100392_659
 
 				for v: Player in Variables.IncognitoPlayers do
-					if v == p then continue end
-					server.Remote.LoadCode(p, [[
-						for _, p in service.Players:GetPlayers() do
-							if p.UserId == ]]..v.UserId..[[ then
-								if p:FindFirstChild("leaderstats") then p.leaderstats:Destroy() end
-								p:Destroy()
+					--// Check if the Player still exists before doing incognito to prevent LoadCode spam.
+					if v == p or v.Parent == service.Players then
+						continue
+					end
+
+					Remote.LoadCode(p, [[
+						local plr = service.Players:GetPlayerByUserId(]] .. v.UserId .. [[)
+						if plr then
+							if not table.find(service.IncognitoPlayers, plr) then
+								table.insert(service.IncognitoPlayers, plr)
 							end
-						end]])
+
+							plr:Remove()
+						end
+					]])
 				end
 			end
 		end;
@@ -944,7 +992,7 @@ return function(Vargs, GetEnv)
 				keyData.PlayerLoaded = true
 			end
 
-			wait()
+			wait(1 / 60)
 			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
@@ -955,28 +1003,14 @@ return function(Vargs, GetEnv)
 				end
 				Remote.Get(p,"UIKeepAlive")
 
-				--//GUI loading
-				local MakeGui = Remote.MakeGui
-				local Refresh = Remote.RefreshGui
-				local RefreshGui = function(gui, ignore, ...)
-					Refresh(p, gui, ignore, ...)
-				end
+				--// GUI loading
 				if Variables.NotifMessage then
-					MakeGui(p, "Notif", {
+					Remote.MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
 				end
-
-				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
-					RefreshGui("Console")
-				end
-
-				if Settings.HelpButton then
-					MakeGui(p, "HelpButton")
-				end
-
 				if Settings.TopBarShift then
-					MakeGui(p, "TopBar")
+					Remote.MakeGui(p, "TopBar")
 				end
 
 				--if Settings.CustomChat then

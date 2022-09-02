@@ -1,11 +1,12 @@
-server = nil
-service = nil
-cPcall = nil
-
 --// Function stuff
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
+
+	local server = Vargs.Server
+	local service = Vargs.Service
+
+	local cPcall = env.cPcall
 
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
@@ -44,8 +45,8 @@ return function(Vargs, GetEnv)
 				Match = "me";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					table.insert(players,plr)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
+					table.insert(players, plr)
 					plus()
 				end;
 			};
@@ -54,7 +55,7 @@ return function(Vargs, GetEnv)
 				Match = "all";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local everyone = true
 					if isKicking then
 						local lower = string.lower
@@ -64,7 +65,7 @@ return function(Vargs, GetEnv)
 							local p = getplr(v)
 							if p and sub(lower(p.Name), 1, #msg)==lower(msg) then
 								everyone = false
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -74,7 +75,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -95,11 +96,11 @@ return function(Vargs, GetEnv)
 				Match = "others";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and p ~= plr then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -110,21 +111,9 @@ return function(Vargs, GetEnv)
 				Match = "random";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
-					local children = parent:GetChildren()
-					if #players >= #children then return end
-					local rand = children[math.random(#children)]
-					local p = getplr(rand)
-
-					for _,v in players do
-						if v.Name == p.Name then
-							Functions.PlayerFinders.random.Function(msg, plr, parent, players, getplr, plus, isKicking)
-							return;
-						end
-					end
-
-					table.insert(players, p)
-					plus();
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
+					table.insert(randplayers, "random")
+					plus()
 				end;
 			};
 
@@ -132,7 +121,7 @@ return function(Vargs, GetEnv)
 				Match = "admins";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and Admin.CheckAdmin(p,false) then
@@ -147,11 +136,11 @@ return function(Vargs, GetEnv)
 				Match = "nonadmins";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and not Admin.CheckAdmin(p,false) then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -162,11 +151,11 @@ return function(Vargs, GetEnv)
 				Match = "friends";
 				Prefix = true;
 				Absolute = true;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					for _,v in parent:GetChildren() do
 						local p = getplr(v)
 						if p and p:IsFriendsWith(plr.UserId) then
-							table.insert(players,p)
+							table.insert(players, p)
 							plus()
 						end
 					end
@@ -176,7 +165,7 @@ return function(Vargs, GetEnv)
 			["@username"] = {
 				Match = "@";
 				Prefix = false;
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "@(.*)")
 					local foundNum = 0
 
@@ -184,7 +173,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.Name == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
@@ -195,7 +184,7 @@ return function(Vargs, GetEnv)
 
 			["%team"] = {
 				Match = "%";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "%%(.*)")
 
 					local lower = string.lower
@@ -207,7 +196,7 @@ return function(Vargs, GetEnv)
 								for _,m in parent:GetChildren() do
 									local p = getplr(m)
 									if p and p.TeamColor == v.TeamColor then
-										table.insert(players,p)
+										table.insert(players, p)
 										plus()
 									end
 								end
@@ -219,13 +208,13 @@ return function(Vargs, GetEnv)
 
 			["$group"] = {
 				Match = "$";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "%$(.*)")
 					if matched and tonumber(matched) then
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p:IsInGroup(tonumber(matched)) then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -235,29 +224,26 @@ return function(Vargs, GetEnv)
 
 			["id-"] = {
 				Match = "id-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = tonumber(string.match(msg, "id%-(.*)"))
 					local foundNum = 0
 					if matched then
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.UserId == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
 						end
 
-						if foundNum == 0 then
-							local ran, name = pcall(function() return service.Players:GetNameFromUserIdAsync(matched) end)
-							if ran and name then
-								local fakePlayer = server.Functions.GetFakePlayer({
-									Name = name;
-									DisplayName = name;
-									CharacterAppearanceId = tostring(matched);
-									UserId = tonumber(matched);
+						if foundNum == 0 and useFakePlayer then
+							local ran, name = pcall(service.Players.GetNameFromUserIdAsync, service.Players, matched)
+							if ran or allowUnknownUsers then
+								local fakePlayer = Functions.GetFakePlayer({
+									UserId = matched,
+									Name = name,
 								})
-
 								table.insert(players, fakePlayer)
 								plus()
 							end
@@ -268,7 +254,7 @@ return function(Vargs, GetEnv)
 
 			["displayname-"] = {
 				Match = "displayname-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = tonumber(string.match(msg, "displayname%-(.*)"))
 					local foundNum = 0
 
@@ -276,7 +262,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p.DisplayName == matched then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 								foundNum += 1
 							end
@@ -287,7 +273,7 @@ return function(Vargs, GetEnv)
 
 			["team-"] = {
 				Match = "team-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local lower = string.lower
 					local sub = string.sub
 
@@ -310,7 +296,7 @@ return function(Vargs, GetEnv)
 
 			["group-"] = {
 				Match = "group-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "group%-(.*)")
 					matched = tonumber(matched)
 
@@ -318,7 +304,7 @@ return function(Vargs, GetEnv)
 						for _,v in parent:GetChildren() do
 							local p = getplr(v)
 							if p and p:IsInGroup(matched) then
-								table.insert(players,p)
+								table.insert(players, p)
 								plus()
 							end
 						end
@@ -328,25 +314,42 @@ return function(Vargs, GetEnv)
 
 			["-name"] = {
 				Match = "-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = string.match(msg, "%-(.*)")
 					if matched then
 						local removes = service.GetPlayers(plr,matched, {
 							DontError = true;
 						})
 
-						for i,v in players do
-							for k,p in removes do
-								if p and v.Name == p.Name then
-									table.remove(players,i)
-									plus()
-								end
+						for k,p in removes do
+							if p then
+								table.insert(delplayers,p)
+								plus()
 							end
 						end
 					end
 				end;
 			};
+			
+			["+name"] = {
+				Match = "+";
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
+					local matched = string.match(msg, "%+(.*)")
+					if matched then
+						local adds = service.GetPlayers(plr,matched, {
+							DontError = true;
+						})
 
+						for k,p in adds do
+							if p then
+								table.insert(addplayers,p)
+								plus()
+							end
+						end
+					end
+				end;
+			};
+			
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
@@ -367,12 +370,12 @@ return function(Vargs, GetEnv)
 
 			["radius-"] = {
 				Match = "radius-";
-				Function = function(msg, plr, parent, players, getplr, plus, isKicking)
+				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
 					local matched = msg:match("radius%-(.*)")
 					if matched and tonumber(matched) then
 						local num = tonumber(matched)
 						if not num then
-							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
+							Remote.MakeGui(plr, "Output", {Message = "Invalid number!"})
 							return;
 						end
 
@@ -389,25 +392,28 @@ return function(Vargs, GetEnv)
 		};
 
 		CatchError = function(func, ...)
-			local ret = {pcall(func, ...)};
+			local ret = {pcall(func, ...)}
 
 			if not ret[1] then
-				logError(ret[2] or "Unknown error occurred");
+				logError(ret[2] or "Unknown error occurred")
 			else
-				return unpack(ret, 2);
+				return unpack(ret, 2)
 			end
 		end;
 
 		GetFakePlayer = function(options)
-			local fakePlayer = service.Wrap(service.New("Folder", {Name = options.Name or "Fake_Player"}))
+			local fakePlayer = service.Wrap(service.New("Folder", {
+				Name = options.Name or "Fake_Player";
+			}))
+
 			local data = {
 				ClassName = "Player";
-				Name = "Fake_Player";
-				DisplayName = "Fake_Player";
+				Name = "[Unknown User]";
+				DisplayName = "[Unknown User]";
 				UserId = 0;
 				AccountAge = 0;
 				MembershipType = Enum.MembershipType.None;
-				CharacterAppearanceId = 0;
+				CharacterAppearanceId = if options.UserId then tostring(options.UserId) else "0";
 				FollowUserId = 0;
 				GameplayPaused = false;
 				Parent = service.Players;
@@ -428,6 +434,13 @@ return function(Vargs, GetEnv)
 				data[i] = v
 			end
 
+			if data.UserId ~= -1 then
+				local success, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, data.UserId)
+				if success then
+					data.Name = actualName
+				end
+			end
+
 			data.userId = data.UserId
 			data.ToString = data.Name
 
@@ -439,12 +452,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120);
-			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120);
+			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
+			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
 
 			if chatMod then
-				return require(chatMod);
+				return require(chatMod)
 			end
+			return nil
 		end;
 
 		IsClass = function(obj, classList)
@@ -453,6 +467,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
+			return false
 		end;
 
 		ArgsToString = function(args)
@@ -463,23 +478,14 @@ return function(Vargs, GetEnv)
 			return str:sub(1, -3)
 		end;
 
-		GetPlayers = function(plr, names, data)
-			if data and type(data) ~= "table" then data = {} end
-			local noSelectors = data and data.NoSelectors
-			local dontError = data and data.DontError
-			local isServer = data and data.IsServer
-			local isKicking = data and data.IsKicking
-			--local noID = data and data.NoID;
-			local useFakePlayer = (data and data.UseFakePlayer ~= nil and data.UseFakePlayer) or true
+		GetPlayers = function(plr, argument, options)
+			options = options or {}
 
+			local parent = options.Parent or service.Players
 			local players = {}
-			--local prefix = (data and data.Prefix) or Settings.SpecialPrefix
-			--if isServer then prefix = "" end
-			local parent = (data and data.Parent) or service.Players
-
-			local lower = string.lower
-			local sub = string.sub
-			local gmatch = string.gmatch
+			local delplayers = {}
+			local addplayers = {}
+			local randplayers = {}
 
 			local function getplr(p)
 				if p then
@@ -492,16 +498,18 @@ return function(Vargs, GetEnv)
 						end
 					end
 				end
+				return nil
 			end
 
 			local function checkMatch(msg)
+				msg = string.lower(msg)
 				local doReturn
 				local PlrLevel = if plr then Admin.GetLevel(plr) else 0
 
-				for ind, data in Functions.PlayerFinders do
+				for _, data in Functions.PlayerFinders do
 					if not data.Level or (data.Level and PlrLevel >= data.Level) then
 						local check = ((data.Prefix and Settings.SpecialPrefix) or "")..data.Match
-						if (data.Absolute and lower(msg) == check) or (not data.Absolute and sub(lower(msg), 1, #check) == lower(check)) then
+						if (data.Absolute and msg == check) or (not data.Absolute and string.sub(msg, 1, #check) == string.lower(check)) then
 							if data.Absolute then
 								return data
 							else --// Prioritize absolute matches over non-absolute matches
@@ -515,66 +523,89 @@ return function(Vargs, GetEnv)
 			end
 
 			if plr == nil then
+				--// Select all players
 				for _, v in parent:GetChildren() do
 					local p = getplr(v)
 					if p then
 						table.insert(players, p)
 					end
 				end
-			elseif plr and not names then
+			elseif plr and not argument then
+				--// Default to the executor ("me")
 				return {plr}
 			else
-				if sub(lower(names), 1, 2) == "##" then
-					error("String passed to GetPlayers is filtered: ".. tostring(names), 2)
-				else
-					for s in gmatch(names, '([^,]+)') do
-						local plrs = 0
-						local function plus() plrs += 1 end
+				if argument:match("^##") then
+					error("String passed to GetPlayers is filtered: ".. tostring(argument), 2)
+				end
 
+				for s in argument:gmatch("([^,]+)") do
+					local plrCount = 0
+					local function plus() plrCount += 1 end
+
+					if not options.NoSelectors then
 						local matchFunc = checkMatch(s)
-						if matchFunc and not noSelectors then
-							matchFunc.Function(s, plr, parent, players, getplr, plus, isKicking, isServer, dontError)
-						else
+						if matchFunc then
+							matchFunc.Function(
+								s,
+								plr,
+								parent,
+								players,
+								delplayers,
+								addplayers,
+								randplayers,
+								getplr,
+								plus,
+								options.IsKicking,
+								options.IsServer,
+								options.DontError,
+								options.UseFakePlayer,
+								options.AllowUnknownUsers
+							)
+						end
+					end
+
+					if plrCount == 0 then
+						--// Check for display names
+						for _, v in parent:GetChildren() do
+							local p = getplr(v)
+							if p and p.ClassName == "Player" and p.DisplayName:lower():match("^"..s) then
+								table.insert(players, p)
+								plus()
+							end
+						end
+
+						if plrCount == 0 then
+							--// Check for usernames
 							for _, v in parent:GetChildren() do
 								local p = getplr(v)
-								if p and p.ClassName == "Player" and sub(lower(p.DisplayName), 1, #s) == lower(s) then
+								if p and p.ClassName == "Player" and p.Name:lower():match("^"..s) then
 									table.insert(players, p)
 									plus()
 								end
 							end
 
-							if plrs == 0 then
-								for _, v in parent:GetChildren() do
-									local p = getplr(v)
-									if p and p.ClassName == "Player" and sub(lower(p.Name), 1, #s) == lower(s) then
-										table.insert(players, p)
+							if plrCount == 0 then
+								if options.UseFakePlayer then
+									--// Attempt to retrieve non-ingame user
+
+									local UserId = Functions.GetUserIdFromNameAsync(s)
+									if UserId or options.AllowUnknownUsers then
+										table.insert(players, Functions.GetFakePlayer({
+											Name = s;
+											DisplayName = s;
+											UserId = UserId or -1;
+										}))
 										plus()
 									end
 								end
-							end
 
-							if plrs == 0 and useFakePlayer then
-								local ran, userid = pcall(function() return service.Players:GetUserIdFromNameAsync(s) end)
-								if ran and tonumber(userid) then
-									local fakePlayer = Functions.GetFakePlayer({
-										Name = s;
-										DisplayName = s;
-										IsFakePlayer = true;
-										CharacterAppearanceId = tostring(userid);
-										UserId = tonumber(userid);
-										Parent = service.New("Folder");
+								if plrCount == 0 and not options.DontError then
+									Remote.MakeGui(plr, "Output", {
+										Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
+											else "No players matching '"..s.."' were found!";
 									})
-
-									table.insert(players, fakePlayer)
-									plus()
 								end
 							end
-						end
-
-						if plrs == 0 and not dontError then
-							Remote.MakeGui(plr, "Output", {
-								Message = "No players matching '"..s.."' were found!"
-							})
 						end
 					end
 				end
@@ -582,6 +613,8 @@ return function(Vargs, GetEnv)
 
 			--// The following is intended to prevent name spamming (eg. :re scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel...)
 			--// It will also prevent situations where a player falls within multiple player finders (eg. :re group-1928483,nonadmins,radius-50 (one player can match all 3 of these))
+			--// Edited to adjust removals and randomizers.
+			
 			local filteredList = {}
 			local checkList = {}
 
@@ -592,7 +625,94 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			return filteredList
+			local delFilteredList = {}
+			local delCheckList = {}
+
+			for _, v in delplayers do
+				if not delCheckList[v] then
+					table.insert(delFilteredList, v)
+					delCheckList[v] = true
+				end
+			end
+
+			local addFilteredList = {}
+			local addCheckList = {}
+
+			for _, v in addplayers do
+				if not addCheckList[v] then
+					table.insert(addFilteredList, v)
+					addCheckList[v] = true
+				end
+			end
+
+			local removalSuccessList = {}
+
+			for i, v in filteredList do
+				for j, w in delFilteredList do
+					if v.Name == w.Name then
+						table.remove(filteredList,i)
+						table.insert(removalSuccessList, w)
+					end
+				end
+			end
+
+
+			for j, w in addFilteredList do
+				table.insert(filteredList, w)
+			end
+
+			local checkList2 = {}
+			local finalFilteredList = {}
+
+			for _, v in filteredList do
+				if not checkList2[v] then
+					table.insert(finalFilteredList, v)
+					checkList2[v] = true
+				end
+			end
+
+
+			local comboTableCheck = {}
+
+			for _, v in finalFilteredList do
+				table.insert(comboTableCheck, v)
+			end
+			for _, v in delFilteredList do
+				table.insert(comboTableCheck, v)
+			end
+
+			local function rplrsort()
+				local children = parent:GetChildren()
+				local childcount = #children
+				local excludecount = #comboTableCheck
+				if excludecount < childcount then
+					local rand = children[math.random(#children)]
+					local rp = getplr(rand)
+
+					for _, v in comboTableCheck do
+						if v.Name == rp.Name then
+							rplrsort()
+							return
+						end
+					end
+
+					table.insert(finalFilteredList, rp)
+
+					local comboTableCheck = {}
+					for _, v in finalFilteredList do
+						table.insert(comboTableCheck, v)
+					end
+					for _, v in delFilteredList do
+						table.insert(comboTableCheck, v)
+					end
+				end
+			end
+
+			for i, v in randplayers do
+				rplrsort()
+			end
+
+			return finalFilteredList
 		end;
 
 		GetRandom = function(pLen)
@@ -603,12 +723,11 @@ return function(Vargs, GetEnv)
 			local random = math.random
 			local format = string.format
 
-			local Len = (type(pLen) == "number" and pLen) or random(5,10) --// reru
-			local Res = {};
-			for Idx = 1, Len do
-				Res[Idx] = format('%02x', random(126));
-			end;
-			return table.concat(Res)
+			local res = {}
+			for i = 1, if type(pLen) == "number" then pLen else random(5, 10) do
+				res[i] = format("%02x", random(126))
+			end
+			return table.concat(res)
 		end;
 
 
@@ -791,19 +910,19 @@ return function(Vargs, GetEnv)
 			end))
 		end;
 
-		Hint = function(message, players, time)
-			time = time or (#tostring(message) / 19 + 2.5);
+		Hint = function(message, players, duration)
+			duration = duration or (#tostring(message) / 19 + 2.5)
 
 			for _, v in players do
 				Remote.MakeGui(v, "Hint", {
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Message = function(title, message, players, scroll, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Message = function(title, message, players, scroll, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Message")
@@ -811,30 +930,30 @@ return function(Vargs, GetEnv)
 					Title = title;
 					Message = message;
 					Scroll = scroll;
-					Time = time
+					Time = duration;
 				})
 			end
 		end;
 
-		Notify = function(title, message, players, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Notify = function(title, message, players, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
 				Remote.RemoveGui(v, "Notify")
 				Remote.MakeGui(v, "Notify", {
 					Title = title;
 					Message = message;
-					Time = time;
+					Time = duration;
 				})
 			end
 		end;
 
-		Notification = function(title, message, players, tim, icon)
+		Notification = function(title, message, players, duration, icon)
 			for _, v in players do
 				Remote.MakeGui(v, "Notification", {
 					Title = title;
 					Message = message;
-					Time = tim;
+					Time = duration;
 					Icon = server.MatIcons[icon or "Info"];
 				})
 			end
@@ -850,7 +969,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		SetLighting = function(prop,value)
-			if service.Lighting[prop]~=nil then
+			if service.Lighting[prop] ~= nil then
 				service.Lighting[prop] = value
 				Variables.LightingSettings[prop] = value
 				for _, p in service.GetPlayers() do
@@ -1002,6 +1121,70 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
+		makeRobot = function(player, num, health, speed, damage, walk, attack, friendly)
+			local Deps = server.Deps
+
+			local char = player.Character
+			local torso = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart
+			local pos = torso.CFrame
+
+			local clone
+			char.Archivable = true
+			clone = char:Clone()
+			char.Archivable = false
+
+			for i = 1, num do
+				local new = clone:Clone()
+				local hum = new:FindFirstChildOfClass("Humanoid")
+
+				local brain = Deps.Assets.BotBrain:Clone()
+				local event = brain.Event
+
+				local oldAnim = new:FindFirstChild("Animate")
+				local isR15 = hum.RigType == "R15"
+				local anim = isR15 and Deps.Assets.R15Animate:Clone() or Deps.Assets.R6Animate:Clone()
+
+				new.Name = player.Name
+				new.HumanoidRootPart.CFrame = pos*CFrame.Angles(0, math.rad((360/num)*i), 0) * CFrame.new((num*0.2)+5, 0, 0)
+
+				hum.WalkSpeed = speed
+				hum.MaxHealth = health
+				hum.Health = health
+
+				if oldAnim then
+					oldAnim:Destroy()
+				end
+
+				anim.Parent = new
+				brain.Parent = new
+
+				anim.Disabled = false
+				brain.Disabled = false
+				new.Parent = workspace
+
+				wait()
+
+				event:Fire("SetSetting", {
+					Creator = player;
+					Friendly = friendly;
+					TeamColor = player.TeamColor;
+					Attack = attack;
+					Swarm = attack;
+					Walk = walk;
+					Damage = damage;
+					Health = health;
+					WalkSpeed = speed;
+					SpecialKey = math.random();
+				})
+
+				if walk then
+					event:Fire("Init")
+				end
+
+				table.insert(Variables.Objects, new)
+			end
+		end,
+
 		GetJoints = function(character)
 			local temp = {}
 			for _,v in character:GetDescendants() do
@@ -1134,6 +1317,20 @@ return function(Vargs, GetEnv)
 			return AllGrabbedPlayers
 		end;
 
+		GetUserIdFromNameAsync = function(name)
+			local cache = Admin.UserIdCache[name]
+			if not cache then
+				local success, UserId = pcall(service.Players.GetUserIdFromNameAsync, service.Players, name)
+
+				if success then
+					Admin.UserIdCache[name] = UserId
+					return UserId
+				end
+			end
+
+			return cache
+		end;
+
 		Shutdown = function(reason)
 			Functions.Message(Settings.SystemTitle, "The server is shutting down...", service.Players:GetPlayers(), false, 5)
 			task.wait(1)
@@ -1165,14 +1362,15 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckMatch = function(check,match)
+		CheckMatch = function(check, match)
 			if check == match then
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				local good = false
 				local num = 0
-				for k,m in check do
-					if m == match[k] then
+
+				for k, v in check do
+					if v == match[k] then
 						good = true
 					else
 						good = false
@@ -1181,10 +1379,23 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				if good and num == Functions.CountTable(check) then
-					return true
-				end
+				return good and num == Functions.CountTable(match)
 			end
+			return false
+		end;
+
+		LaxCheckMatch = function(check, match)
+			if check == match then
+				return true
+			elseif type(check) == "table" and type(match) == "table" then
+				for k, v in match do
+					if check[k] ~= v then
+						return false
+					end
+				end
+				return true
+			end
+			return false
 		end;
 
 		DSKeyNormalize = function(intab, reverse)
@@ -1250,7 +1461,7 @@ return function(Vargs, GetEnv)
 			newCharacterModel.Parent = workspace
 
 			-- hacky way to fix other people being unable to see animations.
-			for _=1,2 do
+			for _ = 1, 2 do
 				if Animate then
 					Animate.Disabled = not Animate.Disabled
 				end
@@ -1259,11 +1470,15 @@ return function(Vargs, GetEnv)
 			return newCharacterModel
 		end;
 
-		CreateClothingFromImageId = function(clothingtype, Id)
-			local Clothing = Instance.new(clothingtype)
-			Clothing.Name = clothingtype
-			Clothing[clothingtype == "Shirt" and "ShirtTemplate" or clothingtype == "Pants" and "PantsTemplate" or clothingtype == "ShirtGraphic" and "Graphic"] = string.format("rbxassetid://%d", Id)
-			return Clothing
+		CreateClothingFromImageId = function(clothingType, id)
+			return service.New(clothingType, {
+				Name = clothingType;
+				[assert(if clothingType == "Shirt" then "ShirtTemplate"
+					elseif clothingType == "Pants" then "PantsTemplate"
+					elseif clothingType == "ShirtGraphic" then "Graphic"
+					else nil, "Invalid clothing type")
+				] = "rbxassetid://"..id;
+			})
 		end;
 
 		ParseColor3 = function(str: string?)
