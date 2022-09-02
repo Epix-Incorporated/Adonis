@@ -5,6 +5,7 @@ return {
 	"";
 	"[Patch v237o 2022-09-02 14:35 EST] @Expertcoderz";
 	"Rewrote Admin.DoCheck (certain checks should now work as intended)";
+	"Fix Console UI issue";
 	"(Git/fxeP1) QoL fixes (#901)";
 	"(Git/fxeP1) Also add TimeBan to first join check (#904)";
 	"";
