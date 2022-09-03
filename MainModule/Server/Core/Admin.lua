@@ -416,10 +416,10 @@ return function(Vargs, GetEnv)
 
 			local pUnWrapped = service.UnWrap(pObj)
 
-			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(p)
-				elseif pType == "string" then service.Players:FindFirstChild(p)
+			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(pObj)
+				elseif pType == "string" then service.Players:FindFirstChild(pObj)
 				elseif typeof(pUnWrapped) == "Instance" and pUnWrapped:IsA("Player") then pUnWrapped
-				elseif pType == "userdata" then service.Players:GetPlayerByUserId(p.UserId)
+				elseif pType == "userdata" then service.Players:GetPlayerByUserId(pObj.UserId)
 				else nil
 			if not plr then
 				return false
