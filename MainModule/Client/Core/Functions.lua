@@ -674,8 +674,8 @@ return function(Vargs, GetEnv)
 				Name = "ADONIS_CAPE";
 				Anchored = false;
 				CanCollide = false;
-        Masless = true;
-        CanQuery = false;
+				Massless = true;
+				CanQuery = false;
 				Size = Vector3.new(2, 4, 0.1);
 				Position = torso.Position;
 				BrickColor = BrickColor.new(color);
