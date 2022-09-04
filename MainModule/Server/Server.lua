@@ -519,8 +519,12 @@ return service.NewProxy({
 		setfenv(1, setmetatable({}, {__metatable = unique}))
 		data = service.Wrap(data or {})
 
-		if not data or not data.Loader then
-			warn("WARNING: MainModule loaded without using the loader;")
+		if not (data and data.Loader) then
+			warn("WARNING: MainModule loaded without using the loader!")
+		end
+
+		if data and data.ModuleID == 8612978896 then
+			warn("Currently using Adonis Nightly MainModule; intended for testing & development only!")
 		end
 
 		--// Server Variables
@@ -532,7 +536,7 @@ return service.NewProxy({
 			local clone = table.clone(tab)
 
 			if recursive then
-				for i,v in pairs(clone) do
+				for i, v in pairs(clone) do
 					if type(v) == "table" then
 						clone[i] = CloneTable(v, recursive)
 					end
@@ -577,19 +581,19 @@ return service.NewProxy({
 		})
 
 		for _, module in ipairs(Folder.Shared:GetChildren()) do
-			module:Clone().Parent = shared;
+			module:Clone().Parent = shared
 		end
 
 		for _, module in pairs(data.ClientPlugins or {}) do
-			module:Clone().Parent = server.Client.Plugins;
+			module:Clone().Parent = server.Client.Plugins
 		end
 
 		for _, theme in pairs(data.Themes or {}) do
-			theme:Clone().Parent = server.Client.UI;
+			theme:Clone().Parent = server.Client.UI
 		end
 
 		for _, pkg in pairs(data.Packages or {}) do
-			LoadPackage(pkg, Folder.Parent, false);
+			LoadPackage(pkg, Folder.Parent, false)
 		end
 
 		for setting, value in pairs(server.Defaults.Settings) do

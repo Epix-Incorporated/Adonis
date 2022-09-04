@@ -66,12 +66,16 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 	server = nil
 	client = nil
 
+	local Routine = env.Routine
+
 	local service;
 	local passOwnershipCache = {}
 	local assetOwnershipCache = {}
 	local assetInfoCache = {}
 	local groupInfoCache = {}
-	local toBoolean = function(stat: any): boolean if stat then return true else return false end end
+	local toBoolean = function(stat: any): boolean
+		return stat and true or false
+	end
 
 	local WaitingEvents = {}
 	local HookedEvents = {}
@@ -256,7 +260,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local Wrapped = service.Wrapped
 				local WrapArgs = service.WrapEventArgs
 				local UnWrapArgs = service.UnWrapEventArgs
-				local event = Wrap(service.New("BindableEvent"), client)
+				local event = Wrap(service.New("BindableEvent"), main)
+
+				--// Unused
+				--[[
 				local hooks = {}
 
 				event.Event:Connect(function(...)
@@ -264,6 +271,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						return v.Function(...)
 					end
 				end)
+				]]
 
 				event:SetSpecial("Wait", function(i, timeout)
 					local special = math.random()
@@ -314,7 +322,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						if con == 2 or con == special then
 							func(unpack(WrapArgs(packedResult), 1, packedResult.n))
 						end
-					end), client)
+					end), main)
 
 					event2:SetSpecial("Fire", function(i, ...)
 						local packedResult = table.pack(...)
@@ -341,7 +349,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				event:SetSpecial("wait", event.Wait)
 				event:SetSpecial("connect", event.Connect)
 				event:SetSpecial("connectOnce", event.ConnectOnce)
-				event:SetSpecial("Event", service.Wrap(event.Event, client))
+				event:SetSpecial("Event", service.Wrap(event.Event, main))
 				event.Event:SetSpecial("Wait", event.Wait)
 				event.Event:SetSpecial("wait", event.Wait)
 				event.Event:SetSpecial("Connect", event.Connect)
@@ -664,14 +672,14 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		ExtractLines = function(str)
-			local strs = {}
+			local strs = table.create(#str+1)
 			local new = ""
 			for i=1,#str+1 do
-				if string.byte(str:sub(i,i)) == 10 or i == #str+1 then
+				if string.byte(string.sub(str, i,i)) == 10 or i == #str+1 then
 					table.insert(strs,new)
 					new = ""
 				else
-					local char = str:sub(i,i)
+					local char = string.sub(str,i,i)
 					if string.byte(char) < 32 then
 						char = ""
 					end
@@ -681,7 +689,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return strs
 		end;
 
-		Filter = function(str,from,to)
+		Filter = function(str, from, to)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -722,7 +730,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		BroadcastFilter = function(str,from)
+		BroadcastFilter = function(str, from)
 			if not utf8.len(str) then
 				return "Filter Error"
 			end
@@ -977,7 +985,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		EscapeControlCharacters = function(str)
-			return str:gsub("%c", {
+			return string.gsub(str, "%c", {
 				["\a"] = "\\a",
 				["\b"] = "\\b",
 				["\f"] = "\\f",
@@ -988,9 +996,17 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			})
 		end;
 
-		GetTime = function()
-			return os.time();
+		SanitizeXML = function(str)
+			return string.gsub(str, "['\"<>&]", {
+				["'"] = "&apos;",
+				["\""] = "&quot;",
+				["<"] = "&lt;",
+				[">"] = "&gt;",
+				["&"] = "&amp;"
+			})
 		end;
+
+		GetTime = os.time;
 
 		FormatTime = function(optTime, options)
 			if options == true then options = {WithDate = true} end
@@ -998,7 +1014,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			local formatString = options.FormatString
 			if not formatString then
-				formatString = options.WithWrittenDate and "LL HH:mm" or (options.WithDate and "L HH:mm" or "HH:mm")
+				formatString = options.WithWrittenDate and "LL HH:mm:ss" or (options.WithDate and "L HH:mm:ss" or "HH:mm:ss")
 			end
 
 			local tim = DateTime.fromUnixTimestamp(optTime or service.GetTime())
@@ -1016,8 +1032,13 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		FormatPlayer = function(plr, withUserId)
 			if not plr then return "%UNKNOWN%" end
+			if plr.Name == "[Unknown User]" then
+				return "[Unknown User"..(if plr.UserId and plr.UserId ~= -1 then " "..plr.UserId else "").."]"
+			end
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName or "???", plr.Name or "???")
-			if withUserId then str ..= string.format(" [%d]", plr.UserId or 0) end
+			if withUserId then
+				str ..= string.format(" [%s]", if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?")
+			end
 			return str
 		end;
 
@@ -1057,8 +1078,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return (if num < 0 then "-" else "") .. newInt:reverse() .. if dec then "."..dec else ""
 		end;
 
-		OwnsAsset = function(p,id)
-			return service.CheckAssetOwnership(p, id)
+		OwnsAsset = function(...)
+			return service.CheckAssetOwnership(...)
 		end;
 
 		GetProductInfo = function(assetId, infoType)
@@ -1183,7 +1204,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			if groupId > 0 then
 				local groupInfo = service.GetGroupInfo(groupId)
 
-				if groupInfo and groupInfo.Created then
+				if groupInfo and groupInfo.Owner then
 					return groupInfo.Owner.Id
 				end
 			end

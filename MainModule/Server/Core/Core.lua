@@ -1,20 +1,14 @@
-server = nil
-service = nil
-cPcall = nil
-Routine = nil
-GetEnv = nil
-origEnv = nil
-logError = nil
+--!nonstrict
+type TableData = {
+	Type: string,
+	Table: {string}|string,
+	Setting: string?,
+	Value: any?,
+	LaxCheck: boolean?,
 
-local function disableAllGUIs(folder: Folder)
-	for _, v in ipairs(folder:GetChildren()) do
-		if v:IsA("ScreenGui") then
-			v.Enabled = false
-		elseif v:IsA("Folder") or v:IsA("Model") then
-			disableAllGUIs(v)
-		end
-	end
-end;
+	Action: string?,
+	Time: number?
+}
 
 --// Core
 return function(Vargs, GetEnv)
@@ -26,6 +20,7 @@ return function(Vargs, GetEnv)
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
 	local AddLog, Queue, TrackTask
+	local logError = env.logError
 	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -42,6 +37,7 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 		Queue = service.Queue;
 		TrackTask = service.TrackTask;
+		logError = logError or env.logError;
 
 		--// Core variables
 		Core.Themes = data.Themes or {}
@@ -55,7 +51,16 @@ return function(Vargs, GetEnv)
 
 		service.DataStoreService = require(Deps.MockDataStoreService)(Settings.LocalDatastore)
 
-		disableAllGUIs(server.Client.UI);
+		local function disableAllGuis(folder: Folder)
+			for _, v in folder:GetChildren() do
+				if v:IsA("ScreenGui") then
+					v.Enabled = false
+				elseif v:IsA("Folder") or v:IsA("Model") then
+					disableAllGuis(v)
+				end
+			end
+		end
+		disableAllGuis(server.Client.UI)
 
 		Core.Init = nil;
 		AddLog("Script", "Core Module Initialized")
@@ -71,8 +76,9 @@ return function(Vargs, GetEnv)
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
-			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in pairs(Core.RemoteEvent) do if c == v then return true end end end)() then
-				wait();
+			task.wait(1/60)
+
+			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in Core.RemoteEvent do if c == v then return true end end end)() then
 				Core.MakeEvent()
 			end
 		end)
@@ -81,14 +87,15 @@ return function(Vargs, GetEnv)
 		Core.DataStore = Core.GetDataStore()
 		if Core.DataStore then
 			TrackTask("Thread: DSLoadAndHook", function()
-				pcall(Core.LoadData)
+				--// Catch any errors and print it to the console; allow for debugging.
+				task.defer(env.Pcall, Core.LoadData)
 			end)
 		end
 
 		--// Save all data on server shutdown & set GAME_CLOSING
 		game:BindToClose(function()
 			Core.GAME_CLOSING = true;
-			Core.SaveAllPlayerData();
+			task.defer(Core.SaveAllPlayerData);
 		end);
 
 		--// Start API
@@ -157,6 +164,11 @@ return function(Vargs, GetEnv)
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
 
+			LoadAdminsFromDS = true;
+
+			WebPanel_ApiKey = true;
+			WebPanel_Enabled = true;
+
 			["Settings.Ranks.Creators.Users"] = true;
 			["Admin.SpecialLevels"] = true;
 
@@ -180,22 +192,22 @@ return function(Vargs, GetEnv)
 
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
-				Core.FixingEvent = true;
+				Core.FixingEvent = true
 
-				for name,event in pairs(Core.RemoteEvent.Events) do
+				for name,event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
 				pcall(function() service.Delete(Core.RemoteEvent.Object) end)
 				pcall(function() service.Delete(Core.RemoteEvent.Function) end)
 
-				Core.FixingEvent = false;
-				Core.RemoteEvent = nil;
+				Core.FixingEvent = false
+				Core.RemoteEvent = nil
 			end
 		end;
 
 		MakeEvent = function()
-			local remoteParent = service.ReplicatedStorage;
+			local remoteParent = service.ReplicatedStorage
 			local ran, err = pcall(function()
 				if server.Running then
 					local rTable = {};
@@ -222,24 +234,24 @@ return function(Vargs, GetEnv)
 						end)
 					end
 
-					Core.DisconnectEvent();
-					Core.TripDet = tripDet;
+					Core.DisconnectEvent()
+					Core.TripDet = tripDet
 
-					rTable.Events = {};
-					rTable.Object = event;
-					rTable.Function = func;
+					rTable.Events = {}
+					rTable.Object = event
+					rTable.Function = func
 
-					rTable.Events.Security = secure(event, event.Name, remoteParent);
-					rTable.Events.FuncSec = secure(func, func.Name, event);
+					rTable.Events.Security = secure(event, event.Name, remoteParent)
+					rTable.Events.FuncSec = secure(func, func.Name, event)
 
 					func.OnServerInvoke = Process.Remote;
-					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote);
+					rTable.Events.ProcessEvent = service.RbxEvent(event.OnServerEvent, Process.Remote)
 
-					Core.RemoteEvent = rTable;
-					event.Parent = remoteParent;
-					secureTriggered = false;
+					Core.RemoteEvent = rTable
+					event.Parent = remoteParent
+					secureTriggered = false
 
-					AddLog(Logs.Script,{
+					AddLog(Logs.Script, {
 						Text = "Created RemoteEvent";
 						Desc = "RemoteEvent was successfully created";
 					})
@@ -253,7 +265,7 @@ return function(Vargs, GetEnv)
 
 		UpdateConnections = function()
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") then
 						Core.Connections[cli] = cli:GetPlayer()
 					end
@@ -263,7 +275,7 @@ return function(Vargs, GetEnv)
 
 		UpdateConnection = function(p)
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						Core.Connections[cli] = p
 					end
@@ -273,7 +285,7 @@ return function(Vargs, GetEnv)
 
 		GetNetworkClient = function(p)
 			if service.NetworkServer then
-				for _, cli in ipairs(service.NetworkServer:GetChildren()) do
+				for _, cli in service.NetworkServer:GetChildren() do
 					if cli:IsA("NetworkReplicator") and cli:GetPlayer() == p then
 						return cli
 					end
@@ -281,16 +293,16 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-	 	MakeClient = function(parent)
+		MakeClient = function(parent)
 			if not parent and Core.ClientLoader then
-				local loader = Core.ClientLoader;
-				loader.Removing = true;
+				local loader = Core.ClientLoader
+				loader.Removing = true
 
-				for _, v in pairs(loader.Events) do
+				for _, v in loader.Events do
 					v:Disconnect()
 				end
 
-				loader.Object:Destroy();
+				loader.Object:Destroy()
 			end;
 
 			local depsName = Functions:GetRandom()
@@ -321,8 +333,8 @@ return function(Vargs, GetEnv)
 			folder.Parent = parentObj;
 
 			if not parent then
-				local oName = folder.Name;
-				clientLoader.Object = folder;
+				local oName = folder.Name
+				clientLoader.Object = folder
 				clientLoader.Events = {}
 
 				clientLoader.Events[folder] = folder.Changed:Connect(function()
@@ -330,55 +342,51 @@ return function(Vargs, GetEnv)
 						if folder.Name ~= oName then
 							folder.Name = oName;
 						elseif folder.Parent ~= parentObj then
-							clientLoader.Removing = true;
-							Core.MakeClient();
+							clientLoader.Removing = true
+							Core.MakeClient()
 						end
 					end
 				end)
 
-				local function sec(child)
-					local oParent = child.Parent;
-					local oName = child.Name;
+				for _, child in folder:GetDescendants() do
+					local oParent = child.Parent
+					local oName = child.Name
 
 					clientLoader.Events[child.Changed] = child.Changed:Connect(function(c)
 						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
 							if child.Parent ~= oParent or child == specialVal then
-								Core.MakeClient();
+								Core.MakeClient()
 							end
 						end
 					end)
 
 					local nameEvent = child:GetPropertyChangedSignal("Name"):Connect(function()
 						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
-							child.Name = oName;
+							child.Name = oName
 						end
 					end)
 
-					clientLoader.Events[nameEvent] = nameEvent;
+					clientLoader.Events[nameEvent] = nameEvent
 					clientLoader.Events[child.AncestryChanged] = child.AncestryChanged:Connect(function()
 						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
-							Core.MakeClient();
+							Core.MakeClient()
 						end
 					end)
-				end;
-
-				for _, child in ipairs(folder:GetDescendants()) do
-					sec(child);
 				end
 
 				folder.DescendantAdded:Connect(function(d)
 					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
-						Core.MakeClient();
+						Core.MakeClient()
 					end
 				end)
 
 				folder.DescendantRemoving:Connect(function(d)
 					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
-						Core.MakeClient();
+						Core.MakeClient()
 					end
 				end)
 
-				Core.ClientLoader = clientLoader;
+				Core.ClientLoader = clientLoader
 			end
 
 
@@ -388,7 +396,7 @@ return function(Vargs, GetEnv)
 
 			clientLoader.Removing = false;
 
-			AddLog("Script", "Created client");
+			AddLog("Script", "Created client")
 		end;
 
 		HookClient = function(p)
@@ -433,17 +441,27 @@ return function(Vargs, GetEnv)
 				--// Event only fires AFTER the client is alive and well
 				local event; event = service.Events.ClientLoaded:Connect(function(plr)
 					if p == plr and container.Parent == parentObj then
-						container.Parent = nil --container:Destroy(); -- Destroy update causes an issue with this pretty sure
-						p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+
+						--container:Destroy(); -- Destroy update causes an issue with this pretty sure
+						container.Parent = nil
+						local leaveEvent; leaveEvent = p.AncestryChanged:Connect(function() -- after/on remove, not on removing...
+							task.wait()
 							if p.Parent == nil then
-								pcall(function() container:Destroy() end) -- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								-- Prevent potential memory leak and ensure this gets properly murdered when they leave and it's no longer needed
+								pcall(function()
+									container:Destroy()
+								end)
 							end
 						end)
+
+						leaveEvent:Disconnect()
+						leaveEvent = nil
 						event:Disconnect();
+						event = nil
 					end
 				end)
 
-				local ok,err = pcall(function()
+				local ok, err = pcall(function()
 					container.Parent = parentObj
 				end)
 
@@ -479,10 +497,10 @@ return function(Vargs, GetEnv)
 		ExecutePermission = function(scr, code, isLocal)
 			local fixscr = service.UnWrap(scr)
 
-			for _, val in pairs(Core.ExecuteScripts) do
+			for _, val in Core.ExecuteScripts do
 				if not isLocal or (isLocal and val.Type == "LocalScript") then
 					if (service.UnWrap(val.Script) == fixscr or code == val.Code) and (not val.runLimit or (val.runLimit ~= nil and val.Executions <= val.runLimit)) then
-						val.Executions = val.Executions+1
+						val.Executions += 1
 
 						return {
 							Source = val.Source;
@@ -495,16 +513,16 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetScript = function(scr,code)
-			for i,val in pairs(Core.ExecuteScripts) do
+		GetScript = function(scr, code)
+			for i, val in Core.ExecuteScripts do
 				if val.Script == scr or code == val.Code then
-					return val,i
+					return val, i
 				end
 			end
 		end;
 
 		UnRegisterScript = function(scr)
-			for i,dat in pairs(Core.ExecuteScripts) do
+			for i, dat in Core.ExecuteScripts do
 				if dat.Script == scr or dat == scr then
 					table.remove(Core.ExecuteScripts, i)
 					return dat
@@ -518,16 +536,16 @@ return function(Vargs, GetEnv)
 			data.Type = data.Script.ClassName
 			data.Wrapped = service.Wrap(data.Script)
 			data.Wrapped:SetSpecial("Clone",function()
-				return Core.RegisterScript {
+				return Core.RegisterScript({
 					Script = service.UnWrap(data.Script):Clone();
 					Code = data.Code;
 					Source = data.Source;
 					noCache = data.noCache;
 					runLimit = data.runLimit;
-				}
+				})
 			end)
 
-			for ind,scr in pairs(Core.ExecuteScripts) do
+			for ind,scr in Core.ExecuteScripts do
 				if scr.Script == data.Script then
 					return scr.Wrapped or scr.Script
 				end
@@ -537,60 +555,58 @@ return function(Vargs, GetEnv)
 				data.Code = Functions.GetRandom()
 			end
 
-			table.insert(Core.ExecuteScripts,data)
+			table.insert(Core.ExecuteScripts, data)
 			return data.Wrapped
 		end;
 
 		GetLoadstring = function()
-			local newLoad = Deps.Loadstring:Clone();
-			local lbi = server.Shared.FiOne:Clone();
+			local newLoad = Deps.Loadstring:Clone()
+			local lbi = server.Shared.FiOne:Clone()
 
 			lbi.Parent = newLoad
 
-			return newLoad;
+			return newLoad
 		end;
 
-		Bytecode = function(str)
+		Bytecode = function(str: string)
 			if Core.BytecodeCache[str] then return Core.BytecodeCache[str] end
 			local f, buff = Core.Loadstring(str)
 			Core.BytecodeCache[str] = buff
 			return buff
 		end;
 
-		NewScript = function(type,source,allowCodes,noCache,runLimit)
-			local ScriptType
+		NewScript = function(scriptType: string, source: string, allowCodes: boolean?, noCache: boolean?, runLimit: number?)
+			local scr = assert(
+				if scriptType == "Script" then Deps.ScriptBase:Clone()
+					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
+					else nil,
+				"Invalid script type '"..tostring(scriptType).."'"
+			)
+
 			local execCode = Functions.GetRandom()
 
-			if type == 'Script' then
-				ScriptType = Deps.ScriptBase:Clone()
-			elseif type == 'LocalScript' then
-				ScriptType = Deps.LocalScriptBase:Clone()
+			scr.Name = "[Adonis] "..scriptType
+
+			if allowCodes then
+				service.New("StringValue", {
+					Name = "Execute",
+					Value = execCode,
+					Parent = scr,
+				})
 			end
 
-			if ScriptType then
-				ScriptType.Name = "[Adonis] ".. type
+			local wrapped = Core.RegisterScript({
+				Script = scr;
+				Code = execCode;
+				Source = Core.Bytecode(source);
+				noCache = noCache;
+				runLimit = runLimit;
+			})
 
-				if allowCodes then
-					service.New("StringValue", {
-						Name = "Execute",
-						Value = execCode,
-						Parent = ScriptType,
-					})
-				end
-
-				local wrapped = Core.RegisterScript {
-					Script = ScriptType;
-					Code = execCode;
-					Source = Core.Bytecode(source);
-					noCache = noCache;
-					runLimit = runLimit;
-				}
-
-				return wrapped or ScriptType, ScriptType, execCode
-			end
+			return wrapped or scr, scr, execCode
 		end;
 
-		SavePlayer = function(p,data)
+		SavePlayer = function(p, data)
 			local key = tostring(p.UserId)
 			Core.PlayerData[key] = data
 		end;
@@ -599,9 +615,9 @@ return function(Vargs, GetEnv)
 			return {
 				Donor = {
 					Cape = {
-						Image = '0';
-						Color = 'White';
-						Material = 'Neon';
+						Image = "0";
+						Color = "White";
+						Material = "Neon";
 					};
 					Enabled = false;
 				};
@@ -612,8 +628,7 @@ return function(Vargs, GetEnv)
 				Aliases = {};
 				Client = {};
 				Warnings = {};
-				AdminPoints = 0;
-			};
+			}
 		end;
 
 		GetPlayer = function(p)
@@ -626,12 +641,12 @@ return function(Vargs, GetEnv)
 
 				if Core.DataStore then
 					local data = Core.GetData(key)
-					if data and type(data) == "table" then
-						data.AdminNotes = (data.AdminNotes and Functions.DSKeyNormalize(data.AdminNotes, true)) or {}
-						data.Warnings = (data.Warnings and Functions.DSKeyNormalize(data.Warnings, true)) or {}
+					if type(data) == "table" then
+						data.AdminNotes = if data.AdminNotes then Functions.DSKeyNormalize(data.AdminNotes, true) else {}
+						data.Warnings = if data.Warnings then Functions.DSKeyNormalize(data.Warnings, true) else {}
 
 						local BLOCKED_SETTINGS = Core.PlayerDataKeyBlacklist
-						for i,v in pairs(data) do
+						for i, v in data do
 							if not BLOCKED_SETTINGS[i] then
 								PlayerData[i] = v
 							end
@@ -646,16 +661,16 @@ return function(Vargs, GetEnv)
 		end;
 
 		ClearPlayer = function(p)
-			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p);
+			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p)
 		end;
 
 		SavePlayerData = function(p, customData)
-			local key = tostring(p.UserId);
-			local pData = customData or Core.PlayerData[key];
+			local key = tostring(p.UserId)
+			local pData = customData or Core.PlayerData[key]
 
 			if Core.DataStore then
 				if pData then
-					local data = service.CloneTable(pData);
+					local data = service.CloneTable(pData)
 
 					data.LastChat = nil
 					data.AdminRank = nil
@@ -667,19 +682,19 @@ return function(Vargs, GetEnv)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
 					Core.SetData(key, data)
-					AddLog(Logs.Script,{
+					AddLog(Logs.Script, {
 						Text = "Saved data for ".. p.Name;
 						Desc = "Player data was saved to the datastore";
 					})
 
-					pData.LastDataSave = os.time();
+					pData.LastDataSave = os.time()
 				end
 			end
 		end;
 
 		SaveAllPlayerData = function(queueWaitTime)
 			local TrackTask = service.TrackTask
-			for key,pdata in pairs(Core.PlayerData) do
+			for key,pdata in Core.PlayerData do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
@@ -700,7 +715,7 @@ return function(Vargs, GetEnv)
 		end;
 		GetDataStore = function()
 			local ran,store = pcall(function()
-				
+
 				return service.DataStoreService:GetDataStore(string.sub(Settings.DataStore, 1, 50),"Adonis")
 			end)
 
@@ -728,31 +743,30 @@ return function(Vargs, GetEnv)
 			return Core.SetData(...)
 		end;
 
-		DS_GetRequestDelay = function(type)
-			local requestType, budget;
+		DS_GetRequestDelay = function(reqTypeName: string)
+			local reqType = assert(
+				if reqTypeName == "Write" then Enum.DataStoreRequestType.SetIncrementAsync
+					elseif reqTypeName == "Read" then Enum.DataStoreRequestType.GetAsync
+					elseif reqTypeName == "Update" then Enum.DataStoreRequestType.UpdateAsync
+					else nil,
+				"Invalid request type name '"..tostring(reqTypeName).."'"
+			)
 
-			local reqPerMin = 60 + #service.Players:GetPlayers() * 10;
-			local reqDelay = 60 / reqPerMin;
+			local reqPerMin = 60 + #service.Players:GetPlayers() * 10
+			local reqDelay = 60 / reqPerMin
 
-			if type == "Write" then
-				requestType = Enum.DataStoreRequestType.SetIncrementAsync;
-			elseif type == "Read" then
-				requestType = Enum.DataStoreRequestType.GetAsync;
-			elseif type == "Update" then
-				requestType = Enum.DataStoreRequestType.UpdateAsync;
-			end
-
+			local budget
 			repeat
-				budget = service.DataStoreService:GetRequestBudgetForRequestType(requestType);
+				budget = service.DataStoreService:GetRequestBudgetForRequestType(reqType);
 			until budget > 0 and task.wait(1)
 
-			return reqDelay + 0.5;
+			return reqDelay + 0.5
 		end;
 
-		DS_WriteLimiter = function(type, func, ...)
+		DS_WriteLimiter = function(reqTypeName: string, func, ...)
 			local vararg = table.pack(...)
-			return Queue("DataStoreWriteData_" .. tostring(type), function()
-				local gotDelay = Core.DS_GetRequestDelay(type); --// Wait for budget, also return how long we should wait before the next request is allowed to go
+			return Queue("DataStoreWriteData_"..tostring(reqTypeName), function()
+				local gotDelay = Core.DS_GetRequestDelay(reqTypeName); --// Wait for budget; also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg, 1, vararg.n))
 				task.wait(gotDelay)
 			end, 120, true)
@@ -761,14 +775,13 @@ return function(Vargs, GetEnv)
 		RemoveData = function(key)
 			local DataStore = Core.DataStore
 			if DataStore then
-				local ran2, err2 = Queue("DataStoreWriteData" .. tostring(key), function()
+				local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
 					local ran, ret = Core.DS_WriteLimiter("Write", DataStore.RemoveAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = nil
 					else
 						logError("DataStore RemoveAsync Failed: ".. tostring(ret))
 					end
-
 					task.wait(6)
 				end, 120, true)
 
@@ -778,7 +791,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetData = function(key, value, repeatCount)
+		SetData = function(key: string, value: any?, repeatCount: number?)
 			if repeatCount then
 				warn("Retrying SetData request for ".. key);
 			end
@@ -788,7 +801,7 @@ return function(Vargs, GetEnv)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					local ran2, err2 = Queue("DataStoreWriteData" .. tostring(key), function()
+					local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
 						local ran, ret = Core.DS_WriteLimiter("Write", DataStore.SetAsync, DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
@@ -803,7 +816,7 @@ return function(Vargs, GetEnv)
 						logError("DataStore SetData Failed: ".. tostring(err2))
 
 						--// Attempt 3 times, with slight delay between if failed
-						task.wait(1);
+						task.wait(1)
 						if not repeatCount then
 							return Core.SetData(key, value, 3);
 						elseif repeatCount > 0 then
@@ -814,21 +827,21 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		UpdateData = function(key, func, repeatCount)
+		UpdateData = function(key: string, callback: (currentData: any?)->any?, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying UpdateData request for ".. key);
+				warn("Retrying UpdateData request for ".. key)
 			end
 
 			local DataStore = Core.DataStore
 			if DataStore then
-				local err = false;
-				local ran2, err2 = Queue("DataStoreWriteData" .. tostring(key), function()
-					local ran, ret = Core.DS_WriteLimiter("Update", DataStore.UpdateAsync, DataStore, Core.DataStoreEncode(key), func)
+				local err = false
+				local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
+					local ran, ret = Core.DS_WriteLimiter("Update", DataStore.UpdateAsync, DataStore, Core.DataStoreEncode(key), callback)
 
 					if not ran then
-						err = ret;
+						err = ret
 						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
-						return error(ret);
+						return error(ret)
 					end
 
 					wait(6)
@@ -838,11 +851,11 @@ return function(Vargs, GetEnv)
 					logError("DataStore UpdateData Failed: ".. tostring(err2))
 
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1);
+					wait(1)
 					if not repeatCount then
-						return Core.UpdateData(key, func, 3);
+						return Core.UpdateData(key, callback, 3)
 					elseif repeatCount > 0 then
-						return Core.UpdateData(key, func, repeatCount - 1);
+						return Core.UpdateData(key, callback, repeatCount - 1)
 					end
 				end
 
@@ -850,15 +863,15 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		GetData = function(key, repeatCount)
+		GetData = function(key: string, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying GetData request for ".. key);
+				warn("Retrying GetData request for ".. key)
 			end
 
 			local DataStore = Core.DataStore
 			if DataStore then
 				local ran2, err2 = Queue("DataStoreReadData", function()
-					wait(Core.DS_GetRequestDelay("Read"))
+					--wait(Core.DS_GetRequestDelay("Read")) -- TODO: re-implement this effectively and without an unnecessary delay
 					local ran, ret = pcall(DataStore.GetAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = ret
@@ -866,9 +879,9 @@ return function(Vargs, GetEnv)
 					else
 						logError("DataStore GetAsync Failed: ".. tostring(ret))
 						if Core.DataCache[key] then
-							return Core.DataCache[key];
+							return Core.DataCache[key]
 						else
-							error(ret);
+							error(ret)
 						end
 					end
 				end, 120, true)
@@ -876,67 +889,81 @@ return function(Vargs, GetEnv)
 				if not ran2 then
 					logError("DataStore GetData Failed: ".. tostring(err2))
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1);
+					wait(1)
 					if not repeatCount then
-						return Core.GetData(key, 3);
+						return Core.GetData(key, 3)
 					elseif repeatCount > 0 then
-						return Core.GetData(key, repeatCount - 1);
+						return Core.GetData(key, repeatCount - 1)
 					end
 				else
-					return err2;
+					return err2
 				end
 			end
 		end;
 
 		IndexPathToTable = function(tableAncestry)
-			local Blacklist = Core.DS_BLACKLIST
-			if type(tableAncestry) == "string" and not Blacklist[tableAncestry] then
-				return Settings[tableAncestry], tableAncestry;
-			elseif type(tableAncestry) == "table" then
-				local curTable = server;
-				local curName = "Server";
+			local ds_blacklist = Core.DS_BLACKLIST
 
-				for _, ind in ipairs(tableAncestry) do
-					curTable = curTable[ind];
-					curName = ind;
+			if type(tableAncestry) == "string" and not ds_blacklist[tableAncestry] then
+				return Settings[tableAncestry], tableAncestry
+			elseif type(tableAncestry) == "table" then
+				local curTable = server
+				local curName = "Server"
+
+				for index, ind in tableAncestry do
+
+					--// Prevent stuff like {t1 = "Settings", t2 = ...} from bypassing datastore blocks
+					if type(index) ~= 'number' then
+						return nil
+					end
+
+					curTable = curTable[ind]
+					curName = ind
+
+					if type(curName) == "string" then
+						--// Admins do NOT load from the DataStore with this setting
+						if curName == "Ranks" and Settings.LoadAdminsFromDS == false then
+							return nil
+						end
+					end
 
 					if not curTable then
 						--warn(tostring(ind) .." could not be found");
 						--// Not allowed or table is not found
-						return nil;
+						return nil
 					end
 				end
 
-				if curName and type(curName) == 'string' and Blacklist[curName] then
+				if type(curName) == "string" and ds_blacklist[curName] then
 					return nil
 				end
 
-				return curTable, curName;
+				return curTable, curName
 			end
 			return nil
 		end;
 
 		ClearAllData = function()
-			local tabs = Core.GetData("SavedTables") or {};
+			local tabs = Core.GetData("SavedTables") or {}
 
-			for _, v in pairs(tabs) do
+			for _, v in tabs do
 				if v.TableKey then
-					Core.RemoveData(v.TableKey);
+					Core.RemoveData(v.TableKey)
 				end
 			end
 
-			Core.SetData("SavedSettings", {});
-			Core.SetData("SavedTables", {});
-			Core.CrossServer("LoadData");
+			Core.SetData("SavedSettings", {})
+			Core.SetData("SavedTables", {})
+			Core.CrossServer("LoadData")
 		end;
 
-		GetTableKey = function(indList)
-			local tabs = Core.GetData("SavedTables") or {};
-			local realTable,tableName = Core.IndexPathToTable(indList);
+		GetTableKey = function(indList: {string})
+			local tabs = Core.GetData("SavedTables") or {}
+			local realTable, tableName = Core.IndexPathToTable(indList)
 
-			local foundTable = nil;
+			local foundTable = nil
 
-			for _, v in pairs(tabs) do
+			for _, v in tabs do
 				if type(v) == "table" and v.TableName and v.TableName == tableName then
 					foundTable = v
 					break
@@ -949,34 +976,35 @@ return function(Vargs, GetEnv)
 					TableKey = "SAVEDTABLE_" .. tableName;
 				}
 
-				table.insert(tabs, foundTable);
-				Core.SetData("SavedTables", tabs);
+				table.insert(tabs, foundTable)
+				Core.SetData("SavedTables", tabs)
 			end
 
 			if not Core.GetData(foundTable.TableKey) then
-				Core.SetData(foundTable.TableKey, {});
+				Core.SetData(foundTable.TableKey, {})
 			end
 
 			return foundTable.TableKey;
 		end;
 
-		DoSave = function(data)
+		DoSave = function(data: TableData)
 			if data.Type == "ClearSettings" then
 				Core.ClearAllData()
 			elseif data.Type == "SetSetting" then
 				local setting = data.Setting
-				local value = data.Value
+				local val = data.Value
 
-				Core.UpdateData("SavedSettings", function(settings)
-					settings[setting] = value
-					return settings
+				Core.UpdateData("SavedSettings", function(savedSettings)
+					savedSettings[setting] = val
+					return savedSettings
 				end)
 
-				Core.CrossServer("LoadData", "SavedSettings", {[setting] = value})
+				Core.CrossServer("LoadData", "SavedSettings", {[setting] = val})
 			elseif data.Type == "TableRemove" then
-				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
-				local value = data.Value
+				local val = data.Value
+				local originalTable = tab
+				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
@@ -985,36 +1013,33 @@ return function(Vargs, GetEnv)
 				data.Action = "Remove"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i, v in pairs(sets) do
-						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
-							table.remove(sets, i)
+					local index = 1
+					for i, v in sets do
+						if type(i) ~= "number" then
+							sets[i] = nil
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
 						end
 					end
 
-					--// Check that the real table actually has the item to remove, do not create if it does not have it
-					--// Prevents snowballing
-					local indList = tab
+					--// Check that the real table actually has the item to remove; do not create if it does not have it
+					--// (prevents snowballing)
 					local continueOperation = false
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-
-						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for _, v in pairs(realTable) do
-							if CheckMatch(v, value) then
+						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+							if CheckMatch(v, val) then
 								continueOperation = true
+								break
 							end
 						end
-					else
-						continueOperation = true
-					end
-
-					if continueOperation then
-						table.insert(sets, data)
 					end
 
 					return sets
@@ -1022,9 +1047,10 @@ return function(Vargs, GetEnv)
 
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			elseif data.Type == "TableAdd" then
-				local key = Core.GetTableKey(data.Table)
 				local tab = data.Table
-				local value = data.Value
+				local originalTable = tab
+				local val = data.Value
+				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
@@ -1033,27 +1059,31 @@ return function(Vargs, GetEnv)
 				data.Action = "Add"
 				data.Time = os.time()
 
-				local CheckMatch = Functions.CheckMatch
+				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 				Core.UpdateData(key, function(sets)
 					sets = sets or {}
 
-					for i, v in pairs(sets) do
-						if CheckMatch(tab, v.Table) and CheckMatch(v.Value, value) then
-							table.remove(sets, i)
+					local index = 1
+					for i, v in sets do
+						if type(i) ~= "number" then
+							sets[i] = nil
+						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
+							table.remove(sets, index)
+						else 
+							index += 1
 						end
 					end
 
-					--// Check that the real table does not have the item to add, do not create if it has it
-					--// Prevents snowballing
-					local indList = tab
+					--// Check that the real table does not already have the item to add; do not create if it has it
+					--// (prevents snowballing)
 					local continueOperation = true
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						local realTable,tableName = Core.IndexPathToTable(indClone)
-						for _, v in pairs(realTable) do
-							if CheckMatch(v, value) then
+						for _, v in Core.IndexPathToTable(indClone) or {} do
+							if CheckMatch(v, val) then
 								continueOperation = false
+								break
 							end
 						end
 					end
@@ -1066,62 +1096,85 @@ return function(Vargs, GetEnv)
 				end)
 
 				Core.CrossServer("LoadData", "TableUpdate", data)
+			else
+				error("Invalid data action type '"..tostring(data.Type).."'", 2)
 			end
 
 			AddLog(Logs.Script, {
 				Text = "Saved setting change to datastore";
-				Desc = "A setting change was issued and saved";
+				Desc = "A setting change was issued and saved ("..data.Type..")";
 			})
 		end;
 
-		LoadData = function(key, data, serverId)
-			if serverId and serverId == game.JobId then return end;
+		LoadData = function(key: string, data: TableData, serverId: string?)
+			if serverId and serverId == game.JobId then
+				return
+			end
 
-			local Blacklist = Core.DS_BLACKLIST
-			local CheckMatch = Functions.CheckMatch;
+			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
+			local ds_blacklist = Core.DS_BLACKLIST
+
 			if key == "TableUpdate" then
-				local tab = data;
-				local indList = tab.Table;
-				local nameRankComp = {--// Old settings backwards compatability
-					Owners = {"Settings", "Ranks", "HeadAdmins", "Users"};
-					Creators = {"Settings", "Ranks", "Creators", "Users"};
-					HeadAdmins = {"Settings", "Ranks", "HeadAdmins", "Users"};
-					Admins = {"Settings", "Ranks", "Admins", "Users"};
-					Moderators = {"Settings", "Ranks", "Moderators", "Users"};
+				local indList = data.Table
+				local nameRankComp = { --// Old settings backwards compatability
+					Owners = { "Settings", "Ranks", "HeadAdmins", "Users" },
+					Creators = { "Settings", "Ranks", "Creators", "Users" },
+					HeadAdmins = { "Settings", "Ranks", "HeadAdmins", "Users" },
+					Admins = { "Settings", "Ranks", "Admins", "Users" },
+					Moderators = { "Settings", "Ranks", "Moderators", "Users" },
 				}
 
 				if type(indList) == "string" and nameRankComp[indList] then
-					indList = nameRankComp[indList];
+					indList = nameRankComp[indList]
 				end
 
-				local realTable, tableName = Core.IndexPathToTable(indList);
-				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName;
+				local realTable, tableName = Core.IndexPathToTable(indList)
+				local displayName = type(indList) == "table" and table.concat(indList, ".") or tableName
 
-				if displayName and type(displayName) == 'string' and Blacklist[displayName] then
-					--// warn("Stopped " .. displayName .. " from being set!")
-					--// Debugging --Coasterteam
-					return
+				if type(displayName) == "string" then
+					if ds_blacklist[displayName] then
+						return
+					end
+
+					if type(indList) == "table" and indList[1] == "Settings" and indList[2] == "Ranks" then
+						if
+							not Settings.SaveAdmins
+							and not Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff
+							and not Settings.SaveAdminsWarning
+							and Settings.LoadAdminsFromDS
+						then
+							warn(
+								'Admins are loading from the Adonis DataStore when Settings.SaveAdmins is FALSE!\nDisable this warning by adding the setting "SaveAdminsWarning" in Settings (and set it to true!) or set Settings.LoadAdminsFromDS to false'
+							)
+							Core.WarnedAboutAdminsLoadingWhenSaveAdminsIsOff = true
+						end
+						--// No adding to Trello or WebPanel rank users list via Datastore
+						if type(indList[3]) == 'string' and (indList[3]:match("Trello") or indList[3]:match("WebPanel")) then
+							return
+						end
+					end
 				end
 
-				if realTable and tab.Action == "Add" then
-					for i, v in pairs(realTable) do
-						if CheckMatch(v, tab.Value) then
+				if realTable and data.Action == "Add" then
+					for i, v in realTable do
+						if CheckMatch(v, data.Value) then
 							table.remove(realTable, i)
 						end
 					end
 
 					AddLog("Script", {
-						Text = "Added value to ".. displayName;
-						Desc = "Added "..tostring(tab.Value).." to ".. displayName .." from datastore";
+						Text = "Added value to " .. displayName,
+						Desc = "Added " .. tostring(data.Value) .. " to " .. displayName .. " from datastore",
 					})
 
-					table.insert(realTable, tab.Value)
-				elseif realTable and tab.Action == "Remove" then
-					for i, v in pairs(realTable) do
-						if CheckMatch(v, tab.Value) then
+					table.insert(realTable, data.Value)
+					service.Events["DataStoreAdd_" .. displayName]:Fire(data.Value)
+				elseif realTable and data.Action == "Remove" then
+					for i, v in realTable do
+						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
-								Text = "Removed value from ".. displayName;
-								Desc = "Removed "..tostring(tab.Value).." from ".. displayName .." from datastore";
+								Text = "Removed value from " .. displayName,
+								Desc = "Removed " .. tostring(data.Value) .. " from " .. displayName .. " from datastore",
 							})
 
 							table.remove(realTable, i)
@@ -1131,30 +1184,10 @@ return function(Vargs, GetEnv)
 			else
 				local SavedSettings
 				local SavedTables
+
 				if Core.DataStore and Settings.DataStoreEnabled then
-					if Settings.DataStoreKey == server.Defaults.Settings.DataStoreKey and not Settings.LocalDatastore then
-						table.insert(server.Messages, {
-							Title = "Warning!";
-							Message = "Using default datastore key!";
-							Icon = server.MatIcons.Description;
-							Time = 15;
-							OnClick = Core.Bytecode([[
-								local window = client.UI.Make("Window", {
-									Title = "How to change the DataStore key";
-									Size = {700,300};
-									Icon = "rbxassetid://7510994359";
-								})
 
-								window:Add("ImageLabel", {
-									Image = "rbxassetid://1059543904";
-								})
-
-								window:Ready()
-							]]);
-						})
-					end
 					local GetData, LoadData, SaveData, DoSave = Core.GetData, Core.LoadData, Core.SaveData, Core.DoSave
-
 					if not key then
 						SavedSettings = GetData("SavedSettings")
 						SavedTables = GetData("SavedTables")
@@ -1185,11 +1218,12 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedSettings then
-						for setting,value in pairs(SavedSettings) do
-							if not Blacklist[setting] then
+						for setting, value in SavedSettings do
+							if not ds_blacklist[setting] then
+
 								if setting == "Prefix" or setting == "AnyPrefix" or setting == "SpecialPrefix" then
 									local orig = Settings[setting]
-									for _, cmd in pairs(server.Commands) do
+									for _, cmd in server.Commands do
 										if cmd.Prefix == orig then
 											cmd.Prefix = value
 										end
@@ -1202,11 +1236,11 @@ return function(Vargs, GetEnv)
 					end
 
 					if SavedTables then
-						for _, tData in pairs(SavedTables) do
-							if tData.TableName and tData.TableKey and not Blacklist[tData.tableName] then
-								local data = GetData(tData.TableKey);
+						for _, tData in SavedTables do
+							if tData.TableName and tData.TableKey and not ds_blacklist[tData.TableName] then
+								local data = GetData(tData.TableKey)
 								if data then
-									for _, v in ipairs(data) do
+									for _, v in data do
 										LoadData("TableUpdate", v)
 									end
 								end
@@ -1216,13 +1250,14 @@ return function(Vargs, GetEnv)
 						end
 
 						if Core.Variables.TimeBans then
-							for i, v in pairs(Core.Variables.TimeBans) do
+							for i, v in Core.Variables.TimeBans do
 								if v.EndTime - os.time() <= 0 then
 									table.remove(Core.Variables.TimeBans, i)
 									DoSave({
-										Type = "TableRemove";
-										Table = {"Core", "Variables", "TimeBans"};
-										Value = v;
+										Type = "TableRemove",
+										Table = { "Core", "Variables", "TimeBans" },
+										Value = v,
+										LaxCheck = true,
 									})
 								end
 							end
@@ -1230,12 +1265,12 @@ return function(Vargs, GetEnv)
 					end
 
 					AddLog(Logs.Script, {
-						Text = "Loaded saved data";
-						Desc = "Data was retrieved from the datastore and loaded successfully";
+						Text = "Loaded saved data",
+						Desc = "Data was retrieved from the datastore and loaded successfully",
 					})
 				end
 			end
-		end;
+		end,
 
 		StartAPI = function()
 			local _G = _G
@@ -1255,8 +1290,8 @@ return function(Vargs, GetEnv)
 			local tostring = tostring
 			local server = server
 			local service = service
-			local Routine = Routine
-			local cPcall = cPcall
+			local Routine = env.Routine
+			local cPcall = env.cPcall
 			local MetaFunc = service.MetaFunc
 			local StartLoop = service.StartLoop
 			local API_Special = {
@@ -1340,7 +1375,7 @@ return function(Vargs, GetEnv)
 					ExecutePermission = MetaFunc(function(srcScript, code)
 						local exists;
 
-						for i,v in pairs(Core.ScriptCache) do
+						for _, v in Core.ScriptCache do
 							if v.Script == srcScript then
 								exists = v
 							end
@@ -1356,7 +1391,7 @@ return function(Vargs, GetEnv)
 							local module;
 							if not exists then
 								module = require(server.Shared.FiOne:Clone())
-								table.insert(Core.ScriptCache,{
+								table.insert(Core.ScriptCache, {
 									Script = srcScript;
 									Source = data.Source;
 									Loadstring = module;
@@ -1442,7 +1477,7 @@ return function(Vargs, GetEnv)
 			end
 
 
-			AddLog(Logs.Script,{
+			AddLog(Logs.Script, {
 				Text = "Started _G API";
 				Desc = "The Adonis _G API was initialized and is ready to use";
 			})

@@ -13,25 +13,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-			_G, game, script, getfenv, setfenv, workspace,
-			getmetatable, setmetatable, loadstring, coroutine,
-			rawequal, typeof, print, math, warn, error,  pcall,
-			xpcall, select, rawset, rawget, ipairs, pairs,
-			next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-			newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-			NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-			NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-			Vector3int16, require, table, type, wait,
-			Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local Anti, Process, UI, Variables
 	local script = script
@@ -80,7 +80,7 @@ return function(Vargs, GetEnv)
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "Detected", action, info)
-			wait(0.5)
+			task.wait(0.5)
 			if action == "kick" then
 				if not isStudio then
 					if nocrash then
@@ -204,18 +204,18 @@ return function(Vargs, GetEnv)
 		}
 
 		Routine(function()
-			while wait(5) do
+			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
-				for method, detector in pairs(detectors) do
+				for method, detector in detectors do
 					local action, callback = detector[1],  detector[2]
 
 					local success, value = pcall(callback)
 					if not success or value ~= false and value ~= true then
 						Detected("crash", "Tamper Protection 906287")
-						wait(1)
+						task.wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -245,7 +245,7 @@ return function(Vargs, GetEnv)
 					end
 
 					if #service.Players:GetPlayers() > 1 then
-						for _, v in ipairs(service.Players:GetPlayers()) do
+						for _, v in service.Players:GetPlayers() do
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
@@ -300,7 +300,7 @@ return function(Vargs, GetEnv)
 				end
 				hasActivated = true
 				Detected("crash", "Tamper Protection 790438; "..tostring(message).."; ")
-				wait(1)
+				task.wait(1)
 				pcall(Disconnect, "Adonis_790438")
 				pcall(Kill, "Adonis_790438")
 				pcall(Kick, Player, "Adonis_790438")
@@ -387,7 +387,7 @@ return function(Vargs, GetEnv)
 		--Detected('log','Client-Side Tool Detected')
 
 		HumanoidState = function()
-			wait(1)
+			task.wait(1)
 			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
@@ -448,14 +448,14 @@ return function(Vargs, GetEnv)
 			}
 
 			local function check(Message)
-				for _,v in pairs(lookFor) do
+				for _,v in lookFor do
 					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
 						return true
 					end
 				end
 			end
 
-			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq. 
+			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq.
 			local function checkServ()
 				--[[if not pcall(function()
 					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
@@ -467,7 +467,7 @@ return function(Vargs, GetEnv)
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in pairs(soundIds) do
+				for _,v in soundIds do
 					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
 						return true
 					end
@@ -494,7 +494,7 @@ return function(Vargs, GetEnv)
 					if soundIdCheck(child) then
 						Detected("crash", "CMDx Detected; "..tostring(child))
 					else
-						wait()
+						task.wait()
 						if soundIdCheck(child) then
 							Detected("crash", "CMDx Detected; "..tostring(child))
 						end
@@ -541,7 +541,7 @@ return function(Vargs, GetEnv)
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
 					if Script then
-						for i, v in pairs(tab) do
+						for i, v in tab do
 							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
 								continue = true
 							end
@@ -587,12 +587,12 @@ return function(Vargs, GetEnv)
 					First = Logs[1]
 					hasPrinted = true
 
-					if (lastLogOutput + 3) > startTime then
+					--[[if (lastLogOutput + 3) > startTime then
 						Detected("kick", "Log event not outputting to console")
-					end
+					end]]
 				else
 					if not First then
-						Detected("kick", "Suspicious log amount detected 5435345")
+						--Detected("kick", "Suspicious log amount detected 5435345")
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 				end
@@ -605,7 +605,7 @@ return function(Vargs, GetEnv)
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
-					for _, v in ipairs(Logs) do
+					for _, v in Logs do
 						if check(v.message) then
 							Detected("crash", "Exploit detected; "..v.message)
 						end
@@ -630,7 +630,7 @@ return function(Vargs, GetEnv)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable
-				--[=[for _, v in pairs({"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"}) do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
+				--[=[for _, v in {"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"} do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
 						Detected("kick", "Malicious Object?: " .. v)
@@ -640,7 +640,7 @@ return function(Vargs, GetEnv)
 				local function getDictionaryLenght(dictionary)
 					local len = 0
 
-					for _, _ in pairs(dictionary) do
+					for _, _ in dictionary do
 						len += 1
 					end
 
@@ -686,25 +686,6 @@ return function(Vargs, GetEnv)
 					Detected("kick", "Tamper Protection 568234")
 				end)]]
 
-				-- // Checks disallowed content URLs in the CoreGui
-				xpcall(function()
-					if isStudio then
-						return
-					end
-
-					local hasDetected = false
-					local tempDecal = service.UnWrap(Instance.new("Decal"))
-					service.UnWrap(service.ContentProvider):PreloadAsync({tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
-						if not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
-							hasDetected = true
-							Detected("Kick", "Disallowed content URL detected in CoreGui")
-						end
-					end)
-
-					tempDecal:Destroy()
-				end, function()
-					Detected("kick", "Tamper Protection 456754")
-				end)
 			end)
 		end
 	}, false, true)
@@ -736,7 +717,7 @@ return function(Vargs, GetEnv)
 		local meta = service.MetaFunc
 		local track = meta(service.TrackTask)
 		local opcall = meta(pcall)
-		local oWait = meta(wait)
+		local oWait = meta(task.wait)
 		local time = meta(time)
 
 		track("Thread: TableCheck", meta(function()

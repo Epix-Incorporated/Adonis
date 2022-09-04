@@ -56,7 +56,7 @@ return function(Vargs, GetEnv)
 			return
 		end
 
-		for _, v in ipairs(service.Players:GetPlayers()) do
+		for _, v in service.Players:GetPlayers() do
 			task.spawn(onPlayerAdded, v)
 		end
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
@@ -129,7 +129,7 @@ return function(Vargs, GetEnv)
 							if handle and handle:CanSetNetworkOwnership() then
 								handle:SetNetworkOwner(nil)
 							end
-							
+
 							Logs.AddLog(Logs.Script, {
 								Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
 								Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
@@ -160,7 +160,7 @@ return function(Vargs, GetEnv)
 			local function onCharacterAdded(character)
 				charGood = true
 
-				for _, v in ipairs(character:GetChildren()) do
+				for _, v in character:GetChildren() do
 					if v:IsA("Accoutrement") and Settings.ProtectHats == true then
 						coroutine.wrap(protectHat)(v)
 					end
@@ -173,13 +173,13 @@ return function(Vargs, GetEnv)
 						local count = 0
 
 						task.defer(function()
-							for _, v in ipairs(character:GetChildren()) do
+							for _, v in character:GetChildren() do
 								if v:IsA("BackpackItem") then
 									count += 1
 									if count > 1 then
 										local backpack = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack")
 										if not backpack.Parent then
-											backpack.Parent = player 
+											backpack.Parent = player
 										end
 										v.Parent = backpack
 										Detected(player, "log", "Multiple tools equipped at the same time")
@@ -255,7 +255,7 @@ return function(Vargs, GetEnv)
 								return
 							end
 
-							for _, v in ipairs(connections) do
+							for _, v in connections do
 								v:Disconnect()
 							end
 
@@ -274,10 +274,10 @@ return function(Vargs, GetEnv)
 					table.insert(connections, connection)
 				end
 
-				local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-				local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
-
 				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
+					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+
 					makeConnection(rootJoint.AncestryChanged)
 
 					if humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -302,7 +302,7 @@ return function(Vargs, GetEnv)
 					Desc = "Making sure all clients are active";
 				})
 
-				for ind,p in ipairs(service.Players:GetPlayers()) do
+				for ind,p in service.Players:GetPlayers() do
 					if p and p:IsA("Player") then
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
@@ -331,7 +331,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else
-						for i,user in next,userInfo do
+						for i,user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
@@ -346,7 +346,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-		
+
 		CheckBackpack = function(p, obj)
 			local ran, err = pcall(function()
 				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
@@ -417,7 +417,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 
-				for _, plr in ipairs(service.Players:GetPlayers()) do
+				for _, plr in service.Players:GetPlayers() do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",

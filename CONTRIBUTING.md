@@ -41,30 +41,15 @@ There is a very clear/obvious difference between unavoidably complex code and in
 
 ## Q: Is there a style guide for writing code?
 
-**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing. 
-  
-<details><summary>ℹ️ Generally, however, here are a few things to note [click to expand]:</summary>
-<hr>
-
-  Leave a space (or newline) after every comma or semicolon. ✅``x, y, z`` ❌``x,y,z``
-
-  Leave a space before and after every operator. ✅``x == y, x + y`` ❌``x==y, x+y``
-
-  No unnecessary parentheses/brackets anywhere. ✅``if x == 2 then`` ❌``if (x == 2) then``
-
-  Don't overwrite builtin globals unnecessarily when declaring local variables! ✅``local dataType = data.Type`` ❌``local type = data.Type``
-
-  Use ``LOUD_SNAKE_CASE`` for (and only for) hardcoded local constants.
-  
-  Use US English spellings for both code variable names and user-facing text. ✅``"color"`` ❌``"colour"``
-<hr>
-</details>
+**A:** Not really, but we would normally try to follow the format of the other existing code in the module we are editing, as well as the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/) where applicable. Also, be sure to use US English spellings for both code variable names and user-facing text.
 
 ## Q: What are some things I should watch out for when submitting my changes?
 
 **A:** Bugs! 🐛 If you are submitting code changes, please be sure to TEST THEM BEFORE SUBMITTING THEM! No one would be quite happy to spend an hour debugging your contribution when merging changes into the model.
 
 Also, try to double check any text for spelling issues. Some of us frequently make typos/mistakes, so it's not a huge deal if you miss something, but a wholly incoherent string of letters and words is not acceptable.
+
+Finally, ***be sure to make file changes based on the latest version of the ``master`` branch, not ``release``!*** Outdated and conflicting code is often a pain to deal with.
 
 ## Q: What can I contribute to the Wiki?
 

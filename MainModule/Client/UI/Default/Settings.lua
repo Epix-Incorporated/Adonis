@@ -28,7 +28,7 @@ return function(data, env)
 	local cliSettings = {
 		{
 			Text = "Keybinds: ";
-			Desc = "- Enabled/Disables Keybinds";
+			Desc = "- Enables/Disables Keybinds";
 			Entry = "Boolean";
 			Value = Variables.KeybindsEnabled;
 			Function = function(enabled, toggle)

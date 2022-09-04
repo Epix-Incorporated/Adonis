@@ -169,13 +169,13 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(...)
 			service.Events.CharacterAdded:Fire(...)
 
-			wait()
+			task.wait()
 			UI.GetHolder()
 		end;
 
 		CharacterRemoving = function()
 			if Variables.UIKeepAlive then
-				for ind,g in next,client.GUIs do
+				for ind,g in client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
 						if not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) and g.CanKeepAlive then
 							g.KeepAlive = true
