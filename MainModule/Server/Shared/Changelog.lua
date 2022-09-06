@@ -3,6 +3,9 @@ return {
 	"*Drag edges to expand*";
 	"*Report bugs/issues on our GitHub repository (https://github.com/Epix-Incorporated/Adonis)*";
 	"";
+	"[Patch v237p 2022-09-06 04:19 EST] @Expertcoderz";
+	"Fixed bug regarding 'GamePass:' checks";
+	"";
 	"[Patch v237o 2022-09-02 14:35 EST] @Expertcoderz";
 	"Rewrote Admin.DoCheck (certain checks should now work as intended)";
 	"Fix Console UI issue";
