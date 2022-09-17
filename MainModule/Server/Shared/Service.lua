@@ -1117,7 +1117,10 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		CheckPassOwnership = function(userId, gamepassId)
-			local cacheIndex = tonumber(userId).."-"..tonumber(gamepassId)
+			userId = if type(userId) == "userdata" then userId.UserId else tonumber(userId)
+			gamepassId = tonumber(gamepassId)
+
+			local cacheIndex = userId.."-"..gamepassId
 			local currentCache = passOwnershipCache[cacheIndex]
 
 			if currentCache and currentCache.owned then
@@ -1144,8 +1147,12 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		CheckAssetOwnership = function(player, assetId)
-			local cacheIndex = tonumber(player.UserId).."-"..tonumber(assetId)
+		CheckAssetOwnership = function(player, assetId)				
+			if type(player) == "number" then
+				player = service.Players:GetPlayerByUserId(player)
+			end
+
+			local cacheIndex = player.UserId.."-"..assetId
 			local currentCache = assetOwnershipCache[cacheIndex]
 
 			if currentCache and currentCache.owned then
