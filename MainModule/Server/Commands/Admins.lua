@@ -811,8 +811,9 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"scriptbuilder", "scriptb", "sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list", "localscript/script", "scriptName", "data"};
-			Description = "Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
+			Description = "[Deprecated] Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
 			AdminLevel = "Admins";
+			Hidden = true;
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
