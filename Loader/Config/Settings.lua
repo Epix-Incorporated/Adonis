@@ -332,8 +332,8 @@ settings.Console = true				-- Whether the command console is enabled
 settings.Console_AdminsOnly = false -- If true, only admins will be able to access the console
 
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
-settings.HelpButton = true    -- Shows a little help button in the bottom right corner.
-settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
+settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
+settings.HelpButtonImage = "rbxassetid://357249130" -- Sets the image used for the Adonis help button above.
 
 settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
 settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
@@ -483,7 +483,7 @@ descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
 
 descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
-descs.HelpButtonImage = [[ Change this to change the help button's image ]]
+descs.HelpButtonImage = [[ Sets the image used for the Adonis help button above. ]]
 
 descs.Detection = [[ Attempts to detect certain known exploits ]]
 descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
