@@ -1,6 +1,14 @@
 -------------------
 -- Adonis Client --
 -------------------
+--!nocheck
+																																																																																						  --[[
+This module is part of Adonis 1.0 and contains lots of old code;
+future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
+
+If you find bugs or similar issues, please submit an issue report
+on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issues/new/choose
+																																																																																						]]
 
 --// Load Order List
 local CORE_LOADING_ORDER = table.freeze {
