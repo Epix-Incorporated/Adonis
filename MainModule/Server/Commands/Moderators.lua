@@ -2957,7 +2957,7 @@ return function(Vargs, env)
 		Clone = {
 			Prefix = Settings.Prefix;
 			Commands = {"clone", "cloneplayer", "duplicate"};
-			Args = {"player", "copies (max: 50)"};
+			Args = {"player", "copies (max: 50 | default: 1)"};
 			Description = "Clones the character of the target player(s)";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -4165,7 +4165,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.LoadCode(v, [[for i, v in service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
@@ -6200,7 +6200,6 @@ return function(Vargs, env)
 						})
 					end
 				end
-
 				return tab
 			end;
 			Function = function(plr: Player, args: {string})
@@ -6255,7 +6254,7 @@ return function(Vargs, env)
 						Time = v.Time;
 						Text = v.Text..": "..tostring(v.Desc);
 						Desc = tostring(v.Desc);
-					})
+					}
 				end
 				return tab
 			end;

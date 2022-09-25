@@ -144,7 +144,7 @@ settings.HideScript = true						 -- When the game starts the Adonis_Loader model
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
 settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
-settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
+settings.LocalDatastore = false					 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 settings.RecursiveTools = false					 -- Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders)
@@ -229,6 +229,7 @@ settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminle
 settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
 settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
+settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
 settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
 settings.Prefix = ":"				-- The : in :kill me
@@ -342,23 +343,24 @@ settings.LocalCapes = false	 	-- Makes Donor capes local so only the donors see 
 settings.Detection = true			-- Attempts to detect certain known exploits
 settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-settings.ExploitNotifications = true		-- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-settings.CharacterCheckLogs = false			-- If the character checks appear in exploit logs and exploit notifications
-settings.AntiNoclip = false	-- Attempts to detect noclipping and kills the player if found
-settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
-settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
-settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
-settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
-settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
-settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
+settings.ExploitNotifications = true	-- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
+settings.AntiNoclip = false				-- Attempts to detect noclipping and kills the player if found
+settings.AntiRootJointDeletion = false	-- Attempts to detect paranoid and kills the player if found
+settings.AntiHumanoidDeletion = false	-- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
+settings.AntiMultiTool = false			-- Prevents multitooling and because of that many other exploits
+settings.AntiGod = false				-- If a player does not respawn when they should have they get respawned
+settings.AntiSpeed = true				-- (Client-Sided) Attempts to detect speed exploits
+settings.AntiBuildingTools = false		-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 settings.AntiClientIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
-settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
+settings.ProtectHats = false 			-- Prevents hats from being un-welded from their characters through unnormal means
 
 ---------------------
 -- END OF SETTINGS --
 ---------------------
 
 --// Setting descriptions used for the in-game settings editor;
+
 
 descs.HideScript = [[ Disable if your game saves; When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module ]]
 descs.DataStore = [[ DataStore the script will use for saving data; Changing this will lose any saved data ]]
@@ -397,6 +399,7 @@ descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		F
 descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
 descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
+descs.LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]]
 descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
 descs.Prefix = [[ The : in :kill me ]]
