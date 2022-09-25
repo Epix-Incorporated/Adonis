@@ -465,7 +465,23 @@ return function(Vargs, GetEnv)
 			end;
 
 			AudioLib = function(p,args)
-				if Admin.GetLevel(p) >= Settings.Ranks.Moderators.Level then
+				local canUseGlobalBroadcast
+				local cmd, ind
+				for i, v in Admin.SearchCommands(p, "all") do
+					for _, c in ipairs(v.Commands) do
+						if (v.Prefix or "")..string.lower(c) == (v.Prefix or "")..string.lower("music") then
+							cmd, ind = v, i
+							break
+						end
+					end
+					if ind then break end
+				end
+				if cmd then
+					canUseGlobalBroadcast = true
+				else
+					canUseGlobalBroadcast = false
+				end
+				if canUseGlobalBroadcast then
 					if not server.Functions.AudioLib then
 						local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
@@ -477,13 +493,6 @@ return function(Vargs, GetEnv)
 					end
 
 					return server.Functions.AudioLib[args[1][1]](server.Functions.AudioLib, args[1][2])
-				else
-					task.spawn(Remote.MakeGui,p,"Notification",{
-						Title = "Global Audio";
-						Message = "Only Moderators or above may broadcast audio!";
-						Icon = server.Shared.MatIcons.Language;
-						Time = 3;
-					})
 				end
 			end;
 		};
