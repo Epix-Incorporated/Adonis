@@ -1204,6 +1204,20 @@ return function(Vargs, GetEnv)
 			end
 			return false
 		end;
+		
+		LaxCheckMatch = function(check, match)
+			if check == match then
+				return true
+			elseif type(check) == "table" and type(match) == "table" then
+				for k, v in match do
+					if check[k] ~= v then
+						return false
+					end
+				end
+				return true
+			end
+			return false
+		end;
 
 		DSKeyNormalize = function(intab, reverse)
 			local tab = {}

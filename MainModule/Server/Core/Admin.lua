@@ -164,6 +164,26 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
 		Admin.Init = nil;
 		AddLog("Script", "Admin Module Initialized")
 	end;

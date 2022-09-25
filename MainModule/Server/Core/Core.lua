@@ -1072,7 +1072,7 @@ return function(Vargs, GetEnv)
 				data.Time = os.time()
 
 				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
-				Core.UpdateData(key, function(sets)
+				Core.UpdateData(key, function(sets: {TableData})
 					sets = sets or {}
 
 					local index = 1

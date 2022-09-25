@@ -79,7 +79,7 @@ return function(Vargs, env)
 
 						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
 					else
-						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p), {plr})
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v, true), {plr})
 					end
 				end
 			end;

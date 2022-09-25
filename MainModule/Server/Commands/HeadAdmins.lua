@@ -138,9 +138,9 @@ return function(Vargs, env)
 					})) do
 					if level > Admin.GetLevel(v) then
 						Admin.AddBan(v, reason, true, plr)
-						Functions.Hint("Game-banned "..tostring(v), {plr})
+						Functions.Hint("Game-banned "..service.FormatPlayer(v, true), {plr})
 					else
-						Functions.Hint("Unable to game-ban "..tostring(v).." (insufficient permission level)", {plr})
+						Functions.Hint("Unable to game-ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
 					end
 				end
 			end

@@ -4150,8 +4150,8 @@ return function(Vargs, env)
 			Description = "Removes all of the target player(s)'s on-screen GUIs except Adonis GUIs";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for _, v in pairs(service.GetPlayers(plr, args[1])) do
-					Remote.LoadCode(v, [[for i, v in pairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
+				for _, v in service.GetPlayers(plr, args[1]) do
+					Remote.LoadCode(v, [[for i, v in ipairs(service.PlayerGui:GetChildren()) do if not client.Core.GetGui(v) then pcall(v.Destroy, v) end end]])
 				end
 			end
 		};
