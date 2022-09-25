@@ -1,3 +1,4 @@
+--!nocheck
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -165,7 +166,7 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
+			Commands = {"unadmin", "unmod", "unowner", "unpadmin", "unheadadmin", "unrank"};
 			Args = {"player/user", "temp? (true/false) (default: false)"};
 			Description = "Removes admin/moderator ranks from the target player(s); saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
@@ -200,41 +201,41 @@ return function(Vargs, env)
 					end
 				end
 
-				if userFound then return end
-
-				if senderLevel < 900 then
-					error("User not found; try the full username or use id-USERSIDHERE");
+				if userFound then
+					return
 				else
-					local checkThis = args[1]
+					Functions.Hint("User not found in server; searching datastore", {plr})
+				end
 
-					for rankName, rankData in Settings.Ranks do
-						if senderLevel > rankData.Level then
-							for i, user in rankData.Users do
-								if Admin.DoCheck(checkThis, user) then
-									local ans = Remote.GetGui(plr, "YesNoPrompt", {
-										Question = "Remove '"..tostring(user).."' from '".. rankName .."'?";
-									})
+				for rankName, rankData in Settings.Ranks do
+					if senderLevel <= rankData.Level then
+						continue
+					end
+					for i, user in rankData.Users do
+						if not Admin.DoCheck(args[1], user) then
+							continue
+						end
+						if
+							Remote.GetGui(plr, "YesNoPrompt", {
+								Question = "Remove '"..tostring(user).."' from '".. rankName .."'?";
+							}) == "Yes"
+						then
+							table.remove(rankData.Users, i)
+							if not temp and Settings.SaveAdmins then
+								service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+									Type = "TableRemove";
+									Table = {"Settings", "Ranks", rankName, "Users"};
+									Value = user;
+								});
+								Functions.Hint("Removed entry '"..tostring(user).."'' from "..rankName, {plr})
+								Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
 
-									if ans == "Yes" then
-										table.remove(rankData.Users, i)
-										if not temp and Settings.SaveAdmins then
-											service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
-												Type = "TableRemove";
-												Table = {"Settings", "Ranks", rankName, "Users"};
-												Value = user;
-											});
-											Functions.Hint("Removed entry '"..tostring(user).."'' from "..rankName, {plr})
-											Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
-
-										end
-									end
-									userFound = true
-								end
 							end
 						end
+						userFound = true
 					end
-					assert(userFound, "No table entries matching '".. checkThis .."' were found")
 				end
+				assert(userFound, "No table entries matching '".. args[1] .."' were found")
 			end
 		};
 
