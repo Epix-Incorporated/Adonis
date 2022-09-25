@@ -6499,7 +6499,7 @@ return function(Vargs, env)
 			end;
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "List", {
-					Title = "Admin Logs";
+					Title = "Command Logs";
 					Table = Logs.ListUpdaters.Logs(plr);
 					Dots = true;
 					Update = "Logs";
