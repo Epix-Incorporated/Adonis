@@ -802,30 +802,34 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Message = function(title, message, players, scroll, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Message = function(title, message, players, scroll, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5;
 
-			for _, v in ipairs(players) do
-				Remote.RemoveGui(v, "Message")
-				Remote.MakeGui(v, "Message", {
-					Title = title;
-					Message = message;
-					Scroll = scroll;
-					Time = time
-				})
+			for _, v in players do
+				task.defer(function()
+					Remote.RemoveGui(v, "Message")
+					Remote.MakeGui(v, "Message", {
+						Title = title;
+						Message = message;
+						Scroll = scroll;
+						Time = duration;
+					})
+				end)
 			end
 		end;
 
-		Notify = function(title, message, players, time)
-			time = time or (#tostring(message) / 19) + 2.5;
+		Notify = function(title, message, players, duration)
+			duration = duration or (#tostring(message) / 19) + 2.5;
 
-			for _, v in ipairs(players) do
-				Remote.RemoveGui(v, "Notify")
-				Remote.MakeGui(v, "Notify", {
-					Title = title;
-					Message = message;
-					Time = time;
-				})
+			for _, v in players do
+				task.defer(function()
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
+						Title = title;
+						Message = message;
+						Time = duration;
+					})
+				end)
 			end
 		end;
 
