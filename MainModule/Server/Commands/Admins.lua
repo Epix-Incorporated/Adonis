@@ -167,44 +167,47 @@ return function(Vargs, env)
 		UnAdmin = {
 			Prefix = Settings.Prefix;
 			Commands = {"unadmin", "unmod", "unowner", "unpadmin", "unheadadmin", "unrank"};
-			Args = {"player/user", "temp? (true/false) (default: false)"};
+			Args = {"player/user / list entry", "temp? (true/false) (default: false)"};
 			Description = "Removes admin/moderator ranks from the target player(s); saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				local target = assert(args[1], "Missing target user (argument #1)")
 				local temp = args[2] and args[2]:lower() == "true"
 				local senderLevel = data.PlayerData.Level
 
 				local userFound = false
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
-					UseFakePlayer = true;
-					AllowUnknownUsers = true;
-					DontError = true;
-					})
-				do
-					userFound = true
-					local targLevel, targRank = Admin.GetLevel(v)
-					if targLevel > 0 then
-						if senderLevel > targLevel then
-							Admin.RemoveAdmin(v, temp, temp)
-							Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = string.format("You are no longer a(n) %s", targRank or "admin");
-								Icon = server.MatIcons["Remove moderator"];
-								Time = 10;
-							})
+				if not target:find(":") then
+					for _, v in service.GetPlayers(plr, target, {
+						UseFakePlayer = true;
+						AllowUnknownUsers = true;
+						DontError = true;
+						})
+					do
+						userFound = true
+						local targLevel, targRank = Admin.GetLevel(v)
+						if targLevel > 0 then
+							if senderLevel > targLevel then
+								Admin.RemoveAdmin(v, temp)
+								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
+								Remote.MakeGui(v, "Notification", {
+									Title = "Notification";
+									Message = string.format("You are no longer a(n) %s", targRank or "admin");
+									Icon = server.MatIcons["Remove moderator"];
+									Time = 10;
+								})
+							else
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s rank", {plr})
+							end
 						else
-							Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s rank", {plr})
+							Functions.Hint(service.FormatPlayer(v, true).." does not already have any rank to remove", {plr})
 						end
-					else
-						Functions.Hint(service.FormatPlayer(v, true).." does not already have any rank to remove", {plr})
 					end
-				end
 
-				if userFound then
-					return
-				else
-					Functions.Hint("User not found in server; searching datastore", {plr})
+					if userFound then
+						return
+					else
+						Functions.Hint("User not found in server; searching datastore", {plr})
+					end
 				end
 
 				for rankName, rankData in Settings.Ranks do
@@ -212,7 +215,7 @@ return function(Vargs, env)
 						continue
 					end
 					for i, user in rankData.Users do
-						if not Admin.DoCheck(args[1], user) then
+						if not (user:lower() == target:lower() or Admin.DoCheck(target, user)) then
 							continue
 						end
 						if
