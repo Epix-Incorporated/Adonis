@@ -958,7 +958,7 @@ return function(Vargs, env)
 						country = res.country,
 						city = res.city,
 						region = res.region,
-						zipcode = res.zip or "[Redacted]",
+						zipcode = res.zip or "N/A",
 						timezone = res.timezone,
 						query = elevated and res.query or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
