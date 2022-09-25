@@ -283,6 +283,7 @@ settings.Trello_Primary = ""			-- Primary Trello board
 settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
 settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trello.com/app-key
 settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
+settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
 settings.G_API = true					-- If true allows other server scripts to access certain functions described in the API module through _G.Adonis
 settings.G_Access = false				-- If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
@@ -413,6 +414,7 @@ descs.Trello_Primary = [[ Primary Trello board ]]
 descs.Trello_Secondary = [[ Secondary Trello boards; Format: {"BoardID";"BoardID2","etc"} ]]
 descs.Trello_AppKey = [[ Your Trello AppKey; Link: https://trello.com/app-key ]]
 descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]]
+descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]]
 
 descs.G_API = [[ If true allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
 descs.G_Access = [[ If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player) ]]
@@ -549,6 +551,7 @@ order = {
 	"Trello_Secondary";
 	"Trello_AppKey";
 	"Trello_Token";
+	"Trello_HideRanks";
 	" ";
 	"G_API";
 	"G_Access";
