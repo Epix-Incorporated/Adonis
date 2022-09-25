@@ -1,11 +1,13 @@
 -------------------
 -- Adonis Server --
 -------------------
+--!nocheck
 																																																																																						  --[[
-If you find bugs, typos, or ways to improve something please message me (Sceleratis/Davey_Bones) with
-what you found so the script can be better.
+This module is part of Adonis 1.0 and contains lots of old code;
+future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
 
-Also just be aware that I'm a very messy person, so a lot of this may or may not be spaghetti.
+If you find bugs or similar issues, please submit an issue report
+on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issues/new/choose
 																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
