@@ -2809,8 +2809,12 @@ return function(Vargs, env)
 				local plrHum = assert(plrChar:FindFirstChildOfClass("Humanoid", "You don't have a humanoid"))
 
 				local persistent = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
-				if persistent and not Variables.TrackingTable[plr.Name] then
+				if persistent and Variables.TrackingTable[plr.Name] then
 					table.clear(Variables.TrackingTable[plr.Name])
+				end
+				
+				if persistent and not Variables.TrackingTable[plr.Name] then
+					Variables.TrackingTable[plr.Name] = {}
 				end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
