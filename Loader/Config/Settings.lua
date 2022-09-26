@@ -229,6 +229,7 @@ settings.OnJoin = {}		-- List of commands ran as player on join (ignores adminle
 settings.OnSpawn = {}		-- List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"}
 
 settings.SaveAdmins = true		  -- If true anyone you :admin or :headadmin in-game will save
+settings.LoadAdminsFromDS = true  -- If false, any admins saved in your DataStores will not load
 settings.WhitelistEnabled = false -- If true enables the whitelist/server lock; Only lets admins & whitelisted users join
 
 settings.Prefix = ":"				-- The : in :kill me
@@ -282,6 +283,7 @@ settings.Trello_Primary = ""			-- Primary Trello board
 settings.Trello_Secondary = {}			-- Secondary Trello boards (read-only)		Format: {"BoardID";"BoardID2","etc"}
 settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trello.com/app-key
 settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
+settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
 settings.G_API = true					-- If true allows other server scripts to access certain functions described in the API module through _G.Adonis
 settings.G_Access = false				-- If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
@@ -332,7 +334,7 @@ settings.Console_AdminsOnly = false -- If true, only admins will be able to acce
 
 settings.HelpSystem = true		-- Allows players to call admins for help using !help
 settings.HelpButton = true		-- Shows a little help button in the bottom right corner.
-settings.HelpButtonImage = "rbxassetid://357249130" -- Change this to change the help button's image
+settings.HelpButtonImage = "rbxassetid://357249130" -- Sets the image used for the Adonis help button above.
 
 settings.DonorCapes = true 		-- Donors get to show off their capes; Not disruptive :)
 settings.DonorCommands = true	-- Show your support for the script and let donors use harmless commands like !sparkles
@@ -341,9 +343,9 @@ settings.LocalCapes = false	 	-- Makes Donor capes local so only the donors see 
 settings.Detection = true			-- Attempts to detect certain known exploits
 settings.CheckClients = true		-- Checks clients every minute or two to make sure they are still active
 
-settings.ExploitNotifications = true		-- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
-settings.CharacterCheckLogs = false			-- If the character checks appear in exploit logs and exploit notifications
-settings.AntiNoclip = false	-- Attempts to detect noclipping and kills the player if found
+settings.ExploitNotifications = true        -- Notify all moderators and higher ups when a player is kicked or crashed from the AntiExploit
+settings.CharacterCheckLogs = false		-- If the character checks appear in exploit logs and exploit notifications
+settings.AntiNoclip = false			-- Attempts to detect noclipping and kills the player if found
 settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills the player if found
 settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 settings.AntiMultiTool = false -- Prevents multitooling and because of that many other exploits
@@ -396,6 +398,7 @@ descs.OnJoin = [[ List of commands ran as player on join (ignores adminlevel)		F
 descs.OnSpawn = [[ List off commands ran as player on spawn (ignores adminlevel)	Format: {"!fire Really red",":ff me"} ]]
 
 descs.SaveAdmins = [[ If true anyone you :mod, :admin, or :headadmin in-game will save]]
+descs.LoadAdminsFromDS = [[ If false, any admins saved in your DataStores will not load ]]
 descs.WhitelistEnabled = [[ If true enables the whitelist/server lock; Only lets admins & whitelisted users join ]]
 
 descs.Prefix = [[ The : in :kill me ]]
@@ -411,6 +414,7 @@ descs.Trello_Primary = [[ Primary Trello board ]]
 descs.Trello_Secondary = [[ Secondary Trello boards; Format: {"BoardID";"BoardID2","etc"} ]]
 descs.Trello_AppKey = [[ Your Trello AppKey; Link: https://trello.com/app-key ]]
 descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]]
+descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]]
 
 descs.G_API = [[ If true allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
 descs.G_Access = [[ If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player) ]]
@@ -423,6 +427,7 @@ descs.PlayerCommands = [[ Are players commands enabled? ]]
 descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
+descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -433,8 +438,6 @@ descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
-descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
-
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
 descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
 
@@ -457,6 +460,32 @@ descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
 descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
 descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
 descs.HelpButtonImage = [[ Change this to change the help button's image ]]
+
+descs.Detection = [[ Attempts to detect certain known exploits ]]
+descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
+
+descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
+descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is acheived by offsetting them by -35 into the transparent region where roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifs to appear in that region. ]]
+
+descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
+
+descs.AutoClean = [[ Will auto clean workspace of things like hats and tools ]]
+descs.AutoBackup = [[ (not recommended) Run a map backup command when the server starts, this is mostly useless as clients cannot modify the server. To restore the map run :restoremap ]]
+descs.AutoCleanDelay = [[ Time between auto cleans ]]
+
+descs.CustomChat = [[ Custom chat ]]
+descs.PlayerList = [[ Custom playerlist ]]
+
+descs.Console = [[ Command console ]]
+descs.Console_AdminsOnly = [[ Makes it so if the console is enabled, only admins will see it ]]
+
+descs.DonorCommands = [[ Show your support for the script and let donors use commands like !sparkles ]]
+descs.DonorCapes = [[ Determines if donors have capes ]]
+descs.LocalCapes = [[ Makes Donor capes local instead of removing them ]]
+
+descs.HelpSystem = [[ Allows players to call admins for help using !help ]]
+descs.HelpButton = [[ Shows a little help button in the bottom right corner ]]
+descs.HelpButtonImage = [[ Sets the image used for the Adonis help button above. ]]
 
 descs.Detection = [[ Attempts to detect certain known exploits ]]
 descs.CheckClients = [[ Checks clients every minute or two to make sure they are still active ]]
@@ -522,6 +551,7 @@ order = {
 	"Trello_Secondary";
 	"Trello_AppKey";
 	"Trello_Token";
+	"Trello_HideRanks";
 	" ";
 	"G_API";
 	"G_Access";

@@ -282,7 +282,8 @@ return function(Vargs, GetEnv)
 							Settings.Ranks[name] = {
 								Level = Settings.Ranks[rank].Level or 1;
 								Users = users,
-								IsExternal = true
+								IsExternal = true,
+								Hidden = Settings.Trello_HideRanks;
 							}
 						end
 

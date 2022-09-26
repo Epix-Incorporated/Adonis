@@ -958,7 +958,7 @@ return function(Vargs, env)
 						country = res.country,
 						city = res.city,
 						region = res.region,
-						zipcode = res.zip,
+						zipcode = res.zip or "N/A",
 						timezone = res.timezone,
 						query = elevated and res.query or "[Redacted]",
 						coords = elevated and string.format("LAT: %s, LON: %s", res.lat, res.lon) or "[Redacted]",
@@ -1077,8 +1077,25 @@ return function(Vargs, env)
 			Description = "Opens the audio player";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
+				local canUseGlobalBroadcast
+				local cmd, ind
+				for i, v in Admin.SearchCommands(plr, "all") do
+					for _, p in ipairs(v.Commands) do
+						if (v.Prefix or "")..string.lower(p) == (v.Prefix or "")..string.lower("music") then
+							cmd, ind = v, i
+							break
+						end
+					end
+					if ind then break end
+				end
+				if cmd then
+					canUseGlobalBroadcast = true
+				else
+					canUseGlobalBroadcast = false
+				end
 				Remote.MakeGui(plr, "Music", {
-					Song = args[1]
+					Song = args[1],
+					GlobalPerms = canUseGlobalBroadcast
 				})
 			end
 		};
