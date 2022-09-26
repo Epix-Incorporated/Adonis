@@ -10,6 +10,8 @@ return {
 	"Added settings.Trello_HideRanks to hide Trello-based list entries from the :adminlist (#910)";
 	"Some internal codebase improvements";
 	"Updated the Version value in Adonis_Loader";
+	":scriptbuilder is now deprecated";
+	"Potentially fixed :n and :m delaying with a lot of players in the server";
 	"(Git/DaEnder) Made cape parented to character and massless (#850)";
 	"(Git/xvarmkorv2) Update Colorize Theme to use TweenService and task.wait (#853)";
 	"(Git/DimensionalFusion) Change Set FPS to not exceed 60 (#879)";
