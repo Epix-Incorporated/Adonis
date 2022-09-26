@@ -15,6 +15,7 @@ return {
 	"(Git/DaEnder) Made cape parented to character and massless (#850)";
 	"(Git/xvarmkorv2) Update Colorize Theme to use TweenService and task.wait (#853)";
 	"(Git/DimensionalFusion) Change Set FPS to not exceed 60 (#879)";
+	"(Git/Lain) Edit the way Players are Selected (#886)";
 	"(Git/Lethalitics) Add a healthlist command (#889)";
 	"(Git/RoyallyFlushed) Removal of next() and pairs() from codebase (#890)";
 	"(Git/RoyallyFlushed) Client/Core code readability improvements (#891)";
