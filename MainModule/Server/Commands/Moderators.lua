@@ -5696,33 +5696,49 @@ return function(Vargs, env)
 					Value = noclip or false;
 					Parent = scr;
 				})
-
+				
 				scr.Name = "ADONIS_FLIGHT"
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
-
+						
 						local new = scr:Clone()
-						local flightPosition = service.New("BodyPosition")
-						local flightGyro = service.New("BodyGyro")
-
+						local flightPositionAttachment: Attachment = service.New("Attachment")
+						local flightGyroAttachment: Attachment = service.New("Attachment")
+						local flightPosition: AlignPosition = service.New("AlignPosition")
+						local flightGyro: AlignOrientation = service.New("AlignOrientation")
+						
+						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
+						flightPositionAttachment.Parent = part
+						
+						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
+						flightGyroAttachment.Parent = part
+						
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
-						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.MaxForce = 0
 						flightPosition.Position = part.Position
+						flightPosition.Attachment0 = flightPositionAttachment
+						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 						flightPosition.Parent = part
-
+						
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
-						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.MaxTorque = 0
 						flightGyro.CFrame = part.CFrame
+						flightGyro.Attachment0 = flightGyroAttachment
+						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
 						flightGyro.Parent = part
-
+						
 						new.Parent = part
 						new.Disabled = false
 						Remote.MakeGui(v, "Notification", {
@@ -5734,7 +5750,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed", "flightspeed"};
@@ -5743,7 +5759,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5765,7 +5781,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
@@ -5777,16 +5793,20 @@ return function(Vargs, env)
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
 			end
 		};
-
+		
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling"};

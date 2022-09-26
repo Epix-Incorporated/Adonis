@@ -13,8 +13,8 @@ local player = players.LocalPlayer
 local char = player.Character
 
 local human = char:FindFirstChildOfClass("Humanoid")
-local bPos = part:WaitForChild("ADONIS_FLIGHT_POSITION")
-local bGyro = part:WaitForChild("ADONIS_FLIGHT_GYRO")
+local bPos: AlignPosition = part:WaitForChild("ADONIS_FLIGHT_POSITION")
+local bGyro: AlignOrientation = part:WaitForChild("ADONIS_FLIGHT_GYRO")
 
 local speedVal = script:WaitForChild("Speed")
 local noclip = script:WaitForChild("Noclip")
@@ -78,10 +78,10 @@ function Start()
 	end)
 
 	bPos.Position = part.Position
-	bPos.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	bPos.MaxForce = math.huge
 
 	bGyro.CFrame = part.CFrame
-	bGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+	bGyro.MaxTorque = 9e9
 
 	antiLoop = antiReLoop
 
@@ -100,7 +100,7 @@ function Start()
 			break
 		end
 
-		local new = bGyro.cframe - bGyro.cframe.p + bPos.position
+		local new = bGyro.CFrame - bGyro.CFrame.Position + bPos.Position
 		if not dir.Forward and not dir.Backward and not dir.Up and not dir.Down and not dir.Left and not dir.Right then
 			curSpeed = 1
 		else
@@ -140,14 +140,14 @@ function Start()
 		end
 
 		human.PlatformStand = true
-		bPos.position = new.p
+		bPos.Position = new.p
 
 		if dir.Forward then
-			bGyro.cframe = camera.CoordinateFrame*CFrame.Angles(-math.rad(curSpeed*7.5), 0, 0)
+			bGyro.CFrame = camera.CoordinateFrame*CFrame.Angles(-math.rad(curSpeed*7.5), 0, 0)
 		elseif dir.Backward then
-			bGyro.cframe = camera.CoordinateFrame*CFrame.Angles(math.rad(curSpeed*7.5), 0, 0)
+			bGyro.CFrame = camera.CoordinateFrame*CFrame.Angles(math.rad(curSpeed*7.5), 0, 0)
 		else
-			bGyro.cframe = camera.CoordinateFrame
+			bGyro.CFrame = camera.CoordinateFrame
 		end
 
 		runService.RenderStepped:Wait()
@@ -165,11 +165,11 @@ function Stop()
 	end
 
 	if bPos then
-		bPos.maxForce = Vector3.new(0, 0, 0)
+		bPos.MaxForce = 0
 	end
 
 	if bGyro then
-		bGyro.maxTorque = Vector3.new(0, 0, 0)
+		bGyro.MaxTorque = 0
 	end
 
 	if conn then
@@ -183,7 +183,7 @@ function Toggle()
 		debounce = true
 		if not flying then
 			flying = true
-			coroutine.wrap(Start)()
+			task.defer(Start)
 		else
 			flying = false
 			Stop()
@@ -224,7 +224,7 @@ end
 listenConnection(part.DescendantRemoving, function(Inst)
 	if Inst == bPos or Inst == bGyro or Inst == speedVal or Inst == noclip then
 		if conn then
-				conn:Disconnect()
+			conn:Disconnect()
 		end
 
 		for _, Signal in pairs(RBXConnections) do
@@ -243,7 +243,7 @@ listenConnection(inputService.InputEnded, function(input, isGame)
 	HandleInput(input, isGame, false)
 end)
 
-coroutine.wrap(Start)()
+task.defer(Start)
 
 if not inputService.KeyboardEnabled then
 	listenConnection(human.Changed, function()
@@ -280,7 +280,7 @@ if a=='KFly' then
 			return
 		end
 		local maxspd,m,acc,dir,CF=100,5,v3()
-		local bg,bv=new'BodyGyro'{Parent=root;D=200;P=5000;cframe=root.CFrame},new'BodyVelocity'{Parent=root}
+		local bg,bv=new'BodyGyro'{Parent=root;D=200;P=5000;CFrame=root.CFrame},new'BodyVelocity'{Parent=root}
 		b=new'BoolValue'{Parent=root;Name='KFly'}
 		Curr.Fly=b
 		b.Changed:Connect(function(a)
@@ -302,7 +302,7 @@ if a=='KFly' then
 				dir=(CF:inverse()*cf(CF.p+dir)).p
 				acc=acc*.95
 				acc=v3(max(-maxspd,min(maxspd,acc.x+dir.x*m)),max(-maxspd,min(maxspd,not isTyping and (f.KeyDown(Enum.KeyCode.Space) and acc.y+m or f.KeyDown(Enum.KeyCode.LeftControl) and acc.y-m) or acc.y)),max(-maxspd,min(maxspd,acc.z+dir.z*m)))
-				bg.cframe,bv.velocity=CF,(CF*cf(acc)).p-CF.p
+				bg.CFrame,bv.velocity=CF,(CF*cf(acc)).p-CF.p
 			else
 				wait()
 			end
@@ -334,7 +334,7 @@ local function start()
   pos.position = torso.Position
   gyro.Name = "ADONIS_GYRO"
   gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-  gyro.cframe = torso.CFrame
+  gyro.CFrame = torso.CFrame
   human.Died:Connect(function()
   if gyro then gyro:Destroy() end
   if pos then pos:Destroy() end
@@ -345,7 +345,7 @@ local function start()
 
   repeat
     localplayer.Character.Humanoid.PlatformStand = true
-    local new = gyro.cframe - gyro.cframe.p + pos.position
+    local new = gyro.CFrame - gyro.CFrame.p + pos.position
 
     if not keys.w and not keys.s and not keys.a and not keys.d then
       speed = 1
@@ -373,11 +373,11 @@ local function start()
     end
     pos.position=new.p
     if keys.w then
-      gyro.cframe = workspace.CurrentCamera.CoordinateFrame*CFrame.Angles(-math.rad(speed*7.5),0,0)
+      gyro.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.Angles(-math.rad(speed*7.5),0,0)
     elseif keys.s then
-      gyro.cframe = workspace.CurrentCamera.CoordinateFrame*CFrame.Angles(math.rad(speed*7.5),0,0)
+      gyro.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.Angles(math.rad(speed*7.5),0,0)
     else
-      gyro.cframe = workspace.CurrentCamera.CoordinateFrame
+      gyro.CFrame = workspace.CurrentCamera.CoordinateFrame
     end
   until not check() or not flying or not gyro or not pos or not pos.Parent or not wait()
   if gyro then gyro:Destroy() end
