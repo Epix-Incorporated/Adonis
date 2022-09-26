@@ -164,6 +164,26 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
 		Admin.Init = nil;
 		AddLog("Script", "Admin Module Initialized")
 	end;
@@ -410,90 +430,76 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		DoCheck = function(p, check, banCheck)
-			local pType = type(p)
-			local cType = type(check)
+		DoCheck = function(pObj, check, banCheck)
+			local pType = typeof(pObj)
+			local cType = typeof(check)
 
-			local lower = string.lower
-			local match = string.match
-			local sub = string.sub
-			local pUnWrapped = service.UnWrap(p)
+			local pUnWrapped = service.UnWrap(pObj)
 
-			local plrUserId = (type(p)=="number" and p) or (type(p)=="userdata" and p.UserId)
-			local realPlayer = (typeof(pUnWrapped)=="Instance" and pUnWrapped:IsA("Player") and pUnWrapped) or
-				(type(p) == "userdata" and service.Players:GetPlayerByUserId(p.UserId))
+			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(pObj)
+				elseif pType == "string" then service.Players:FindFirstChild(pObj)
+				elseif typeof(pUnWrapped) == "Instance" and pUnWrapped:IsA("Player") then pUnWrapped
+				elseif pType == "userdata" then service.Players:GetPlayerByUserId(pObj.UserId)
+				else nil
+			if not plr then
+				return false
+			end
 
-			if pType == "string" and cType == "string" then
-				if p == check or sub(lower(check), 1, #tostring(p)) == lower(p) then
+			if cType == "number" then
+				return plr.UserId == check
+			elseif cType == "string" then
+				if plr.Name == check then
 					return true
 				end
-			elseif pType == "number" and (cType == "number" or tonumber(check)) then
-				if p == tonumber(check) then
-					return true
-				end
-			elseif cType == "number" then
-				if p.UserId == check then
-					return true
-				end
-			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
-				local isGood = p and p.Parent == service.Players
 
-				if plrUserId and match(check, "^Group:(.*):(.*)") then
-					local sGroup, sRank = match(check, "^Group:(.*):(.*)")
-					local groupId, rank = tonumber(sGroup), tonumber(sRank)
-					if groupId and rank then
-						local playerRank = Admin.GetGroupLevel(plrUserId, groupId)
-						if playerRank == rank or (rank < 0 and playerRank >= math.abs(rank)) then
-							return true
-						end
-					end
-				elseif plrUserId and sub(check, 1, 6) == "Group:" then --check:match("^Group:(.*)") then
-					local groupId = tonumber(match(check, "^Group:(.*)"))
+				local filterName, filterData = string.match(check, "^(.-):(.+)$")
+				if filterName then
+					filterName = string.lower(filterName)
+				else
+					return false
+				end
+				if filterName == "group" then
+					local groupId = tonumber((string.match(filterData, "^%d+")))
 					if groupId then
-						local playerRank = Admin.GetGroupLevel(plrUserId, groupId)
-						if playerRank > 0 then
+						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
+						local requiredRank = tonumber((string.match(filterData, "^%d+:(.+)$")))
+						if requiredRank then
+							return plrRank == requiredRank or (requiredRank < 0 and plrRank >= math.abs(requiredRank))
+						end
+						return plrRank > 0
+					end
+					return false
+				elseif filterName == "item" then
+					local itemId = tonumber((string.match(filterData, "^%d+")))
+					return itemId and service.CheckAssetOwnership(plr, itemId)
+				elseif filterName == "gamepass" then
+					local gamepassId = tonumber((string.match(filterData, "^%d+")))
+					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
+				else
+					local username, userId = string.match(check, "^(.*):(.*)")
+					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
+						return true
+					end
+
+					if not banCheck and type(check) == "string" and not string.find(check, ":") then
+						local cache = Functions.GetUserIdFromNameAsync(check)
+						if cache and plr.UserId == cache then
 							return true
 						end
-					end
-				elseif realPlayer and sub(check, 1, 5) == "Item:" then --check:match("^Item:(.*)") then
-					local item = tonumber(match(check, "^Item:(.*)"))
-					if item then
-						return service.CheckAssetOwnership(realPlayer, item)
-					end
-				elseif sub(check, 1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
-					local item = tonumber(match(check, "^GamePass:(.*)"))
-					if item then
-						return service.CheckPassOwnership(plrUserId, item)
-					end
-				elseif match(check, "^(.*):(.*)") then
-					local player, sUserid = match(check, "^(.*):(.*)")
-					local userid = tonumber(sUserid)
-					if player and userid and p.Name == player or p.UserId == userid then
-						return true
-					end
-				elseif p.Name == check then
-					return true
-				elseif not banCheck and type(check) == "string" and not string.find(check, ":") then
-					local cache = Functions.GetUserIdFromNameAsync(check)
-
-					if cache and p.UserId == cache then
-						return true
 					end
 				end
-			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
-				if check.Group and check.Rank then
-					local rank = check.Rank
-					local pGroup = Admin.GetPlayerGroup(p, check.Group)
-					if pGroup then
-						local pRank = pGroup.Rank
-						if pRank == rank or (rank < 0 and pRank >= math.abs(rank)) then
-							return true
-						end
+			elseif cType == "table" then
+				local groupId, rank = check.Group, check.Rank
+				if groupId and rank then
+					local plrGroupInfo = Admin.GetPlayerGroup(plr, groupId)
+					if plrGroupInfo then
+						local plrRank = plrGroupInfo.Rank
+						return plrRank == rank or (rank < 0 and plrRank >= math.abs(rank))
 					end
 				end
 			end
 
-			return false
+			return check == plr
 		end;
 
 		LevelToList = function(lvl)
@@ -1290,7 +1296,7 @@ return function(Vargs, GetEnv)
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
 				return true, nil
 			end
-
+					
 			if Admin.IsBlacklisted(pDat.Player) then
 				return false, "You are blacklisted from running commands."
 			end

@@ -925,13 +925,15 @@ return function(Vargs, GetEnv)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
-				Remote.RemoveGui(v, "Message")
-				Remote.MakeGui(v, "Message", {
-					Title = title;
-					Message = message;
-					Scroll = scroll;
-					Time = duration;
-				})
+				task.defer(function()
+					Remote.RemoveGui(v, "Message")
+					Remote.MakeGui(v, "Message", {
+						Title = title;
+						Message = message;
+						Scroll = scroll;
+						Time = duration;
+					})
+				end)
 			end
 		end;
 
@@ -939,12 +941,14 @@ return function(Vargs, GetEnv)
 			duration = duration or (#tostring(message) / 19) + 2.5
 
 			for _, v in players do
-				Remote.RemoveGui(v, "Notify")
-				Remote.MakeGui(v, "Notify", {
-					Title = title;
-					Message = message;
-					Time = duration;
-				})
+				task.defer(function()
+					Remote.RemoveGui(v, "Notify")
+					Remote.MakeGui(v, "Notify", {
+						Title = title;
+						Message = message;
+						Time = duration;
+					})
+				end)
 			end
 		end;
 

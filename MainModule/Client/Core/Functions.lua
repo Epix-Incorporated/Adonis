@@ -670,10 +670,12 @@ return function(Vargs, GetEnv)
 			local isR15 = torso.Name == "UpperTorso"
 
 			local p = service.New("Part", {
-				Parent = service.LocalContainer();
+				Parent = char;
 				Name = "ADONIS_CAPE";
 				Anchored = false;
 				CanCollide = false;
+				Massless = true;
+				CanQuery = false;
 				Size = Vector3.new(2, 4, 0.1);
 				Position = torso.Position;
 				BrickColor = BrickColor.new(color);

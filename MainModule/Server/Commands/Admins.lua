@@ -1,3 +1,4 @@
+--!nocheck
 return function(Vargs, env)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
@@ -82,7 +83,7 @@ return function(Vargs, env)
 
 						Functions.Hint(service.FormatPlayer(v, true).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
 					else
-						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v), {plr})
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v, true), {plr})
 					end
 				end
 			end;
@@ -165,76 +166,77 @@ return function(Vargs, env)
 
 		UnAdmin = {
 			Prefix = Settings.Prefix;
-			Commands = {"unadmin", "unmod", "unowner", "unhelper", "unpadmin", "unheadadmin", "unrank"};
-			Args = {"player/user", "temp? (true/false) (default: false)"};
+			Commands = {"unadmin", "unmod", "unowner", "unpadmin", "unheadadmin", "unrank"};
+			Args = {"player/user / list entry", "temp? (true/false) (default: false)"};
 			Description = "Removes admin/moderator ranks from the target player(s); saves unless <temp> is 'true'";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string}, data: {any})
+				local target = assert(args[1], "Missing target user (argument #1)")
 				local temp = args[2] and args[2]:lower() == "true"
 				local senderLevel = data.PlayerData.Level
 
 				local userFound = false
-				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target user (argument #1)"), {
-					UseFakePlayer = true;
-					AllowUnknownUsers = true;
-					DontError = true;
-					})
-				do
-					userFound = true
-					local targLevel, targRank = Admin.GetLevel(v)
-					if targLevel > 0 then
-						if senderLevel > targLevel then
-							Admin.RemoveAdmin(v, temp, temp)
-							Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
-							Remote.MakeGui(v, "Notification", {
-								Title = "Notification";
-								Message = string.format("You are no longer a(n) %s", targRank or "admin");
-								Icon = server.MatIcons["Remove moderator"];
-								Time = 10;
-							})
+				if not target:find(":") then
+					for _, v in service.GetPlayers(plr, target, {
+						DontError = true;
+						})
+					do
+						userFound = true
+						local targLevel, targRank = Admin.GetLevel(v)
+						if targLevel > 0 then
+							if senderLevel > targLevel then
+								Admin.RemoveAdmin(v, temp)
+								Functions.Hint(string.format("Removed %s from rank %s", service.FormatPlayer(v, true), targRank or "[unknown rank]"), {plr})
+								Remote.MakeGui(v, "Notification", {
+									Title = "Notification";
+									Message = string.format("You are no longer a(n) %s", targRank or "admin");
+									Icon = server.MatIcons["Remove moderator"];
+									Time = 10;
+								})
+							else
+								Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s rank", {plr})
+							end
 						else
-							Functions.Hint("You do not have permission to remove "..service.FormatPlayer(v, true).."'s rank", {plr})
+							Functions.Hint(service.FormatPlayer(v, true).." does not already have any rank to remove", {plr})
 						end
+					end
+
+					if userFound then
+						return
 					else
-						Functions.Hint(service.FormatPlayer(v, true).." does not already have any rank to remove", {plr})
+						Functions.Hint("User not found in server; searching datastore", {plr})
 					end
 				end
 
-				if userFound then return end
+				for rankName, rankData in Settings.Ranks do
+					if senderLevel <= rankData.Level then
+						continue
+					end
+					for i, user in rankData.Users do
+						if not (user:lower() == target:lower() or user:lower():match("^"..target:lower()..":") or Admin.DoCheck(target, user)) then
+							continue
+						end
+						if
+							Remote.GetGui(plr, "YesNoPrompt", {
+								Question = "Remove '"..tostring(user).."' from '".. rankName .."'?";
+							}) == "Yes"
+						then
+							table.remove(rankData.Users, i)
+							if not temp and Settings.SaveAdmins then
+								service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
+									Type = "TableRemove";
+									Table = {"Settings", "Ranks", rankName, "Users"};
+									Value = user;
+								});
+								Functions.Hint("Removed entry '"..tostring(user).."'' from "..rankName, {plr})
+								Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
 
-				if senderLevel < 900 then
-					error("User not found; try the full username or use id-USERSIDHERE");
-				else
-					local checkThis = args[1]
-
-					for rankName, rankData in Settings.Ranks do
-						if senderLevel > rankData.Level then
-							for i, user in rankData.Users do
-								if Admin.DoCheck(checkThis, user) then
-									local ans = Remote.GetGui(plr, "YesNoPrompt", {
-										Question = "Remove '"..tostring(user).."' from '".. rankName .."'?";
-									})
-
-									if ans == "Yes" then
-										table.remove(rankData.Users, i)
-										if not temp and Settings.SaveAdmins then
-											service.TrackTask("Thread: RemoveAdmin", Core.DoSave, {
-												Type = "TableRemove";
-												Table = {"Settings", "Ranks", rankName, "Users"};
-												Value = user;
-											});
-											Functions.Hint("Removed entry '"..tostring(user).."'' from "..rankName, {plr})
-											Logs:AddLog("Script", string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName))
-
-										end
-									end
-									userFound = true
-								end
 							end
 						end
+						userFound = true
 					end
-					assert(userFound, "No table entries matching '".. checkThis .."' were found")
 				end
+				assert(userFound, "No table entries matching '".. args[1] .."' were found")
 			end
 		};
 
@@ -811,8 +813,9 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"scriptbuilder", "scriptb", "sb"};
 			Args = {"create/remove/edit/close/clear/append/run/stop/list", "localscript/script", "scriptName", "data"};
-			Description = "Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
+			Description = "[Deprecated] Script Builder; make a script, then edit it and chat it's code or use :sb append <codeHere>";
 			AdminLevel = "Admins";
+			Hidden = true;
 			NoFilter = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
