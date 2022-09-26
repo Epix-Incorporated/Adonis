@@ -176,8 +176,6 @@ return function(Vargs, env)
 				local userFound = false
 				if not target:find(":") then
 					for _, v in service.GetPlayers(plr, target, {
-						UseFakePlayer = true;
-						AllowUnknownUsers = true;
 						DontError = true;
 						})
 					do
@@ -213,7 +211,7 @@ return function(Vargs, env)
 						continue
 					end
 					for i, user in rankData.Users do
-						if not (user:lower() == target:lower() or Admin.DoCheck(target, user)) then
+						if not (user:lower() == target:lower() or user:lower():match("^"..target:lower()..":") or Admin.DoCheck(target, user)) then
 							continue
 						end
 						if
