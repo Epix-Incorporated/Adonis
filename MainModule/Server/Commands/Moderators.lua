@@ -6346,7 +6346,7 @@ return function(Vargs, env)
 						Time = v.Time;
 						Text = v.Text..": "..tostring(v.Desc);
 						Desc = tostring(v.Desc);
-					}
+					})
 				end
 				return tab
 			end;
