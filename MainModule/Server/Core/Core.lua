@@ -1116,7 +1116,6 @@ return function(Vargs, GetEnv)
 			if serverId and serverId == game.JobId then
 				return
 			end
-			data = data or {}
 
 			local CheckMatch = if data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST

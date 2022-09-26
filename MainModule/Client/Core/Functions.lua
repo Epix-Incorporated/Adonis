@@ -694,24 +694,23 @@ return function(Vargs, GetEnv)
 							Face = 2;
 							Texture = "rbxassetid://"..decal;
 							Transparency = 0;
-						})
-					end
-					local p = service.New("Part", {
-						Parent = char;
-						Name = "ADONIS_CAPE";
-						Anchored = false;
-						CanCollide = false;
-						Massless = true;
-						CanQuery = false;
-						Size = Vector3.new(2, 4, 0.1);
-						Position = torso.Position;
-						BrickColor = BrickColor.new(color);
-						Transparency = 0;
-						Reflectance = reflect;
-						Material = material;
-						TopSurface = 0;
-						BottomSurface = 0;
-					})
+
+			local p = service.New("Part", {
+				Parent = char;
+				Name = "ADONIS_CAPE";
+				Anchored = false;
+				CanCollide = false;
+				Massless = true;
+				CanQuery = false;
+				Size = Vector3.new(2, 4, 0.1);
+				Position = torso.Position;
+				BrickColor = BrickColor.new(color);
+				Transparency = 0;
+				Reflectance = reflect;
+				Material = material;
+				TopSurface = 0;
+				BottomSurface = 0;
+			})
 
 					local index = Functions.GetRandom()
 					Variables.Capes[index] = {
