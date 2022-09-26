@@ -55,7 +55,7 @@ function dirToCom(part, mdir)
 		Left = ((getCF(part)*CFrame.new(-1, 0, 0)) - part.CFrame.p).p;
 	}
 
-	for i,v in next,dirs do
+	for i,v in dirs do
 		if (v - mdir).Magnitude <= 1.05 and mdir ~= Vector3.new(0,0,0) then
 			dir[i] = true
 		elseif not keyTab[i] then
@@ -105,33 +105,33 @@ function Start()
 			curSpeed = 1
 		else
 			if dir.Up then
-				new = new * CFrame.new(0, curSpeed, 0)
-				curSpeed = curSpeed + speedInc
+				new *= CFrame.new(0, curSpeed, 0)
+				curSpeed += speedInc
 			end
 
 			if dir.Down then
-				new = new * CFrame.new(0, -curSpeed, 0)
-				curSpeed = curSpeed + speedInc
+				new *= CFrame.new(0, -curSpeed, 0)
+				curSpeed += speedInc
 			end
 
 			if dir.Forward then
-				new = new + camera.CoordinateFrame.LookVector * curSpeed
-				curSpeed = curSpeed + speedInc
+				new += camera.CoordinateFrame.LookVector * curSpeed
+				curSpeed += speedInc
 			end
 
 			if dir.Backward then
-				new = new - camera.CoordinateFrame.LookVector * curSpeed
-				curSpeed = curSpeed + speedInc
+				new -= camera.CoordinateFrame.LookVector * curSpeed
+				curSpeed += speedInc
 			end
 
 			if dir.Left then
-				new = new * CFrame.new(-curSpeed, 0, 0)
-				curSpeed = curSpeed + speedInc
+				new *= CFrame.new(-curSpeed, 0, 0)
+				curSpeed += speedInc
 			end
 
 			if dir.Right then
-				new = new * CFrame.new(curSpeed, 0, 0)
-				curSpeed = curSpeed + speedInc
+				new *= CFrame.new(curSpeed, 0, 0)
+				curSpeed += speedInc
 			end
 
 			if curSpeed > topSpeed then
@@ -188,7 +188,7 @@ function Toggle()
 			flying = false
 			Stop()
 		end
-		wait(0.5)
+		task.wait(0.5)
 		debounce = false
 	end
 end
@@ -352,19 +352,19 @@ local function start()
     end
 
     if keys.w then
-      new = new + workspace.CurrentCamera.CoordinateFrame.LookVector * speed
+      new += workspace.CurrentCamera.CoordinateFrame.LookVector * speed
       speed = speed+0.15
     end
     if keys.a then
-      new = new * CFrame.new(-speed,0,0)
+      new *= CFrame.new(-speed,0,0)
       speed = speed+0.15
     end
     if keys.s then
-      new = new - workspace.CurrentCamera.CoordinateFrame.LookVector * speed
+      new -= workspace.CurrentCamera.CoordinateFrame.LookVector * speed
       speed = speed+0.15
     end
     if keys.d then
-      new = new * CFrame.new(speed,0,0)
+      new *= CFrame.new(speed,0,0)
       speed = speed+0.15
     end
 
