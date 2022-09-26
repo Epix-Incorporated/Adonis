@@ -8,6 +8,7 @@ return {
 	"Disabled AutoLocalize for GUI objects";
 	"Added settings.SilentCommandDenials to avoid notifying users when they can't run a command (#836)";
 	"Added settings.Trello_HideRanks to hide Trello-based list entries from the :adminlist (#910)";
+	"Removed all instances of pairs()/ipairs() in core modules (#870)";
 	"Some internal codebase improvements";
 	"Updated the Version value in Adonis_Loader";
 	":scriptbuilder is now deprecated";
