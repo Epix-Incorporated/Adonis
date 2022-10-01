@@ -6866,5 +6866,21 @@ return function(Vargs, env)
 				})
 			end
 		};
+		Highlight = {
+			Prefix = Settings.Prefix;
+			Commands = {"highlight"};
+			Args = {"player"};
+			Description = "Highlights a set player";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				assert(args[1], "Missing target player")
+				local Highlight = Instance.new("Highlight")
+				Highlight.Name = "Adonis_Highlight"
+				Highlight.OutlineTransparency = 0.5
+				Highlight.FillTransparency = 0.25
+				Highlight.FillColor = Color3.fromRGB(110,209,255)
+				Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+			end
+		};
 	}
 end
