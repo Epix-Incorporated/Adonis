@@ -6880,6 +6880,7 @@ return function(Vargs, env)
 				Highlight.FillTransparency = 0.25
 				Highlight.FillColor = Color3.fromRGB(110,209,255)
 				Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+				Highlight.Parent = player
 			end
 		};
 	}
