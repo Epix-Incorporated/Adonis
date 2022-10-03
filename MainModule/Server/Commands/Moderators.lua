@@ -23,6 +23,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {})
 				for _, v in service.GetPlayers(plr, assert(args[1], "Missing target player (argument #1)"), {
 					IsKicking = true;
+					NoFakePlayer = true; --// Can't really kick someone not in game...
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "kick") then
@@ -362,7 +363,10 @@ return function(Vargs, env)
 				local reason = assert(args[2], "Missing reason (argument #2)")
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					UseFakePlayer = true;
+					DontError = false;
+					IsServer = false;
+					IsKicking = false;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "warn", false) then
@@ -410,7 +414,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = true;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "kick-warn", false) then
@@ -452,7 +456,10 @@ return function(Vargs, env)
 				local reason = string.lower(assert(args[2], "Missing warning reason (argument #2)"))
 
 				for _, v in service.GetPlayers(plr, args[1], {
-					UseFakePlayer = true;
+					DontError = false;
+					IsServer = false;
+					IsKicking = false;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "remove warning(s) from") then
@@ -544,7 +551,10 @@ return function(Vargs, env)
 			end,
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1], {
-					UseFakePlayer = true;
+					DontError = false;
+					IsServer = false;
+					IsKicking = false;
+					NoFakePlayer = false;
 					})
 				do
 
@@ -6744,7 +6754,7 @@ return function(Vargs, env)
 			Description = "Shows you a list and count of players selected in the supplied argument, ex: '"..Settings.Prefix.."select %raiders true' to monitor people in the 'raiders' team";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
-				local players = service.GetPlayers(plr, selection, {DontError = true; UseFakePlayer = false;})
+				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
 					"Specified: \""..(selection or (Settings.SpecialPrefix.."me")).."\"",
 					"# Players: "..#players,

@@ -67,13 +67,10 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-				for _, v in service.GetPlayers(plr, args[1], {
-					UseFakePlayer = true;
-					})
-				do
-					if senderLevel > Admin.GetLevel(v) then
-						Admin.AddAdmin(v, rankName)
-						Remote.MakeGui(v, "Notification", {
+				for _, p in Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})do
+					if senderLevel > Admin.GetLevel(p) then
+						Admin.AddAdmin(p, rankName)
+						Remote.MakeGui(p, "Notification", {
 							Title = "Notification";
 							Message = string.format("You are %s%s. Click to view commands.", if string.lower(string.sub(rankName, 1, 3)) == "the" then "" elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(string.sub(rankName, 1, 3)) ~= "uni" then "an " else "a ", rankName);
 							Icon = server.MatIcons.Shield;
@@ -407,7 +404,7 @@ return function(Vargs, env)
 							DontError = true;
 							IsServer = false;
 							IsKicking = false;
-							UseFakePlayer = true;
+							NoFakePlayer = false;
 						})
 						if #plrs>0 then
 							for _, v in plrs do
@@ -1201,6 +1198,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "crash") then
@@ -1219,6 +1217,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "hard-crash") then
@@ -1237,6 +1236,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "RAM-crash") then
@@ -1255,6 +1255,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string}, data: {any})
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "GPU-crash") then
@@ -1305,7 +1306,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
@@ -1358,7 +1359,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1], {
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if level > Admin.GetLevel(v) then
