@@ -44,7 +44,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if level > Admin.GetLevel(v) then
@@ -142,7 +142,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if level > Admin.GetLevel(v) then

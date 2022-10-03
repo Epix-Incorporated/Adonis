@@ -66,7 +66,7 @@ return function(Vargs, env)
 
 				assert(newLevel < senderLevel, string.format("Rank level (%s) cannot be equal to or above your own level (%s)", newLevel, senderLevel))
 
-				for _, p in Functions.GetPlayers(plr, args[1], {UseFakePlayer = true})do
+				for _, p in Functions.GetPlayers(plr, args[1], {NoFakePlayer = false})do
 					if senderLevel > Admin.GetLevel(p) then
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
@@ -406,7 +406,7 @@ return function(Vargs, env)
 							DontError = true;
 							IsServer = false;
 							IsKicking = false;
-							UseFakePlayer = true;
+							NoFakePlayer = false;
 						})
 						if #plrs>0 then
 							for _, v in plrs do
@@ -1203,7 +1203,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1226,7 +1226,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1249,7 +1249,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1272,7 +1272,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if data.PlayerData.Level > Admin.GetLevel(v) then
@@ -1327,7 +1327,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if level > Admin.GetLevel(v) then
@@ -1385,7 +1385,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if level > Admin.GetLevel(v) then

@@ -26,7 +26,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -372,7 +372,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -426,7 +426,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = true;
-					UseFakePlayer = false;
+					NoFakePlayer = true;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -470,7 +470,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 					if plrLevel > Admin.GetLevel(v) then
@@ -567,7 +567,7 @@ return function(Vargs, env)
 					DontError = false;
 					IsServer = false;
 					IsKicking = false;
-					UseFakePlayer = true;
+					NoFakePlayer = false;
 					})
 				do
 
@@ -6865,7 +6865,7 @@ return function(Vargs, env)
 			Description = "Shows you a list and count of players selected in the supplied argument, ex: '"..Settings.Prefix.."select %raiders true' to monitor people in the 'raiders' team";
 			AdminLevel = "Moderators";
 			ListUpdater = function(plr: Player, selection: string?)
-				local players = service.GetPlayers(plr, selection, {DontError = true; UseFakePlayer = false;})
+				local players = service.GetPlayers(plr, selection, {DontError = true; NoFakePlayer = true;})
 				local tab = {
 					"Specified: \""..(selection or (Settings.SpecialPrefix.."me")).."\"",
 					"# Players: "..#players,
