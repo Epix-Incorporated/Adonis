@@ -481,8 +481,6 @@ return function(Vargs, GetEnv)
 		GetPlayers = function(plr, argument, options)
 			options = options or {}
 
-			print("GET PLAYERS FIRED FOR", plr, argument, options) -- REMOVE THIS LATER
-
 			local parent = options.Parent or service.Players
 			local players = {}
 			local delplayers = {}
@@ -566,8 +564,6 @@ return function(Vargs, GetEnv)
 						end
 					end
 
-					print("DID WE GET ANYTHING???", plrCount, players) -- REMOVE THIS LATER
-
 					if plrCount == 0 then
 						--// Check for display names
 						for _, v in parent:GetChildren() do
@@ -589,7 +585,6 @@ return function(Vargs, GetEnv)
 							end
 
 							if plrCount == 0 then
-								print("CHECK OPTIONS", options) -- REMOVE THIS LATER
 								if not options.NoFakePlayer then
 									--// Attempt to retrieve non-ingame user
 
