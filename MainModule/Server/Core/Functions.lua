@@ -558,7 +558,7 @@ return function(Vargs, GetEnv)
 								options.IsKicking,
 								options.IsServer,
 								options.DontError,
-								options.UseFakePlayer,
+								not options.NoFakePlayer,
 								options.AllowUnknownUsers
 							)
 						end
@@ -585,7 +585,7 @@ return function(Vargs, GetEnv)
 							end
 
 							if plrCount == 0 then
-								if options.UseFakePlayer then
+								if not options.NoFakePlayer then
 									--// Attempt to retrieve non-ingame user
 
 									local UserId = Functions.GetUserIdFromNameAsync(s)
@@ -601,7 +601,7 @@ return function(Vargs, GetEnv)
 
 								if plrCount == 0 and not options.DontError then
 									Remote.MakeGui(plr, "Output", {
-										Message = if options.UseFakePlayer then "No user named '"..s.."' exists"
+										Message = if not options.NoFakePlayer then "No user named '"..s.."' exists"
 											else "No players matching '"..s.."' were found!";
 									})
 								end

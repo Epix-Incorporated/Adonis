@@ -863,7 +863,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
-				local players = service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = not elevated;})
+				local players = service.GetPlayers(plr, args[1], {NoFakePlayer = true; NoSelectors = not elevated;})
 
 				if #players > 2 then
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})

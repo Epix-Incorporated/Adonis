@@ -232,7 +232,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target player (argument #1)")
 				assert(args[2], "Missing command string (argument #2)")
-				for _, v in service.GetPlayers(plr, args[1], {UseFakePlayer = false}) do
+				for _, v in service.GetPlayers(plr, args[1], {NoFakePlayer = true}) do
 					task.defer(Process.Command, v, args[2], {isSystem = true})
 				end
 			end
