@@ -77,9 +77,9 @@ return function(Vargs, env)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						Functions.Hint(service.FormatPlayer(p).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
+						Functions.Hint(service.FormatPlayer(p, true).." is now rank ".. rankName .. " (Permission Level: ".. newLevel ..")", {plr})
 					else
-						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(v, true), {plr})
+						Functions.Hint("You do not have permission to set the rank of "..service.FormatPlayer(p, true), {plr})
 					end
 				end
 			end;

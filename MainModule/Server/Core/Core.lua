@@ -1003,11 +1003,15 @@ return function(Vargs, GetEnv)
 			elseif data.Type == "TableRemove" then
 				local tab = data.Table
 				local val = data.Value
-				local originalTable = tab
 				local key = Core.GetTableKey(tab)
+
+				--// Storing an old reference of data.Table as we may override it later on.
+				local originalTable = tab
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
+				elseif type(tab) == "table" and tab[1] == "Settings" then
+					originalTable = tab[2]
 				end
 
 				data.Action = "Remove"
@@ -1023,7 +1027,7 @@ return function(Vargs, GetEnv)
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
 							table.remove(sets, index)
-						else 
+						else
 							index += 1
 						end
 					end
@@ -1075,7 +1079,7 @@ return function(Vargs, GetEnv)
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
 							table.remove(sets, index)
-						else 
+						else
 							index += 1
 						end
 					end
