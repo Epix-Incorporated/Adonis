@@ -658,44 +658,9 @@ return function(Vargs, GetEnv)
 			if char then
 				Functions.RemoveCape(char)
 				local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
-				local isR15 = (torso.Name == "UpperTorso")
 				if torso then
-					local p = service.New("Part")
-					p.Name = "ADONIS_CAPE"
-					p.Anchored = false
-					p.Position = torso.Position
-					p.Transparency = 0
-					p.Material = material
-					p.CanCollide = false
-					p.TopSurface = 0
-					p.BottomSurface = 0
-					p.Size = Vector3.new(2,4,0.1)
-					p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
-					p.Parent = service.LocalContainer()
+					local isR15 = torso.Name == "UpperTorso"
 
-					if reflect then
-						p.Reflectance = reflect
-					end
-
-					local motor1 = service.New("Motor", p)
-					motor1.Part0 = p
-					motor1.Part1 = torso
-					motor1.MaxVelocity = .01
-					motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
-					motor1.C1 = CFrame.new(0,1-((isR15 and 0.2) or 0),(torso.Size.Z/2))*CFrame.Angles(0,math.rad(90),0)
-
-					local msh = service.New("BlockMesh", p)
-					msh.Scale = Vector3.new(0.9,0.87,0.1)
-
-					local dec
-					if decal and decal ~= 0 then
-						dec = service.New("Decal", {
-							Name = "Decal";
-							Face = 2;
-							Texture = "rbxassetid://"..decal;
-							Transparency = 0;
-						})
-					end
 					local p = service.New("Part", {
 						Parent = char;
 						Name = "ADONIS_CAPE";
@@ -713,46 +678,71 @@ return function(Vargs, GetEnv)
 						BottomSurface = 0;
 					})
 
-					local index = Functions.GetRandom()
-					Variables.Capes[index] = {
+					if reflect then
+						p.Reflectance = reflect
+					end
+
+					local motor1 = service.New("Motor", {
+						Parent = p;
+						Part0 = p;
+						Part1 = torso;
+						MaxVelocity = 0.01;
+						C0 = CFrame.new(0, 1.75, 0) * CFrame.Angles(0, math.rad(90), 0);
+						C1 = CFrame.new(0, 1 - (if isR15 then 0.2 else 0), torso.Size.Z / 2) * CFrame.Angles(0, math.rad(90), 0);
+					})
+
+					service.New("BlockMesh", {
+						Parent = p;
+						Scale = Vector3.new(0.9, 0.87, 0.1)
+					})
+
+					local dec
+					if decal and decal ~= 0 then
+						dec = service.New("Decal", {
+							Parent = p;
+							Name = "Decal";
+							Face = 2;
+							Texture = "rbxassetid://"..decal;
+							Transparency = 0;
+						})
+					end
+
+					table.insert(Variables.Capes, {
 						Part = p;
 						Motor = motor1;
-						Enabled = true;
+						Enabled = Variables.CapesEnabled;
 						Parent = data.Parent;
 						Torso = torso;
 						Decal = dec;
 						Data = data;
 						Wave = true;
 						isR15 = isR15;
-					}
-
-					local p = service.Players:GetPlayerFromCharacter(data.Parent)
-					if p and p == service.Player then
-						Variables.Capes[index].isPlayer = true
-					end
+						isPlayer = service.Players:GetPlayerFromCharacter(data.Parent) == service.Player;
+					})
 
 					if not Variables.CapesEnabled then
 						p.Transparency = 1
 						if dec then
 							dec.Transparency = 1
 						end
-						Variables.Capes[index].Enabled = false
 					end
 
 					Functions.MoveCapes()
 				end
 			end
 		end;
+
 		RemoveCape = function(parent)
-			for i,v in Variables.Capes do
+			for i, v in Variables.Capes do
 				if v.Parent == parent or not v.Parent or not v.Parent.Parent then
-					pcall(v.Part.Destroy,v.Part)
-					Variables.Capes[i] = nil
+					pcall(v.Part.Destroy, v.Part)
+					table.remove(Variables.Capes, i)
 				end
 			end
 		end;
+
 		HideCapes = function(hide)
-			for i,v in Variables.Capes do
+			for i, v in Variables.Capes do
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
@@ -777,8 +767,8 @@ return function(Vargs, GetEnv)
 						v.Enabled = false
 					end
 				else
-					pcall(part.Destroy,part)
-					Variables.Capes[i] = nil
+					pcall(part.Destroy, part)
+					table.remove(Variables.Capes, i)
 				end
 			end
 		end;
@@ -789,7 +779,7 @@ return function(Vargs, GetEnv)
 				if Functions.CountTable(Variables.Capes) == 0 or not Variables.CapesEnabled then
 					service.StopLoop("CapeMover")
 				else
-					for i,v in Variables.Capes do
+					for i, v in Variables.Capes do
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
@@ -810,21 +800,21 @@ return function(Vargs, GetEnv)
 								local ang = 0.1
 								if wave then
 									if torso.Velocity.Magnitude > 1 then
-										ang += ((torso.Velocity.Magnitude/10)*.05)+.05
+										ang += (torso.Velocity.Magnitude/10 * 0.05) + 0.05
 									end
 									v.Wave = false
 								else
 									v.Wave = true
 								end
 								ang += math.min(torso.Velocity.Magnitude/11, .8)
-								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), .04) + 0.002
+								motor.MaxVelocity = math.min((torso.Velocity.Magnitude/111), 0.04) + 0.002
 								if isPlayer then
 									motor.DesiredAngle = -ang
 								else
 									motor.CurrentAngle = -ang -- bugs
 								end
-								if motor.CurrentAngle < -.2 and motor.DesiredAngle > -.2 then
-									motor.MaxVelocity = .04
+								if motor.CurrentAngle < -0.2 and motor.DesiredAngle > -0.2 then
+									motor.MaxVelocity = 0.04
 								end
 							else
 								part.Transparency = 1
@@ -833,8 +823,8 @@ return function(Vargs, GetEnv)
 								end
 							end
 						else
-							pcall(part.Destroy,part)
-							Variables.Capes[i] = nil
+							pcall(part.Destroy, part)
+							table.remove(Variables.Capes, i)
 						end
 					end
 				end
