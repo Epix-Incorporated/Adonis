@@ -1348,7 +1348,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Argument #1 (player) is required")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {AllowUnknownUsers = true;}) do
 					local ret = Admin.RemoveBan(v.Name)
 					if ret then
 						if type(ret) == "table" then
