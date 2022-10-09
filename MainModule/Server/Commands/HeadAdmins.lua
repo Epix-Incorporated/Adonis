@@ -163,7 +163,7 @@ return function(Vargs, env)
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				assert(args[1], "Missing target user (argument #1)")
-				for _, v in service.GetPlayers(plr, args[1]) do
+				for _, v in service.GetPlayers(plr, args[1], {AllowUnknownUsers = true;}) do
 					local ret = Admin.RemoveBan(v.Name, true)
 					if ret then
 						if type(ret) == "table" then
