@@ -81,6 +81,10 @@ return function(Vargs, GetEnv)
 				end)
 
 				AddLog("Script", "ChatService Handler Loaded")
+			elseif game:GetService('TextChatService').ChatVersion == Enum.ChatVersion.TextChatService then
+				local ChatService = game:GetService('TextChatService')
+		        --// Not done!
+				AddLog("Script", "TextChatService Handler Loaded")
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
 				AddLog("Script", "ChatService Handler Not Found")

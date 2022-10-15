@@ -452,6 +452,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
+			if game:GetService('TextChatService').ChatVersion == Enum.ChatVersion.TextChatService then
+				print('TextChatService is not yet fully supported! Things may hit the fan.')
+				return false
+			else
 			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
 			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
 
@@ -459,6 +463,7 @@ return function(Vargs, GetEnv)
 				return require(chatMod)
 			end
 			return nil
+		   end
 		end;
 
 		IsClass = function(obj, classList)

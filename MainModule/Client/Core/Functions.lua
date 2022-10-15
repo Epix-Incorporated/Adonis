@@ -874,29 +874,40 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		ChatMessage = function(msg,color,font,size)
-			local tab = {}
+	ToHex = function(c3:Color3)  -- from https://devforum.roblox.com/t/converting-a-color-to-a-hex-string/793018/3
+			local r,g,b = math.floor(c3.R*255), math.floor(c3.G*255), math.floor(c3.B*255)
+			return string.format("#%X%X%X", r, g, b)	
+	end;
+	
+	ChatMessage = function(msg:string,color,font,size)
+		local tab = {}
+		local FormattedColor = Color3.new(1, 1, 1)
+		tab.Text = msg
 
-			tab.Text = msg
+		if color then
+			tab.Color = color
+			FormattedColor  = Functions.ToHex(color)
+		end
 
-			if color then
-				tab.Color = color
-			end
+		if font then
+			tab.Font = font
+		end
 
-			if font then
-				tab.Font = font
-			end
+		if size then
+			tab.Size = size
+		end
+		if game:GetService('TextChatService').ChatVersion == Enum.ChatVersion.TextChatService then
+			game:GetService('TextChatService').TextChannels.RBXGeneral:DisplaySystemMessage(string.format("<font color='%s'>%s</font>",FormattedColor,msg))
+			
+		else
+		
+		service.StarterGui:SetCore("ChatMakeSystemMessage",tab)
 
-			if size then
-				tab.Size = size
-			end
-
-			service.StarterGui:SetCore("ChatMakeSystemMessage",tab)
-
-			if Functions.SendToChat then
+		if Functions.SendToChat then
 				Functions.SendToChat({Name = "::Adonis::"},msg,"Private")
 			end
-		end;
+		end
+	end;
 
 		SetCamProperty = function(prop,value)
 			local cam = workspace.CurrentCamera
