@@ -636,7 +636,8 @@ return service.NewProxy({
 
 		--// Server Specific Service Functions
 		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
-		ServiceSpecific.CloneTable = CloneTable
+		--// Experimental, may have issues with Adonis tables that are protected metatables
+		--ServiceSpecific.CloneTable = CloneTable
 
 		--// Initialize Cores
 		local runLast = {}
