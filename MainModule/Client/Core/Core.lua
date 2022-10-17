@@ -120,7 +120,7 @@ return function(Vargs, GetEnv)
 			if Core.RemoteEvent then
 				log("Disconnect old RemoteEvent")
 
-				for name,event in next,Core.RemoteEvent.Events do
+				for name,event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
@@ -154,7 +154,7 @@ return function(Vargs, GetEnv)
 
 					events.ProcessRemote = event.OnClientEvent:Connect(Process.Remote)
 					events.ParentChildRemoved = remoteParent.ChildRemoved:Connect(function(child)
-						if (Core.RemoteEvent == eventData) and child == event and wait() then
+						if (Core.RemoteEvent == eventData) and child == event and task.wait() then
 							warn("::ADONIS:: REMOTE EVENT REMOVED? RE-GRABBING");
 							log("~! REMOTEEVENT WAS REMOVED?")
 							Core.GetEvent();
@@ -284,7 +284,7 @@ return function(Vargs, GetEnv)
 					ExecutePermission = (function(srcScript, code)
 						local exists;
 
-						for i,v in next,ScriptCache do
+						for i,v in ScriptCache do
 							if UnWrap(v.Script) == srcScript then
 								exists = v
 							end

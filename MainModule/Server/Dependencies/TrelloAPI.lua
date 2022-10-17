@@ -10,9 +10,9 @@
 -- It is requested that existing credits remain here.																											 --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local print = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: INFO: "..tostring(v)) end end
-local error = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: ERROR: "..tostring(v)) end end
-local warn = function(...) for i,v in pairs({...}) do warn("[Adonis TrelloAPI]: WARN: "..tostring(v)) end end
+local print = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: INFO: "..tostring(v)) end end
+local error = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: ERROR: "..tostring(v)) end end
+local warn = function(...) for i,v in {...} do warn("[Adonis TrelloAPI]: WARN: "..tostring(v)) end end
 
 local HttpService = game:GetService("HttpService")
 local Weeks = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
@@ -37,14 +37,6 @@ local RateLimit = function()
 end
 
 local HttpFunctions; HttpFunctions = {
-	CheckHttp = function()
-		local enabled, err = pcall(function()
-			HttpService:GetAsync("https://trello.com/")
-		end)
-
-		return enabled
-	end;
-
 	--// Same as the GetRandom() function
 	GenerateRequestID = function()
 		local format = string.format
@@ -101,7 +93,7 @@ local HttpFunctions; HttpFunctions = {
 
 			Queue[RequestID] = Request
 
-			for ind, header in pairs(Headers) do
+			for ind, header in Headers do
 				Request.Headers[ind] = header
 			end
 
@@ -160,9 +152,9 @@ local HttpFunctions; HttpFunctions = {
 
 	GetListObject = function(Lists, Name)
 		if not Name then error("Missing search term") end
-		for _, List in pairs(Lists) do
+		for _, List in Lists do
 			if type(Name)=="table" then
-				for _, Name in pairs(Name) do
+				for _, Name in Name do
 					if string.lower(HttpFunctions.Trim(List.name)) == string.lower( HttpFunctions.Trim(Name)) then
 						return List
 					end
@@ -177,15 +169,10 @@ local HttpFunctions; HttpFunctions = {
 }
 
 return function(AppKey, Token)
-	if not HttpFunctions.CheckHttp() then
-		error("Could not connect to Trello! Make sure HTTP is enabled")
-		return
-	end
-
 	AppKey = AppKey or ""
 	Token = Token or ""
 
-	local Base = "https://api.trello.com/1/"
+	local Base = "https://trello.com/1/"
 	local Arguments = "key="..tostring(AppKey).."&token="..tostring(Token)
 
 	local GetUrl = function(str)
@@ -196,6 +183,26 @@ return function(AppKey, Token)
 			Token="?"..Arguments
 		end
 		return Base..str..Token
+	end;
+	
+	local CheckHttp = function()
+		local enabled, err = pcall(function()
+			HttpService:GetAsync(GetUrl("members/trello?fields=id"))
+		end)
+		
+		return enabled
+	end;
+	
+	local HttpEnabled = pcall(HttpService.GetAsync, HttpService, "http://www.google.com/robots.txt");
+	
+	if not HttpEnabled then
+		error("Unable to connect to trello, Http requests are not enabled. Enable them via game settings.")
+		return
+	end
+	
+	if not CheckHttp() then
+		error("Could not connect to Trello! Please check if your app-key/token are valid.")
+		return
 	end;
 
 	local API; API = {
@@ -371,13 +378,14 @@ return function(AppKey, Token)
 		};
 	}
 
-	for ind, func in pairs(HttpFunctions) do
+	for ind, func in HttpFunctions do
 		API[ind] = func
 	end
 
 	API.http = HttpService
 	API.getListObj = API.GetListObject
-	API.checkHttp = API.CheckHttp
+	API.checkHttp = CheckHttp
+	API.CheckHttp = CheckHttp
 	API.urlEncode = API.UrlEncode
 	API.encode = API.Encode
 	API.decode = API.Decode

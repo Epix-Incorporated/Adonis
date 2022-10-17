@@ -8,7 +8,10 @@ logError = nil
 
 --// This module is for stuff specific to cross server communication
 --// NOTE: THIS IS NOT A *CONFIG/USER* PLUGIN! ANYTHING IN THE MAINMODULE PLUGIN FOLDERS IS ALREADY PART OF/LOADED BY THE SCRIPT! DO NOT ADD THEM TO YOUR CONFIG>PLUGINS FOLDER!
-return function(Vargs)
+return function(Vargs, GetEnv)
+	local env = GetEnv(nil, {script = script})
+	setfenv(1, env)
+
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
@@ -18,7 +21,7 @@ return function(Vargs)
 
 	local ServerId = game.JobId;
 	local MsgService = service.MessagingService;
-	local subKey = Core.DataStoreEncode("AdonisCrossServerMessaging");
+	local subKey = Core.DataStoreEncode("Adonis_CrossServerMessaging");
 	local counter = 0;
 	local lastTick;
 
@@ -28,9 +31,9 @@ return function(Vargs)
 	Core.CrossServerCommands = {
 		ServerChat = function(jobId, data)
 			if data then
-				for i,v in next,service.GetPlayers() do
+				for _, v in ipairs(service.GetPlayers()) do
 					if Admin.GetLevel(v) > 0 then
-						Remote.Send(v,"handler", "ChatHandler", data.Player, data.Message, "Cross")
+						Remote.Send(v, "handler", "ChatHandler", data.Player, data.Message, "Cross")
 					end
 				end
 			end
@@ -44,42 +47,29 @@ return function(Vargs)
 		end;
 
 		Pong = function(jobId, data)
-			service.Events.ServerPingReplyReceived:Fire(jobId, data);
+			service.Events.ServerPingReplyReceived:Fire(jobId, data)
 		end;
 
 		NewRunCommand = function(jobId, plrData, comString)
-			local fakePlayer = service.Wrap(service.New("Folder"))
-			local data = {
-				Name = plrData.Name;
-				ToString = plrData.Name;
-				ClassName = "Player";
-				AccountAge = 0;
-				CharacterAppearanceId = plrData.UserId or -1;
-				UserId = plrData.UserId or -1;
-				userId = plrData.UserId or -1;
-				Parent = service.Players;
-				Character = Instance.new("Model");
-				Backpack = Instance.new("Folder");
-				PlayerGui = Instance.new("Folder");
-				PlayerScripts = Instance.new("Folder");
-				Kick = function() fakePlayer:Destroy() fakePlayer:SetSpecial("Parent", nil) end;
-				IsA = function(ignore, arg) if arg == "Player" then return true end end;
-				GetRankInGroup = function() return 0 end;
-			}
-
-			for i,v in next,data do fakePlayer:SetSpecial(i, v) end
-
-			Process.Command(fakePlayer, comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
+			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		Loadstring = function(jobId, source)
+		-- // Unused, unnecessary, at the very least it should use GetEnv, and yes even if GetEnv has an empty table you can still do GetEnv({}).GetEnv().server
+		-- If this ever were to be re-enabled it should use Core.Loadstring at all
+		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
+		end;]]
+
+		Message = function(jobId, fromPlayer, message, duration)
+			server.Functions.Message(
+				"Global Message from " .. (fromPlayer or "[Unknown]"),
+				message,
+				service.GetPlayers(),
+				true,
+				duration
+			)
 		end;
-		
-		Message = function(jobId, fromPlayer, message, time)
-			server.Functions.Message("Global Message from " .. tostring(fromPlayer), message, service.GetPlayers(), true, time)
-		end;
-		
+
 		RemovePlayer = function(jobId, name, BanMessage, reason)
 			--// probably should move this to userid
 			local player =	service.Players:FindFirstChild(name)
@@ -88,18 +78,20 @@ return function(Vargs)
 			end
 		end;
 
-		DataStoreUpdate = function(jobId, type, data)
-			if type and data then
-				Routine(Core.LoadData, type, data)
+		DataStoreUpdate = function(jobId, key, data)
+			if key and data then
+				Routine(Core.LoadData, key, data)
 			end
 		end;
 
 		UpdateSetting = function(jobId, setting, newValue)
-			Settings[setting] = newValue;
+			if type(setting) == "string" then
+				Settings[setting] = if newValue == nil then require(Deps.DefaultSettings).Settings[setting] else newValue
+			end
 		end;
 
 		LoadData = function(jobId, key, dat)
-			Core.LoadData(key, dat, jobId);
+			Core.LoadData(key, dat, jobId)
 		end;
 
 		Event = function(jobId, eventId, ...)
@@ -107,16 +99,20 @@ return function(Vargs)
 		end;
 
 		CrossServerVote = function(jobId, data)
-			local question = data.Question;
-			local answers = data.Answers;
-			local voteKey = data.VoteKey;
+			local question = data.Question
+			local answers = data.Answers
+			local voteKey = data.VoteKey
 
 			local start = os.time()
-			local players = service.GetPlayers()
 
-			for i,v in pairs(players) do
+			Logs.AddLog("Commands", {
+				Text = "[CRS_SERVER] Vote initiated by "..data.Initiator,
+				Desc = question
+			})
+
+			for _, v in pairs(service.GetPlayers()) do
 				Routine(function()
-					local response = Remote.GetGui(v, "Vote", {Question = question,Answers = answers})
+					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
 					if response and os.time() - start <= 120 then
 						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
@@ -132,15 +128,24 @@ return function(Vargs)
 	--// User Commands
 	Commands.CrossServer = {
 		Prefix = Settings.Prefix;
-		Commands = {"crossserver","cross","globalservers"};
+		Commands = {"crossserver", "cross"};
 		Args = {"command"};
 		Description = "Runs the specified command string on all servers";
 		AdminLevel = "HeadAdmins";
 		CrossServerDenied = true; --// Makes it so this command cannot be ran via itself causing an infinite spammy loop of cross server commands...
 		IsCrossServer = true; --// Used in settings.CrossServerCommands in case a game creator wants to disable the cross-server commands
-		Function = function(plr,args)
-			if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, args[1]) then
-				error("CrossServer Handler Not Ready");
+		Function = function(plr: Player, args: {string})
+			if not Core.CrossServer("NewRunCommand", {
+				UserId = plr.UserId;
+				Name = plr.Name;
+				DisplayName = plr.DisplayName;
+				AccountAge = plr.AccountAge;
+				--MembershipType = plr.MembershipType; -- MessagingService doesn't accept Enums
+				FollowUserId = plr.FollowUserId;
+				AdminLevel = Admin.GetLevel(plr);
+				}, args[1])
+			then
+				error("CrossServer handler not ready (try again later)")
 			end
 		end;
 	};
@@ -153,24 +158,24 @@ return function(Vargs)
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr,args)
-			local disced = false;
-			local updateKey = "SERVERPING".. math.random();
-			local replyList = {};
+		Function = function(plr: Player, args: {string})
+			local disced = false
+			local updateKey = "SERVERPING_".. math.random()
+			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then
-					replyList[jobId] = data or {};
+					replyList[jobId] = data or {}
 				end
 			end)
 
 			local function listUpdate()
 				local tab = {}
-				local totalPlayers = 0;
-				local totalServers = 0;
+				local totalPlayers = 0
+				local totalServers = 0
 
 				for jobId,data in pairs(replyList) do
-					totalServers = totalServers + 1;
-					totalPlayers = totalPlayers + (data.NumPlayers or 0);
+					totalServers += 1
+					totalPlayers = totalPlayers + (data.NumPlayers or 0)
 					table.insert(tab, {
 						Text = "Players: ".. (data.NumPlayers or 0) .. " | JobId: ".. jobId;
 						Desc = "JobId: ".. jobId;
@@ -187,28 +192,28 @@ return function(Vargs)
 
 			local function doDisconnect()
 				if not disced then
-					disced = true;
-					Logs.TempUpdaters[updateKey] = nil;
-					listener:Disconnect();
+					disced = true
+					Logs.TempUpdaters[updateKey] = nil
+					listener:Disconnect()
 				end
 			end
 
 			if not Core.CrossServer("Ping") then
-				doDisconnect();
-				error("CrossServer Handler Not Ready");
+				doDisconnect()
+				error("CrossServer handler not ready (please try again later)")
 			else
 				local closeEvent = Remote.NewPlayerEvent(plr,updateKey, function()
-					doDisconnect();
+					doDisconnect()
 				end)
 
 				Logs.TempUpdaters[updateKey] = listUpdate;
 
-				Remote.MakeGui(plr,"List",{
-					Title = 'Server List',
+				Remote.MakeGui(plr, "List", {
+					Title = "Server List",
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
-					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')";
+					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')",
 					AutoUpdate = 1,
 				})
 
@@ -219,21 +224,21 @@ return function(Vargs)
 
 	Commands.CrossServerVote = {
 		Prefix = Settings.Prefix;
-		Commands = {"crossservervote", "crsvote","globalvote","gvote"};
-		Args = {"answer1,answer2,etc (NO SPACES)";"question";};
+		Commands = {"crossservervote", "crsvote", "globalvote", "gvote"};
+		Args = {"answer1,answer2,etc (NO SPACES)", "question"};
 		Filter = true;
 		Description = "Lets you ask players in all servers a question with a list of answers and get the results";
 		AdminLevel = "Moderators";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr,args)
+		Function = function(plr: Player, args: {string})
 			local question = args[2]
-			if not question then error("You forgot to supply a question!") end
+			if not question then error("You forgot to supply a question! (argument #2)") end
 			local answers = args[1]
 			local anstab = {}
 			local responses = {}
-			local voteKey = "ADONISVOTE".. math.random();
-			local startTime = os.time();
+			local voteKey = "ADONISVOTE".. math.random()
+			local startTime = os.time()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
 				table.insert(responses, data.Data.Response)
@@ -249,12 +254,12 @@ return function(Vargs)
 					--"Didn't Vote: "..#players-total;
 				}
 
-				for i,v in pairs(responses) do
+				for _, v in pairs(responses) do
 					if not results[v] then results[v] = 0 end
-					results[v] = results[v]+1
+					results[v] += 1
 				end
 
-				for i,v in pairs(anstab) do
+				for _, v in pairs(anstab) do
 					local ans = v
 					local num = results[v]
 					local percent
@@ -265,10 +270,13 @@ return function(Vargs)
 						percent = math.floor((num/total)*100)
 					end
 
-					table.insert(tab,{Text=ans.." | "..percent.."% - "..num.."/"..total,Desc="Number: "..num.."/"..total.." | Percent: "..percent})
+					table.insert(tab, {
+						Text = ans.." | "..percent.."% - "..num.."/"..total,
+						Desc = "Number: "..num.."/"..total.." | Percent: "..percent
+					})
 				end
 
-				return tab;
+				return tab
 			end
 
 			Logs.TempUpdaters[voteKey] = voteUpdate;
@@ -277,27 +285,32 @@ return function(Vargs)
 				anstab = {"Yes","No"}
 			else
 				for ans in answers:gmatch("([^,]+)") do
-					table.insert(anstab,ans)
+					table.insert(anstab, ans)
 				end
 			end
 
 			local data = {
 				Answers = anstab;
 				Question = question;
-				VoteKey = voteKey
+				VoteKey = voteKey;
+				Initiator = service.FormatPlayer(plr);
 			}
 
 			Core.CrossServer("CrossServerVote", data)
 
-			Remote.MakeGui(plr,"List",{
-				Title = 'Results',
+			Remote.MakeGui(plr, "List", {
+				Title = "Results",
+				Icon = server.MatIcons["Text snippet"];
 				Tab = voteUpdate(),
 				Update = "TempUpdate",
 				UpdateArgs = {{UpdateKey = voteKey}},
 				AutoUpdate = 1,
 			})
 
-			delay(120, function() Logs.TempUpdaters[voteKey] = nil; msgSub:Disconnect(); end)
+			delay(120, function()
+				Logs.TempUpdaters[voteKey] = nil
+				msgSub:Disconnect()
+			end)
 		end
 	};
 
@@ -306,43 +319,52 @@ return function(Vargs)
 		local data = {ServerId, ...};
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
-			counter = counter+1;
+			counter += 1
 			if not lastTick then lastTick = os.time() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60;
+				repeat wait() until os.time()-lastTick > 60
 			end
 
 			if os.time()-lastTick > 60 then
-				lastTick = os.time();
-				counter = 1;
+				lastTick = os.time()
+				counter = 1
 			end
 
 			--// publish
 			MsgService:PublishAsync(subKey, data)
 		end, 300, true)
 
-		return true;
+		return true
 	end
 
 	Process.CrossServerMessage = function(msg)
-		local data = msg.Data;
-		if not data or type(data) ~= "table" then error("CrossServer: Invalid Data Type ".. type(data)); end
-		Logs:AddLog("Script", "Cross-Server Message received: ".. tostring(data and data[2] or "nil data[2]"));
-		local command = data[2];
+		local data = msg.Data
+		assert(data and type(data) == "table", "CrossServer: Invalid data type ".. type(data))
 
-		table.remove(data, 2);
+		local serverId, command = data[1], data[2]
+
+		Logs:AddLog("Script", {
+			Text = "Cross-server message received: "..(command or "[NO COMMAND]");
+			Desc = "Origin JobId: "..(serverId or "[MISSING]")
+		})
+
+		if not (serverId and command) then return end
+
+		table.remove(data, 2)
 
 		if Core.CrossServerCommands[command] then
-			Core.CrossServerCommands[command](unpack(data));
+			Core.CrossServerCommands[command](unpack(data))
 		end
 	end
 
-	Core.SubEvent = MsgService:SubscribeAsync(subKey, function(...) return Process.CrossServerMessage(...) end)
+	Core.SubEvent = MsgService:SubscribeAsync(subKey, function(...)
+		return Process.CrossServerMessage(...)
+	end)
 
 	--// Check for additions added by other modules in core before this one loaded
-	for i,v in next,oldCommands do
-		Core.CrossServerCommands[i] = v;
+	for i, v in pairs(oldCommands) do
+		Core.CrossServerCommands[i] = v
 	end
 
 	Logs:AddLog("Script", "Cross-Server Module Loaded");
-end;
+end

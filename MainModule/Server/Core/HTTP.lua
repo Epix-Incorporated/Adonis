@@ -40,7 +40,13 @@ return function(Vargs, GetEnv)
 
 	server.HTTP = {
 		Init = Init;
-		HttpEnabled = pcall(service.HttpService.GetAsync, service.HttpService, "http://www.google.com/robots.txt");
+		HttpEnabled = (function()
+			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
+			if not success and res:find("Http requests are not enabled.") then
+				return false
+			end
+			return true
+		end)();
 		LoadstringEnabled = pcall(loadstring, "");
 
 		CheckHttp = function()
@@ -76,7 +82,7 @@ return function(Vargs, GetEnv)
 						})
 					end
 				},
-				{
+				{ -- // Was this really a good idea? Since when should databases run code
 					Lists = {"Commands", "Command List"},
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
@@ -85,7 +91,7 @@ return function(Vargs, GetEnv)
 							if string.sub(cmd, 1, 1) == "$" then
 								local placeid = string.match(string.sub(cmd, 2), ".%d+")
 								cmd = string.sub(cmd, #placeid+2)
-								if tonumber(placeid) ~= game.PlaceId then 
+								if tonumber(placeid) ~= game.PlaceId then
 									return
 								end
 							end
@@ -209,13 +215,13 @@ return function(Vargs, GetEnv)
 						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
 						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
-						for _, list in pairs(lists) do 
+						for _, list in lists do
 							local foundOverride = false
 
-							for _, override in pairs(HTTP.Trello.Overrides) do 
+							for _, override in HTTP.Trello.Overrides do
 								if table.find(override.Lists, list.name) then
 									foundOverride = true
-									for _, card in ipairs(list.cards) do 
+									for _, card in list.cards do
 										override.Process(card, data)
 									end
 									break
@@ -228,9 +234,10 @@ return function(Vargs, GetEnv)
 
 								if rank and not rank.IsExternal then
 									local users = {}
-									for _, card in ipairs(list.cards) do
+									for _, card in list.cards do
 										table.insert(users, card.name)
 									end
+									data.Ranks[list.name] = users
 								end
 							end
 						end
@@ -238,12 +245,12 @@ return function(Vargs, GetEnv)
 
 					local success = true
 					local boards = {
-						Settings.Trello_Primary, 
+						Settings.Trello_Primary,
 						unpack(Settings.Trello_Secondary)
 					}
-					for i,v in pairs(boards) do
-						if not v or service.Trim(v) == "" then 
-							continue 
+					for i,v in boards do
+						if not v or service.Trim(v) == "" then
+							continue
 						end
 						local ran, err = pcall(grabData, v)
 						if not ran then
@@ -264,22 +271,23 @@ return function(Vargs, GetEnv)
 						Variables.Whitelist.Lists.Trello = data.Whitelist
 
 						--// Clear any custom ranks that were not fetched from Trello
-						for rank, info in pairs(Settings.Ranks) do 
+						for rank, info in Settings.Ranks do
 							if rank.IsExternal and not data.Ranks[rank] then
 								Settings.Ranks[rank] = nil
 							end
 						end
 
-						for rank, users in pairs(data.Ranks) do 
+						for rank, users in data.Ranks do
 							local name = string.format("[Trello] %s", server.Functions.Trim(rank))
 							Settings.Ranks[name] = {
 								Level = Settings.Ranks[rank].Level or 1;
 								Users = users,
-								IsExternal = true
+								IsExternal = true,
+								Hidden = Settings.Trello_HideRanks;
 							}
 						end
 
-						for i, v in pairs(service.GetPlayers()) do
+						for i, v in service.GetPlayers() do
 							local isBanned, Reason = Admin.CheckBan(v)
 							if isBanned then
 								v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
@@ -296,15 +304,15 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end;
-			
+
 			GetOverrideLists = function()
 				local lists = {}
-				for _, override in ipairs(HTTP.Trello.Overrides) do 
-					for _, list in ipairs(override.Lists) do 
+				for _, override in HTTP.Trello.Overrides do
+					for _, list in override.Lists do
 						table.insert(lists, list)
 					end
 				end
-				for name, rank in pairs(Settings.Ranks) do 
+				for name, rank in Settings.Ranks do
 					if not rank.IsExternal and not table.find(lists, name) then
 						table.insert(lists, name)
 					end

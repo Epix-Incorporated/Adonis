@@ -1,6 +1,10 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+
 	local Name = data.Name
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
@@ -18,11 +22,11 @@ return function(data)
 	local Size = data.Size
 	local Sanitize = data.Sanitize
 	local Stacking = data.Stacking
-	local PagesEnabled = (data.PagesEnabled ~= nil and data.PagesEnabled) or (data.PagesEnabled == nil and true);
-	local PageSize = data.PageSize or 100;
-	local PageNumber = data.PageNumber or 1;
-	local PageCounter = PageNumber or 1;
-	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText;
+	local PagesEnabled = (data.PagesEnabled ~= nil and data.PagesEnabled) or (data.PagesEnabled == nil and true)
+	local PageSize = data.PageSize or 100
+	local PageNumber = data.PageNumber or 1
+	local PageCounter = PageNumber or 1
+	local RichText = data.RichTextSupported or data.RichTextAllowed or data.RichText
 	local TextSelectable = data.TextSelectable
 	local TimeOptions = data.TimeOptions
 	local getListTab, getPage
@@ -31,31 +35,31 @@ return function(data)
 	local lastPageButton, nextPageButton, pageCounterLabel;
 	local currentListTab
 	local pageDebounce
-	local genDebounce = false;
+	local genDebounce = false
 
 	function getPage(tab, pageNum)
 		if not PagesEnabled then
-			return tab;
+			return tab
 		end
 
-		local pageNum = pageNum or 1;
-		local startPos = (pageNum-1) * PageSize;
-		local endPos = pageNum *PageSize;
-		local pageList = {};
+		local pageNum = pageNum or 1
+		local startPos = (pageNum-1) * PageSize
+		local endPos = pageNum *PageSize
+		local pageList = {}
 
 		for i = startPos, endPos do
 			if tab[i] ~= nil then
-				table.insert(pageList, tab[i]);
+				table.insert(pageList, tab[i])
 			end
 		end
 
-		return pageList;
+		return pageList
 	end
 
 	function getListTab(Tab)
 		local newTab = {}
 
-		for i,v in next,Tab do
+		for i, v in ipairs(Tab) do
 			if type(v) == "table" then
 				newTab[i] = {
 					Text = v.Text;
@@ -74,12 +78,12 @@ return function(data)
 		end
 
 		if Stacking then
-			local oldNewTab = newTab;
+			local oldNewTab = newTab
 			newTab = {}
 			local lastTab
-			for ind,ent in next,oldNewTab do
-				ent.Text = service.Trim(ent.Text)
-				ent.Desc = service.Trim(ent.Desc)
+			for _, ent in ipairs(oldNewTab) do
+				ent.Text = service.EscapeControlCharacters(service.Trim(ent.Text))
+				ent.Desc = service.EscapeControlCharacters(service.Trim(ent.Desc))
 				if not lastTab then
 					lastTab = ent
 					table.insert(newTab, ent)
@@ -94,7 +98,7 @@ return function(data)
 			end
 		end
 
-		for i,v in next,newTab do
+		for _, v in ipairs(newTab) do
 			v.Text = (data.Sanitize and service.SanitizeString(v.Text)) or v.Text
 
 			if v.Duplicates then
@@ -112,7 +116,7 @@ return function(data)
 	function doSearch(tab, text)
 		local found = {}
 		text = string.lower(tostring(text)):gsub("%%", "%%%%"):gsub("%[", "%%["):gsub("%]", "%%]")
-		for i,v in pairs(tab) do
+		for _, v in ipairs(tab) do
 			if text == "" or (type(v) == "string" and string.find(string.lower(v),text)) or (type(v) == "table" and ((v.Text and string.find(string.lower(tostring(v.Text)), text)) or (v.Filter and string.find(string.lower(v.Filter),text)))) then
 				table.insert(found, v)
 			end
@@ -122,53 +126,54 @@ return function(data)
 	end
 
 	function genList(Tab)
-		local gotList = Tab;
+		local gotList = Tab
 
 		if not genDebounce then
-			genDebounce = true;
+			genDebounce = true
 
 			if search.Text ~= "" then
-				PageCounter = 1;
-				gotList = getListTab(doSearch(Tab, search.Text));
+				PageCounter = 1
+				gotList = getListTab(doSearch(Tab, search.Text))
 			else
-				PageCounter = PageNumber;
+				PageCounter = PageNumber
 				search.Text = ""
-				gotList = getListTab(Tab);
+				gotList = getListTab(Tab)
 			end
 
 			if PagesEnabled and #gotList > PageSize then
-			
 
-				scroller.Size = UDim2.new(1,-10,1,-60);
-				nextPageButton.Visible = true;
-				pageCounterLabel.Visible = true;
+
+				scroller.Size = UDim2.new(1, -10, 1, -60)
+				nextPageButton.Visible = true
+				pageCounterLabel.Visible = true
 				if currentListTab then
-					local maxPages = math.ceil(#currentListTab/PageSize);
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					local maxPages = math.ceil(#currentListTab/PageSize)
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages
 				else
-					pageCounterLabel.Text = "Page: ".. PageCounter;
+					pageCounterLabel.Text = "Page: ".. PageCounter
 				end
 
 				if PageCounter > 1 then
-					lastPageButton.Visible = true;
+					lastPageButton.Visible = true
 				else
-					lastPageButton.Visible = false;
+					lastPageButton.Visible = false
 				end
 			else
-				scroller.Size = UDim2.new(1,-10,1,-30);
-				nextPageButton.Visible = false;
-				lastPageButton.Visible = false;
-				pageCounterLabel.Visible = false;
+				scroller.Size = UDim2.new(1, -10, 1, -30)
+				nextPageButton.Visible = false
+				lastPageButton.Visible = false
+				pageCounterLabel.Visible = false
 			end
 
-			for i,v in ipairs(scroller:GetChildren()) do
-				v:Destroy()
-			end
+			scroller:ClearAllChildren()
 
-			currentListTab = gotList;
-			scroller:GenerateList(getPage(gotList, PageCounter), {RichTextAllowed = RichText; TextSelectable = TextSelectable});
+			currentListTab = gotList
+			scroller:GenerateList(getPage(gotList, PageCounter), {
+				RichTextAllowed = RichText;
+				TextSelectable = TextSelectable;
+			})
 
-			genDebounce = false;
+			genDebounce = false
 		end
 	end
 
@@ -176,16 +181,15 @@ return function(data)
 		Name = data.Name or "List";
 		Title = Title;
 		Icon = Icon;
-		Size = Size or {240, 225};
-		MinSize = {150, 100};
+		Size = Size or {300, 250};
+		MinSize = {200, 120};
 		OnRefresh = Update and function()
 			Tab = client.Remote.Get("UpdateList", Update, unpack(UpdateArgs or {UpdateArg}))
 			if Tab then
-				currentListTab = Tab;
+				currentListTab = Tab
 				genList(Tab)
 			end
 		end;
-
 		RichTextSupport = data.RichTextSupport or data.SupportRichText or false;
 	})
 
@@ -219,45 +223,46 @@ return function(data)
 		Debounce = true;
 		OnClick = function()
 			if not pageDebounce then
-				pageDebounce = true;
-				local origLTrans = nextPageButton.BackgroundTransparency;
-				lastPageButton.BackgroundTransparency = origLTrans+0.35;
+				pageDebounce = true
+				local origLTrans = nextPageButton.BackgroundTransparency
+				lastPageButton.BackgroundTransparency = origLTrans + 0.35
 
-				local origNTrans = nextPageButton.BackgroundTransparency;
-				nextPageButton.BackgroundTransparency = origNTrans+0.35;
+				local origNTrans = nextPageButton.BackgroundTransparency
+				nextPageButton.BackgroundTransparency = origNTrans + 0.35
 
-				lastPageButton.TextTransparency = 0.8;
-				nextPageButton.TextTransparency = 0.8;
+				lastPageButton.TextTransparency = 0.8
+				nextPageButton.TextTransparency = 0.8
 
 				if currentListTab then
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter+1, 1, maxPages);
 
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages
 
 					if PageCounter > 1 then
-						lastPageButton.Visible = true;
+						lastPageButton.Visible = true
 					end
 
 					if PageCounter == maxPages then
-						nextPageButton.Visible = false;
+						nextPageButton.Visible = false
 					end
 
-					for i,v in next,scroller:GetChildren() do
-						v:Destroy()
-					end
+					scroller:ClearAllChildren()
 
-					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller.CanvasPosition = Vector2.new(0, 0)
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					})
 				end
 
-				lastPageButton.BackgroundTransparency = origLTrans;
-				nextPageButton.BackgroundTransparency = origNTrans;
+				lastPageButton.BackgroundTransparency = origLTrans
+				nextPageButton.BackgroundTransparency = origNTrans
 
-				lastPageButton.TextTransparency = 0;
-				nextPageButton.TextTransparency = 0;
+				lastPageButton.TextTransparency = 0
+				nextPageButton.TextTransparency = 0
 
-				pageDebounce = false;
+				pageDebounce = false
 			end
 		end
 	})
@@ -270,47 +275,48 @@ return function(data)
 		Debounce = true;
 		OnClick = function()
 			if not pageDebounce then
-				pageDebounce = true;
-				local origLTrans = nextPageButton.BackgroundTransparency;
-				lastPageButton.BackgroundTransparency = origLTrans+0.2;
+				pageDebounce = true
+				local origLTrans = nextPageButton.BackgroundTransparency
+				lastPageButton.BackgroundTransparency = origLTrans + 0.2
 
-				local origNTrans = nextPageButton.BackgroundTransparency;
-				nextPageButton.BackgroundTransparency = origNTrans+0.2;
+				local origNTrans = nextPageButton.BackgroundTransparency
+				nextPageButton.BackgroundTransparency = origNTrans + 0.2
 
-				lastPageButton.TextTransparency = 0.8;
-				nextPageButton.TextTransparency = 0.8;
+				lastPageButton.TextTransparency = 0.8
+				nextPageButton.TextTransparency = 0.8
 
 				if currentListTab then
-					local maxPages = math.ceil(#currentListTab/PageSize);
-					PageCounter = math.clamp(PageCounter-1, 1, maxPages);
+					local maxPages = math.ceil(#currentListTab/PageSize)
+					PageCounter = math.clamp(PageCounter-1, 1, maxPages)
 
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages
 
 					if PageCounter == 1 then
-						lastPageButton.Visible = false;
+						lastPageButton.Visible = false
 					end
 
 					if PageCounter == maxPages then
-						nextPageButton.Visible = false;
+						nextPageButton.Visible = false
 					else
-						nextPageButton.Visible = true;
+						nextPageButton.Visible = true
 					end
 
-					for i,v in next,scroller:GetChildren() do
-						v:Destroy()
-					end
+					scroller:ClearAllChildren()
 
-					scroller.CanvasPosition = Vector2.new(0, 0);
-					scroller:GenerateList(getPage(currentListTab, PageCounter));
+					scroller.CanvasPosition = Vector2.new(0, 0)
+					scroller:GenerateList(getPage(currentListTab, PageCounter), {
+						RichTextAllowed = RichText;
+						TextSelectable = TextSelectable;
+					})
 				end
 
-				lastPageButton.BackgroundTransparency = origLTrans;
-				nextPageButton.BackgroundTransparency = origNTrans;
+				lastPageButton.BackgroundTransparency = origLTrans
+				nextPageButton.BackgroundTransparency = origNTrans
 
-				lastPageButton.TextTransparency = 0;
-				nextPageButton.TextTransparency = 0;
+				lastPageButton.TextTransparency = 0
+				nextPageButton.TextTransparency = 0
 
-				pageDebounce = false;
+				pageDebounce = false
 			end
 		end
 	})
@@ -331,14 +337,14 @@ return function(data)
 	})
 
 	search:GetPropertyChangedSignal("Text"):Connect(function()
-		currentListTab = Tab;
+		currentListTab = Tab
 		genList(Tab)
 	end)
 
 	--window:SetPosition(UDim2.new(0.25, 0, 0.5, -window.AbsoluteSize.Y/2))
 	gTable = window.gTable
 	window:Ready()
-	currentListTab = Tab;
+	currentListTab = Tab
 	genList(Tab)
 
 	if Update and AutoUpdate then

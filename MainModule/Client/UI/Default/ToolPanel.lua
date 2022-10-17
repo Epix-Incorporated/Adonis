@@ -1,11 +1,15 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local generateStorage, generateAdded
 
 	local window = client.UI.Make("Window", {
-		Name  = "ToolCenter";
-		Title = "Tools Center";
+		Name  = "ToolPanel";
+		Title = "Tools Panel";
 		Icon = client.MatIcons["Inventory 2"];
 		Size  = {400, 290};
 		MinSize  = {300, 200};

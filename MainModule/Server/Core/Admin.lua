@@ -13,10 +13,11 @@ return function(Vargs, GetEnv)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+	local cloneTable = service.CloneTable;
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Commands
 	local AddLog, TrackTask, Defaults
-	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
+	local CreatorId = game.CreatorType == Enum.CreatorType.User and game.CreatorId or service.GetGroupCreatorId(game.CreatorId)
 	local function Init()
 		Functions = server.Functions;
 		Admin = server.Admin;
@@ -33,15 +34,6 @@ return function(Vargs, GetEnv)
 
 		TrackTask = service.TrackTask
 		AddLog = Logs.AddLog;
-
-		if not CreatorId then
-			TrackTask("Thread: GetGroupCreatorId", function()
-				local success, creator = pcall(service.GroupService.GetGroupInfoAsync, service.GroupService, game.CreatorId)
-				if success and type(creator) == "table" then
-					CreatorId = creator.Owner.Id
-				end
-			end)
-		end
 
 		TrackTask("Thread: ChatServiceHandler", function()
 			--// ChatService mute handler (credit to Coasterteam)
@@ -97,27 +89,97 @@ return function(Vargs, GetEnv)
 
 		--// Make sure the default ranks are always present for compatability with existing commands
 		local Ranks = Settings.Ranks
-		for rank, data in pairs(Defaults.Settings.Ranks) do
+		for rank, data in Defaults.Settings.Ranks do
 			if not Ranks[rank] then
+				for r, d in Ranks do
+					if d.Level == data.Level then
+						data.Hidden = true
+						break
+					end
+				end
 				Ranks[rank] = data
 			end
 		end
 
 		--// Old settings/plugins backwards compatibility
-		for _, rank in ipairs({"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"}) do
+		for _, rank in {"Owners", "HeadAdmins", "Admins", "Moderators", "Creators"} do
 			if Settings[rank] then
 				Settings.Ranks[if rank == "Owners" then "HeadAdmins" else rank].Users = Settings[rank]
 			end
 		end
 
+		--[[Settings.HeadAdmins = Settings.Ranks.HeadAdmins.Users;
+		Settings.Admins = Settings.Ranks.Admins.Users;
+		Settings.Moderators = Settings.Ranks.Moderators.Users;--]]
+
 		if Settings.CustomRanks then
 			local Ranks = Settings.Ranks
-			for name, users in pairs(Settings.CustomRanks) do
+			for name, users in Settings.CustomRanks do
 				if not Ranks[name] then
 					Ranks[name] = {
 						Level = 1;
 						Users = users;
 					};
+				end
+			end
+		end
+
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in Settings.CommandCooldowns do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in Settings.CommandCooldowns do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
 				end
 			end
 		end
@@ -133,7 +195,7 @@ return function(Vargs, GetEnv)
 		end
 
 		--// Run OnStartup Commands
-		for i,v in pairs(Settings.OnStartup) do
+		for i,v in Settings.OnStartup do
 			warn("Running startup command ".. tostring(v))
 			TrackTask("Thread: Startup_Cmd: ".. tostring(v), Admin.RunCommand, v)
 			AddLog("Script", {
@@ -196,7 +258,7 @@ return function(Vargs, GetEnv)
 		local out = aliasCmd
 
 		local EscapeSpecialCharacters = service.EscapeSpecialCharacters
-		for i,argType in pairs(argTab) do
+		for i,argType in argTab do
 			local replaceWith = suppliedArgs[i]
 			if replaceWith then
 				out = string.gsub(out, EscapeSpecialCharacters(argType), replaceWith)
@@ -244,49 +306,16 @@ return function(Vargs, GetEnv)
 
 		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
-				return
+				return {}
 			end
-
-			local key = tostring(p.UserId)
-
-			local cache = Admin.GroupsCache[key]
-			if cache then
-				return cache
-			else 
-				local timestamp = os.time()
-				local success, groups = pcall(service.GroupService.GetGroupsAsync, service.GroupService, p.UserId)
-				if success then
-					local mapped = {}
-					for _, group in ipairs(groups) do
-						table.insert(mapped, {
-							Id = group.Id;
-							Name = group.Name;
-							Rank = group.Rank;
-							Role = group.Role;
-						})
-					end
-					local result = {
-						CreatedAt = timestamp;
-						Groups = mapped;
-					}
-					Admin.GroupsCache[key] = result
-					task.delay(10 + (math.random() * 60), function()
-						local cache = Admin.GroupsCache[key]
-						if cache and timestamp == cache.CreatedAt then
-							Admin.GroupsCache[key] = nil
-						end
-					end)
-					return result
-				end
-			end
+			return Admin.GetGroups(p.UserId)
 		end;
 
-		GetPlayerGroup = function(p: Player, group: number | string)
+		GetPlayerGroup = function(p, group)
 			local groups = Admin.GetPlayerGroups(p)
 			local isId = type(group) == "number"
-
-			if groups and groups.Groups then
-				for _, g in ipairs(groups.Groups) do 
+			if groups and #groups > 0 then
+				for _, g in groups do
 					if (isId and g.Id == group) or (not isId and g.Name == group) then
 						return g
 					end
@@ -294,23 +323,106 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		IsMuted = function(player: Player)
-			local DoCheck = Admin.DoCheck
+		GetGroups = function(uid, updateCache)
+			uid = tonumber(uid)
 
-			for _, v in pairs(Settings.Muted) do
+			if type(uid) == "number" then
+				local existCache = Admin.GroupsCache[uid]
+				local canUpdate = false
+
+				if not updateCache then
+					--> Feel free to adjust the time to update over or less than 300 seconds (5 minutes).
+					--> 300 seconds is recommended in the event of unexpected server breakdowns with Roblox and faster performance.
+					if existCache and (os.time()-existCache.LastUpdated > 300) then
+						canUpdate = true
+					elseif not existCache then
+						canUpdate = true
+					end
+				else
+					canUpdate = true
+				end
+
+				if canUpdate then
+					local cacheTab = {
+						Groups = (existCache and existCache.Groups) or {};
+						LastUpdated = os.time();
+					}
+					Admin.GroupsCache[uid] = cacheTab
+
+					local suc,groups = pcall(function()
+						return service.GroupService:GetGroupsAsync(uid) or {}
+					end)
+
+					if suc and type(groups) == "table" then
+						cacheTab.Groups = groups
+						return cacheTab.Groups
+					end
+
+					Admin.GroupsCache[uid] = cacheTab
+					return cloneTable(cacheTab.Groups)
+				else
+					return cloneTable((existCache and existCache.Groups) or {})
+				end
+			end
+		end;
+
+		GetGroupLevel = function(uid, groupId)
+			groupId = tonumber(groupId)
+
+			if groupId then
+				local groups = Admin.GetGroups(uid) or {}
+
+				for _, group in groups do
+					if group.Id == groupId then
+						return group.Rank
+					end
+				end
+			end
+
+			return 0
+		end;
+
+		CheckInGroup = function(uid, groupId)
+			local groups = Admin.GetGroups(uid) or {}
+			groupId = tonumber(groupId)
+
+			if groupId then
+				for i,group in groups do
+					if group.Id == groupId then
+						return true
+					end
+				end
+			end
+
+			return false
+		end,
+
+		IsLax = function(str)
+			for _, v in {"plr", "user", "player", "brickcolor"} do
+				if string.match(string.lower(str), v) then
+					return true
+				end
+			end
+
+			return false
+		end,
+
+		IsMuted = function(player)
+			local DoCheck = Admin.DoCheck
+			for _, v in Settings.Muted do
 				if DoCheck(player, v) then
 					return true
 				end
 			end
 
-			for _, v in pairs(HTTP.Trello.Mutes) do
+			for _, v in HTTP.Trello.Mutes do
 				if DoCheck(player, v) then
 					return true
 				end
 			end
 
 			if HTTP.WebPanel.Mutes then
-				for _, v in pairs(HTTP.WebPanel.Mutes) do
+				for _, v in HTTP.WebPanel.Mutes do
 					if DoCheck(player, v) then
 						return true
 					end
@@ -318,104 +430,81 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		DoCheck = function(p: string | number | Player, check: string | number | {[string]: any}, banCheck: boolean?)
-			local pType = type(p)
-			local cType = type(check)
+		DoCheck = function(pObj, check, banCheck)
+			local pType = typeof(pObj)
+			local cType = typeof(check)
 
-			local lower = string.lower
-			local match = string.match
-			local sub = string.sub
+			local pUnWrapped = service.UnWrap(pObj)
 
-			if pType == "string" and cType == "string" then
-				if p == check or sub(lower(check), 1, #tostring(p)) == lower(p) then
+			local plr: Player = if pType == "number" then service.Players:GetPlayerByUserId(pObj)
+				elseif pType == "string" then service.Players:FindFirstChild(pObj)
+				elseif typeof(pUnWrapped) == "Instance" and pUnWrapped:IsA("Player") then pUnWrapped
+				elseif pType == "userdata" then service.Players:GetPlayerByUserId(pObj.UserId)
+				else nil
+			if not plr then
+				return false
+			end
+
+			if cType == "number" then
+				return plr.UserId == check
+			elseif cType == "string" then
+				if plr.Name == check then
 					return true
 				end
-			elseif pType == "number" and (cType == "number" or tonumber(check)) then
-				if p == tonumber(check) then
-					return true
+
+				local filterName, filterData = string.match(check, "^(.-):(.+)$")
+				if filterName then
+					filterName = string.lower(filterName)
+				else
+					return false
 				end
-			elseif cType == "number" then
-				if p.UserId == check then
-					return true
-				end
-			elseif cType == "string" and pType == "userdata" and p:IsA("Player") then
-				local isGood = p and p.Parent == service.Players
-				if isGood and match(check, "^Group:(.*):(.*)") then
-					local sGroup, sRank = match(check, "^Group:(.*):(.*)")
-					local group, rank = tonumber(sGroup), tonumber(sRank)
-					if group and rank then
-						local pGroup = Admin.GetPlayerGroup(p, group)
-						if pGroup then
-							local pRank = pGroup.Rank
-							if pRank == rank or (rank < 0 and pRank >= math.abs(rank)) then
-								return true
-							end
+				if filterName == "group" then
+					local groupId = tonumber((string.match(filterData, "^%d+")))
+					if groupId then
+						local plrRank = Admin.GetGroupLevel(plr.UserId, groupId)
+						local requiredRank = tonumber((string.match(filterData, "^%d+:(.+)$")))
+						if requiredRank then
+							return plrRank == requiredRank or (requiredRank < 0 and plrRank >= math.abs(requiredRank))
 						end
+						return plrRank > 0
 					end
-				elseif isGood and sub(check, 1, 6) == "Group:" then --check:match("^Group:(.*)") then
-					local group = tonumber(match(check, "^Group:(.*)"))
-					if group then
-						local pGroup = Admin.GetPlayerGroup(p, group)
-						if pGroup then
-							return true
-						end
-					end
-				elseif isGood and sub(check, 1, 5) == "Item:" then --check:match("^Item:(.*)") then
-					local item = tonumber(match(check, "^Item:(.*)"))
-					if item then
-						if service.MarketPlace:PlayerOwnsAsset(p, item) then
-							return true
-						end
-					end
-				elseif p and sub(check, 1, 9) == "GamePass:" then --check:match("^GamePass:(.*)") then
-					local item = tonumber(match(check, "^GamePass:(.*)"))
-					if item then
-						if service.MarketPlace:UserOwnsGamePassAsync(p.UserId, item) then
-							return true
-						end
-					end
-				elseif match(check, "^(.*):(.*)") then
-					local player, sUserid = match(check, "^(.*):(.*)")
-					local userid = tonumber(sUserid)
-					if player and userid and p.Name == player or p.UserId == userid then
+					return false
+				elseif filterName == "item" then
+					local itemId = tonumber((string.match(filterData, "^%d+")))
+					return itemId and service.CheckAssetOwnership(plr, itemId)
+				elseif filterName == "gamepass" then
+					local gamepassId = tonumber((string.match(filterData, "^%d+")))
+					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
+				else
+					local username, userId = string.match(check, "^(.*):(.*)")
+					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
 						return true
 					end
-				elseif p.Name == check then
-					return true
-				elseif not banCheck and type(check) == "string" and not string.find(check, ":") then
-					local cache = Admin.UserIdCache[check]
 
-					if cache and p.UserId == cache then
-						return true
-					elseif not cache then
-						local suc, userId = pcall(function() return service.Players:GetUserIdFromNameAsync(check) end)
-
-						if suc and userId then
-							Admin.UserIdCache[check] = userId
-
-							if p.UserId == userId then
-								return true
-							end
+					if not banCheck and type(check) == "string" and not string.find(check, ":") then
+						local cache = Functions.GetUserIdFromNameAsync(check)
+						if cache and plr.UserId == cache then
+							return true
 						end
 					end
 				end
-			elseif cType == "table" and pType == "userdata" and p and p:IsA("Player") then
-				if check.Group and check.Rank then
-					local rank = check.Rank
-					local pGroup = Admin.GetPlayerGroup(p, check.Group)
-					if pGroup then
-						local pRank = pGroup.Rank
-						if pRank == rank or (rank < 0 and pRank >= math.abs(rank)) then
-							return true
-						end
+			elseif cType == "table" then
+				local groupId, rank = check.Group, check.Rank
+				if groupId and rank then
+					local plrGroupInfo = Admin.GetPlayerGroup(plr, groupId)
+					if plrGroupInfo then
+						local plrRank = plrGroupInfo.Rank
+						return plrRank == rank or (rank < 0 and plrRank >= math.abs(rank))
 					end
 				end
 			end
+
+			return check == plr
 		end;
 
-		LevelToList = function(lvl: number)
+		LevelToList = function(lvl)
 			local lvl = tonumber(lvl)
-			if not lvl then return end
+			if not lvl then return nil end
 			local listName = Admin.LevelToListName(lvl)
 			if listName then
 				local list = Settings.Ranks[listName];
@@ -425,7 +514,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		LevelToListName = function(lvl: number)
+		LevelToListName = function(lvl)
 			if lvl > 999 then
 				return "Place Owner"
 			elseif lvl == 0 then
@@ -433,22 +522,23 @@ return function(Vargs, GetEnv)
 			end
 
 			--// Check if this is a default rank and if the level matches the default (so stuff like [Trello] Admins doesn't appear in the command list)
-			for i,v in pairs(server.Defaults.Settings.Ranks) do
+			for i,v in server.Defaults.Settings.Ranks do
 				local tRank = Settings.Ranks[i];
 				if tRank and tRank.Level == v.Level and v.Level == lvl then
 					return i
 				end
 			end
 
-			for i,v in pairs(Settings.Ranks) do
+			for i,v in Settings.Ranks do
 				if v.Level == lvl then
 					return i
 				end
 			end
 		end;
 
-		UpdateCachedLevel = function(p: Player, data: {[string]: any}?)
+		UpdateCachedLevel = function(p, data)
 			local data = data or Core.GetPlayer(p)
+			local oLevel, oRank = data.AdminLevel, data.AdminRank
 			local level, rank = Admin.GetUpdatedLevel(p, data)
 
 			data.AdminLevel = level
@@ -461,10 +551,18 @@ return function(Vargs, GetEnv)
 				Player = p;
 			})
 
+			if Settings.Console and (oLevel ~= level or oRank ~= rank) then
+				if not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0) then
+					task.defer(Remote.RefreshGui, p, "Console")
+				else
+					task.defer(Remote.RemoveGui, p, "Console")
+				end
+			end
+
 			return level, rank
 		end;
 
-		GetLevel = function(p: Player)
+		GetLevel = function(p)
 			local data = Core.GetPlayer(p)
 			local level = data.AdminLevel
 			local rank = data.AdminRank
@@ -491,18 +589,22 @@ return function(Vargs, GetEnv)
 			return level or 0, rank;
 		end;
 
-		GetUpdatedLevel = function(p: Player, data: {[string]: any}?)
+		GetUpdatedLevel = function(p, data)
 			local checkTable = Admin.CheckTable
 			local doCheck = Admin.DoCheck
 
-			for _, admin in pairs(Admin.SpecialLevels) do
+			--[[if data and data.AdminLevelOverride then
+				return data.AdminLevelOverride
+			end--]]
+
+			for _, admin in Admin.SpecialLevels do
 				if doCheck(p, admin.Player) then
 					return admin.Level, admin.Rank
 				end
 			end
 
 			local sortedRanks = {}
-			for rank, data in pairs(Settings.Ranks) do
+			for rank, data in Settings.Ranks do
 				table.insert(sortedRanks, {
 					Rank = rank;
 					Users = data.Users;
@@ -515,12 +617,12 @@ return function(Vargs, GetEnv)
 			end)
 
 			local highestLevel = 0
-			local highestRank
+			local highestRank = nil
 
-			for _, data in pairs(sortedRanks) do
+			for _, data in sortedRanks do
 				local level = data.Level
 				if level > highestLevel then
-					for _, v in ipairs(data.Users) do
+					for _, v in data.Users do
 						if doCheck(p, v) then
 							highestLevel, highestRank = level, data.Rank
 							break
@@ -536,17 +638,12 @@ return function(Vargs, GetEnv)
 			return highestLevel, highestRank
 		end;
 
-		IsPlaceOwner = function(p: Player)
+		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
 				--// These are my accounts; Lately I've been using my game dev account(698712377) more so I'm adding it so I can debug without having to sign out and back in (it's really a pain)
 				--// Disable CreatorPowers in settings if you don't trust me. It's not like I lose or gain anything either way. Just re-enable it BEFORE telling me there's an issue with the script so I can go to your place and test it.
-				if Settings.CreatorPowers then
-					local creatorAccounts = {1237666, 76328606, 698712377}
-					for _, userId in ipairs(creatorAccounts) do
-						if p.UserId == userId then
-							return true
-						end
-					end
+				if Settings.CreatorPowers and table.find({1237666, 76328606, 698712377}, p.UserId) then
+					return true
 				end
 
 				if tonumber(CreatorId) and p.UserId == CreatorId then
@@ -559,11 +656,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckAdmin = function(p: Player)
+		CheckAdmin = function(p)
 			return Admin.GetLevel(p) > 0
 		end;
 
-		SetLevel = function(p: Player, level: number | string, doSave: boolean?, rankName: string)
+		SetLevel = function(p, level, doSave, rankName)
 			local current, rank = Admin.GetLevel(p)
 
 			if tonumber(level) then
@@ -575,6 +672,13 @@ return function(Vargs, GetEnv)
 						Level = level,
 						Rank = rankName
 					}
+
+					--[[if doSave then
+						local data = Core.GetPlayer(p)
+						if data then
+							data.AdminLevelOverride = level;
+						end
+					end--]]
 				end
 			elseif level == "Reset" then
 				Admin.SpecialLevels[tostring(p.UserId)] = nil
@@ -583,16 +687,16 @@ return function(Vargs, GetEnv)
 			Admin.UpdateCachedLevel(p)
 		end;
 
-		IsTempAdmin = function(p: Player)
+		IsTempAdmin = function(p)
 			local DoCheck = Admin.DoCheck
-			for i,v in pairs(Admin.TempAdmins) do
+			for i,v in Admin.TempAdmins do
 				if DoCheck(p,v) then
 					return true, i
 				end
 			end
 		end;
 
-		RemoveAdmin = function(p: Player, temp: boolean?, override: boolean?)
+		RemoveAdmin = function(p, temp, override)
 			local current, rank = Admin.GetLevel(p)
 			local listData = rank and Settings.Ranks[rank]
 			local listName = listData and rank
@@ -602,7 +706,7 @@ return function(Vargs, GetEnv)
 
 			if isTemp then
 				temp = true
-				table.remove(Admin.TempAdmins,tempInd)
+				table.remove(Admin.TempAdmins, tempInd)
 			end
 
 			if override then
@@ -615,7 +719,7 @@ return function(Vargs, GetEnv)
 
 			if list then
 				local DoCheck = Admin.DoCheck
-				for ind,check in ipairs(list) do
+				for ind,check in list do
 					if DoCheck(p, check) and not (type(check) == "string" and (string.match(check,"^Group:") or string.match(check,"^Item:"))) then
 						table.remove(list, ind)
 
@@ -633,7 +737,7 @@ return function(Vargs, GetEnv)
 			Admin.UpdateCachedLevel(p)
 		end;
 
-		AddAdmin = function(p: Player, level: string | number, temp: boolean?)
+		AddAdmin = function(p, level, temp)
 			local current, rank = Admin.GetLevel(p)
 			local list = rank and Settings.Ranks[rank]
 			local levelName, newRank, newList
@@ -660,7 +764,7 @@ return function(Vargs, GetEnv)
 			if list and type(list) == "table" then
 				local index,value
 
-				for ind,ent in ipairs(list) do
+				for ind,ent in list do
 					if (type(ent)=="number" or type(ent)=="string") and (ent==p.UserId or string.lower(ent)==string.lower(p.Name) or string.lower(ent)==string.lower(p.Name..":"..p.UserId)) then
 						index = ind
 						value = ent
@@ -675,7 +779,7 @@ return function(Vargs, GetEnv)
 			local value = p.Name ..":".. p.UserId
 
 			if newList then
-				table.insert(newList,value)
+				table.insert(newList, value)
 
 				if Settings.SaveAdmins and levelName and not temp then
 					TrackTask("Thread: SaveAdmin", Core.DoSave, {
@@ -689,7 +793,7 @@ return function(Vargs, GetEnv)
 			Admin.UpdateCachedLevel(p)
 		end;
 
-		CheckDonor = function(p: Player)
+		CheckDonor = function(p)
 			--if not Settings.DonorPerks then return false end
 			local key = tostring(p.UserId)
 			if Variables.CachedDonors[key] then
@@ -697,7 +801,7 @@ return function(Vargs, GetEnv)
 			else
 				--if p.UserId<0 or (tonumber(p.AccountAge) and tonumber(p.AccountAge)<0) then return false end
 				local pGroup = Admin.GetPlayerGroup(p, 886423)
-				for _, pass in ipairs(Variables.DonorPass) do
+				for _, pass in Variables.DonorPass do
 					if p.Parent ~= service.Players then
 						return false
 					end
@@ -717,17 +821,17 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CheckBan = function(p: Player)
+		CheckBan = function(p)
 			local doCheck = Admin.DoCheck
 			local banCheck = Admin.DoBanCheck
 
-			for _, admin in pairs(Settings.Banned) do
+			for ind, admin in Settings.Banned do
 				if (type(admin) == "table" and ((admin.UserId and doCheck(p, admin.UserId, true)) or (admin.Name and not admin.UserId and doCheck(p, admin.Name, true)))) or doCheck(p, admin, true) then
 					return true, (type(admin) == "table" and admin.Reason)
 				end
 			end
 
-			for ind, ban in pairs(Core.Variables.TimeBans) do
+			for ind, ban in Core.Variables.TimeBans do
 				if p.UserId == ban.UserId then
 					if ban.EndTime-os.time() <= 0 then
 						table.remove(Core.Variables.TimeBans, ind)
@@ -737,7 +841,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			for _, admin in pairs(HTTP.Trello.Bans) do
+			for ind, admin in HTTP.Trello.Bans do
 				local name = type(admin) == "table" and admin.Name or admin
 				if doCheck(p, name) or banCheck(p, name) then
 					return true, (type(admin) == "table" and admin.Reason and service.Filter(admin.Reason, p, p))
@@ -745,7 +849,7 @@ return function(Vargs, GetEnv)
 			end
 
 			if HTTP.WebPanel.Bans then
-				for _, admin in pairs(HTTP.WebPanel.Bans) do
+				for ind, admin in HTTP.WebPanel.Bans do
 					if doCheck(p, admin) or banCheck(p, admin) then
 						return true, (type(admin) == "table" and admin.Reason)
 					end
@@ -753,11 +857,12 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		AddBan = function(p: Player | {[string]: any}, reason: string, doSave: boolean?)
+		AddBan = function(p, reason, doSave, moderator)
 			local value = {
 				Name = p.Name;
 				UserId = p.UserId;
 				Reason = reason;
+				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
 			}
 
 			table.insert(Settings.Banned, value)--p.Name..':'..p.UserId
@@ -780,8 +885,38 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			service.Events.PlayerBanned:Fire(p, reason, doSave)
+			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
 		end;
+
+		AddTimeBan = function(p : Player | {[string]: any}, duration: number, reason: string, moderator: Player?)
+			local value = {
+				Name = p.Name;
+				UserId = p.UserId;
+				EndTime = os.time() + tonumber(duration);
+				Reason = reason;
+				Moderator = if moderator then service.FormatPlayer(moderator) else "%SYSTEM%";
+			}
+
+			table.insert(Core.Variables.TimeBans, value)
+
+			Core.DoSave({
+				Type = "TableAdd";
+				Table = {"Core", "Variables", "TimeBans"};
+				Value = value;
+			})
+
+			Core.CrossServer("RemovePlayer", p.Name, Variables.BanMessage, value.Reason or "No reason provided")
+
+			if type(p) ~= "table" then
+				if not service.Players:FindFirstChild(p.Name) then
+					Remote.Send(p, "Function", "KillClient")
+				else
+					if p then pcall(function() p:Kick(Variables.BanMessage .. " | Reason: "..(value.Reason or "No reason provided")) end) end
+				end
+			end
+
+			service.Events.PlayerBanned:Fire(p, reason, true, moderator)
+		end,
 
 		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
 			local id = type(name) == "number" and name
@@ -803,27 +938,29 @@ return function(Vargs, GetEnv)
 
 				if cName then
 					if string.lower(cName) == string.lower(name) then
-						return true;
+						return true
 					elseif id and cId and id == cId then
-						return true;
+						return true
 					end
+				else
+					return string.lower(tostring(check)) == string.lower(tostring(name))
 				end
 			end
 
 			return false
 		end;
 
-		RemoveBan = function(name: string | number | Instance, doSave: boolean?)
+		RemoveBan = function(name, doSave)
 			local ret
-			for i,v in pairs(Settings.Banned) do
+			for i,v in Settings.Banned do
 				if Admin.DoBanCheck(name, v) then
-					table.remove(Settings.Banned, i)
-					ret = v
+					ret = table.remove(Settings.Banned, i)
 					if doSave then
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = v;
+							Value = ret;
+							LaxCheck = true;
 						})
 					end
 				end
@@ -831,11 +968,28 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
+		RemoveTimeBan = function(name : string | number | Instance)
+			local ret
+			for i,v in Core.Variables.TimeBans do
+				if Admin.DoBanCheck(name, v) then
+					table.remove(Core.Variables.TimeBans, i)
+					ret = v
+					Core.DoSave({
+						Type = "TableRemove";
+						Table = {"Core", "Variables", "TimeBans"};
+						Value = v;
+						LaxCheck = true;
+					})
+				end
+			end
+			return ret
+		end,
+
 		RunCommand = function(coma: string, ...)
 			local _, com = Admin.GetCommand(coma)
 			if com then
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				--local task,ran,error = service.Threads.TimeoutRunTask("SERVER_COMMAND: "..coma,com.Function,60*5,false,args)
 				--[[local ran, error = TrackTask("Command: ".. tostring(coma), com.Function, false, args)
@@ -847,13 +1001,13 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		RunCommandAsPlayer = function(coma: string, plr: Player, ...)
+		RunCommandAsPlayer = function(coma, plr, ...)
 			local ind, com = Admin.GetCommand(coma)
 			if com then
 				local adminLvl = Admin.GetLevel(plr)
 
 				local cmdArgs = com.Args or com.Arguments
-				local args = Admin.GetArgs(coma,#cmdArgs,...)
+				local args = Admin.GetArgs(coma, #cmdArgs, ...)
 
 				local ran, error = TrackTask(plr.Name .. ": ".. coma, com.Function, plr, args, {
 					PlayerData = {
@@ -867,17 +1021,17 @@ return function(Vargs, GetEnv)
 				if error then
 					--logError(plr,"Command",error)
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = '';
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 					return;
 				end
 			end
 		end;
 
-		RunCommandAsNonAdmin = function(coma: string, plr: Player, ...)
+		RunCommandAsNonAdmin = function(coma, plr, ...)
 			local ind, com = Admin.GetCommand(coma)
 			if com and com.AdminLevel == 0 then
 				local cmdArgs = com.Args or com.Arguments
@@ -889,10 +1043,10 @@ return function(Vargs, GetEnv)
 				}})
 				if error then
 					error = string.match(error, ":(.+)$") or "Unknown error"
-					Remote.MakeGui(plr, 'Output', {
+					Remote.MakeGui(plr, "Output", {
 						Title = "";
 						Message = error;
-						Color = Color3.new(1,0,0)
+						Color = Color3.new(1, 0, 0)
 					})
 				end
 			end
@@ -901,9 +1055,9 @@ return function(Vargs, GetEnv)
 		CacheCommands = function()
 			local tempTable = {}
 			local tempPrefix = {}
-			for ind, data in pairs(Commands) do
+			for ind, data in Commands do
 				if type(data) == "table" then
-					for _,cmd in pairs(data.Commands) do
+					for i,cmd in data.Commands do
 						if data.Prefix == "" then Variables.BlankPrefix = true end
 						tempPrefix[data.Prefix] = true
 						tempTable[string.lower(data.Prefix..cmd)] = ind
@@ -915,9 +1069,10 @@ return function(Vargs, GetEnv)
 			Admin.CommandCache = tempTable
 		end;
 
-		GetCommand = function(Command: string)
+		GetCommand = function(Command)
 			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
-				local matched = if string.find(Command, Settings.SplitKey) then
+				local matched
+				matched = if string.find(Command, Settings.SplitKey) then
 					string.match(Command, "^(%S+)"..Settings.SplitKey)
 					else string.match(Command, "^(%S+)")
 
@@ -933,7 +1088,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		FindCommands = function(Command: string)
+		FindCommands = function(Command)
 			local prefixChar = string.sub(Command, 1, 1)
 			local checkPrefix = Admin.PrefixCache[prefixChar] and prefixChar
 			local matched
@@ -952,9 +1107,9 @@ return function(Vargs, GetEnv)
 				local foundCmds = {}
 				matched = string.lower(matched)
 
-				for ind,cmd in pairs(Commands) do
+				for ind,cmd in Commands do
 					if type(cmd) == "table" and ((checkPrefix and prefixChar == cmd.Prefix) or not checkPrefix) then
-						for _, alias in pairs(cmd.Commands) do
+						for _, alias in cmd.Commands do
 							if string.lower(alias) == matched then
 								foundCmds[ind] = cmd
 								break
@@ -967,30 +1122,58 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SetPermission = function(comString: string, newLevel: number)
+		SetPermission = function(comString, newLevel)
 			local cmds = Admin.FindCommands(comString)
 			if cmds then
-				for _, cmd in pairs(cmds) do
+				for ind, cmd in cmds do
 					cmd.AdminLevel = newLevel
 				end
 			end
 		end;
 
-		FormatCommand = function(command: {[string]: any}, cmdn: number?)
-			local text = command.Prefix.. command.Commands[cmdn or 1]
-			local cmdArgs = command.Args or command.Arguments
-			local splitter = Settings.SplitKey
-
-			for _,arg in pairs(cmdArgs) do
-				text ..= splitter.."<"..arg..">"
+		FormatCommandArguments = function(command)
+			local text = ""
+			for i, arg in command.Args do
+				text ..= "<"..arg..">"
+				if i < #command.Args then
+					text ..= Settings.SplitKey
+				end
 			end
-
 			return text
 		end;
 
-		CheckTable = function(p: Player, tab: {[any]: any})
+		FormatCommand = function(command, cmdn)
+			local text = command.Prefix..command.Commands[cmdn or 1]
+			if #command.Args > 0 then
+				text ..= Settings.SplitKey .. Admin.FormatCommandArguments(command)
+			end
+			return text
+		end;
+
+		FormatCommandAdminLevel = function(command)
+			local levels = if type(command.AdminLevel) == "table"
+				then table.clone(command.AdminLevel)
+				else {command.AdminLevel}
+			local permissionDesc = ""
+			for i, lvl in levels do
+				if type(lvl) == "number" then
+					local list, name, data = Admin.LevelToList(lvl)
+					permissionDesc ..= (name or "No Rank") .."; Level ".. lvl
+				elseif type(lvl) == "string" then
+					local numLvl = Admin.StringToComLevel(lvl)
+					permissionDesc ..= lvl .. "; Level ".. (numLvl or "Unknown")
+				end
+
+				if i < #levels then
+					permissionDesc ..= ", "
+				end
+			end
+			return permissionDesc
+		end;
+
+		CheckTable = function(p, tab)
 			local doCheck = Admin.DoCheck
-			for _,v in pairs(tab) do
+			for i,v in tab do
 				if doCheck(p, v) then
 					return true
 				end
@@ -998,7 +1181,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
-		CheckAliasBlacklist = function(alias: string)
+		CheckAliasBlacklist = function(alias)
 			local playerPrefix = Settings.PlayerPrefix;
 			local prefix = Settings.Prefix;
 			local blacklist = {
@@ -1010,23 +1193,25 @@ return function(Vargs, GetEnv)
 				[":adonissettings"] = true;
 
 			}
-			--return Admin.CommandCache[string.lower(alias)] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
+			--return Admin.CommandCache[alias:lower()] --// Alternatively, we could make it so you can't overwrite ANY existing commands...
 			return blacklist[alias];
 		end;
 
-		GetArgs = function(msg: string, num: number, ...)
+		GetArgs = function(msg, num, ...)
 			local args = Functions.Split((string.match(msg, "^.-"..Settings.SplitKey..'(.+)') or ''),Settings.SplitKey,num) or {}
-			for _,v in ipairs({...}) do table.insert(args, v) end
+			for _, v in {...} do
+				table.insert(args, v)
+			end
 			return args
 		end;
 
-		AliasFormat = function(aliases: {[string]: any}, msg: string)
+		AliasFormat = function(aliases, msg)
 			local foundPlayerAlias = false --// Check if there's a player-defined alias first then otherwise check settings aliases
 
 			local CheckAliasBlacklist, EscapeSpecialCharacters = Admin.CheckAliasBlacklist, service.EscapeSpecialCharacters
 
 			if aliases then
-				for alias, cmd in pairs(aliases) do
+				for alias, cmd in aliases do
 					local tAlias = stripArgPlaceholders(alias)
 					if not Admin.CheckAliasBlacklist(tAlias) then
 						local escAlias = EscapeSpecialCharacters(tAlias)
@@ -1038,7 +1223,7 @@ return function(Vargs, GetEnv)
 			end
 
 			--if not foundPlayerAlias then
-			for alias, cmd in pairs(Settings.Aliases) do
+			for alias, cmd in Settings.Aliases do
 				local tAlias = stripArgPlaceholders(alias)
 				if not CheckAliasBlacklist(tAlias) then
 					local escAlias = EscapeSpecialCharacters(tAlias)
@@ -1052,7 +1237,7 @@ return function(Vargs, GetEnv)
 			return msg
 		end;
 
-		StringToComLevel = function(str: string | number)
+		StringToComLevel = function(str)
 			local strType = type(str)
 			if strType == "string" and string.lower(str) == "players" then
 				return 0
@@ -1065,65 +1250,197 @@ return function(Vargs, GetEnv)
 			return (lvl and lvl.Level) or tonumber(str)
 		end;
 
-		CheckComLevel = function(plrAdminLevel: number, comLevel: string | number | {[any]: number})
+		CheckComLevel = function(plrAdminLevel, comLevel)
 			if type(comLevel) == "string" then
 				comLevel = Admin.StringToComLevel(comLevel)
-			end
-
-			if type(comLevel) == "number" and plrAdminLevel >= comLevel then
-				return true;
 			elseif type(comLevel) == "table" then
-				for _,level in pairs(comLevel) do
-					if plrAdminLevel == level then
+				for _, level in comLevel do
+					if Admin.CheckComLevel(plrAdminLevel, level) then
 						return true
 					end
 				end
+				return false
 			end
+
+			return type(comLevel) == "number" and plrAdminLevel >= comLevel
 		end;
 
-		IsBlacklisted = function(p: Player)
+		IsBlacklisted = function(p)
 			local CheckTable = Admin.CheckTable
-			for _,list in pairs(Variables.Blacklist.Lists) do
+			for _, list in Variables.Blacklist.Lists do
 				if CheckTable(p, list) then
 					return true
 				end
 			end
 		end;
 
-		CheckPermission = function(pDat: {[string]: any}, cmd: {[string]: any})
-			local adminLevel = pDat.Level
-			local isDonor = (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors))
+		CheckPermission = function(pDat, cmd, ignoreCooldown, opts)
+			opts = opts or {}
 
+			local adminLevel = pDat.Level
 			local comLevel = cmd.AdminLevel
 
-			local funAllowed = Settings.FunCommands
-			local crossServerAllowed = Settings.CrossServerCommands
-
-			--// Creators rank will bypass any permissions set
-			if adminLevel >= Settings.Ranks.Creators.Level then
-				return true
-			elseif (comLevel == "Players" or comLevel == 0) and not Settings.PlayerCommands then
-				--// If PlayerCommands is set to false it will prevent users from using "Players" level commands
-				return false
-			elseif cmd.Fun and not funAllowed then
-				--// If FunCommands are disabled it will block any command Labeled "Fun"
-				return false
-			elseif cmd.IsCrossServer and not crossServerAllowed then
-				--// If CrossServerCommands is disabled it will block any command that is "CrossServer"
-				return false
-			elseif cmd.Donors and isDonor then
-				--// If a command is for "Donors" it will allow anyone with Donor to use it
-				return true
-			elseif Admin.CheckComLevel(adminLevel, comLevel) then
-				--// Check if user has permission to the command
-				return true
+			if cmd.Disabled then
+				return false, "This command has been disabled."
 			end
 
-			--// If none of the checks pass it will deny permissions
-			return false
+			if Variables.IsStudio and cmd.NoStudio then
+				return false, "This command cannot be used in Roblox Studio."
+			end
+
+			if opts.CrossServer and cmd.CrossServerDenied then
+				return false, "This command may not be run across servers (cross-server-blacklisted)."
+			end
+
+			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
+				return true, nil
+			end
+
+			if Admin.IsBlacklisted(pDat.Player) then
+				return false, "You are blacklisted from running commands."
+			end
+
+			if (comLevel == 0 or comLevel == "Players") and adminLevel <= 0 and not Settings.PlayerCommands then
+				return false, "Player commands are disabled in this game."
+			end
+
+			if cmd.Fun and not Settings.FunCommands then
+				return false, "Fun commands are disabled in this game."
+			end
+
+			if opts.Chat and cmd.Chattable == false then
+				return false, "This command is not permitted as chat message (non-chattable command)."
+			end
+
+			local permAllowed = (cmd.Donors and (pDat.isDonor and (Settings.DonorCommands or cmd.AllowDonors)))
+				or Admin.CheckComLevel(adminLevel, comLevel)
+
+			if permAllowed and not ignoreCooldown and type(pDat.Player) == "userdata" then
+				local playerCooldown = tonumber(cmd.PlayerCooldown)
+				local serverCooldown = tonumber(cmd.ServerCooldown)
+				local crossCooldown = tonumber(cmd.CrossCooldown)
+
+				local cmdFullName = cmd._fullName or (function()
+					local aliases = cmd.Aliases or cmd.Commands or {}
+					cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+					return cmd._fullName
+				end)()
+
+				local pCooldown_Cache = cmd._playerCooldownCache or (function()
+					local tab = {}
+					cmd._playerCooldownCache = tab
+					return tab
+				end)()
+
+				local sCooldown_Cache = cmd._serverCooldownCache or (function()
+					local tab = {}
+					cmd._serverCooldownCache = tab
+					return tab
+				end)()
+
+				local crossCooldown_Cache = cmd._crossCooldownCache or (function()
+					local tab = {}
+					cmd._crossCooldownCache = tab
+					return tab
+				end)()
+
+				local cooldownIndex = tostring(pDat.Player.UserId)
+				local pCooldown_playerCache = pCooldown_Cache[cooldownIndex]
+				local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
+
+				if playerCooldown and pCooldown_playerCache then
+					local secsTillPass = os.clock() - pCooldown_playerCache
+					if secsTillPass < playerCooldown then
+						return false, string.format("[PlayerCooldown] You must wait %.0f seconds to run the command.", playerCooldown - secsTillPass)
+					end
+				end
+
+				if serverCooldown and sCooldown_playerCache then
+					local secsTillPass = os.clock() - sCooldown_playerCache
+					if secsTillPass < serverCooldown then
+						return false, string.format("[ServerCooldown] You must wait %.0f seconds to run the command.", serverCooldown - secsTillPass)
+					end
+				end
+
+				if crossCooldown then
+					local playerData = Core.GetPlayer(pDat.Player) or {}
+					local crossCooldown_Cache = playerData._crossCooldownCache or (function()
+						local tab = {}
+						playerData._crossCooldownCache = tab
+						return tab
+					end)()
+					local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
+
+					if crossCooldown_playerCache then
+						local secsTillPass = os.clock() - crossCooldown_playerCache
+						if secsTillPass < crossCooldown then
+							return false, string.format("[CrossServerCooldown] You must wait %.0f seconds to run the command.", crossCooldown - secsTillPass)
+						end
+					end
+				end
+			end
+
+			return permAllowed, nil
 		end;
 
-		SearchCommands = function(p: Player, search: string)
+		UpdateCooldown = function(pDat, cmd)
+			if pDat.Player == "SYSTEM" then return end
+			local playerCooldown = tonumber(cmd.PlayerCooldown)
+			local serverCooldown = tonumber(cmd.ServerCooldown)
+			local crossCooldown = tonumber(cmd.CrossCooldown)
+
+			local cmdFullName = cmd._fullName or (function()
+				local aliases = cmd.Aliases or cmd.Commands or {}
+				cmd._fullName = cmd.Prefix..(aliases[1] or service.getRandom().."-RANDOM_COMMAND")
+				return cmd._fullName
+			end)()
+
+			local pCooldown_Cache = cmd._playerCooldownCache or (function()
+				local tab = {}
+				cmd._playerCooldownCache = tab
+				return tab
+			end)()
+
+			local sCooldown_Cache = cmd._serverCooldownCache or (function()
+				local tab = {}
+				cmd._serverCooldownCache = tab
+				return tab
+			end)()
+
+			local crossCooldown_Cache = cmd._crossCooldownCache or (function()
+				local tab = {}
+				cmd._crossCooldownCache = tab
+				return tab
+			end)()
+
+			local cooldownIndex = tostring(pDat.Player.UserId)
+			local pCooldown_playerCache = pCooldown_Cache[cooldownIndex]
+			local sCooldown_playerCache = sCooldown_Cache[cooldownIndex]
+			local lastUsed = os.clock()
+
+			if playerCooldown then
+				pCooldown_Cache[cooldownIndex] = lastUsed
+			end
+
+			if serverCooldown then
+				sCooldown_Cache[cooldownIndex] = lastUsed
+			end
+
+			--// Cross cooldown
+			do
+				local playerData = Core.GetPlayer(pDat.Player)
+				local crossCooldown_Cache = playerData._crossCooldownCache or {}
+				local crossCooldown_playerCache = crossCooldown_Cache[cmdFullName]
+
+				if not crossCooldown and crossCooldown_playerCache then
+					crossCooldown_playerCache[cmdFullName] = nil
+				elseif crossCooldown then
+					crossCooldown_Cache[cmdFullName] = lastUsed
+				end
+			end
+		end;
+
+		SearchCommands = function(p, search)
 			local checkPerm = Admin.CheckPermission
 			local tab = {}
 			local pDat = {
@@ -1132,13 +1449,32 @@ return function(Vargs, GetEnv)
 				isDonor = Admin.CheckDonor(p);
 			}
 
-			for index, command in pairs(Commands) do
-				if search == "All" or checkPerm(pDat, command) then
-					tab[index] = command
+			for ind, cmd in Commands do
+				if checkPerm(pDat, cmd, true) then
+					tab[ind] = cmd
 				end
 			end
 
 			return tab
+		end;
+
+		CheckAuthority = function(p, target, actionName, allowSelf)
+			if p == target then
+				if allowSelf == false then
+					Functions.Hint("You cannot "..actionName.." yourself", {p})
+					return false
+				end
+
+				return allowSelf or Remote.GetGui(p, "YesNoPrompt", {
+					Question = "Are you sure you want to "..actionName.." yourself?";
+				}) == "Yes"
+
+			elseif Admin.GetLevel(p) > Admin.GetLevel(target) then
+				return true
+			end
+
+			Functions.Hint("You don't have permission to "..actionName.." "..service.FormatPlayer(target), {p})
+			return false
 		end;
 	}
 end

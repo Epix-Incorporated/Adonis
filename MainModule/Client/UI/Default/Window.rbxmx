@@ -801,6 +801,7 @@
 					<string name="Name">NoEnv-Code</string>
 					<string name="ScriptGuid">{D3ADB31E-582B-4AC1-89DB-C1BEA60D38FC}</string>
 					<ProtectedString name="Source"><![CDATA[																																																				--[[
+																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -1001,6 +1002,7 @@ return function(data, env)
 	local addTitleButton
 	local LoadChildren
 	local BringToFront
+	local functionify
 
 	local Drag = GUI.Drag
 	local Close = Drag.Close
@@ -1035,23 +1037,23 @@ return function(data, env)
 
 			ent.MouseMoved:Connect(function(x,y)
 				inExpandable = ent
-				
+
 				local text = text or ent.Desc.Value
 				label.Text = text
 				label.RichText = richText
 				label.TextScaled = richText
-				
+
 				local sizeText = label.ContentText
 
 				local maxWidth = 400
 				local bounds = service.TextService:GetTextSize(sizeText, label.TextSize, label.Font, Vector2.new(maxWidth, math.huge))
-				
+
 				local sizeX, sizeY = bounds.X + 10, bounds.Y + 10
-				local posX = (x + 6 + sizeX) < GUI.AbsoluteSize.X and (x + 6) or (x - 6 - sizeX) 
-				local posY = (y - 6 - sizeY) > 0 and (y - 6 - sizeY) or (y) 
-				
-				point.Size = UDim2.new(0, sizeX, 0, sizeY)
-				point.Position = UDim2.new(0, posX, 0, posY)
+				local posX = (x + 6 + sizeX) < GUI.AbsoluteSize.X and (x + 6) or (x - 6 - sizeX)
+				local posY = (y - 6 - sizeY) > 0 and (y - 6 - sizeY) or (y)
+
+				point.Size = UDim2.fromOffset(sizeX, sizeY)
+				point.Position = UDim2.fromOffset(posX, posY)
 				point.Visible = true
 			end)
 		end
@@ -1059,7 +1061,7 @@ return function(data, env)
 
 	function getNextPos(frame)
 		local farXChild, farYChild
-		for i,v in next,frame:GetChildren() do
+		for i,v in ipairs(frame:GetChildren()) do
 			if checkProperty(v, "Size") then
 				if not farXChild or (v.AbsolutePosition.X + v.AbsoluteSize.X) > (farXChild.AbsolutePosition.X + farXChild.AbsoluteSize.X) then
 					farXChild = v
@@ -1077,7 +1079,7 @@ return function(data, env)
 	function LoadChildren(Obj, Children)
 		if Children then
 			local runWhenDone = Children.RunWhenDone and functionify(Children.RunWhenDone, Obj)
-			for class,data in next,Children do
+			for class,data in pairs(Children) do
 				if type(data) == "table" then
 					if not data.Parent then data.Parent = Obj end
 					create(data.Class or data.ClassName or class, data)
@@ -1368,7 +1370,7 @@ return function(data, env)
 			end
 
 			if data.BoxProperties then
-				for i,v in next,data.BoxProperties do
+				for i,v in pairs(data.BoxProperties) do
 					if checkProperty(box, i) then
 						box[i] = v
 					end
@@ -1417,8 +1419,8 @@ return function(data, env)
 			end
 
 			bar.InputBegan:Connect(function(input)
-				if not moving and input.UserInputType == Enum.UserInputType.MouseButton1 then
-					value = ((Mouse.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
+				if not moving and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					value = ((input.Position.X)-(new.AbsolutePosition.X))/(new.AbsoluteSize.X)
 
 					if value < 0 then
 						value = 0
@@ -1484,8 +1486,8 @@ return function(data, env)
 			local textProps = data.TextProperties
 			local scroller = create("ScrollingFrame", {
 				Parent = menu;
-				Size = UDim2.new(1, 0, 1, 0);
-				Position = UDim2.new(0, 0, 0, 0);
+				Size = UDim2.fromScale(1, 1);
+				Position = UDim2.new();
 				BackgroundTransparency = 1;
 				ZIndex = 100;
 			})
@@ -1498,7 +1500,7 @@ return function(data, env)
 
 			if data.TextAlignment then
 				selected.TextXAlignment = data.TextAlignment
-				selected.Position = UDim2.new(0, 30, 0, 0);
+				selected.Position = UDim2.fromOffset(30, 0);
 			end
 
 			if data.NoArrow then
@@ -1509,12 +1511,12 @@ return function(data, env)
 
 			new.Changed:Connect(function(p)
 				if p == "AbsolutePosition" and menu.Visible then
-					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
+					menu.Position = UDim2.fromOffset(new.AbsolutePosition.X, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 				elseif p == "AbsoluteSize" or p == "Parent" then
 					downImg.Size = UDim2.new(0, new.AbsoluteSize.Y, 1, 0);
 					if data.TextAlignment == "Right" then
 						downImg.Position = UDim2.new(0, 0, 0.5, -(downImg.AbsoluteSize.X/2))
-						selected.Position = UDim2.new(0, new.AbsoluteSize.Y, 0, 0);
+						selected.Position = UDim2.fromOffset(new.AbsoluteSize.Y, 0);
 					else
 						downImg.Position = UDim2.new(1, -downImg.AbsoluteSize.X, 0.5, -(downImg.AbsoluteSize.X/2))
 					end
@@ -1522,9 +1524,9 @@ return function(data, env)
 					selected.Size = UDim2.new(1, -downImg.AbsoluteSize.X, 1, 0);
 
 					if options and #options <= 6 then
-						menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 30*#options);
+						menu.Size = UDim2.fromOffset(new.AbsoluteSize.X, 30*#options);
 					else
-						menu.Size = UDim2.new(0, new.AbsoluteSize.X, 0, 30*6);
+						menu.Size = UDim2.fromOffset(new.AbsoluteSize.X, 30*6);
 						scroller:ResizeCanvas(false, true);
 					end
 				end
@@ -1534,13 +1536,13 @@ return function(data, env)
 			downImg.ZIndex = new.ZIndex
 
 			if textProps then
-				for i,v in next,textProps do
+				for i,v in pairs(textProps) do
 					selected[i] = v
 				end
 			end
 
 			if options then
-				for i,v in next,options do
+				for i,v in pairs(options) do
 					local button = scroller:Add("TextButton", {
 						Text = "  ".. tostring(v);
 						Size = UDim2.new(1, -10, 0, 30);
@@ -1555,7 +1557,7 @@ return function(data, env)
 					})
 
 					if textProps then
-						for i,v in next,textProps do
+						for i,v in pairs(textProps) do
 							button[i] = v
 						end
 					end
@@ -1568,7 +1570,7 @@ return function(data, env)
 				end
 
 				local function showMenu()
-					menu.Position = UDim2.new(0, new.AbsolutePosition.X, 0, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
+					menu.Position = UDim2.fromOffset(new.AbsolutePosition.X, new.AbsolutePosition.Y+new.AbsoluteSize.Y)
 					menu.Visible = not menu.Visible
 				end
 
@@ -1602,8 +1604,8 @@ return function(data, env)
 				local disabled = false
 				local tabFrame = create("ScrollingFrame",{
 					Name = name;
-					Size = UDim2.new(1, 0, 1, 0);
-					Position = UDim2.new(0, 0, 0, 0);
+					Size = UDim2.fromScale(1, 1);
+					Position = UDim2.new();
 					BorderSizePixel = 0;
 					BackgroundTransparency = data.FrameTransparency or data.Transparency;
 					BackgroundColor3 = data.Color or dSecondaryBackground;
@@ -1625,14 +1627,14 @@ return function(data, env)
 				})
 
 				tabFrame:SetSpecial("FocusTab",function()
-					for i,v in next,buttonsTab do
+					for i,v in ipairs(buttonsTab) do
 						if isGui(v) then
 							v.BackgroundTransparency = (v:IsDisabled() and 0.9) or 0.7
 							v.TextTransparency = (v:IsDisabled() and 0.9) or 0.7
 						end
 					end
 
-					for i,v in next,frames:GetChildren() do
+					for i,v in ipairs(frames:GetChildren()) do
 						if isGui(v) then
 							v.Visible = false
 						end
@@ -1711,7 +1713,7 @@ return function(data, env)
 				})
 
 				local num = 0
-				for i,v in next,list do
+				for i,v in pairs(list) do
 					local text = v;
 					local desc;
 					local color
@@ -1803,7 +1805,7 @@ return function(data, env)
 				local newY, newX = 0,0
 
 				if not onX and not onY then onX = false onY = true end
-				for i,v in next,new:GetChildren() do
+				for i,v in ipairs(new:GetChildren()) do
 					if v:IsA("GuiObject") then
 						if onY then
 							v.Size = UDim2.new(v.Size.X.Scale, v.Size.X.Offset, 0, v.AbsoluteSize.Y)
@@ -1852,7 +1854,7 @@ return function(data, env)
 		data.Children = nil
 		data.Content = nil
 
-		for i,v in next,data do
+		for i,v in pairs(data) do
 			if checkProperty(new, i) then
 				new[i] = v
 			end
@@ -1879,11 +1881,11 @@ return function(data, env)
 			local newData = {}
 			local new
 
-			for i,v in next,data do
+			for i,v in pairs(data) do
 				newData[i] = v
 			end
 
-			for i,v in next,gotData do
+			for i,v in pairs(gotData) do
 				newData[i] = v
 			end
 
@@ -2308,18 +2310,20 @@ return function(data, env)
 
 		Event(InputService.InputBegan, function(input, gameHandled)
 			if not gameHandled and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-				inputStart(Mouse.X, Mouse.Y)
+				local Position = input.Position
+				inputStart(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputChanged, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or Enum.UserInputType.Touch then
-				inputMoved(input.Position.X, input.Position.Y)
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local Position = input.Position
+				inputMoved(Position.X, Position.Y)
 			end
 		end)
 
 		Event(InputService.InputEnded, function(input, gameHandled)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch then
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				inputEnd()
 			end
 		end)
@@ -2372,7 +2376,7 @@ return function(data, env)
 		service.UnWrap(GUI):Destroy()
 	end
 
-	for i,child in next,GUI:GetChildren() do
+	for i,child in ipairs(GUI:GetChildren()) do
 		if child.Name ~= "Desc" and child.Name ~= "Drag" then
 			specialInsts[child.Name] = child
 			child.Parent = nil
@@ -2424,7 +2428,7 @@ return function(data, env)
 
 		Event(InputService.InputChanged, function(input)
 			if dragDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-				Drag.Position = UDim2.new(0, dragOffset.X + input.Position.X, 0, dragOffset.Y + input.Position.Y)
+				Drag.Position = UDim2.fromOffset(dragOffset.X + input.Position.X, dragOffset.Y + input.Position.Y)
 			end
 		end)
 

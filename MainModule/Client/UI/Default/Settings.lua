@@ -2,12 +2,16 @@
 client = nil
 service = nil
 
-return function(data, Vargs)
+return function(data, env)
 	local gTable
 
-	local client = Vargs.client
-	local service = Vargs.service
-	local gui = Vargs.gui
+	if env then
+		setfenv(1, env)
+	end
+
+	local client = env.client
+	local service = env.service
+	local gui = env.gui
 
 	local UI = client.UI
 	local Remote = client.Remote
@@ -24,7 +28,7 @@ return function(data, Vargs)
 	local cliSettings = {
 		{
 			Text = "Keybinds: ";
-			Desc = "- Enabled/Disables Keybinds";
+			Desc = "- Enables/Disables Keybinds";
 			Entry = "Boolean";
 			Value = Variables.KeybindsEnabled;
 			Function = function(enabled, toggle)

@@ -8,7 +8,11 @@ gTable = nil
 --// All global vars will be wiped/replaced except script
 --// All guis are autonamed using client.Functions.GetRandom()
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local gui = service.New("ScreenGui")
 	local mode = data.Mode
 	local gTable = client.UI.Register(gui, {Name = "Effect"})
@@ -31,8 +35,8 @@ return function(data)
 		local distance = data.Distance or 80
 
 		local function renderScreen()
-			for i,pixel in pairs(pixels) do
-				local ray = camera:ScreenPointToRay(pixel.X,pixel.Y,depth)
+			for _, pixel in pairs(pixels) do
+				local ray = camera:ScreenPointToRay(pixel.X, pixel.Y, depth)
 				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
 				local part, endPoint = result.Instance, result.Position
 				if part and part.Transparency < 1 then
@@ -43,18 +47,19 @@ return function(data)
 			end
 		end
 
-		frame.Size = UDim2.new(1,0,1,40)
-		frame.Position = UDim2.new(0,0,0,-35)
-		for y = 0,gui.AbsoluteSize.Y+50,resY do
-			for x = 0,gui.AbsoluteSize.X+30,resX do
-				local pixel = Instance.new("TextLabel")
-				pixel.Text = ""
-				pixel.BorderSizePixel = 0
-				pixel.Size = UDim2.new(0,resX,0,resY)
-				pixel.Position = UDim2.new(0,x-(resX/2),0,y-(resY/2))
-				pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
-				pixel.Parent = frame
-				table.insert(pixels,{Pixel = pixel,X = x, Y = y})
+		frame.Size = UDim2.new(1, 0, 1, 40)
+		frame.Position = UDim2.new(0, 0, 0, -35)
+		for y = 0, gui.AbsoluteSize.Y+50, resY do
+			for x = 0, gui.AbsoluteSize.X+30, resX do
+				local pixel = service.New("TextLabel", {
+					Parent = frame;
+					Text = "";
+					BorderSizePixel = 0;
+					Size = UDim2.fromOffset(resX, resY);
+					Position = UDim2.fromOffset(x-(resX/2), y-(resY/2));
+					BackgroundColor3 = Color3.fromRGB(105, 170, 255);
+				})
+				table.insert(pixels, {Pixel = pixel, X = x, Y = y})
 			end
 		end
 
@@ -71,8 +76,8 @@ return function(data)
 		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 		service.UserInputService.MouseIconEnabled = false
 
-		for i,v in pairs(service.PlayerGui:GetChildren()) do
-			pcall(function() if v~=gui then v:Destroy() end end)
+		for _, v in pairs(service.PlayerGui:GetChildren()) do
+			pcall(function() if v ~= gui then v:Destroy() end end)
 		end
 
 		local blur = service.New("BlurEffect", {
@@ -89,7 +94,7 @@ return function(data)
 			Position = UDim2.new(-0.5,0,-0.5,0);
 		})
 
-		for i = 1,0,-0.01 do
+		for i = 1, 0, -0.01 do
 			bg.BackgroundTransparency = i
 			blur.Size = 56 * (1 - i);
 			wait(0.1)
@@ -109,7 +114,7 @@ return function(data)
 
 		while gui and gui.Parent do
 			wait(1/44)
-			bg.BackgroundColor3 = Color3.new(math.random(255)/255,math.random(255)/255,math.random(255)/255)
+			bg.BackgroundColor3 = Color3.new(math.random(255)/255, math.random(255)/255, math.random(255)/255)
 		end
 
 		if gui then gui:Destroy() end

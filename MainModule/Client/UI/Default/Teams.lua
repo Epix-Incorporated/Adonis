@@ -1,9 +1,14 @@
 client, service = nil, nil
 
-return function(data)
+return function(data, env)
+	if env then
+		setfenv(1, env)
+	end
+	
 	local window = client.UI.Make("Window", {
 		Name  = "Teams";
 		Title = "Teams";
+		Icon = client.MatIcons.People;
 		Size  = {300, 280};
 		AllowMultiple = false;
 	})
