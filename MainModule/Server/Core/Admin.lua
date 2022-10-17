@@ -942,7 +942,7 @@ return function(Vargs, GetEnv)
 					elseif id and cId and id == cId then
 						return true
 					end
-				else 
+				else
 					return string.lower(tostring(check)) == string.lower(tostring(name))
 				end
 			end
@@ -954,13 +954,12 @@ return function(Vargs, GetEnv)
 			local ret
 			for i,v in Settings.Banned do
 				if Admin.DoBanCheck(name, v) then
-					table.remove(Settings.Banned, i)
-					ret = v
+					ret = table.remove(Settings.Banned, i)
 					if doSave then
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = {"Settings", "Banned"};
-							Value = v;
+							Table = "Banned";
+							Value = ret;
 							LaxCheck = true;
 						})
 					end
@@ -1296,7 +1295,7 @@ return function(Vargs, GetEnv)
 			if Admin.IsPlaceOwner(pDat.Player) or adminLevel >= Settings.Ranks.Creators.Level then
 				return true, nil
 			end
-					
+
 			if Admin.IsBlacklisted(pDat.Player) then
 				return false, "You are blacklisted from running commands."
 			end
