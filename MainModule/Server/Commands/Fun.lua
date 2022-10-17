@@ -1673,9 +1673,11 @@ return function(Vargs, env)
 						function fling(part)
 							part:BreakJoints()
 							part.Anchored=false
-							local pos=Instance.new("BodyPosition", part)
-							pos.maxForce = Vector3.new(math.huge, math.huge, math.huge)--10000, 10000, 10000)
+							local attachment = Instance.New("Attachment", part)
+							local pos=Instance.new("AlignPosition", part)
+							pos.maxForce = math.huge
 							pos.position = part.Position
+							pos.Attachment0 = attachment
 							local i=1
 							local run=true
 							while main and wait() and run do
@@ -2383,19 +2385,22 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
-							if frc.Name == "ADONIS_GRAVITY" then
+							if frc.Name == "ADONIS_GRAVITY" or frc.Name == "ADONIS_GRAVITY_ATTACHMENT" then
 								frc:Destroy()
 							end
 						end
-
-						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
+						
+						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
-						frc.force = Vector3.new(0, 0, 0)
+						frc.Attachment0 = attachment
+						frc.Force = Vector3.new(0, 0, 0)
 						for _, prt in v.Character:GetChildren() do
 							if prt:IsA("BasePart") then
-								frc.force = frc.force - Vector3.new(0, prt:GetMass()*tonumber(args[2]), 0)
+								frc.Force -= Vector3.new(0, prt:GetMass()*tonumber(args[2]), 0)
 							elseif prt:IsA("Accoutrement") then
-								frc.force = frc.force - Vector3.new(0, prt.Handle:GetMass()*tonumber(args[2]), 0)
+								frc.Force -= Vector3.new(0, prt.Handle:GetMass()*tonumber(args[2]), 0)
 							end
 						end
 					end
@@ -2414,19 +2419,23 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, frc in v.Character.HumanoidRootPart:GetChildren() do
-							if frc.Name == "ADONIS_GRAVITY" then
+							if frc.Name == "ADONIS_GRAVITY" or frc.Name == "ADONIS_GRAVITY_ATTACHMENT" then
 								frc:Destroy()
 							end
 						end
 
-						local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+						local attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+						attachment.Name = "ADONIS_GRAVITY_ATTACHMENT"
+						
+						local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 						frc.Name = "ADONIS_GRAVITY"
-						frc.force = Vector3.new(0, 0, 0)
+						frc.Attachment0 = attachment
+						frc.Force = Vector3.new(0, 0, 0)
 						for _, prt in v.Character:GetChildren() do
 							if prt:IsA("BasePart") then
-								frc.force = frc.force + Vector3.new(0, prt:GetMass()*196.25, 0)
+								frc.Force += Vector3.new(0, prt:GetMass()*workspace.Gravity, 0)
 							elseif prt:IsA("Accoutrement") then
-								frc.force = frc.force + Vector3.new(0, prt.Handle:GetMass()*196.25, 0)
+								frc.Force += Vector3.new(0, prt.Handle:GetMass()*workspace.Gravity, 0)
 							end
 						end
 					end
@@ -2672,21 +2681,23 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
-				local bg = Instance.new("BodyGyro")
-				bg.Name = "SPINNER_GYRO"
-				bg.maxTorque = Vector3.new(0, math.huge, 0)
-				bg.P = 11111
-				bg.D = 0
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
+							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" then
 								q:Destroy()
 							end
 						end
-						local gyro = bg:Clone()
-						gyro.cframe = v.Character.HumanoidRootPart.CFrame
-						gyro.Parent = v.Character.HumanoidRootPart
+						local spinGryoAttachment: Attachment = service.New("Attachment")
+						local spinGryo: AlignOrientation = service.New("AlignOrientation")
+
+						spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
+						spinGryoAttachment.Parent = v.Character.HumanoidRootPart
+
+						spinGryo.Name = "ADONIS_SPIN_GYRO"
+						spinGryo.MaxTorque = math.huge
+						spinGryo.cframe = v.Character.HumanoidRootPart.CFrame
+						spinGryo.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
 						new.Disabled = false
@@ -2764,7 +2775,8 @@ return function(Vargs, env)
 								Size = Vector3.new(3, 1, 4),
 							})
 
-							local bf = service.New("BodyForce", {Force = Vector3.new(0, 2e3, 0), Parent = st})
+							local attachment = service.New("Attachment", {Parent = st})
+							local bf = service.New("VectorForce", {Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment})
 
 							st.CFrame = torso.CFrame
 							st.Parent = char

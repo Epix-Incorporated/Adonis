@@ -4610,10 +4610,10 @@ return function(Vargs, env)
 
 						local flightPosObject = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local flightGyroObject = rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and (flightPosObject:IsA("AlignPosition")) then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 
@@ -4621,10 +4621,10 @@ return function(Vargs, env)
 						--rootPart.Position = destination
 						v.Character:MoveTo(destination)
 
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and flightPosObject:IsA("AlignPosition") then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 					end
@@ -5832,10 +5832,13 @@ return function(Vargs, env)
 							repeat zran = math.random(-9999, 9999) until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
 							v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-							local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+							local Attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+							local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 							frc.Name = "BFRC"
-							frc.force = Vector3.new(xran*4, 9999*5, zran*4)
+							frc.Attachment0 = Attachment
+							frc.Force = Vector3.new(xran*4, 9999*5, zran*4)
 							service.Debris:AddItem(frc,.1)
+							service.Debris:AddItem(Attachment,.1)
 						end
 					end)
 				end
