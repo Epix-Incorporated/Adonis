@@ -1675,8 +1675,8 @@ return function(Vargs, env)
 							part.Anchored=false
 							local attachment = Instance.New("Attachment", part)
 							local pos=Instance.new("AlignPosition", part)
-							pos.maxForce = math.huge
-							pos.position = part.Position
+							pos.MaxForce = math.huge
+							pos.Position = part.Position
 							pos.Attachment0 = attachment
 							local i=1
 							local run=true
@@ -2684,7 +2684,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" then
+							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
 								q:Destroy()
 							end
 						end
@@ -2695,8 +2695,10 @@ return function(Vargs, env)
 						spinGryoAttachment.Parent = v.Character.HumanoidRootPart
 
 						spinGryo.Name = "ADONIS_SPIN_GYRO"
+						spinGryo.Attachment0 = spinGryoAttachment
 						spinGryo.MaxTorque = math.huge
-						spinGryo.cframe = v.Character.HumanoidRootPart.CFrame
+						spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
+						spinGryo.CFrame = v.Character.HumanoidRootPart.CFrame
 						spinGryo.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart
@@ -2717,7 +2719,7 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" then
+							if q.Name == "SPINNER" or q.Name == "SPINNER_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
 								q:Destroy()
 							end
 						end
