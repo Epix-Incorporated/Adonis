@@ -179,9 +179,9 @@ return function(data, env)
 		end
 	})
 	
-	redGradient = Instance.new("UIGradient", redSlider.SliderBar)
-	greenGradient = Instance.new("UIGradient", greenSlider.SliderBar)
-	blueGradient = Instance.new("UIGradient", blueSlider.SliderBar)
+	redGradient = service.New("UIGradient", redSlider.SliderBar)
+	greenGradient = service.New("UIGradient", greenSlider.SliderBar)
+	blueGradient = service.New("UIGradient", blueSlider.SliderBar)
 	
 	updateColors()
 	gTable = window.gTable
