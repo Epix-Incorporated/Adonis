@@ -873,20 +873,15 @@ return function(Vargs, GetEnv)
 				Variables.LightingSettings[prop] = value
 			end
 		end;
-
-	ToHex = function(c3:Color3)  -- from https://devforum.roblox.com/t/converting-a-color-to-a-hex-string/793018/3
-			local r,g,b = math.floor(c3.R*255), math.floor(c3.G*255), math.floor(c3.B*255)
-			return string.format("#%X%X%X", r, g, b)	
-	end;
 	
-	ChatMessage = function(msg:string,color,font,size)
+		ChatMessage = function(msg:string,color,font,size)
 		local tab = {}
 		local FormattedColor = Color3.new(1, 1, 1)
 		tab.Text = msg
 
 		if color then
 			tab.Color = color
-			FormattedColor  = Functions.ToHex(color)
+			FormattedColor  = Color3.new(color):ToHex() -- // This line is here for TextChatService support.
 		end
 
 		if font then
