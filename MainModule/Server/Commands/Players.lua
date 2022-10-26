@@ -22,7 +22,6 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local tab = {}
 				local cmdCount = 0
-
 				for _, cmd in Admin.SearchCommands(plr, "all") do
 					if cmd.Hidden or cmd.Disabled then
 						continue
@@ -568,14 +567,13 @@ return function(Vargs, env)
 					"<i>"..Settings.SpecialPrefix.."admins</i> - All admins in the server";
 					"<i>"..Settings.SpecialPrefix.."nonadmins</i> - Non-admins (normal players) in the server";
 					"<i>"..Settings.SpecialPrefix.."others</i> - Everyone except yourself";
-					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server excluding those removed with -SELECTION";
+					"<i>"..Settings.SpecialPrefix.."random</i> - A random person in the server";
 					"<i>@USERNAME</i> - Targets a specific player with that exact username Ex: <i>"..Settings.Prefix.."god @Sceleratis </i> would give a player with the username 'Sceleratis' god powers";
-					"<i>#NUM</i> - NUM random players in the server <i>"..Settings.Prefix.."ff #5</i> will ff 5 random players excluding those removed with -SELECTION.";
+					"<i>#NUM</i> - NUM random players in the server <i>"..Settings.Prefix.."ff #5</i> will ff 5 random players.";
 					"<i>"..Settings.SpecialPrefix.."friends</i> - Your friends who are in the server";
 					"<i>%TEAMNAME</i> - Members of the team TEAMNAME Ex: "..Settings.Prefix.."kill %raiders";
 					"<i>$GROUPID</i> - Members of the group with ID GROUPID (number in the Roblox group webpage URL)";
-					"<i>-SELECTION</i> - Inverts the selection, ie. will remove SELECTION from list of players to run command on. "..Settings.Prefix.."kill all,-%TEAM will kill everyone except players on TEAM";
-					"<i>+SELECTION</i> - Readds the selection, ie. will readd SELECTION from list of players to run command on. "..Settings.Prefix.."kill all,-%TEAM,+Lethalitics will kill everyone except players on TEAM but also Lethalitics";
+					"<i>-PLAYERNAME</i> - Inverts the selection, ie. will remove PLAYERNAME from list of players to run command on. "..Settings.Prefix.."kill all,-scel will kill everyone except scel";
 					"<i>radius-NUM</i> -- Anyone within a NUM-stud radius of you. "..Settings.Prefix.."ff radius-5 will ff anyone within a 5-stud radius of you.";
 					"";
 					"<b>――――― Repetition ―――――</b>";
@@ -863,7 +861,7 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local elevated: boolean = Admin.CheckAdmin(plr)
-				local players = service.GetPlayers(plr, args[1], {NoFakePlayer = true; NoSelectors = not elevated;})
+				local players = service.GetPlayers(plr, args[1], {UseFakePlayer = false; NoSelectors = not elevated;})
 
 				if #players > 2 then
 					Functions.Hint(string.format("Loading profile data for %d players... [This may take a while]", #players), {plr})

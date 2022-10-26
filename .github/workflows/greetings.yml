@@ -13,4 +13,4 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: "👋 Welcome! It looks like this is your first issue submission here. Please make sure you've included all necessary details in your post so we can reach a resolution as painlessly as possible! Also note that not recieving a response does not mean that your issue has been ignored!"
-        pr-message: "👋 Hey there! It looks like this is your first time contributing to this project (welcome!) Please read [Contributing Guide](https://github.com/Epix-Incorporated/Adonis/blob/master/CONTRIBUTING.md) before submitting changes and make corrections now if you need to. Failure to adhere to contribution guidlines may cause denial!"
+        pr-message: "👋 Hey there! It looks like this is your first time contributing to this project (welcome!) Please read [Contributing Guide](https://github.com/Sceleratis/Adonis/blob/master/CONTRIBUTING.md) before submitting changes and make corrections now if you need to. Failure to adhere to contribution guidlines may cause denial!"

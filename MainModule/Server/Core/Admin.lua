@@ -184,6 +184,26 @@ return function(Vargs, GetEnv)
 			end
 		end
 
+		if Settings.CommandCooldowns then
+			for cmdName, cooldownData in pairs(Settings.CommandCooldowns) do
+				local realCmd = Admin.GetCommand(cmdName)
+
+				if realCmd then
+					if cooldownData.Player then
+						realCmd.PlayerCooldown = cooldownData.Player
+					end
+
+					if cooldownData.Server then
+						realCmd.ServerCooldown = cooldownData.Server
+					end
+
+					if cooldownData.Cross then
+						realCmd.CrossCooldown = cooldownData.Cross
+					end
+				end
+			end
+		end
+
 		Admin.Init = nil;
 		AddLog("Script", "Admin Module Initialized")
 	end;
@@ -942,7 +962,7 @@ return function(Vargs, GetEnv)
 					elseif id and cId and id == cId then
 						return true
 					end
-				else
+				else 
 					return string.lower(tostring(check)) == string.lower(tostring(name))
 				end
 			end
@@ -954,12 +974,13 @@ return function(Vargs, GetEnv)
 			local ret
 			for i,v in Settings.Banned do
 				if Admin.DoBanCheck(name, v) then
-					ret = table.remove(Settings.Banned, i)
+					table.remove(Settings.Banned, i)
+					ret = v
 					if doSave then
 						Core.DoSave({
 							Type = "TableRemove";
-							Table = "Banned";
-							Value = ret;
+							Table = {"Settings", "Banned"};
+							Value = v;
 							LaxCheck = true;
 						})
 					end

@@ -11,41 +11,39 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
+	
+	local playergui = service.PlayerGui
+	local localplayer = service.Players.LocalPlayer
+	local gui = service.New("ScreenGui")
+	local toggle = service.New("ImageButton", gui)
+	local gTable = client.UI.Register(gui)
 
-	local UI = client.UI
-
-	local gui = service.New("ScreenGui", {ResetOnSpawn = false})
-	local gTable = UI.Register(gui)
-
-	if UI.Get("HelpButton", gui, true) then
+	if client.UI.Get("HelpButton", gui, true) then
 		gui:Destroy()
 		gTable:Destroy()
 		return nil
 	end
 
 	gTable.Name = "HelpButton"
-	gTable.CanKeepAlive = true
+	gTable.CanKeepAlive = false
 
-	local toggle = service.New("ImageButton", {
-		Parent = gui;
-		Name = "Toggle";
-		BackgroundTransparency = 1;
-		Position = UDim2.new(1, -45, 1, -45);
-		Size = UDim2.fromOffset(40, 40);
-		Image = client.HelpButtonImage;
-		ImageTransparency = 0.5;
-	})
+	toggle.Name = "Toggle"
+	toggle.BackgroundTransparency = 1
+	toggle.Position = UDim2.new(1, -45, 1, -45)
+	toggle.Size = UDim2.new(0, 40, 0, 40)
+	toggle.Image = client.HelpButtonImage
+	toggle.ImageTransparency = 0.5
 
-	--if UI.Get("Chat") then
+	--if client.UI.Get("Chat") then
 	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
 	--end
 
 	toggle.MouseButton1Down:Connect(function()
-		local found = UI.Get("UserPanel", nil, true)
+		local found = client.UI.Get("UserPanel",nil,true)
 		if found then
 			found.Object:Destroy()
 		else
-			UI.Make("UserPanel")
+			client.UI.Make("UserPanel",{})
 		end
 	end)
 

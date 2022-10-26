@@ -536,9 +536,9 @@ return function(Vargs, GetEnv)
 							if gTable.Class == "TextLabel" and parent == service.PlayerGui then
 								task.wait()
 								gTable.Object.Parent = UI.GetHolder()
-							elseif parent == nil and not gTable.KeepAlive then
+							elseif rawequal(c, gTable.Object) and parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()
-							elseif parent ~= nil then
+							elseif rawequal(c, gTable.Object) and parent ~= nil then
 								gTable.Active = true
 								client.GUIs[gIndex] = gTable
 							end

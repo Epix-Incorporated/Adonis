@@ -1032,13 +1032,8 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 		FormatPlayer = function(plr, withUserId)
 			if not plr then return "%UNKNOWN%" end
-			if plr.Name == "[Unknown User]" then
-				return "[Unknown User"..(if plr.UserId and plr.UserId ~= -1 then " "..plr.UserId else "").."]"
-			end
 			local str = if plr.DisplayName == plr.Name then "@"..plr.Name else string.format("%s (@%s)", plr.DisplayName or "???", plr.Name or "???")
-			if withUserId then
-				str ..= string.format(" [%s]", if plr.UserId and plr.UserId ~= -1 then plr.UserId else "?")
-			end
+			if withUserId then str ..= string.format(" [%d]", plr.UserId or 0) end
 			return str
 		end;
 

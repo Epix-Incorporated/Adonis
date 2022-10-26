@@ -891,8 +891,7 @@ return function(Vargs, GetEnv)
 					if not ran then
 						logError(err)
 					end
-				else 
-					--// probably could make this RefreshGui instead of MakeGui down the road
+				else
 					if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
 						Remote.MakeGui(p, "Console")
 					end
@@ -902,19 +901,15 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if Settings.Console and (not Settings.Console_AdminsOnly or level > 0) then
-					Remote.MakeGui(p, "Console")
-				end
 
-				if Settings.HelpButton then
-					Remote.MakeGui(p, "HelpButton")
-				end
 
 				if level > 0 then
 					local oldVer = (level > 300) and Core.GetData("VersionNumber")
 					local newVer = (level > 300) and tonumber(string.match(server.Changelog[1], "Version: (.*)"))
 
 					if Settings.Notification then
+						wait(2)
+
 						Remote.MakeGui(p, "Notification", {
 							Title = "Welcome.";
 							Message = "Click here for commands.";
@@ -1012,14 +1007,28 @@ return function(Vargs, GetEnv)
 				end
 				Remote.Get(p,"UIKeepAlive")
 
-				--// GUI loading
+				--//GUI loading
+				local MakeGui = Remote.MakeGui
+				local Refresh = Remote.RefreshGui
+				local RefreshGui = function(gui, ignore, ...)
+					Refresh(p, gui, ignore, ...)
+				end
 				if Variables.NotifMessage then
-					Remote.MakeGui(p, "Notif", {
+					MakeGui(p, "Notif", {
 						Message = Variables.NotifMessage
 					})
 				end
+
+				if Settings.Console and (not Settings.Console_AdminsOnly or (Settings.Console_AdminsOnly and level > 0)) then
+					RefreshGui("Console")
+				end
+
+				if Settings.HelpButton then
+					MakeGui(p, "HelpButton")
+				end
+
 				if Settings.TopBarShift then
-					Remote.MakeGui(p, "TopBar")
+					MakeGui(p, "TopBar")
 				end
 
 				--if Settings.CustomChat then

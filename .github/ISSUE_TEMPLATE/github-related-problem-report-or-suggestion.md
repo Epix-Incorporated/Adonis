@@ -1,7 +1,6 @@
 ---
-name: Make a GitHub-related problem report or suggestion
-about: For all things pertaining to documentation, the README file, the User Manual,
-  GitHub workflows etc.
+name: GitHub-related problem report or suggestion
+about: Documentation errors go under this category.
 title: ''
 labels: github
 assignees: ''

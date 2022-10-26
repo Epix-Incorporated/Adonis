@@ -14,7 +14,6 @@
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">HelpButton</string>
-				<string name="OriginalScriptGuid"></string>
 				<string name="ScriptGuid">{AE2B245B-468D-47BC-A0DF-40AF8B4AEA32}</string>
 				<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -64,7 +63,7 @@ return function(data, env)
 	--end
 
 	toggle.MouseButton1Down:Connect(function()
-		task.spawn(function()
+		spawn(function()
 			local effect = Instance.new("ImageLabel", toggle)
 			effect.AnchorPoint = Vector2.new(0.5, 0.5)
 			effect.BorderSizePixel = 0
@@ -74,7 +73,7 @@ return function(data, env)
 			effect.Image = "rbxasset://textures/whiteCircle.png"
 			effect.Position = UDim2.new(0.5, 0, 0.5, 0)
 			effect:TweenSize(UDim2.new(0, toggle.AbsoluteSize.X * 2.5, 0, toggle.AbsoluteSize.X * 2.5), Enum.EasingDirection.Out, Enum.EasingStyle.Linear, 0.2)
-			task.wait(0.2)
+			wait(0.2)
 			effect:Destroy()
 		end)
 		local found = client.UI.Get("UserPanel",nil,true)
@@ -174,7 +173,6 @@ end
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{0CF7425E-ABEA-4B57-BCF3-4404F70BD63D}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -256,14 +254,14 @@ return function(data, env)
 
 	local function moveGuis(holder,mod)
 		local holdstuff = {}
-		for i,v in holder:GetChildren() do
+		for i,v in pairs(holder:children()) do
 			table.insert(holdstuff,1,v)
 		end
-		for i,v in holdstuff do
+		for i,v in pairs(holdstuff) do
 			v.Position = UDim2.new(0,0,1,-75*(i+mod))
 		end
-		holder.CanvasSize=UDim2.new(0,0,0,(#holder:GetChildren()*75))
-		local pos = (((#holder:GetChildren())*75) - holder.AbsoluteWindowSize.Y)
+		holder.CanvasSize=UDim2.new(0,0,0,(#holder:children()*75))
+		local pos = (((#holder:children())*75) - holder.AbsoluteWindowSize.Y)
 		if pos<0 then pos = 0 end
 		holder.CanvasPosition = Vector2.new(0,pos)
 	end
@@ -299,7 +297,7 @@ return function(data, env)
 	frame:TweenSize(UDim2.new(1, -5, 0, 60),'Out','Quad',0.2)
 	frame:TweenPosition(UDim2.new(0,0,1,-75),'Out','Linear',0.2)
 
-	task.spawn(function()
+	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		if text == "Click here for commands." then
 			sound.SoundId = "rbxassetid://2871645235"
@@ -308,19 +306,19 @@ return function(data, env)
 		else
 			sound.SoundId = "rbxassetid://1555493683"
 		end
-		task.wait(0.1)
+		wait(0.1)
 		sound:Play()
-		task.wait(1)
+		wait(1)
 		sound:Destroy()
 	end)
 
 	if time then
 		timer.Visible = true
-		task.spawn(function()
+		spawn(function()
 			repeat
 				timer.Text = time
 				--timer.Size=UDim2.new(0,timer.TextBounds.X,0,10)
-				task.wait(1)
+				wait(1)
 				time = time-1
 			until time<=0 or not frame or not frame.Parent
 
@@ -334,7 +332,7 @@ return function(data, env)
 		end)
 	end
 
-	repeat task.wait() until returner ~= nil or not frame or not frame.Parent
+	repeat wait() until returner ~= nil or not frame or not frame.Parent
 
 	return returner
 end]]></ProtectedString>
@@ -448,12 +446,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -569,12 +562,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -671,12 +659,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">16</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>600</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -760,12 +743,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">4</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>700</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -976,12 +954,7 @@ end]]></ProtectedString>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -1065,12 +1038,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -1552,12 +1520,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -1703,12 +1666,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">16</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>600</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -1961,7 +1919,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{CA23F0F4-6492-4BED-A9F4-1CE75AABC170}</string>
 						<ProtectedString name="Source"><![CDATA[																																																				--[[
 --//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -2188,7 +2145,7 @@ return function(data, env)
 	local Top = Main.Top
 
 	local function RippleEffect(element)
-		task.spawn(function()
+		spawn(function()
 			element.ClipsDescendants = true
 			local effect = create("ImageLabel", {
 				Parent = element,
@@ -2201,7 +2158,7 @@ return function(data, env)
 				Position = UDim2.new(0.5, 0, 0.5, 0),
 			})
 			effect:TweenSize(UDim2.new(0, element.AbsoluteSize.X * 2.5, 0, element.AbsoluteSize.X * 2.5), Enum.EasingDirection.Out, Enum.EasingStyle.Linear, 0.2)
-			task.wait(0.2)
+			wait(0.2)
 			effect:Destroy()
 		end)
 	end
@@ -2255,7 +2212,7 @@ return function(data, env)
 
 	function getNextPos(frame)
 		local farXChild, farYChild
-		for i,v in frame:GetChildren() do
+		for i,v in next,frame:GetChildren() do
 			if checkProperty(v, "Size") then
 				if not farXChild or (v.AbsolutePosition.X + v.AbsoluteSize.X) > (farXChild.AbsolutePosition.X + farXChild.AbsoluteSize.X) then
 					farXChild = v
@@ -2273,7 +2230,7 @@ return function(data, env)
 	function LoadChildren(Obj, Children)
 		if Children then
 			local runWhenDone = Children.RunWhenDone and functionify(Children.RunWhenDone, Obj)
-			for class,data in Children do
+			for class,data in next,Children do
 				if type(data) == "table" then
 					if not data.Parent then data.Parent = Obj end
 					create(data.Class or data.ClassName or class, data)
@@ -2458,7 +2415,7 @@ return function(data, env)
 			end
 
 			if data.Events then
-				for event,func in data.Events do
+				for event,func in pairs(data.Events) do
 					local realFunc = functionify(func, new)
 					Event(new[event], function(...)
 						realFunc(...)
@@ -2572,7 +2529,7 @@ return function(data, env)
 			end
 
 			if data.BoxProperties then
-				for i,v in data.BoxProperties do
+				for i,v in next,data.BoxProperties do
 					if checkProperty(box, i) then
 						box[i] = v
 					end
@@ -2738,13 +2695,13 @@ return function(data, env)
 			downImg.ZIndex = new.ZIndex
 
 			if textProps then
-				for i,v in textProps do
+				for i,v in next,textProps do
 					selected[i] = v
 				end
 			end
 
 			if options then
-				for i,v in options do
+				for i,v in next,options do
 					local button = scroller:Add("TextButton", {
 						Text = "  ".. tostring(v);
 						Size = UDim2.new(1, -10, 0, 30);
@@ -2759,7 +2716,7 @@ return function(data, env)
 					})
 
 					if textProps then
-						for i,v in textProps do
+						for i,v in next,textProps do
 							button[i] = v
 						end
 					end
@@ -2829,14 +2786,14 @@ return function(data, env)
 				})
 
 				tabFrame:SetSpecial("FocusTab",function()
-					for i,v in buttonsTab do
+					for i,v in next,buttonsTab do
 						if isGui(v) then
 							v.BackgroundTransparency = (v:IsDisabled() and 0.9) or 0.7
 							v.TextTransparency = (v:IsDisabled() and 0.9) or 0.7
 						end
 					end
 
-					for i,v in frames:GetChildren() do
+					for i,v in next,frames:GetChildren() do
 						if isGui(v) then
 							v.Visible = false
 						end
@@ -2905,7 +2862,7 @@ return function(data, env)
 				new:ClearAllChildren()
 
 				local num = 0
-				for i,v in list do
+				for i,v in next,list do
 					local text = v;
 					local desc;
 					local color
@@ -2940,7 +2897,7 @@ return function(data, env)
 					end
 
 					if labelProperties then
-						for i,v in entProps do
+						for i,v in next,entProps do
 							if checkProperty(label, i) then
 								label[i] = v
 							end
@@ -2958,9 +2915,9 @@ return function(data, env)
 
 					if data.Delay then
 						if type(data.Delay) == "number" then
-							task.wait(data.Delay)
+							wait(data.Delay)
 						elseif i%100 == 0 then
-							task.wait(0.1)
+							wait(0.1)
 						end
 					end
 				end
@@ -2974,7 +2931,7 @@ return function(data, env)
 				local newY, newX = 0,0
 
 				if not onX and not onY then onX = false onY = true end
-				for i,v in new:GetChildren() do
+				for i,v in next,new:GetChildren() do
 					if v:IsA("GuiObject") then
 						if onY then
 							v.Size = UDim2.new(v.Size.X.Scale, v.Size.X.Offset, 0, v.AbsoluteSize.Y)
@@ -2992,7 +2949,7 @@ return function(data, env)
 						newX = math.max(newX, xLower)
 						if modBreak then
 							if i%modBreak == 0 then
-								task.wait(1/60)
+								wait(1/60)
 							end
 						end
 					end
@@ -3023,7 +2980,7 @@ return function(data, env)
 		data.Children = nil
 		data.Content = nil
 
-		for i,v in data do
+		for i,v in next,data do
 			if checkProperty(new, i) then
 				new[i] = v
 			end
@@ -3050,11 +3007,11 @@ return function(data, env)
 			local newData = {}
 			local new
 
-			for i,v in data do
+			for i,v in next,data do
 				newData[i] = v
 			end
 
-			for i,v in gotData do
+			for i,v in next,gotData do
 				newData[i] = v
 			end
 
@@ -3069,7 +3026,7 @@ return function(data, env)
 	function doClose()
 		if not isClosed then
 			isClosed = true
-			for _, thing in Drag:GetChildren() do
+			for _, thing in pairs(Drag:GetChildren()) do
 				if thing ~= Main then
 					thing:Destroy()
 				end
@@ -3077,7 +3034,7 @@ return function(data, env)
 			Drag:TweenSize(UDim2.new(0,0,0,0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15)
 			Main.ClipsDescendants = true
 			Main:TweenSize(UDim2.new(0,0,0,0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15)
-			task.wait(0.12)
+			wait(0.12)
 			gTable:Destroy()
 		end
 	end
@@ -3246,17 +3203,17 @@ return function(data, env)
 				local done = false
 				Refreshing = true
 
-				task.spawn(function()
+				spawn(function()
 					while gTable.Active and not done do
 						for i = 0,180,10 do
 							rSpinner.Rotation = -i
-							task.wait(1/60)
+							wait(1/60)
 						end
 					end
 				end)
 
 				onRefresh()
-				task.wait(1)
+				wait(1)
 				done = true
 				Refreshing = false
 			end
@@ -3552,7 +3509,7 @@ return function(data, env)
 		end
 	end
 
-	for i,child in GUI:GetChildren() do
+	for i,child in next,GUI:GetChildren() do
 		if child.Name ~= "Desc" and child.Name ~= "Drag" then
 			specialInsts[child.Name] = child
 			child.Parent = nil
@@ -3697,12 +3654,7 @@ end
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3786,12 +3738,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -3888,12 +3835,7 @@ end
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -3977,12 +3919,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -4080,12 +4017,7 @@ end
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">0</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/LegacyArial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -4172,12 +4104,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">2</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>700</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -4471,12 +4398,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">2</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>700</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arialbd.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -4670,12 +4592,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -4761,12 +4678,7 @@ end
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">1</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -4879,12 +4791,7 @@ end
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -6702,12 +6609,7 @@ end
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -6791,12 +6693,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -6962,12 +6859,7 @@ end
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">1</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -7051,12 +6943,7 @@ end
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -7142,12 +7029,7 @@ end
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -7240,7 +7122,6 @@ end
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{B8025F9E-65C7-4450-92A8-7828E92C095F}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -7291,13 +7172,13 @@ return function(data, env)
 		fadeOut()
 	end
 
-	task.spawn(function()
+	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://7152561753"
 		sound.Volume = 0.3
-		task.wait(0.1)
+		wait(0.1)
 		sound:Play()
-		task.wait(1)
+		wait(1)
 		sound:Destroy()
 	end)
 
@@ -7308,9 +7189,9 @@ return function(data, env)
 	if not tim then
 		local _,time = message:gsub(" ","")
 		time = math.clamp(time/2,4,11)+1
-		task.wait(time)
+		wait(time)
 	else
-		task.wait(tim)
+		wait(tim)
 	end
 
 	fadeOut()
@@ -7484,12 +7365,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">16</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>600</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -7573,12 +7449,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">5</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>300</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Light.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -8103,12 +7974,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -8367,7 +8233,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{50030479-DCBC-4CC1-9EDF-B518421F939C}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -8428,26 +8293,26 @@ return function(data, env)
 
 	container.Position = UDim2.new(0,0,0,((notif and 30) or 0) + ((topbar and 40) or 0) - 35)
 
-	local children = container:GetChildren()
+	local children = container:children()
 
 	gui.Position = UDim2.new(0,0,0,-100)
 	gui.Frame.msg.Text = str
 	local bounds = gui.Frame.msg.TextBounds.X
 
-	task.spawn(function()
+	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://255881176"
 		sound.Volume = 0.25
-		task.wait(0.1)
+		wait(0.1)
 		sound:Play()
-		task.wait(0.8)
+		wait(0.8)
 		sound:Destroy()
 	end)
 
 	local function moveGuis(m,ignore)
 		m = m or 0
-		local max = #container:GetChildren()
-		for i,v in container:GetChildren() do
+		local max = #container:children()
+		for i,v in pairs(container:children()) do
 			if v~=ignore then
 				local y = (i+m)*28
 				v.Position = UDim2.new(0,0,0,y)
@@ -8459,19 +8324,19 @@ return function(data, env)
 	local lom = -1
 	moveGuis(-1)
 	gui.Parent = container
-	if #container:GetChildren()>5 then lom = -2 end
-	UDim2.new(0,0,0,(#container:GetChildren()+lom)*28)
+	if #container:children()>5 then lom = -2 end
+	UDim2.new(0,0,0,(#container:children()+lom)*28)
 	moveGuis(-1)
-	--gui:TweenPosition(UDim2.new(0,0,0,(#container:GetChildren()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
+	--gui:TweenPosition(UDim2.new(0,0,0,(#container:children()+lom)*28),nil,nil,0.3,true,function() if gui and gui.Parent then moveGuis(-1) end end)
 
-	if #container:GetChildren()>5 then
-		local gui = container:GetChildren()[1]
+	if #container:children()>5 then
+		local gui = container:children()[1]
 		moveGuis(-2,gui)
 		gui:Destroy()
 		--gui:TweenPosition(UDim2.new(0,0,0,-100),nil,nil,0.2,true,function() if gui and gui.Parent then gui:Destroy() end end)
 	end
 
-	task.wait(data.Time or 5)
+	wait(data.Time or 5)
 
 	if gui and gui.Parent then
 		moveGuis(-2,gui)
@@ -8534,7 +8399,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{7FAF7F51-BFCF-48C7-ADAE-8F50DCAA1FB3}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -8613,12 +8477,7 @@ end]]></ProtectedString>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">3</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -8802,7 +8661,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{6F347222-5B55-4E8F-BAF3-24DB719CE3C1}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -8879,7 +8737,7 @@ return function(data, env)
 				if frame.BackgroundTransparency>frameFade then
 					frame.BackgroundTransparency = frame.BackgroundTransparency-frameStep
 				end
-				task.wait(1/60)
+				wait(1/60)
 			end
 		end
 	end
@@ -8901,7 +8759,7 @@ return function(data, env)
 				if frame.BackgroundTransparency<1 then
 					frame.BackgroundTransparency = frame.BackgroundTransparency+frameStep
 				end
-				task.wait(1/60)
+				wait(1/60)
 			end
 			blur.Enabled = false
 			blur:Destroy()
@@ -8925,16 +8783,16 @@ return function(data, env)
 		msg.Text = message
 	else
 		Routine(function()
-			task.wait(0.5)
+			wait(0.5)
 			for i = 1, #message do
 				msg.Text = msg.Text .. message:sub(i,i)
-				task.wait(0.05)
+				wait(0.05)
 			end
 		end)
 	end--]] -- For now?
 
 	fadeIn()
-	task.wait(tim or 5)
+	wait(tim or 5)
 	if not gone then
 		fadeOut()
 	end
@@ -8949,19 +8807,19 @@ return function(data, env)
 
 	if not scroll then
 		msg.Text = message
-		task.wait(tim or 10)
+		wait(tim or 10)
 	else
-		task.wait(0.5)
+		wait(0.5)
 		for i = 1, #message do
 			msg.Text = msg.Text .. message:sub(i,i)
-			task.wait(0.05)
+			wait(0.05)
 		end
-		task.wait(tim or 5)
+		wait(tim or 5)
 	end
 
 	if frame then
 		frame:TweenPosition(UDim2.new(0.5,-175,-1.5,0),nil,nil,0.5)
-		task.wait(1)
+		wait(1)
 		gui:Destroy()
 	end
 	--]]
@@ -9120,12 +8978,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -9209,12 +9062,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">4</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>700</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -9473,12 +9321,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -10180,12 +10023,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">true</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -10458,12 +10296,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -10551,12 +10384,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -10644,12 +10472,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -10737,12 +10560,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -10830,12 +10648,7 @@ end]]></ProtectedString>
 							<bool name="ClipsDescendants">false</bool>
 							<bool name="Draggable">false</bool>
 							<token name="Font">3</token>
-							<Font name="FontFace">
-								<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-								<Weight>400</Weight>
-								<Style>Normal</Style>
-								<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-							</Font>
+							<Font name="FontFace"></Font>
 							<int name="LayoutOrder">0</int>
 							<float name="LineHeight">1</float>
 							<int name="MaxVisibleGraphemes">-1</int>
@@ -11078,12 +10891,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -11167,12 +10975,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">4</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>700</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Bold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -11266,12 +11069,7 @@ end]]></ProtectedString>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">3</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -11359,7 +11157,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{683A92C5-C02E-43C2-A6B6-CBB41BA34C54}</string>
 						<ProtectedString name="Source"><![CDATA[
 client, cPcall, Pcall, Routine, service, gTable
@@ -11433,7 +11230,7 @@ return function(data, env)
 			local localNum = 0
 			local adminsNum = 0
 			local crossNum = 0
-			for i, v in storedChats do
+			for i, v in pairs(storedChats) do
 				local clone = entry:Clone()
 				clone.Message.Text = service.MaxLen(v.Message, 100)
 				clone.Desc.Value = v.Message
@@ -12070,7 +11867,7 @@ end
 							cont:GetChildren()[1]:Destroy()
 						end
 
-						for i, v in cont:GetChildren() do
+						for i, v in pairs(cont:GetChildren()) do
 							local xsize = v.TextLabel.TextBounds.X + 40
 							if xsize > 400 then
 								xsize = 400
@@ -12093,11 +11890,11 @@ end
 								else
 									clone.Visible = false
 								end
-								task.wait(0.1)
+								wait(0.1)
 							until not clone.Parent or not clone or not head or not head.Parent or not char
 						end)
 
-						task.wait(10)
+						wait(10)
 
 						if clone then
 							clone:Destroy()
@@ -12244,12 +12041,7 @@ end]]></ProtectedString>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">1</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/Arial.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -12501,12 +12293,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">16</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>600</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Semibold.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -12843,12 +12630,7 @@ end]]></ProtectedString>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
 					<token name="Font">3</token>
-					<Font name="FontFace">
-						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-						<Weight>400</Weight>
-						<Style>Normal</Style>
-						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-					</Font>
+					<Font name="FontFace"></Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -12930,7 +12712,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{E4E59A50-D56E-4FA1-8189-62846C708FB8}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -13091,7 +12872,7 @@ return function(data, env)
 			frame.Position = UDim2.new(0,0,0,0)
 			text:CaptureFocus()
 			text.Text = ''
-			task.wait()
+			wait()
 			text.Text = ''
 			debounce = false
 			opened = true
@@ -13101,12 +12882,12 @@ return function(data, env)
 	text.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
 			if text.Text~='' and string.len(text.Text)>1 then
-				task.spawn(function()
+				spawn(function()
 					local sound = Instance.new("Sound",service.LocalContainer())
 					sound.SoundId = "rbxassetid://669596713"
 					sound.Volume = 0.2
 					sound:Play()
-					task.wait(0.5)
+					wait(0.5)
 					sound:Destroy()
 				end)
 				client.Remote.Send('ProcessCommand',text.Text)
@@ -13140,7 +12921,7 @@ return function(data, env)
 
 			local pNum = 0
 			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
-			for i,v in service.Players:GetPlayers() do
+			for i,v in next,service.Players:GetPlayers() do
 				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
 					local new = entry:Clone()
 					new.Text = tostring(v)
@@ -13160,7 +12941,7 @@ return function(data, env)
 			players.CanvasSize = UDim2.new(0,0,0,pNum*20)
 
 			local num = 0
-			for i,v in commands do
+			for i,v in next,commands do
 				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
 					if not scrollOpen then
 						scrollOpenTween:Play();
@@ -13329,12 +13110,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -13418,12 +13194,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -13494,7 +13265,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{A01C056B-1941-47DD-ABC4-F26BC1C33072}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -13521,7 +13291,7 @@ return function(data, env)
 
 	local found = client.UI.Get("Output")
 	if found then
-		for i,v in found do
+		for i,v in pairs(found) do
 			local p = v.Object
 			if p and p.Parent then
 				p.Main.Position = UDim2.new(0, 0, 0.35, p.Main.Position.Y.Offset+50)
@@ -13531,19 +13301,19 @@ return function(data, env)
 
 	t2.Text = msg
 
-	task.spawn(function()
+	spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
 		sound.SoundId = "rbxassetid://7152562261"
 		sound.Volume = 0.1
 		sound:Play()
-		task.wait(0.8)
+		wait(0.8)
 		sound:Destroy()
 	end)
 
 	main.Size = UDim2.new(1, 0, 0, 0)
 	gTable.Ready()
 	main:TweenSize(UDim2.new(1, 0, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1)
-	task.wait(5)
+	wait(5)
 	gTable.Destroy()
 end]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
@@ -13610,7 +13380,6 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Code</string>
-						<string name="OriginalScriptGuid"></string>
 						<string name="ScriptGuid">{03B045CB-1E47-4A96-8B09-DCF4D3BA16B1}</string>
 						<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
@@ -13705,15 +13474,15 @@ return function(data, env)
 		local leaderstats = {}
 		local found = {}
 
-		for i,v in service.Teams:GetChildren() do
+		for i,v in pairs(service.Teams:GetChildren()) do
 			teams[v.Name] = {Color = v.TeamColor, Players = {}, Stats = {}, StatNames = {}}
 		end
 
-		for i,v in service.Players:GetPlayers() do
+		for i,v in pairs(service.Players:GetPlayers()) do
 			local good = false
 			local team
 			if not v.Neutral then
-				for k,m in teams do
+				for k,m in pairs(teams) do
 					if m.Color == v.TeamColor then
 						good = true
 						team = m
@@ -13728,7 +13497,7 @@ return function(data, env)
 
 			local stats = v:FindFirstChild("leaderstats")
 			if stats then
-				for k,m in stats:GetChildren() do
+				for k,m in pairs(stats:GetChildren()) do
 					if team.Stats[m.Name] and tonumber(team.Stats[m.Name]) and m:IsA("IntValue") and tonumber(m.Value) then
 						team.Stats[m.Name] = team.Stats[m.Name]+tonumber(m.Value)
 					elseif not team.Stats[m.Name] and m:IsA("IntValue") then
@@ -13764,7 +13533,7 @@ return function(data, env)
 		if stats then
 			stats.Visible = true
 			local statEnt = top.Stat
-			for stat,k in leaderstats do
+			for stat,k in pairs(leaderstats) do
 				local new = statEnt:Clone()
 				new.Visible = true
 				new.Parent = stats
@@ -13779,7 +13548,7 @@ return function(data, env)
 			teams.Neutral = nil
 		end
 
-		for i,v in teams do
+		for i,v in pairs(teams) do
 			if #teams > 1 then
 				local team = entry:Clone()
 				team.Visible = true
@@ -13796,7 +13565,7 @@ return function(data, env)
 					team.Stats.Visible = true
 					team.Stats.Size = UDim2.new(0,70*(#v.Stats-1),1,0)
 					local statEnt = team.Stat
-					for stat,k in v.StatNames do
+					for stat,k in pairs(v.StatNames) do
 						local new = statEnt:Clone()
 						new.Parent = team.Stats
 						new.Visible = true
@@ -13813,7 +13582,7 @@ return function(data, env)
 				end
 				numEntries = numEntries+1
 			end
-			for k,p in v.Players do
+			for k,p in pairs(v.Players) do
 				local player = entry:Clone()
 				player.Visible = true
 				player.Position = UDim2.new(0,0,0,numEntries*25)
@@ -13866,7 +13635,7 @@ return function(data, env)
 					stats = stats:GetChildren()
 					pstats.Visible = true
 					local statEnt = pstat
-					for stat,k in stats do
+					for stat,k in pairs(stats) do
 						local new = statEnt:Clone()
 						new.Visible = true
 						new.Parent = pstats
@@ -13966,7 +13735,7 @@ return function(data, env)
 	end)
 
 	--[[
-	for k,p in service.Players:GetPlayers() do
+	for k,p in pairs(service.Players:GetPlayers()) do
 		p.Changed:Connect(populate)
 		p.ChildAdded:Connect(function(c)
 			populate()
@@ -13984,14 +13753,14 @@ return function(data, env)
 				c.ChildAdded:Connect(populate)
 			end
 		end)
-		task.wait(0.5)
+		wait(0.5)
 		populate()
 	end)
 
 	service.Teams.ChildAdded:Connect(populate)
 	service.Teams.ChildRemoved:Connect(populate)
 
-	task.wait(0.5)
+	wait(0.5)
 	populate()
 	--]]
 
@@ -14781,12 +14550,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">true</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>
@@ -14870,12 +14634,7 @@ end]]></ProtectedString>
 						<bool name="ClipsDescendants">false</bool>
 						<bool name="Draggable">false</bool>
 						<token name="Font">3</token>
-						<Font name="FontFace">
-							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
-							<Weight>400</Weight>
-							<Style>Normal</Style>
-							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
-						</Font>
+						<Font name="FontFace"></Font>
 						<int name="LayoutOrder">0</int>
 						<float name="LineHeight">1</float>
 						<int name="MaxVisibleGraphemes">-1</int>

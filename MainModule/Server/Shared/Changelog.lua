@@ -8,7 +8,6 @@ return {
 	"Disabled AutoLocalize for GUI objects";
 	"Added settings.SilentCommandDenials to avoid notifying users when they can't run a command (#836)";
 	"Added settings.Trello_HideRanks to hide Trello-based list entries from the :adminlist (#910)";
-	"Removed all instances of pairs()/ipairs() in core modules (#870)";
 	"Some internal codebase improvements";
 	"Updated the Version value in Adonis_Loader";
 	":scriptbuilder is now deprecated";
@@ -16,7 +15,6 @@ return {
 	"(Git/DaEnder) Made cape parented to character and massless (#850)";
 	"(Git/xvarmkorv2) Update Colorize Theme to use TweenService and task.wait (#853)";
 	"(Git/DimensionalFusion) Change Set FPS to not exceed 60 (#879)";
-	"(Git/Lain) Edit the way Players are Selected (#886)";
 	"(Git/Lethalitics) Add a healthlist command (#889)";
 	"(Git/RoyallyFlushed) Removal of next() and pairs() from codebase (#890)";
 	"(Git/RoyallyFlushed) Client/Core code readability improvements (#891)";
@@ -168,7 +166,7 @@ return {
 	"(Git/Expertcoderz) Enhancement towards how commands are registered/handled (#852)";
 	"";
 	"[v236 6.12.2022 12:30 EST]";
-	"*Refer to GitHub repository for more information. (https://github.com/Epix-Incorporated/Adonis)";
+	"*Refer to GitHub repository for more information. (https://github.com/Sceleratis/Adonis)";
 	"";
 	"[v235 3.29.2022 01:38 EST]";
 	"(Git/L8X) Remove math.randomseed() due to Luau optimizations (#624)";
@@ -963,7 +961,7 @@ return {
 	"*+Added :nocollide to disable player to player character collisions";
 	"";
 	"[6.24.2020 10:31 EST]";
-	"*Git merges (Refer to GitHub repo /Epix-Incorporated/Adonis for changes)";
+	"*Git merges (Refer to GitHub repo /Sceleratis/Adonis for changes)";
 	"";
 	"[6.23.2020 7:49 EST]";
 	"*Git merges";
@@ -1163,7 +1161,7 @@ return {
 	"*FlyNoclip now uses GetService(\"Players\")";
 	"*Invisible now makes faces and forcefields invisible";
 	"*Set 1-120 limit on FOV cmd";
-	"*Also Adonis is now on Github https://github.com/Epix-Incorporated/Adonis";
+	"*Also Adonis is now on Github https://github.com/Sceleratis/Adonis";
 	"";
 	"1.2.22b [6/7/2018]";
 	"*Killed some datastore error spam";

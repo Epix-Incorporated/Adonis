@@ -1,13 +1,13 @@
 ---
-name: Request a feature
+name: Feature request
 about: Suggest an idea for a new feature, or a way to improve an existing feature
-  within Adonis
+  within Adonis.
 title: ''
-labels: "✨ enhancement"
-assignees: ''
+labels: enhancement
+assignees: Expertcoderz
 
 ---
 
 - Is your feature request related to a problem? If so, please describe concisely. (Eg. "I'm always frustrated when [...]", "It's currently too difficult to [...]")
-- What is the solution, improvement or enhancement you'd like to see? Please describe.
+- What is the solution or enhancement you'd like? Please describe.
 - (Any additional context.)

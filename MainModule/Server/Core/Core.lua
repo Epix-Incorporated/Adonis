@@ -1003,22 +1003,18 @@ return function(Vargs, GetEnv)
 			elseif data.Type == "TableRemove" then
 				local tab = data.Table
 				local val = data.Value
-				local key = Core.GetTableKey(tab)
-
-				--// Storing an old reference of data.Table as we may override it later on.
 				local originalTable = tab
+				local key = Core.GetTableKey(tab)
 
 				if type(tab) == "string" then
 					tab = {"Settings", tab}
-				elseif type(tab) == "table" and tab[1] == "Settings" then
-					originalTable = tab[2]
 				end
 
 				data.Action = "Remove"
 				data.Time = os.time()
 
 				local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
-				Core.UpdateData(key, function(sets)
+				Core.UpdateData(key, function(sets: {TableData})
 					sets = sets or {}
 
 					local index = 1
@@ -1027,7 +1023,7 @@ return function(Vargs, GetEnv)
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
 							table.remove(sets, index)
-						else
+						else 
 							index += 1
 						end
 					end
@@ -1038,12 +1034,18 @@ return function(Vargs, GetEnv)
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
-						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
+						for _, v in Core.IndexPathToTable(indClone) or {} do
 							if CheckMatch(v, val) then
 								continueOperation = true
 								break
 							end
 						end
+					else
+						continueOperation = true
+					end
+
+					if continueOperation then
+						table.insert(sets, data)
 					end
 
 					return sets
@@ -1073,7 +1075,7 @@ return function(Vargs, GetEnv)
 							sets[i] = nil
 						elseif (CheckMatch(tab, v.Table) or CheckMatch(originalTable, v.Table)) and CheckMatch(v.Value, val) then
 							table.remove(sets, index)
-						else
+						else 
 							index += 1
 						end
 					end
@@ -1114,8 +1116,9 @@ return function(Vargs, GetEnv)
 			if serverId and serverId == game.JobId then
 				return
 			end
+			data = data or {}
 
-			local CheckMatch = if type(data) == "table" and data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
+			local CheckMatch = if data.LaxCheck then Functions.LaxCheckMatch else Functions.CheckMatch
 			local ds_blacklist = Core.DS_BLACKLIST
 
 			if key == "TableUpdate" then

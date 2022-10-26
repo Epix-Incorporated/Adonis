@@ -1,25 +1,25 @@
---!nonstrict
 --[[
 
 	DEVELOPMENT HAS BEEN MOVED FROM DAVEY_BONES/SCELERATIS TO THE EPIX INCORPORATED GROUP
 
 	CURRENT LOADER:
-	https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated
+	https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 
 	CURRENT MODULE:
 	https://www.roblox.com/library/7510592873/Adonis-MainModule
 
 --]]
 
-----------------------------------------------------------------------------------
---                                Adonis Loader                                 --
---                            By Epix Incorporated                              --
-----------------------------------------------------------------------------------
---          Edit settings using the Settings module in the Config folder        --
-----------------------------------------------------------------------------------
---       This script loads the Adonis source (MainModule) into the game.        --
---            Only edit this script if you know what you're doing!              --
-----------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------
+--                                  Adonis Loader                                     --
+----------------------------------------------------------------------------------------
+--		   	  Epix Incorporated. Not Everything is so Black and White.    --
+----------------------------------------------------------------------------------------
+--	    Edit settings in-game or using the settings module in the Config folder   --
+----------------------------------------------------------------------------------------
+--	                  This is not designed to work in solo mode                   --
+----------------------------------------------------------------------------------------
 
 local warn = function(...)
 	warn(":: Adonis ::", ...)
@@ -44,32 +44,32 @@ else
 	mutex.Parent = RunService
 
 	local model = script.Parent.Parent
-	local configFolder = model.Config
-	local loaderFolder = model.Loader
+	local config = model.Config
+	local core = model.Loader
 
-	local dropper = loaderFolder.Dropper
-	local loader = loaderFolder.Loader
+	local dropper = core.Dropper
+	local loader = core.Loader
 	local runner = script
 
-	local settingsModule = configFolder.Settings
-	local pluginsFolder = configFolder.Plugins
-	local themesFolder = configFolder.Themes
+	local settings = config.Settings
+	local plugins = config.Plugins
+	local themes = config.Themes
 
 	local backup = model:Clone()
 
 	local data = {
-		Settings = {} :: {[string]: any};
-		Descriptions = {} :: {[string]: string};
-		Messages = {} :: {string|{[string]: any}};
-		ServerPlugins = {} :: {ModuleScript};
-		ClientPlugins = {} :: {ModuleScript};
-		Packages = {} :: {Folder};
-		Themes = {} :: {Instance};
+		Settings = {};
+		Descriptions = {};
+		Messages = {};
+		ServerPlugins = {};
+		ClientPlugins = {};
+		Packages = {};
+		Themes = {};
 
 		ModelParent = model.Parent;
 		Model = model;
-		Config = configFolder;
-		Core = loaderFolder;
+		Config = config;
+		Core = core;
 
 		Loader = loader;
 		Dopper = dropper;
@@ -89,25 +89,16 @@ else
 
 	local moduleId = data.ModuleID
 	if data.DebugMode then
-		for _, v in model.Parent:GetChildren() do
-			if v.Name == "MainModule" and v:IsA("ModuleScript") then
-				moduleId = v
-				break
-			end
-		end
-		if not moduleId then
-			error("Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in "..model.Parent:GetFullName())
-		end
+		moduleId = model.Parent.MainModule
 	end
-	local success, setTab = pcall(require, settingsModule)
+	local success, setTab = pcall(require, settings)
 	if success then
 		data.Messages = setTab.Settings.Messages
 	else
 		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
 			Title = "Warning!";
-			Icon = "rbxassetid://7495468117";
-			Message = "Settings module error detected; using default settings.";
+			Message = "Settings module error detected. Using default settings.";
 			Time = 15;
 		})
 		setTab = {}
@@ -117,24 +108,24 @@ else
 	data.Descriptions = setTab.Description
 	data.Order = setTab.Order
 
-	for _, module in pluginsFolder:GetChildren() do
-		if module:IsA("Folder") then
-			table.insert(data.Packages, module)
-		elseif module.Name:lower():match("^client[%-:]") then
-			table.insert(data.ClientPlugins, module)
-		elseif module.Name:lower():match("^server[%-:]") then
-			table.insert(data.ServerPlugins, module)
+	for _, plugin in ipairs(plugins:GetChildren()) do
+		if plugin:IsA("Folder") then
+			table.insert(data.Packages, plugin)
+		elseif plugin.Name:lower():match("^client[%-:]") then
+			table.insert(data.ClientPlugins, plugin)
+		elseif plugin.Name:lower():match("^server[%-:]") then
+			table.insert(data.ServerPlugins, plugin)
 		else
-			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(module).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
+			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(plugin).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
 		end
 	end
 
-	for _, theme in themesFolder:GetChildren() do
+	for _, theme in ipairs(themes:GetChildren()) do
 		table.insert(data.Themes, theme)
 	end
 
 	if tonumber(moduleId) then
-		warn("Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/".. moduleId)
+		warn("Requiring Adonis MainModule. Model URL: https://www.roblox.com/library/".. moduleId)
 	end
 
 	local module = require(moduleId)
