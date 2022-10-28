@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 					local lower = string.lower
 					local sub = string.sub
 
-					if matched then
+					if matched and #matched > 0 then
 						for _,v in service.Teams:GetChildren() do
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for _,m in parent:GetChildren() do
