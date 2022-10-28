@@ -32,15 +32,21 @@ return function(data, env)
 		local resY = data.Resolution or 20
 		local resX = data.Resolution or 20
 		local depth = 0
-		local distance = data.Distance or 80
+		local distance = data.Distance or 128
 
 		local function renderScreen()
-			for _, pixel in pairs(pixels) do
+			for _, pixel in pixels do
 				local ray = camera:ScreenPointToRay(pixel.X, pixel.Y, depth)
 				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
-				local part, endPoint = result.Instance, result.Position
-				if part and part.Transparency < 1 then
-					pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
+				
+				if result then
+					local part, endPoint = result.Instance, result.Position
+					if part and part.Transparency < 1 then
+						pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
+					else
+						pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
+					end
+					
 				else
 					pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
 				end
@@ -76,7 +82,7 @@ return function(data, env)
 		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 		service.UserInputService.MouseIconEnabled = false
 
-		for _, v in pairs(service.PlayerGui:GetChildren()) do
+		for _, v in service.PlayerGui:GetChildren() do
 			pcall(function() if v ~= gui then v:Destroy() end end)
 		end
 
