@@ -38,7 +38,7 @@ return function(data, env)
 		Position = UDim2.new(0, 5, 0, 55);
 	})
 	
-	for i,ans in next,answers do
+	for i,ans in answers do
 		ansList:Add("TextButton",{
 			Text = i..". "..ans;
 			Size = UDim2.new(1, -10, 0, 25);
@@ -57,6 +57,6 @@ return function(data, env)
 	gTable = window.gTable
 	window:Ready()
 	
-	repeat wait() until selected or not gTable.Active
+	repeat task.wait() until selected or not gTable.Active
 	return selected
 end
