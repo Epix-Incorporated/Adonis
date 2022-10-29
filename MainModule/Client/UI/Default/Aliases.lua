@@ -23,7 +23,7 @@ return function(data, env)
 		Command = "",
 		Description = ""
 	}
-	for i,v in pairs(template) do
+	for i,v in template do
 		if not data[i] then
 			data[i] = v
 		end
