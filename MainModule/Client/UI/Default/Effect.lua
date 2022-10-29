@@ -41,11 +41,9 @@ return function(data, env)
 				
 				if result then
 					local part, endPoint = result.Instance, result.Position
-					if part and part.Transparency < 1 then
-						pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
-					else
-						pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
-					end
+					pixel.Pixel.BackgroundColor3 = if part and part.Transparency < 1
+						then part.BrickColor.Color
+						else Color3.fromRGB(105, 170, 255)
 					
 				else
 					pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
