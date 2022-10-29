@@ -275,7 +275,7 @@ return function(Vargs, env)
 					sound.PlayOnRemove = true
 					sound.Parent = root
 					sound:Destroy()
-					wait(1.4)
+					task.wait(1.4)
 					local vel = Instance.new("BodyVelocity")
 					vel.Velocity = CFrame.new(root.Position - Vector3.new(0, 1, 0), root.CFrame.LookVector * 5 + root.Position).LookVector * 1500
 					vel.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
@@ -477,13 +477,13 @@ return function(Vargs, env)
 
 				if not Variables.ZaWarudoDebounce then
 					Variables.ZaWarudoDebounce = true
-					delay(10, function() Variables.ZaWarudoDebounce = false end)
+					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
 						local audio = service.New("Sound", workspace)
 						audio.SoundId = "rbxassetid://676242549"
 						audio.Volume = 0.5
 						audio:Play()
-						wait(2)
+						task.wait(2)
 						for i, part in Variables.FrozenObjects do
 							part.Anchored = false
 						end
@@ -492,7 +492,7 @@ return function(Vargs, env)
 						if old then
 							for i = -2, 0, 0.1 do
 								old.Saturation = i
-								wait(0.01)
+								task.wait(0.01)
 							end
 							old:Destroy()
 						end
@@ -512,7 +512,7 @@ return function(Vargs, env)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
 						audio:Play()
-						wait(2.25)
+						task.wait(2.25)
 						doPause(workspace)
 						Variables.ZaWarudo = game.DescendantAdded:Connect(function(c)
 							if c:IsA("BasePart") and not c.Anchored and c.Name ~= "HumanoidRootPart" then
@@ -525,7 +525,7 @@ return function(Vargs, env)
 						cc.Name = "ADONIS_ZAWARUDO"
 						for i = 0,-2,-0.1 do
 							cc.Saturation = i
-							wait(0.01)
+							task.wait(0.01)
 						end
 
 						audio:Destroy()
@@ -668,7 +668,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Core.NewScript("LocalScript",[[
 					repeat
-						wait(0.1)
+						task.wait(0.1)
 						local char = script.Parent.Parent
 						local clr = BrickColor.random()
 						for i, v in char:GetChildren() do
@@ -972,9 +972,9 @@ return function(Vargs, env)
 				thanos.Parent = service.SoundService
 				audio.Parent = service.SoundService
 
-				wait()
+				task.wait()
 				thanos:Destroy()--]]
-				wait()
+				task.wait()
 				audio:Destroy()
 
 				if #playerList == 1 then
@@ -998,7 +998,7 @@ return function(Vargs, env)
 								else
 									table.remove(playerList, index)
 								end
-								wait()
+								task.wait()
 							end
 						else
 							break
@@ -1077,10 +1077,10 @@ return function(Vargs, env)
 								part.Parent = workspace
 								service.Debris:AddItem(part, 5)
 							end--]]
-							wait(0.2)
+							task.wait(0.2)
 						end
 
-						wait(1)
+						task.wait(1)
 						p:Kick("\n\n\"I don't feel so good\"\n")
 					end)
 				end
@@ -1198,7 +1198,7 @@ return function(Vargs, env)
 
 						ufo.Parent = p.Character
 
-						wait()
+						task.wait()
 						rotScript.Disabled = false
 
 						for i = 1, 200 do
@@ -1206,12 +1206,12 @@ return function(Vargs, env)
 								break
 							else
 								ufo:PivotTo(tPos*CFrame.new(0, 200-i, 0))
-								wait(0.001*(i/5))
+								task.wait(0.001*(i/5))
 							end
 						end
 
 						if check() then
-							wait(1)
+							task.wait(1)
 							spotLight.Enabled = true
 							particles.Enabled = true
 							beam.Transparency = origBeamTrans
@@ -1233,7 +1233,7 @@ return function(Vargs, env)
 								end
 							end
 
-							wait(5)
+							task.wait(5)
 
 							spotLight.Enabled = false
 							particles.Enabled = false
@@ -1266,7 +1266,7 @@ return function(Vargs, env)
 								end
 							end
 
-							wait(1)
+							task.wait(1)
 
 							Remote.MakeGui(p, "Effect", {Mode = "FadeOut";})
 
@@ -1276,7 +1276,7 @@ return function(Vargs, env)
 								else
 									ufo:PivotTo(tPos*CFrame.new(0, i, 0))
 									--torso.CFrame = bay.CFrame*CFrame.new(0, 2, 0)
-									wait(0.001*(i/5))
+									task.wait(0.001*(i/5))
 								end
 							end
 
@@ -1292,7 +1292,7 @@ return function(Vargs, env)
 								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
 								bg.Parent = gui
 								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
-								wait(0.5)
+								task.wait(0.5)
 								pcall(function() gui:Destroy() end)
 							end
 						end
@@ -1508,27 +1508,27 @@ return function(Vargs, env)
 								break
 							else
 								van:PivotTo(tPos * (CFrame.new(-200+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
-								wait(0.001*(i/5))
+								task.wait(0.001*(i/5))
 							end
 						end
 
 						sound.Pitch = 0.9
 
-						wait(0.5)
+						task.wait(0.5)
 						if check() then
 							door.Transparency = 1
 						end
-						wait(0.5)
+						task.wait(0.5)
 
 						if check() then
 							torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
 						end
 
-						wait(0.5)
+						task.wait(0.5)
 						if check() then
 							door.Transparency = 0
 						end
-						wait(0.5)
+						task.wait(0.5)
 
 						sound.Pitch = 1.3
 						Remote.MakeGui(p, "Effect", {
@@ -1543,7 +1543,7 @@ return function(Vargs, env)
 							else
 								van:PivotTo(tPos * (CFrame.new(0+i, -1, -7) * CFrame.Angles(0, math.rad(270), 0)))
 								torso.CFrame = primary.CFrame * (CFrame.new(0, 2.3, 0) * CFrame.Angles(0, math.rad(90), 0))
-								wait(0.1/(i*5))
+								task.wait(0.1/(i*5))
 
 								if i == 270 then
 									Remote.FadeAudio(p, 421358540, nil, nil, 0.5)
@@ -1569,7 +1569,7 @@ return function(Vargs, env)
 								service.TeleportService:Teleport(527443962, p, nil, bg)
 							end
 						end
-						wait(0.5)
+						task.wait(0.5)
 						pcall(function() van:Destroy() end)
 						pcall(function() gui:Destroy() end)
 					end)
@@ -1605,7 +1605,7 @@ return function(Vargs, env)
 				service.StartLoop("ChickenSpam", 5, function()
 					tempHats = {}
 					for i, v in hats do
-						wait(0.5)
+						task.wait(0.5)
 						if not hat or not hat.Parent or not scr or not scr.Parent then
 							break
 						end
@@ -1712,7 +1712,7 @@ return function(Vargs, env)
 								end
 							end
 							main.CFrame = main.CFrame + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))
-							wait()
+							task.wait()
 					until main.Parent ~= workspace or not main]])
 					cl.Parent = p
 					cl.Disabled = false
@@ -1721,7 +1721,7 @@ return function(Vargs, env)
 							if not p or not p.Parent then
 								return
 							end
-							wait(1)
+							task.wait(1)
 						end
 						if p then p:Destroy() end
 					end
@@ -1785,7 +1785,7 @@ return function(Vargs, env)
 						v.Size = v.Size + Vector3.new(3, 3, 3)
 						v.CFrame = curPos
 					end
-					wait(1/44)
+					task.wait(1/44)
 				end
 
 				for i, v in nukes do
@@ -1861,7 +1861,7 @@ return function(Vargs, env)
 
 						for i = 0.1, 1, 0.1 do
 							part.Color = oColor:lerp(Color3.new(0, 0, 0), i)
-							wait(math.random(5))
+							task.wait(math.random(5))
 						end
 
 						local ex = service.New("Explosion", {
@@ -1936,7 +1936,7 @@ return function(Vargs, env)
 
 							local sound = service.New("Sound", v.Character.HumanoidRootPart)
 							sound.SoundId = "http://www.roblox.com/asset/?id="..130767645
-							wait(0.5)
+							task.wait(0.5)
 							sound:Play()
 						end
 					end)
@@ -1981,11 +1981,11 @@ return function(Vargs, env)
 											Explosion.Parent = Part
 											Explosion.BlastRadius = 0
 											Explosion.Position = Part.Position + Vector3.new(0, 0, 0)
-											wait()
+											task.wait()
 										end
 									end)
 									--]]
-							wait(5)
+							task.wait(5)
 							BodyVelocity:remove()
 							if knownchar.Parent then
 								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
@@ -2072,7 +2072,7 @@ return function(Vargs, env)
 						k.Name = "Epix Puke"
 						Routine(function()
 							repeat
-								wait(0.07)
+								task.wait(0.07)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2110,7 +2110,7 @@ return function(Vargs, env)
 										local c = service.New("CylinderMesh", g)
 										c.Scale = Vector3.new(1, 0.2, 1)
 										c.Name = "PukeMesh"
-										wait(10)
+										task.wait(10)
 										g:Destroy()
 									elseif o and o.Name == "Puke Plate" and p then
 										p:Destroy()
@@ -2119,7 +2119,7 @@ return function(Vargs, env)
 								end)
 							until run == false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild("Head"))
 						end)
-						wait(12)
+						task.wait(12)
 						run = false
 						k:Destroy()
 					end)
@@ -2143,7 +2143,7 @@ return function(Vargs, env)
 						k.Name = "ADONIS_BLEED"
 						Routine(function()
 							repeat
-								wait(0.15)
+								task.wait(0.15)
 								v.Character.Humanoid.Health = v.Character.Humanoid.Health-1
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
@@ -2181,7 +2181,7 @@ return function(Vargs, env)
 										local c = service.New("CylinderMesh", g)
 										c.Scale = Vector3.new(1, 0.2, 1)
 										c.Name = "BloodMesh"
-										wait(10)
+										task.wait(10)
 										g:Destroy()
 									elseif o and o.Name == "Blood Plate" and p then
 										p:Destroy()
@@ -2190,7 +2190,7 @@ return function(Vargs, env)
 								end)
 							until run == false or not k or not k.Parent or (not v) or (not v.Character) or (not v.Character:FindFirstChild("Head"))
 						end)
-						wait(10)
+						task.wait(10)
 						run = false
 						k:Destroy()
 					end)
@@ -2234,7 +2234,7 @@ return function(Vargs, env)
 							local run = true
 							coroutine.wrap(function() wait(10) run = false end)()
 							repeat
-								wait(1)
+								task.wait(1)
 								hum.Health = hum.Health-5
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
@@ -2543,11 +2543,11 @@ return function(Vargs, env)
 							local foot = torso.CFrame * CFrame.new(0,-3, 0)
 							for i = 1, 10 do
 								torso.CFrame = foot * CFrame.fromEulerAnglesXYZ(-(math.pi/2)*i/10, 0, 0) * CFrame.new(0, 3, 0)
-								wait(0.1)
+								task.wait(0.1)
 							end
 							for i = 1, 5, 0.2 do
 								torso.CFrame = foot * CFrame.new(0,-(i^2), 0) * CFrame.fromEulerAnglesXYZ(-(math.pi/2), 0, 0) * CFrame.new(0, 3, 0)
-								wait()
+								task.wait()
 							end
 							player.Character:BreakJoints()
 						end
@@ -2585,28 +2585,28 @@ return function(Vargs, env)
 						light.Brightness = 10
 						light.Range = 30
 						light.Enabled = false
-						wait(0.2)
+						task.wait(0.2)
 						sound.Volume = 0.5
 						sound.Pitch = 0.8
 						sound:Play()
 						light.Enabled = true
-						wait(1/100)
+						task.wait(1/100)
 						light.Enabled = false
-						wait(0.2)
+						task.wait(0.2)
 						light.Enabled = true
 						light.Brightness = 1
-						wait(0.05)
+						task.wait(0.05)
 						light.Brightness = 3
-						wait(0.02)
+						task.wait(0.02)
 						light.Brightness = 1
-						wait(0.07)
+						task.wait(0.07)
 						light.Brightness = 10
-						wait(0.09)
+						task.wait(0.09)
 						light.Brightness = 0
-						wait(0.01)
+						task.wait(0.01)
 						light.Brightness = 7
 						light.Enabled = false
-						wait(1.5)
+						task.wait(1.5)
 						local part1 = service.New("Part", zeus)
 						part1.Anchored = true
 						part1.CanCollide = false
@@ -2617,13 +2617,13 @@ return function(Vargs, env)
 						part1.TopSurface = "Smooth"
 						part1.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 15, 0)
 						part1.Rotation = Vector3.new(0.359, 1.4, -14.361)
-						wait()
+						task.wait()
 						local part2 = part1:clone()
 						part2.Parent = zeus
 						part2.Size = Vector3.new(1, 7.48, 2)
 						part2.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 7.5, 0)
 						part2.Rotation = Vector3.new(77.514, -75.232, 78.051)
-						wait()
+						task.wait()
 						local part3 = part1:clone()
 						part3.Parent = zeus
 						part3.Size = Vector3.new(1.86, 7.56, 1)
@@ -2633,7 +2633,7 @@ return function(Vargs, env)
 						sound.Volume = 1
 						sound.Pitch = 1
 						sound:Play()
-						wait()
+						task.wait()
 						part1.Transparency = 1
 						part2.Transparency = 1
 						part3.Transparency = 1
@@ -3554,7 +3554,7 @@ return function(Vargs, env)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=rleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1,-1.5, 0)
-							wait()
+							task.wait()
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = false end
 							end
@@ -3908,7 +3908,7 @@ return function(Vargs, env)
 						local pTorso = plr.Character:FindFirstChild("HumanoidRootPart")
 						if torso and pTorso and plr ~= v then
 							Admin.RunCommand(Settings.Prefix.."clip", v.Name)
-							wait(0.3)
+							task.wait(0.3)
 							torso.CFrame = pTorso.CFrame*CFrame.new(0, 0, 5)
 						else
 							plr:LoadCharacter()
@@ -5156,7 +5156,7 @@ return function(Vargs, env)
 							end
 
 							clicks += 1
-							delay(0.4, function()
+							task.delay(0.4, function()
 								clicks -= 1
 							end)
 
@@ -5193,7 +5193,7 @@ return function(Vargs, env)
 
 								prevname = spart.Name
 								sound.SoundId = "rbxassetid://"..spart.Name
-								wait(2)
+								task.wait(2)
 							elseif not Success then
 								spart.Name = prevname
 							end
@@ -5206,7 +5206,7 @@ return function(Vargs, env)
 
 					if not toggable then
 						sound:Play()
-						wait(2)
+						task.wait(2)
 					end
 
 					sound.Parent = spart
