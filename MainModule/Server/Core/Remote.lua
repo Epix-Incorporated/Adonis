@@ -34,7 +34,7 @@ return function(Vargs, GetEnv)
 	end;
 
 	local function RunAfterPlugins(data)
-		for com in next, Remote.Commands do
+		for com in Remote.Commands do
 			if string.len(com) > Remote.MaxLen then
 				Remote.MaxLen = string.len(com)
 			end
@@ -136,7 +136,7 @@ return function(Vargs, GetEnv)
 					local action = args[1]
 					if action == "GetTasks" then
 						local tab = {}
-						for _, v in next, service.GetTasks() do
+						for _, v in service.GetTasks() do
 							local new = {
 								Status = v.Status;
 								Name = v.Name;
@@ -501,7 +501,7 @@ return function(Vargs, GetEnv)
 			Data = {};
 			Format = function(msg,data) (data or {}).Text = msg end;
 			Output = function(tab,msg,mata) table.insert(tab,Remote.Terminal.Format(msg,mata)) end;
-			GetCommand = function(cmd) for i,com in next,Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
+			GetCommand = function(cmd) for i,com in Remote.Terminal.Commands do if com.Command:lower() == cmd:lower() then return com end end end;
 			LiveOutput = function(p,data,type) Remote.FireEvent(p,"TerminalLive",{Data = data; Type = type or "Terminal";}) end;
 			Commands = {
 				Help = {
