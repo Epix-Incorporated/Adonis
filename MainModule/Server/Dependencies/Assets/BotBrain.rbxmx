@@ -2,26 +2,27 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Script" referent="RBX6F6D824EF82D436A8D4BB07C73CC6E4B">
+	<Item class="Script" referent="RBXC732856BD1794030BD81DBF4DAF91A37">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="Disabled">true</bool>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">BotBrain</string>
-			<string name="ScriptGuid">{EC769CAE-59C9-481A-A7E3-856A89C656BD}</string>
+			<token name="RunContext">0</token>
+			<string name="ScriptGuid">{996E9DAB-6244-4310-B1DA-34783184C4A3}</string>
 			<ProtectedString name="Source"><![CDATA[local char = script.Parent
 local event = script.Event
 
 local pathService = game:GetService("PathfindingService")
 local players = game:GetService("Players")
 
-local hum = script.Parent.Humanoid
-local head = script.Parent.Head
-local torso = script.Parent:FindFirstChild("HumanoidRootPart") or script.Parent:FindFirstChild("Torso") or script.Parent:FindFirstChild("UpperTorso") 
-local larm = script.Parent:FindFirstChild("Left Arm") or script.Parent:FindFirstChild("LeftLowerArm")
-local rarm = script.Parent:FindFirstChild("Right Arm") or script.Parent:FindFirstChild("RightLowerArm")
-local lleg = script.Parent:FindFirstChild("Left Leg") or script.Parent:FindFirstChild("LeftLowerLeg")
-local rleg = script.Parent:FindFirstChild("Right Leg") or script.Parent:FindFirstChild("RightLowerLeg")
+local hum = char.Humanoid
+local head = char.Head
+local torso = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") 
+local larm = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftLowerArm")
+local rarm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightLowerArm")
+local lleg = char:FindFirstChild("Left Leg") or char:FindFirstChild("LeftLowerLeg")
+local rleg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightLowerLeg")
 
 local path = {}
 local current
@@ -53,8 +54,8 @@ function setProp(prop, value)
 end
 
 function getCFrame()
-	local humanoidRootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
-	if humanoidRootPart ~= nil and humanoidRootPart:IsA('BasePart') then
+	local humanoidRootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+	if humanoidRootPart ~= nil and humanoidRootPart:IsA("BasePart") then
 		return humanoidRootPart.CFrame
 	else
 		return CFrame.new()
@@ -63,15 +64,17 @@ end
 
 function jumpCheck()
 	local cframe = getCFrame()
-	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild('HumanoidRootPart') or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
-	if targ and (targ.Position-cframe.p).Magnitude < 1 then
+	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild("HumanoidRootPart") or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
+	if targ and (targ.Position-cframe.Position).Magnitude < 1 then
 		--// Do something?
 	else
-		local checkVector = (cframe*CFrame.new(0,0,-3.5)).p
-		local ray = Ray.new(cframe.p,(checkVector - cframe.p).unit)
-		local hit, pos = workspace:FindPartOnRay(ray,char)
-		if hit and (pos-cframe.p).Magnitude < 0.7 then
-			hum.Jump = true
+		local checkVector = (cframe*CFrame.new(0,0,-3.5)).Position
+		local result = workspace:Raycast(cframe.Position, (checkVector - cframe.Position).Unit)
+		if result then
+			local hit, pos = result.Instance, result.Position
+			if hit and (pos-cframe.Position).Magnitude < 0.7 then
+				hum.Jump = true
+			end
 		end
 	end
 end
@@ -79,7 +82,7 @@ end
 function findTarget()
 	local closest
 	local prevDist = props.Distance
-	for i,v in next,workspace:GetChildren() do
+	for i,v in workspace:GetChildren() do
 		local vTorso = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChild("Torso") or v:FindFirstChild("UpperTorso")
 		local human = v:FindFirstChildOfClass("Humanoid")
 		if v~=char and v:IsA("Model") and torso and vTorso and human and human.Health>0 then
@@ -94,12 +97,16 @@ function findTarget()
 end
 
 function canSee(targCFrame)
-	local myPos = getCFrame().p
-	local targetPos = targCFrame.p
-	local ray = Ray.new(myPos, (targetPos - myPos).unit)
-	local hit, pos = workspace:FindPartOnRayWithIgnoreList(ray,{char, props.Target})
+	local myPos = getCFrame().Position
+	local targetPos = targCFrame.Position
 	
-	if hit then
+	local rayParams = RaycastParams.new()
+	rayParams.FilterDescendantsInstances = {char, props.Target}
+	rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+	
+	local result = workspace:Raycast(myPos, (targetPos - myPos).Unit, rayParams)
+	
+	if result and result.Instance then
 		return false
 	else
 		return true
@@ -113,7 +120,7 @@ function validTarget(v)
 	local canHurt = (not isBot and not isPlayer) or (isBot and props.AttackBots and (isBot.Value ~= props.SpecialKey or isBot.Value == "null")) or (isPlayer and not (props.Friendly and (isPlayer == props.Creator or isPlayer.TeamColor == props.TeamColor)))
 	if targ and targ ~= char and canHurt then
 		local targetHumanoid = targ:FindFirstChildOfClass("Humanoid")
-		if targetHumanoid ~= nil and targetHumanoid.Health < 999999999 and (targ:FindFirstChild("HumanoidRootPart") or targ:FindFirstChild("Torso") or targ:FindFirstChild("UpperTorso")) then
+		if targetHumanoid ~= nil and targetHumanoid.Health < 9e9 and (targ:FindFirstChild("HumanoidRootPart") or targ:FindFirstChild("Torso") or targ:FindFirstChild("UpperTorso")) then
 			return true
 		else
 			return false
@@ -147,7 +154,7 @@ function getPath()
 			targetPos = target.CFrame
 		else
 			targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
-			wait(0.1)
+			task.wait(0.1)
 		end
 	else
 		targetPos = CFrame.new(props.PatrolZone+Vector3.new(math.random(-props.PatrolDist,props.PatrolDist),0,math.random(-props.PatrolDist,props.PatrolDist)))
@@ -156,7 +163,7 @@ function getPath()
 	if not props.isDead and not props.Computing then
 		if canSee(targetPos) then
 			props.AutoCompute = true
-			path = {getCFrame(), targetPos.p}
+			path = {getCFrame(), targetPos.Position}
 			props.LastCompute = tick()
 			current = nil
 			currentInd = 2
@@ -165,8 +172,8 @@ function getPath()
 			props.AutoCompute = false
 			
 			local pathf = pathService:ComputeSmoothPathAsync(
-				getCFrame().p,
-				targetPos.p,
+				getCFrame().Position,
+				targetPos.Position,
 				500
 			)
 			
@@ -181,7 +188,7 @@ function getPath()
 end
 
 function walkPath()
-	local myPos = getCFrame().p
+	local myPos = getCFrame().Position
 	
 	local coord = path[currentInd]
 	if coord then
@@ -192,14 +199,14 @@ function walkPath()
 			hum:MoveTo(current)
 			
 			jumpCheck()
-			if (current.Y - getCFrame().p.Y) > 2.5 then
+			if (current.Y - getCFrame().Position.Y) > 2.5 then
 				hum.Jump = true
-			elseif (current.Y - getCFrame().p.Y) < -2.5 then
+			elseif (current.Y - getCFrame().Position.Y) < -2.5 then
 				hum:MoveTo(current+Vector3.new(2,0,2))
 			end
 			
 			if #path>2 then
-				repeat wait(0.1) until path[currentInd] ~= coord or (getCFrame().p - coord).Magnitude < 2.5
+				repeat task.wait(0.1) until path[currentInd] ~= coord or (getCFrame().Position - coord).Magnitude < 2.5
 			end
 		end
 		
@@ -218,7 +225,7 @@ function updateBot()
 	end
 	checkPath()
 	walkPath()
-	wait()
+	task.wait(1/30)
 end
 
 function init()
@@ -227,17 +234,17 @@ function init()
 	str.Value = props.SpecialKey
 	
 	hum.Died:Connect(function()
-		wait(1)
+		task.wait(1)
 		props.isDead = true
 		char:Destroy()
 	end)
 	
-	while wait() and not props.isDead do
+	while task.wait(1/30) and not props.isDead do
 		if char and hum and not props.isDead then
 			updateBot()
 		else
 			props.isDead = true
-			wait(1)
+			task.wait(1)
 			char:Destroy()
 		end
 	end
@@ -258,7 +265,7 @@ doToucher(rleg)
 
 event.Event:Connect(function(command,data)
 	if command == "SetSetting" then
-		for i,v in next,data do
+		for i,v in data do
 			props[i] = v
 		end
 	elseif command == "Init" then
@@ -268,7 +275,7 @@ end)]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="BindableEvent" referent="RBX611761C20520464BB65A0C347B27791D">
+		<Item class="BindableEvent" referent="RBXBA58843F5106435DBFDFC20DDDBD1D51">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Event</string>
