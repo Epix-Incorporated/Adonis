@@ -550,6 +550,7 @@ return function(Vargs, GetEnv)
 						local newenv = GetEnv(getfenv(),{
 							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
 							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
+							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(v)) end end;
 						})
 
 						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
@@ -610,10 +611,12 @@ return function(Vargs, GetEnv)
 					Function = function(p, args, data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
+							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
-								return {"Disconnect "..tostring(v.Name).." from the server"}
+								table.insert(ret, "Disconnect "..service.FormatPlayer(v).." from the server")
 							end
+							return ret
 						else
 							return {"No players matching '"..args[1].."' found"}
 						end
@@ -629,13 +632,15 @@ return function(Vargs, GetEnv)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
 							for _,v in plrs do
+								local ret = {}
 								local char = v.Character
 								if char and char.ClassName == "Model" then
 									char:BreakJoints()
-									return {"Killed "..tostring(v.Name)}
+									table.insert(ret, "Killed "..service.FormatPlayer(v))
 								else
-									return {tostring(v.Name).." has no character or it's not a model"}
+									table.insert(ret, service.FormatPlayer(v).." has no character or it's not a model")
 								end
+								return ret
 							end
 						else
 							return {"No players matching '"..args[1].."' found"}
@@ -651,9 +656,10 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local plrs = service.GetPlayers(p,args[1])
 						if #plrs>0 then
+							local ret = {}
 							for _,v in plrs do
 								v:LoadCharacter()
-								return {"Respawned "..tostring(v.Name)}
+								table.insert(ret, "Respawned "..service.FormatPlayer(v))
 							end
 						else
 							return {"No players matching '"..args[1].."' found"}
@@ -662,17 +668,17 @@ return function(Vargs, GetEnv)
 				};
 
 				Shutdown = {
-					Usage = "shutdown";
+					Usage = "shutdown <reason>";
 					Command = "shutdown";
-					Arguments = 0;
+					Arguments = 1;
 					Description = "Disconnects all players from the server and prevents rejoining";
 					Function = function(p,args,data)
 						service.PlayerAdded:Connect(function(p)
-							p:Kick()
+							p:Kick(args[1] or "No Given Reason")
 						end)
 
 						for _,v in service.Players:GetPlayers() do
-							v:Kick()
+							v:Kick(args[1] or "No Given Reason")
 						end
 					end
 				};
