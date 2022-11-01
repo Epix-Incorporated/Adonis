@@ -120,7 +120,7 @@ function validTarget(v)
 	local canHurt = (not isBot and not isPlayer) or (isBot and props.AttackBots and (isBot.Value ~= props.SpecialKey or isBot.Value == "null")) or (isPlayer and not (props.Friendly and (isPlayer == props.Creator or isPlayer.TeamColor == props.TeamColor)))
 	if targ and targ ~= char and canHurt then
 		local targetHumanoid = targ:FindFirstChildOfClass("Humanoid")
-		if targetHumanoid ~= nil and targetHumanoid.Health < 9e9 and (targ:FindFirstChild("HumanoidRootPart") or targ:FindFirstChild("Torso") or targ:FindFirstChild("UpperTorso")) then
+		if targetHumanoid ~= nil and targetHumanoid.Health < math.huge and (targ:FindFirstChild("HumanoidRootPart") or targ:FindFirstChild("Torso") or targ:FindFirstChild("UpperTorso")) then
 			return true
 		else
 			return false
