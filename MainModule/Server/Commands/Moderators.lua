@@ -4709,11 +4709,18 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
-
+						
 						local hum = char:FindFirstChildOfClass("Humanoid")
 						if hum then
-							hum.Jump = true
+							if hum.SeatPart then
+								Functions.RemoveSeatWelds(hum.SeatPart)
+							end
+							if hum.Sit then
+								hum.Sit = false
+								hum.Jump = true
+							end
 						end
+						
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
