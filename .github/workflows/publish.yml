@@ -15,7 +15,10 @@ jobs:
       - uses: Roblox/setup-foreman@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
+        
+      - name: Build Standalone
+        run: rojo build -o Adonis_Release_${{ steps.date.outputs.date }}.rbxm .github/build.project.json
+        
       - name: Set DebugMode off
         run: sed -i "s/DebugMode = true/DebugMode = false/g" Loader/Loader/Loader.server.lua 
         
@@ -24,6 +27,13 @@ jobs:
         
       - name: Build MainModule
         run: rojo build -o module.rbxm .github/module.deploy.project.json
+
+      - name: Send Standalone Release to Discord channel
+        uses: tsickert/discord-webhook@v3.0.0
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        with:
+          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
+          filename: Adonis_Release_${{ steps.date.outputs.date }}.rbxm
         
       - name: Publish Loader
         uses: fjogeleit/http-request-action@v1
