@@ -11,6 +11,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: release
+          
+      - name: Get current date
+        id: date
+        run: echo "date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       - uses: Roblox/setup-foreman@v1
         with:
