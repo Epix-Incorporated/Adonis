@@ -110,7 +110,7 @@ return function(Vargs, GetEnv)
 				Desc = question
 			})
 
-			for _, v in pairs(service.GetPlayers()) do
+			for _, v in service.GetPlayers() do
 				Routine(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
 					if response and os.time() - start <= 120 then
@@ -173,7 +173,7 @@ return function(Vargs, GetEnv)
 				local totalPlayers = 0
 				local totalServers = 0
 
-				for jobId,data in pairs(replyList) do
+				for jobId,data in replyList do
 					totalServers += 1
 					totalPlayers = totalPlayers + (data.NumPlayers or 0)
 					table.insert(tab, {
@@ -254,12 +254,12 @@ return function(Vargs, GetEnv)
 					--"Didn't Vote: "..#players-total;
 				}
 
-				for _, v in pairs(responses) do
+				for _, v in responses do
 					if not results[v] then results[v] = 0 end
 					results[v] += 1
 				end
 
-				for _, v in pairs(anstab) do
+				for _, v in anstab do
 					local ans = v
 					local num = results[v]
 					local percent
@@ -362,7 +362,7 @@ return function(Vargs, GetEnv)
 	end)
 
 	--// Check for additions added by other modules in core before this one loaded
-	for i, v in pairs(oldCommands) do
+	for i, v in oldCommands do
 		Core.CrossServerCommands[i] = v
 	end
 

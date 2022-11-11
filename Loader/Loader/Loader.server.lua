@@ -118,12 +118,17 @@ else
 	data.Order = setTab.Order
 
 	for _, module in pluginsFolder:GetChildren() do
+		local name = string.lower(module.Name)
+		
 		if module:IsA("Folder") then
 			table.insert(data.Packages, module)
-		elseif module.Name:lower():match("^client[%-:]") then
+			
+		elseif string.match(name, "^client[%-:]") then
 			table.insert(data.ClientPlugins, module)
-		elseif module.Name:lower():match("^server[%-:]") then
+			
+		elseif string.match(name, "^server[%-:]") then
 			table.insert(data.ServerPlugins, module)
+			
 		else
 			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(module).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
 		end

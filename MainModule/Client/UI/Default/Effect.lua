@@ -67,9 +67,9 @@ return function(data, env)
 			end
 		end
 
-		while wait() and not gTable.Destroyed and gui.Parent do
+		while task.wait() and not gTable.Destroyed and gui.Parent do
 			if not gTable.Destroyed and not gTable.Active then
-				wait(5)
+				task.wait(5)
 			else
 				renderScreen()
 			end
@@ -101,7 +101,7 @@ return function(data, env)
 		for i = 1, 0, -0.01 do
 			bg.BackgroundTransparency = i
 			blur.Size = 56 * (1 - i);
-			wait(0.1)
+			task.wait(0.1)
 		end
 
 		bg.BackgroundTransparency = 0
@@ -117,7 +117,7 @@ return function(data, env)
 		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(math.random(255)/255, math.random(255)/255, math.random(255)/255)
 		end
 
@@ -163,7 +163,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				task.wait(0.1)
 			end
 		end
 		sound:Stop()
@@ -217,7 +217,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				task.wait(0.1)
 			end
 		end
 
@@ -272,7 +272,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.13)
+				task.wait(0.13)
 			end
 		end
 
@@ -287,9 +287,9 @@ return function(data, env)
 		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(1,1,1)
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(0,0,0)
 		end
 		if gui then gui:Destroy() end

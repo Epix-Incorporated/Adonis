@@ -57,7 +57,7 @@ return function(Vargs, GetEnv)
 
 		--// Ping loop
 		log("~! Start ClientCheck loop");
-		delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
+		task.delay(5, function() service.StartLoop("ClientCheck", 30, Remote.CheckClient, true) end)
 
 		--// Get settings
 		log("Get settings");
