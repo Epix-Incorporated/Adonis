@@ -4619,10 +4619,10 @@ return function(Vargs, env)
 
 						local flightPosObject = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local flightGyroObject = rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and (flightPosObject:IsA("AlignPosition")) then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 
@@ -4630,10 +4630,10 @@ return function(Vargs, env)
 						--rootPart.Position = destination
 						v.Character:MoveTo(destination)
 
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and flightPosObject:IsA("AlignPosition") then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 					end
@@ -5715,33 +5715,49 @@ return function(Vargs, env)
 					Value = noclip or false;
 					Parent = scr;
 				})
-
+				
 				scr.Name = "ADONIS_FLIGHT"
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
-
+						
 						local new = scr:Clone()
-						local flightPosition = service.New("BodyPosition")
-						local flightGyro = service.New("BodyGyro")
-
+						local flightPositionAttachment: Attachment = service.New("Attachment")
+						local flightGyroAttachment: Attachment = service.New("Attachment")
+						local flightPosition: AlignPosition = service.New("AlignPosition")
+						local flightGyro: AlignOrientation = service.New("AlignOrientation")
+						
+						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
+						flightPositionAttachment.Parent = part
+						
+						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
+						flightGyroAttachment.Parent = part
+						
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
-						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.MaxForce = 0
 						flightPosition.Position = part.Position
+						flightPosition.Attachment0 = flightPositionAttachment
+						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 						flightPosition.Parent = part
-
+						
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
-						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.MaxTorque = 0
 						flightGyro.CFrame = part.CFrame
+						flightGyro.Attachment0 = flightGyroAttachment
+						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
 						flightGyro.Parent = part
-
+						
 						new.Parent = part
 						new.Disabled = false
 						Remote.MakeGui(v, "Notification", {
@@ -5753,7 +5769,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed", "flightspeed"};
@@ -5762,7 +5778,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5784,7 +5800,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
@@ -5796,16 +5812,20 @@ return function(Vargs, env)
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
 			end
 		};
-
+		
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling"};
@@ -5821,10 +5841,13 @@ return function(Vargs, env)
 							repeat zran = math.random(-9999, 9999) until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
 							v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-							local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+							local Attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+							local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 							frc.Name = "BFRC"
-							frc.force = Vector3.new(xran*4, 9999*5, zran*4)
+							frc.Attachment0 = Attachment
+							frc.Force = Vector3.new(xran*4, 9999*5, zran*4)
 							service.Debris:AddItem(frc,.1)
+							service.Debris:AddItem(Attachment,.1)
 						end
 					end)
 				end
