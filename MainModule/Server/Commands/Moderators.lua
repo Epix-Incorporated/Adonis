@@ -561,7 +561,7 @@ return function(Vargs, env)
 					--// For fake players
 					local fake_data
 					if service.Wrapped(v) then
-						fake_data = {UserId = v.UserId, Nmae = v.Name}
+						fake_data = {UserId = v.UserId, Name = v.Name}
 					end
 
 					Remote.MakeGui(plr, "List", {
@@ -2786,57 +2786,61 @@ return function(Vargs, env)
 		};
 
 		Track = {
-			Prefix = Settings.Prefix;
-			Commands = {"track", "trace", "find", "locate"};
-			Args = {"player", "persistent? (default: false)"};
-			Description = "Shows you where the target player(s) is/are";
-			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string})
+			Prefix = Settings.Prefix,
+			Commands = {"track", "trace", "find", "locate"},
+			Args = {"player", "persistent? (default: false)"},
+			Description = "Shows you where the target player(s) is/are",
+			AdminLevel = "Moderators",
+			Function = function(plr: Player, args: { string })
 				local plrChar = assert(plr.Character, "You don't have a character")
 				local plrHum = assert(plrChar:FindFirstChildOfClass("Humanoid", "You don't have a humanoid"))
 
 				local persistent = args[2] and (args[2]:lower() == "true" or args[2]:lower() == "yes")
-				if persistent and not Variables.TrackingTable[plr.Name] then
-					table.clear(Variables.TrackingTable[plr.Name])
+				if persistent and type(Variables.TrackingTable[plr.Name]) ~= "table" then
+					Variables.TrackingTable[plr.Name] = {}
 				end
 
-				for _, v in service.GetPlayers(plr, args[1]) do
-					if persistent then
+				for _, v: Player in service.GetPlayers(plr, args[1]) do
+					if persistent and Variables.TrackingTable[plr.Name] then
 						Variables.TrackingTable[plr.Name][v] = true
 					end
+
 					local char = v.Character
 					if not char then
-						Functions.Hint(service.FormatPlayer(v).." doesn't currently have a character", {plr})
+						Functions.Hint(service.FormatPlayer(v) .. " doesn't currently have a character", { plr })
 						continue
 					end
+
 					local rootPart = char:FindFirstChild("HumanoidRootPart")
 					local head = char:FindFirstChild("Head")
+
 					if not (rootPart and head) then
-						Functions.Hint(service.FormatPlayer(v).." doesn't currently have a HumanoidRootPart/Head", {plr})
+						Functions.Hint(service.FormatPlayer(v) .. " doesn't currently have a HumanoidRootPart/Head", { plr })
 						continue
 					end
+
 					task.defer(function()
 						local gui = service.New("BillboardGui", {
-							Name = v.Name.."Tracker",
+							Name = v.Name .. "_Tracker",
 							Adornee = head,
 							AlwaysOnTop = true,
 							StudsOffset = Vector3.new(0, 2, 0),
-							Size = UDim2.fromOffset(100, 40)
+							Size = UDim2.fromOffset(100, 40),
 						})
 						local beam = service.New("SelectionPartLasso", {
 							Parent = gui,
 							Part = rootPart,
 							Humanoid = plrHum,
-							Color3 = v.TeamColor.Color
+							Color3 = v.TeamColor.Color,
 						})
 						local frame = service.New("Frame", {
 							Parent = gui,
 							BackgroundTransparency = 1,
-							Size = UDim2.fromScale(1, 1)
+							Size = UDim2.fromScale(1, 1),
 						})
 						local name = service.New("TextLabel", {
 							Parent = frame,
-							Text = if v.Name == v.DisplayName then "@"..v.Name else v.DisplayName.."\n(@"..v.Name..")",
+							Text = service.FormatPlayer(v),
 							BackgroundTransparency = 1,
 							Font = Enum.Font.Arial,
 							TextColor3 = Color3.new(1, 1, 1),
@@ -2844,8 +2848,9 @@ return function(Vargs, env)
 							TextStrokeTransparency = 0,
 							Size = UDim2.new(1, 0, 0, 20),
 							TextScaled = true,
-							TextWrapped = true
+							TextWrapped = true,
 						})
+
 						local arrow = name:Clone()
 						arrow.Position = UDim2.fromOffset(0, 20)
 						arrow.Text = "v"
@@ -2853,23 +2858,25 @@ return function(Vargs, env)
 
 						Remote.MakeLocal(plr, gui, false)
 
+						local charRemovingConn
 						local teamChangeConn = v:GetPropertyChangedSignal("TeamColor"):Connect(function()
 							beam.Color3 = v.TeamColor.Color
 						end)
-						local charRemovingConn
 						local plrCharRemovingConn = plr.CharacterRemoving:Once(function()
-							Remote.RemoveLocal(plr, v.Name.."Tracker")
+							Remote.RemoveLocal(plr, v.Name .. "Tracker")
 							teamChangeConn:Disconnect()
-							if charRemovingConn then charRemovingConn:Disconnect() end
+							if charRemovingConn then
+								charRemovingConn:Disconnect()
+							end
 						end)
 						charRemovingConn = v.CharacterRemoving:Once(function()
-							Remote.RemoveLocal(plr, v.Name.."Tracker")
+							Remote.RemoveLocal(plr, v.Name .. "Tracker")
 							teamChangeConn:Disconnect()
 							plrCharRemovingConn:Disconnect()
 						end)
 					end)
 				end
-			end
+			end,
 		};
 
 		UnTrack = {
@@ -2880,8 +2887,8 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				if args[1] and args[1]:lower() == Settings.SpecialPrefix.."all" then
-					Remote.RemoveLocal(plr, "Tracker", false, true)
 					Variables.TrackingTable[plr.Name] = nil
+					Remote.RemoveLocal(plr, "Tracker", false, true)
 				else
 					local trackTargets = Variables.TrackingTable[plr.Name]
 					for _, v in service.GetPlayers(plr, args[1]) do
@@ -2915,8 +2922,10 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for _, v in service.GetPlayers(plr, args[1]) do
-					Remote.MoveLocal(v, v.Character.Name, false, workspace)
-					v.Character.Parent = workspace
+					if v.Character then
+						Remote.MoveLocal(v, v.Character.Name, false, workspace)
+						v.Character.Parent = workspace
+					end
 				end
 			end
 		};

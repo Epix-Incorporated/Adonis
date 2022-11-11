@@ -666,11 +666,10 @@ return function(Vargs, GetEnv)
 				if pData then
 					local data = service.CloneTable(pData)
 
-					data.LastChat = nil
-					data.AdminRank = nil
-					data.AdminLevel = nil
-					data.LastLevelUpdate = nil
-					data.LastDataSave = nil
+					--// Temporary junk that will be removed on save.
+					for _, blacklistedData in ipairs({"LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
+						data[blacklistedData] = nil
+					end
 
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
