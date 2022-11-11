@@ -92,12 +92,6 @@ return function(Vargs, GetEnv)
 			end)
 		end
 
-		--// Save all data on server shutdown & set GAME_CLOSING
-		game:BindToClose(function()
-			Core.GAME_CLOSING = true;
-			task.defer(Core.SaveAllPlayerData);
-		end);
-
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
