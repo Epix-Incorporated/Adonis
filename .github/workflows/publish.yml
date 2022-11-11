@@ -36,7 +36,7 @@ jobs:
         uses: tsickert/discord-webhook@v3.0.0
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
-          webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
+          webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: Adonis_Release_${{ steps.date.outputs.date }}.rbxm
         
       #- name: Publish Loader
