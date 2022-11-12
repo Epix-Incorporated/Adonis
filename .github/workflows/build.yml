@@ -15,7 +15,7 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: echo "$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
         #run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - uses: Roblox/setup-foreman@v1
