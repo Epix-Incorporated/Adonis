@@ -15,7 +15,8 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        #run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - uses: Roblox/setup-foreman@v1
         with:
@@ -33,20 +34,20 @@ jobs:
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
 
-      - name: Publish Nightly MainModule
-        uses: fjogeleit/http-request-action@v1
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
-        with:
-          url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "module.rbxm" }'
-          customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
-          timeout: 10000
-
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+
+      #- name: Publish Nightly MainModule
+      #  uses: fjogeleit/http-request-action@v1
+      #  if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+      #  with:
+      #    url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
+      #    method: "POST"
+      #    contentType: "multipart/form-data"
+      #    files: '{ "file": "module.rbxm" }'
+      #    customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
+      #    timeout: 10000

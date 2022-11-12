@@ -92,12 +92,6 @@ return function(Vargs, GetEnv)
 			end)
 		end
 
-		--// Save all data on server shutdown & set GAME_CLOSING
-		game:BindToClose(function()
-			Core.GAME_CLOSING = true;
-			task.defer(Core.SaveAllPlayerData);
-		end);
-
 		--// Start API
 		if service.NetworkServer then
 			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
@@ -672,11 +666,10 @@ return function(Vargs, GetEnv)
 				if pData then
 					local data = service.CloneTable(pData)
 
-					data.LastChat = nil
-					data.AdminRank = nil
-					data.AdminLevel = nil
-					data.LastLevelUpdate = nil
-					data.LastDataSave = nil
+					--// Temporary junk that will be removed on save.
+					for _, blacklistedData in ipairs({"LastChat", "AdminRank", "AdminLevel", "LastLevelUpdate", "LastDataSave"}) do
+						data[blacklistedData] = nil
+					end
 
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
@@ -702,13 +695,13 @@ return function(Vargs, GetEnv)
 				end
 			end
 			--[[ --// OLD METHOD (Kept in case this messes anything up)
-			for i,p in next,service.Players:GetPlayers() do
+			for i,p in service.Players:GetPlayers() do
 				local pdata = Core.PlayerData[tostring(p.UserId)];
 				--// Only save player's data if it has not been saved within the last INTERVAL (default 30s)
 				if pdata and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval) then
 					service.Queue("SavePlayerData", function()
 						Core.SavePlayerData(p)
-						wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
+						task.wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
 					end)
 				end
 			end--]]
@@ -844,14 +837,14 @@ return function(Vargs, GetEnv)
 						return error(ret)
 					end
 
-					wait(6)
+					task.wait(6)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
 					logError("DataStore UpdateData Failed: ".. tostring(err2))
 
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1)
+					task.wait(1)
 					if not repeatCount then
 						return Core.UpdateData(key, callback, 3)
 					elseif repeatCount > 0 then
@@ -889,7 +882,7 @@ return function(Vargs, GetEnv)
 				if not ran2 then
 					logError("DataStore GetData Failed: ".. tostring(err2))
 					--// Attempt 3 times, with slight delay between if failed
-					wait(1)
+					task.wait(1)
 					if not repeatCount then
 						return Core.GetData(key, 3)
 					elseif repeatCount > 0 then

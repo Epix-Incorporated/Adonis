@@ -32,15 +32,19 @@ return function(data, env)
 		local resY = data.Resolution or 20
 		local resX = data.Resolution or 20
 		local depth = 0
-		local distance = data.Distance or 80
+		local distance = data.Distance or 128
 
 		local function renderScreen()
-			for _, pixel in pairs(pixels) do
+			for _, pixel in pixels do
 				local ray = camera:ScreenPointToRay(pixel.X, pixel.Y, depth)
 				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
-				local part, endPoint = result.Instance, result.Position
-				if part and part.Transparency < 1 then
-					pixel.Pixel.BackgroundColor3 = part.BrickColor.Color
+				
+				if result then
+					local part, endPoint = result.Instance, result.Position
+					pixel.Pixel.BackgroundColor3 = if part and part.Transparency < 1
+						then part.BrickColor.Color
+						else Color3.fromRGB(105, 170, 255)
+					
 				else
 					pixel.Pixel.BackgroundColor3 = Color3.fromRGB(105, 170, 255)
 				end
@@ -63,9 +67,9 @@ return function(data, env)
 			end
 		end
 
-		while wait() and not gTable.Destroyed and gui.Parent do
+		while task.wait() and not gTable.Destroyed and gui.Parent do
 			if not gTable.Destroyed and not gTable.Active then
-				wait(5)
+				task.wait(5)
 			else
 				renderScreen()
 			end
@@ -76,7 +80,7 @@ return function(data, env)
 		service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 		service.UserInputService.MouseIconEnabled = false
 
-		for _, v in pairs(service.PlayerGui:GetChildren()) do
+		for _, v in service.PlayerGui:GetChildren() do
 			pcall(function() if v ~= gui then v:Destroy() end end)
 		end
 
@@ -97,7 +101,7 @@ return function(data, env)
 		for i = 1, 0, -0.01 do
 			bg.BackgroundTransparency = i
 			blur.Size = 56 * (1 - i);
-			wait(0.1)
+			task.wait(0.1)
 		end
 
 		bg.BackgroundTransparency = 0
@@ -113,7 +117,7 @@ return function(data, env)
 		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(math.random(255)/255, math.random(255)/255, math.random(255)/255)
 		end
 
@@ -159,7 +163,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				task.wait(0.1)
 			end
 		end
 		sound:Stop()
@@ -213,7 +217,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.1)
+				task.wait(0.1)
 			end
 		end
 
@@ -268,7 +272,7 @@ return function(data, env)
 		while gui and gui.Parent do
 			for i=1,#textures do
 				img.Image = "rbxassetid://"..textures[i]
-				wait(0.13)
+				task.wait(0.13)
 			end
 		end
 
@@ -283,9 +287,9 @@ return function(data, env)
 		bg.Parent = gui
 
 		while gui and gui.Parent do
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(1,1,1)
-			wait(1/44)
+			task.wait(1/44)
 			bg.BackgroundColor3 = Color3.new(0,0,0)
 		end
 		if gui then gui:Destroy() end

@@ -41,13 +41,13 @@ return function(Vargs, GetEnv)
 		--// Necessary checks to prevent first time users from bypassing bans.
 		service.Events.DataStoreAdd_Banned:Connect(function(data: table|string)
 			local userId = if type(data) == "string" then tonumber(string.match(data, ":(%d+)$"))
-					elseif type(data) == "table" then data.UserId
-					else nil
+				elseif type(data) == "table" then data.UserId
+				else nil
 
 			local plr = userId and service.Players:GetPlayerByUserId(userId)
 			if plr then
 				local reason = if type(data) == "table" and data.Reason then data.Reason
-						else "No reason provided"
+					else "No reason provided"
 				pcall(plr.Kick, plr, string.format("%s | Reason: %s", Variables.BanMessage, reason))
 				AddLog("Script", {
 					Text = "Applied ban on "..plr.Name;
@@ -385,7 +385,7 @@ return function(Vargs, GetEnv)
 						local num = tonumber(string.sub(cmd, #waiter + 1))
 
 						if num then
-							wait(tonumber(num))
+							task.wait(tonumber(num))
 						end
 					else
 						Process.Command(p, cmd, opts, false)
@@ -769,7 +769,7 @@ return function(Vargs, GetEnv)
 					end
 				end)
 
-				delay(600, function()
+				task.delay(600, function()
 					if p.Parent and Core.PlayerData[key] and Remote.Clients[key] and Remote.Clients[key] == keyData and keyData.LoadingStatus ~= "READY" then
 						AddLog("Script", {
 							Text = p.Name .. " Failed to Load",
@@ -790,7 +790,7 @@ return function(Vargs, GetEnv)
 
 			service.Events.PlayerRemoving:Fire(p)
 
-			delay(1, function()
+			task.delay(1, function()
 				if not service.Players:GetPlayerByUserId(p.UserId) then
 					Core.PlayerData[key] = nil
 				end
@@ -923,7 +923,7 @@ return function(Vargs, GetEnv)
 							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
 						})
 
-						wait(1)
+						task.wait(1)
 
 						if oldVer and newVer and newVer > oldVer then
 							Remote.MakeGui(p, "Notification", {
@@ -935,7 +935,7 @@ return function(Vargs, GetEnv)
 							})
 						end
 
-						wait(1)
+						task.wait(1)
 
 						if level > 300 and Settings.DataStoreKey == Defaults.Settings.DataStoreKey then
 							Remote.MakeGui(p, "Notification", {
@@ -1001,12 +1001,12 @@ return function(Vargs, GetEnv)
 				keyData.PlayerLoaded = true
 			end
 
-			wait(1 / 60)
+			task.wait(1 / 60)
 			if char and keyData and keyData.FinishedLoading then
 				local level = Admin.GetLevel(p)
 
 				--// Wait for UI stuff to finish
-				wait(1)
+				task.wait(1)
 				if not p:FindFirstChildWhichIsA("PlayerGui") then
 					p:WaitForChild("PlayerGui", 9e9)
 				end
@@ -1072,7 +1072,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		NetworkAdded = function(cli)
-			wait(0.25)
+			task.wait(0.25)
 
 			local p = cli:GetPlayer()
 
