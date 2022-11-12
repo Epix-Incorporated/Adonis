@@ -11,21 +11,21 @@ return function(Vargs, GetEnv)
 	local logError
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
-		Functions = server.Functions
-		Admin = server.Admin
-		Anti = server.Anti
-		Core = server.Core
-		HTTP = server.HTTP
-		Logs = server.Logs
-		Remote = server.Remote
-		Process = server.Process
-		Variables = server.Variables
-		Settings = server.Settings
-		logError = server.logError
+		Functions = server.Functions;
+		Admin = server.Admin;
+		Anti = server.Anti;
+		Core = server.Core;
+		HTTP = server.HTTP;
+		Logs = server.Logs;
+		Remote = server.Remote;
+		Process = server.Process;
+		Variables = server.Variables;
+		Settings = server.Settings;
+		logError = server.logError;
 
 		Functions.Init = nil
 		Logs:AddLog("Script", "Functions Module Initialized")
-	end
+	end;
 
 	local function RunAfterPlugins(data)
 		--// AutoClean
@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 					local lower = string.lower
 					local sub = string.sub
 
-					if matched and #matched > 0 then
+					if matched then
 						for _,v in service.Teams:GetChildren() do
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for _,m in parent:GetChildren() do
@@ -358,7 +358,7 @@ return function(Vargs, GetEnv)
 						local num = tonumber(matched)
 						if not num then
 							Remote.MakeGui(plr,'Output',{Title = 'Output'; Message = "Invalid number!"})
-							return
+							return;
 						end
 
 						for i = 1,num do
@@ -376,7 +376,7 @@ return function(Vargs, GetEnv)
 						local num = tonumber(matched)
 						if not num then
 							Remote.MakeGui(plr, "Output", {Message = "Invalid number!"})
-							return
+							return;
 						end
 
 						for _,v in parent:GetChildren() do
@@ -452,10 +452,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetChatService = function()
-		if game:GetService("TextChatService").ChatVersion == Enum.ChatVersion.TextChatService then
-			print("TextChatService is not fully supported yet!")
-			return false
-		else
+			if game:GetService('TextChatService').ChatVersion == Enum.ChatVersion.TextChatService then
+				print('TextChatService is not fully supported yet!')
+				return false
+			else
 			local chatHandler = service.ServerScriptService:WaitForChild("ChatServiceRunner", 120)
 			local chatMod = chatHandler and chatHandler:WaitForChild("ChatService", 120)
 
@@ -463,7 +463,7 @@ return function(Vargs, GetEnv)
 				return require(chatMod)
 			end
 			return nil
-		end
+		   end
 		end;
 
 		IsClass = function(obj, classList)
@@ -817,7 +817,7 @@ return function(Vargs, GetEnv)
 				for i = 6, 1, -1 do
 					r ..= (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
 				end
-				return r
+				return r;
 			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
 				if #x ~= 8 then
 					return ''
@@ -840,7 +840,7 @@ return function(Vargs, GetEnv)
 				for i = 8, 1, -1 do
 					r ..= (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
 				end
-				return r
+				return r;
 			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
 				if #(x) < 6 then
 					return ''
@@ -868,7 +868,7 @@ return function(Vargs, GetEnv)
 				for i = 8, 1, -1 do
 					r ..= (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
 				end
-				return r
+				return r;
 			end) .. '0000', '%d%d%d?%d?%d?%d?', function(x)
 				if #(x) < 6 then
 					return ''
@@ -902,7 +902,7 @@ return function(Vargs, GetEnv)
 				for i = 6, 1, -1 do
 					r ..= (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and '1' or '0')
 				end
-				return r
+				return r;
 			end), '%d%d%d?%d?%d?%d?%d?%d?', function(x)
 				if #x ~= 8 then
 					return ''
@@ -1171,7 +1171,7 @@ return function(Vargs, GetEnv)
 				brain.Disabled = false
 				new.Parent = workspace
 
-				task.wait()
+				wait()
 
 				event:Fire("SetSetting", {
 					Creator = player;
@@ -1265,18 +1265,18 @@ return function(Vargs, GetEnv)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
 
 			if ran and info and info.AssetTypeId == 1 then
-				return true
+				return true;
 			else
-				return false
+				return false;
 			end
 		end;
 
 		GetTexture = function(id)
-			local id = tonumber(id)
+			local id = tonumber(id);
 			if id and Functions.IsValidTexture(id) then
-				return id
+				return id;
 			else
-				return 6825455804
+				return 6825455804;
 			end
 		end;
 
@@ -1413,16 +1413,16 @@ return function(Vargs, GetEnv)
 			if reverse then
 				for i,v in intab do
 					if tonumber(i) then
-						tab[tonumber(i)] = v
+						tab[tonumber(i)] = v;
 					end
 				end
 			else
 				for i,v in intab do
-					tab[tostring(i)] = v
+					tab[tostring(i)] = v;
 				end
 			end
 
-			return tab
+			return tab;
 		end;
 
 		GetIndex = function(tab,match)
@@ -1535,5 +1535,5 @@ return function(Vargs, GetEnv)
 			end
 			return if allowNil then nil else BrickColor.random()
 		end;
-	}
+	};
 end
