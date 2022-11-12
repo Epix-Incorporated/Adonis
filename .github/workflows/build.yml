@@ -40,6 +40,17 @@ jobs:
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+          
+      - name: Publish Nightly MainModule
+        uses: fjogeleit/http-request-action@v1
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
 
       #- name: Publish Nightly MainModule
       #  uses: fjogeleit/http-request-action@v1
