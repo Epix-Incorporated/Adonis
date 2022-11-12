@@ -38,6 +38,26 @@ jobs:
         with:
           webhook-url: ${{ secrets.RELEASE_WEBHOOK }}
           filename: Adonis_Release_${{ steps.date.outputs.date }}.rbxm
+          
+      - name: Publish Loader
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.LOADER_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "loader.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+          
+      - name: Publish Module
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
         
       #- name: Publish Loader
       #  uses: fjogeleit/http-request-action@v1
