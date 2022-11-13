@@ -5719,7 +5719,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = (noclip == true and noclip) or false;
 					Parent = scr;
 				})
 				
