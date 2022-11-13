@@ -1109,7 +1109,7 @@ return function(Vargs, env)
 			Hidden = true;
 			Function = function(plr: Player, args: {string})
 				local list = {}
-				for code, name in require(server.Shared.CountryRegionCodes) do
+				for code, name in require(server.Dependencies.CountryRegionCodes) do
 					table.insert(list, code.." - "..name)
 				end
 				table.sort(list)
