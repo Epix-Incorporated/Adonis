@@ -8395,7 +8395,7 @@ end]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<token name="Style">0</token>
 				<BinaryString name="Tags"></BinaryString>
-				<bool name="Visible">false</bool>
+				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
 			<Item class="Frame" referent="RBXEE7C14EE05CC4E649BB9AA463F768C46">
