@@ -1447,7 +1447,7 @@ return function(Vargs, GetEnv)
 			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
 			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
+			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType, Enum.AssetTypeVerification.Always)
 			local Animate: BaseScript = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName
