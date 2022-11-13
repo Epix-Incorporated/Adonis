@@ -4935,8 +4935,8 @@ return function(Vargs, env)
 							end
 						end
 
-						v1hum:ApplyDescription(v2desc,Enum.AssetTypeVerification.Always)
-						v2hum:ApplyDescription(v1desc,Enum.AssetTypeVerification.Always)
+						v1hum:ApplyDescription(v2desc, Enum.AssetTypeVerification.Always)
+						v2hum:ApplyDescription(v1desc, Enum.AssetTypeVerification.Always)
 
 						v1.Character:PivotTo(v2pos)
 						v2.Character:PivotTo(v1pos)
