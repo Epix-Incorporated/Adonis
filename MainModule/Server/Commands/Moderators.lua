@@ -2503,17 +2503,18 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"noclip"};
 			Args = {"player"};
-			Description = "NoClips the target player(s); allowing them to walk through walls";
+			Description = "NoClips the target player(s); allowing them to walk through walls.";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local clipper = Deps.Assets.Clipper:Clone()
-				clipper.Name = "ADONIS_NoClip"
-
 				for i, p in service.GetPlayers(plr, args[1]) do
 					Admin.RunCommand(Settings.Prefix.."clip", p.Name)
-					local new = clipper:Clone()
-					new.Parent = p.Character.Humanoid
-					new.Disabled = false
+					
+					local clipperName = "ADONIS_NoClip"
+					local clipper = Deps.Assets.Clipper:Clone()
+					clipper.Name = clipperName
+					clipper.Parent = p.Character.Humanoid
+					clipper.Disabled = false
+					
 					if Settings.CommandFeedback then
 						Functions.Notification("Noclip", "Character noclip has been enabled. You will now be able to walk though walls.", {p}, 15, "Info") -- Functions.Notification(title,message,player,time,icon)
 					end
@@ -2538,17 +2539,12 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"clip", "unnoclip"};
 			Args = {"player"};
-			Description = "Un-NoClips the target player(s)";
+			Description = "Un-NoClips the target player(s).";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, p in service.GetPlayers(plr, args[1]) do
 					local old = p.Character.Humanoid:FindFirstChild("ADONIS_NoClip")
 					if old then
-						local enabled = old:FindFirstChild("Enabled")
-						if enabled then
-							enabled.Value = false
-							wait(0.5)
-						end
 						old.Parent = nil
 						wait(0.5)
 						old:Destroy()
