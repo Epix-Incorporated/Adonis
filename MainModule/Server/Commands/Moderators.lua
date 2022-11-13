@@ -872,7 +872,7 @@ return function(Vargs, env)
 						for _, prop in DescsToRemove do
 							humanoidDesc[prop] = ""
 						end
-						humanoid:ApplyDescription(humanoidDesc,Enum.AssetTypeVerification.Always)
+						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -3044,7 +3044,7 @@ return function(Vargs, env)
 
 				assert(target_character, "Target player doesn't have a character or has a locked character")
 
-				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
+				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass("HumanoidDescription")
 
 				assert(target_humandescrip, "Target player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
 
@@ -3053,7 +3053,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
+						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass("Humanoid")) then
 							v.Character.Archivable = true
 
 							for _, a in v.Character:GetChildren() do
@@ -3064,7 +3064,7 @@ return function(Vargs, env)
 
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
-							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl,Enum.AssetTypeVerification.Always) end)
+							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl, Enum.AssetTypeVerification.Always) end)
 
 							for _, a in target_character:GetChildren() do
 								if a:IsA("Accessory") then
@@ -4917,7 +4917,7 @@ return function(Vargs, env)
 									local humDescClone = humanoidAppliedDesc:Clone()
 
 									humDescClone.GraphicTShirt = 6901238398 -- Some template shirt graphic
-									v.Character.Humanoid:ApplyDescription(humDescClone,Enum.AssetTypeVerification.Always)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -4995,7 +4995,7 @@ return function(Vargs, env)
 
 									-- Default Shirt ID 855777286, given when no valid shirt was set with HumanoidDescription
 									humDescClone.Shirt = 855777286 -- Default shirt TODO: You want to change this because the ID put here can't be given with the command if already ran.
-									v.Character.Humanoid:ApplyDescription(humDescClone,Enum.AssetTypeVerification.Always)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5073,7 +5073,7 @@ return function(Vargs, env)
 
 									-- Default Pants ID 855782781, given when no valid pants was set with HumanoidDescription
 									humDescClone.Pants = 855782781 -- Default pants
-									v.Character.Humanoid:ApplyDescription(humDescClone,Enum.AssetTypeVerification.Always)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -6122,7 +6122,7 @@ return function(Vargs, env)
 								end
 							end
 
-							humanoid:ApplyDescription(newDescription,Enum.AssetTypeVerification.Always)
+							humanoid:ApplyDescription(newDescription, Enum.AssetTypeVerification.Always)
 						end
 					end
 				end
@@ -6148,7 +6148,7 @@ return function(Vargs, env)
 							v.CharacterAppearanceId = target
 
 							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-								v.Character.Humanoid:ApplyDescription(desc,Enum.AssetTypeVerification.Always)
+								v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 							end
 						end
 					else
@@ -6175,7 +6175,7 @@ return function(Vargs, env)
 							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
 
 							if success then
-								Humanoid:ApplyDescription(desc,Enum.AssetTypeVerification.Always)
+								Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 							end
 						end
 					end)
