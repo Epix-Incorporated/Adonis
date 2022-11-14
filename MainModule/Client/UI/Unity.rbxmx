@@ -3013,10 +3013,13 @@ return function(data, env)
 		local label = point:FindFirstChild("Label")
 
 		if label then
-			local rounder = service.New("UICorner",{
-				CornerRadius = UDim.new(0,5.5);
-				Parent = point;
-			});
+			--| No more UICorners if there is a one exist!
+			if not point:FindFirstChildWhichIsA("UICorner") then
+				local rounder = service.New("UICorner",{
+					CornerRadius = UDim.new(0, 5);
+					Parent = point;
+				});
+			end
 
 			ent.MouseLeave:Connect(function(x,y)
 				if inExpandable == ent then
