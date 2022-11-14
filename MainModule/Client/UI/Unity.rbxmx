@@ -3144,10 +3144,15 @@ return function(data, env)
 
 
 		local instancefinally = create("TextButton", data)
-		local rounder = service.New("UICorner",{
-			CornerRadius = UDim.new(0.2,0);
-			Parent = instancefinally;
-		});
+		local uiCorner = instancefinally:FindFirstChildWhichIsA("UICorner")
+		if not uiCorner then
+			local rounder = service.New("UICorner",{
+				CornerRadius = UDim.new(0.2, 0);
+				Parent = instancefinally;
+			});
+		else
+			uiCorner.CornerRadius = UDim.new(0.2, 0)
+		end
 		return instancefinally
 	end
 
