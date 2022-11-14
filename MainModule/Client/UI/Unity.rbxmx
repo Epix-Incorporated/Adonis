@@ -4030,7 +4030,7 @@ return function(data, env)
 				local done = false
 				Refreshing = true
 
-				spawn(function()
+				task.spawn(function()
 					while gTable.Active and not done do
 						for i = 0,180,10 do
 							rSpinner.Rotation = -i
@@ -4476,7 +4476,7 @@ end
 
 local function CircleClick(Button, X, Y)
 	local duration = 0.5
-	spawn(function()
+	task.spawn(function()
 		local effect = Instance.new("ImageLabel", Button)
 		effect.AnchorPoint = Vector2.new(0.5, 0.5)
 		effect.BorderSizePixel = 0
@@ -11714,7 +11714,7 @@ return function(data, env)
 						Position = UDim2.new(1, -120, 0, 0);
 						TextXAlignment = "Right";
 					})
-					spawn(function()
+					task.spawn(function()
 						entry:Add("ImageLabel", {
 							Image = game:GetService("Players"):GetUserThumbnailAsync(friendInfo[friendName].id, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
 							BackgroundTransparency = 1;
