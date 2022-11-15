@@ -457,6 +457,11 @@ return function(Vargs, GetEnv)
 
 			-- Tons of false positives. Disabled for now. All anti-exploit stuff needs to just be moved to a non-default plugin or something cuz it consistently causes problems every update qq.
 			local function checkServ()
+				pcall(function()
+					if game:FindService'NetworkServer' then
+						Detected('crash',"FilteringEnabled bypass prevented.")
+					end
+				end
 				--[[if not pcall(function()
 					if not isStudio and (findService(game, "ServerStorage") or findService(game, "ServerScriptService")) then
 						Detected("crash", "Disallowed Services Detected")
