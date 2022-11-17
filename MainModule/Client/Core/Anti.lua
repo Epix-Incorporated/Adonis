@@ -597,20 +597,21 @@ return function(Vargs, GetEnv)
 					end
 				end
 
-				if
-					not rawequal(type(First), "table") or
-					not rawequal(type(First.message), "string") or
-					not rawequal(typeof(First.messageType), "EnumItem") or
-					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - os.clock() - 60 * 60 * 15
-				then
-					Detected("kick", "Bypass detected 5435345")
-				else
-					for _, v in Logs do
-						if check(v.message) then
-							Detected("crash", "Exploit detected; "..v.message)
-						end
-					end
-				end
+				
+				--if
+				--	not rawequal(type(First), "table") or
+				--	not rawequal(type(First.message), "string") or
+				--	not rawequal(typeof(First.messageType), "EnumItem") or
+				--	not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - os.clock() - 60 * 60 * 15
+				--then
+				--	Detected("kick", "Bypass detected 5435345")
+				--else
+				--	for _, v in Logs do
+				--		if check(v.message) then
+				--			Detected("crash", "Exploit detected; "..v.message)
+				--		end
+				--	end
+				--end
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
