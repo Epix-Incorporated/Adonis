@@ -190,7 +190,7 @@ return function(Vargs, GetEnv)
 					local lower = string.lower
 					local sub = string.sub
 
-					if matched then
+					if matched and #matched > 0 then
 						for _,v in service.Teams:GetChildren() do
 							if sub(lower(v.Name), 1, #matched) == lower(matched) then
 								for _,m in parent:GetChildren() do
@@ -1166,7 +1166,7 @@ return function(Vargs, GetEnv)
 				brain.Disabled = false
 				new.Parent = workspace
 
-				wait()
+				task.wait()
 
 				event:Fire("SetSetting", {
 					Creator = player;
@@ -1447,7 +1447,7 @@ return function(Vargs, GetEnv)
 			local Humanoid: Humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
 
 			local HumanoidDescription = Humanoid:GetAppliedDescription() or service.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType)
+			local newCharacterModel: Model = service.Players:CreateHumanoidModelFromDescription(HumanoidDescription, rigType, Enum.AssetTypeVerification.Always)
 			local Animate: BaseScript = newCharacterModel.Animate
 
 			newCharacterModel.Humanoid.DisplayName = Humanoid.DisplayName

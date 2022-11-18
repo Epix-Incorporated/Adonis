@@ -43,7 +43,7 @@ return function(data, env)
 		VerticalAlignment = "Top";
 	})
 
-	for i,v in next,options do
+	for i,v in options do
 		frame:Add("TextButton", {
 			Text = v.Text;
 			Size = UDim2.new(1, 0, 0, 30);

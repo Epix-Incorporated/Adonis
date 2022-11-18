@@ -740,7 +740,14 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v in service.Teams:GetTeams() do
 					if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
-						v:Destroy()
+						local ans = Remote.GetGui(plr, "YesNoPrompt", { Question = "Remove team: '"..tostring(v.Name).."'?" })
+
+						if ans == "Yes" then
+							v:Destroy()
+							return Functions.Hint("Removed team ".. (v.Name), {plr})
+						else
+							return Functions.Hint("Cancelled team removal operation", {plr})
+						end
 					end
 				end
 			end

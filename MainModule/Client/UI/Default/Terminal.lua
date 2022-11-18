@@ -76,6 +76,8 @@ return function(data, env)
 			wait(0.1)
 		end)
 	end)
+
+	out(string.format("Adonis Terminal [%s]", string.match(client.Changelog[5], "%[(.+)%].+")), termLines)
 	
 	gTable = window.gTable
 	window:Ready()

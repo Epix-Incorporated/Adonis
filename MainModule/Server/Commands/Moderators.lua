@@ -872,7 +872,7 @@ return function(Vargs, env)
 						for _, prop in DescsToRemove do
 							humanoidDesc[prop] = ""
 						end
-						humanoid:ApplyDescription(humanoidDesc)
+						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -3044,7 +3044,7 @@ return function(Vargs, env)
 
 				assert(target_character, "Target player doesn't have a character or has a locked character")
 
-				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass"HumanoidDescription"
+				local target_humandescrip = target and target.Character:FindFirstChildOfClass("Humanoid") and target.Character:FindFirstChildOfClass("Humanoid"):FindFirstChildOfClass("HumanoidDescription")
 
 				assert(target_humandescrip, "Target player doesn't have a HumanoidDescription or has a locked HumanoidDescription [Cannot copy target's character]")
 
@@ -3053,7 +3053,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Routine(function()
-						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass"Humanoid") then
+						if (v and v.Character and v.Character:FindFirstChildOfClass("Humanoid")) and (target and target.Character and target.Character:FindFirstChildOfClass("Humanoid")) then
 							v.Character.Archivable = true
 
 							for _, a in v.Character:GetChildren() do
@@ -3064,7 +3064,7 @@ return function(Vargs, env)
 
 							local cl = target_humandescrip:Clone()
 							cl.Parent = v.Character:FindFirstChildOfClass("Humanoid")
-							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl) end)
+							pcall(function() v.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(cl, Enum.AssetTypeVerification.Always) end)
 
 							for _, a in target_character:GetChildren() do
 								if a:IsA("Accessory") then
@@ -3776,7 +3776,7 @@ return function(Vargs, env)
 							humanoidDesc[property] = color
 						end
 
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -4619,10 +4619,10 @@ return function(Vargs, env)
 
 						local flightPosObject = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION")
 						local flightGyroObject = rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and (flightPosObject:IsA("AlignPosition")) then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 
@@ -4630,10 +4630,10 @@ return function(Vargs, env)
 						--rootPart.Position = destination
 						v.Character:MoveTo(destination)
 
-						if flightPosObject and flightPosObject:IsA("BodyPosition") then
+						if flightPosObject and flightPosObject:IsA("AlignPosition") then
 							flightPosObject.Position = rootPart.Position
 						end
-						if flightGyroObject and flightGyroObject:IsA("BodyGyro") then
+						if flightGyroObject and flightGyroObject:IsA("AlignOrientation") then
 							flightGyroObject.CFrame = rootPart.CFrame
 						end
 					end
@@ -4718,11 +4718,18 @@ return function(Vargs, env)
 					for i = (l-1) * math.floor(numPlayers/lines) + 1, l * math.floor(numPlayers/lines) do
 						local char = players[i].Character
 						if not char then continue end
-
+						
 						local hum = char:FindFirstChildOfClass("Humanoid")
 						if hum then
-							hum.Jump = true
+							if hum.SeatPart then
+								Functions.RemoveSeatWelds(hum.SeatPart)
+							end
+							if hum.Sit then
+								hum.Sit = false
+								hum.Jump = true
+							end
 						end
+						
 						task.wait()
 
 						local rootPart = char:FindFirstChild("HumanoidRootPart")
@@ -4910,7 +4917,7 @@ return function(Vargs, env)
 									local humDescClone = humanoidAppliedDesc:Clone()
 
 									humDescClone.GraphicTShirt = 6901238398 -- Some template shirt graphic
-									v.Character.Humanoid:ApplyDescription(humDescClone)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -4988,7 +4995,7 @@ return function(Vargs, env)
 
 									-- Default Shirt ID 855777286, given when no valid shirt was set with HumanoidDescription
 									humDescClone.Shirt = 855777286 -- Default shirt TODO: You want to change this because the ID put here can't be given with the command if already ran.
-									v.Character.Humanoid:ApplyDescription(humDescClone)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5066,7 +5073,7 @@ return function(Vargs, env)
 
 									-- Default Pants ID 855782781, given when no valid pants was set with HumanoidDescription
 									humDescClone.Pants = 855782781 -- Default pants
-									v.Character.Humanoid:ApplyDescription(humDescClone)
+									v.Character.Humanoid:ApplyDescription(humDescClone, Enum.AssetTypeVerification.Always)
 									humDescClone:Destroy()
 								end
 
@@ -5216,7 +5223,7 @@ return function(Vargs, env)
 							error("Item not supported")
 						end
 
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -5235,7 +5242,7 @@ return function(Vargs, env)
 						if humanoid then
 							local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 							humanoidDesc.GraphicTShirt = 0
-							task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+							task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
 						end
 					end
 				end
@@ -5254,7 +5261,7 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						humanoidDesc.Shirt = 0
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -5272,7 +5279,7 @@ return function(Vargs, env)
 					if humanoid then
 						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
 						humanoidDesc.Pants = 0
-						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc)
+						task.defer(humanoid.ApplyDescription, humanoid, humanoidDesc, Enum.AssetTypeVerification.Always)
 					end
 				end
 			end
@@ -5715,33 +5722,49 @@ return function(Vargs, env)
 					Value = noclip or false;
 					Parent = scr;
 				})
-
+				
 				scr.Name = "ADONIS_FLIGHT"
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
-
+						
 						local new = scr:Clone()
-						local flightPosition = service.New("BodyPosition")
-						local flightGyro = service.New("BodyGyro")
-
+						local flightPositionAttachment: Attachment = service.New("Attachment")
+						local flightGyroAttachment: Attachment = service.New("Attachment")
+						local flightPosition: AlignPosition = service.New("AlignPosition")
+						local flightGyro: AlignOrientation = service.New("AlignOrientation")
+						
+						flightPositionAttachment.Name = "ADONIS_FLIGHT_POSITION_ATTACHMENT"
+						flightPositionAttachment.Parent = part
+						
+						flightGyroAttachment.Name = "ADONIS_FLIGHT_GYRO_ATTACHMENT"
+						flightGyroAttachment.Parent = part
+						
 						flightPosition.Name = "ADONIS_FLIGHT_POSITION"
-						flightPosition.MaxForce = Vector3.new(0, 0, 0)
+						flightPosition.MaxForce = 0
 						flightPosition.Position = part.Position
+						flightPosition.Attachment0 = flightPositionAttachment
+						flightPosition.Mode = Enum.PositionAlignmentMode.OneAttachment
 						flightPosition.Parent = part
-
+						
 						flightGyro.Name = "ADONIS_FLIGHT_GYRO"
-						flightGyro.MaxTorque = Vector3.new(0, 0, 0)
+						flightGyro.MaxTorque = 0
 						flightGyro.CFrame = part.CFrame
+						flightGyro.Attachment0 = flightGyroAttachment
+						flightGyro.Mode = Enum.OrientationAlignmentMode.OneAttachment
 						flightGyro.Parent = part
-
+						
 						new.Parent = part
 						new.Disabled = false
 						Remote.MakeGui(v, "Notification", {
@@ -5753,7 +5776,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		FlySpeed = {
 			Prefix = Settings.Prefix;
 			Commands = {"flyspeed", "flightspeed"};
@@ -5762,7 +5785,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2])
-
+				
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
@@ -5784,7 +5807,7 @@ return function(Vargs, env)
 				end
 			end
 		};
-
+		
 		UnFly = {
 			Prefix = Settings.Prefix;
 			Commands = {"unfly", "ground"};
@@ -5796,16 +5819,20 @@ return function(Vargs, env)
 					local part = v.Character:FindFirstChild("HumanoidRootPart")
 					if part then
 						local oldp = part:FindFirstChild("ADONIS_FLIGHT_POSITION")
+						local oldpa = part:FindFirstChild("ADONIS_FLIGHT_POSITION_ATTACHMENT")
 						local oldg = part:FindFirstChild("ADONIS_FLIGHT_GYRO")
+						local oldga = part:FindFirstChild("ADONIS_FLIGHT_GYRO_ATTACHMENT")
 						local olds = part:FindFirstChild("ADONIS_FLIGHT")
 						if oldp then oldp:Destroy() end
+						if oldpa then oldpa:Destroy() end
 						if oldg then oldg:Destroy() end
+						if oldga then oldga:Destroy() end
 						if olds then olds:Destroy() end
 					end
 				end
 			end
 		};
-
+		
 		Fling = {
 			Prefix = Settings.Prefix;
 			Commands = {"fling"};
@@ -5821,10 +5848,13 @@ return function(Vargs, env)
 							repeat zran = math.random(-9999, 9999) until math.abs(zran) >= 5555
 							v.Character.Humanoid.Sit = true
 							v.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-							local frc = service.New("BodyForce", v.Character.HumanoidRootPart)
+							local Attachment = service.New("Attachment", v.Character.HumanoidRootPart)
+							local frc = service.New("VectorForce", v.Character.HumanoidRootPart)
 							frc.Name = "BFRC"
-							frc.force = Vector3.new(xran*4, 9999*5, zran*4)
+							frc.Attachment0 = Attachment
+							frc.Force = Vector3.new(xran*4, 9999*5, zran*4)
 							service.Debris:AddItem(frc,.1)
+							service.Debris:AddItem(Attachment,.1)
 						end
 					end)
 				end
@@ -6092,7 +6122,7 @@ return function(Vargs, env)
 								end
 							end
 
-							humanoid:ApplyDescription(newDescription)
+							humanoid:ApplyDescription(newDescription, Enum.AssetTypeVerification.Always)
 						end
 					end
 				end
@@ -6118,7 +6148,7 @@ return function(Vargs, env)
 							v.CharacterAppearanceId = target
 
 							if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
-								v.Character.Humanoid:ApplyDescription(desc)
+								v.Character.Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 							end
 						end
 					else
@@ -6145,7 +6175,7 @@ return function(Vargs, env)
 							local success, desc = pcall(service.Players.GetHumanoidDescriptionFromUserId, service.Players, v.UserId)
 
 							if success then
-								Humanoid:ApplyDescription(desc)
+								Humanoid:ApplyDescription(desc, Enum.AssetTypeVerification.Always)
 							end
 						end
 					end)
@@ -6636,13 +6666,19 @@ return function(Vargs, env)
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2]) and math.max(tonumber(args[2]), 50) or 1
+				local num = tonumber(args[2]) and math.min(tonumber(args[2]), 50) or 1
 				local health = tonumber(args[6]) or 100
 				local speed = tonumber(args[7]) or 16
 				local damage = tonumber(args[8]) or 5
-				local walk = args[3] == "false" and false or true
 				local attack = args[4] == "true" and true or false
 				local friendly = args[5] == "true" and true or false
+				local walk
+				
+				if args[3] == "false" then
+					walk = false
+				else
+					walk = true
+				end
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					Functions.makeRobot(v, num, health, speed, damage, walk, attack, friendly)

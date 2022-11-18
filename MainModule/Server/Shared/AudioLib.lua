@@ -25,7 +25,7 @@ function AudioLib.new(container)
 
     --// Loops through a table of properties used to overwrite those of an existing instance.
 	function self:UpdateSound(data)
-		for property,value in pairs(data) do
+		for property,value in data do
 			self.Sound[property] = value
 		end
 		return self.Sound

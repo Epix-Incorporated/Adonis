@@ -1,48 +1,37 @@
 name: rojo
-
+ 
 on:
   push:
     branches: [master]
   pull_request:
     branches: [master]
-
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-
+      
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "curDate=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        #run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       - uses: Roblox/setup-foreman@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build -o Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm .github/build.project.json
+        run: rojo build -o Adonis_Nightly_${{ env.curDate }}.rbxm .github/build.project.json
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Adonis_Nightly_${{ steps.date.outputs.date }}
-          path: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+          name: Adonis_Nightly_${{ env.curDate }}
+          path: Adonis_Nightly_${{ env.curDate }}.rbxm
           
       - name: Build Nightly MainModule
         if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
         run: rojo build -o module.rbxm .github/module.deploy.project.json
-
-      - name: Publish Nightly MainModule
-        uses: fjogeleit/http-request-action@v1
-        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
-        with:
-          url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
-          method: "POST"
-          contentType: "multipart/form-data"
-          files: '{ "file": "module.rbxm" }'
-          customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
-          timeout: 10000
 
       - name: Send file nightly build to Discord channel
         uses: tsickert/discord-webhook@v3.0.0
@@ -50,3 +39,25 @@ jobs:
         with:
           webhook-url: ${{ secrets.NIGHTLY_WEBHOOK }}
           filename: Adonis_Nightly_${{ steps.date.outputs.date }}.rbxm
+          
+      - name: Publish Nightly MainModule
+        uses: fjogeleit/http-request-action@v1
+        if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+        with:
+          url: "${{ secrets.PUBURL2 }}/?assetId=${{ secrets.NIGHTLY_MODULE_ID }}"
+          method: "POST"
+          contentType: "multipart/form-data"
+          files: '{ "file": "module.rbxm" }'
+          customHeaders: '{ "upload-secret": "${{ secrets.PUBURL2_SECRET }}" }'
+          timeout: 10000
+
+      #- name: Publish Nightly MainModule
+      #  uses: fjogeleit/http-request-action@v1
+      #  if: github.repository == 'Epix-Incorporated/Adonis' && github.event_name == 'push'
+      #  with:
+      #    url: "${{ secrets.PUBLISH_URL }}/${{ secrets.NIGHTLY_MODULE_ID }}"
+      #    method: "POST"
+      #    contentType: "multipart/form-data"
+      #    files: '{ "file": "module.rbxm" }'
+      #    customHeaders: '{ "x-auth-token": "${{ secrets.PUBLISH_TOKEN }}" }'
+      #    timeout: 10000

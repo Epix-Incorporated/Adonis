@@ -288,6 +288,10 @@ local function CleanUp()
 	server.Model.Name = "Adonis_Loader"
 	server.Model.Parent = service.ServerScriptService
 	server.Running = false
+	
+	server.Logs.SaveCommandLogs()
+	server.Core.GAME_CLOSING = true;
+	server.Core.SaveAllPlayerData()
 
 	pcall(service.Threads.StopAll)
 	pcall(function()
