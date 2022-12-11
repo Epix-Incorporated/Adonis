@@ -330,7 +330,7 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
-			
+
 			["+name"] = {
 				Match = "+";
 				Function = function(msg, plr, parent, players, delplayers, addplayers, randplayers, getplr, plus, isKicking, useFakePlayer, allowUnknownUsers)
@@ -349,7 +349,7 @@ return function(Vargs, GetEnv)
 					end
 				end;
 			};
-			
+
 			["#number"] = {
 				Match = "#";
 				Function = function(msg, plr, ...)
@@ -564,30 +564,37 @@ return function(Vargs, GetEnv)
 						end
 					end
 
+					--// Check for display names
+					for _, v in parent:GetChildren() do
+						local p = getplr(v)
+						if p and p.ClassName == "Player" and p.DisplayName:lower():match("^"..s) then
+							table.insert(players, p)
+							plus()
+						end
+					end
+
 					if plrCount == 0 then
-						--// Check for display names
+						--// Check for usernames
 						for _, v in parent:GetChildren() do
 							local p = getplr(v)
-							if p and p.ClassName == "Player" and p.DisplayName:lower():match("^"..s) then
+							if p and p.ClassName == "Player" and p.Name:lower():match("^"..s) then
 								table.insert(players, p)
 								plus()
 							end
 						end
 
 						if plrCount == 0 then
-							--// Check for usernames
-							for _, v in parent:GetChildren() do
-								local p = getplr(v)
-								if p and p.ClassName == "Player" and p.Name:lower():match("^"..s) then
-									table.insert(players, p)
+							if not options.NoFakePlayer then
+								--// Attempt to retrieve non-ingame user
+								if tonumber(s) then
+									local success, response = pcall(service.Players.GetNameFromUserIdAsync, service.Players, s)
+									table.insert(players, Functions.GetFakePlayer({
+										Name = (success == true and response) or "%UnknownUsername%";
+										DisplayName = (success == true and response) or "%UnknownUsername%";
+										UserId = s;
+									}))
 									plus()
-								end
-							end
-
-							if plrCount == 0 then
-								if not options.NoFakePlayer then
-									--// Attempt to retrieve non-ingame user
-
+								else
 									local UserId = Functions.GetUserIdFromNameAsync(s)
 									if UserId or options.AllowUnknownUsers then
 										table.insert(players, Functions.GetFakePlayer({
@@ -598,13 +605,13 @@ return function(Vargs, GetEnv)
 										plus()
 									end
 								end
+							end
 
-								if plrCount == 0 and not options.DontError then
-									Remote.MakeGui(plr, "Output", {
-										Message = if not options.NoFakePlayer then "No user named '"..s.."' exists"
-											else "No players matching '"..s.."' were found!";
-									})
-								end
+							if plrCount == 0 and not options.DontError then
+								Remote.MakeGui(plr, "Output", {
+									Message = if not options.NoFakePlayer then "No user named '"..s.."' exists"
+										else "No players matching '"..s.."' were found!";
+								})
 							end
 						end
 					end
@@ -614,7 +621,7 @@ return function(Vargs, GetEnv)
 			--// The following is intended to prevent name spamming (eg. :re scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel,scel...)
 			--// It will also prevent situations where a player falls within multiple player finders (eg. :re group-1928483,nonadmins,radius-50 (one player can match all 3 of these))
 			--// Edited to adjust removals and randomizers.
-			
+
 			local filteredList = {}
 			local checkList = {}
 
