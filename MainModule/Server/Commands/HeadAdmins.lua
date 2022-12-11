@@ -148,7 +148,7 @@ return function(Vargs, env)
 					})
 				do
 					Functions.Hint(
-						if Admin.RemoveBan(v.Name, true)
+						if Admin.RemoveBan(v.UserId, true)
 							then service.FormatPlayer(v, true).." has been unbanned from the game"
 							else service.FormatPlayer(v, true).." is not currently banned",
 						{plr}
