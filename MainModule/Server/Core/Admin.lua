@@ -919,7 +919,7 @@ return function(Vargs, GetEnv)
 		end,
 
 		DoBanCheck = function(name: string | number | Instance, check: string | {[string]: any})
-			local id = type(name) == "number" and name
+			local id = tonumber(name)
 
 			if type(name) == "userdata" and name:IsA("Player") then
 				id = name.UserId
@@ -929,7 +929,7 @@ return function(Vargs, GetEnv)
 			if type(check) == "table" then
 				if type(name) == "string" and check.Name and string.lower(check.Name) == string.lower(name) then
 					return true
-				elseif id and check.UserId and check.UserId == id then
+				elseif id and check.UserId and tonumber(check.UserId) == id then
 					return true
 				end
 			elseif type(check) == "string" then
