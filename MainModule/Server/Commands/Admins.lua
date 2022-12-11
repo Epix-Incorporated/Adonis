@@ -1336,7 +1336,7 @@ return function(Vargs, env)
 					UseFakePlayer = true;
 					})
 				do
-					if Admin.RemoveBan(v.Name) then
+					if Admin.RemoveBan(v.UserId) then
 						Functions.Hint(service.FormatPlayer(v, true).." has been unbanned", {plr})
 					else
 						Functions.Hint(service.FormatPlayer(v, true).." is not currently banned", {plr})
