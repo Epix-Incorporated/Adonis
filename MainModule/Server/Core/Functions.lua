@@ -587,13 +587,15 @@ return function(Vargs, GetEnv)
 							if not options.NoFakePlayer then
 								--// Attempt to retrieve non-ingame user
 								if tonumber(s) then
-									local success, response = pcall(service.Players.GetNameFromUserIdAsync, service.Players, s)
-									table.insert(players, Functions.GetFakePlayer({
-										Name = (success == true and response) or "%UnknownUsername%";
-										DisplayName = (success == true and response) or "%UnknownUsername%";
-										UserId = s;
-									}))
-									plus()
+									local success, response = pcall(service.UserService.GetUserInfosByUserIdsAsync, service.UserService, {tonumber(s)})
+									if success or options.AllowUnknownUsers then
+										table.insert(players, Functions.GetFakePlayer({
+											Name = (success == true and response[1].Username) or "%UnknownUsername%";
+											DisplayName = (success == true and response[1].DisplayName) or "%UnknownDisplayName%";
+											UserId = s;
+										}))
+										plus()
+									end
 								else
 									local UserId = Functions.GetUserIdFromNameAsync(s)
 									if UserId or options.AllowUnknownUsers then
