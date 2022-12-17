@@ -664,6 +664,16 @@ return function(Vargs, GetEnv)
 						Detected("crash", "Anti-dex bypass found. Method 2")
 					end
 				end
+					
+				-- // Integrity check the Adonis _G entry
+				coroutine.wrap(function()
+					while true do
+						if _G.Adonis ~= nil and type(_G.Adonis) ~= "userdata" then
+							Detected("crash", "Incorrect entry for _G.Adonis found. Integrity damaged")
+						end
+						task.wait()
+					end
+				end)()
 
 				-- // Checks for anti-coregui detetection bypasses
 				-- It's not physically possible for this code to error, yet it still does, weird
