@@ -2528,11 +2528,7 @@ return function(Vargs, env)
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local newArgs = {
-					"me",
-					args[2] or "2",
-					"true"
-				}
+				local newArgs = { "me", args[2] or "2", "true" }
 
 				for i, p in service.GetPlayers(plr, args[1]) do
 					Commands.Fly.Function(p, newArgs)
