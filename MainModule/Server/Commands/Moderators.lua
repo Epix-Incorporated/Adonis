@@ -3503,7 +3503,7 @@ return function(Vargs, env)
 
 
 							-- Check if partInput is a table
-							if typeof(partInput) == "table" then
+							if type(partInput) == "table" then
 								local hash = {}
 
 								-- Check for duplicates
