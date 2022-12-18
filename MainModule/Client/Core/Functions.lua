@@ -1132,7 +1132,9 @@ return function(Vargs, GetEnv)
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
 			task.wait(1)
-			repeat task.wait(0.1) until not sound.IsPlaying
+			if sound.IsPlaying == true then
+				sound.Ended:Wait()
+			end
 			sound:Destroy()
 			Variables.localSounds[tostring(audioId)] = nil
 		end;
