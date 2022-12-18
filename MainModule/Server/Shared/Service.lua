@@ -262,17 +262,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local UnWrapArgs = service.UnWrapEventArgs
 				local event = Wrap(service.New("BindableEvent"), main)
 
-				--// Unused
-				--[[
-				local hooks = {}
-
-				event.Event:Connect(function(...)
-					for i,v in hooks do
-						return v.Function(...)
-					end
-				end)
-				]]
-
 				event:SetSpecial("Wait", function(i, timeout)
 					local special = math.random()
 					local done = false
