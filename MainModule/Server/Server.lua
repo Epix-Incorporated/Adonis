@@ -606,7 +606,6 @@ return service.NewProxy({
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
-		server.Threading = require(server.Deps.ThreadHandler)
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		do
