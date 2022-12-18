@@ -322,7 +322,7 @@ return function(Vargs, GetEnv)
 			counter += 1
 			if not lastTick then lastTick = os.time() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60
+				task.wait(60)
 			end
 
 			if os.time()-lastTick > 60 then
