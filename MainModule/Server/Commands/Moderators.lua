@@ -2528,8 +2528,14 @@ return function(Vargs, env)
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local newArgs = {
+					"me",
+					args[2] or "2",
+					"true"
+				}
+
 				for i, p in service.GetPlayers(plr, args[1]) do
-					Commands.Fly.Function(p, args, nil, true)
+					Commands.Fly.Function(p, newArgs)
 				end
 			end
 		};
@@ -5706,10 +5712,10 @@ return function(Vargs, env)
 		Fly = {
 			Prefix = Settings.Prefix;
 			Commands = {"fly", "flight"};
-			Args = {"player", "speed"};
+			Args = {"player", "speed", "noclip"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, _: any?, noclip: boolean?)
+			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
@@ -5719,7 +5725,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes") or args[3] == nil and false;
 					Parent = scr;
 				})
 				
