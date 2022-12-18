@@ -2529,7 +2529,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				for i, p in service.GetPlayers(plr, args[1]) do
-					Commands.Fly.Function(p, args, true)
+					Commands.Fly.Function(p, args, nil, true)
 				end
 			end
 		};
@@ -5709,7 +5709,7 @@ return function(Vargs, env)
 			Args = {"player", "speed"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, noclip: boolean?)
+			Function = function(plr: Player, args: {string}, _: any?, noclip: boolean?)
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
