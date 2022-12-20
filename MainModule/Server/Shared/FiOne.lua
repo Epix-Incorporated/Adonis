@@ -1010,12 +1010,6 @@ local function exec_lua_func(exst)
 					if type(metatable) == "table" and rawget(metatable, "__close") then
 						-- Edge case where the table has a __close methamethod
 					else
-						warn(
-							"[FiOne]: Please do not use general iteration!\n"..
-								"Generalised iteration may not iterate properly over arrays and is not designed for them.\n"..
-								"Please use `ipairs` for arrays and `pairs` for dictionaries instead."
-						)
-
 						func, state, index = (type(metatable) == "table" and rawget(metatable, "__iter") or next), func, nil
 						stack[A], stack[A + 1], stack[A + 2] = func, state, index
 					end
