@@ -69,6 +69,7 @@ return {
 		{Text = "@GitHub supercoolspy",		Desc = "GitHub Contributor"};
 	};
 	Misc = {
+		{Text = "Kein-Hong Man",		Desc = "Creator of the Yueliang (loadstring Lua compiler in Lua). Also created first Lua bytecode interpreter used in Adonis (no longer used)"};
 		{Text = "Stravant/JustAPerson",		Desc = "Wrote LBI (no longer used)"};
 		{Text = "darkelementallord",		Desc = "Updated some guis"};
 		{Text = "TheFurryFish",				Desc = "Gave me some dank ideas like local particles and some loading related things; and helped debug"};
