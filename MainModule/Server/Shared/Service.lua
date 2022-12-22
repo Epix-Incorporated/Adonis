@@ -1147,7 +1147,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		CheckAssetOwnership = function(player, assetId)				
+		CheckAssetOwnership = function(player, assetId)
 			if type(player) == "number" then
 				player = service.Players:GetPlayerByUserId(player)
 			end

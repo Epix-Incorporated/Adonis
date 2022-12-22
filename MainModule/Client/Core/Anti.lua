@@ -35,8 +35,8 @@ return function(Vargs, GetEnv)
 
 	local Anti, Process, UI, Variables
 	local script = script
-	local service = service
-	local client = client
+	local service = env.service
+	local client = env.client
 	local Core = client.Core
 	local Remote = client.Remote
 	local Functions = client.Functions
@@ -420,7 +420,7 @@ return function(Vargs, GetEnv)
 		MainDetection = function()
 			local game = service.DataModel
 			local findService = service.DataModel.FindService
-			local lastLogOutput = os.clock()
+			--local lastLogOutput = os.clock()
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -438,9 +438,6 @@ return function(Vargs, GetEnv)
 				"returning json";
 				"shattervast";
 				"failed to parse json";
-				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
-				"getrawmetatable";
-				"setfflag";
 			}
 
 			local soundIds = {
@@ -503,9 +500,10 @@ return function(Vargs, GetEnv)
 			end)
 
 			service.LogService.MessageOut:Connect(function(Message)
-				if Message == " " then
+				--[[if Message == " " then
 					lastLogOutput = os.clock()
-				elseif type(Message) ~= "string" then
+				]]
+				if type(Message) ~= "string" then
 					pcall(Detected, "crash", "Tamper Protection 24589 (Invalid MessageOut)")
 					task.wait(1)
 					pcall(Disconnect, "Adonis_24589")
@@ -621,12 +619,17 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Check Context Level
-				local ran, _ = pcall(function()
-					local test = Instance.new("StringValue")
+				local test
+				local ran = pcall(function()
+					test = Instance.new("StringValue")
 					test.RobloxLocked = true
 				end)
 				if ran then
 					Detected("crash", "RobloxLocked usable")
+				end
+				if test then
+					--// Cleanup
+					pcall(service.Delete, test)
 				end
 
 				-- // Checks for certain disallowed object names in the core GUI which wouldnt otherwise be detectable

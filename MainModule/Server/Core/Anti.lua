@@ -79,8 +79,8 @@ return function(Vargs, GetEnv)
 			pcall(p.Destroy, p)
 			pcall(service.Delete, p)
 
-			Logs.AddLog("Script",{
-				Text = "Server removed "..tostring(p);
+			Logs.AddLog("Script", {
+				Text = "Server removed ".. tostring(p);
 				Desc = info;
 			})
 		end;
@@ -355,15 +355,16 @@ return function(Vargs, GetEnv)
 		end;
 
 		Detected = function(player, action, info)
-			local info = string.gsub(tostring(info), "\n", "")
+			local info = string.sub(string.gsub(tostring(info), "\n", ""), 1, 50)
 
 			if service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
+						Remote.Clients[tostring(player.UserId)] = nil
 						Anti.RemovePlayer(player, info)
-					elseif string.lower(action) == "kill" then
+					elseif string.lower(action) == "kill" and player.Character then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
 
 						if humanoid then
@@ -373,6 +374,7 @@ return function(Vargs, GetEnv)
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
 						Remote.Send(player, "Function", "Kill")
+						Remote.Clients[tostring(player.UserId)] = nil
 						task.wait(5)
 						pcall(function()
 							local scr = Core.NewScript("LocalScript", [[while true do end]])
