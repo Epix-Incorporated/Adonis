@@ -230,7 +230,7 @@ return function(Vargs, GetEnv)
 					local workspace = service.UnWrap(workspace)
 					local nilPlayers = setmetatable({}, {__mode = "v"})
 
-					service.UnWrap(Players).ChildRemoved:Connect(function(child)
+					service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
 						if child:IsA("Player") then
 							table.insert(nilPlayers, child)
 						end
