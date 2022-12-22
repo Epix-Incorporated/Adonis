@@ -475,9 +475,9 @@ return function(Vargs)
 				continue
 			end
 
-			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
-
 			if code ~= 520 and code ~= 524 then
+				local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
+
 				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
 				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
 				break
