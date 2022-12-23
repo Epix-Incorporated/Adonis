@@ -373,12 +373,14 @@ return function(Vargs, env)
 			Description = "Enables/disables server lock";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not args[1] or (args[1] and (string.lower(args[1]) == "on" or string.lower(args[1]) == "true")) then
+				local arg = args[1] and string.lower(args[1])
+
+				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true") then
 					Variables.ServerLock = true
-					Functions.Hint("Server Locked", {plr})
-				elseif string.lower(args[1]) == "off" or string.lower(args[1]) == "false" then
+					Functions.Hint("Server Locked", service.Players:GetPlayers())
+				elseif Variables.ServerLock == true or arg == "off" or arg == "false" then
 					Variables.ServerLock = false
-					Functions.Hint("Server Unlocked", {plr})
+					Functions.Hint("Server Unlocked", service.Players:GetPlayers())
 				end
 			end
 		};
