@@ -375,7 +375,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local arg = args[1] and string.lower(args[1])
 
-				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true") then
+				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true" then
 					Variables.ServerLock = true
 					Functions.Hint("Server Locked", service.Players:GetPlayers())
 				elseif Variables.ServerLock == true or arg == "off" or arg == "false" then
@@ -1106,7 +1106,7 @@ return function(Vargs, env)
 								end
 							end
 						end
-						Core.SavePlayer(v, PlayerData)--v:SaveInstance("Admin Notes", notes)
+						Core.SavePlayer(v, PlayerData)
 					end
 				end
 			end
@@ -1378,7 +1378,6 @@ return function(Vargs, env)
 							reason
 						)
 
-						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
 						pcall(function() v:Kick(reason) end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";
