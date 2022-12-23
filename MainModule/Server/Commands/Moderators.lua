@@ -2234,6 +2234,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				service.StopLoop("ChickenSpam")
+				Functions.CleanWorkspace()
 				for _, v in Variables.Objects do
 					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
