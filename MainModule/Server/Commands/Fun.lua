@@ -3177,16 +3177,24 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					if head then
+						head.Transparency = 0.9
+						if head:FindFirstChild("Mesh") then
+							head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+						else
+							head.Size = Vector3.new(0.01, 0.01, 0.01)
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
 
-					decal1.Parent = v.Character.HumanoidRootPart
-					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
-					mesh.Parent = v.Character.HumanoidRootPart
+					local primaryPart = v.Character.HumanoidRootPart or v.Character.PrimaryPart
+					decal1.Parent = primaryPart
+					decal2.Parent = primaryPart
+					sound.Parent = primaryPart
+					mesh.Parent = primaryPart
 
 					decal1.Animator.Disabled = false
 					decal2.Animator.Disabled = false
