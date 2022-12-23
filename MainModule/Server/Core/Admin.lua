@@ -39,6 +39,7 @@ return function(Vargs, GetEnv)
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService()
 
+			--// Support for lua chat service
 			if chatService then
 				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
 					local speaker = chatService:GetSpeaker(speakerName)
@@ -84,6 +85,67 @@ return function(Vargs, GetEnv)
 			else
 				warn("Place is missing ChatService; Vanilla Roblox chat related features may not work")
 				AddLog("Script", "ChatService Handler Not Found")
+			end
+
+			-- // Support for TextChatService
+			if service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+				local function onNewTextchannel(textchannel)
+					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
+						if
+							chatMessage.Status == Enum.TextChatMessageStatus.Success or
+							chatMessage.Sending == Enum.TextChatMessageStatus.Success
+						then
+							local player = service.Players:GetPlayerByUserId(textSource.UserId)
+							local slowCache = Admin.SlowCache
+
+							if not player then
+								return true
+							end
+
+							-- // Hide chat command CMDs
+							if Admin.DoHideChatCmd(player, message) then
+								return false
+							end
+
+							-- // Mute handler
+							if Admin.IsMuted(player) then
+								Remote.MakeGui(v, "Notification", {
+									Title = "You are muted!";
+									Message = "You are muted and cannot talk in the chat right now.";
+									Time = 10;
+								})
+
+								return false
+							elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+								Remote.MakeGui(v, "Notification", {
+									Title = "You are chatting too fast!";
+									Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
+									Time = 10;
+								})
+
+								return false
+							end
+
+							if Admin.SlowMode then
+								slowCache[speakerPlayer] = os.time()
+							end
+						end
+
+						return true
+					end
+				end
+
+				for _, v in ipairs(service.TextChatService:GetChildren()) do
+					if v:IsA("TextChannel") then
+						task.spawn(onNewTextchannel, v)
+					end
+				end
+
+				service.TextChatService.ChildAdded:Connect(function(child)
+					if child:IsA("TextChannel") then
+						task.spawn(onNewTextchannel, child)
+					end
+				end)
 			end
 		end)
 
