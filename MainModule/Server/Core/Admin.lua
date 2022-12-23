@@ -42,7 +42,7 @@ return function(Vargs, GetEnv)
 					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 						if
 							chatMessage.Status == Enum.TextChatMessageStatus.Success or
-							chatMessage.Sending == Enum.TextChatMessageStatus.Success
+							chatMessage.Status == Enum.TextChatMessageStatus.Sending
 						then
 							local player = service.Players:GetPlayerByUserId(textSource.UserId)
 							local slowCache = Admin.SlowCache
