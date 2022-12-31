@@ -1121,5 +1121,33 @@ return function(Vargs, env)
 			end
 		};
 
+		BuyItem = {
+			Prefix = Settings.PlayerPrefix;
+			Commands = {"buyitem", "buyasset"};
+			Args = {"id"};
+			Description = "Prompts the localplayer to buy the product belonging to the ID you supply";
+			AdminLevel = "Players";
+			Function = function(plr: Player, args: {string})
+				local assetId = assert(tonumber(args[1]), "Pro")
+
+				local success, value = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, plr, assetId))
+
+				if success and value or not success then
+					local connection
+					connection = service.MarketPlace.PromptProductPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
+						if boughtAssetId == assetId then
+							connection:Disconnect()
+							Remote.MakeGui(v, "Notification", {
+								Title = "Adonis purchase";
+								Message = (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId));
+								Time = 10;
+							})
+						end
+					end)
+
+					service.MarketPlace:PromptPurchase(plr, assetId, false)
+				end
+			end
+		};
 	};
 end
