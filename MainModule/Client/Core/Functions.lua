@@ -248,8 +248,8 @@ return function(Vargs, GetEnv)
 			local CurrentCamera = workspace.CurrentCamera
 
 			if ob=='reset' then
-				CurrentCamera.CameraType = 'Custom'
-				CurrentCamera.CameraSubject = service.Player.Character.Humanoid
+				CurrentCamera.CameraType = Enum.CameraType.Custom
+				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChild("Humanoid")
 				CurrentCamera.FieldOfView = 70
 			else
 				CurrentCamera.CameraSubject = ob
