@@ -331,7 +331,7 @@ return function(Vargs, env)
 						)
 						model.Name = targetName
 
-						local hum = model:WaitForChild("Humanoid")
+						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
 						hum:WaitForChild("BodyHeightScale").Value /= 2
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
