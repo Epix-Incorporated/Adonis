@@ -1137,7 +1137,7 @@ return function(Vargs, env)
 					connection = service.MarketPlace.PromptProductPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
 						if boughtAssetId == assetId then
 							connection:Disconnect()
-							Remote.MakeGui(v, "Notification", {
+							Remote.MakeGui(plr, "Notification", {
 								Title = "Adonis purchase";
 								Message = (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId));
 								Time = 10;
