@@ -2146,7 +2146,7 @@ return function(Vargs, env)
 						Routine(function()
 							repeat
 								task.wait(0.15)
-								v.Character.Humanoid.Health = v.Character.Humanoid.Health-1
+								v.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(1)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2216,7 +2216,7 @@ return function(Vargs, env)
 						local lleg = v.Character:FindFirstChild("Left Leg")
 						local rleg = v.Character:FindFirstChild("Right Leg")
 						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChild("Humanoid")
+						local hum=v.Character:FindFirstChildOfClass("Humanoid")
 						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
@@ -2237,7 +2237,7 @@ return function(Vargs, env)
 							coroutine.wrap(function() wait(10) run = false end)()
 							repeat
 								task.wait(1)
-								hum.Health = hum.Health-5
+								hum:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
 								torso.BrickColor = tor
