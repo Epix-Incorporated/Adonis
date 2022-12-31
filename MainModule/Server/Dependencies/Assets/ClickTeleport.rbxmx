@@ -19,24 +19,24 @@ local use = false
 local holding = false
 local target = game:GetService("Players"):WaitForChild(name)
 local char = target.Character
-local hum = char:FindFirstChild('Humanoid')
+local hum = char:FindFirstChildOfClass("Humanoid")
 if not hum then tool:Destroy() end
 
 hum.Died:Connect(function() tool:Destroy() end)
 tool.Name = mode..' '..target.Name
 
 function onButton1Down(mouse)
-  if not target.Character or not target.Character:FindFirstChild('Humanoid') then return end
+  if not target.Character or not target.Character:FindFirstChildOfClass("Humanoid") then return end
   if mode=='Teleport' then
-    local torso=target.Character:FindFirstChild('HumanoidRootPart')
+    local torso=target.Character:FindFirstChild("HumanoidRootPart")
 	if not torso then return end
-	local FlightPos, FlightGyro = torso:FindFirstChild('ADONIS_FLIGHT_POSITION'), torso:FindFirstChild('ADONIS_FLIGHT_GYRO')
+	local FlightPos, FlightGyro = torso:FindFirstChild("ADONIS_FLIGHT_POSITION"), torso:FindFirstChild("ADONIS_FLIGHT_GYRO")
 	local pos=mouse.Hit.p
 	if FlightPos and FlightGyro then  
 		FlightPos.Position = torso.Position
 		FlightGyro.CFrame = torso.CFrame
 	end
-	wait()
+	task.wait()
 	torso.CFrame=CFrame.new(Vector3.new(pos.x, pos.y + 4, pos.z))
 	if FlightPos and FlightGyro then  
 		FlightPos.Position = torso.Position
@@ -53,7 +53,7 @@ function rotate()
   if not torso then return end
   repeat
     torso.CFrame=CFrame.new(torso.Position,Vector3.new(mouse.Hit.p.X,torso.Position.Y,mouse.Hit.p.Z))
-    wait()
+    task.wait()
   until not holding or not use
 end
 
