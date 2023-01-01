@@ -1129,7 +1129,6 @@ return function(Vargs, env)
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
 				local assetId = assert(tonumber(args[1]), "Pro")
-
 				local success, value = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, plr, assetId)
 
 				if success and value or not success then
