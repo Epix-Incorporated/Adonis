@@ -16,16 +16,11 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Admin, HTTP, Logs, Variables, Settings
 	local function Init()
-		Functions = server.Functions;
 		Admin = server.Admin;
-		Anti = server.Anti;
-		Core = server.Core;
 		HTTP = server.HTTP;
 		Logs = server.Logs;
-		Remote = server.Remote;
-		Process = server.Process;
 		Variables = server.Variables;
 		Settings = server.Settings;
 
@@ -105,7 +100,7 @@ return function(Vargs, GetEnv)
 							})
 
 							if Settings.Trello_Token ~= "" then
-								pcall(HTTP.Trello.API.makeComment, card.id, "Ran Command: "..cmd.."\nPlace ID: "..game.PlaceId.."\nServer Job Id: "..game.JobId.."\nServer Players: "..#service.GetPlayers().."\nServer Time: "..service.FormatTime())
+								pcall(HTTP.Trello.API.makeComment, card.id, `Ran Command: {cmd}\nPlace ID: {game.PlaceId}\nServer Job Id: {game.JobId}\nServer Players: {#service.GetPlayers()}\nServer Time: {service.FormatTime()}}`)
 							end
 						end
 					end
@@ -213,6 +208,7 @@ return function(Vargs, GetEnv)
 
 					local function grabData(board)
 						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
+						-- TODO: Change from the mean "L + ratio" error to a nice message
 						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 						for _, list in lists do
@@ -248,11 +244,11 @@ return function(Vargs, GetEnv)
 						Settings.Trello_Primary,
 						unpack(Settings.Trello_Secondary)
 					}
-					for i,v in boards do
+					for _,v in boards do
 						if not v or service.Trim(v) == "" then
 							continue
 						end
-						local ran, err = pcall(grabData, v)
+						local ran = pcall(grabData, v)
 						if not ran then
 							warn("Unable to reach Trello. Ensure your board IDs, Trello key, and token are all correct. If issue persists, try increasing HttpWait in your Adonis settings.")
 							success = false
@@ -271,14 +267,14 @@ return function(Vargs, GetEnv)
 						Variables.Whitelist.Lists.Trello = data.Whitelist
 
 						--// Clear any custom ranks that were not fetched from Trello
-						for rank, info in Settings.Ranks do
+						for rank in Settings.Ranks do
 							if rank.IsExternal and not data.Ranks[rank] then
 								Settings.Ranks[rank] = nil
 							end
 						end
 
 						for rank, users in data.Ranks do
-							local name = string.format("[Trello] %s", server.Functions.Trim(rank))
+							local name = `[Trello] {server.Functions.Trim(rank)}`
 							Settings.Ranks[name] = {
 								Level = Settings.Ranks[rank].Level or 1;
 								Users = users,
@@ -287,10 +283,10 @@ return function(Vargs, GetEnv)
 							}
 						end
 
-						for i, v in service.GetPlayers() do
+						for _, v in service.GetPlayers() do
 							local isBanned, Reason = Admin.CheckBan(v)
 							if isBanned then
-								v:Kick(string.format("%s | Reason: %s", Variables.BanMessage, (Reason or "No reason provided")))
+								v:Kick(`{Variables.BanMessage} | Reason: {(Reason or "No reason provided")}`)
 								continue
 							end
 

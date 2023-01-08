@@ -14,7 +14,7 @@ return function(data, env)
 
 	local UI = client.UI
 
-	local gui = service.New("ScreenGui", {ResetOnSpawn = false})
+	local gui = service.New("ScreenGui", { ResetOnSpawn = false })
 	local gTable = UI.Register(gui)
 
 	if UI.Get("HelpButton", gui, true) then
@@ -27,13 +27,13 @@ return function(data, env)
 	gTable.CanKeepAlive = true
 
 	local toggle = service.New("ImageButton", {
-		Parent = gui;
-		Name = "Toggle";
-		BackgroundTransparency = 1;
-		Position = UDim2.new(1, -45, 1, -45);
-		Size = UDim2.fromOffset(40, 40);
-		Image = client.HelpButtonImage;
-		ImageTransparency = 0.5;
+		Parent = gui,
+		Name = "Toggle",
+		BackgroundTransparency = 1,
+		Position = UDim2.new(1, -45, 1, -45),
+		Size = UDim2.fromOffset(40, 40),
+		Image = client.HelpButtonImage,
+		ImageTransparency = 0.5,
 	})
 
 	--if UI.Get("Chat") then

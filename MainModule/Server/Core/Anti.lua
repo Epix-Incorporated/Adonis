@@ -8,35 +8,35 @@ logError = nil
 
 --// Anti-Exploit
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	local server = Vargs.Server
+	local service = Vargs.Service
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
-		Functions = server.Functions;
-		Admin = server.Admin;
-		Anti = server.Anti;
-		Core = server.Core;
-		HTTP = server.HTTP;
-		Logs = server.Logs;
-		Remote = server.Remote;
-		Process = server.Process;
-		Variables = server.Variables;
-		Settings = server.Settings;
+		Functions = server.Functions
+		Admin = server.Admin
+		Anti = server.Anti
+		Core = server.Core
+		HTTP = server.HTTP
+		Logs = server.Logs
+		Remote = server.Remote
+		Process = server.Process
+		Variables = server.Variables
+		Settings = server.Settings
 
 		--// Client check
 		service.StartLoop("ClientCheck", 30, Anti.CheckAllClients, true)
 
-		Anti.Init = nil;
+		Anti.Init = nil
 		Logs:AddLog("Script", "AntiExploit Module Initialized")
 	end
 
 	local function RunAfterPlugins(data)
-		Anti.RunAfterPlugins = nil;
-		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished");
+		Anti.RunAfterPlugins = nil
+		Logs:AddLog("Script", "Anti Module RunAfterPlugins Finished")
 
 		local function onPlayerAdded(player)
 			if not player.Character then
@@ -49,10 +49,13 @@ return function(Vargs, GetEnv)
 		end
 
 		if
-			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus") or
-			service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
+			service.ServerScriptService:FindFirstChild("AntiExploit_PlusPlus")
+			or service.ServerScriptService:FindFirstChild("FE_Plus_Plus_AntiExploit") -- // Legacy name
 		then
-			Logs:AddLog("Script", "Didn't run character AC checks because another anti-exploit which does the same is already loaded.")
+			Logs:AddLog(
+				"Script",
+				"Didn't run character AC checks because another anti-exploit which does the same is already loaded."
+			)
 			return
 		end
 
@@ -65,32 +68,37 @@ return function(Vargs, GetEnv)
 	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
 
 	server.Anti = {
-		Init = Init;
-		RunAfterPlugins = RunAfterPlugins;
-		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
-		SpoofCheckCache = {};
+		Init = Init,
+		RunAfterPlugins = RunAfterPlugins,
+		ClientTimeoutLimit = 300, --// ... Five minutes without communication seems long enough right?
+		SpoofCheckCache = {},
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
-			pcall(function()service.UnWrap(p):Kick(":: Adonis ::\n".. tostring(info)) end)
+			pcall(function()
+				service.UnWrap(p):Kick(":: Adonis ::\n" .. tostring(info))
+			end)
 
 			task.wait(1)
 
 			pcall(p.Destroy, p)
 			pcall(service.Delete, p)
 
-			Logs.AddLog("Script",{
-				Text = "Server removed "..tostring(p);
-				Desc = info;
+			Logs.AddLog("Script", {
+				Text = "Server removed " .. tostring(p),
+				Desc = info,
 			})
-		end;
+		end,
 
 		CharacterCheck = function(player) -- // From my plugin FE++ (Creator Github@ccuser44/Roblox@ALE111_boiPNG)
 			local charGood = false --// Prevent accidental triggers while removing the character ~ Scel
 
 			local function Detected(player, action, reason)
 				if charGood then
-					if Settings.CharacterCheckLogs ~= true and (string.lower(action) == "log" or string.lower(action) == "kill") then
+					if
+						Settings.CharacterCheckLogs ~= true
+						and (string.lower(action) == "log" or string.lower(action) == "kill")
+					then
 						if action == "kill" then
 							local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 							if humanoid then
@@ -99,12 +107,24 @@ return function(Vargs, GetEnv)
 						end
 
 						Logs.AddLog(Logs.Script, {
-							Text = "Character AE Detected "..tostring(player);
-							Desc = "The Anti-Exploit character check detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason);
-							Player = player;
+							Text = "Character AE Detected " .. tostring(player),
+							Desc = "The Anti-Exploit character check detected player: "
+								.. tostring(player)
+								.. " action: "
+								.. tostring(action)
+								.. " reason: "
+								.. tostring(reason),
+							Player = player,
 						})
 
-						warn("Charactercheck detected player: "..tostring(player).." action: "..tostring(action).." reason: "..tostring(reason))
+						warn(
+							"Charactercheck detected player: "
+								.. tostring(player)
+								.. " action: "
+								.. tostring(action)
+								.. " reason: "
+								.. tostring(reason)
+						)
 					else
 						Anti.Detected(player, action, reason)
 					end
@@ -131,9 +151,10 @@ return function(Vargs, GetEnv)
 							end
 
 							Logs.AddLog(Logs.Script, {
-								Text = "AE: Hat joint deletion reset network ownership for player: "..tostring(player);
-								Desc = "The AE reset joint handle network ownership for player: "..tostring(player);
-								Player = player;
+								Text = "AE: Hat joint deletion reset network ownership for player: "
+									.. tostring(player),
+								Desc = "The AE reset joint handle network ownership for player: " .. tostring(player),
+								Player = player,
 							})
 						end)
 					end)
@@ -143,7 +164,13 @@ return function(Vargs, GetEnv)
 
 						mesh.AncestryChanged:Connect(function(child, parent)
 							task.defer(function()
-								if child == mesh and handle and (not parent or not handle:IsAncestorOf(mesh)) and hat and hat.Parent then
+								if
+									child == mesh
+									and handle
+									and (not parent or not handle:IsAncestorOf(mesh))
+									and hat
+									and hat.Parent
+								then
 									mesh.Parent = handle
 									Detected(player, "log", "Hat mesh removed. Very likely using a hat exploit")
 								end
@@ -177,7 +204,8 @@ return function(Vargs, GetEnv)
 								if v:IsA("BackpackItem") then
 									count += 1
 									if count > 1 then
-										local backpack = player:FindFirstChildOfClass("Backpack") or Instance.new("Backpack")
+										local backpack = player:FindFirstChildOfClass("Backpack")
+											or Instance.new("Backpack")
 										if not backpack.Parent then
 											backpack.Parent = player
 										end
@@ -195,7 +223,11 @@ return function(Vargs, GetEnv)
 				if Settings.AntiHumanoidDeletion then
 					humanoid.AncestryChanged:Connect(function(child, parent)
 						task.defer(function()
-							if child == humanoid and character and (not parent or not character:IsAncestorOf(humanoid)) then
+							if
+								child == humanoid
+								and character
+								and (not parent or not character:IsAncestorOf(humanoid))
+							then
 								humanoid.Parent = character
 								Detected(player, "kill", "Humanoid removed")
 							end
@@ -208,9 +240,9 @@ return function(Vargs, GetEnv)
 						humanoid.Health = 0
 						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 						Logs.AddLog(Logs.Script, {
-							Text = "AE: Humanoid came out of dead state for player: "..tostring(player);
-							Desc = "AE: Humanoid came out of dead state for player: "..tostring(player);
-							Player = player;
+							Text = "AE: Humanoid came out of dead state for player: " .. tostring(player),
+							Desc = "AE: Humanoid came out of dead state for player: " .. tostring(player),
+							Player = player,
 						})
 					end
 				end)
@@ -238,9 +270,12 @@ return function(Vargs, GetEnv)
 
 				animator.AnimationPlayed:Connect(function(animationTrack)
 					local animationId = animationTrack.Animation.AnimationId
-					if animationId == "rbxassetid://148840371" or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*") then
+					if
+						animationId == "rbxassetid://148840371"
+						or string.match(animationId, "[%d%l]+://[/%w%p%?=%-_%$&'%*%+%%]*148840371/*")
+					then
 						task.defer(function()
-							animationTrack:Stop(1/60)
+							animationTrack:Stop(1 / 60)
 						end)
 						Detected(player, "log", "Player played an inappropriate character animation")
 					end
@@ -263,9 +298,9 @@ return function(Vargs, GetEnv)
 								humanoid.Health = 0
 								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 								Logs.AddLog(Logs.Script, {
-									Text = "AE: Waist joint deleted by player: "..tostring(player);
-									Desc = "AE: Waist joint deleted by player: "..tostring(player);
-									Player = player;
+									Text = "AE: Waist joint deleted by player: " .. tostring(player),
+									Desc = "AE: Waist joint deleted by player: " .. tostring(player),
+									Player = player,
 								})
 							end
 						end)
@@ -276,7 +311,12 @@ return function(Vargs, GetEnv)
 
 				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
 					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15 and character:WaitForChild("LowerTorso"):WaitForChild("Root") or humanoid.RigType == Enum.HumanoidRigType.R6 and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild("RootJoint"))
+					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15
+							and character:WaitForChild("LowerTorso"):WaitForChild("Root")
+						or humanoid.RigType == Enum.HumanoidRigType.R6
+							and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild(
+								"RootJoint"
+							))
 
 					makeConnection(rootJoint.AncestryChanged)
 
@@ -292,46 +332,51 @@ return function(Vargs, GetEnv)
 
 			player.CharacterRemoving:Connect(onCharacterRemoving)
 			player.CharacterAdded:Connect(onCharacterAdded)
-		end;
+		end,
 
 		CheckAllClients = function()
 			--// Check if clients are alive
 			if Settings.CheckClients and server.Running then
-				Logs.AddLog(Logs.Script,{
-					Text = "Checking Clients";
-					Desc = "Making sure all clients are active";
+				Logs.AddLog(Logs.Script, {
+					Text = "Checking Clients",
+					Desc = "Making sure all clients are active",
 				})
 
-				for ind,p in service.Players:GetPlayers() do
+				for ind, p in service.Players:GetPlayers() do
 					if p and p:IsA("Player") then
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
 						if client and client.LastUpdate and client.PlayerLoaded then
 							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-								Anti.Detected(p, "Kick", "Client Not Responding [>".. Anti.ClientTimeoutLimit .." seconds]")
+								Anti.Detected(
+									p,
+									"Kick",
+									"Client Not Responding [>" .. Anti.ClientTimeoutLimit .. " seconds]"
+								)
 							end
 						end
 					end
 				end
 			end
-		end;
+		end,
 
 		UserSpoofCheck = function(p)
 			--// Supplied by BetterAccount
 			if not service.RunService:IsStudio() then
-				local userService = service.UserService;
-				local success,err = pcall(function()
-					local userInfo = Anti.SpoofCheckCache[p.UserId] or userService:GetUserInfosByUserIdsAsync({p.UserId})
-					local data = userInfo and userInfo[1];
+				local userService = service.UserService
+				local success, err = pcall(function()
+					local userInfo = Anti.SpoofCheckCache[p.UserId]
+						or userService:GetUserInfosByUserIdsAsync({ p.UserId })
+					local data = userInfo and userInfo[1]
 
-					Anti.SpoofCheckCache[p.UserId] = userInfo;
+					Anti.SpoofCheckCache[p.UserId] = userInfo
 
 					if data and data.Id == p.UserId then
 						if p.Name ~= data.Username or p.DisplayName ~= data.DisplayName then
 							return true
 						end
 					else
-						for i,user in userInfo do
+						for i, user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
@@ -342,23 +387,23 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not success then
-					warn("Failed to check validity of player's name, reason: ".. tostring(err))
+					warn("Failed to check validity of player's name, reason: " .. tostring(err))
 				end
 			end
-		end;
+		end,
 
 		CheckBackpack = function(p, obj)
 			local ran, err = pcall(function()
 				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
 			end)
 			return if ran then ran else false
-		end;
+		end,
 
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
 			if service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
+				warn("ANTI-EXPLOIT: " .. player.Name .. " " .. action .. " " .. info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
@@ -384,25 +429,27 @@ return function(Vargs, GetEnv)
 					elseif string.lower(action) ~= "log" then
 						-- fake log (thonk?)
 						Anti.Detected(player, "Kick", "Spoofed log")
-						return;
+						return
 					end
 				end
 			end
 
-			Logs.AddLog(Logs.Script,{
-				Text = "AE Detected "..tostring(player);
-				Desc = "The Anti-Exploit system detected strange activity from "..tostring(player);
-				Player = player;
+			Logs.AddLog(Logs.Script, {
+				Text = "AE Detected " .. tostring(player),
+				Desc = "The Anti-Exploit system detected strange activity from " .. tostring(player),
+				Player = player,
 			})
 
-			Logs.AddLog(Logs.Exploit,{
-				Text = "[Action: "..tostring(action).." User: (".. tostring(player) ..")] ".. tostring(string.sub(info, 1, 50)) .. " (Mouse over for full info)";
-				Desc = tostring(info);
-				Player = player;
+			Logs.AddLog(Logs.Exploit, {
+				Text = "[Action: " .. tostring(action) .. " User: (" .. tostring(player) .. ")] " .. tostring(
+					string.sub(info, 1, 50)
+				) .. " (Mouse over for full info)",
+				Desc = tostring(info),
+				Player = player,
 			})
 
 			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
-				local debounceIndex = tostring(action)..tostring(player)..tostring(info)
+				local debounceIndex = tostring(action) .. tostring(player) .. tostring(info)
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}
 					antiNotificationResetTick = os.clock() + 60
@@ -411,8 +458,8 @@ return function(Vargs, GetEnv)
 				if not antiNotificationDebounce[debounceIndex] then
 					antiNotificationDebounce[debounceIndex] = 1
 				elseif
-					(string.lower(action) == "log" or string.lower(action) == "kill") and
-					antiNotificationDebounce[debounceIndex] > 3
+					(string.lower(action) == "log" or string.lower(action) == "kill")
+					and antiNotificationDebounce[debounceIndex] > 3
 				then
 					return
 				end
@@ -421,19 +468,21 @@ return function(Vargs, GetEnv)
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
-							Icon = server.MatIcons["Notification important"];
+							Icon = server.MatIcons["Notification important"],
 							Message = string.format(
 								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
 								player.Name,
 								action,
 								string.sub(info, 1, 50)
-							);
-							Time = 30;
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."exploitlogs')");
+							),
+							Time = 30,
+							OnClick = Core.Bytecode(
+								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "exploitlogs')"
+							),
 						})
 					end
 				end
 			end
-		end;
-	};
+		end,
+	}
 end

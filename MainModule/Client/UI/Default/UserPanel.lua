@@ -1,26 +1,26 @@
 local canEditTables = {
-	Admins = true;
-	HeadAdmins = true;
-	Moderators = true;
+	Admins = true,
+	HeadAdmins = true,
+	Moderators = true,
 
-	Banned = true;
-	Muted = true;
+	Banned = true,
+	Muted = true,
 
-	Blacklist = true;
-	Whitelist = true;
-	Permissions = true;
+	Blacklist = true,
+	Whitelist = true,
+	Permissions = true,
 
-	MusicList = false;
-	InsertList = false;
-	CapeList = false;
-	CustomRanks = false;
+	MusicList = false,
+	InsertList = false,
+	CapeList = false,
+	CustomRanks = false,
 
-	OnStartup = true;
-	OnJoin = true;
-	OnSpawn = true;
+	OnStartup = true,
+	OnJoin = true,
+	OnSpawn = true,
 
-	Allowed_API_Calls = false;
-	HideScript = false;
+	Allowed_API_Calls = false,
+	HideScript = false,
 }
 
 local function tabToString(tab)
@@ -31,7 +31,7 @@ local function tabToString(tab)
 				str ..= "; "
 			end
 
-			str ..= tostring(i) ..": ".. tostring(v)
+			str ..= tostring(i) .. ": " .. tostring(v)
 		end
 		return str
 	else
@@ -52,49 +52,49 @@ return function(data, env)
 	local Remote = client.Remote
 	local Variables = client.Variables
 	local Deps = client.Deps
-	local Functions = client.Functions;
+	local Functions = client.Functions
 
 	local gTable
 	local window = UI.Make("Window", {
-		Name  = "UserPanel";
-		Title = "Adonis";
-		Icon = "rbxassetid://7681261289"; --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
-		Size  = {465, 325};
-		AllowMultiple = false;
+		Name = "UserPanel",
+		Title = "Adonis",
+		Icon = "rbxassetid://7681261289", --"rbxassetid://7681088830"; --"rbxassetid://7681233602"; --"rbxassetid://7681048299";
+		Size = { 465, 325 },
+		AllowMultiple = false,
 		OnClose = function()
 			Variables.WaitingForBind = false
-		end
+		end,
 	})
 
 	local function createPurchaseWindow(isGamepass, id)
 		local purchaseWindow = UI.Make("Window", {
-			Name = "Purchase window";
-			Title = "Purchase "..(isGamepass and "gamepass" or "asset");
-			Icon = client.MatIcons["Shopping cart"];
-			AllowMultiple = false;
-			Size = {380, 160};
-			SizeLocked = true;
+			Name = "Purchase window",
+			Title = "Purchase " .. (isGamepass and "gamepass" or "asset"),
+			Icon = client.MatIcons["Shopping cart"],
+			AllowMultiple = false,
+			Size = { 380, 160 },
+			SizeLocked = true,
 		})
 
 		if purchaseWindow then
 			purchaseWindow:Add("TextLabel", {
-				Size = UDim2.new(1, -20, 1, -55);
-				Position = UDim2.new(0.5, 0, 0, 10);
-				AnchorPoint = Vector2.new(0.5, 0);
-				ZIndex = 2;
-				TextScaled = true;
-				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.";
+				Size = UDim2.new(1, -20, 1, -55),
+				Position = UDim2.new(0.5, 0, 0, 10),
+				AnchorPoint = Vector2.new(0.5, 0),
+				ZIndex = 2,
+				TextScaled = true,
+				Text = "This game does not allow third party purchases. If you would like to purchase, please copy the link below and put it in your browser.",
 			})
 
 			purchaseWindow:Add("TextBox", {
-				Size = UDim2.new(1, -20, 0, 30);
-				Position = UDim2.new(0.5, 0, 1, -10);
-				AnchorPoint = Vector2.new(0.5, 1);
-				ZIndex = 2;
-				ClearTextOnFocus = false;
-				TextEditable = false;
-				TextScaled = true;
-				Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id)
+				Size = UDim2.new(1, -20, 0, 30),
+				Position = UDim2.new(0.5, 0, 1, -10),
+				AnchorPoint = Vector2.new(0.5, 1),
+				ZIndex = 2,
+				ClearTextOnFocus = false,
+				TextEditable = false,
+				TextScaled = true,
+				Text = string.format("https://roblox.com/%s/%d/", isGamepass and "game-pass" or "library", id),
 			})
 
 			purchaseWindow:Ready()
@@ -108,18 +108,23 @@ return function(data, env)
 			local logEvent, finishEvent
 
 			logEvent = service.LogService.MessageOut:Connect(function(msg, typ)
-				if typ == Enum.MessageType.MessageWarning and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt") then
+				if
+					typ == Enum.MessageType.MessageWarning
+					and string.find(msg, "AllowThirdPartySales has blocked the purchase prompt")
+				then
 					client.Variables.AllowThirdPartyPurchases = false
 
 					createPurchaseWindow(isGamepass, id)
 				end
 			end)
-			finishEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]:Connect(function(plr, aid)
-				if plr == service.Players.LocalPlayer and aid == id then
-					logEvent:Disconnect()
-					finishEvent:Disconnect()
+			finishEvent = service.MarketPlace[isGamepass and "PromptGamePassPurchaseFinished" or "PromptPurchaseFinished"]:Connect(
+				function(plr, aid)
+					if plr == service.Players.LocalPlayer and aid == id then
+						logEvent:Disconnect()
+						finishEvent:Disconnect()
+					end
 				end
-			end)
+			)
 
 			if isGamepass then
 				service.MarketPlace:PromptGamePassPurchase(service.Players.LocalPlayer, id)
@@ -131,22 +136,22 @@ return function(data, env)
 
 	local function showTable(tab, setting)
 		local tabPath = type(setting) == "table" and setting
-		local setting = tabPath and tabPath[#tabPath-1] or setting
+		local setting = tabPath and tabPath[#tabPath - 1] or setting
 		local name = tabPath and table.concat(tabPath, ".") or setting
 
-		local tabWindow = UI.Make("Window",{
-			Name  = name .. "EditSettingsTable";
-			Title = name;
-			Size  = {320, 300};
-			AllowMultiple = false;
+		local tabWindow = UI.Make("Window", {
+			Name = name .. "EditSettingsTable",
+			Title = name,
+			Size = { 320, 300 },
+			AllowMultiple = false,
 		})
 
 		if tabWindow then
 			--// Display tab & allow changes
 			local items = tabWindow:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 1;
+				Size = UDim2.new(1, -10, 1, -35),
+				Position = UDim2.new(0, 5, 0, 5),
+				BackgroundTransparency = 1,
 			})
 
 			if tabPath and tabPath[2] == "Ranks" or canEditTables[setting] then
@@ -156,18 +161,18 @@ return function(data, env)
 				local function showItems()
 					local num = 0
 					selected = nil
-					items:ClearAllChildren();
+					items:ClearAllChildren()
 
 					local fromOffset = UDim2.fromOffset
 					local listSize = UDim2.new(1, 0, 0, 25)
 
-					for i,v in ipairs(tab) do
+					for i, v in ipairs(tab) do
 						items:Add("TextButton", {
-							Text = tabToString(v);
-							Size = listSize;
-							Position = fromOffset(0, num*25);
-							Visible = true;
-							ZIndex = 100;
+							Text = tabToString(v),
+							Size = listSize,
+							Position = fromOffset(0, num * 25),
+							Visible = true,
+							ZIndex = 100,
 							OnClicked = function(button)
 								if selected then
 									selected.Button.BackgroundTransparency = 0
@@ -175,11 +180,11 @@ return function(data, env)
 
 								button.BackgroundTransparency = 0.5
 								selected = {
-									Index = i;
-									Value = v;
-									Button = button;
+									Index = i,
+									Value = v,
+									Button = button,
 								}
-							end
+							end,
 						})
 
 						num += 1
@@ -189,27 +194,28 @@ return function(data, env)
 				end
 
 				local entryText
-				local entryBox; entryBox = tabWindow:Add("Frame", {
-					Visible = false;
-					Size = UDim2.new(0, 200, 0, 75);
-					Position = UDim2.new(0.5, -100, 0.5, -100);
-					ZIndex = 100;
+				local entryBox
+				entryBox = tabWindow:Add("Frame", {
+					Visible = false,
+					Size = UDim2.new(0, 200, 0, 75),
+					Position = UDim2.new(0.5, -100, 0.5, -100),
+					ZIndex = 100,
 					Children = {
 						{
-							Class = "TextLabel";
-							Text = "Entry:";
-							Position = UDim2.new(0, 15, 0, 10);
-							Size = UDim2.new(0, 40, 0, 25);
-							BackgroundTransparency = 1;
-							ZIndex = 100;
-						};
+							Class = "TextLabel",
+							Text = "Entry:",
+							Position = UDim2.new(0, 15, 0, 10),
+							Size = UDim2.new(0, 40, 0, 25),
+							BackgroundTransparency = 1,
+							ZIndex = 100,
+						},
 						{
-							Class = "TextButton";
-							Text = "Add";
-							Position = UDim2.new(0.5, 0, 1, -30);
-							Size = UDim2.new(0.5, -20, 0, 20);
-							BackgroundTransparency = 1;
-							ZIndex = 100;
+							Class = "TextButton",
+							Text = "Add",
+							Position = UDim2.new(0.5, 0, 1, -30),
+							Size = UDim2.new(0.5, -20, 0, 20),
+							BackgroundTransparency = 1,
+							ZIndex = 100,
 							OnClicked = function()
 								if not inputBlock then
 									inputBlock = true
@@ -222,40 +228,40 @@ return function(data, env)
 									inputBlock = false
 									showItems()
 								end
-							end
-						};
+							end,
+						},
 						{
-							Class = "TextButton";
-							Text = "Cancel";
-							Position = UDim2.new(0, 10, 1, -30);
-							Size = UDim2.new(0.5, -20, 0, 20);
-							BackgroundTransparency = 1;
-							ZIndex = 100;
+							Class = "TextButton",
+							Text = "Cancel",
+							Position = UDim2.new(0, 10, 1, -30),
+							Size = UDim2.new(0.5, -20, 0, 20),
+							BackgroundTransparency = 1,
+							ZIndex = 100,
 							OnClicked = function()
 								if not inputBlock then
 									inputBlock = false
 									entryBox.Visible = false
 								end
-							end
-						};
-					}
+							end,
+						},
+					},
 				})
 
 				entryText = entryBox:Add("TextBox", {
-					Position = UDim2.new(0, 55, 0, 10);
-					Size = UDim2.new(1, -60, 0, 25);
-					Text = "";
-					PlaceholderText = "Type entry here";
-					TextScaled = true;
-					BackgroundColor3 = Color3.new(1,1,1);
-					BackgroundTransparency = 0.8;
-					ZIndex = 100;
+					Position = UDim2.new(0, 55, 0, 10),
+					Size = UDim2.new(1, -60, 0, 25),
+					Text = "",
+					PlaceholderText = "Type entry here",
+					TextScaled = true,
+					BackgroundColor3 = Color3.new(1, 1, 1),
+					BackgroundTransparency = 0.8,
+					ZIndex = 100,
 				})
 
 				tabWindow:Add("TextButton", {
-					Text = "Remove";
-					Position = UDim2.new(0, 5, 1, -25);
-					Size = UDim2.new(0.5, -10, 0, 20);
+					Text = "Remove",
+					Position = UDim2.new(0, 5, 1, -25),
+					Size = UDim2.new(0.5, -10, 0, 20),
 					OnClicked = function(button)
 						if selected and not inputBlock then
 							inputBlock = true
@@ -265,28 +271,28 @@ return function(data, env)
 							wait(0.5)
 							inputBlock = false
 						end
-					end
+					end,
 				})
 
 				tabWindow:Add("TextButton", {
 					Text = "Add",
-					Position = UDim2.new(0.5, 0, 1, -25);
-					Size = UDim2.new(0.5, -5, 0, 20);
+					Position = UDim2.new(0.5, 0, 1, -25),
+					Size = UDim2.new(0.5, -5, 0, 20),
 					OnClicked = function()
 						if not inputBlock then
 							entryText.Text = ""
 							entryBox.Visible = true
 						end
-					end
+					end,
 				})
 
-				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1,1,1), 0.25)
+				entryBox.BackgroundColor3 = entryBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.25)
 				showItems()
 			else
 				items:Add("TextLabel", {
-					Text = "Cannot edit this table in-game";
-					Size = UDim2.new(1, 0, 0, 25);
-					Position = UDim2.new(0, 0, 0, 0);
+					Text = "Cannot edit this table in-game",
+					Size = UDim2.new(1, 0, 0, 25),
+					Position = UDim2.new(0, 0, 0, 0),
 				})
 			end
 
@@ -295,39 +301,40 @@ return function(data, env)
 	end
 
 	if window then
-		local playerData   = Remote.Get("PlayerData")
-		local chatMod 	   = Remote.Get("Setting",{"Prefix","SpecialPrefix","BatchKey","AnyPrefix","DonorCommands","DonorCapes"})
+		local playerData = Remote.Get("PlayerData")
+		local chatMod =
+			Remote.Get("Setting", { "Prefix", "SpecialPrefix", "BatchKey", "AnyPrefix", "DonorCommands", "DonorCapes" })
 		local settingsData = Remote.Get("AllSettings")
 
 		Variables.Aliases = playerData.Aliases or {}
 
 		local tabFrame = window:Add("TabFrame", {
-			Size = UDim2.new(1, -10, 1, -10);
-			Position = UDim2.new(0, 5, 0, 5);
+			Size = UDim2.new(1, -10, 1, -10),
+			Position = UDim2.new(0, 5, 0, 5),
 		})
 
 		local infoTab = tabFrame:NewTab("Info", {
-			Text = "Info";
+			Text = "Info",
 		})
 
 		local donorTab = tabFrame:NewTab("Donate", {
-			Text = "Donate";
+			Text = "Donate",
 		})
 
 		local keyTab = tabFrame:NewTab("Keybinds", {
-			Text = "Keybinds";
+			Text = "Keybinds",
 		})
 
 		local aliasTab = tabFrame:NewTab("Aliases", {
-			Text = "Aliases";
+			Text = "Aliases",
 		})
 
 		local clientTab = tabFrame:NewTab("Client", {
-			Text = "Client";
+			Text = "Client",
 		})
 
 		local gameTab = tabFrame:NewTab("Game", {
-			Text = "Game";
+			Text = "Game",
 		})
 
 		if data.Tab then
@@ -346,120 +353,123 @@ return function(data, env)
 			end
 		end
 
-
 		--// Help/Info
 		do
 			infoTab:Add("TextLabel", {
-				Text = "Adonis is a frequently updated, community maintained, open source administration system created by Sceleratis (Davey_Bones). \n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.\nHave an idea? Want to participate? Join us on GitHub! (GitHub.com/Sceleratis/Adonis)";
-				TextWrapped = true;
-				Size = UDim2.new(1, -145, 1, -10);
-				Position = UDim2.new(0, 5, 0, 5);
+				Text = "Adonis is a frequently updated, community maintained, open source administration system created by Sceleratis (Davey_Bones). \n\nIts purpose is to assist in the\nadministration and moderation\nof Roblox game servers.\n\nFeel free to take and edit it on\nthe condition that existing credits remain.\nHave an idea? Want to participate? Join us on GitHub! (GitHub.com/Sceleratis/Adonis)",
+				TextWrapped = true,
+				Size = UDim2.new(1, -145, 1, -10),
+				Position = UDim2.new(0, 5, 0, 5),
 			})
 
 			infoTab:Add("TextButton", {
-				Text = "Commands";
-				Size = UDim2.new(0, 130, 0, 40);
-				Position = UDim2.new(1, -135, 0, 5);
-				BackgroundTransparency = 0.5;
+				Text = "Commands",
+				Size = UDim2.new(0, 130, 0, 40),
+				Position = UDim2.new(1, -135, 0, 5),
+				BackgroundTransparency = 0.5,
 				Events = {
 					MouseButton1Down = function()
-						Remote.Send("ProcessCommand", chatMod.Prefix.."cmds")
-					end
-				}
+						Remote.Send("ProcessCommand", chatMod.Prefix .. "cmds")
+					end,
+				},
 			})
 
 			infoTab:Add("TextButton", {
-				Text = "Changelog";
-				Size = UDim2.new(0, 130, 0, 40);
-				Position = UDim2.new(1, -135, 0, 50);
-				BackgroundTransparency = 0.5;
+				Text = "Changelog",
+				Size = UDim2.new(0, 130, 0, 40),
+				Position = UDim2.new(1, -135, 0, 50),
+				BackgroundTransparency = 0.5,
 				Events = {
 					MouseButton1Down = function()
 						UI.Make("List", {
-							Title = "Changelog";
-							Table = client.Changelog;
+							Title = "Changelog",
+							Table = client.Changelog,
 						})
-					end
-				}
+					end,
+				},
 			})
 
 			infoTab:Add("TextButton", {
-				Text = "Credits";
-				Size = UDim2.new(0, 130, 0, 40);
-				Position = UDim2.new(1, -135, 0, 95);
-				BackgroundTransparency = 0.5;
+				Text = "Credits",
+				Size = UDim2.new(0, 130, 0, 40),
+				Position = UDim2.new(1, -135, 0, 95),
+				BackgroundTransparency = 0.5,
 				Events = {
 					MouseButton1Down = function()
 						UI.Make("Credits", {})
-					end
-				}
+					end,
+				},
 			})
 
-			infoTab:Add("TextButton", {
-				Text = "Get Loader";
-				Size = UDim2.new(0, 130, 0, 40);
-				Position = UDim2.new(1, -135, 0, 140);
-				BackgroundTransparency = 0.5;
-				Events = {
-					MouseButton1Down = function()
-						promptPurchase(false, 7510622625)
-					end
-				}
-			}):Add("ImageLabel", {
-				BackgroundTransparency = 1;
-				Image = "rbxassetid://7346570801";
-				ImageTransparency = 0.2;
-				Size = UDim2.new(0, 18, 0, 18);
-				Position = UDim2.new(1, -22, 0, 4);
-			})
+			infoTab
+				:Add("TextButton", {
+					Text = "Get Loader",
+					Size = UDim2.new(0, 130, 0, 40),
+					Position = UDim2.new(1, -135, 0, 140),
+					BackgroundTransparency = 0.5,
+					Events = {
+						MouseButton1Down = function()
+							promptPurchase(false, 7510622625)
+						end,
+					},
+				})
+				:Add("ImageLabel", {
+					BackgroundTransparency = 1,
+					Image = "rbxassetid://7346570801",
+					ImageTransparency = 0.2,
+					Size = UDim2.new(0, 18, 0, 18),
+					Position = UDim2.new(1, -22, 0, 4),
+				})
 
-			infoTab:Add("TextButton", {
-				Text = "Get Source";
-				Size = UDim2.new(0, 130, 0, 40);
-				Position = UDim2.new(1, -135, 0, 185);
-				BackgroundTransparency = 0.5;
-				Events = {
-					MouseButton1Down = function()
-						promptPurchase(false, 7510592873)
-					end
-				}
-			}):Add("ImageLabel", {
-				BackgroundTransparency = 1;
-				Image = "rbxassetid://7346570801";
-				ImageTransparency = 0.2;
-				Size = UDim2.new(0, 18, 0, 18);
-				Position = UDim2.new(1, -22, 0, 4);
-			})
-
+			infoTab
+				:Add("TextButton", {
+					Text = "Get Source",
+					Size = UDim2.new(0, 130, 0, 40),
+					Position = UDim2.new(1, -135, 0, 185),
+					BackgroundTransparency = 0.5,
+					Events = {
+						MouseButton1Down = function()
+							promptPurchase(false, 7510592873)
+						end,
+					},
+				})
+				:Add("ImageLabel", {
+					BackgroundTransparency = 1,
+					Image = "rbxassetid://7346570801",
+					ImageTransparency = 0.2,
+					Size = UDim2.new(0, 18, 0, 18),
+					Position = UDim2.new(1, -22, 0, 4),
+				})
 		end
-
 
 		--// Donor Tab
 		do
-			local donorData       = playerData.Donor
+			local donorData = playerData.Donor
 			local currentMaterial = donorData and donorData.Cape.Material
-			local currentTexture  = donorData and donorData.Cape.Image
-			local currentColor    = donorData and donorData.Cape.Color
+			local currentTexture = donorData and donorData.Cape.Image
+			local currentColor = donorData and donorData.Cape.Color
 
 			if type(currentColor) == "table" then
-				currentColor = Color3.new(currentColor[1],currentColor[2],currentColor[3])
+				currentColor = Color3.new(currentColor[1], currentColor[2], currentColor[3])
 			else
 				currentColor = BrickColor.new(currentColor).Color
 			end
 
-			local dStatus = donorTab:Add("TextLabel", {
-				Text = " Donor Status: ";
-				Size = UDim2.new(1, -10, 0, 20);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 0.25;
-				TextXAlignment = "Left";
-			}):Add("TextLabel", {
-				Text = (playerData.isDonor and "Donated") or "Not a Donor";
-				Size = UDim2.new(0, 150, 1, 0);
-				Position = UDim2.new(1, -155, 0, 0);
-				BackgroundTransparency = 1;
-				TextXAlignment = "Right";
-			})
+			local dStatus = donorTab
+				:Add("TextLabel", {
+					Text = " Donor Status: ",
+					Size = UDim2.new(1, -10, 0, 20),
+					Position = UDim2.new(0, 5, 0, 5),
+					BackgroundTransparency = 0.25,
+					TextXAlignment = "Left",
+				})
+				:Add("TextLabel", {
+					Text = (playerData.isDonor and "Donated") or "Not a Donor",
+					Size = UDim2.new(0, 150, 1, 0),
+					Position = UDim2.new(1, -155, 0, 0),
+					BackgroundTransparency = 1,
+					TextXAlignment = "Right",
+				})
 
 			local function updateStatus()
 				dStatus.Text = "Updating..."
@@ -469,222 +479,223 @@ return function(data, env)
 			end
 
 			donorTab:Add("TextLabel", {
-				Text = " Donor Cape: ";
-				Size = UDim2.new(1, -10, 0, 20);
-				Position = UDim2.new(0, 5, 0, 25);
-				BackgroundTransparency = 0.8;
-				TextXAlignment = "Left";
+				Text = " Donor Cape: ",
+				Size = UDim2.new(1, -10, 0, 20),
+				Position = UDim2.new(0, 5, 0, 25),
+				BackgroundTransparency = 0.8,
+				TextXAlignment = "Left",
 				Children = {
 					{
-						Class = "Boolean";
-						TextXAlignment = "Right";
-						Size = UDim2.new(0, 150, 1, 0);
-						Position = UDim2.new(1, -155, 0, 0);
-						TextTransparency = (playerData.isDonor and 0) or 0.5;
-						BackgroundTransparency = 1;
-						Enabled = playerData.isDonor and playerData.Donor.Enabled;
+						Class = "Boolean",
+						TextXAlignment = "Right",
+						Size = UDim2.new(0, 150, 1, 0),
+						Position = UDim2.new(1, -155, 0, 0),
+						TextTransparency = (playerData.isDonor and 0) or 0.5,
+						BackgroundTransparency = 1,
+						Enabled = playerData.isDonor and playerData.Donor.Enabled,
 						OnToggle = playerData.isDonor and function(enabled)
 							service.Debounce("DonorStatusUpdate", function()
 								playerData.Donor.Enabled = enabled
 								updateStatus()
 							end)
-						end
-					}
-				}
+						end,
+					},
+				},
 			})
 
 			donorTab:Add("TextLabel", {
-				Text = " Cape Color: ";
-				Size = UDim2.new(1, -10, 0, 20);
-				Position = UDim2.new(0, 5, 0, 45);
-				BackgroundTransparency = 0.25;
-				TextXAlignment = "Left";
+				Text = " Cape Color: ",
+				Size = UDim2.new(1, -10, 0, 20),
+				Position = UDim2.new(0, 5, 0, 45),
+				BackgroundTransparency = 0.25,
+				TextXAlignment = "Left",
 				Children = {
 					{
-						Class = "TextButton";
-						Text = "";
-						Size = UDim2.new(0, 40, 1, -6);
-						Position = UDim2.new(1, -45, 0, 3);
-						BackgroundColor3 = currentColor;
-						TextTransparency = (playerData.isDonor and 0) or 0.5;
-						BackgroundTransparency = 0;
-						BorderPixelSize = 1;
-						BorderColor3 = Color3.fromRGB(100, 100, 100);
+						Class = "TextButton",
+						Text = "",
+						Size = UDim2.new(0, 40, 1, -6),
+						Position = UDim2.new(1, -45, 0, 3),
+						BackgroundColor3 = currentColor,
+						TextTransparency = (playerData.isDonor and 0) or 0.5,
+						BackgroundTransparency = 0,
+						BorderPixelSize = 1,
+						BorderColor3 = Color3.fromRGB(100, 100, 100),
 						OnClick = playerData.isDonor and function(new)
 							service.Debounce("DonorStatusUpdate", function()
 								local newColor = UI.Make("ColorPicker", {
-									Color = currentColor;
+									Color = currentColor,
 								})
 
 								currentColor = newColor or currentColor
 								new.BackgroundColor3 = currentColor
-								donorData.Cape.Color = {currentColor.R; currentColor.G; currentColor.B;}
+								donorData.Cape.Color = { currentColor.R, currentColor.G, currentColor.B }
 								updateStatus()
 							end)
-						end
-					}
-				}
+						end,
+					},
+				},
 			})
 
 			donorTab:Add("TextLabel", {
-				Text = " Cape Material: ";
-				Size = UDim2.new(1, -10, 0, 20);
-				Position = UDim2.new(0, 5, 0, 65);
-				BackgroundTransparency = 0.8;
-				TextXAlignment = "Left";
+				Text = " Cape Material: ",
+				Size = UDim2.new(1, -10, 0, 20),
+				Position = UDim2.new(0, 5, 0, 65),
+				BackgroundTransparency = 0.8,
+				TextXAlignment = "Left",
 				Children = {
 					{
-						Class = "Dropdown";
-						Size = UDim2.new(0, 100, 1, 0);
-						Position = UDim2.new(1, -105, 0, 0);
-						BackgroundTransparency = 1;
-						Selected = currentMaterial;
-						TextAlignment = "Right";
-						NoArrow = true;
+						Class = "Dropdown",
+						Size = UDim2.new(0, 100, 1, 0),
+						Position = UDim2.new(1, -105, 0, 0),
+						BackgroundTransparency = 1,
+						Selected = currentMaterial,
+						TextAlignment = "Right",
+						NoArrow = true,
 						TextProperties = {
-							TextTransparency = (playerData.isDonor and 0) or 0.5;
-						};
+							TextTransparency = (playerData.isDonor and 0) or 0.5,
+						},
 
 						Options = playerData.isDonor and {
-							"Brick";
-							"Cobblestone";
-							"Concrete";
-							"CorrodedMetal";
-							"DiamondPlate";
-							"Fabric";
-							"Foil";
-							"ForceField";
-							"Granite";
-							"Grass";
-							"Ice";
-							"Marble";
-							"Metal";
-							"Neon";
-							"Pebble";
-							"Plastic";
-							"Sand";
-							"Slate";
-							"SmoothPlastic";
-							"Wood";
-							"WoodPlanks";
-							"Glass";
-						};
+							"Brick",
+							"Cobblestone",
+							"Concrete",
+							"CorrodedMetal",
+							"DiamondPlate",
+							"Fabric",
+							"Foil",
+							"ForceField",
+							"Granite",
+							"Grass",
+							"Ice",
+							"Marble",
+							"Metal",
+							"Neon",
+							"Pebble",
+							"Plastic",
+							"Sand",
+							"Slate",
+							"SmoothPlastic",
+							"Wood",
+							"WoodPlanks",
+							"Glass",
+						},
 
 						OnSelect = function(selection)
 							service.Debounce("DonorStatusUpdate", function()
 								donorData.Cape.Material = selection
 								updateStatus()
 							end)
-						end;
-					}
-				}
+						end,
+					},
+				},
 			})
 
 			donorTab:Add("TextLabel", {
-				Text = " Cape Texture: ";
-				Size = UDim2.new(1, -10, 0, 20);
-				Position = UDim2.new(0, 5, 0, 85);
-				BackgroundTransparency = 0.25;
-				TextXAlignment = "Left";
+				Text = " Cape Texture: ",
+				Size = UDim2.new(1, -10, 0, 20),
+				Position = UDim2.new(0, 5, 0, 85),
+				BackgroundTransparency = 0.25,
+				TextXAlignment = "Left",
 				Children = {
 					{
-						Class = "TextButton";
-						TextXAlignment = "Right";
-						Text = currentTexture or 0;
-						Size = UDim2.new(0, 100, 1, 0);
-						Position = UDim2.new(1, -105, 0, 0);
-						TextTransparency = (playerData.isDonor and 0) or 0.5;
-						BackgroundTransparency = 1;
-						OnClick = playerData.isDonor and function(textureButton)
-							service.Debounce("DonorStatusUpdate", function()
-								local lastValid = currentTexture
-								local donePreview = false
-								local pWindow = UI.Make("Window", {
-									Name = "CapeTexture";
-									Title = "Texture Preview";
-									Size = {200, 250};
-									Ready = true;
-									OnClose = function()
-										donePreview = true;
-									end
-								})
+						Class = "TextButton",
+						TextXAlignment = "Right",
+						Text = currentTexture or 0,
+						Size = UDim2.new(0, 100, 1, 0),
+						Position = UDim2.new(1, -105, 0, 0),
+						TextTransparency = (playerData.isDonor and 0) or 0.5,
+						BackgroundTransparency = 1,
+						OnClick = playerData.isDonor
+							and function(textureButton)
+								service.Debounce("DonorStatusUpdate", function()
+									local lastValid = currentTexture
+									local donePreview = false
+									local pWindow = UI.Make("Window", {
+										Name = "CapeTexture",
+										Title = "Texture Preview",
+										Size = { 200, 250 },
+										Ready = true,
+										OnClose = function()
+											donePreview = true
+										end,
+									})
 
-								local img = pWindow:Add("ImageLabel", {
-									BackgroundTransparency = 1;
-									Image = "rbxassetid://".. Functions.GetTexture(currentTexture);
-									Size = UDim2.new(1, -10, 1, -80);
-									Position = UDim2.new(0, 5, 0, 35);
-								})
+									local img = pWindow:Add("ImageLabel", {
+										BackgroundTransparency = 1,
+										Image = "rbxassetid://" .. Functions.GetTexture(currentTexture),
+										Size = UDim2.new(1, -10, 1, -80),
+										Position = UDim2.new(0, 5, 0, 35),
+									})
 
-								local lastChange = 0;
-								pWindow:Add("TextBox", {
-									Text = currentTexture;
-									Size = UDim2.new(1, -10, 0, 30);
-									Position = UDim2.new(0, 5, 0, 5);
-									TextChanged = function(text, enter, new)
-										local lastVal = math.random();
+									local lastChange = 0
+									pWindow:Add("TextBox", {
+										Text = currentTexture,
+										Size = UDim2.new(1, -10, 0, 30),
+										Position = UDim2.new(0, 5, 0, 5),
+										TextChanged = function(text, enter, new)
+											local lastVal = math.random()
 
-										lastChange = lastVal;
+											lastChange = lastVal
 
-										delay(0.5, function()
-											if lastChange == lastVal then --// So we only do the update when they finish typing
-												local num = tonumber(text)
-												if num then
-													lastValid = num
-													img.Image = "rbxassetid://".. Functions.GetTexture(num);
-												else
-													new.Text = lastValid
+											delay(0.5, function()
+												if lastChange == lastVal then --// So we only do the update when they finish typing
+													local num = tonumber(text)
+													if num then
+														lastValid = num
+														img.Image = "rbxassetid://" .. Functions.GetTexture(num)
+													else
+														new.Text = lastValid
+													end
 												end
-											end
-										end)
-									end
-								})
+											end)
+										end,
+									})
 
-								pWindow:Add("TextButton", {
-									Text = "Select";
-									Size = UDim2.new(1, -10, 0, 30);
-									Position = UDim2.new(0, 5, 1, -35);
-									OnClick = function(new)
-										currentTexture = lastValid;
-										donorData.Cape.Image = lastValid;
-										textureButton.Text = lastValid;
-										donePreview = true;
+									pWindow:Add("TextButton", {
+										Text = "Select",
+										Size = UDim2.new(1, -10, 0, 30),
+										Position = UDim2.new(0, 5, 1, -35),
+										OnClick = function(new)
+											currentTexture = lastValid
+											donorData.Cape.Image = lastValid
+											textureButton.Text = lastValid
+											donePreview = true
 
-										pWindow:Close()
-										updateStatus()
-									end
-								})
-							end)
-						end
-					}
-				}
+											pWindow:Close()
+											updateStatus()
+										end,
+									})
+								end)
+							end,
+					},
+				},
 			})
 
 			local donorPerks = {
-				"Perks you get here: "
+				"Perks you get here: ",
 			}
 
-			local capePerks,cmdPerks = {
-				"Customizable Cape (see above)";
-				"Access to !cape";
-				"Access to !uncape";
-			},{
-				"Access to !sparkles <BrickColor>";
-				"Access to !unsparkles";
-				"Access to !particle <textureID> <startColor3> <endColor3>";
-				"Access to !unparticle";
-				"Access to !fire <BrickColor>";
-				"Access to !unfire";
-				"Access to !light <BrickColor>";
-				"Access to !unlight";
-				"Access to !avataritem/!hat/!shirt/!pants <ID>";
-				"Access to !myhats";
-				"Access to !removehat <name>";
-				"Access to !removehats";
-				"Access to !neon <BrickColor>";
-				"Access to !removetshirt";
-			}
-
+			local capePerks, cmdPerks =
+				{
+					"Customizable Cape (see above)",
+					"Access to !cape",
+					"Access to !uncape",
+				}, {
+					"Access to !sparkles <BrickColor>",
+					"Access to !unsparkles",
+					"Access to !particle <textureID> <startColor3> <endColor3>",
+					"Access to !unparticle",
+					"Access to !fire <BrickColor>",
+					"Access to !unfire",
+					"Access to !light <BrickColor>",
+					"Access to !unlight",
+					"Access to !avataritem/!hat/!shirt/!pants <ID>",
+					"Access to !myhats",
+					"Access to !removehat <name>",
+					"Access to !removehats",
+					"Access to !neon <BrickColor>",
+					"Access to !removetshirt",
+				}
 
 			if chatMod.DonorCapes then
 				for _, v in ipairs(capePerks) do
@@ -702,83 +713,84 @@ return function(data, env)
 				table.insert(donorPerks, "Donor commands are disabled here")
 			end
 
-			donorTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -145, 1, -115);
-				Position = UDim2.new(0, 5, 0, 110);
-			}):GenerateList(donorPerks, {
-				TextXAlignment = "Left";
-			})
+			donorTab
+				:Add("ScrollingFrame", {
+					Size = UDim2.new(1, -145, 1, -115),
+					Position = UDim2.new(0, 5, 0, 110),
+				})
+				:GenerateList(donorPerks, {
+					TextXAlignment = "Left",
+				})
 
 			local dFrame = donorTab:Add("Frame", {
-				Size = UDim2.new(0, 140, 1, -110);
-				Position = UDim2.new(1, -140, 0, 105);
-				BackgroundTransparency = 1;
+				Size = UDim2.new(0, 140, 1, -110),
+				Position = UDim2.new(1, -140, 0, 105),
+				BackgroundTransparency = 1,
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "Donate (Perks)";
-				Size = UDim2.new(1, -10, 0, 40);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.fromRGB(231, 6, 141);
+				Text = "Donate (Perks)",
+				Size = UDim2.new(1, -10, 0, 40),
+				Position = UDim2.new(0, 5, 0, 5),
+				BackgroundTransparency = 0.5,
+				BackgroundColor3 = Color3.fromRGB(231, 6, 141),
 				OnClick = function()
 					promptPurchase(true, 1348327) --497917601)
-				end
+				end,
 			})
 
 			dFrame:Add("TextLabel", {
-				Text = "Extra (No Perks): ";
-				TextXAlignment = "Left";
-				Size = UDim2.new(1, 0, 0, 30);
-				Position = UDim2.new(0, 5, 1, -80);
-				BackgroundTransparency = 1;
+				Text = "Extra (No Perks): ",
+				TextXAlignment = "Left",
+				Size = UDim2.new(1, 0, 0, 30),
+				Position = UDim2.new(0, 5, 1, -80),
+				BackgroundTransparency = 1,
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "50";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0, 5, 1, -50);
-				BackgroundTransparency = 0.7;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.1);
+				Text = "50",
+				Size = UDim2.new(0, 60, 0, 20),
+				Position = UDim2.new(0, 5, 1, -50),
+				BackgroundTransparency = 0.7,
+				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.1),
 				OnClick = function()
 					promptPurchase(true, 5212076)
-				end
+				end,
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "100";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0.5, 5, 1, -50);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.3);
+				Text = "100",
+				Size = UDim2.new(0, 60, 0, 20),
+				Position = UDim2.new(0.5, 5, 1, -50),
+				BackgroundTransparency = 0.5,
+				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.3),
 				OnClick = function()
 					promptPurchase(true, 5212077)
-				end
+				end,
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "500";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0, 5, 1, -25);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.6);
+				Text = "500",
+				Size = UDim2.new(0, 60, 0, 20),
+				Position = UDim2.new(0, 5, 1, -25),
+				BackgroundTransparency = 0.5,
+				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.6),
 				OnClick = function()
 					promptPurchase(true, 5212081)
-				end
+				end,
 			})
 
 			dFrame:Add("TextButton", {
-				Text = "1000";
-				Size = UDim2.new(0, 60, 0, 20);
-				Position = UDim2.new(0.5, 5, 1, -25);
-				BackgroundTransparency = 0.5;
-				BackgroundColor3 = Color3.new(0,1,0):lerp(Color3.new(1,0,0), 0.9);
+				Text = "1000",
+				Size = UDim2.new(0, 60, 0, 20),
+				Position = UDim2.new(0.5, 5, 1, -25),
+				BackgroundTransparency = 0.5,
+				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.9),
 				OnClick = function()
 					promptPurchase(true, 5212082)
-				end
+				end,
 			})
 		end
-
 
 		--// Keybinds
 		do
@@ -795,38 +807,40 @@ return function(data, env)
 			local inputBlock = false
 			local commandBox
 			local keyBox
-			local keyCodeToName = Functions.KeyCodeToName;
+			local keyCodeToName = Functions.KeyCodeToName
 			local binds = keyTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 0.5;
+				Size = UDim2.new(1, -10, 1, -35),
+				Position = UDim2.new(0, 5, 0, 5),
+				BackgroundTransparency = 0.5,
 			})
-
-
 
 			local function getBinds()
 				local num = 0
 				selected = nil
-				binds:ClearAllChildren();
+				binds:ClearAllChildren()
 
-				for i,v in Variables.KeyBinds do
+				for i, v in Variables.KeyBinds do
 					binds:Add("TextButton", {
-						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
-						Size = UDim2.new(1, 0, 0, 25);
-						Position = UDim2.new(0, 0, 0, num*25);
+						Text = "Key: " .. string.upper(keyCodeToName(i)) .. " | Command: " .. v,
+						Size = UDim2.new(1, 0, 0, 25),
+						Position = UDim2.new(0, 0, 0, num * 25),
 						OnClicked = function(button)
 							if selected then
 								selected.Button.BackgroundTransparency = 0
-								if autoButtonColor then selected.Button.AutoButtonColor = true end
+								if autoButtonColor then
+									selected.Button.AutoButtonColor = true
+								end
 							end
 
 							if not (selected and selected.Button == button) then
 								button.BackgroundTransparency = 0.5
-								if autoButtonColor then button.AutoButtonColor = false end
+								if autoButtonColor then
+									button.AutoButtonColor = false
+								end
 								selected = {
-									Key = i;
-									Command = v;
-									Button = button;
+									Key = i,
+									Command = v,
+									Button = button,
 								}
 
 								editButton.TextTransparency = orgTextTransparency
@@ -844,7 +858,7 @@ return function(data, env)
 									removeButton.AutoButtonColor = false
 								end
 							end
-						end
+						end,
 					})
 
 					num += 1
@@ -853,31 +867,32 @@ return function(data, env)
 				binds:ResizeCanvas(false, true)
 			end
 
-			local binderBox; binderBox = keyTab:Add("Frame", {
-				Visible = false;
-				Size = UDim2.new(0, 220, 0, 150);
-				Position = UDim2.new(0.5, -100, 0.5, -100);
+			local binderBox
+			binderBox = keyTab:Add("Frame", {
+				Visible = false,
+				Size = UDim2.new(0, 220, 0, 150),
+				Position = UDim2.new(0.5, -100, 0.5, -100),
 				Children = {
 					{
-						Class = "TextLabel";
-						Text = "Command:";
-						Position = UDim2.new(0, 0, 0, 10);
-						Size = UDim2.new(1, 0, 0, 20);
-						BackgroundTransparency = 1;
-					};
+						Class = "TextLabel",
+						Text = "Command:",
+						Position = UDim2.new(0, 0, 0, 10),
+						Size = UDim2.new(1, 0, 0, 20),
+						BackgroundTransparency = 1,
+					},
 					{
-						Class = "TextLabel";
-						Text = "Key:";
-						Position = UDim2.new(0, 0, 0, 65);
-						Size = UDim2.new(1, 0, 0, 20);
-						BackgroundTransparency = 1;
-					};
+						Class = "TextLabel",
+						Text = "Key:",
+						Position = UDim2.new(0, 0, 0, 65),
+						Size = UDim2.new(1, 0, 0, 20),
+						BackgroundTransparency = 1,
+					},
 					{
-						Class = "TextButton";
-						Text = "Add";
-						Position = UDim2.new(0.5, 0, 1, -30);
-						Size = UDim2.new(0.5, -20, 0, 20);
-						BackgroundTransparency = 1;
+						Class = "TextButton",
+						Text = "Add",
+						Position = UDim2.new(0.5, 0, 1, -30),
+						Size = UDim2.new(0.5, -20, 0, 20),
+						BackgroundTransparency = 1,
 						OnClicked = function()
 							inputBlock = true
 
@@ -894,14 +909,14 @@ return function(data, env)
 							binderBox.Visible = false
 							inputBlock = false
 							getBinds()
-						end
-					};
+						end,
+					},
 					{
-						Class = "TextButton";
-						Text = "Cancel";
-						Position = UDim2.new(0, 10, 1, -30);
-						Size = UDim2.new(0.5, -20, 0, 20);
-						BackgroundTransparency = 1;
+						Class = "TextButton",
+						Text = "Cancel",
+						Position = UDim2.new(0, 10, 1, -30),
+						Size = UDim2.new(0.5, -20, 0, 20),
+						BackgroundTransparency = 1,
 						OnClicked = function()
 							if not inputBlock then
 								doneKey = true
@@ -913,31 +928,35 @@ return function(data, env)
 									keyInputHandler:Disconnect()
 								end
 							end
-						end
-					};
-				}
+						end,
+					},
+				},
 			})
 
 			commandBox = binderBox:Add("TextBox", {
-				Position = UDim2.new(0, 10, 0, 35);
-				Size = UDim2.new(1, -20, 0, 20);
-				ClearTextOnFocus = false;
+				Position = UDim2.new(0, 10, 0, 35),
+				Size = UDim2.new(1, -20, 0, 20),
+				ClearTextOnFocus = false,
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
-				end
+				end,
 			})
 
 			keyBox = binderBox:Add("TextButton", {
-				Text = "Click To Bind";
-				Position = UDim2.new(0, 10, 0, 90);
-				Size = UDim2.new(1, -20, 0, 20);
+				Text = "Click To Bind",
+				Position = UDim2.new(0, 10, 0, 90),
+				Size = UDim2.new(1, -20, 0, 20),
 				OnClicked = function(button)
 					doneKey = false
 					button.Text = "Waiting..."
 					Variables.WaitingForBind = true
 					keyInputHandler = window:BindEvent(service.UserInputService.InputBegan, function(InputObject)
 						local textbox = service.UserInputService:GetFocusedTextBox()
-						if not (textbox) and not doneKey and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+						if
+							not textbox
+							and not doneKey
+							and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard)
+						then
 							currentKey = InputObject.KeyCode
 							if currentKey then
 								button.Text = string.upper(keyCodeToName(currentKey.Value))
@@ -949,7 +968,7 @@ return function(data, env)
 							end
 						end
 					end)
-				end
+				end,
 			})
 
 			commandBox.BackgroundColor3 = commandBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
@@ -957,9 +976,9 @@ return function(data, env)
 			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 
 			removeButton = keyTab:Add("TextButton", {
-				Text = "Remove";
-				Position = UDim2.new(0, 5, 1, -25);
-				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
+				Text = "Remove",
+				Position = UDim2.new(0, 5, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3) - 1, 0, 20),
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						inputBlock = true
@@ -974,13 +993,13 @@ return function(data, env)
 						getBinds()
 						inputBlock = false
 					end
-				end
+				end,
 			})
 
 			editButton = keyTab:Add("TextButton", {
-				Text = "Edit";
-				Position = UDim2.new((1/3), 0, 1, -25);
-				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
+				Text = "Edit",
+				Position = UDim2.new((1 / 3), 0, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3) + 4, 0, 20),
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						currentKey = nil
@@ -989,7 +1008,7 @@ return function(data, env)
 						commandBox.Text = selected.Command
 						binderBox.Visible = true
 					end
-				end
+				end,
 			})
 
 			orgTextTransparency = removeButton.TextTransparency
@@ -1003,8 +1022,8 @@ return function(data, env)
 
 			keyTab:Add("TextButton", {
 				Text = "Add",
-				Position = UDim2.new((1/3)*2, 0, 1, -25);
-				Size = UDim2.new(1/3, -(15/3), 0, 20);
+				Position = UDim2.new((1 / 3) * 2, 0, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3), 0, 20),
 				OnClicked = function()
 					if not inputBlock then
 						editOldKeybind = nil
@@ -1013,7 +1032,7 @@ return function(data, env)
 						commandBox.Text = ""
 						binderBox.Visible = true
 					end
-				end
+				end,
 			})
 
 			getBinds()
@@ -1035,34 +1054,38 @@ return function(data, env)
 			local aliasBox
 
 			local aliases = aliasTab:Add("ScrollingFrame", {
-				Size = UDim2.new(1, -10, 1, -35);
-				Position = UDim2.new(0, 5, 0, 5);
-				BackgroundTransparency = 0.5;
+				Size = UDim2.new(1, -10, 1, -35),
+				Position = UDim2.new(0, 5, 0, 5),
+				BackgroundTransparency = 0.5,
 			})
 
 			local function getAliases()
 				local num = 0
 				selected = nil
-				aliases:ClearAllChildren();
+				aliases:ClearAllChildren()
 
 				for i, v in Variables.Aliases do
 					aliases:Add("TextButton", {
-						Text = "Alias: ".. i .." | Command: "..v;
-						Size = UDim2.new(1, 0, 0, 25);
-						Position = UDim2.new(0, 0, 0, num*25);
+						Text = "Alias: " .. i .. " | Command: " .. v,
+						Size = UDim2.new(1, 0, 0, 25),
+						Position = UDim2.new(0, 0, 0, num * 25),
 						OnClicked = function(button)
 							if selected then
 								selected.Button.BackgroundTransparency = 0
-								if autoButtonColor then selected.Button.AutoButtonColor = true end
+								if autoButtonColor then
+									selected.Button.AutoButtonColor = true
+								end
 							end
 
 							if not (selected and selected.Button == button) then
 								button.BackgroundTransparency = 0.5
-								if autoButtonColor then button.AutoButtonColor = false end
+								if autoButtonColor then
+									button.AutoButtonColor = false
+								end
 								selected = {
-									Alias = i;
-									Command = v;
-									Button = button;
+									Alias = i,
+									Command = v,
+									Button = button,
 								}
 
 								editButton.TextTransparency = orgTextTransparency
@@ -1080,7 +1103,7 @@ return function(data, env)
 									removeButton.AutoButtonColor = false
 								end
 							end
-						end
+						end,
 					})
 					num += 1
 				end
@@ -1088,33 +1111,34 @@ return function(data, env)
 				aliases:ResizeCanvas(false, true)
 			end
 
-			local binderBox; binderBox = aliasTab:Add("Frame", {
-				Visible = false;
-				Size = UDim2.new(0, 200, 0, 150);
-				Position = UDim2.new(0.5, -100, 0.5, -100);
+			local binderBox
+			binderBox = aliasTab:Add("Frame", {
+				Visible = false,
+				Size = UDim2.new(0, 200, 0, 150),
+				Position = UDim2.new(0.5, -100, 0.5, -100),
 				Children = {
 					{
-						Class = "TextLabel";
-						Text = "Command:";
-						Position = UDim2.new(0, 0, 0, 10);
-						Size = UDim2.new(1, 0, 0, 20);
-						BackgroundTransparency = 1;
-					};
+						Class = "TextLabel",
+						Text = "Command:",
+						Position = UDim2.new(0, 0, 0, 10),
+						Size = UDim2.new(1, 0, 0, 20),
+						BackgroundTransparency = 1,
+					},
 					{
-						Class = "TextLabel";
-						Text = "Alias:";
-						Position = UDim2.new(0, 0, 0, 65);
-						Size = UDim2.new(1, 0, 0, 20);
-						BackgroundTransparency = 1;
-					};
+						Class = "TextLabel",
+						Text = "Alias:",
+						Position = UDim2.new(0, 0, 0, 65),
+						Size = UDim2.new(1, 0, 0, 20),
+						BackgroundTransparency = 1,
+					},
 					{
-						Class = "TextButton";
-						Text = "Add";
-						Position = UDim2.new(0.5, 0, 1, -30);
-						Size = UDim2.new(0.5, -20, 0, 20);
-						BackgroundTransparency = 1;
+						Class = "TextButton",
+						Text = "Add",
+						Position = UDim2.new(0.5, 0, 1, -30),
+						Size = UDim2.new(0.5, -20, 0, 20),
+						BackgroundTransparency = 1,
 						OnClicked = function()
-							local alias = aliasBox.Text;
+							local alias = aliasBox.Text
 							inputBlock = true
 							if alias ~= "" and commandBox.Text ~= "" then
 								aliasBox.Text = "Saving..."
@@ -1131,14 +1155,14 @@ return function(data, env)
 							binderBox.Visible = false
 							inputBlock = false
 							getAliases()
-						end
-					};
+						end,
+					},
 					{
-						Class = "TextButton";
-						Text = "Cancel";
-						Position = UDim2.new(0, 10, 1, -30);
-						Size = UDim2.new(0.5, -20, 0, 20);
-						BackgroundTransparency = 1;
+						Class = "TextButton",
+						Text = "Cancel",
+						Position = UDim2.new(0, 10, 1, -30),
+						Size = UDim2.new(0.5, -20, 0, 20),
+						BackgroundTransparency = 1,
 						OnClicked = function()
 							if not inputBlock then
 								doneKey = true
@@ -1147,25 +1171,25 @@ return function(data, env)
 								inputBlock = false
 								binderBox.Visible = false
 							end
-						end
-					};
-				}
+						end,
+					},
+				},
 			})
 
 			commandBox = binderBox:Add("TextBox", {
-				Position = UDim2.new(0, 10, 0, 35);
-				Size = UDim2.new(1, -20, 0, 20);
-				ClearTextOnFocus = false;
+				Position = UDim2.new(0, 10, 0, 35),
+				Size = UDim2.new(1, -20, 0, 20),
+				ClearTextOnFocus = false,
 				TextChanged = function(newText, enter, box)
 					curCommandText = newText
-				end
+				end,
 			})
 
 			aliasBox = binderBox:Add("TextBox", {
-				Text = "";
-				ClearTextOnFocus = false;
-				Position = UDim2.new(0, 10, 0, 90);
-				Size = UDim2.new(1, -20, 0, 20);
+				Text = "",
+				ClearTextOnFocus = false,
+				Position = UDim2.new(0, 10, 0, 90),
+				Size = UDim2.new(1, -20, 0, 20),
 			})
 
 			commandBox.BackgroundColor3 = commandBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.1)
@@ -1173,9 +1197,9 @@ return function(data, env)
 			binderBox.BackgroundColor3 = binderBox.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.05)
 
 			removeButton = aliasTab:Add("TextButton", {
-				Text = "Remove";
-				Position = UDim2.new(0, 5, 1, -25);
-				Size = UDim2.new(1/3, -(15/3)-1, 0, 20);
+				Text = "Remove",
+				Position = UDim2.new(0, 5, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3) - 1, 0, 20),
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						inputBlock = true
@@ -1190,13 +1214,13 @@ return function(data, env)
 						getAliases()
 						inputBlock = false
 					end
-				end
+				end,
 			})
 
 			editButton = aliasTab:Add("TextButton", {
-				Text = "Edit";
-				Position = UDim2.new((1/3), 0, 1, -25);
-				Size = UDim2.new(1/3, -(15/3)+4, 0, 20);
+				Text = "Edit",
+				Position = UDim2.new((1 / 3), 0, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3) + 4, 0, 20),
 				OnClicked = function(button)
 					if selected and not inputBlock then
 						currentAlias = nil
@@ -1205,7 +1229,7 @@ return function(data, env)
 						commandBox.Text = selected.Command
 						binderBox.Visible = true
 					end
-				end
+				end,
 			})
 
 			orgTextTransparency = removeButton.TextTransparency
@@ -1219,8 +1243,8 @@ return function(data, env)
 
 			aliasTab:Add("TextButton", {
 				Text = "Add",
-				Position = UDim2.new((1/3)*2, 0, 1, -25);
-				Size = UDim2.new(1/3, -(15/3), 0, 20);
+				Position = UDim2.new((1 / 3) * 2, 0, 1, -25),
+				Size = UDim2.new(1 / 3, -(15 / 3), 0, 20),
 				OnClicked = function()
 					if not inputBlock then
 						currentAlias = nil
@@ -1229,7 +1253,7 @@ return function(data, env)
 						commandBox.Text = ""
 						binderBox.Visible = true
 					end
-				end
+				end,
 			})
 
 			getAliases()
@@ -1239,36 +1263,36 @@ return function(data, env)
 		do
 			local cliSettings = {
 				{
-					Text = "Keybinds: ";
-					Desc = "- Enables/Disables Keybinds";
-					Entry = "Boolean";
-					Value = Variables.KeybindsEnabled;
+					Text = "Keybinds: ",
+					Desc = "- Enables/Disables Keybinds",
+					Entry = "Boolean",
+					Value = Variables.KeybindsEnabled,
 					Function = function(enabled, toggle)
 						Variables.KeybindsEnabled = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
 						Remote.Get("UpdateClient", "KeybindsEnabled", enabled)
 						toggle.Text = text
-					end
-				};
+					end,
+				},
 				{
-					Text = "UI Keep Alive: ";
-					Desc = "- Prevents Adonis UI deletion on death";
-					Entry = "Boolean";
-					Value = Variables.UIKeepAlive;
+					Text = "UI Keep Alive: ",
+					Desc = "- Prevents Adonis UI deletion on death",
+					Entry = "Boolean",
+					Value = Variables.UIKeepAlive,
 					Function = function(enabled, toggle)
 						Variables.UIKeepAlive = enabled
 						local text = toggle.Text
 						toggle.Text = "Saving.."
 						Remote.Get("UpdateClient", "UIKeepAlive", enabled)
 						toggle.Text = text
-					end
-				};
+					end,
+				},
 				{
-					Text = "Particle Effects: ";
-					Desc = "- Enables/Disables Adonis made particles";
-					Entry = "Boolean";
-					Value = Variables.ParticlesEnabled;
+					Text = "Particle Effects: ",
+					Desc = "- Enables/Disables Adonis made particles",
+					Entry = "Boolean",
+					Value = Variables.ParticlesEnabled,
 					Function = function(enabled, toggle)
 						Variables.ParticlesEnabled = enabled
 
@@ -1282,13 +1306,13 @@ return function(data, env)
 						toggle.Text = "Saving.."
 						Remote.Get("UpdateClient", "ParticlesEnabled", enabled)
 						toggle.Text = text
-					end
-				};
+					end,
+				},
 				{
-					Text = "Capes: ";
-					Desc = "- Allows you to disable all player capes locally";
-					Entry = "Boolean";
-					Value = Variables.CapesEnabled;
+					Text = "Capes: ",
+					Desc = "- Allows you to disable all player capes locally",
+					Entry = "Boolean",
+					Value = Variables.CapesEnabled,
 					Function = function(enabled, toggle)
 						Variables.CapesEnabled = enabled
 
@@ -1308,14 +1332,14 @@ return function(data, env)
 						toggle.Text = "Saving.."
 						Remote.Get("UpdateClient", "CapesEnabled", enabled)
 						toggle.Text = text
-					end
-				};
+					end,
+				},
 				{
-					Text = "Hide Chat Commands: ";
-					Desc = "- Hide your commands run from the chat from others";
-					Entry = "Boolean";
-					Setting = "HideChatCommands";
-					Value = Variables.HideChatCommands or false;
+					Text = "Hide Chat Commands: ",
+					Desc = "- Hide your commands run from the chat from others",
+					Entry = "Boolean",
+					Setting = "HideChatCommands",
+					Value = Variables.HideChatCommands or false,
 					Function = function(enabled, toggle)
 						Variables.HideChatCommands = enabled
 
@@ -1323,8 +1347,8 @@ return function(data, env)
 						toggle.Text = "Saving.."
 						Remote.Get("UpdateClient", "HideChatCommands", enabled)
 						toggle.Text = text
-					end
-				};
+					end,
+				},
 				--[[{ --// Not totally removing this as it may come back in a different capacity in the future ~ Scel
 					Text = "Privacy Mode: ";
 					Desc = "- Hide certain info from your profile";
@@ -1341,22 +1365,24 @@ return function(data, env)
 					end
 				};--]]
 				{
-					Text = "Console Key: ";
-					Desc = "- Key used to open the console";
-					Entry = "Keybind";
-					Value = Variables.CustomConsoleKey or Remote.Get("Setting","ConsoleKeyCode");
+					Text = "Console Key: ",
+					Desc = "- Key used to open the console",
+					Entry = "Keybind",
+					Value = Variables.CustomConsoleKey or Remote.Get("Setting", "ConsoleKeyCode"),
 					Function = function(toggle)
 						service.Debounce("CliSettingKeybinder", function()
 							local gotKey
 							toggle.Text = "Waiting..."
 							local event = service.UserInputService.InputBegan:Connect(function(InputObject)
 								local textbox = service.UserInputService:GetFocusedTextBox()
-								if not (textbox) and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
+								if not textbox and rawequal(InputObject.UserInputType, Enum.UserInputType.Keyboard) then
 									gotKey = InputObject.KeyCode.Name
 								end
 							end)
 
-							repeat wait() until gotKey
+							repeat
+								wait()
+							until gotKey
 
 							Variables.CustomConsoleKey = gotKey
 							event:Disconnect()
@@ -1364,16 +1390,16 @@ return function(data, env)
 							Remote.Get("UpdateClient", "CustomConsoleKey", Variables.CustomConsoleKey)
 							toggle.Text = gotKey
 						end)
-					end
-				};
+					end,
+				},
 				{
-					Text = "Theme: ";
-					Desc = "- Allows you to set the Adonis UI theme";
-					Entry = "DropDown";
-					Setting = "CustomTheme";
-					Value = Variables.CustomTheme or "Game Theme";
+					Text = "Theme: ",
+					Desc = "- Allows you to set the Adonis UI theme",
+					Entry = "DropDown",
+					Setting = "CustomTheme",
+					Value = Variables.CustomTheme or "Game Theme",
 					Options = (function()
-						local themes = {"Game Theme"}
+						local themes = { "Game Theme" }
 						for _, v in ipairs(client.UIFolder:GetChildren()) do
 							local theme = (string.sub(v.Name, 1, 5) == "NoEnv" and string.sub(v.Name, 7)) or v.Name
 							if theme ~= "README" then
@@ -1381,7 +1407,7 @@ return function(data, env)
 							end
 						end
 						return themes
-					end)();
+					end)(),
 					Function = function(selection)
 						if selection == "Game Theme" then
 							Variables.CustomTheme = nil
@@ -1392,10 +1418,10 @@ return function(data, env)
 						end
 						task.delay(0.029, function()
 							window:Close()
-							UI.Make("UserPanel", {Tab = "Client"})
+							UI.Make("UserPanel", { Tab = "Client" })
 						end)
-					end
-				}
+					end,
+				},
 			}
 
 			local num = 0
@@ -1405,39 +1431,39 @@ return function(data, env)
 
 			for i, setData in ipairs(cliSettings) do
 				local label = clientTab:Add("TextLabel", {
-					Text = "  ".. setData.Text;
-					ToolTip = setData.Desc;
-					TextXAlignment = "Left";
-					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, num*30+5);
-					BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
+					Text = "  " .. setData.Text,
+					ToolTip = setData.Desc,
+					TextXAlignment = "Left",
+					Size = UDim2.new(1, -10, 0, 30),
+					Position = UDim2.new(0, 5, 0, num * 30 + 5),
+					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 				})
 
 				if setData.Entry == "Boolean" then
 					label:Add("Boolean", {
-						Size = UDim2.new(0, 120, 1, 0);
-						Position = UDim2.new(1, -120, 0, 0);
-						Enabled = setData.Value;
-						OnToggle = setData.Function;
-						BackgroundTransparency = 1;
+						Size = UDim2.new(0, 120, 1, 0),
+						Position = UDim2.new(1, -120, 0, 0),
+						Enabled = setData.Value,
+						OnToggle = setData.Function,
+						BackgroundTransparency = 1,
 					})
 				elseif setData.Entry == "Keybind" then
 					label:Add("TextButton", {
-						Text = tostring(setData.Value);
-						Size = UDim2.new(0, 120, 1, 0);
-						Position = UDim2.new(1, -120, 0, 0);
-						OnClick = setData.Function;
-						BackgroundTransparency = 1;
+						Text = tostring(setData.Value),
+						Size = UDim2.new(0, 120, 1, 0),
+						Position = UDim2.new(1, -120, 0, 0),
+						OnClick = setData.Function,
+						BackgroundTransparency = 1,
 					})
 				elseif setData.Entry == "DropDown" then
 					label:Add("Dropdown", {
-						Size = UDim2.new(0, 120, 1, 0);
-						Position = UDim2.new(1, -120, 0, 0);
-						Selected = setData.Value;
-						OnSelect = setData.Function;
-						Options = setData.Options;
+						Size = UDim2.new(0, 120, 1, 0),
+						Position = UDim2.new(1, -120, 0, 0),
+						Selected = setData.Value,
+						OnSelect = setData.Function,
+						Options = setData.Options,
 						--BackgroundColor3 = label.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.25);
-						BackgroundTransparency = 1;
+						BackgroundTransparency = 1,
 					})
 				end
 
@@ -1455,7 +1481,6 @@ return function(data, env)
 			clientTab:ResizeCanvas(false, true)
 		end
 
-
 		--// Game Settings
 		do
 			if settingsData then
@@ -1465,23 +1490,23 @@ return function(data, env)
 				local order = settingsData.Order
 
 				gameTab:Add("TextLabel", {
-					Text = "  Clear all saved settings: ";
-					ToolTip = "Clears all saved settings";
-					BackgroundTransparency = 0.2;
-					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, 5);
-					TextXAlignment = "Left";
+					Text = "  Clear all saved settings: ",
+					ToolTip = "Clears all saved settings",
+					BackgroundTransparency = 0.2,
+					Size = UDim2.new(1, -10, 0, 30),
+					Position = UDim2.new(0, 5, 0, 5),
+					TextXAlignment = "Left",
 					Children = {
 						TextButton = {
-							Text = "Clear";
-							Size = UDim2.new(0, 100, 1, 0);
-							Position = UDim2.new(1, -100, 0, 0);
-							BackgroundTransparency = 1;
+							Text = "Clear",
+							Size = UDim2.new(0, 100, 1, 0),
+							Position = UDim2.new(1, -100, 0, 0),
+							BackgroundTransparency = 1,
 							OnClick = function()
 								Remote.Send("ClearSavedSettings")
-							end
-						}
-					}
+							end,
+						},
+					},
 				})
 
 				local i = 1
@@ -1495,149 +1520,153 @@ return function(data, env)
 						continue
 					elseif value == nil then
 						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-							TextXAlignment = "Left";
+							Text = "  " .. setting .. ": ",
+							ToolTip = desc,
+							BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+							Size = UDim2.new(1, -10, 0, 30),
+							Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+							TextXAlignment = "Left",
 							Children = {
 								TextLabel = {
-									Text = "Studio Only";
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									TextTransparency = 0.5;
-									BackgroundTransparency = 1;
-								}
-							}
+									Text = "Studio Only",
+									Size = UDim2.new(0, 100, 1, 0),
+									Position = UDim2.new(1, -100, 0, 0),
+									TextTransparency = 0.5,
+									BackgroundTransparency = 1,
+								},
+							},
 						})
 					elseif type(value) == "table" then
 						if setting == "Ranks" then
 							i -= 1
 							for rank, data in value do
 								i += 1
-								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
+								if
+									string.match(rank, "^[WebPanel]")
+									or string.match(rank, "^[Trello]")
+									or data.Level >= 900
+								then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {
-										Text = "  "..rank..": ";
-										ToolTip = "Permission Level: ".. data.Level;
-										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-										Size = UDim2.new(1, -10, 0, 30);
-										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-										TextXAlignment = "Left";
+										Text = "  " .. rank .. ": ",
+										ToolTip = "Permission Level: " .. data.Level,
+										BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+										Size = UDim2.new(1, -10, 0, 30),
+										Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+										TextXAlignment = "Left",
 										Children = {
 											TextLabel = {
-												Text = "Studio Only";
-												Size = UDim2.new(0, 100, 1, 0);
-												Position = UDim2.new(1, -100, 0, 0);
-												TextTransparency = 0.5;
-												BackgroundTransparency = 1;
-											}
-										}
+												Text = "Studio Only",
+												Size = UDim2.new(0, 100, 1, 0),
+												Position = UDim2.new(1, -100, 0, 0),
+												TextTransparency = 0.5,
+												BackgroundTransparency = 1,
+											},
+										},
 									})
 								else
 									gameTab:Add("TextLabel", {
-										Text = "  "..rank..": ";
-										ToolTip = "Permission Level: ".. data.Level;
-										BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-										Size = UDim2.new(1, -10, 0, 30);
-										Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-										TextXAlignment = "Left";
+										Text = "  " .. rank .. ": ",
+										ToolTip = "Permission Level: " .. data.Level,
+										BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+										Size = UDim2.new(1, -10, 0, 30),
+										Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+										TextXAlignment = "Left",
 										Children = {
 											TextButton = {
-												Text = "Open";
-												Size = UDim2.new(0, 100, 1, 0);
-												Position = UDim2.new(1, -100, 0, 0);
-												BackgroundTransparency = 1;
+												Text = "Open",
+												Size = UDim2.new(0, 100, 1, 0),
+												Position = UDim2.new(1, -100, 0, 0),
+												BackgroundTransparency = 1,
 												OnClick = function()
-													showTable(data.Users, {"Settings", "Ranks", rank, "Users"})
-												end
-											}
-										}
+													showTable(data.Users, { "Settings", "Ranks", rank, "Users" })
+												end,
+											},
+										},
 									})
 								end
 							end
 						elseif not canEditTables[setting] then
 							gameTab:Add("TextLabel", {
-								Text = "  "..setting..": ";
-								ToolTip = desc;
-								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-								Size = UDim2.new(1, -10, 0, 30);
-								Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-								TextXAlignment = "Left";
+								Text = "  " .. setting .. ": ",
+								ToolTip = desc,
+								BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+								Size = UDim2.new(1, -10, 0, 30),
+								Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+								TextXAlignment = "Left",
 								Children = {
 									TextLabel = {
-										Text = "Studio Only";
-										Size = UDim2.new(0, 100, 1, 0);
-										Position = UDim2.new(1, -100, 0, 0);
-										TextTransparency = 0.5;
-										BackgroundTransparency = 1;
-									}
-								}
+										Text = "Studio Only",
+										Size = UDim2.new(0, 100, 1, 0),
+										Position = UDim2.new(1, -100, 0, 0),
+										TextTransparency = 0.5,
+										BackgroundTransparency = 1,
+									},
+								},
 							})
 						else
 							gameTab:Add("TextLabel", {
-								Text = "  "..setting..": ";
-								ToolTip = desc;
-								BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-								Size = UDim2.new(1, -10, 0, 30);
-								Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-								TextXAlignment = "Left";
+								Text = "  " .. setting .. ": ",
+								ToolTip = desc,
+								BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+								Size = UDim2.new(1, -10, 0, 30),
+								Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+								TextXAlignment = "Left",
 								Children = {
 									TextButton = {
-										Text = "Open";
-										Size = UDim2.new(0, 100, 1, 0);
-										Position = UDim2.new(1, -100, 0, 0);
-										BackgroundTransparency = 1;
+										Text = "Open",
+										Size = UDim2.new(0, 100, 1, 0),
+										Position = UDim2.new(1, -100, 0, 0),
+										BackgroundTransparency = 1,
 										OnClick = function()
 											showTable(value, setting)
-										end
-									}
-								}
+										end,
+									},
+								},
 							})
 						end
 					elseif type(value) == "boolean" then
 						gameTab:Add("TextLabel", {
-							Text = "  ".. tostring(setting)..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-							TextXAlignment = "Left";
+							Text = "  " .. tostring(setting) .. ": ",
+							ToolTip = desc,
+							BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+							Size = UDim2.new(1, -10, 0, 30),
+							Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+							TextXAlignment = "Left",
 							Children = {
 								Boolean = {
-									Enabled = value;
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									BackgroundTransparency = 1;
+									Enabled = value,
+									Size = UDim2.new(0, 100, 1, 0),
+									Position = UDim2.new(1, -100, 0, 0),
+									BackgroundTransparency = 1,
 									OnToggle = function(enabled, button)
 										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
 										Remote.Send("SaveSetSetting", setting, enabled)
-									end
-								}
-							}
+									end,
+								},
+							},
 						})
 					elseif type(value) == "string" or type(value) == "number" then
 						gameTab:Add("TextLabel", {
-							Text = "  "..setting..": ";
-							ToolTip = desc;
-							BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
-							Size = UDim2.new(1, -10, 0, 30);
-							Position = UDim2.new(0, 5, 0, 30*(i-1) + 5);
-							TextXAlignment = "Left";
+							Text = "  " .. setting .. ": ",
+							ToolTip = desc,
+							BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+							Size = UDim2.new(1, -10, 0, 30),
+							Position = UDim2.new(0, 5, 0, 30 * (i - 1) + 5),
+							TextXAlignment = "Left",
 							Children = {
 								TextBox = {
-									Text = value;
-									Size = UDim2.new(0, 100, 1, 0);
-									Position = UDim2.new(1, -100, 0, 0);
-									BackgroundTransparency = 1;
+									Text = value,
+									Size = UDim2.new(0, 100, 1, 0),
+									Position = UDim2.new(1, -100, 0, 0),
+									BackgroundTransparency = 1,
 									TextChanged = function(text, enter, new)
 										if enter then
 											--warn("Setting "..tostring(setting)..": "..tostring(text))
 											Remote.Send("SaveSetSetting", setting, text)
 										end
-									end
-								}
-							}
+									end,
+								},
+							},
 						})
 					end
 				end

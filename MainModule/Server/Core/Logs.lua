@@ -8,57 +8,50 @@ logError = nil
 
 --// Special Variables
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	local server = Vargs.Server
+	local service = Vargs.Service
 
 	local MaxLogs = 1000
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Core, Logs, Settings
 	local function Init()
-		Functions = server.Functions;
-		Admin = server.Admin;
-		Anti = server.Anti;
-		Core = server.Core;
-		HTTP = server.HTTP;
-		Logs = server.Logs;
-		Remote = server.Remote;
-		Process = server.Process;
-		Variables = server.Variables;
-		Settings = server.Settings;
+		Core = server.Core
+		Logs = server.Logs
+		Settings = server.Settings
 
-		MaxLogs = Settings.MaxLogs;
+		MaxLogs = Settings.MaxLogs
 
-		Logs.Init = nil;
-		Logs:AddLog("Script", "Logging Module Initialized");
-	end;
+		Logs.Init = nil
+		Logs:AddLog("Script", "Logging Module Initialized")
+	end
 
 	server.Logs = {
-		Init = Init;
-		Chats = {};
-		Joins = {};
-		Leaves = {};
-		Script = {};
-		RemoteFires = {};
-		Commands = {};
-		Exploit = {};
-		Errors = {};
-		DateTime = {};
-		TempUpdaters = {};
-		OldCommandLogsLimit = 1000; --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
+		Init = Init,
+		Chats = {},
+		Joins = {},
+		Leaves = {},
+		Script = {},
+		RemoteFires = {},
+		Commands = {},
+		Exploit = {},
+		Errors = {},
+		DateTime = {},
+		TempUpdaters = {},
+		OldCommandLogsLimit = 1000, --// Maximum number of command logs to save to the datastore (the higher the number, the longer the server will take to close)
 
 		TabToType = function(tab)
 			local indToName = {
-				Chats = "Chat";
-				Joins = "Join";
-				Leaves = "Leave";
-				Script = "Script";
-				RemoteFires = "RemoteFire";
-				Commands = "Command";
-				Exploit = "Exploit";
-				Errors = "Error";
-				DateTime = "DateTime";
+				Chats = "Chat",
+				Joins = "Join",
+				Leaves = "Leave",
+				Script = "Script",
+				RemoteFires = "RemoteFire",
+				Commands = "Command",
+				Exploit = "Exploit",
+				Errors = "Error",
+				DateTime = "DateTime",
 			}
 
 			for ind, t in server.Logs do
@@ -66,7 +59,7 @@ return function(Vargs, GetEnv)
 					return indToName[ind] or ind
 				end
 			end
-		end;
+		end,
 
 		AddLog = function(tab, log, misc)
 			if misc then
@@ -79,8 +72,8 @@ return function(Vargs, GetEnv)
 
 			if type(log) == "string" then
 				log = {
-					Text = log;
-					Desc = log;
+					Text = log,
+					Desc = log,
 				}
 			end
 
@@ -94,7 +87,7 @@ return function(Vargs, GetEnv)
 			end
 
 			service.Events.LogAdded:Fire(server.Logs.TabToType(tab), log, tab)
-		end;
+		end,
 
 		SaveCommandLogs = function()
 			--// Disable saving command logs in Studio; not required.
@@ -111,11 +104,6 @@ return function(Vargs, GetEnv)
 
 			local logsToSave = Logs.Commands --{}
 			local maxLogs = Logs.OldCommandLogsLimit
-			--local numLogsToSave = 200; --// Save the last X logs from this server
-
-			--for i = #Logs.Commands, i = math.max(#Logs.Commands - numLogsToSave, 1), -1 do
-			--	table.insert(logsToSave, Logs.Commands[i]);
-			--end
 
 			Core.UpdateData("OldCommandLogs", function(oldLogs)
 				local temp = {}
@@ -125,11 +113,11 @@ return function(Vargs, GetEnv)
 					if type(m) == "table" and newTab.Player then
 						local p = newTab.Player
 						newTab.Player = {
-							Name = p.Name;
-							UserId = p.UserId;
+							Name = p.Name,
+							UserId = p.UserId,
 						}
 					end
-					table.insert(temp, newTab)--{Time = m.Time; Text = m.Text..": "..m.Desc; Desc = m.Desc})
+					table.insert(temp, newTab)
 				end
 
 				if oldLogs then
@@ -159,18 +147,18 @@ return function(Vargs, GetEnv)
 			end)
 
 			warn("Command logs saved!")
-		end;
+		end,
 
 		ListUpdaters = {
-			TempUpdate = function(plr, data)
+			TempUpdate = function(_, data)
 				local updateKey = data.UpdateKey
 				local updater = Logs.TempUpdaters[updateKey]
 				if updater then
 					return updater(data)
 				end
-			end;
-		};
-	};
+			end,
+		},
+	}
 
 	Logs = Logs
 end

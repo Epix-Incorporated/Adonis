@@ -33,7 +33,12 @@ local RunService = game:GetService("RunService")
 local mutex = RunService:FindFirstChild("__Adonis_MUTEX")
 if mutex then
 	if mutex:IsA("StringValue") then
-		warn("Adonis is already running! Aborting...; Running Location:", mutex.Value, "This Location:", script:GetFullName())
+		warn(
+			"Adonis is already running! Aborting...; Running Location:",
+			mutex.Value,
+			"This Location:",
+			script:GetFullName()
+		)
 	else
 		warn("Adonis mutex detected but is not a StringValue! Aborting anyway...; This Location:", script:GetFullName())
 	end
@@ -55,36 +60,34 @@ else
 	local pluginsFolder = configFolder.Plugins
 	local themesFolder = configFolder.Themes
 
-	local backup = model:Clone()
-
 	local data = {
-		Settings = {} :: {[string]: any};
-		Descriptions = {} :: {[string]: string};
-		Messages = {} :: {string|{[string]: any}};
-		ServerPlugins = {} :: {ModuleScript};
-		ClientPlugins = {} :: {ModuleScript};
-		Packages = {} :: {Folder};
-		Themes = {} :: {Instance};
+		Settings = {} :: { [string]: any },
+		Descriptions = {} :: { [string]: string },
+		Messages = {} :: { string | { [string]: any } },
+		ServerPlugins = {} :: { ModuleScript },
+		ClientPlugins = {} :: { ModuleScript },
+		Packages = {} :: { Folder },
+		Themes = {} :: { Instance },
 
-		ModelParent = model.Parent;
-		Model = model;
-		Config = configFolder;
-		Core = loaderFolder;
+		ModelParent = model.Parent,
+		Model = model,
+		Config = configFolder,
+		Core = loaderFolder,
 
-		Loader = loader;
-		Dopper = dropper;
-		Runner = runner;
+		Loader = loader,
+		Dopper = dropper,
+		Runner = runner,
 
-		ModuleID = 7510592873;  --// https://www.roblox.com/library/7510592873/Adonis-MainModule
-		LoaderID = 7510622625;	--// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
+		ModuleID = 7510592873, --// https://www.roblox.com/library/7510592873/Adonis-MainModule
+		LoaderID = 7510622625, --// https://www.roblox.com/library/7510622625/Adonis-Loader-Sceleratis-Davey-Bones-Epix
 
-		DebugMode = true;
+		DebugMode = true,
 	}
 
 	--// Init
 
 	-- selene: allow(incorrect_standard_library_use)
-	script.Parent = nil --script:Destroy()
+	script.Parent = nil
 	model.Name = math.random()
 
 	local moduleId = data.ModuleID
@@ -96,7 +99,10 @@ else
 			end
 		end
 		if not moduleId then
-			error("Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in "..model.Parent:GetFullName())
+			error(
+				"Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in "
+					.. model.Parent:GetFullName()
+			)
 		end
 	end
 	local success, setTab = pcall(require, settingsModule)
@@ -105,10 +111,10 @@ else
 	else
 		warn("[DEVELOPER ERROR] Settings module errored while loading; Using defaults; Error Message: ", setTab)
 		table.insert(data.Messages, {
-			Title = "Warning!";
-			Icon = "rbxassetid://7495468117";
-			Message = "Settings module error detected; using default settings.";
-			Time = 15;
+			Title = "Warning!",
+			Icon = "rbxassetid://7495468117",
+			Message = "Settings module error detected; using default settings.",
+			Time = 15,
 		})
 		setTab = {}
 	end
@@ -119,18 +125,17 @@ else
 
 	for _, module in pluginsFolder:GetChildren() do
 		local name = string.lower(module.Name)
-		
+
 		if module:IsA("Folder") then
 			table.insert(data.Packages, module)
-			
 		elseif string.match(name, "^client[%-:]") then
 			table.insert(data.ClientPlugins, module)
-			
 		elseif string.match(name, "^server[%-:]") then
 			table.insert(data.ServerPlugins, module)
-			
 		else
-			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(module).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
+			warn(
+				`[DEVELOPER ERROR] Unknown Plugin Type for {tostring(module)}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`
+			)
 		end
 	end
 
@@ -139,7 +144,7 @@ else
 	end
 
 	if tonumber(moduleId) then
-		warn("Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/".. moduleId)
+		warn(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
 	local module = require(moduleId)
@@ -160,7 +165,7 @@ else
 	end
 end
 
-																																																							--[[
+--[[
 --___________________________________________________________________________________________--
 --___________________________________________________________________________________________--
 --___________________________________________________________________________________________--

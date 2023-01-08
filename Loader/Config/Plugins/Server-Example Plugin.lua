@@ -27,16 +27,16 @@ return function(Vargs)
 	local server, service = Vargs.Server, Vargs.Service
 
 	server.Commands.ExampleCommand = {
-		Prefix = server.Settings.Prefix;	-- Prefix to use for command
-		Commands = {"example"};	-- Commands
-		Args = {"arg1"};	-- Command arguments
-		Description = "Example command";	-- Command Description
-		Hidden = true; -- Is it hidden from the command list?
-		Fun = false;	-- Is it fun?
-		AdminLevel = "Players";	    -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
-		Function = function(plr,args)    -- Function to run for command
+		Prefix = server.Settings.Prefix, -- Prefix to use for command
+		Commands = { "example" }, -- Commands
+		Args = { "arg1" }, -- Command arguments
+		Description = "Example command", -- Command Description
+		Hidden = true, -- Is it hidden from the command list?
+		Fun = false, -- Is it fun?
+		AdminLevel = "Players", -- Admin level; If using settings.CustomRanks set this to the custom rank name (eg. "Baristas")
+		Function = function(plr, args) -- Function to run for command
 			print("HELLO WORLD FROM AN EXAMPLE COMMAND :)")
-			print("Player supplied args[1] "..tostring(args[1]))
-		end
+			print("Player supplied args[1] " .. tostring(args[1]))
+		end,
 	}
 end

@@ -4,21 +4,21 @@ return function(data, env)
 	if env then
 		setfenv(1, env)
 	end
-	
-	local Owner = data.FromPlayer;
-	local SessionKey = data.SessionKey;
-	local SessionName = data.SessionName;
-	local CanManageUsers = data.CanManageUsers;
+
+	local Owner = data.FromPlayer
+	local SessionKey = data.SessionKey
+	local SessionName = data.SessionName
+	local CanManageUsers = data.CanManageUsers
 
 	local debounce = false
 	local gTable
 	local newMessage
 
-	local window, chatlog, reply, playerList, send, layout, sessionEvent;
-	local peerList = {};
-	local messageObjs = {};
+	local window, chatlog, reply, playerList, send, layout, sessionEvent
+	local peerList = {}
+	local messageObjs = {}
 
-	local selectedPlayer = nil;
+	local selectedPlayer = nil
 
 	local function sendIt()
 		local text = service.Trim(reply.Text)
@@ -30,52 +30,52 @@ return function(data, env)
 
 	local function promptAddUser()
 		local list = {}
-		for _,v in service.Players:GetPlayers() do
-			local good = true;
+		for _, v in service.Players:GetPlayers() do
+			local good = true
 			for _, peer in peerList do
 				if peer.UserId == v.UserId then
-					good = false;
-					break;
+					good = false
+					break
 				end
 			end
 
 			if good then
 				table.insert(list, {
-					Text = service.FormatPlayer(v);
-					Data = service.UnWrap(v);
+					Text = service.FormatPlayer(v),
+					Data = service.UnWrap(v),
 				})
 			end
 		end
 
 		local answer = client.UI.Make("SelectionPrompt", {
-			Name = "Add User";
-			Options = list;
-		});
+			Name = "Add User",
+			Options = list,
+		})
 
 		if answer then
 			client.Remote.Send("Session", SessionKey, "AddPlayerToSession", answer)
 		end
-	end;
+	end
 
 	local function updatePeerList(peers)
 		playerList:ClearAllChildren()
 		peerList = peers
 
 		local lObj = service.New("UIListLayout", {
-			Parent = playerList;
-			FillDirection = "Vertical";
-			HorizontalAlignment = "Center";
-			VerticalAlignment = "Top";
-			SortOrder = "LayoutOrder";
+			Parent = playerList,
+			FillDirection = "Vertical",
+			HorizontalAlignment = "Center",
+			VerticalAlignment = "Top",
+			SortOrder = "LayoutOrder",
 		})
 
-		for i,peer in peers do
+		for i, peer in peers do
 			local pBut = playerList:Add("TextButton", {
-				Text = service.FormatPlayer(peer);
-				Size = UDim2.new(1, 0, 0, 25);
-				TextScaled = true;
-				TextWarped = true;
-				BackgroundTransparency = 1;
+				Text = service.FormatPlayer(peer),
+				Size = UDim2.new(1, 0, 0, 25),
+				TextScaled = true,
+				TextWarped = true,
+				BackgroundTransparency = 1,
 			})
 
 			if CanManageUsers then
@@ -84,7 +84,7 @@ return function(data, env)
 
 				if peer.UserId and peer.UserId ~= service.Players.LocalPlayer.UserId then
 					pBut.MouseButton1Down:Connect(function()
-						for i,v in ipairs(playerList:GetChildren()) do
+						for i, v in ipairs(playerList:GetChildren()) do
 							if v:IsA("TextButton") or v:IsA("Frame") then
 								v.BackgroundTransparency = 1
 							end
@@ -99,103 +99,116 @@ return function(data, env)
 		end
 
 		playerList.CanvasSize = UDim2.new(0, 0, 0, lObj.AbsoluteContentSize.Y)
-	end;
+	end
 
 	function newMessage(data)
-		local pName = data.PlayerName;
+		local pName = data.PlayerName
 		local pDisplayName = pName ~= "*SYSTEM*" and data.PlayerDisplayName
-		local msg = data.Message;
-		local icon = data.Icon or 0;
+		local msg = data.Message
+		local icon = data.Icon or 0
 
 		local newMsg
 
 		if pName == "* SYSTEM *" then
 			newMsg = chatlog:Add("Frame", {
-				Size = UDim2.new(1, 0, 0, 25);
-				BackgroundTransparency = 1;
-				AutomaticSize = "Y";
+				Size = UDim2.new(1, 0, 0, 25),
+				BackgroundTransparency = 1,
+				AutomaticSize = "Y",
 				Children = {
-					{ClassName = "Frame";
-						Name = "CHATFRAME";
-						Size = UDim2.new(1, -10, 1, -10);
-						Position = UDim2.new(0, 5, 0, 5);
-						BackgroundTransparency = 0.5;
-						AutomaticSize = "Y";
+					{
+						ClassName = "Frame",
+						Name = "CHATFRAME",
+						Size = UDim2.new(1, -10, 1, -10),
+						Position = UDim2.new(0, 5, 0, 5),
+						BackgroundTransparency = 0.5,
+						AutomaticSize = "Y",
 						Children = {
 
-							{ClassName = "TextLabel";
-								Name = "PlayerName";
-								Size = UDim2.new(0, 0, 0, 14);
-								Position = UDim2.new(0, 1, 0, 1);
-								Text = "   "..pName;
-								TextSize = "14";
-								TextXAlignment = "Left";
-								BackgroundTransparency = 1;
-							};
+							{
+								ClassName = "TextLabel",
+								Name = "PlayerName",
+								Size = UDim2.new(0, 0, 0, 14),
+								Position = UDim2.new(0, 1, 0, 1),
+								Text = "   " .. pName,
+								TextSize = "14",
+								TextXAlignment = "Left",
+								BackgroundTransparency = 1,
+							},
 
-							{ClassName = "TextLabel";
-								Name = "Message";
-								Size = UDim2.new(1, 0, 0, 10);
-								Position = UDim2.new(0, 0, 0, 14);
-								Text = "   "..(msg or "<font color='rgb(230,0,0)'>An error has occured</font>");
-								TextXAlignment = "Left";
-								TextYAlignment = "Top";
-								AutomaticSize = "Y";
-								TextWrapped = true;
-								TextScaled = false;
-								RichText = true;
-								BackgroundTransparency = 1;
-							};
-						}
-					}
-				}
+							{
+								ClassName = "TextLabel",
+								Name = "Message",
+								Size = UDim2.new(1, 0, 0, 10),
+								Position = UDim2.new(0, 0, 0, 14),
+								Text = "   " .. (msg or "<font color='rgb(230,0,0)'>An error has occured</font>"),
+								TextXAlignment = "Left",
+								TextYAlignment = "Top",
+								AutomaticSize = "Y",
+								TextWrapped = true,
+								TextScaled = false,
+								RichText = true,
+								BackgroundTransparency = 1,
+							},
+						},
+					},
+				},
 			})
 		else
 			chatlog:Add("Frame", {
-				Size = UDim2.new(1, 0, 0, 50);
-				BackgroundTransparency = 1;
-				AutomaticSize = "Y";
+				Size = UDim2.new(1, 0, 0, 50),
+				BackgroundTransparency = 1,
+				AutomaticSize = "Y",
 				Children = {
-					{ClassName = "Frame";
-						Name = "CHATFRAME";
-						Size = UDim2.new(1, -10, 1, -10);
-						Position = UDim2.new(0, 5, 0, 5);
-						BackgroundTransparency = 0.5;
-						AutomaticSize = "Y";
+					{
+						ClassName = "Frame",
+						Name = "CHATFRAME",
+						Size = UDim2.new(1, -10, 1, -10),
+						Position = UDim2.new(0, 5, 0, 5),
+						BackgroundTransparency = 0.5,
+						AutomaticSize = "Y",
 						Children = {
-							{ClassName = "ImageButton";
-								Name = "Icon";
-								Size = UDim2.new(0, 48, 0, 48);
-								Position = UDim2.new(0, 1, 0, 1);
-								Image = icon;
-							};
+							{
+								ClassName = "ImageButton",
+								Name = "Icon",
+								Size = UDim2.new(0, 48, 0, 48),
+								Position = UDim2.new(0, 1, 0, 1),
+								Image = icon,
+							},
 
-							{ClassName = "TextLabel";
-								Name = "PlayerName";
-								Size = UDim2.new(1, -55, 0, 15);
-								Position = UDim2.new(0, 55, 0, 0);
-								Text = if pDisplayName then pDisplayName == pName and ("@"..pName) or string.format("%s (@%s)", pDisplayName, pName) else pName;
-								TextSize = "14";
-								TextXAlignment = "Left";
-								BackgroundTransparency = 1;
-							};
+							{
+								ClassName = "TextLabel",
+								Name = "PlayerName",
+								Size = UDim2.new(1, -55, 0, 15),
+								Position = UDim2.new(0, 55, 0, 0),
+								Text = if pDisplayName
+									then pDisplayName == pName and ("@" .. pName) or string.format(
+										"%s (@%s)",
+										pDisplayName,
+										pName
+									)
+									else pName,
+								TextSize = "14",
+								TextXAlignment = "Left",
+								BackgroundTransparency = 1,
+							},
 
-							{ClassName = "TextLabel";
-								Name = "Message";
-								Size = UDim2.new(1, -55, 0, 10);
-								Position = UDim2.new(0, 55, 0, 15);
-								Text = msg;
-								TextXAlignment = "Left";
-								TextYAlignment = "Top";
-								AutomaticSize = "Y";
-								TextWrapped = true;
-								TextScaled = false;
-								RichText = true;
-								BackgroundTransparency = 1;
-							};
-						}
-					}
-				}
+							{
+								ClassName = "TextLabel",
+								Name = "Message",
+								Size = UDim2.new(1, -55, 0, 10),
+								Position = UDim2.new(0, 55, 0, 15),
+								Text = msg,
+								TextXAlignment = "Left",
+								TextYAlignment = "Top",
+								AutomaticSize = "Y",
+								TextWrapped = true,
+								TextScaled = false,
+								RichText = true,
+								BackgroundTransparency = 1,
+							},
+						},
+					},
+				},
 			})
 		end
 
@@ -209,70 +222,70 @@ return function(data, env)
 
 	local function systemMessage(msg)
 		newMessage({
-			PlayerName = "* SYSTEM *";
-			Message = msg;
-			Icon = 0;
+			PlayerName = "* SYSTEM *",
+			Message = msg,
+			Icon = 0,
 		})
-	end;
+	end
 
-	if client.UI.Get("PrivateChat".. SessionName) then
+	if client.UI.Get("PrivateChat" .. SessionName) then
 		return
 	end
 
 	window = client.UI.Make("Window", {
-		Name  = "PrivateChat".. SessionName;
-		Title = "Private Chat";
-		Icon = client.MatIcons.Forum;
-		Size  = {500,300};
+		Name = "PrivateChat" .. SessionName,
+		Title = "Private Chat",
+		Icon = client.MatIcons.Forum,
+		Size = { 500, 300 },
 		OnClose = function()
 			if sessionEvent then
 				sessionEvent:Disconnect()
 			end
 
 			client.Remote.Send("Session", SessionKey, "LeaveSession")
-		end;
+		end,
 	})
 
 	chatlog = window:Add("ScrollingFrame", {
-		Size = UDim2.new(1, -105, 1, -45);
-		CanvasSize = UDim2.new(0, 0, 0, 0);
-		BackgroundTransparency = 0.9;
+		Size = UDim2.new(1, -105, 1, -45),
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		BackgroundTransparency = 0.9,
 		--AutomaticCanvasSize = "Y";
 	})
 
 	reply = window:Add("TextBox", {
-		Text = ""; --"Enter reply";
-		PlaceholderText = "";
-		Size = UDim2.new(1, -70, 0, 30);
-		Position = UDim2.new(0, 5, 1, -35);
-		ClearTextOnFocus = false;--true;
-		TextScaled = true;
+		Text = "", --"Enter reply";
+		PlaceholderText = "",
+		Size = UDim2.new(1, -70, 0, 30),
+		Position = UDim2.new(0, 5, 1, -35),
+		ClearTextOnFocus = false, --true;
+		TextScaled = true,
 	})
 
 	playerList = window:Add("ScrollingFrame", {
-		Size = UDim2.new(0, 100, 1, -75);
-		Position = UDim2.new(1, -100, 0, 0);
-		BackgroundTransparency = 0.5;
-		AutomaticCanvasSize = "Y";
+		Size = UDim2.new(0, 100, 1, -75),
+		Position = UDim2.new(1, -100, 0, 0),
+		BackgroundTransparency = 0.5,
+		AutomaticCanvasSize = "Y",
 	})
 
 	local add = window:Add("TextButton", {
-		Text = "+";
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(1, -100, 1, -70);
+		Text = "+",
+		Size = UDim2.new(0, 30, 0, 30),
+		Position = UDim2.new(1, -100, 1, -70),
 		OnClick = function()
 			if CanManageUsers then
 				promptAddUser()
 			else
 				systemMessage("<i>You are not allowed to manage users</i>")
 			end
-		end
+		end,
 	})
 
 	local remove = window:Add("TextButton", {
-		Text = "-";
-		Size = UDim2.new(0, 30, 0, 30);
-		Position = UDim2.new(1, -35, 1, -70);
+		Text = "-",
+		Size = UDim2.new(0, 30, 0, 30),
+		Position = UDim2.new(1, -35, 1, -70),
 		OnClick = function()
 			if CanManageUsers then
 				if selectedPlayer then
@@ -282,28 +295,28 @@ return function(data, env)
 			else
 				systemMessage("<i>You are not allowed to manage users</i>")
 			end
-		end
+		end,
 	})
 
 	send = window:Add("TextButton", {
-		Text = "Send";
-		Size = UDim2.new(0, 60, 0, 30);
-		Position = UDim2.new(1, -65, 1, -35);
+		Text = "Send",
+		Size = UDim2.new(0, 60, 0, 30),
+		Position = UDim2.new(1, -65, 1, -35),
 		OnClick = function()
 			sendIt()
 			reply.Text = ""
-		end
+		end,
 	})
 
 	layout = service.New("UIListLayout", {
-		Parent = chatlog;
-		FillDirection = "Vertical";
-		HorizontalAlignment = "Left";
-		VerticalAlignment = "Bottom";
-		SortOrder = "LayoutOrder";
+		Parent = chatlog,
+		FillDirection = "Vertical",
+		HorizontalAlignment = "Left",
+		VerticalAlignment = "Bottom",
+		SortOrder = "LayoutOrder",
 	})
 
-	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0,0,0), 0.1)
+	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0, 0, 0), 0.1)
 	reply.FocusLost:Connect(function(isEnter)
 		if isEnter then
 			sendIt()
@@ -318,19 +331,19 @@ return function(data, env)
 	end)
 
 	if data.History then
-		for i,data in ipairs(data.History) do
-			local p = data.Sender;
+		for i, data in ipairs(data.History) do
+			local p = data.Sender
 			newMessage({
-				PlayerName = p.Name;
-				PlayerDisplayName = p.DisplayName;
-				Message = data.Message;
-				Icon = p.Icon or 0; --// replace with user avatar later
-			});
+				PlayerName = p.Name,
+				PlayerDisplayName = p.DisplayName,
+				Message = data.Message,
+				Icon = p.Icon or 0, --// replace with user avatar later
+			})
 		end
 	end
 
 	sessionEvent = service.Events.SessionData:Connect(function(sessionKey, cmd, ...)
-		local vargs = {...};
+		local vargs = { ... }
 		if SessionKey == sessionKey then
 			if cmd == "PlayerSentMessage" then
 				local p = vargs[1]
@@ -338,10 +351,10 @@ return function(data, env)
 
 				if newMessage then
 					newMessage({
-						PlayerName = p.Name;
-						PlayerDisplayName = p.DisplayName;
-						Message = message;
-						Icon = p.Icon or 0;
+						PlayerName = p.Name,
+						PlayerDisplayName = p.DisplayName,
+						Message = message,
+						Icon = p.Icon or 0,
 					})
 				end
 			elseif cmd == "UpdatePeerList" then

@@ -247,5 +247,5 @@ return {
 	CU = "Cuba",
 	IR = "Iran",
 	SY = "Syria",
-	KP = "North Korea"
+	KP = "North Korea",
 }

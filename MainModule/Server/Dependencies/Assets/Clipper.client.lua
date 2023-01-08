@@ -3,7 +3,7 @@ local char = hum.Parent
 local torso = char:FindFirstChild("HumanoidRootPart")
 local origY = torso.Position.Y
 game:GetService("RunService").Stepped:Connect(function()
-	for _,v in pairs(char:GetDescendants()) do
+	for _, v in pairs(char:GetDescendants()) do
 		if v:IsA("BasePart") then
 			v.CanCollide = false
 		end

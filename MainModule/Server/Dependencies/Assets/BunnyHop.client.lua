@@ -1,1 +1,5 @@
-local hum = script.Parent.Humanoid while true do hum.Jump = true wait() end
+local hum = script.Parent.Humanoid
+repeat
+	hum.Jump = true
+	task.wait()
+until false

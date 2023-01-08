@@ -60,13 +60,15 @@ local luaZ = {}
 -- create a chunk reader from a source string
 ------------------------------------------------------------------------
 function luaZ:make_getS(buff)
-  local b = buff
-  return function() -- chunk reader anonymous function here
-    if not b then return nil end
-    local data = b
-    b = nil
-    return data
-  end
+	local b = buff
+	return function() -- chunk reader anonymous function here
+		if not b then
+			return nil
+		end
+		local data = b
+		b = nil
+		return data
+	end
 end
 
 ------------------------------------------------------------------------
@@ -90,26 +92,34 @@ end
 -- returns the ZIO structure, z
 ------------------------------------------------------------------------
 function luaZ:init(reader, data, name)
-  if not reader then return end
-  local z = {}
-  z.reader = reader
-  z.data = data or ""
-  z.name = name
-  -- set up additional data for reading
-  if not data or data == "" then z.n = 0 else z.n = #data end
-  z.p = 0
-  return z
+	if not reader then
+		return
+	end
+	local z = {}
+	z.reader = reader
+	z.data = data or ""
+	z.name = name
+	-- set up additional data for reading
+	if not data or data == "" then
+		z.n = 0
+	else
+		z.n = #data
+	end
+	z.p = 0
+	return z
 end
 
 ------------------------------------------------------------------------
 -- fill up input buffer
 ------------------------------------------------------------------------
 function luaZ:fill(z)
-  local buff = z.reader()
-  z.data = buff
-  if not buff or buff == "" then return "EOZ" end
-  z.n, z.p = #buff - 1, 1
-  return string.sub(buff, 1, 1)
+	local buff = z.reader()
+	z.data = buff
+	if not buff or buff == "" then
+		return "EOZ"
+	end
+	z.n, z.p = #buff - 1, 1
+	return string.sub(buff, 1, 1)
 end
 
 ------------------------------------------------------------------------
@@ -117,13 +127,13 @@ end
 -- * local n, p are used to optimize code generation
 ------------------------------------------------------------------------
 function luaZ:zgetc(z)
-  local n, p = z.n, z.p + 1
-  if n > 0 then
-    z.n, z.p = n - 1, p
-    return string.sub(z.data, p, p)
-  else
-    return self:fill(z)
-  end
+	local n, p = z.n, z.p + 1
+	if n > 0 then
+		z.n, z.p = n - 1, p
+		return string.sub(z.data, p, p)
+	else
+		return self:fill(z)
+	end
 end
 
 return luaZ

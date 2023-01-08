@@ -43,7 +43,7 @@ return { -- Decal IDs
 	["Done"] = 7495550742,
 	["Door sliding"] = 7495552050,
 	["Double arrow"] = 7541578585,
-	["Mail"] = 7501175708,	-- originally 'Email'
+	["Mail"] = 7501175708, -- originally 'Email'
 	["Epix"] = 7681261289,
 	["Error"] = 7501176860,
 	["Explore"] = 7646573201,
@@ -106,7 +106,7 @@ return { -- Decal IDs
 	["Security"] = 7541911332,
 	["Send"] = 7541921277,
 	["Settings"] = 7541906831,
-	["Broadcast"] = 7541576921,	-- originally 'Settings input antenna'
+	["Broadcast"] = 7541576921, -- originally 'Settings input antenna'
 	["Shield"] = 7536784790,
 	["Shopping cart"] = 7541907631,
 	["Sort"] = 7541585212,

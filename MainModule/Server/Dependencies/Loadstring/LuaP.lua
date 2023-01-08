@@ -63,23 +63,23 @@ local luaP = {}
 ===========================================================================
 --]]
 
-luaP.OpMode = { iABC = 0, iABx = 1, iAsBx = 2 }  -- basic instruction format
+luaP.OpMode = { iABC = 0, iABx = 1, iAsBx = 2 } -- basic instruction format
 
 ------------------------------------------------------------------------
 -- size and position of opcode arguments.
 -- * WARNING size and position is hard-coded elsewhere in this script
 ------------------------------------------------------------------------
-luaP.SIZE_C  = 9
-luaP.SIZE_B  = 9
+luaP.SIZE_C = 9
+luaP.SIZE_B = 9
 luaP.SIZE_Bx = luaP.SIZE_C + luaP.SIZE_B
-luaP.SIZE_A  = 8
+luaP.SIZE_A = 8
 
 luaP.SIZE_OP = 6
 
 luaP.POS_OP = 0
-luaP.POS_A  = luaP.POS_OP + luaP.SIZE_OP
-luaP.POS_C  = luaP.POS_A + luaP.SIZE_A
-luaP.POS_B  = luaP.POS_C + luaP.SIZE_C
+luaP.POS_A = luaP.POS_OP + luaP.SIZE_OP
+luaP.POS_C = luaP.POS_A + luaP.SIZE_A
+luaP.POS_B = luaP.POS_C + luaP.SIZE_C
 luaP.POS_Bx = luaP.POS_C
 
 ------------------------------------------------------------------------
@@ -90,8 +90,8 @@ luaP.POS_Bx = luaP.POS_C
 -- removed "#if SIZE_Bx < BITS_INT-1" test, assume this script is
 -- running on a Lua VM with double or int as LUA_NUMBER
 
-luaP.MAXARG_Bx  = math.ldexp(1, luaP.SIZE_Bx) - 1
-luaP.MAXARG_sBx = math.floor(luaP.MAXARG_Bx / 2)  -- 'sBx' is signed
+luaP.MAXARG_Bx = math.ldexp(1, luaP.SIZE_Bx) - 1
+luaP.MAXARG_sBx = math.floor(luaP.MAXARG_Bx / 2) -- 'sBx' is signed
 
 luaP.MAXARG_A = math.ldexp(1, luaP.SIZE_A) - 1
 luaP.MAXARG_B = math.ldexp(1, luaP.SIZE_B) - 1
@@ -125,83 +125,107 @@ luaP.MAXARG_C = math.ldexp(1, luaP.SIZE_C) - 1
 ------------------------------------------------------------------------
 
 -- these accept or return opcodes in the form of string names
-function luaP:GET_OPCODE(i) return self.ROpCode[i.OP] end
-function luaP:SET_OPCODE(i, o) i.OP = self.OpCode[o] end
-
-function luaP:GETARG_A(i) return i.A end
-function luaP:SETARG_A(i, u) i.A = u end
-
-function luaP:GETARG_B(i) return i.B end
-function luaP:SETARG_B(i, b) i.B = b end
-
-function luaP:GETARG_C(i) return i.C end
-function luaP:SETARG_C(i, b) i.C = b end
-
-function luaP:GETARG_Bx(i) return i.Bx end
-function luaP:SETARG_Bx(i, b) i.Bx = b end
-
-function luaP:GETARG_sBx(i) return i.Bx - self.MAXARG_sBx end
-function luaP:SETARG_sBx(i, b) i.Bx = b + self.MAXARG_sBx end
-
-function luaP:CREATE_ABC(o,a,b,c)
-  return {OP = self.OpCode[o], A = a, B = b, C = c}
+function luaP:GET_OPCODE(i)
+	return self.ROpCode[i.OP]
+end
+function luaP:SET_OPCODE(i, o)
+	i.OP = self.OpCode[o]
 end
 
-function luaP:CREATE_ABx(o,a,bc)
-  return {OP = self.OpCode[o], A = a, Bx = bc}
+function luaP:GETARG_A(i)
+	return i.A
+end
+function luaP:SETARG_A(i, u)
+	i.A = u
+end
+
+function luaP:GETARG_B(i)
+	return i.B
+end
+function luaP:SETARG_B(i, b)
+	i.B = b
+end
+
+function luaP:GETARG_C(i)
+	return i.C
+end
+function luaP:SETARG_C(i, b)
+	i.C = b
+end
+
+function luaP:GETARG_Bx(i)
+	return i.Bx
+end
+function luaP:SETARG_Bx(i, b)
+	i.Bx = b
+end
+
+function luaP:GETARG_sBx(i)
+	return i.Bx - self.MAXARG_sBx
+end
+function luaP:SETARG_sBx(i, b)
+	i.Bx = b + self.MAXARG_sBx
+end
+
+function luaP:CREATE_ABC(o, a, b, c)
+	return { OP = self.OpCode[o], A = a, B = b, C = c }
+end
+
+function luaP:CREATE_ABx(o, a, bc)
+	return { OP = self.OpCode[o], A = a, Bx = bc }
 end
 
 ------------------------------------------------------------------------
 -- create an instruction from a number (for OP_SETLIST)
 ------------------------------------------------------------------------
 function luaP:CREATE_Inst(c)
-  local o = c % 64
-  c = (c - o) / 64
-  local a = c % 256
-  c = (c - a) / 256
-  return self:CREATE_ABx(o, a, c)
+	local o = c % 64
+	c = (c - o) / 64
+	local a = c % 256
+	c = (c - a) / 256
+	return self:CREATE_ABx(o, a, c)
 end
 
 ------------------------------------------------------------------------
 -- returns a 4-char string little-endian encoded form of an instruction
 ------------------------------------------------------------------------
 function luaP:Instruction(i)
-  if i.Bx then
-    -- change to OP/A/B/C format
-    i.C = i.Bx % 512
-    i.B = (i.Bx - i.C) / 512
-  end
-  local I = i.A * 64 + i.OP
-  local c0 = I % 256
-  I = i.C * 64 + (I - c0) / 256  -- 6 bits of A left
-  local c1 = I % 256
-  I = i.B * 128 + (I - c1) / 256  -- 7 bits of C left
-  local c2 = I % 256
-  local c3 = (I - c2) / 256
-  return string.char(c0, c1, c2, c3)
+	if i.Bx then
+		-- change to OP/A/B/C format
+		i.C = i.Bx % 512
+		i.B = (i.Bx - i.C) / 512
+	end
+	local I = i.A * 64 + i.OP
+	local c0 = I % 256
+	I = i.C * 64 + (I - c0) / 256 -- 6 bits of A left
+	local c1 = I % 256
+	I = i.B * 128 + (I - c1) / 256 -- 7 bits of C left
+	local c2 = I % 256
+	local c3 = (I - c2) / 256
+	return string.char(c0, c1, c2, c3)
 end
 
 ------------------------------------------------------------------------
 -- decodes a 4-char little-endian string into an instruction struct
 ------------------------------------------------------------------------
 function luaP:DecodeInst(x)
-  local byte = string.byte
-  local i = {}
-  local I = byte(x, 1)
-  local op = I % 64
-  i.OP = op
-  I = byte(x, 2) * 4 + (I - op) / 64  -- 2 bits of c0 left
-  local a = I % 256
-  i.A = a
-  I = byte(x, 3) * 4 + (I - a) / 256  -- 2 bits of c1 left
-  local c = I % 512
-  i.C = c
-  i.B = byte(x, 4) * 2 + (I - c) / 512 -- 1 bits of c2 left
-  local opmode = self.OpMode[tonumber(string.sub(self.opmodes[op + 1], 7, 7))]
-  if opmode ~= "iABC" then
-    i.Bx = i.B * 512 + i.C
-  end
-  return i
+	local byte = string.byte
+	local i = {}
+	local I = byte(x, 1)
+	local op = I % 64
+	i.OP = op
+	I = byte(x, 2) * 4 + (I - op) / 64 -- 2 bits of c0 left
+	local a = I % 256
+	i.A = a
+	I = byte(x, 3) * 4 + (I - a) / 256 -- 2 bits of c1 left
+	local c = I % 512
+	i.C = c
+	i.B = byte(x, 4) * 2 + (I - c) / 512 -- 1 bits of c2 left
+	local opmode = self.OpMode[tonumber(string.sub(self.opmodes[op + 1], 7, 7))]
+	if opmode ~= "iABC" then
+		i.Bx = i.B * 512 + i.C
+	end
+	return i
 end
 
 ------------------------------------------------------------------------
@@ -213,15 +237,21 @@ end
 luaP.BITRK = math.ldexp(1, luaP.SIZE_B - 1)
 
 -- test whether value is a constant
-function luaP:ISK(x) return x >= self.BITRK end
+function luaP:ISK(x)
+	return x >= self.BITRK
+end
 
 -- gets the index of the constant
-function luaP:INDEXK(x) return x - self.BITRK end
+function luaP:INDEXK(x)
+	return x - self.BITRK
+end
 
 luaP.MAXINDEXRK = luaP.BITRK - 1
 
 -- code a constant index as a RK value
-function luaP:RKASK(x) return x + self.BITRK end
+function luaP:RKASK(x)
+	return x + self.BITRK
+end
 
 ------------------------------------------------------------------------
 -- invalid register that fits in 8 bits
@@ -285,15 +315,17 @@ OP_CLOSURE    A Bx    R(A) := closure(KPROTO[Bx], R(A), ... ,R(A+n))
 OP_VARARG     A B     R(A), R(A+1), ..., R(A+B-1) = vararg
 ----------------------------------------------------------------------]]
 
-luaP.opnames = {}  -- opcode names
-luaP.OpCode = {}   -- lookup name -> number
-luaP.ROpCode = {}  -- lookup number -> name
+luaP.opnames = {} -- opcode names
+luaP.OpCode = {} -- lookup name -> number
+luaP.ROpCode = {} -- lookup number -> name
 
 ------------------------------------------------------------------------
 -- ORDER OP
 ------------------------------------------------------------------------
 local i = 0
-for v in string.gmatch([[
+for v in
+	string.gmatch(
+		[[
 MOVE LOADK LOADBOOL LOADNIL GETUPVAL
 GETGLOBAL GETTABLE SETGLOBAL SETUPVAL SETTABLE
 NEWTABLE SELF ADD SUB MUL
@@ -302,12 +334,15 @@ LEN CONCAT JMP EQ LT
 LE TEST TESTSET CALL TAILCALL
 RETURN FORLOOP FORPREP TFORLOOP SETLIST
 CLOSE CLOSURE VARARG
-]], "%S+") do
-  local n = "OP_"..v
-  luaP.opnames[i] = v
-  luaP.OpCode[n] = i
-  luaP.ROpCode[i] = n
-  i = i + 1
+]],
+		"%S+"
+	)
+do
+	local n = "OP_" .. v
+	luaP.opnames[i] = v
+	luaP.OpCode[n] = i
+	luaP.ROpCode[i] = n
+	i = i + 1
 end
 luaP.NUM_OPCODES = i
 
@@ -352,23 +387,23 @@ luaP.OpArgMask = { OpArgN = 0, OpArgU = 1, OpArgR = 2, OpArgK = 3 }
 ------------------------------------------------------------------------
 
 function luaP:getOpMode(m)
-  return self.opmodes[self.OpCode[m]] % 4
+	return self.opmodes[self.OpCode[m]] % 4
 end
 
 function luaP:getBMode(m)
-  return math.floor(self.opmodes[self.OpCode[m]] / 16) % 4
+	return math.floor(self.opmodes[self.OpCode[m]] / 16) % 4
 end
 
 function luaP:getCMode(m)
-  return math.floor(self.opmodes[self.OpCode[m]] / 4) % 4
+	return math.floor(self.opmodes[self.OpCode[m]] / 4) % 4
 end
 
 function luaP:testAMode(m)
-  return math.floor(self.opmodes[self.OpCode[m]] / 64) % 2
+	return math.floor(self.opmodes[self.OpCode[m]] / 64) % 2
 end
 
 function luaP:testTMode(m)
-  return math.floor(self.opmodes[self.OpCode[m]] / 128)
+	return math.floor(self.opmodes[self.OpCode[m]] / 128)
 end
 
 -- luaP_opnames[] is set above, as the luaP.opnames table
@@ -381,54 +416,52 @@ luaP.LFIELDS_PER_FLUSH = 50
 -- * deliberately coded to look like the C equivalent
 ------------------------------------------------------------------------
 local function opmode(t, a, b, c, m)
-  local luaP = luaP
-  return t * 128 + a * 64 +
-         luaP.OpArgMask[b] * 16 + luaP.OpArgMask[c] * 4 + luaP.OpMode[m]
+	local luaP = luaP
+	return t * 128 + a * 64 + luaP.OpArgMask[b] * 16 + luaP.OpArgMask[c] * 4 + luaP.OpMode[m]
 end
 
 -- ORDER OP
 luaP.opmodes = {
--- T A B C mode opcode
-  opmode(0, 1, "OpArgK", "OpArgN", "iABx"),     -- OP_LOADK
-  opmode(0, 1, "OpArgU", "OpArgU", "iABC"),     -- OP_LOADBOOL
-  opmode(0, 1, "OpArgR", "OpArgN", "iABC"),     -- OP_LOADNIL
-  opmode(0, 1, "OpArgU", "OpArgN", "iABC"),     -- OP_GETUPVAL
-  opmode(0, 1, "OpArgK", "OpArgN", "iABx"),     -- OP_GETGLOBAL
-  opmode(0, 1, "OpArgR", "OpArgK", "iABC"),     -- OP_GETTABLE
-  opmode(0, 0, "OpArgK", "OpArgN", "iABx"),     -- OP_SETGLOBAL
-  opmode(0, 0, "OpArgU", "OpArgN", "iABC"),     -- OP_SETUPVAL
-  opmode(0, 0, "OpArgK", "OpArgK", "iABC"),     -- OP_SETTABLE
-  opmode(0, 1, "OpArgU", "OpArgU", "iABC"),     -- OP_NEWTABLE
-  opmode(0, 1, "OpArgR", "OpArgK", "iABC"),     -- OP_SELF
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_ADD
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_SUB
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_MUL
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_DIV
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_MOD
-  opmode(0, 1, "OpArgK", "OpArgK", "iABC"),     -- OP_POW
-  opmode(0, 1, "OpArgR", "OpArgN", "iABC"),     -- OP_UNM
-  opmode(0, 1, "OpArgR", "OpArgN", "iABC"),     -- OP_NOT
-  opmode(0, 1, "OpArgR", "OpArgN", "iABC"),     -- OP_LEN
-  opmode(0, 1, "OpArgR", "OpArgR", "iABC"),     -- OP_CONCAT
-  opmode(0, 0, "OpArgR", "OpArgN", "iAsBx"),    -- OP_JMP
-  opmode(1, 0, "OpArgK", "OpArgK", "iABC"),     -- OP_EQ
-  opmode(1, 0, "OpArgK", "OpArgK", "iABC"),     -- OP_LT
-  opmode(1, 0, "OpArgK", "OpArgK", "iABC"),     -- OP_LE
-  opmode(1, 1, "OpArgR", "OpArgU", "iABC"),     -- OP_TEST
-  opmode(1, 1, "OpArgR", "OpArgU", "iABC"),     -- OP_TESTSET
-  opmode(0, 1, "OpArgU", "OpArgU", "iABC"),     -- OP_CALL
-  opmode(0, 1, "OpArgU", "OpArgU", "iABC"),     -- OP_TAILCALL
-  opmode(0, 0, "OpArgU", "OpArgN", "iABC"),     -- OP_RETURN
-  opmode(0, 1, "OpArgR", "OpArgN", "iAsBx"),    -- OP_FORLOOP
-  opmode(0, 1, "OpArgR", "OpArgN", "iAsBx"),    -- OP_FORPREP
-  opmode(1, 0, "OpArgN", "OpArgU", "iABC"),     -- OP_TFORLOOP
-  opmode(0, 0, "OpArgU", "OpArgU", "iABC"),     -- OP_SETLIST
-  opmode(0, 0, "OpArgN", "OpArgN", "iABC"),     -- OP_CLOSE
-  opmode(0, 1, "OpArgU", "OpArgN", "iABx"),     -- OP_CLOSURE
-  opmode(0, 1, "OpArgU", "OpArgN", "iABC"),     -- OP_VARARG
+	-- T A B C mode opcode
+	opmode(0, 1, "OpArgK", "OpArgN", "iABx"), -- OP_LOADK
+	opmode(0, 1, "OpArgU", "OpArgU", "iABC"), -- OP_LOADBOOL
+	opmode(0, 1, "OpArgR", "OpArgN", "iABC"), -- OP_LOADNIL
+	opmode(0, 1, "OpArgU", "OpArgN", "iABC"), -- OP_GETUPVAL
+	opmode(0, 1, "OpArgK", "OpArgN", "iABx"), -- OP_GETGLOBAL
+	opmode(0, 1, "OpArgR", "OpArgK", "iABC"), -- OP_GETTABLE
+	opmode(0, 0, "OpArgK", "OpArgN", "iABx"), -- OP_SETGLOBAL
+	opmode(0, 0, "OpArgU", "OpArgN", "iABC"), -- OP_SETUPVAL
+	opmode(0, 0, "OpArgK", "OpArgK", "iABC"), -- OP_SETTABLE
+	opmode(0, 1, "OpArgU", "OpArgU", "iABC"), -- OP_NEWTABLE
+	opmode(0, 1, "OpArgR", "OpArgK", "iABC"), -- OP_SELF
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_ADD
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_SUB
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_MUL
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_DIV
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_MOD
+	opmode(0, 1, "OpArgK", "OpArgK", "iABC"), -- OP_POW
+	opmode(0, 1, "OpArgR", "OpArgN", "iABC"), -- OP_UNM
+	opmode(0, 1, "OpArgR", "OpArgN", "iABC"), -- OP_NOT
+	opmode(0, 1, "OpArgR", "OpArgN", "iABC"), -- OP_LEN
+	opmode(0, 1, "OpArgR", "OpArgR", "iABC"), -- OP_CONCAT
+	opmode(0, 0, "OpArgR", "OpArgN", "iAsBx"), -- OP_JMP
+	opmode(1, 0, "OpArgK", "OpArgK", "iABC"), -- OP_EQ
+	opmode(1, 0, "OpArgK", "OpArgK", "iABC"), -- OP_LT
+	opmode(1, 0, "OpArgK", "OpArgK", "iABC"), -- OP_LE
+	opmode(1, 1, "OpArgR", "OpArgU", "iABC"), -- OP_TEST
+	opmode(1, 1, "OpArgR", "OpArgU", "iABC"), -- OP_TESTSET
+	opmode(0, 1, "OpArgU", "OpArgU", "iABC"), -- OP_CALL
+	opmode(0, 1, "OpArgU", "OpArgU", "iABC"), -- OP_TAILCALL
+	opmode(0, 0, "OpArgU", "OpArgN", "iABC"), -- OP_RETURN
+	opmode(0, 1, "OpArgR", "OpArgN", "iAsBx"), -- OP_FORLOOP
+	opmode(0, 1, "OpArgR", "OpArgN", "iAsBx"), -- OP_FORPREP
+	opmode(1, 0, "OpArgN", "OpArgU", "iABC"), -- OP_TFORLOOP
+	opmode(0, 0, "OpArgU", "OpArgU", "iABC"), -- OP_SETLIST
+	opmode(0, 0, "OpArgN", "OpArgN", "iABC"), -- OP_CLOSE
+	opmode(0, 1, "OpArgU", "OpArgN", "iABx"), -- OP_CLOSURE
+	opmode(0, 1, "OpArgU", "OpArgN", "iABC"), -- OP_VARARG
 }
 -- an awkward way to set a zero-indexed table...
-luaP.opmodes[0] =
-  opmode(0, 1, "OpArgR", "OpArgN", "iABC")      -- OP_MOVE
+luaP.opmodes[0] = opmode(0, 1, "OpArgR", "OpArgN", "iABC") -- OP_MOVE
 
 return luaP

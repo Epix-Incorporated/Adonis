@@ -9,7 +9,7 @@ logError = nil
 --// Commands
 --// Highly recommended you disable Intellesense before editing this...
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
 	local server = Vargs.Server
@@ -21,18 +21,18 @@ return function(Vargs, GetEnv)
 	local RegisterCommandDefinition
 
 	local function Init()
-		Functions = server.Functions;
-		Admin = server.Admin;
-		Anti = server.Anti;
-		Core = server.Core;
-		HTTP = server.HTTP;
-		Logs = server.Logs;
-		Remote = server.Remote;
-		Process = server.Process;
-		Variables = server.Variables;
-		Commands = server.Commands;
-		Deps = server.Deps;
-		t = server.Typechecker;
+		Functions = server.Functions
+		Admin = server.Admin
+		Anti = server.Anti
+		Core = server.Core
+		HTTP = server.HTTP
+		Logs = server.Logs
+		Remote = server.Remote
+		Process = server.Process
+		Variables = server.Variables
+		Commands = server.Commands
+		Deps = server.Deps
+		t = server.Typechecker
 
 		local ValidateCommandDefinition = t.interface({
 			Prefix = t.string,
@@ -48,7 +48,7 @@ return function(Vargs, GetEnv)
 			Donors = t.boolean,
 			Filter = t.boolean,
 			Function = t.callback,
-			ListUpdater = t.optional(t.union(t.string, t.callback))
+			ListUpdater = t.optional(t.union(t.string, t.callback)),
 		})
 
 		function RegisterCommandDefinition(ind, cmd)
@@ -63,23 +63,24 @@ return function(Vargs, GetEnv)
 				return
 			end
 
-			for opt, default in {
-				Prefix = Settings.Prefix;
-				Commands = {};
-				Description = "(No description)";
-				Fun = false;
-				Hidden = false;
-				Disabled = false;
-				NoStudio = false;
-				NonChattable = false;
-				AllowDonors = false;
-				Donors = false;
-				CrossServerDenied = false;
-				IsCrossServer = false;
-				Filter = false;
-				Function = function(plr)
-					Remote.MakeGui(plr, "Output", {Message = "No command implementation"})
-				end
+			for opt, default in
+				{
+					Prefix = Settings.Prefix,
+					Commands = {},
+					Description = "(No description)",
+					Fun = false,
+					Hidden = false,
+					Disabled = false,
+					NoStudio = false,
+					NonChattable = false,
+					AllowDonors = false,
+					Donors = false,
+					CrossServerDenied = false,
+					IsCrossServer = false,
+					Filter = false,
+					Function = function(plr)
+						Remote.MakeGui(plr, "Output", { Message = "No command implementation" })
+					end,
 				}
 			do
 				if cmd[opt] == nil then
@@ -90,13 +91,18 @@ return function(Vargs, GetEnv)
 			if cmd.Chattable ~= nil then
 				cmd.NonChattable = not cmd.Chattable
 				cmd.Chattable = nil
-				warn("Deprecated 'Chattable' property found in command "..ind.."; switched to NonChattable = "..tostring(cmd.NonChattable))
+				warn(
+					"Deprecated 'Chattable' property found in command "
+						.. ind
+						.. "; switched to NonChattable = "
+						.. tostring(cmd.NonChattable)
+				)
 			end
 
 			Admin.PrefixCache[cmd.Prefix] = true
 
 			for _, v in cmd.Commands do
-				Admin.CommandCache[string.lower(cmd.Prefix..v)] = ind
+				Admin.CommandCache[string.lower(cmd.Prefix .. v)] = ind
 			end
 
 			cmd.Args = cmd.Args or cmd.Arguments or {}
@@ -125,7 +131,7 @@ return function(Vargs, GetEnv)
 
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
-				logError("Invalid command definition table "..ind..":", fault)
+				logError("Invalid command definition table " .. ind .. ":", fault)
 				Commands[ind] = nil
 			end
 
@@ -135,10 +141,12 @@ return function(Vargs, GetEnv)
 		--// Automatic New Command Caching and Ability to do server.Commands[":ff"]
 		setmetatable(Commands, {
 			__index = function(_, ind)
-				if type(ind) ~= "string" then return nil end
+				if type(ind) ~= "string" then
+					return nil
+				end
 				local targInd = Admin.CommandCache[string.lower(ind)]
 				return if targInd then rawget(Commands, targInd) else rawget(Commands, ind)
-			end;
+			end,
 
 			__newindex = function(_, ind, val)
 				if val == nil then
@@ -154,7 +162,7 @@ return function(Vargs, GetEnv)
 					end
 					RegisterCommandDefinition(ind, val)
 				end
-			end;
+			end,
 		})
 
 		Logs.AddLog("Script", "Loading Command Modules...")
@@ -171,11 +179,11 @@ return function(Vargs, GetEnv)
 						Commands[ind] = cmd
 					end
 
-					Logs.AddLog("Script", "Loaded Command Module: ".. module.Name)
+					Logs.AddLog("Script", "Loaded Command Module: " .. module.Name)
 				elseif not ran then
-					warn("CMDMODULE ".. module.Name .. " failed to load:")
+					warn("CMDMODULE " .. module.Name .. " failed to load:")
 					warn(tostring(tab))
-					Logs.AddLog("Script", "Loading Command Module Failed: ".. module.Name)
+					Logs.AddLog("Script", "Loading Command Module Failed: " .. module.Name)
 				end
 			end
 		end
@@ -191,7 +199,7 @@ return function(Vargs, GetEnv)
 		--// Load custom user-supplied commands in settings.Commands
 
 		local commandEnv = GetEnv(nil, {
-			script = server.Config and server.Config:FindFirstChild("Settings") or script;
+			script = server.Config and server.Config:FindFirstChild("Settings") or script,
 		})
 		for ind, cmd in Settings.Commands or {} do
 			if type(cmd) == "table" and cmd.Function then
@@ -226,7 +234,7 @@ return function(Vargs, GetEnv)
 	end
 
 	server.Commands = {
-		Init = Init;
-		RunAfterPlugins = RunAfterPlugins;
-	};
+		Init = Init,
+		RunAfterPlugins = RunAfterPlugins,
+	}
 end

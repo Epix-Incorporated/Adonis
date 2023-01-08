@@ -18,19 +18,16 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Deps;
+	local Functions, Admin, Core, Logs, Remote, Process, Settings, Deps;
 	local AddLog, Queue, TrackTask
 	local logError = env.logError
 	local function Init(data)
 		Functions = server.Functions;
 		Admin = server.Admin;
-		Anti = server.Anti;
 		Core = server.Core;
-		HTTP = server.HTTP;
 		Logs = server.Logs;
 		Remote = server.Remote;
 		Process = server.Process;
-		Variables = server.Variables;
 		Settings = server.Settings;
 		Deps = server.Deps;
 
@@ -66,19 +63,15 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Core Module Initialized")
 	end;
 
-	local function RunAfterPlugins(data)
+	local function RunAfterPlugins()
 		--// RemoteEvent Handling
 		Core.MakeEvent()
-
-		--// Prepare the client loader
-		--local existingPlayers = service.Players:GetPlayers();
-		--Core.MakeClient()
 
 		local remoteParent = service.ReplicatedStorage;
 		remoteParent.ChildRemoved:Connect(function(c)
 			task.wait(1/60)
 
-			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for i,v in Core.RemoteEvent do if c == v then return true end end end)() then
+			if server.Core.RemoteEvent and not Core.FixingEvent and (function() for _,v in Core.RemoteEvent do if c == v then return true end end end)() then
 				Core.MakeEvent()
 			end
 		end)
@@ -94,7 +87,6 @@ return function(Vargs, GetEnv)
 
 		--// Start API
 		if service.NetworkServer then
-			--service.Threads.RunTask("_G API Manager",server.Core.StartAPI)
 			TrackTask("Thread: API Manager", Core.StartAPI)
 		end
 
@@ -112,7 +104,7 @@ return function(Vargs, GetEnv)
 		DataCache = {};
 		PlayerData = {};
 		CrossServerCommands = {};
-		CrossServer = function(...) return false end;
+		CrossServer = function() return false end;
 		ExecuteScripts = {};
 		LastDataSave = 0;
 		FixingEvent = false;
@@ -202,7 +194,7 @@ return function(Vargs, GetEnv)
 
 		MakeEvent = function()
 			local remoteParent = service.ReplicatedStorage
-			local ran, err = pcall(function()
+			local _, err = pcall(function()
 				if server.Running then
 					local rTable = {};
 					local event = service.New("RemoteEvent", {Name = Core.Name, Archivable = false}, true, true)
@@ -1333,8 +1325,8 @@ return function(Vargs, GetEnv)
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
 										AddLog(Logs.Script, {
-											Text = "Access to "..tostring(inde).." was granted";
-											Desc = "A server script was granted access to "..tostring(inde);
+											Text = `Access to {inde} was granted";
+											Desc = `A server script was granted access to {inde}`;
 										})
 
 										if targ[inde]~=nil and type(targ[inde]) == "table" and Settings.G_Access_Perms == "Read" then
@@ -1344,13 +1336,13 @@ return function(Vargs, GetEnv)
 										end
 									elseif API_Special[inde] == false then
 										AddLog(Logs.Script, {
-											Text = "Access to "..tostring(inde).." was denied";
-											Desc = "A server script attempted to access "..tostring(inde).." via _G.Adonis.Access";
+											Text = `Access to {inde} was denied";
+											Desc = `A server script attempted to access {inde} via _G.Adonis.Access";
 										})
 
-										error("Access Denied: "..tostring(inde))
+										error(`Access Denied: {inde}`)
 									else
-										error("Could not find "..tostring(inde))
+										error(`Could not find {inde}`)
 									end
 								end;
 								__newindex = function(tabl, inde, valu)
@@ -1441,7 +1433,7 @@ return function(Vargs, GetEnv)
 			}
 
 			local AdonisGTable = service.NewProxy({
-				__index = function(tab,ind)
+				__index = function(_, ind)
 					if Settings.G_API then
 						return API[ind]
 					elseif ind == "Scripts" then

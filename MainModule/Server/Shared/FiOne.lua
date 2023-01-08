@@ -58,85 +58,85 @@ local OPCODE_RM = {
 
 -- opcode types for getting values
 local OPCODE_T = {
-	[0] = 'ABC',
-	'ABx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABx',
-	'ABC',
-	'ABx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'AsBx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABC',
-	'AsBx',
-	'AsBx',
-	'ABC',
-	'ABC',
-	'ABC',
-	'ABx',
-	'ABC',
+	[0] = "ABC",
+	"ABx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABx",
+	"ABC",
+	"ABx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"AsBx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABC",
+	"AsBx",
+	"AsBx",
+	"ABC",
+	"ABC",
+	"ABC",
+	"ABx",
+	"ABC",
 }
 
 local OPCODE_M = {
-	[0] = {b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgR'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgK', c = 'OpArgK'},
-	{b = 'OpArgR', c = 'OpArgU'},
-	{b = 'OpArgR', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgR', c = 'OpArgN'},
-	{b = 'OpArgN', c = 'OpArgU'},
-	{b = 'OpArgU', c = 'OpArgU'},
-	{b = 'OpArgN', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
-	{b = 'OpArgU', c = 'OpArgN'},
+	[0] = { b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgK", c = "OpArgN" },
+	{ b = "OpArgU", c = "OpArgU" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgU", c = "OpArgN" },
+	{ b = "OpArgK", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgN" },
+	{ b = "OpArgU", c = "OpArgN" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgU", c = "OpArgU" },
+	{ b = "OpArgR", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgR" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgK", c = "OpArgK" },
+	{ b = "OpArgR", c = "OpArgU" },
+	{ b = "OpArgR", c = "OpArgU" },
+	{ b = "OpArgU", c = "OpArgU" },
+	{ b = "OpArgU", c = "OpArgU" },
+	{ b = "OpArgU", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgR", c = "OpArgN" },
+	{ b = "OpArgN", c = "OpArgU" },
+	{ b = "OpArgU", c = "OpArgU" },
+	{ b = "OpArgN", c = "OpArgN" },
+	{ b = "OpArgU", c = "OpArgN" },
+	{ b = "OpArgU", c = "OpArgN" },
 }
 
 -- int rd_int_basic(string src, int s, int e, int d)
@@ -152,7 +152,9 @@ local function rd_int_basic(src, s, e, d)
 	-- 	bb[l] = bb[l] - 128
 	-- end
 
-	for i = s, e, d do num = num + string.byte(src, i, i) * 256 ^ (i - s) end
+	for i = s, e, d do
+		num = num + string.byte(src, i, i) * 256 ^ (i - s)
+	end
 
 	return num
 end
@@ -215,18 +217,24 @@ end
 -- @src - Source binary string
 -- @s - Start index of a little endian integer
 -- @e - End index of the integer
-local function rd_int_le(src, s, e) return rd_int_basic(src, s, e - 1, 1) end
+local function rd_int_le(src, s, e)
+	return rd_int_basic(src, s, e - 1, 1)
+end
 
 -- int rd_int_be(string src, int s, int e)
 -- @src - Source binary string
 -- @s - Start index of a big endian integer
 -- @e - End index of the integer
-local function rd_int_be(src, s, e) return rd_int_basic(src, e - 1, s, -1) end
+local function rd_int_be(src, s, e)
+	return rd_int_basic(src, e - 1, s, -1)
+end
 
 -- float rd_flt_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian float
-local function rd_flt_le(src, s) return rd_flt_basic(string.byte(src, s, s + 3)) end
+local function rd_flt_le(src, s)
+	return rd_flt_basic(string.byte(src, s, s + 3))
+end
 
 -- float rd_flt_be(string src, int s)
 -- @src - Source binary string
@@ -239,7 +247,9 @@ end
 -- double rd_dbl_le(string src, int s)
 -- @src - Source binary string
 -- @s - Start index of little endian double
-local function rd_dbl_le(src, s) return rd_dbl_basic(string.byte(src, s, s + 7)) end
+local function rd_dbl_le(src, s)
+	return rd_dbl_basic(string.byte(src, s, s + 7))
+end
 
 -- double rd_dbl_be(string src, int s)
 -- @src - Source binary string
@@ -251,8 +261,8 @@ end
 
 -- to avoid nested ifs in deserializing
 local float_types = {
-	[4] = {little = rd_flt_le, big = rd_flt_be},
-	[8] = {little = rd_dbl_le, big = rd_dbl_be},
+	[4] = { little = rd_flt_le, big = rd_flt_be },
+	[8] = { little = rd_dbl_le, big = rd_dbl_be },
 }
 
 -- byte stm_byte(Stream S)
@@ -282,7 +292,9 @@ local function stm_lstring(S)
 	local len = S:s_szt()
 	local str
 
-	if len ~= 0 then str = string.sub(stm_string(S, len), 1, -2) end
+	if len ~= 0 then
+		str = string.sub(stm_string(S, len), 1, -2)
+	end
 
 	return str
 end
@@ -321,17 +333,17 @@ local function stm_instructions(S)
 		local op = bit.band(ins, 0x3F)
 		local args = OPCODE_T[op]
 		local mode = OPCODE_M[op]
-		local data = {value = ins, op = OPCODE_RM[op], A = bit.band(bit.rshift(ins, 6), 0xFF)}
+		local data = { value = ins, op = OPCODE_RM[op], A = bit.band(bit.rshift(ins, 6), 0xFF) }
 
-		if args == 'ABC' then
+		if args == "ABC" then
 			data.B = bit.band(bit.rshift(ins, 23), 0x1FF)
 			data.C = bit.band(bit.rshift(ins, 14), 0x1FF)
-			data.is_KB = mode.b == 'OpArgK' and data.B > 0xFF -- post process optimization
-			data.is_KC = mode.c == 'OpArgK' and data.C > 0xFF
-		elseif args == 'ABx' then
+			data.is_KB = mode.b == "OpArgK" and data.B > 0xFF -- post process optimization
+			data.is_KC = mode.c == "OpArgK" and data.C > 0xFF
+		elseif args == "ABx" then
 			data.Bx = bit.band(bit.rshift(ins, 14), 0x3FFFF)
-			data.is_K = mode.b == 'OpArgK'
-		elseif args == 'AsBx' then
+			data.is_K = mode.b == "OpArgK"
+		elseif args == "AsBx" then
 			data.sBx = bit.band(bit.rshift(ins, 14), 0x3FFFF) - 131071
 		end
 
@@ -378,7 +390,9 @@ local function stm_lineinfo(S)
 	local size = S:s_int()
 	local lines = {}
 
-	for i = 1, size do lines[i] = S:s_int() end
+	for i = 1, size do
+		lines[i] = S:s_int()
+	end
 
 	return lines
 end
@@ -387,7 +401,9 @@ local function stm_locvars(S)
 	local size = S:s_int()
 	local locvars = {}
 
-	for i = 1, size do locvars[i] = {varname = stm_lstring(S), startpc = S:s_int(), endpc = S:s_int()} end
+	for i = 1, size do
+		locvars[i] = { varname = stm_lstring(S), startpc = S:s_int(), endpc = S:s_int() }
+	end
 
 	return locvars
 end
@@ -396,7 +412,9 @@ local function stm_upvals(S)
 	local size = S:s_int()
 	local upvals = {}
 
-	for i = 1, size do upvals[i] = stm_lstring(S) end
+	for i = 1, size do
+		upvals[i] = stm_lstring(S)
+	end
 
 	return upvals
 end
@@ -429,9 +447,13 @@ function stm_lua_func(S, psrc)
 		if v.is_K then
 			v.const = proto.const[v.Bx + 1] -- offset for 1 based index
 		else
-			if v.is_KB then v.const_B = proto.const[v.B - 0xFF] end
+			if v.is_KB then
+				v.const_B = proto.const[v.B - 0xFF]
+			end
 
-			if v.is_KC then v.const_C = proto.const[v.C - 0xFF] end
+			if v.is_KC then
+				v.const_C = proto.const[v.C - 0xFF]
+			end
 		end
 	end
 
@@ -457,9 +479,9 @@ function stm_lua_bytecode(src)
 		source = src,
 	}
 
-	assert(stm_string(stream, 4) == '\27Lua', 'invalid Lua signature')
-	assert(stm_byte(stream) == 0x51, 'invalid Lua version')
-	assert(stm_byte(stream) == 0, 'invalid Lua format')
+	assert(stm_string(stream, 4) == "\27Lua", "invalid Lua signature")
+	assert(stm_byte(stream) == 0x51, "invalid Lua version")
+	assert(stm_byte(stream) == 0, "invalid Lua format")
 
 	little = stm_byte(stream) ~= 0
 	size_int = stm_byte(stream)
@@ -476,12 +498,12 @@ function stm_lua_bytecode(src)
 	if flag_int then
 		stream.s_num = cst_int_rdr(size_num, rdr_func)
 	elseif float_types[size_num] then
-		stream.s_num = cst_flt_rdr(size_num, float_types[size_num][little and 'little' or 'big'])
+		stream.s_num = cst_flt_rdr(size_num, float_types[size_num][little and "little" or "big"])
 	else
-		error('unsupported float size')
+		error("unsupported float size")
 	end
 
-	return stm_lua_func(stream, '@virtual')
+	return stm_lua_func(stream, "@virtual")
 end
 
 local function close_lua_upvalues(list, index)
@@ -489,7 +511,7 @@ local function close_lua_upvalues(list, index)
 		if uv.index >= index then
 			uv.value = uv.store[uv.index] -- store value
 			uv.store = uv
-			uv.index = 'value' -- self reference
+			uv.index = "value" -- self reference
 			list[i] = nil
 		end
 	end
@@ -499,25 +521,27 @@ local function open_lua_upvalue(list, index, stack)
 	local prev = list[index]
 
 	if not prev then
-		prev = {index = index, store = stack}
+		prev = { index = index, store = stack }
 		list[index] = prev
 	end
 
 	return prev
 end
 
-local function wrap_lua_variadic(...) return select('#', ...), {...} end
+local function wrap_lua_variadic(...)
+	return select("#", ...), { ... }
+end
 
 local function on_lua_error(exst, err)
 	local src = exst.source
 	local line = exst.lines[exst.pc - 1]
-	local psrc, pline, pmsg = string.match(err or '', '^(.-):(%d+):%s+(.+)')
-	local fmt = '%s:%i: [%s:%i] %s'
+	local psrc, pline, pmsg = string.match(err or "", "^(.-):(%d+):%s+(.+)")
+	local fmt = "%s:%i: [%s:%i] %s"
 
-	line = line or '0'
-	psrc = psrc or '?'
-	pline = pline or '0'
-	pmsg = pmsg or err or ''
+	line = line or "0"
+	psrc = psrc or "?"
+	pline = pline or "0"
+	pmsg = pmsg or err or ""
 
 	error(string.format(fmt, src, line, psrc, pline, pmsg), 0)
 end
@@ -546,7 +570,9 @@ local function exec_lua_func(exst)
 				if op < 3 then
 					if op < 1 then
 						--[[LOADNIL]]
-						for i = inst.A, inst.B do stack[i] = nil end
+						for i = inst.A, inst.B do
+							stack[i] = nil
+						end
 					elseif op > 1 then
 						--[[GETUPVAL]]
 						local uv = upvs[inst.B]
@@ -650,7 +676,9 @@ local function exec_lua_func(exst)
 								sz_vals = C - 1
 							end
 
-							for i = 1, sz_vals do stack[A + i - 1] = l_vals[i] end
+							for i = 1, sz_vals do
+								stack[A + i - 1] = l_vals[i]
+							end
 						else
 							--[[SETUPVAL]]
 							local uv = upvs[inst.B]
@@ -774,7 +802,9 @@ local function exec_lua_func(exst)
 								size = B - 1
 							end
 
-							for i = 1, size do vals[i] = stack[A + i - 1] end
+							for i = 1, size do
+								vals[i] = stack[A + i - 1]
+							end
 
 							close_lua_upvalues(openupvs, 0)
 							return size, vals
@@ -782,7 +812,9 @@ local function exec_lua_func(exst)
 							--[[CONCAT]]
 							local str = stack[inst.B]
 
-							for i = inst.B + 1, inst.C do str = str .. stack[i] end
+							for i = inst.B + 1, inst.C do
+								str = str .. stack[i]
+							end
 
 							stack[inst.A] = str
 						end
@@ -825,7 +857,9 @@ local function exec_lua_func(exst)
 								rhs = stack[inst.C]
 							end
 
-							if (lhs == rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
+							if (lhs == rhs) == (inst.A ~= 0) then
+								pc = pc + code[pc].sBx
+							end
 
 							pc = pc + 1
 						end
@@ -845,7 +879,9 @@ local function exec_lua_func(exst)
 							rhs = stack[inst.C]
 						end
 
-						if (lhs < rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
+						if (lhs < rhs) == (inst.A ~= 0) then
+							pc = pc + code[pc].sBx
+						end
 
 						pc = pc + 1
 					else
@@ -870,7 +906,9 @@ local function exec_lua_func(exst)
 					--[[LOADBOOL]]
 					stack[inst.A] = inst.B ~= 0
 
-					if inst.C ~= 0 then pc = pc + 1 end
+					if inst.C ~= 0 then
+						pc = pc + 1
+					end
 				end
 			elseif op > 28 then
 				if op < 33 then
@@ -890,7 +928,9 @@ local function exec_lua_func(exst)
 							rhs = stack[inst.C]
 						end
 
-						if (lhs <= rhs) == (inst.A ~= 0) then pc = pc + code[pc].sBx end
+						if (lhs <= rhs) == (inst.A ~= 0) then
+							pc = pc + code[pc].sBx
+						end
 
 						pc = pc + 1
 					elseif op > 30 then
@@ -944,15 +984,17 @@ local function exec_lua_func(exst)
 								stktop = A + size - 1
 							end
 
-							for i = 1, size do stack[A + i - 1] = vargs.list[i] end
+							for i = 1, size do
+								stack[A + i - 1] = vargs.list[i]
+							end
 						else
 							--[[FORPREP]]
 							local A = inst.A
 							local init, limit, step
 
-							init = assert(tonumber(stack[A]), '`for` initial value must be a number')
-							limit = assert(tonumber(stack[A + 1]), '`for` limit must be a number')
-							step = assert(tonumber(stack[A + 2]), '`for` step must be a number')
+							init = assert(tonumber(stack[A]), "`for` initial value must be a number")
+							limit = assert(tonumber(stack[A + 1]), "`for` limit must be a number")
+							step = assert(tonumber(stack[A + 2]), "`for` step must be a number")
 
 							stack[A] = init - step
 							stack[A + 1] = limit
@@ -968,7 +1010,9 @@ local function exec_lua_func(exst)
 						local tab = stack[A]
 						local offset
 
-						if size == 0 then size = stktop - A end
+						if size == 0 then
+							size = stktop - A
+						end
 
 						if C == 0 then
 							C = inst[pc].value
@@ -977,14 +1021,18 @@ local function exec_lua_func(exst)
 
 						offset = (C - 1) * FIELDS_PER_FLUSH
 
-						for i = 1, size do tab[i + offset] = stack[A + i] end
+						for i = 1, size do
+							tab[i + offset] = stack[A + i]
+						end
 					else
 						--[[NOT]]
 						stack[inst.A] = not stack[inst.B]
 					end
 				else
 					--[[TEST]]
-					if (not stack[inst.A]) == (inst.C ~= 0) then pc = pc + 1 end
+					if (not stack[inst.A]) == (inst.C ~= 0) then
+						pc = pc + 1
+					end
 				end
 			else
 				--[[TFORLOOP]]
@@ -999,9 +1047,11 @@ local function exec_lua_func(exst)
 				stack[base + 1] = state
 				stack[base] = func
 
-				vals = {func(state, index)}
+				vals = { func(state, index) }
 
-				for i = 1, inst.C do stack[base + i - 1] = vals[i] end
+				for i = 1, inst.C do
+					stack[base + i - 1] = vals[i]
+				end
 
 				if stack[base] ~= nil then
 					stack[A + 2] = stack[base]
@@ -1034,15 +1084,19 @@ function wrap_lua_func(state, env, upvals)
 		local exst
 		local ok, err, vals
 
-		for i = 1, st_numparams do stack[i - 1] = l_args[i] end
+		for i = 1, st_numparams do
+			stack[i - 1] = l_args[i]
+		end
 
 		if st_numparams < sz_args then
 			sizevarg = sz_args - st_numparams
-			for i = 1, sizevarg do varargs[i] = l_args[st_numparams + i] end
+			for i = 1, sizevarg do
+				varargs[i] = l_args[st_numparams + i]
+			end
 		end
 
 		exst = {
-			varargs = {list = varargs, size = sizevarg},
+			varargs = { list = varargs, size = sizevarg },
 			code = st_code,
 			subs = st_subs,
 			lines = st_lines,
