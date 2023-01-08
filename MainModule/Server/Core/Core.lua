@@ -529,7 +529,7 @@ return function(Vargs, GetEnv)
 				})
 			end)
 
-			for ind,scr in Core.ExecuteScripts do
+			for _, scr in Core.ExecuteScripts do
 				if scr.Script == data.Script then
 					return scr.Wrapped or scr.Script
 				end
@@ -677,7 +677,7 @@ return function(Vargs, GetEnv)
 
 		SaveAllPlayerData = function()
 			TrackTask = service.TrackTask
-			for key,pdata in Core.PlayerData do
+			for key, pdata in Core.PlayerData do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
@@ -929,7 +929,7 @@ return function(Vargs, GetEnv)
 
 		GetTableKey = function(indList: {string})
 			local tabs = Core.GetData("SavedTables") or {}
-			local realTable, tableName = Core.IndexPathToTable(indList)
+			local _, tableName = Core.IndexPathToTable(indList)
 
 			local foundTable = nil
 
@@ -1004,13 +1004,11 @@ return function(Vargs, GetEnv)
 
 					--// Check that the real table actually has the item to remove; do not create if it does not have it
 					--// (prevents snowballing)
-					local continueOperation = false
 					if tab[1] == "Settings" or tab[2] == "Settings" then
 						local indClone = table.clone(tab)
 						indClone[1] = "OriginalSettings"
 						for _, v in pairs(Core.IndexPathToTable(indClone) or {}) do
 							if CheckMatch(v, val) then
-								continueOperation = true
 								break
 							end
 						end
@@ -1244,7 +1242,7 @@ return function(Vargs, GetEnv)
 					})
 				end
 			end
-		end,
+		end;
 
 		StartAPI = function()
 			local _G = _G
