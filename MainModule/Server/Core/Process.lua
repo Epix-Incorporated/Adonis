@@ -7,7 +7,7 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
+	local Functions, Admin, Anti, Core, Logs, Remote, Process, Variables, Settings, Defaults
 	local logError = env.logError
 	local Routine = env.Routine
 	local function Init()
@@ -15,7 +15,6 @@ return function(Vargs, GetEnv)
 		Admin = server.Admin;
 		Anti = server.Anti;
 		Core = server.Core;
-		HTTP = server.HTTP;
 		Logs = server.Logs;
 		Remote = server.Remote;
 		Process = server.Process;
@@ -27,7 +26,6 @@ return function(Vargs, GetEnv)
 		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
-		Encrypt = Remote.Encrypt
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -68,7 +66,7 @@ return function(Vargs, GetEnv)
 				pcall(
 					plr.Kick,
 					plr,
-					`\n Reason: {(reason or "(No reason provided.")}\n Banned until {service.FormatTime(data.EndTime, { WithWrittenDate = true })}`
+					`\nReason: {(reason or "(No reason provided.")}\n Banned until {service.FormatTime(data.EndTime, { WithWrittenDate = true })}`
 				)
 				AddLog("Script", {
 					Text = `Applied TimeBan on {plr.Name}`;
@@ -120,7 +118,7 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
-	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
+	local function newRateLimit(rateLimit: {[any]: any}, rateKey: any)
 		-- Ratelimit: table
 		-- Ratekey: string or number
 
@@ -265,7 +263,7 @@ return function(Vargs, GetEnv)
 
 	local unWrap = service.unWrap
 	local function RateLimit(p, typ)
-		local isPlayer = type(p)=="userdata" and p:IsA"Player"
+		local isPlayer = type(p)=="userdata" and p:IsA("Player")
 		if isPlayer then
 			local rateData = RateLimiter[typ]
 			assert(rateData, `No rate limit data available for the given type {typ}`)
@@ -302,7 +300,7 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 				else
 					local args = {...}
-					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
+					local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
 					if keys then
 						keys.LastUpdate = os.time()
@@ -512,7 +510,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		CustomChat = function(p, a, b, canCross)
-			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
+			local didPassRate, _, _, curRate, _ = RateLimit(p, "CustomChat")
 
 			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
@@ -550,7 +548,7 @@ return function(Vargs, GetEnv)
 						DontError = true;
 						})
 					do
-						local a = service.Filter(a, p, v)
+						a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == "Global" then
@@ -577,13 +575,13 @@ return function(Vargs, GetEnv)
 		end;
 
 		Chat = function(p, msg)
-			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
+			local didPassRate, _, _, curRate, _ = RateLimit(p, "Chat")
 			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit)
+					msg = string.sub(msg, 1, Process.MsgStringLimit)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats, {
@@ -612,7 +610,7 @@ return function(Vargs, GetEnv)
 						service.Events.PlayerChatted:Fire(p, msg)
 					end
 				elseif isMuted then
-					local msg = string.sub(msg, 1, Process.MsgStringLimit);
+					msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
 						Text = `[MUTED] {p.Name}: {tostring(filtered)}`;
@@ -671,7 +669,7 @@ return function(Vargs, GetEnv)
 					local listed = false
 
 					local CheckTable = Admin.CheckTable
-					for listName, list in Variables.Whitelist.Lists do
+					for _, list in Variables.Whitelist.Lists do
 						if CheckTable(p, list) then
 							listed = true
 							break;
@@ -708,7 +706,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
+					ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -716,7 +714,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
+					ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
 					if not ran then
 						logError(err);
 					end
