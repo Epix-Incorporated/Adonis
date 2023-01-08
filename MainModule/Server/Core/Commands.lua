@@ -16,22 +16,15 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps, t
+	local Commands, Admin, Logs, Remote, t
 
 	local RegisterCommandDefinition
 
 	local function Init()
-		Functions = server.Functions
 		Admin = server.Admin
-		Anti = server.Anti
-		Core = server.Core
-		HTTP = server.HTTP
 		Logs = server.Logs
 		Remote = server.Remote
-		Process = server.Process
-		Variables = server.Variables
 		Commands = server.Commands
-		Deps = server.Deps
 		t = server.Typechecker
 
 		local ValidateCommandDefinition = t.interface({
@@ -92,17 +85,14 @@ return function(Vargs, GetEnv)
 				cmd.NonChattable = not cmd.Chattable
 				cmd.Chattable = nil
 				warn(
-					"Deprecated 'Chattable' property found in command "
-						.. ind
-						.. "; switched to NonChattable = "
-						.. tostring(cmd.NonChattable)
+					`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {tostring(cmd.NonChattable)}`
 				)
 			end
 
 			Admin.PrefixCache[cmd.Prefix] = true
 
 			for _, v in cmd.Commands do
-				Admin.CommandCache[string.lower(cmd.Prefix .. v)] = ind
+				Admin.CommandCache[string.lower(`{cmd.Prefix}{v}`)] = ind
 			end
 
 			cmd.Args = cmd.Args or cmd.Arguments or {}
@@ -131,7 +121,7 @@ return function(Vargs, GetEnv)
 
 			local isValid, fault = ValidateCommandDefinition(cmd)
 			if not isValid then
-				logError("Invalid command definition table " .. ind .. ":", fault)
+				logError(`Invalid command definition table {ind}:`, fault)
 				Commands[ind] = nil
 			end
 
@@ -179,11 +169,11 @@ return function(Vargs, GetEnv)
 						Commands[ind] = cmd
 					end
 
-					Logs.AddLog("Script", "Loaded Command Module: " .. module.Name)
+					Logs.AddLog("Script", `Loaded Command Module: {module.Name}`)
 				elseif not ran then
-					warn("CMDMODULE " .. module.Name .. " failed to load:")
+					warn(`CMDMODULE {module.Name} failed to load:`)
 					warn(tostring(tab))
-					Logs.AddLog("Script", "Loading Command Module Failed: " .. module.Name)
+					Logs.AddLog("Script", `Loading Command Module Failed: {module.Name}`)
 				end
 			end
 		end
@@ -210,7 +200,7 @@ return function(Vargs, GetEnv)
 
 		--// Change command permissions based on settings
 		local Trim = service.Trim
-		for ind, cmd in Settings.Permissions or {} do
+		for _, cmd in Settings.Permissions or {} do
 			local com, level = string.match(cmd, "^(.*):(.*)")
 			if com and level then
 				if string.find(level, ",") then
