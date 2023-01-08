@@ -9,12 +9,12 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Piano</string>
 			<string name="ScriptGuid">{38BE1E96-4280-4914-BAED-94753E9321C1}</string>
-			<ProtectedString name="Source"><![CDATA[wait(0.5)
+			<ProtectedString name="Source"><![CDATA[task.wait(0.5)
 ExistingSounds = {}
 Player = game:GetService("Players").LocalPlayer
-Gui = script:WaitForChild("PianoGui")
+Gui = script:task.waitForChild("PianoGui")
 Humanoid = Player.Character.Humanoid
-Tools = Instance.new("Folder",game:service("ReplicatedStorage"))
+Tools = Instance.new("Folder", game:GetService("ReplicatedStorage"))
 PlayingEnabled = false
 PianoSounds = {
 	"233836579", --C/C#
@@ -38,8 +38,8 @@ function Activate()
 	SetSounds(PianoSounds)
 	--Player.Character.Torso.Anchored=true
 	--Humanoid.PlatformStand=true
-	for i,v in pairs(Player.Backpack:GetChildren()) do
-		v.Parent=Tools
+	for _, v in pairs(Player.Backpack:GetChildren()) do
+		v.Parent = Tools
 	end
 end
 
@@ -50,18 +50,18 @@ function Deactivate()
 	--ReturnCamera()	
 	--Player.Character.Torso.Anchored=false
 	--Humanoid.PlatformStand=false
-	for i,v in pairs(ExistingSounds) do
+	for _,v in pairs(ExistingSounds) do
 		if v then
 			v:Stop()
 			v:Destroy()
 		end
 	end
 	for i,v in pairs(Tools:GetChildren()) do
-		v.Parent=Player.Backpack
+		v.Parent = Player.Backpack
 	end
 	Tools:Destroy()
 	Gui.Parent=script
-	wait(0.5)
+	task.wait(0.5)
 	script:Destroy()
 end
 
@@ -104,7 +104,6 @@ function KeyDown(Object)
 	elseif key == 8 then
 		-- backspace was pressed
 		Deactivate()
-		
 	elseif key == "s" then
 		-- space was pressed --changed to S
 		ToggleSheets()
@@ -188,7 +187,7 @@ function HighlightPianoKey(note)
 	else
 		keyGui.BackgroundColor3 = Color3.new(200/255, 200/255, 200/255)
 	end
-	delay(.5, function() RestorePianoKey(note) end)
+	task.delay(.5, function() RestorePianoKey(note) end)
 end
 
 function RestorePianoKey(note)
@@ -292,8 +291,8 @@ SoundFolder = script.SoundFolder
 SoundFolder.Parent = game:GetService("Players").LocalPlayer.Character
 
 function PreloadAudio(sounds)
-	for i, v in pairs(sounds) do
-		ContentProvider:Preload("http://www.roblox.com/asset/?id="..v)
+	for _, v in pairs(sounds) do
+		ContentProvider:Preload(`http://www.roblox.com/asset/?id={v}`)
 	end
 end
 function SetSounds(sounds)
@@ -312,13 +311,14 @@ function PlayNoteSound(note, source, range, sounds)
 	
 	local offset = 16 * (octave - 1) + 8 * (1 - note2%2) -- How far in audio?
 	
-	local audio = Instance.new("Sound", SoundFolder)-- Create the audio
-	audio.SoundId = "https://roblox.com/asset/?id="..SoundList[sound] -- Give its sound
+	local audio = Instance.new("Sound")-- Create the audio
+	audio.SoundId = `https://roblox.com/asset/?id={SoundList[sound]}` -- Give its sound
 	audio.Volume = 1
+	audio.Parent = SoundFolder
 	
 	if source then
 		local a = 1/range^2
-		local distance = (workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
+		local distance = (workspace.CurrentCamera.CFrame.Position - source).Magnitude
 		local volume = -a*distance^2 + 1
 		if volume < 0.05 then
 			audio:remove()
@@ -335,7 +335,7 @@ function PlayNoteSound(note, source, range, sounds)
 		ExistingSounds[10] = nil
 	end
 	
-	delay(4, function() audio:Stop() audio:remove() end ) -- remove the audio in 4 seconds, enough time for it to play
+	task.delay(4, function() audio:Stop() audio:remove() end ) -- remove the audio in 4 seconds, enough time for it to play
 end
 
 Camera = workspace.CurrentCamera
@@ -344,7 +344,7 @@ Camera = workspace.CurrentCamera
 function SetCamera(cframe)
 	Camera.CameraType = Enum.CameraType.Scriptable
 	Camera:Interpolate(cframe, cframe + cframe.lookVector, .5)
-	--Camera.CoordinateFrame = cframe
+	--Camera.CFrame = cframe
 end
 function ReturnCamera()
 	Camera.CameraType = Enum.CameraType.Custom

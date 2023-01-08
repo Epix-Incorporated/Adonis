@@ -9,23 +9,24 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Sfling</string>
 			<string name="ScriptGuid">{61F447BE-6192-4214-8938-59EF4489FA89}</string>
-			<ProtectedString name="Source"><![CDATA[wait()
+			<ProtectedString name="Source"><![CDATA[task.wait()
 local cam = workspace.CurrentCamera
 local torso = script.Parent
 local hum = torso.Parent.Humanoid
 local strength = script.Strength.Value
-for i=1,100 do
-  wait(0.1)
-  hum.Sit = true
-  local ex = Instance.new("Explosion",cam)
-  ex.Position = torso.Position+Vector3.new(math.random(-5,5),-10,math.random(-5,5))
-  ex.BlastRadius = 35;
-  ex.BlastPressure = strength;
-  ex.ExplosionType = Enum.ExplosionType.CratersAndDebris;
-  ex.DestroyJointRadiusPercent = 0
+for _=1, 100 do
+	hum.Sit = true
+	local ex = Instance.new("Explosion")
+	ex.Position = torso.Position + Vector3.new(math.random(-5,5),-10,math.random(-5,5))
+	ex.BlastRadius = 35;
+	ex.BlastPressure = strength;
+	ex.ExplosionType = Enum.ExplosionType.CratersAndDebris;
+	ex.DestroyJointRadiusPercent = 0
+	ex.Parent = cam
+	task.wait(0.1)
 end
 script:Destroy()]]></ProtectedString>
-			<int64 name="SourceAssetId">-1</int64>
+<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
 		<Item class="NumberValue" referent="RBXCB3F5B8FB6D146399BEFF15E8600883C">
