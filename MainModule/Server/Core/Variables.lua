@@ -14,16 +14,9 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Logs, Variables, Settings
 	local function Init()
-		Functions = server.Functions
-		Admin = server.Admin
-		Anti = server.Anti
-		Core = server.Core
-		HTTP = server.HTTP
 		Logs = server.Logs
-		Remote = server.Remote
-		Process = server.Process
 		Variables = server.Variables
 		Settings = server.Settings
 
@@ -38,7 +31,7 @@ return function(Vargs, GetEnv)
 		Logs:AddLog("Script", "Variables Module Initialized")
 	end
 
-	local function AfterInit(data)
+	local function AfterInit()
 		server.Variables.CodeName = server.Functions:GetRandom()
 
 		Variables.RunAfterInit = nil
@@ -129,27 +122,27 @@ return function(Vargs, GetEnv)
 			{Name = "crabrave", 				ID = 5410086218},
 			{Name = "shiawase", 				ID = 5409360995},
 			{Name = "unchartedwaters", 			ID = 7028907200},
-			{Name = "glow", 				ID = 7028856935},
-			{Name = "good4me", 				ID = 7029051434},
-			{Name = "bloom", 				ID = 7029024726},
+			{Name = "glow", 					ID = 7028856935},
+			{Name = "good4me", 					ID = 7029051434},
+			{Name = "bloom", 					ID = 7029024726},
 			{Name = "safe&sound", 				ID = 7024233823},
-			{Name = "shaku", 				ID = 7024332460},
+			{Name = "shaku", 					ID = 7024332460},
 			{Name = "fromdust&ashes", 			ID = 7024254685},
-			{Name = "loveis", 				ID = 7029092469},
+			{Name = "loveis", 					ID = 7029092469},
 			{Name = "playitcool", 				ID = 7029017448},
-			{Name = "still", 				ID = 7023771708},
-			{Name = "sleep", 				ID = 7023407320},
-			{Name = "whatareyouwaitingfor", 		ID = 7028977687},
-			{Name = "balace", 				ID = 7024183256},
+			{Name = "still", 					ID = 7023771708},
+			{Name = "sleep", 					ID = 7023407320},
+			{Name = "whatareyouwaitingfor",		ID = 7028977687},
+			{Name = "balace", 					ID = 7024183256},
 			{Name = "brokenglass", 				ID = 7028799370},
-			{Name = "thelanguageofangels", 			ID = 7029031068},
+			{Name = "thelanguageofangels",		ID = 7029031068},
 			{Name = "imprints", 				ID = 7023704173},
 			{Name = "foundareason", 			ID = 7028919492},
 			{Name = "newhorizons", 				ID = 7028518546},
 			{Name = "whatsitlike", 				ID = 7028997537},
 			{Name = "destroyme",				ID = 7023617400},
 			{Name = "consellations", 			ID = 7023733671},
-			{Name = "wish", 				ID = 7023670701},
+			{Name = "wish", 					ID = 7023670701},
 			{Name = "samemistake", 				ID = 7024101188},
 			{Name = "whereibelong", 			ID = 7028527348},
 		};
@@ -157,30 +150,30 @@ return function(Vargs, GetEnv)
 		InsertList = {};
 
 		Capes = {
-			{Name = "crossota", 	Material = "Neon", 	Color = "Cyan", 			ID = 420260457},
-			{Name = "jamiejr99", 	Material = "Neon", 	Color = "Cashmere",			ID = 429297485},
+			{Name = "crossota", 	Material = "Neon", 		Color = "Cyan", 					ID = 420260457},
+			{Name = "jamiejr99", 	Material = "Neon", 		Color = "Cashmere",					ID = 429297485},
 			{Name = "new yeller", 	Material = "Fabric", 	Color = "New Yeller"},
 			{Name = "pastel blue", 	Material = "Fabric", 	Color = "Pastel Blue"},
 			{Name = "dusty rose", 	Material = "Fabric", 	Color = "Dusty Rose"},
 			{Name = "cga brown", 	Material = "Fabric", 	Color = "CGA brown"},
-			{Name = "random", 	Material = "Fabric", 	Color = (BrickColor.random()).Name},
-			{Name = "shiny", 	Material = "Plastic", 	Color = "Institutional white",		Reflectance = 1},
-			{Name = "gold",		Material = "Plastic", 	Color = "Bright yellow",		Reflectance = 0.4},
-			{Name = "kohl",		Material = "Fabric", 	Color = "Really black", 		ID = 108597653},
-			{Name = "script", 	Material = "Plastic", 	Color = "White", 			ID = 151359194},
-			{Name = "batman", 	Material = "Fabric", 	Color = "Institutional white", 		ID = 108597669},
-			{Name = "epix", 	Material = "Plastic", 	Color = "Really black", 		ID = 149442745},
-			{Name = "superman", 	Material = "Fabric", 	Color = "Bright blue", 			ID = 108597677},
-			{Name = "swag", 	Material = "Fabric", 	Color = "Pink", 			ID = 109301474},
-			{Name = "donor", 	Material = "Plastic", 	Color = "White", 			ID = 149009184},
-			{Name = "gomodern", 	Material = "Plastic", 	Color = "Really black", 		ID = 149438175},
-			{Name = "admin", 	Material = "Plastic", 	Color = "White", 			ID = 149092195},
-			{Name = "giovannis", 	Material = "Plastic", 	Color = "White", 			ID = 149808729},
+			{Name = "random", 		Material = "Fabric", 	Color = (BrickColor.random()).Name},
+			{Name = "shiny", 		Material = "Plastic", 	Color = "Institutional white",		Reflectance = 1},
+			{Name = "gold",			Material = "Plastic", 	Color = "Bright yellow",			Reflectance = 0.4},
+			{Name = "kohl",			Material = "Fabric", 	Color = "Really black", 			ID = 108597653},
+			{Name = "script", 		Material = "Plastic", 	Color = "White", 					ID = 151359194},
+			{Name = "batman", 		Material = "Fabric", 	Color = "Institutional white", 		ID = 108597669},
+			{Name = "epix", 		Material = "Plastic", 	Color = "Really black", 			ID = 149442745},
+			{Name = "superman", 	Material = "Fabric", 	Color = "Bright blue", 				ID = 108597677},
+			{Name = "swag", 		Material = "Fabric", 	Color = "Pink", 					ID = 109301474},
+			{Name = "donor", 		Material = "Plastic", 	Color = "White", 					ID = 149009184},
+			{Name = "gomodern", 	Material = "Plastic", 	Color = "Really black", 			ID = 149438175},
+			{Name = "admin", 		Material = "Plastic", 	Color = "White", 					ID = 149092195},
+			{Name = "giovannis", 	Material = "Plastic", 	Color = "White", 					ID = 149808729},
 			{Name = "godofdonuts", 	Material = "Plastic", 	Color = "Institutional white",		ID = 151034443},
-			{Name = "host", 	Material = "Plastic", 	Color = "Really black", 		ID = 152299000},
-			{Name = "cohost", 	Material = "Plastic", 	Color = "Really black", 		ID = 152298950},
-			{Name = "trainer",	Material = "Plastic", 	Color = "Really black", 		ID = 152298976},
-			{Name = "ba", 		Material = "Plastic", 	Color = "White", 			ID = 172528001}
+			{Name = "host", 		Material = "Plastic", 	Color = "Really black", 			ID = 152299000},
+			{Name = "cohost", 		Material = "Plastic", 	Color = "Really black", 			ID = 152298950},
+			{Name = "trainer",		Material = "Plastic", 	Color = "Really black", 			ID = 152298976},
+			{Name = "ba", 			Material = "Plastic", 	Color = "White", 					ID = 172528001}
 		};
 
 		Blacklist = {

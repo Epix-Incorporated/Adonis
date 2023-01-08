@@ -111,27 +111,27 @@ return function(Vargs, GetEnv)
 		};
 
 		Returnables = {
-			RateLimits = function(p: Player,args: {[number]: any})
+			RateLimits = function(p: Player,args: {any})
 				return server.Process.RateLimits
 			end;
 
-			Test = function(p: Player,args: {[number]: any})
+			Test = function(p: Player,args: {any})
 				return "HELLO FROM THE OTHER SIDE :)!"
 			end;
 
-			Ping = function(p: Player,args: {[number]: any})
+			Ping = function(p: Player,args: {any})
 				return "Pong"
 			end;
 
-			Filter = function(p: Player,args: {[number]: any})
+			Filter = function(p: Player,args: {any})
 				return service.Filter(args[1],args[2],args[3])
 			end;
 
-			BroadcastFilter = function(p: Player,args: {[number]: any})
+			BroadcastFilter = function(p: Player,args: {any})
 				return service.BroadcastFilter(args[1],args[2] or p)
 			end;
 
-			TaskManager = function(p: Player,args: {[number]: any})
+			TaskManager = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local action = args[1]
 					if action == "GetTasks" then
@@ -151,15 +151,15 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ExecutePermission = function(p: Player,args: {[number]: any})
+			ExecutePermission = function(p: Player,args: {any})
 				return Core.ExecutePermission(args[1],args[2],true)
 			end;
 
-			Variable = function(p: Player,args: {[number]: any})
+			Variable = function(p: Player,args: {any})
 				return Variables[args[1]]
 			end;
 
-			Default = function(p: Player,args: {[number]: any})
+			Default = function(p: Player,args: {any})
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
 				local ret
@@ -173,11 +173,8 @@ return function(Vargs, GetEnv)
 					Trello_AppKey = true;
 					Trello_Token = true;
 
-					--G_Access = true;
 					G_Access_Key = true;
 					WebPanel_ApiKey = true;
-					--G_Access_Perms = true;
-					--Allowed_API_Calls = true;
 				}
 
 				if type(setting) == "table" then
@@ -196,7 +193,7 @@ return function(Vargs, GetEnv)
 				return ret
 			end;
 
-			AllDefaults = function(p: Player,args: {[number]: any})
+			AllDefaults = function(p: Player)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local sets = {
 						Settings = table.clone(Defaults);
@@ -210,9 +207,6 @@ return function(Vargs, GetEnv)
 						DataStoreKey = true;
 						DataStoreEnabled = true;
 
-						--Trello_Enabled = true;
-						--Trello_PrimaryBoard = true;
-						--Trello_SecondaryBoards = true;
 						Trello_AppKey = true;
 						Trello_Token = true;
 
@@ -239,7 +233,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Setting = function(p: Player,args: {[number]: any})
+			Setting = function(p: Player,args: {any})
 				local setting = args[1]
 				local level = Admin.GetLevel(p)
 				local ret
@@ -261,7 +255,7 @@ return function(Vargs, GetEnv)
 				return ret
 			end;
 
-			AllSettings = function(p: Player,args: {[number]: any})
+			AllSettings = function(p: Player)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local sets = {
 						Settings = table.clone(Settings);
@@ -281,7 +275,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			UpdateList = function(p: Player,args: {[number]: any})
+			UpdateList = function(p: Player,args: {any})
 				local list = args[1]
 				local update = Logs.ListUpdaters[list]
 				if update then
@@ -289,16 +283,16 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			AdminLevel = function(p: Player,args: {[number]: any})
+			AdminLevel = function(p: Player)
 				return Admin.GetLevel(p)
 			end;
 
-			Keybinds = function(p: Player,args: {[number]: any})
+			Keybinds = function(p: Player)
 				local playerData = Core.GetPlayer(p)
 				return playerData.Keybinds or {}
 			end;
 
-			UpdateKeybinds = function(p: Player,args: {[number]: any})
+			UpdateKeybinds = function(p: Player, args: {any})
 				local playerData = Core.GetPlayer(p)
 				local binds = args[1]
 				local resp = "OK"
@@ -313,12 +307,12 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			Playlist = function(p: Player,args: {[number]: any})
+			Playlist = function(p: Player)
 				local playerData = Core.GetPlayer(p)
 				return playerData.CustomPlaylist or {}
 			end;
 
-			UpdatePlaylist = function(p: Player,args: {[number]: any})
+			UpdatePlaylist = function(p: Player, args: {any})
 				local resp = "Error: Unknown Error"
 				if type(args)=="table" then
 					if string.len(service.HttpService:JSONEncode(args)) < 4000 then
@@ -335,7 +329,7 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			UpdateClient = function(p: Player,args: {[number]: any})
+			UpdateClient = function(p: Player, args: {any})
 				local playerData = Core.GetPlayer(p)
 				local setting = args[1]
 				local value = args[2]
@@ -348,7 +342,7 @@ return function(Vargs, GetEnv)
 				return "Updated"
 			end;
 
-			UpdateDonor = function(p: Player,args: {[number]: any})
+			UpdateDonor = function(p: Player, args: {any})
 				local playerData = Core.GetPlayer(p)
 				local donor = args[1]
 				local resp = "OK"
@@ -367,7 +361,7 @@ return function(Vargs, GetEnv)
 				return resp
 			end;
 
-			UpdateAliases = function(p: Player,args: {[number]: any})
+			UpdateAliases = function(p: Player, args: {any})
 				local aliases = args[1] or {};
 
 				if type(aliases) == "table" then
@@ -384,25 +378,25 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			PlayerData = function(p: Player,args: {[number]: any})
+			PlayerData = function(p: Player)
 				local data = Core.GetPlayer(p)
 				data.isDonor = Admin.CheckDonor(p)
 				return data
 			end;
 
-			CheckAdmin = function(p: Player,args: {[number]: any})
+			CheckAdmin = function(p: Player)
 				return Admin.CheckAdmin(p)
 			end;
 
-			SearchCommands = function(p: Player,args: {[number]: any})
+			SearchCommands = function(p: Player, args: {any})
 				return Admin.SearchCommands(p,args[1] or "all")
 			end;
 
-			CheckBackpack = function(p: Player,args: {[number]: any})
+			CheckBackpack = function(p: Player, args: {any})
 				return Anti.CheckBackpack(p,args[1])
 			end;
 
-			FormattedCommands = function(p: Player,args: {[number]: any})
+			FormattedCommands = function(p: Player, args: {any})
 				local commands = Admin.SearchCommands(p,args[1] or "all")
 				local tab = {}
 				for _,v in commands do
@@ -415,7 +409,7 @@ return function(Vargs, GetEnv)
 				return tab
 			end;
 
-			TerminalData = function(p: Player,args: {[number]: any})
+			TerminalData = function(p: Player)
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local entry = Remote.Terminal.Data[tostring(p.UserId)]
 					if not entry then
@@ -439,7 +433,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Terminal = function(p: Player,args: {[number]: any})
+			Terminal = function(p: Player, args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local data = args[2]
 					local message = args[1]
@@ -453,12 +447,12 @@ return function(Vargs, GetEnv)
 							return ret
 						else
 							return {
-								"COMMAND ERROR: "..tostring(ret)
+								`COMMAND ERROR: {tostring(ret)}`
 							}
 						end
 					else
 						return {
-							"Could not find any command matching \""..command.."\""
+							`Could not find any command matching "{command}"`
 						}
 					end
 				end
@@ -469,7 +463,7 @@ return function(Vargs, GetEnv)
 				local cmd, ind
 				for i, v in Admin.SearchCommands(p, "all") do
 					for _, c in ipairs(v.Commands) do
-						if (v.Prefix or "")..string.lower(c) == (v.Prefix or "")..string.lower("music") then
+						if `{(v.Prefix or "")}{string.lower(c)}` == `{(v.Prefix or "")}{string.lower("music")}` then
 							cmd, ind = v, i
 							break
 						end
@@ -512,8 +506,8 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						local output = {}
 						for i,v in Remote.Terminal.Commands do
-							table.insert(output, tostring(v.Usage).. string.rep(" ",30-string.len(tostring(v.Usage))))
-							table.insert(output, "- ".. tostring(v.Description))
+							table.insert(output, `{tostring(v.Usage)}{string.rep(" ",30-string.len(tostring(v.Usage)))}`)
+							table.insert(output, `- {tostring(v.Description)}`)
 						end
 						return output
 					end;
@@ -536,8 +530,8 @@ return function(Vargs, GetEnv)
 					Command = "test";
 					Arguments = 1;
 					Description = "Used to test the connection to the server and it's ability to return data";
-					Function = function(p,args,data)
-						Remote.Terminal.LiveOutput(p,"Return Test: "..tostring(args[1]))
+					Function = function(p, args, data)
+						Remote.Terminal.LiveOutput(p, `Return Test: {tostring(args[1])}`)
 					end
 				};
 
@@ -548,9 +542,9 @@ return function(Vargs, GetEnv)
 					Description = "Loads and runs the given lua string";
 					Function = function(p,args,data)
 						local newenv = GetEnv(getfenv(),{
-							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"PRINT: "..tostring(v)) end end;
-							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"WARN: "..tostring(v)) end end;
-							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(v)) end end;
+							print = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p, `PRINT: {tostring(v)}`) end end;
+							warn = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p, `WARN: {tostring(v)}`) end end;
+							error = function(...) local nums = {...} for _,v in nums do Remote.Terminal.LiveOutput(p, `ERROR: {tostring(v)}`) end end;
 						})
 
 						if not server.Remote.RemoteExecutionConfirmed[p.UserId] then
@@ -572,7 +566,7 @@ return function(Vargs, GetEnv)
 						if func then
 							func()
 						else
-							Remote.Terminal.LiveOutput(p,"ERROR: "..tostring(string.match(err, ":(.*)") or err))
+							Remote.Terminal.LiveOutput(p,`ERROR: {tostring(string.match(err, ":(.*)") or err)}`)
 						end
 					end
 				};
@@ -585,7 +579,7 @@ return function(Vargs, GetEnv)
 					Function = function(p,args,data)
 						Process.Command(p, args[1], {DontLog = true, Check = true}, true)
 						return {
-							"Command ran: "..args[1]
+							`Command ran: {args[1]}`
 						}
 					end
 				};
@@ -595,10 +589,10 @@ return function(Vargs, GetEnv)
 					Command = "sudo";
 					Arguments = 1;
 					Description = "Runs the specified command on the specified player as the server";
-					Function = function(p,args,data)
-						Process.Command(p, Settings.Prefix.."sudo ".. tostring(args[1]), {DontLog = true, Check = true}, true)
+					Function = function(p, args, data)
+						Process.Command(p, `{Settings.Prefix}sudo {tostring(args[1])}`, {DontLog = true, Check = true}, true)
 						return {
-							"Command ran: ".. Settings.Prefix.."sudo ".. tostring(args[1])
+							`Command ran: {Settings.Prefix}sudo {tostring(args[1])}`
 						}
 					end
 				};
@@ -614,11 +608,11 @@ return function(Vargs, GetEnv)
 							local ret = {}
 							for _,v in plrs do
 								v:Kick(args[2] or "Disconnected by server")
-								table.insert(ret, "Disconnect "..service.FormatPlayer(v).." from the server")
+								table.insert(ret, `Disconnect {service.FormatPlayer(v)} from the server`)
 							end
 							return ret
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
@@ -636,14 +630,14 @@ return function(Vargs, GetEnv)
 								local char = v.Character
 								if char and char.ClassName == "Model" then
 									char:BreakJoints()
-									table.insert(ret, "Killed "..service.FormatPlayer(v))
+									table.insert(ret, `Killed {service.FormatPlayer(v)}`)
 								else
-									table.insert(ret, service.FormatPlayer(v).." has no character or it's not a model")
+									table.insert(ret, `{service.FormatPlayer(v)} has no character or it's not a model`)
 								end
 								return ret
 							end
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
@@ -659,10 +653,10 @@ return function(Vargs, GetEnv)
 							local ret = {}
 							for _,v in plrs do
 								v:LoadCharacter()
-								table.insert(ret, "Respawned "..service.FormatPlayer(v))
+								table.insert(ret, `Respawned {service.FormatPlayer(v)}`)
 							end
 						else
-							return {"No players matching '"..args[1].."' found"}
+							return {`No players matching '{args[1]}' found`}
 						end
 					end
 				};
@@ -697,7 +691,7 @@ return function(Vargs, GetEnv)
 		});
 
 		Commands = {
-			GetReturn = function(p: Player,args: {[number]: any})
+			GetReturn = function(p: Player,args: {any})
 				local com = args[1]
 				local key = args[2]
 				local parms = {unpack(args,3)}
@@ -711,14 +705,14 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			GiveReturn = function(p: Player,args: {[number]: any})
+			GiveReturn = function(p: Player,args: {any})
 				if Remote.PendingReturns[args[1]] then
 					Remote.PendingReturns[args[1]] = nil
 					service.Events[args[1]]:Fire(unpack(args,2))
 				end
 			end;
 
-			ClientCheck = function(p: Player,args: {[number]: any})
+			ClientCheck = function(p: Player,args: {any})
 				local key = tostring(p.UserId)
 				--local data = args[1]
 				local special = args[2]
@@ -731,7 +725,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Session = function(p: Player,args: {[number]: any})
+			Session = function(p: Player,args: {any})
 				local sessionKey = args[1];
 				local session = sessionKey and Remote.GetSession(sessionKey);
 
@@ -765,11 +759,11 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			PlayerEvent = function(p: Player,args: {[number]: any})
-				service.Events[tostring(args[1])..p.UserId]:Fire(unpack(args,2))
+			PlayerEvent = function(p: Player,args: {any})
+				service.Events[`{tostring(args[1])}{p.UserId}`]:Fire(unpack(args,2))
 			end;
 
-			SaveTableAdd = function(p: Player,args: {[number]: any})
+			SaveTableAdd = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local tabName = args[1];
 					local value = args[2];
@@ -785,7 +779,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			SaveTableRemove = function(p: Player,args: {[number]: any})
+			SaveTableRemove = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local tabName = args[1];
 					local value = args[2];
@@ -804,7 +798,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			SaveSetSetting = function(p: Player,args: {[number]: any})
+			SaveSetSetting = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local setting = args[1]
 					local value = args[2]
@@ -830,14 +824,14 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			ClearSavedSettings = function(p: Player,args: {[number]: any})
+			ClearSavedSettings = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					Core.DoSave({Type = "ClearSettings"})
 					Functions.Hint("Cleared saved settings", {p})
 				end
 			end;
 
-			SetSetting = function(p: Player,args: {[number]: any})
+			SetSetting = function(p: Player,args: {any})
 				if Admin.GetLevel(p) >= Settings.Ranks.Creators.Level then
 					local setting = args[1]
 					local value = args[2]
@@ -857,11 +851,11 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			Detected = function(p: Player,args: {[number]: any})
+			Detected = function(p: Player,args: {any})
 				Anti.Detected(p, args[1], args[2])
 			end;
 
-			TrelloOperation = function(p: Player,args: {[number]: any})
+			TrelloOperation = function(p: Player,args: {any})
 				local adminLevel = Admin.GetLevel(p)
 
 				local trello = HTTP.Trello.API
@@ -885,20 +879,20 @@ return function(Vargs, GetEnv)
 						local list = trello.getListObj(lists, listName)
 						if list then
 							local card = trello.makeCard(list.id, name, desc)
-							Functions.Hint("Made card \""..card.name.."\" in list \""..list.name.."\"", {p})
+							Functions.Hint(`Made card "{card.name}" in list "{list.name}"`, {p})
 							Logs.AddLog(Logs.Script,{
-								Text = tostring(p).." performed Trello operation";
+								Text = `{tostring(p)} performed Trello operation`;
 								Desc = "Player created a Trello card";
 								Player = p;
 							})
 						else
-							Functions.Hint("\""..listName.."\" does not exist", {p})
+							Functions.Hint(`"{listName}" does not exist`, {p})
 						end
 					end
 				end
 			end;
 
-			ClientLoaded = function(p: Player, args: {[number]: any})
+			ClientLoaded = function(p: Player, args: {any})
 				local key = tostring(p.UserId)
 				local client = Remote.Clients[key]
 
@@ -910,44 +904,42 @@ return function(Vargs, GetEnv)
 					service.Events.ClientLoaded:Fire(p)
 					task.defer(Process.FinishLoading, p)
 				else
-					warn("[CLI-199524] ClientLoaded fired when not ready for ".. tostring(p))
-					Logs:AddLog("Script", string.format("%s fired ClientLoaded too early", tostring(p)));
-					--p:Kick("Loading error [ClientLoaded Failed]")
+					warn(`[CLI-199524] ClientLoaded fired when not ready for {tostring(p)}`)
+					Logs:AddLog("Script", `{tostring(p)} fired ClientLoaded too early`);
 				end
 			end;
 
-			LogError = function(p: Player,args: {[number]: any})
+			LogError = function(p: Player, args: {any})
 				logError(p,args[1])
 			end;
 
-			Test = function(p: Player,args: {[number]: any})
-				print("OK WE GOT COMMUNICATION! FROM: "..p.Name.." ORGL: "..args[1])
+			Test = function(p: Player,args: {any})
+				print(`OK WE GOT COMMUNICATION! FROM: {p.Name} ORGL: {args[1]}`)
 			end;
 
-			ProcessCommand = function(p: Player,args: {[number]: any})
+			ProcessCommand = function(p: Player, args: {any})
 				if Process.RateLimit(p, "Command") then
 					Process.Command(p, args[1], {
 						Check = true
 					})
 				elseif Process.RateLimit(p, "RateLog") then
-					Anti.Detected(p, "Log", string.format("Running commands too quickly (>Rate: %s/sec)", 1/Process.RateLimits.Command));
-					warn(string.format("%s is running commands too quickly (>Rate: %s/sec)", p.Name, 1/Process.RateLimits.Command));
+					Anti.Detected(p, "Log", `Running commands too quickly (>Rate: {1/Process.RateLimits.Command}/sec)`);
+					warn(`{p.Name} is running commands too quickly (>Rate: {1/Process.RateLimits.Command}/sec)`);
 				end
 			end;
 
-			ProcessChat = function(p: Player,args: {[number]: any})
+			ProcessChat = function(p: Player,args: {any})
 				Process.Chat(p,args[1])
 			end;
 
-			ProcessCustomChat = function(p: Player,args: {[number]: any})
+			ProcessCustomChat = function(p: Player,args: {any})
 				Process.Chat(p,args[1],"CustomChat")
 				Process.CustomChat(p,args[1],args[2],true)
 			end;
 
-			PrivateMessage = function(p: Player,args: {[number]: any})
+			PrivateMessage = function(p: Player,args: {any})
 				if not type(args[1]) == "string" then return end
 
-				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local target = Variables.PMtickets[args[1]]
 				if target or Admin.CheckAdmin(p) then
 					if target then
@@ -956,7 +948,7 @@ return function(Vargs, GetEnv)
 						target = args[2]
 					end
 
-					local title = string.format("Reply from %s (@%s)", p.DisplayName, p.Name)
+					local title = `Reply from {p.DisplayName} (@{p.Name})`
 					local message = args[3]
 
 					local replyTicket = Functions.GetRandom()
@@ -969,12 +961,12 @@ return function(Vargs, GetEnv)
 					})
 
 					Logs:AddLog(Logs.Script,{
-						Text = p.Name.." replied to "..tostring(target),
+						Text = `{p.Name} replied to {tostring(target)}`,
 						Desc = message,
 						Player = p;
 					})
 				else
-					Anti.Detected(p, "info", "Invalid PrivateMessage ticket! Got: ".. tostring(args[2]))
+					Anti.Detected(p, "info", `Invalid PrivateMessage ticket! Got: {tostring(args[2])}`)
 				end
 			end;
 		};
@@ -1075,25 +1067,25 @@ return function(Vargs, GetEnv)
 			return Remote.Sessions[sessionKey];
 		end;
 
-		Fire = function(p: Player,...)
-			assert(p and p:IsA("Player"), "Remote.Fire: ".. tostring(p) .." is not a valid Player")
+		Fire = function(p: Player, ...)
+			assert(p and p:IsA("Player"), `Remote.Fire: {tostring(p)} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Object then
 				keys.Sent += 1
-				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0},...)
+				pcall(RemoteEvent.Object.FireClient, RemoteEvent.Object, p, {Mode = "Fire", Sent = 0}, ...)
 			end
 		end;
 
-		Send = function(p: Player,com: string,...)
-			assert(p and p:IsA("Player"), "Remote.Send: ".. tostring(p) .." is not a valid Player")
+		Send = function(p: Player,com: string, ...)
+			assert(p and p:IsA("Player"), `Remote.Fire: {tostring(p)} is not a valid Player`)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
+				Remote.Fire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
 			end
 		end;
 
-		GetFire = function(p: Player,...)
+		GetFire = function(p: Player, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			local RemoteEvent = Core.RemoteEvent
 			if RemoteEvent and RemoteEvent.Function then
@@ -1102,10 +1094,10 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Get = function(p: Player,com: string,...)
+		Get = function(p: Player, com: string, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
-				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache),...)
+				local ret = Remote.GetFire(p, Remote.Encrypt(com, keys.Key, keys.Cache), ...)
 				if type(ret) == "table" then
 					return unpack(ret);
 				else
@@ -1114,7 +1106,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		OldGet = function(p: Player,com: string, ...)
+		OldGet = function(p: Player, com: string, ...)
 			local keys = Remote.Clients[tostring(p.UserId)]
 			if keys and keys.RemoteReady == true then
 				local returns, finished
@@ -1123,18 +1115,17 @@ return function(Vargs, GetEnv)
 				local event = service.Events[key]:Connect(function(...) print("WE ARE GETTING A RETURN!") finished = true returns = {...} Yield:Release() end)
 
 				Remote.PendingReturns[key] = true
-				Remote.Send(p,"GetReturn",com,key,...)
+				Remote.Send(p, "GetReturn", com, key, ...)
 
 				print("GETTING RETURN");
 				if not finished and not returns and p.Parent then
 					local pEvent = service.Players.PlayerRemoving:Connect(function(plr) if plr == p then event:Fire() end end)
 					task.delay(600, function() if not finished then event:Fire() end end)
-					print(string.format("WAITING FOR RETURN %s", tostring(returns)));
-					--returns = returns or {event:Wait()}
+					print(`WAITING FOR RETURN {tostring(returns)}`);
 					Yield:Wait();
 					Yield:Destroy();
 
-					print(string.format("WE GOT IT! %s", tostring(returns)));
+					print(`WE GOT IT! {tostring(returns)}`);
 					pEvent:Disconnect()
 					pEvent = nil
 				end
@@ -1181,8 +1172,7 @@ return function(Vargs, GetEnv)
 
 				if continue and (data.LastUpdate and os.time() - data.LastUpdate > Remote.TimeUntilKeyDestroyed) then
 					Remote.Clients[key] = nil;
-					--print("Client key removed for UserId ".. tostring(key))
-					Logs:AddLog("Script", "Client key removed for UserId ".. tostring(key))
+					Logs:AddLog("Script", `Client key removed for UserId {tostring(key)}`)
 				end
 			end
 
@@ -1253,12 +1243,12 @@ return function(Vargs, GetEnv)
 			Remote.Send(p,"Function","SetLighting",prop,value)
 		end;
 
-		FireEvent = function(p: Player,...)
-			Remote.Send(p,"FireEvent",...)
+		FireEvent = function(p: Player, ...)
+			Remote.Send(p,"FireEvent", ...)
 		end;
 
 		NewPlayerEvent = function(p: Player,type: string,func: (...any) -> (...any))
-			return service.Events[type..p.UserId]:Connect(func)
+			return service.Events[`{type}{p.UserId}`]:Connect(func)
 		end;
 
 		StartLoop = function(p: Player,name: string,delay: number | string,funcCode: string)
