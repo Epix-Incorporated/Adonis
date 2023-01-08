@@ -12,47 +12,26 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local _G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	local getfenv, setfenv, rawequal, print, warn,  pcall,
+	unpack, string, tostring, Instance, require, table, type, UDim2 =
+		getfenv, setfenv, rawequal, print, warn,  pcall,
+	unpack, string, tostring, Instance, require, table, type, UDim2
 
 	local UIFolder = client.UIFolder
-
-	local script = script
 
 	local service = Vargs.Service
 	local client = Vargs.Client
 
-	local GetEnv = env.GetEnv
+	GetEnv = env.GetEnv
 
-	local Anti, Core, Functions, Process, Remote, UI, Variables, Deps
+	local Anti, Functions, Remote, UI, Variables
 	local CloneTable, TrackTask
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
-		Core = client.Core;
 		Variables = client.Variables
 		Functions = client.Functions;
-		Process = client.Process;
 		Remote = client.Remote;
-		Deps = client.Deps;
 
 		CloneTable = service.CloneTable;
 		TrackTask = service.TrackTask;
@@ -61,36 +40,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
 		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
 		UI.RunLast = nil;
 	end
@@ -128,7 +77,7 @@ return function(Vargs, GetEnv)
 				new.Active = true
 				new.Text = ""
 
-				for ind,child in gui:GetChildren() do
+				for _,child in gui:GetChildren() do
 					child.Parent = new
 				end
 
@@ -144,11 +93,11 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		LoadModule = function(module, data, env)
+		LoadModule = function(module, data, env2)
 			data = data or {}
 
 			local ran, func = pcall(require, module)
-			local newEnv = GetEnv(env, {
+			local newEnv = GetEnv(env2, {
 				script = module,
 				client = CloneTable(client),
 				service = CloneTable(service)
@@ -165,16 +114,8 @@ return function(Vargs, GetEnv)
 			end
 
 			if ran then
-				--// Temporarily disabled NoEnv; it seems to be causing some issues(?)
-				--// ~ Expertcoderz
-
-				--[[if (data.isModifier and not data.modNoEnv) or (not data.isModifier and data.isCode and not data.NoEnv) then
-					setfenv(func, env)
-				end]]
-
 				local rets = {
-					TrackTask("UI: ".. module:GetFullName(),
-						--func,
+					TrackTask(`UI: {module:GetFullName()}`,
 						setfenv(func, newEnv),
 						data,
 						newEnv
@@ -185,7 +126,7 @@ return function(Vargs, GetEnv)
 					return unpack(rets, 2)
 				else
 					warn("Error while running module", module.Name, rets[2])
-					client.LogError("Error loading ".. module.Name .." - ".. tostring(rets[2]))
+					client.LogError(`Error loading {module.Name} - {tostring(rets[2])}`)
 				end
 			else
 				warn("Error while loading module", module.Name, tostring(func))
@@ -195,26 +136,25 @@ return function(Vargs, GetEnv)
 		GetNew = function(theme, name)
 			local foundConfigs = {}
 			local endConfig = {}
-			local endConfValues = {}
 
 			local confFolder = Instance.new("Folder")
 			local debounce = false
 
-			local function func(theme, name, depth)
-				local depth = (depth or 11) - 1
+			local function func(theme2, name2, depth)
+				depth = (depth or 11) - 1
 
-				local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
+				local folder = UIFolder:FindFirstChild(theme2) or UIFolder.Default
 				if folder then
 					local baseValue = folder:FindFirstChild("Base_Theme")
 					local baseTheme = baseValue and baseValue.Value
-					local foundGUI = folder:FindFirstChild(name) --local foundGUI = (baseValue and folder:FindFirstChild(name)) or UIFolder.Default:FindFirstChild(name)
+					local foundGUI = folder:FindFirstChild(name2)
 
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
 						table.insert(foundConfigs, {
-							Theme = theme;
+							Theme = theme2;
 							Folder = folder;
-							Name = name;
+							Name = name2;
 							Found = foundGUI;
 							Config = config;
 							isModule = foundGUI:IsA("ModuleScript");
@@ -227,10 +167,10 @@ return function(Vargs, GetEnv)
 					end
 					if baseTheme and depth > 0 then
 						if UI.DefaultTheme and baseTheme == "Default" and theme ~= UI.DefaultTheme and not debounce then
-							func(UI.DefaultTheme, name, depth)
+							func(UI.DefaultTheme, name2, depth)
 						else
 							debounce = true
-							func(baseTheme, name, depth)
+							func(baseTheme, name2, depth)
 						end
 					end
 				end
@@ -244,9 +184,9 @@ return function(Vargs, GetEnv)
 
 			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for i,v in foundConfigs do
+				for _,v in foundConfigs do
 					if v.Config then
-						for k,m in v.Config:GetChildren() do
+						for _,m in v.Config:GetChildren() do
 							if not endConfig[m.Name] then
 								if string.sub(m.Name, 1, 5) == "NoEnv" then
 									endConfig["Code"] = m
@@ -259,7 +199,7 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Load all config values into the new Config folder
-				for i,v in endConfig do
+				for _,v in endConfig do
 					v:Clone().Parent = confFolder;
 				end
 
@@ -319,7 +259,6 @@ return function(Vargs, GetEnv)
 					end
 
 					local mult = foundConf.AllowMultiple
-					--local keep = foundConf.CanKeepAlive
 
 					local allowMult = mult and mult.Value or true
 					local found, num = UI.Get(name)
@@ -328,20 +267,17 @@ return function(Vargs, GetEnv)
 						local gTable,gIndex = UI.Register(newGui)
 
 						if folder:IsA("ModuleScript") then
-							local folderNoEnv = string.sub(folder.Name, 1, 5) == "NoEnv" or folder:FindFirstChild("NoEnv")
-
 							local newEnv = GetEnv{{
 								script = folder,
 								gTable = gTable
 							}}
 
-							local ran, func = pcall(require, folder)
+							local _, func = pcall(require, folder)
 							local rets = {
-								--// NoEnv temporarily disabled ~ Expertcoderz
-								--[[if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else]] pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
 							}
 
-							local ran, ret = rets[1], rets[2]
+							local _, ret = rets[1], rets[2]
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
@@ -426,7 +362,7 @@ return function(Vargs, GetEnv)
 		Remove = function(name, ignore)
 			local gui = UI.Get(name, ignore)
 			if gui then
-				for i,v in gui do
+				for _,v in gui do
 					v.Destroy()
 				end
 			end
@@ -436,7 +372,7 @@ return function(Vargs, GetEnv)
 			local gIndex = Functions.GetRandom()
 			local gTable;gTable = {
 				Object = gui,
-				Config = gui:FindFirstChild'Config';
+				Config = gui:FindFirstChild('Config');
 				Name = gui.Name,
 				Events = {},
 				Class = gui.ClassName,
@@ -494,7 +430,7 @@ return function(Vargs, GetEnv)
 				end,
 
 				ClearEvents = function()
-					for i,v in gTable.Events do
+					for _,v in gTable.Events do
 						v:Remove()
 					end
 				end,

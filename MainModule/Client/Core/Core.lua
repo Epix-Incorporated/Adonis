@@ -13,37 +13,18 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	local _G, script, getfenv, setfenv, getmetatable, setmetatable,
+		warn, error, rawset, rawget, require, table, type =
+		_G, script, getfenv, setfenv, getmetatable, setmetatable,
+		warn, error, rawset, rawget, require, table, type
 
-	local script = script
 	local service = Vargs.Service
 	local client = Vargs.Client
-	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local Anti, Core, Process, Remote, UI
 	local function Init()
 		UI = client.UI;
 		Anti = client.Anti;
 		Core = client.Core;
-		Variables = client.Variables
-		Functions = client.Functions;
 		Process = client.Process;
 		Remote = client.Remote;
 
@@ -56,7 +37,7 @@ return function(Vargs, GetEnv)
 		Core.Init = nil;
 	end
 
-	local function RunAfterPlugins(data)
+	local function RunAfterPlugins()
 		Core.GetEvent()
 
 		Core.RunAfterPlugins = nil;
@@ -66,39 +47,7 @@ return function(Vargs, GetEnv)
 		--// API
 		if service.NetworkClient then
 			service.TrackTask("Thread: API Manager", Core.StartAPI)
-			--service.Threads.RunTask("_G API Manager",client.Core.StartAPI)
 		end
-
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-		}, true)--]]
 
 		Core.RunLast = nil
 	end
@@ -110,7 +59,6 @@ return function(Vargs, GetEnv)
 	client.Core = {
 		Init = Init;
 		RunLast = RunLast;
-		--RunAfterLoaded = RunAfterLoaded;
 		RunAfterPlugins = RunAfterPlugins;
 		Name = script.Name;
 		Special = script.Name;
@@ -120,7 +68,7 @@ return function(Vargs, GetEnv)
 			if Core.RemoteEvent then
 				log("Disconnect old RemoteEvent")
 
-				for name,event in Core.RemoteEvent.Events do
+				for _,event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
@@ -165,7 +113,7 @@ return function(Vargs, GetEnv)
 
 					if not Core.Key then
 						log("~! Getting key from server")
-						Remote.Fire(client.DepsName.."GET_KEY")
+						Remote.Fire(`{client.DepsName}GET_KEY`)
 					end
 				end
 			end
@@ -177,108 +125,41 @@ return function(Vargs, GetEnv)
 			cPcall(func)
 		end;
 
-		LoadBytecode = function(str, env)
-			return require(client.Shared.FiOne)(str, env)
+		LoadBytecode = function(str, env2)
+			return require(client.Shared.FiOne)(str, env2)
 		end;
 
-		LoadCode = function(str, env)
-			return Core.LoadBytecode(str, env)
+		LoadCode = function(str, env2)
+			return Core.LoadBytecode(str, env2)
 		end;
 
 		StartAPI = function()
 			local ScriptCache = Core.ScriptCache
 			local FiOne = client.Shared.FiOne
 			local Get = Remote.Get
-			local GetFire = Remote.GetFire
 			local G_API = client.G_API
 			local Allowed_API_Calls = client.Allowed_API_Calls
 			local NewProxy = service.NewProxy
 			local MetaFunc = service.MetaFunc
-			local ReadOnly = service.ReadOnly
 			local StartLoop = service.StartLoop
 			local ReadOnly = service.ReadOnly
 			local UnWrap = service.UnWrap
-			local service = nil
-			local client = nil
-			local _G = _G
-			local setmetatable = setmetatable
-			local type = type
-			local print = print
-			local error = error
-			local pairs = pairs
-			local warn = warn
-			local next = next
-			local table = table
-			local rawset = rawset
-			local rawget = rawget
-			local getfenv = getfenv
-			local setfenv = setfenv
-			local require = require
-			local tostring = tostring
-			local client = client
-			local Routine = Routine
-			local cPcall = cPcall
-
-			--// Get Settings
-			local API_Special = {
-
-			}
+			_G = _G
+			setmetatable = setmetatable
+			type = type
+			error = error
+			warn = warn
+			table = table
+			rawset = rawset
+			rawget = rawget
+			getfenv = getfenv
+			setfenv = setfenv
+			require = require
 
 			setfenv(1,setmetatable({}, {__metatable = getmetatable(getfenv())}))
 
-			local API_Specific = {
-				API_Specific = {
-					Test = function()
-						print("We ran the api specific stuff")
-					end
-				};
-				Service = service;
-			}
-
 			local API = {
 				Access = ReadOnly({}, nil, nil, true);
-				--[[
-				Access = service.MetaFunc(function(...)
-					local args = {...}
-					local key = args[1]
-					local ind = args[2]
-					local targ
-
-					setfenv(1,setmetatable({}, {__metatable = getmetatable(getfenv())}))
-
-					if API_Specific[ind] then
-						targ = API_Specific[ind]
-					elseif client[ind] and client.Allowed_API_Calls[ind] then
-						targ = client[ind]
-					end
-
-					if client.G_Access and key == client.G_Access_Key and targ and client.Allowed_API_Calls[ind] then
-						if type(targ) == "table" then
-							return service.NewProxy {
-								__index = function(tab,inde)
-									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
-										if targ[inde]~=nil and type(targ[inde]) == "table" and client.G_Access_Perms == "Read" then
-											return service.ReadOnly(targ[inde])
-										else
-											return targ[inde]
-										end
-									elseif API_Special[inde] == false then
-										error("Access Denied: "..tostring(inde))
-									else
-										error("Could not find "..tostring(inde))
-									end
-								end;
-								__newindex = function(tabl,inde,valu)
-									error("Read-only")
-								end;
-								__metatable = true;
-							}
-						end
-					else
-						error("Incorrect key or G_Access is disabled")
-					end
-				end);
-				--]]
 
 				Scripts = ReadOnly({
 					ExecutePermission = (function(srcScript, code)

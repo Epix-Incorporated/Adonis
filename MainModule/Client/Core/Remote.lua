@@ -13,28 +13,13 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local _G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	local getfenv, setmetatable, print, math, warn, error, pcall,
+	select, os, time, unpack, string, Color3, tostring, table, type,
+	Enum, delay =
+		getfenv, setmetatable, print, math, warn, error, pcall,
+	select, os, time, unpack, string, Color3, tostring, table, type,
+	Enum, task.delay
 
-	local script = script
 	local service = Vargs.Service
 	local client = Vargs.Client
 	local Anti, Core, Functions, Process, Remote, UI, Variables
@@ -64,9 +49,6 @@ return function(Vargs, GetEnv)
 		local settings = client.Remote.Get("Setting",{"G_API","Allowed_API_Calls","HelpButtonImage"})
 		if settings then
 			client.G_API = settings.G_API
-			--client.G_Access = settings.G_Access
-			--client.G_Access_Key = settings.G_Access_Key
-			--client.G_Access_Perms = settings.G_Access_Perms
 			client.Allowed_API_Calls = settings.Allowed_API_Calls
 			client.HelpButtonImage = settings.HelpButtonImage
 		else
@@ -78,37 +60,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
 		Remote.RunLast = nil;
 	end
 
@@ -141,11 +92,11 @@ return function(Vargs, GetEnv)
 				return "HELLO FROM THE CLIENT SIDE :)! ", unpack(args)
 			end;
 
-			Ping = function(args)
+			Ping = function()
 				return Remote.Ping()
 			end;
 
-			ClientHooked = function(args)
+			ClientHooked = function()
 				return Core.Special
 			end;
 
@@ -189,7 +140,7 @@ return function(Vargs, GetEnv)
 				end
 			end;
 
-			UIKeepAlive = function(args)
+			UIKeepAlive = function()
 				if Variables.UIKeepAlive then
 					for _, g in client.GUIs do
 						if g.KeepAlive then
@@ -216,7 +167,7 @@ return function(Vargs, GetEnv)
 				return UI.Make(guiName, guiData, themeData)
 			end;
 
-			InstanceList = function(args)
+			InstanceList = function()
 				local objects = service.GetAdonisObjects()
 				local temp = {}
 				for _, v in objects do
@@ -228,7 +179,7 @@ return function(Vargs, GetEnv)
 				return temp
 			end;
 
-			ClientLog = function(args)
+			ClientLog = function()
 				local MESSAGE_TYPE_COLORS = {
 					[Enum.MessageType.MessageWarning] = Color3.fromRGB(221, 187, 13),
 					[Enum.MessageType.MessageError] = Color3.fromRGB(255, 50, 14),
@@ -318,7 +269,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			Test = function(args)
-				print("OK WE GOT COMMUNICATION!  ORGL: "..tostring(args[1]))
+				print(`OK WE GOT COMMUNICATION!  ORGL: {tostring(args[1])}`)
 			end;
 
 			TestError = function(args)
@@ -369,7 +320,7 @@ return function(Vargs, GetEnv)
 
 			StartLoop = function(args)
 				local name = args[1]
-				local delay = args[2]
+				delay = args[2]
 				local code = args[3]
 				local func = Core.LoadCode(code, GetEnv())
 				if name and delay and code and func then
@@ -484,10 +435,9 @@ return function(Vargs, GetEnv)
 
 			Remote.PendingReturns[key] = true
 			Remote.Send("GetReturn",com,key,...)
-			print(string.format("GETTING RETURNS? %s", tostring(returns)))
-			--returns = returns or {event:Wait()}
+			print(`GETTING RETURNS? {tostring(returns)}`)
 			waiter.Event:Wait();
-			print(string.format("WE GOT IT! %s", tostring(returns)))
+			print(`WE GOT IT! {tostring(returns)}`)
 
 			event:Disconnect()
 

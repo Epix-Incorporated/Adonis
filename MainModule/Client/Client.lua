@@ -131,7 +131,7 @@ end
 
 --// Dump log on disconnect
 local isStudio = game:GetService("RunService"):IsStudio()
-game:GetService("NetworkClient").ChildRemoved:Connect(function(p)
+game:GetService("NetworkClient").ChildRemoved:Connect(function(_)
 	if not isStudio then
 		warn("~! PLAYER DISCONNECTED/KICKED! DUMPING ADONIS CLIENT LOG!")
 		dumplog()
@@ -141,9 +141,6 @@ end)
 local unique = {}
 local origEnv = getfenv()
 setfenv(1, setmetatable({}, { __metatable = unique }))
---local origWarn = warn
-local startTime = time()
-local clientLocked = false
 local oldInstNew = Instance.new
 local oldReq = require
 local Folder = script.Parent
@@ -174,11 +171,6 @@ print = function(...)
 	oldPrint(":: Adonis ::", ...)
 end
 
---[[
-local warn = function(...)
-	warn(...)
-end
-]]
 local cPcall = function(func, ...)
 	local ran, err = pcall(coroutine.resume, coroutine.create(func), ...)
 
@@ -219,7 +211,6 @@ local Fire, Detected = nil, nil
 do
 	local wrap = coroutine.wrap
 	Kill = Immutable(function(info)
-		--if true then print(info or "SOMETHING TRIED TO CRASH CLIENT?") return end
 		wrap(function()
 			pcall(function()
 				if Detected then
@@ -243,7 +234,6 @@ do
 				while true do
 					pcall(task.spawn, function()
 						task.spawn(Kill())
-						-- memes
 					end)
 				end
 			end)
@@ -254,7 +244,7 @@ end
 local GetEnv
 GetEnv = function(env, repl)
 	local scriptEnv = setmetatable({}, {
-		__index = function(tab, ind)
+		__index = function(_, ind)
 			return (locals[ind] or (env or origEnv)[ind])
 		end,
 
@@ -283,29 +273,27 @@ local LoadModule = function(module, yield, envVars, noEnv)
 	if plugran then
 		if type(plug) == "function" then
 			if yield then
-				--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
-					"Plugin: " .. tostring(module),
+					`Plugin: {tostring(module)}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					GetVargTable(),
 					GetEnv
 				)
 
 				if not ran then
-					warn("Module encountered an error while loading: " .. tostring(module))
+					warn(`Module encountered an error while loading: {tostring(module)}`)
 					warn(tostring(err))
 				end
 			else
-				--service.Threads.RunTask("PLUGIN: "..tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars)))
 				local ran, err = service.TrackTask(
-					"Thread: Plugin: " .. tostring(module),
+					`Thread: Plugin: {tostring(module)}`,
 					(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 					GetVargTable(),
 					GetEnv
 				)
 
 				if not ran then
-					warn("Module encountered an error while loading: " .. tostring(module))
+					warn(`Module encountered an error while loading: {tostring(module)}`)
 					warn(tostring(err))
 				end
 			end
@@ -336,13 +324,9 @@ client = setmetatable({
 
 	Disconnect = function(info)
 		service.Player:Kick(info or "Disconnected from server")
-		--wait(30)
-		--client.Kill()(info)
 	end,
-
-	--Kill = Kill;
 }, {
-	__index = function(self, ind)
+	__index = function(_, ind)
 		if ind == "Kill" then
 			local ran, func = pcall(function()
 				return Kill()
@@ -375,26 +359,13 @@ locals = {
 
 log("Create service metatable")
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
-	--warn(eType, msg, desc, ...)
-	local extra = { ... }
+service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
 	if eType == "MethodError" then
-		--Kill()("Shananigans denied")
-		--player:Kick("Method error")
-		--service.Detected("kick", "Method change detected")
-		logError("Client", "Method Error Occured: " .. tostring(msg))
+		logError("Client", `Method Error Occured: {tostring(msg)}`)
 	elseif eType == "ServerError" then
 		logError("Client", tostring(msg))
 	elseif eType == "ReadError" then
-		--message("===== READ ERROR:::::::")
-		--message(tostring(msg))
-		--message(tostring(desc))
-		--message("    ")
-
 		Kill()(tostring(msg))
-		--if Detected then
-		--	Detected("log", tostring(msg))
-		--end
 	end
 end, function(c, parent, tab)
 	if not isModule(c) and c ~= script and c ~= Folder and parent == nil then
@@ -542,11 +513,11 @@ end
 --// Init
 log("Return init function")
 return service.NewProxy({
-	__call = function(self, data)
+	__call = function(_, data)
 		log("Begin init")
 
 		local remoteName, depsName = string.match(data.Name, "(.*)\\(.*)")
-		Folder = service.Wrap(data.Folder --[[or folder and folder:Clone()]] or Folder)
+		Folder = service.Wrap(data.Folder or Folder)
 
 		setfenv(1, setmetatable({}, { __metatable = unique }))
 
@@ -569,7 +540,7 @@ return service.NewProxy({
 				__index = function(self, ind)
 					local materialIcon = MaterialIcons[ind]
 					if materialIcon then
-						self[ind] = "rbxassetid://" .. materialIcon
+						self[ind] = `rbxassetid://{materialIcon}`
 						return self[ind]
 					end
 				end,
@@ -585,8 +556,7 @@ return service.NewProxy({
 
 		--// Do this before we start hooking up events
 		log("Destroy script object")
-		--folder:Destroy()
-		script.Parent = nil --script:Destroy()
+		script.Parent = nil
 
 		--// Intial setup
 		log("Initial services caching")
@@ -613,17 +583,6 @@ return service.NewProxy({
 			end)
 		end
 
-		--[[
-		-- // Doesn't seem to be used anymore
-
-		ServiceSpecific.SafeTweenSize = function(obj, ...)
-			pcall(obj.TweenSize, obj, ...)
-		end;
-		ServiceSpecific.SafeTweenPos = function(obj, ...)
-			pcall(obj.TweenPosition, obj, ...)
-		end;
-		]]
-
 		ServiceSpecific.Filter = function(str, from, to)
 			return client.Remote.Get("Filter", str, (to and from) or service.Player, to or from)
 		end
@@ -645,7 +604,7 @@ return service.NewProxy({
 			if not (Variables.LocalContainer and Variables.LocalContainer.Parent) then
 				Variables.LocalContainer = service.New("Folder", {
 					Parent = workspace,
-					Name = "__ADONIS_LOCALCONTAINER_" .. client.Functions.GetRandom(),
+					Name = `__ADONIS_LOCALCONTAINER_{client.Functions.GetRandom()}`,
 				})
 			end
 			return Variables.LocalContainer
@@ -658,7 +617,7 @@ return service.NewProxy({
 		for _, load in CORE_LOADING_ORDER do
 			local modu = Folder.Core:FindFirstChild(load)
 			if modu then
-				log("~! Loading Core Module: " .. tostring(load))
+				log(`~! Loading Core Module: {tostring(load)}`)
 				LoadModule(modu, true, { script = script }, true)
 			end
 		end
@@ -687,9 +646,8 @@ return service.NewProxy({
 
 				--// Finished loading
 				log("Finish loading")
-				clientLocked = true
 				client.Finish_Loading = function() end
-				client.LoadingTime() --origWarn(tostring(time()-(client.TrueStart or startTime)))
+				client.LoadingTime()
 				service.Events.FinishedLoading:Fire(os.time())
 
 				log("~! FINISHED LOADING!")
@@ -703,7 +661,7 @@ return service.NewProxy({
 		log("~! Init cores")
 		for _, name in CORE_LOADING_ORDER do
 			local core = client[name]
-			log("~! INIT: " .. tostring(name))
+			log(`~! INIT: {tostring(name)}`)
 
 			if core then
 				if type(core) == "table" or (type(core) == "userdata" and getmetatable(core) == "ReadOnly_Table") then
@@ -728,7 +686,7 @@ return service.NewProxy({
 					end
 
 					if core.Init then
-						log("Run init for " .. tostring(name))
+						log(`Run init for {tostring(name)}`)
 						Pcall(core.Init, data)
 						core.Init = nil
 					end
@@ -764,36 +722,6 @@ return service.NewProxy({
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		client.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
-
-		--[[client = service.ReadOnly(client, {
-			[client.Variables] = true;
-			[client.Handlers] = true;
-			G_API = true;
-			G_Access = true;
-			G_Access_Key = true;
-			G_Access_Perms = true;
-			Allowed_API_Calls = true;
-			HelpButtonImage = true;
-			Finish_Loading = true;
-			RemoteEvent = true;
-			ScriptCache = true;
-			Returns = true;
-			PendingReturns = true;
-			EncodeCache = true;
-			DecodeCache = true;
-			Received = true;
-			Sent = true;
-			Service = true;
-			Holder = true;
-			GUIs = true;
-			LastUpdate = true;
-			RateLimits = true;
-
-			Init = true;
-			RunAfterInit = true;
-			RunAfterLoaded = true;
-			RunAfterPlugins = true;
-		}, true)--]]
 
 		service.Events.ClientInitialized:Fire()
 

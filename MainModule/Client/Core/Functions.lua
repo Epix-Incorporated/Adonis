@@ -12,75 +12,28 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
 	setfenv(1, env)
 
-	local _G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-		_G, game, script, getfenv, setfenv, workspace,
-	getmetatable, setmetatable, loadstring, coroutine,
-	rawequal, typeof, print, math, warn, error,  pcall,
-	xpcall, select, rawset, rawget, ipairs, pairs,
-	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-	Vector3int16, require, table, type, wait,
-	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	local game, getfenv, workspace, print, math,
+	pcall, time, string, Color3, tostring, tonumber,
+	Instance, BrickColor, table, type, Enum, UDim2,
+	Vector3, CFrame =
+		game, getfenv, workspace, print, math,
+	pcall, time, string, Color3, tostring, tonumber,
+	Instance, BrickColor, table, type, Enum, UDim2,
+	Vector3, CFrame
 
-	local script = script
 	local service = Vargs.Service
 	local client = Vargs.Client
-	local Anti, Core, Functions, Process, Remote, UI, Variables
+	local Functions, Remote, UI, Variables
 	local function Init()
 		UI = client.UI;
-		Anti = client.Anti;
-		Core = client.Core;
 		Variables = client.Variables;
 		Functions = client.Functions;
-		Process = client.Process;
 		Remote = client.Remote;
 
 		Functions.Init = nil;
 	end
 
 	local function RunLast()
-		--[[client = service.ReadOnly(client, {
-				[client.Variables] = true;
-				[client.Handlers] = true;
-				G_API = true;
-				G_Access = true;
-				G_Access_Key = true;
-				G_Access_Perms = true;
-				Allowed_API_Calls = true;
-				HelpButtonImage = true;
-				Finish_Loading = true;
-				RemoteEvent = true;
-				ScriptCache = true;
-				Returns = true;
-				PendingReturns = true;
-				EncodeCache = true;
-				DecodeCache = true;
-				Received = true;
-				Sent = true;
-				Service = true;
-				Holder = true;
-				GUIs = true;
-				LastUpdate = true;
-				RateLimits = true;
-
-				Init = true;
-				RunLast = true;
-				RunAfterInit = true;
-				RunAfterLoaded = true;
-				RunAfterPlugins = true;
-			}, true)--]]
-
 		Functions.RunLast = nil;
 	end
 
@@ -117,7 +70,7 @@ return function(Vargs, GetEnv)
 								BackgroundTransparency = 1,
 								TextColor3 = Color3.new(1,1,1),
 								TextStrokeTransparency = 0,
-								Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, "0"),
+								Text = `{player.DisplayName} (@{player.Name})\n> 0 <`,
 								Size = UDim2.new(1, 0, 1, 0),
 								TextScaled = true,
 								TextWrapped = true,
@@ -127,14 +80,14 @@ return function(Vargs, GetEnv)
 							bb.Parent = part
 
 							if player ~= LocalPlayer then
-								spawn(function()
+								task.spawn(function()
 									repeat
 										if not part then
 											break
 										end
 
 										local DIST = LocalPlayer:DistanceFromCharacter(part.CFrame.Position)
-										taglabel.Text = string.format("%s (@%s)\n> %s <", player.DisplayName, player.Name, DIST and math.floor(DIST) or 'N/A')
+										taglabel.Text = `{player.DisplayName} (@{player.Name})\n> {DIST and math.floor(DIST) or 'N/A'} <`
 
 										task.wait()
 									until not part or not bb or not taglabel
@@ -225,10 +178,6 @@ return function(Vargs, GetEnv)
 		end;
 
 		GetRandom = function(pLen)
-			--local str = ""
-			--for i=1,math.random(5,10) do str=str..string.char(math.random(33,90)) end
-			--return str
-
 			local random = math.random
 			local format = string.format
 
@@ -263,7 +212,7 @@ return function(Vargs, GetEnv)
 				Time = 4;
 				Icon = client.MatIcons["Add circle"];
 				Title = "Notification";
-				Message = string.format('Alias "%s" added', string.lower(alias));
+				Message = `Alias "{string.lower(alias)}" added`;
 			})
 		end;
 
@@ -275,14 +224,14 @@ return function(Vargs, GetEnv)
 					Time = 4;
 					Icon = client.MatIcons.Delete;
 					Title = "Notification";
-					Message = string.format('Alias "%s" removed', string.lower(alias));
+					Message = `Alias "{string.lower(alias)}" removed`;
 				})
 			else
 				task.defer(UI.MakeGui, "Notification", {
 					Time = 3;
 					Icon = client.MatIcons.Help;
 					Title = "Error";
-					Message = string.format('Alias "%s" not found', string.lower(alias));
+					Message = `Alias "{string.lower(alias)}" not found`;
 				})
 			end
 		end;
@@ -309,7 +258,7 @@ return function(Vargs, GetEnv)
 					else
 						rot -= math.rad(speed*dt)
 					end
-					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
+					cam.CFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
 			end
@@ -373,7 +322,7 @@ return function(Vargs, GetEnv)
 			end))
 		end;
 
-		GetGuiData = function(args)
+		GetGuiData = function()
 			local props = {
 				"AbsolutePosition";
 				"AbsoluteSize";
@@ -489,7 +438,7 @@ return function(Vargs, GetEnv)
 					end)
 				end
 
-				for i,v in children do
+				for _,v in children do
 					pcall(function()
 						local g = make(v)
 						if g then
@@ -537,7 +486,7 @@ return function(Vargs, GetEnv)
 		GetParticleContainer = function(target)
 			if target then
 				for _, v in service.LocalContainer():GetChildren() do
-					if v.Name == target:GetFullName().."PARTICLES" then
+					if v.Name == `{target:GetFullName()}PARTICLES` then
 						local obj = v:FindFirstChild("_OBJECT")
 						if obj.Value == target then
 							return v
@@ -604,7 +553,7 @@ return function(Vargs, GetEnv)
 
 		MakeLocal = function(object,parent,clone)
 			if object then
-				local object = object
+				object = object
 				if clone then object = object:Clone() end
 				if not parent or parent == "LocalContainer" then
 					object.Parent = service.LocalContainer()
@@ -704,7 +653,7 @@ return function(Vargs, GetEnv)
 				Parent = p;
 				Name = "Decal";
 				Face = 2;
-				Texture = "rbxassetid://"..decalId;
+				Texture = `rbxassetid://{decalId}`;
 				Transparency = 0;
 			}) else nil
 
@@ -721,7 +670,7 @@ return function(Vargs, GetEnv)
 			}
 			Variables.Capes[Functions.GetRandom()] = capeData
 
-			local p = service.Players:GetPlayerFromCharacter(char)
+			p = service.Players:GetPlayerFromCharacter(char)
 			if p and p == service.Player then
 				capeData.isPlayer = true
 			end
@@ -751,8 +700,6 @@ return function(Vargs, GetEnv)
 				local torso = v.Torso
 				local parent = v.Parent
 				local part = v.Part
-				local motor = v.Motor
-				local wave = v.Wave
 				local decal = v.Decal
 
 				if parent and parent.Parent and torso and torso.Parent and part and part.Parent then
@@ -788,7 +735,6 @@ return function(Vargs, GetEnv)
 						local torso = v.Torso
 						local parent = v.Parent
 						local isPlayer = v.isPlayer
-						local isR15 = v.isR15
 						local part = v.Part
 						local motor = v.Motor
 						local wave = v.Wave
@@ -860,7 +806,7 @@ return function(Vargs, GetEnv)
 
 			for _, v in animator:GetPlayingAnimationTracks() do v:Stop() end
 			local anim = service.New('Animation', {
-				AnimationId = 'rbxassetid://'..animId,
+				AnimationId = `rbxassetid://{animId}`,
 				Name = "ADONIS_Animation"
 			})
 			local track = animator:LoadAnimation(anim)
@@ -907,7 +853,7 @@ return function(Vargs, GetEnv)
 
 		SetFPS = function(fps)
 			service.StopLoop("SetFPS")
-			local fps = tonumber(fps)
+			fps = tonumber(fps)
 			if fps then
 				service.StartLoop("SetFPS",0.1,function()
 					local fpslockint = time() +1 /fps
@@ -921,48 +867,15 @@ return function(Vargs, GetEnv)
 		end;
 
 		Crash = function()
-			--[[
-			local load = function(f) return f() end
-			local s = string.rep("\n", 2^24)
-			print(load(function() return s end))--]]
-			--print(string.find(string.rep("a", 2^20), string.rep(".?", 2^20)))
-			--[[while true do
-				spawn(function()
-					spawn(function()
-						spawn(function()
-							spawn(function()
-								spawn(function()
-									spawn(function()
-										spawn(function()
-											spawn(function()
-												spawn(function()
-													spawn(function()
-														spawn(function()
-															print("Triangles.")
-														end)
-													end)
-												end)
-											end)
-										end)
-									end)
-								end)
-							end)
-						end)
-					end)
-				end)
-			end--]]
-
 			local Run = service.RunService;
 			local Lol = 0;
 
 			local Thread; function Thread()
-				Run:BindToRenderStep(tostring(Lol), 100, function() print"Stopping"; Thread(); end);
+				Run:BindToRenderStep(tostring(Lol), 100, function() print("Stopping"); Thread(); end);
 				Lol += 1;
 			end;
 
 			Thread();
-			--local crash; crash = function() while true do repeat spawn(function() pcall(function() print(game[("%s|"):rep(100000)]) crash() end) end) until nil end end
-			--crash()
 		end;
 
 		HardCrash = function()
@@ -971,31 +884,31 @@ return function(Vargs, GetEnv)
 			local gui = service.New("ScreenGui",service.PlayerGui)
 			local rem = service.New("RemoteEvent",workspace.CurrentCamera)
 			crash = function()
-				for i=1,50 do
+				for _=1,50 do
 					service.Debris:AddItem(service.New("Part",workspace.CurrentCamera),2^4000)
 					print("((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)((((**&&#@#$$$$$%%%%:)")
 					local f = service.New('Frame',gui)
 					f.Size = UDim2.new(1,0,1,0)
-					spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)
+					task.spawn(function() table.insert(tab,string.rep(tostring(math.random()),100)) end)
 					rem:FireServer("Hiiiiiiiiiiiiiiii")
-					spawn(function()
-						spawn(function()
-							spawn(function()
-								spawn(function()
-									spawn(function()
+					task.spawn(function()
+						task.spawn(function()
+							task.spawn(function()
+								task.spawn(function()
+									task.spawn(function()
 										print("hi")
-										spawn(crash)
+										-- lol, hi!
+										task.spawn(crash)
 									end)
 								end)
 							end)
 						end)
 					end)
-					--print(game[("%s|"):rep(0xFFFFFFF)])
 				end
 				tab = {}
 			end
 			while task.wait(0.01) do
-				for i = 1,50000000 do
+				for _ = 1,50000000 do
 					cPcall(function() client.GPUCrash() end)
 					cPcall(function() crash() end)
 					print(1)
@@ -1026,7 +939,7 @@ return function(Vargs, GetEnv)
 			local New = service.New
 
 			while task.wait(0.1) do
-				for i = 1,10000 do
+				for _ = 1,10000 do
 					Debris:AddItem(New("Part",workspace.CurrentCamera),2^4000)
 				end
 			end
@@ -1037,7 +950,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		KeyCodeToName = function(keyVal)
-			local keyVal = tonumber(keyVal);
+			keyVal = tonumber(keyVal);
 			if keyVal then
 				for _, e in Enum.KeyCode:GetEnumItems() do
 					if e.Value == keyVal then
@@ -1064,7 +977,7 @@ return function(Vargs, GetEnv)
 					if time() - timer > 5 or isAdmin then
 						Remote.Send('ProcessCommand',Variables.KeyBinds[key],false,true)
 						UI.Make("Hint",{
-							Message = "[Ran] Key: "..Functions.KeyCodeToName(key).." | Command: "..tostring(Variables.KeyBinds[key])
+							Message = `[Ran] Key: {Functions.KeyCodeToName(key)} | Command: {tostring(Variables.KeyBinds[key])}`
 						})
 					end
 					timer = time()
@@ -1073,23 +986,23 @@ return function(Vargs, GetEnv)
 		end;
 
 		AddKeyBind = function(key, command)
-			local key = tostring(key);
+			key = tostring(key);
 			Variables.KeyBinds[tostring(key)] = command
 			Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 			UI.Make("Hint",{
-				Message = 'Bound key "'..Functions.KeyCodeToName(key)..'" to command: '..command
+				Message = `Bound key "{Functions.KeyCodeToName(key)}" to command: {command}`
 			})
 		end;
 
 		RemoveKeyBind = function(key)
-			local key = tostring(key);
+			key = tostring(key);
 
 			if Variables.KeyBinds[tostring(key)] ~= nil then
 				Variables.KeyBinds[tostring(key)] = nil
 				Remote.Get("UpdateKeybinds",Variables.KeyBinds)
 				Routine(function()
 					UI.Make("Hint",{
-						Message = 'Removed key "'..Functions.KeyCodeToName(key)..'" from keybinds'
+						Message = `Removed key "{Functions.KeyCodeToName(key)}" from keybinds`
 					})
 				end)
 			end
@@ -1109,7 +1022,7 @@ return function(Vargs, GetEnv)
 				pa.FormFactor = "Custom"
 				pa.Size=Vector3.new(100,100,0)
 				while pa and pa.Parent and task.wait(1/40) do
-					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
+					pa.CFrame = workspace.CurrentCamera.CFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
 				for _, v in workspace.CurrentCamera:GetChildren() do
@@ -1123,11 +1036,11 @@ return function(Vargs, GetEnv)
 		PlayAudio = function(audioId, volume, pitch, looped)
 			if Variables.localSounds[tostring(audioId)] then Variables.localSounds[tostring(audioId)]:Stop() Variables.localSounds[tostring(audioId)]:Destroy() Variables.localSounds[tostring(audioId)]=nil end
 			local sound = service.New("Sound")
-			sound.SoundId = "rbxassetid://"..audioId
+			sound.SoundId = `rbxassetid://{audioId}`
 			if looped then sound.Looped = true end
 			if volume then sound.Volume = volume end
 			if pitch then sound.Pitch = pitch end
-			sound.Name = "ADONI_LOCAL_SOUND "..audioId
+			sound.Name = `ADONI_LOCAL_SOUND {audioId}`
 			sound.Parent = service.LocalContainer()
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
@@ -1206,7 +1119,7 @@ return function(Vargs, GetEnv)
 		Cape = function(material,color,decal,reflect)
 			local torso = service.Player.Character:FindFirstChild("HumanoidRootPart")
 			if torso then
-				local p = service.New("Part",service.LocalContainer())
+				local p = service.New("Part")
 				p.Name = "::Adonis::Cape"
 				p.Anchored = true
 				p.Transparency=0.1
@@ -1214,6 +1127,7 @@ return function(Vargs, GetEnv)
 				p.CanCollide = false
 				p.TopSurface = 0
 				p.BottomSurface = 0
+				p.Parent = service.LocalContainer()
 				if type(color)=="table" then
 					color = Color3.new(color[1],color[2],color[3])
 				end
@@ -1222,29 +1136,32 @@ return function(Vargs, GetEnv)
 					p.Reflectance=reflect
 				end
 				if decal and decal~=0 then
-					local dec = service.New("Decal", p)
+					local dec = service.New("Decal")
 					dec.Face = 2
-					dec.Texture = "http://www.roblox.com/asset/?id="..decal
+					dec.Texture = `http://www.roblox.com/asset/?id={decal}`
 					dec.Transparency=0
+					dec.Parent = p
 				end
 				p.formFactor = "Custom"
 				p.Size = Vector3.new(.2,.2,.2)
-				local msh = service.New("BlockMesh", p)
+				local msh = service.New("BlockMesh")
 				msh.Scale = Vector3.new(9,17.5,.5)
+				msh.Parent = p
 				task.wait(0.1)
 				p.Anchored=false
-				local motor1 = service.New("Motor", p)
+				local motor1 = service.New("Motor")
 				motor1.Part0 = p
 				motor1.Part1 = torso
 				motor1.MaxVelocity = .01
 				motor1.C0 = CFrame.new(0,1.75,0)*CFrame.Angles(0,math.rad(90),0)
-				motor1.C1 = CFrame.new(0,1,torso.Size.Z/2)*CFrame.Angles(0,math.rad(90),0)--.45
+				motor1.C1 = CFrame.new(0,1,torso.Size.Z/2)*CFrame.Angles(0,math.rad(90),0)
+				motor1.Parent = p
 				local wave = false
 				repeat task.wait(1/44)
 					local ang = 0.1
 					local oldmag = torso.Velocity.Magnitude
 					local mv = .002
-					if wave then 
+					if wave then
 						ang += ((torso.Velocity.Magnitude/10)*.05)+.05
 						wave = false
 					else
@@ -1269,441 +1186,412 @@ return function(Vargs, GetEnv)
 		TextToSpeech = function(str)
 			local audioId = 296333956
 
-			local audio = Instance.new("Sound",service.LocalContainer())
-			audio.SoundId = "rbxassetid://"..audioId
+			local audio = Instance.new("Sound")
+			audio.SoundId = `rbxassetid://{audioId}`
 			audio.Volume = 1
+			audio.Parent = service.LocalContainer()
 
-			local audio2 = Instance.new("Sound",service.LocalContainer())
-			audio2.SoundId = "rbxassetid://"..audioId
+			local audio2 = Instance.new("Sound")
+			audio2.SoundId = `rbxassetid://{audioId}`
 			audio2.Volume = 1
+			audio2.Parent = service.LocalContainer()
 
-			local phonemes = {
-				{
-					str='%so';
-					func={17}
-				}; --(on)
-				{
-					str='ing';
-					func={41}
-				}; --(singer)
-				{
-					str="oot";
-					func={4, 26}; --oo,t
-				};
-				{
-					str='or';
-					func={10}
-				}; --(door) --oor
-				{
-					str='oo';
-					func={3}
-				};  --(good)
-				{
-					str='hi';
-					func={44, 19}; --h, y/ii
-				};
-				{
-					str='ie';
-					func={1}; --ee
-				};
-				{
-					str="eye";
-					func={19}; --y/ii
-				};
-				{
-					str="$Suy%s"; --%Suy
-					real="uy";
-					func={19}; --y/ii
-				};
-				{
-					str="%Sey%s"; --%Sey
-					func={1}; --ee
-				};
-				{
-					str="%sye"; --%sye
-					func={19}; --y/ii
-				};
-				--[[{
-					str='th';
-					func={30.9, 31.3}
-				}; --(think)--]]
-				{
-					str='the';
-					func={25, 15}; --th, u
-				};
-				{
-					str='th';
-					func={32, 0.2395}
-				}; --(this)
-				--[[
-				{
-					str='ow';
-					func={10, 0.335}
-				}; --(show) --ow
-				--]]
-				{
-					str='ow';
-					func={20}
-				}; --(cow) --ow
-				{
-					str="qu";
-					func={21,38};--c,w
-				};
-				{
-					str='ee';
-					func={1}
-				}; --(sheep)
-				{
-					str='i%s';
-					delay=0.5;
-					func={19}
-				}; --(I)
-				{
-					str='ea';
-					func={1}
-				}; --(read)
-				{
-					str='u(.*)e';
-					real='u';
-					capture=true;
-					func={9}
-				}; --(cure) (match ure) --u
-				{
-					str='ch';
-					func={24}
-				}; --(cheese)
-				{
-					str='ere';
-					func={5}
-				}; --(here)
-				{
-					str='ai';
-					func={6}
-				}; --(wait)
-				{
-					str='la';
-					func={39,6}
-				};
-				{
-					str='oy';
-					func={8}
-				}; --(boy)
-				{
-					str='gh';
-					func={44};
-				};
-				{
-					str='sh';
-					func={22}
-				}; --(shall)
-				{
-					str='air';
-					func={18}
-				}; --(hair)
-
-				{
-					str='ar';
-					func={16}
-				}; --(far)
-				{
-					str='ir';
-					func={11}
-				}; --(bird)
-				{
-					str='er';
-					func={12}
-				}; --(teacher)
-				{
-					str='sio';
-					func={35}
-				}; --(television)
-				{
-					str='ck';
-					func={21}
-				}; --(book)
-				{
-					str="zy";
-					func={34,1}; --z,ee
-				};
-				{
-					str="ny";
-					func={42, 1}; --n,ee
-				};
-				{
-					str="ly";
-					func={39, 1}; --l,ee
-				};
-				{
-					str="ey";
-					func={1} --ee
-				};
-				{
-					str='ii';
-					func={19}
-				}; --(ii?)
-				{
-					str='i';
-					func={2}
-				};--(ship)
-
-				{
-					str='y'; --y%S
-					func={37}
-				}; --(yes)
-				--[[
-				{
-					str='%Sy';
-					func={23.9, 24.4}
-				}; --(my)
-				--]]
-				{
-					str='y';
-					func={37}
-				}; --(my)
-
-				{
-					str='s';
-					func={23}
-				}; --(see)
-
-				{
-					str='e';
-					func={13};
-				}; --(bed)
-				--[[--]]
-				{
-					str='a';
-					func={14}
-				}; --(cat)
-				--[[
-				{
-					str='a';
-					func={6}
-				}; --(lazy) --ai--]]
-				{
-					str="x";
-					func={21, 23} --c, s
-				};
-				{
-					str='u';
-					func={15}
-				}; --(up)
-				{
-					str='o';
-					func={17}
-				}; --(on)
-				{
-					str='c';
-					func={21}
-				}; --(car)
-				{
-					str='k';
-					func={21}
-				}; --(book)
-				{
-					str='t';
-					func={26}
-				}; --(tea)
-				{
-					str='f';
-					func={27}
-				}; --(fly)
-				{
-					str='i';
-					func={2}
-				};--(ship)
-				{
-					str='p';
-					func={28}
-				}; --(pea)
-				{
-					str='b';
-					func={29}
-				}; --(boat)
-				{
-					str='v';
-					func={30}
-				}; --(video)
-				{
-					str='d';
-					func={31}
-				}; --(dog)
-				{
-					str='j';
-					func={33}
-				}; --(june)
-				{
-					str='z';
-					func={34}
-				}; --(zoo)
-				{
-					str='g';
-					func={36}
-				}; --(go)
-				{
-					str='w';
-					func={38}
-				}; --(wet)
-				{
-					str='l';
-					func={39}
-				}; --(love)
-				{
-					str='r';
-					func={40}
-				}; --(red)
-				{
-					str='n';
-					func={42}
-				}; --(now)
-				{
-					str='m';
-					func={43}
-				}; --(man)
-				{
-					str='h';
-					func={44}
-				}; --(hat)
-				{
-					str=' ';
-					func="wait";
-				};
-				{
-					str='%.';
-					func="wait";
-				};
-				{
-					str='!';
-					func="wait";
-				};
-				{
-					str='?';
-					func="wait";
-				};
-				{
-					str=';';
-					func="wait";
-				};
-				{
-					str=':';
-					func="wait";
-				};
-
-			}
-
-			game:service("ContentProvider"):Preload("rbxassetid://"..audioId)
-
-			local function getText(str)
-				local tab = {}
-				local str = str
-				local function getNext()
-					for _, v in phonemes do
-						local occ,pos = string.find(string.lower(str),"^"..v.str)
-						if occ then
-							if v.capture then
-								local real = v.real
-								local realStart,realEnd = string.find(string.lower(str),real)
-								--local captStart,captEnd = str:lower():find(v.str)
-								local capt = string.match(string.lower(str),v.str)
-								if occ>realEnd then
-									table.insert(tab,v)
-									getText(capt)
-								else
-									getText(capt)
-									table.insert(tab,v)
-								end
-							else
-								table.insert(tab,v)
-							end
-							str = string.sub(str,pos+1)
-							getNext()
-						end
-					end
-				end
-				getNext()
-				return tab
-			end
-
-			local phos=getText(str)
-			local swap = false
-
-			local function say(pos)
-				local sound=audio
-				--[[--]]
-				if swap then
-					sound=audio2
-				end--]]
-				sound.TimePosition=pos
-				--sound:Play()
-				--wait(0.2) --wait(pause)
-				--sound:Stop()
-			end
-
-			audio:Play()
-			audio2:Play()
-			for _, v in phos do
-				--print(i,v.str)
-				if type(v.func)=="string" then--v.func=="wait" then
-					task.wait(0.5)
-				elseif type(v)=="table" then
-					for _, p in v.func do
-						--[[--]]
-						if swap then
-							swap=false
-						else
-							swap=true
-						end--]]
-						say(p)
-						if v.delay then
-							task.wait(v.delay)
-						else
-							task.wait(0.1)
-						end
-					end
-				end
-			end
-			task.wait(0.5)
-			audio:Stop()
-			audio2:Stop()
-		end;
-
-		IsValidTexture = function(id)
-			local id = tonumber(id)
-			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
-
-			if ran and info and info.AssetTypeId == 1 then
-				return true;
-			else
-				return false;
-			end
-		end;
-
-		GetTexture = function(id)
-			local id = tonumber(id);
-			if id and Functions.IsValidTexture(id) then
-				return id;
-			else
-				return 6825455804;
-			end
-		end;
-
-		GetUserInputServiceData = function(args)
-			local data = {}
-			local props = {
-				"AccelerometerEnabled";
-				"GamepadEnabled";
-				"GyroscopeEnabled";
-				"KeyboardEnabled";
-				"MouseDeltaSensitivity";
-				"MouseEnabled";
-				"OnScreenKeyboardVisible";
-				"TouchEnabled";
-				"VREnabled";
-			}
-			for _, p in props do
-				data[p] = service.UserInputService[p]
-			end
-			return data
-		end;
+local phonemes = {
+	{
+		str='%so';
+		func={17}
+	}; --(on)
+	{
+		str='ing';
+		func={41}
+	}; --(singer)
+	{
+		str="oot";
+		func={4, 26}; --oo,t
 	};
+	{
+		str='or';
+		func={10}
+	}; --(door) --oor
+	{
+		str='oo';
+		func={3}
+	};  --(good)
+	{
+		str='hi';
+		func={44, 19}; --h, y/ii
+	};
+	{
+		str='ie';
+		func={1}; --ee
+	};
+	{
+		str="eye";
+		func={19}; --y/ii
+	};
+	{
+		str="$Suy%s"; --%Suy
+		real="uy";
+		func={19}; --y/ii
+	};
+	{
+		str="%Sey%s"; --%Sey
+		func={1}; --ee
+	};
+	{
+		str="%sye"; --%sye
+		func={19}; --y/ii
+	};
+	{
+		str='the';
+		func={25, 15}; --th, u
+	};
+	{
+		str='th';
+		func={32, 0.2395}
+	}; --(this)
+	{
+		str='ow';
+		func={20}
+	}; --(cow) --ow
+	{
+		str="qu";
+		func={21,38};--c,w
+	};
+	{
+		str='ee';
+		func={1}
+	}; --(sheep)
+	{
+		str='i%s';
+		delay=0.5;
+		func={19}
+	}; --(I)
+	{
+		str='ea';
+		func={1}
+	}; --(read)
+	{
+		str='u(.*)e';
+		real='u';
+		capture=true;
+		func={9}
+	}; --(cure) (match ure) --u
+	{
+		str='ch';
+		func={24}
+	}; --(cheese)
+	{
+		str='ere';
+		func={5}
+	}; --(here)
+	{
+		str='ai';
+		func={6}
+	}; --(wait)
+	{
+		str='la';
+		func={39,6}
+	};
+	{
+		str='oy';
+		func={8}
+	}; --(boy)
+	{
+		str='gh';
+		func={44};
+	};
+	{
+		str='sh';
+		func={22}
+	}; --(shall)
+	{
+		str='air';
+		func={18}
+	}; --(hair)
+	{
+		str='ar';
+		func={16}
+	}; --(far)
+	{
+		str='ir';
+		func={11}
+	}; --(bird)
+	{
+		str='er';
+		func={12}
+	}; --(teacher)
+	{
+		str='sio';
+		func={35}
+	}; --(television)
+	{
+		str='ck';
+		func={21}
+	}; --(book)
+	{
+		str="zy";
+		func={34,1}; --z,ee
+	};
+	{
+		str="ny";
+		func={42, 1}; --n,ee
+	};
+	{
+		str="ly";
+		func={39, 1}; --l,ee
+	};
+	{
+		str="ey";
+		func={1} --ee
+	};
+	{
+		str='ii';
+		func={19}
+	}; --(ii?)
+	{
+		str='i';
+		func={2}
+	};--(ship)
+
+	{
+		str='y'; --y%S
+		func={37}
+	}; --(yes)
+	{
+		str='y';
+		func={37}
+	}; --(my)
+
+	{
+		str='s';
+		func={23}
+	}; --(see)
+
+	{
+		str='e';
+		func={13};
+	}; --(bed)
+	{
+		str='a';
+		func={14}
+	}; --(cat)
+	{
+		str="x";
+		func={21, 23} --c, s
+	};
+	{
+		str='u';
+		func={15}
+	}; --(up)
+	{
+		str='o';
+		func={17}
+	}; --(on)
+	{
+		str='c';
+		func={21}
+	}; --(car)
+	{
+		str='k';
+		func={21}
+	}; --(book)
+	{
+		str='t';
+		func={26}
+	}; --(tea)
+	{
+		str='f';
+		func={27}
+	}; --(fly)
+	{
+		str='i';
+		func={2}
+	};--(ship)
+	{
+		str='p';
+		func={28}
+	}; --(pea)
+	{
+		str='b';
+		func={29}
+	}; --(boat)
+	{
+		str='v';
+		func={30}
+	}; --(video)
+	{
+		str='d';
+		func={31}
+	}; --(dog)
+	{
+		str='j';
+		func={33}
+	}; --(june)
+	{
+		str='z';
+		func={34}
+	}; --(zoo)
+	{
+		str='g';
+		func={36}
+	}; --(go)
+	{
+		str='w';
+		func={38}
+	}; --(wet)
+	{
+		str='l';
+		func={39}
+	}; --(love)
+	{
+		str='r';
+		func={40}
+	}; --(red)
+	{
+		str='n';
+		func={42}
+	}; --(now)
+	{
+		str='m';
+		func={43}
+	}; --(man)
+	{
+		str='h';
+		func={44}
+	}; --(hat)
+	{
+		str=' ';
+		func="wait";
+	};
+	{
+		str='%.';
+		func="wait";
+	};
+	{
+		str='!';
+		func="wait";
+	};
+	{
+		str='?';
+		func="wait";
+	};
+	{
+		str=';';
+		func="wait";
+	};
+	{
+		str=':';
+		func="wait";
+	};
+
+}
+
+game:GetService("ContentProvider"):PreloadAsync(`rbxassetid://{audioId}`)
+
+local function getText(str2)
+	local tab = {}
+	local function getNext()
+		for _, v in phonemes do
+			local occ,pos = string.find(string.lower(str2),`^{v.str}`)
+			if occ then
+				if v.capture then
+					local real = v.real
+					local _,realEnd = string.find(string.lower(str2),real)
+					local capt = string.match(string.lower(str2),v.str)
+					if occ>realEnd then
+						table.insert(tab,v)
+						getText(capt)
+					else
+						getText(capt)
+						table.insert(tab,v)
+					end
+				else
+					table.insert(tab,v)
+				end
+				str2 = string.sub(str2,pos+1)
+				getNext()
+			end
+		end
+	end
+	getNext()
+	return tab
+end
+
+local phos=getText(str)
+local swap = false
+
+local function say(pos)
+	local sound=audio
+	if swap then
+		sound=audio2
+	end
+	sound.TimePosition=pos
+end
+
+audio:Play()
+audio2:Play()
+for _, v in phos do
+	if type(v.func)=="string" then
+		task.wait(0.5)
+	elseif type(v)=="table" then
+		for _, p in v.func do
+			if swap then
+				swap=false
+			else
+				swap=true
+			end
+			say(p)
+			if v.delay then
+				task.wait(v.delay)
+			else
+				task.wait(0.1)
+			end
+		end
+	end
+end
+task.wait(0.5)
+audio:Stop()
+audio2:Stop()
+end;
+
+IsValidTexture = function(id)
+	id = tonumber(id)
+	local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
+
+	if ran and info and info.AssetTypeId == 1 then
+		return true;
+	else
+		return false;
+	end
+end;
+
+GetTexture = function(id)
+	id = tonumber(id);
+	if id and Functions.IsValidTexture(id) then
+		return id;
+	else
+		return 6825455804;
+	end
+end;
+
+GetUserInputServiceData = function()
+	local data = {}
+	local props = {
+		"AccelerometerEnabled";
+		"GamepadEnabled";
+		"GyroscopeEnabled";
+		"KeyboardEnabled";
+		"MouseDeltaSensitivity";
+		"MouseEnabled";
+		"OnScreenKeyboardVisible";
+		"TouchEnabled";
+		"VREnabled";
+	}
+	for _, p in props do
+		data[p] = service.UserInputService[p]
+	end
+	return data
+end;
+};
 end
