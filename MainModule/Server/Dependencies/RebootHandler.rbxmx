@@ -17,7 +17,7 @@
 	local modeVal = script:WaitForChild("Mode");
 
 	warn("Reloading in 5 seconds...");
-	wait(5)
+	task.wait(5)
 	script.Parent = nil;
 
 	local dropper = dDropperVal.Value;
@@ -30,7 +30,7 @@
 		warn("TARGET DISABLED");
 		dTarget.Disabled = true;
 		pcall(function() dTarget.Parent = game:GetService("ServerScriptService") end);
-		wait()
+		task.wait()
 		pcall(function() dTarget:Destroy() end);
 
 		warn("TARGET DESTROYED");
@@ -54,12 +54,12 @@
 	if mode == "REBOOT" then
 		warn("ATTEMPTING TO RELOAD ADONIS");
 		CleanUp();
-		wait();
+		task.wait();
 
 		warn("MOVING")
 		model.Parent = tParent;
 
-		wait()
+		task.wait()
 
 		warn("RUNNING");
 		model.Loader.Dropper.Disabled = false;

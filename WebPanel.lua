@@ -21,11 +21,6 @@ return function(Vargs)
 
 	Variables.WebPanel_Initiated = false
 
-	--[[
-		settings.WebPanel_Enabled = true;
-		settings.WebPanel_ApiKey = "";
-	]]
-
 	local WebPanel = HTTP.WebPanel
 
 	local ownerId = game.CreatorType == Enum.CreatorType.User and game.CreatorId
@@ -378,18 +373,6 @@ return function(Vargs)
 
 		if success and res.Success then
 			local data = HttpService:JSONDecode(res.Body)
-
-			--// Load plugins
-		--[[if init then
-			for i,v in next,data.Plugins do
-				local func,err = server.Core.Loadstring(Decode(v), getfenv())
-				if func then
-					func()
-				else
-					warn("Error Loading Plugin from WebPanel.")
-				end
-			end
-		end]]
 
 			if not Variables.WebPanel_Initiated then
 				UpdateCommands(data)

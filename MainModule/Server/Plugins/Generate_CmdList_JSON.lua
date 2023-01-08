@@ -42,9 +42,6 @@ return function(Vargs, GetEnv)
 				})
 			end
 
-			--warn("COMMANDS LIST JSON: ");
-			--print("\n\n".. HTTP:JSONEncode(list) .."\n\n");
-			--print("ENCODED")
 			--// LAUNCH IT
 			print("LAUNCHING")
 			local success, res = pcall(HTTP.RequestAsync, HTTP, {

@@ -20,7 +20,7 @@ local methods = setmetatable({}, {
 					RealMethods[class][index] = obj[index]
 				end
 
-				if RealMethods[class][index] ~= obj[index] then --or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] then
 					if ErrorHandler then
 						ErrorHandler("MethodError", `{debug.traceback()} || Cached method doesn't match found method: {tostring(index)}`, `Method: {index}`, index)
 					end
@@ -129,7 +129,7 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 			if isThread then
 				data.Thread = coroutine.create(taskFunc)
-				return coroutine.resume(data.Thread, ...) --select(2, coroutine.resume(data.Thread, ...))
+				return coroutine.resume(data.Thread, ...)
 			else
 				return taskFunc(...)
 			end
@@ -262,17 +262,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local UnWrapArgs = service.UnWrapEventArgs
 				local event = Wrap(service.New("BindableEvent"), main)
 
-				--// Unused
-				--[[
-				local hooks = {}
-
-				event.Event:Connect(function(...)
-					for i,v in hooks do
-						return v.Function(...)
-					end
-				end)
-				]]
-
 				event:SetSpecial("Wait", function(i, timeout)
 					local special = math.random()
 					local done = false
@@ -404,7 +393,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				Changed = {};
 				Timeout = timeout or 0;
 				Running = false;
-				--Function = func;
 				R_Status = "Idle";
 				Finished = {};
 				Function = function(...) newTask.R_Status = "Running" newTask.Running = true local ret = {func(...)} newTask.R_Status = "Finished" newTask.Running = false newTask.Remove() return unpack(ret) end;
@@ -465,7 +453,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		end;
 
 		NewEventTask = function(name,func,timeout)
-			--if true then return func end --// disabling stuff for now; Spamming tasks for events just seems like a bad idea
 			return function(...)
 				if service.Running then
 					return service.Threads.NewTask(name,func,timeout)(...)
@@ -483,7 +470,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 		Running = coroutine.running;
 		Create = coroutine.create;
 		Start = coroutine.resume;
-		--Wrap = coroutine.wrap;
 		Get = coroutine.running;
 		New = function(func) local new = coroutine.create(func) table.insert(service.Threads.Threads,new) return new end;
 		End = function(thread) repeat if thread and service.Threads.Status(thread) ~= "dead" then service.Threads.Stop(thread) service.Threads.Resume(thread) else thread = false break end until not thread or service.Threads.Status(thread) == "dead" end;
@@ -538,11 +524,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 					tab[i] = Wrap(v, fullWrap)
 				end
 				return tab
-			--[[elseif type(object) == "function" then
-				return function(...)
-					pcall(setfenv, object, getfenv())
-					return unpack(service.Wrap({object(...)}))
-				end--]]
 			elseif (typeof(object) == "Instance" or typeof(object) == "RBXScriptSignal" or typeof(object) == "RBXScriptConnection") and not service.Wrapped(object) then
 				local UnWrap = service.UnWrap
 				local sWrap = service.Wrap
@@ -623,10 +604,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 
 				newMeta.__eq = service.RawEqual
 				newMeta.__tostring = function() return custom.ToString or tostring(object) end
-				-- Roblox doesn't respect this afaik.
-				--newMeta.__gc = function(tab)
-				--	custom:RemoveFromCache()
-				--end
 				newMeta.__metatable = "Adonis_Proxy"
 
 				custom:AddToCache()
@@ -1294,19 +1271,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 						service.TrackTask(`Loop: {name}`, loop)
 					end
 
-			--[[local task = service.Threads.RunTask("LOOP:"..name, loop)
-
-			if not noYield then
-				task.Finished:wait()
-				kill()
-			end--]]
-
-			--[[if noYield then
-				Routine(loop)
-			else
-				loop()
-			end--]]
-
 					return tab
 				end;
 				StopLoop = function(name)
@@ -1354,8 +1318,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							local setRan = doChecks and pcall(settings)
 							if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
 								ErrorHandler("ReadError", "Tampering with Client [read rt0001]", `[${tostring(ind)} {tostring(topEnv)} {tostring(topEnv and getMeta(topEnv))}\n{tostring(debug.traceback())}`)
-								--elseif doChecks and (function() local ran,err = pc(function() for i in next,checkFor do if topEnv[i] then return true end end return false end) if not ran or ran and err then return true end end)() then
-								--	ErrorHandler("ReadError", "Tampering with Client [read rt0002]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 							elseif tabl[ind]~=nil and type(tabl[ind]) == "table" and not (excluded and (excluded[ind] or excluded[tabl[ind]])) then
 								return service.ReadOnly(tabl[ind], excluded, killOnError, noChecks)
 							else
@@ -1370,8 +1332,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 							local setRan = doChecks and pcall(settings)
 							if doChecks and (setRan or (get ~= getfenv or getMeta ~= getmetatable or pc ~= pcall) or (not topEnv or type(topEnv) ~= "table" or getMeta(topEnv) ~= unique)) then
 								ErrorHandler("ReadError", "Tampering with Client [write wt0003]", `[${tostring(ind)} {tostring(topEnv)} {tostring(topEnv and getMeta(topEnv))}\n{tostring(debug.traceback())}`)
-								--elseif doChecks and (function() local ran,err = pc(function() for i in next,checkFor do if topEnv[i] then return true end end return false end) if not ran or ran and err then return true end end)() then
-								--	ErrorHandler("ReadError", "Tampering with Client [write wt0004]", "["..tostring(ind).. " " .. tostring(topEnv) .. " " .. tostring(topEnv and getMeta(topEnv)).."]\n".. tostring(debug.traceback()))
 							elseif not (excluded and (excluded[ind] or excluded[tabl[ind]])) then
 								if killOnError then
 									ErrorHandler("ReadError", "Tampering with Client [write wt0005]", `[{tostring(ind)} {tostring(topEnv)} {tostring(topEnv and getMeta(topEnv))}]\n{tostring(debug.traceback())}`)

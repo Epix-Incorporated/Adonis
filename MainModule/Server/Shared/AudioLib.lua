@@ -5,7 +5,6 @@ function AudioLib.new(container)
 
 	self.DefaultProperties = {
 		Children = nil;
-		--ClearAllChildren = true;
 
 		Looped = false;
 		PlaybackSpeed = 1;
@@ -43,7 +42,7 @@ function AudioLib.new(container)
 		end
 	end
 
-	local container = workspace:FindFirstChild(container.Name)
+	container = workspace:FindFirstChild(container.Name)
 	self.Sound = container:FindFirstChild("AudioLib_Sound")
 	if not self.Sound then
 		self.Sound = Instance.new("Sound")

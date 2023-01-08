@@ -13,11 +13,10 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local server = Vargs.Server;
-	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	local Logs =
+		server.Logs
 
 	-- // Remove legacy trello board
 	local epix_board_index = type(Settings.Trello_Secondary) == "table" and table.find(Settings.Trello_Secondary, "9HH6BEX2")

@@ -54,12 +54,6 @@ return function(Vargs, GetEnv)
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
-		-- // Unused, unnecessary, at the very least it should use GetEnv, and yes even if GetEnv has an empty table you can still do GetEnv({}).GetEnv().server
-		-- If this ever were to be re-enabled it should use Core.Loadstring at all
-		--[[Loadstring = function(_, source) -- // Im honestly not even sure what to think of this one.
-			Core.Loadstring(source, GetEnv{})()
-		end;]]
-
 		Message = function(_, fromPlayer, message, duration)
 			server.Functions.Message(
 				`Global Message from {(fromPlayer or "[Unknown]")}`,
@@ -243,7 +237,6 @@ return function(Vargs, GetEnv)
 					`Question: {question}`;
 					`Total Responses: {total}`;
 					`Time Left: {math.max(0, 120 - (os.time()-startTime))}`;
-					--"Didn't Vote: "..#players-total;
 				}
 
 				for _, v in responses do

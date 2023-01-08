@@ -126,7 +126,6 @@ local logError = function(plr, err)
 	end
 end
 
---local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
 local print = function(...)
 	print(":: Adonis ::", ...)
 end
@@ -134,16 +133,6 @@ end
 local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
-
---[[
-local require = function(mod, ...)
-	if mod and tonumber(mod) then
-		warn("Requiring Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-	end
-
-	return require(mod, ...)
-end
---]]
 
 local function CloneTable(tab, recursive)
 	local clone = table.clone(tab)
@@ -205,7 +194,7 @@ end
 local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
-	local module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
+	module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
 	local plug = (isFunc and module) or require(module)
 
 	if server.Modules and type(module) ~= "function" then
@@ -222,7 +211,6 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				return err;
 			end
 		elseif yield then
-			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran,err = service.TrackTask(`Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
@@ -231,7 +219,6 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 				return err;
 			end
 		else
-			--service.Threads.RunTask("PLUGIN: "..tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars)))
 			local ran, err = service.TrackTask(`Thread: Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
@@ -254,8 +241,6 @@ end;
 
 --// WIP
 local function LoadPackage(package, folder)
-	--// runNow - Run immediately after unpacking (default behavior is to just unpack (((only needed if loading after startup))))
-	--// runNow currently not used (limitations) so all packages must be present at server startup
 	local function unpackFolder(curFolder, unpackInto)
 		if unpackInto then
 			for _, obj in ipairs(curFolder:GetChildren()) do
@@ -280,11 +265,8 @@ local function LoadPackage(package, folder)
 end;
 
 local function CleanUp()
-	--local env = getfenv(2)
-	--local ran,ret = pcall(function() return env.script:GetFullName() end)
 	warn("Beginning Adonis cleanup & shutdown process...")
-	--warn("CleanUp called from "..tostring((ran and ret) or "Unknown"))
-	--local loader = server.Core.ClientLoader
+
 	server.Model.Name = "Adonis_Loader"
 	server.Model.Parent = service.ServerScriptService
 	server.Running = false
@@ -301,18 +283,10 @@ local function CleanUp()
 			table.remove(RbxEvents, i)
 		end
 	end)
-	--loader.Archivable = false
-	--loader.Disabled = true
-	--loader:Destroy()
+
 	if server.Core and server.Core.RemoteEvent then
 		pcall(server.Core.DisconnectEvent)
 	end
-
-	--[[delay(0, function()
-		for i,v in next,server do
-			server[i] = nil; --// Try to break it to prevent any potential hanging issues; Not very graceful...
-		end
-	--end)--]]
 
 	warn("Unloading complete")
 end;
@@ -354,10 +328,8 @@ service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
 			})
 		end
 	elseif eType == "ServerError" then
-		--print("Server error")
 		logError("Server", msg)
 	elseif eType == "TaskError" then
-		--print("Task error")
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
@@ -406,8 +378,6 @@ function require(obj)
 	return oldReq(service.UnWrap(obj))
 end
 rawequal = service.RawEqual
---service.Players = service.Wrap(service.Players)
---Folder = service.Wrap(Folder)
 server.Folder = Folder
 server.Deps = Folder.Dependencies;
 server.CommandModules = Folder.Commands;
@@ -601,7 +571,6 @@ return service.NewProxy({
 
 		--// Bind cleanup
 		service.DataModel:BindToClose(CleanUp)
-		--server.CleanUp = CleanUp;
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
@@ -633,14 +602,12 @@ return service.NewProxy({
 		for _, load in ipairs(CORE_LOADING_ORDER) do
 			local CoreModule = Folder.Core:FindFirstChild(load)
 			if CoreModule then
-				LoadModule(CoreModule, true, nil, nil, true) --noenv, CoreModule
+				LoadModule(CoreModule, true, nil, nil, true)
 			end
 		end
 
 		--// Server Specific Service Functions
 		ServiceSpecific.GetPlayers = server.Functions.GetPlayers
-		--// Experimental, may have issues with Adonis tables that are protected metatables
-		--ServiceSpecific.CloneTable = CloneTable
 
 		--// Initialize Cores
 		local runLast = {}
@@ -700,9 +667,6 @@ return service.NewProxy({
 		--// Below can be used to determine when all modules and plugins have finished loading; service.Events.AllModulesLoaded:Connect(function() doSomething end)
 		server.AllModulesLoaded = true
 		service.Events.AllModulesLoaded:Fire(os.time())
-
-		--// Queue handler
-		--service.StartLoop("QueueHandler","Heartbeat",service.ProcessQueue)
 
 		--// Stuff to run after absolutely everything else has had a chance to run and initialize and all that
 		for _, f in pairs(runLast) do

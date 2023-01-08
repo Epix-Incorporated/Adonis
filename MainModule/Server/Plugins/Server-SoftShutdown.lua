@@ -10,8 +10,8 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	local Functions, Commands, Core, Remote =
+		server.Functions, server.Commands, server.Core, server.Remote
 
 	local TeleportService: TeleportService = service.TeleportService
 	local Players: Players = service.Players
@@ -35,7 +35,7 @@ return function(Vargs, GetEnv)
 					Time = 1000
 				})
 
-				wait(waitTime)
+				task.wait(waitTime)
 				waitTime /= 2
 
 				TeleportService:Teleport(game.PlaceId, player)
@@ -54,7 +54,7 @@ return function(Vargs, GetEnv)
 		Command = "restart";
 		Arguments = 0;
 		Description = "Restart the server, placing all of the players in a reserved server and teleporting each of them to the new server";
-		Function = function(p,args,data)
+		Function = function()
 			if service.RunService:IsStudio() then return end
 			if #Players:GetPlayers() == 0 then return end
 
