@@ -18,12 +18,11 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Functions, Admin, Core, Logs, Remote, Process, Settings, Deps;
+	local Functions, Core, Logs, Remote, Process, Settings, Deps;
 	local AddLog, Queue, TrackTask
 	local logError = env.logError
 	local function Init(data)
 		Functions = server.Functions;
-		Admin = server.Admin;
 		Core = server.Core;
 		Logs = server.Logs;
 		Remote = server.Remote;
@@ -180,7 +179,7 @@ return function(Vargs, GetEnv)
 			if Core.RemoteEvent and not Core.FixingEvent then
 				Core.FixingEvent = true
 
-				for name,event in Core.RemoteEvent.Events do
+				for _, event in Core.RemoteEvent.Events do
 					event:Disconnect()
 				end
 
@@ -307,7 +306,7 @@ return function(Vargs, GetEnv)
 
 			local depsName = Core.MockClientKeys.Special;
 			local specialVal = service.New("StringValue")
-			specialVal.Value = Core.Name.."\\"..depsName
+			specialVal.Value = `{Core.Name}\\{depsName}`
 			specialVal.Name = "Special"
 			specialVal.Parent = folder
 
@@ -336,7 +335,7 @@ return function(Vargs, GetEnv)
 
 				for _, child in folder:GetDescendants() do
 					local oParent = child.Parent
-					local oName = child.Name
+					oName = child.Name
 
 					clientLoader.Events[child.Changed] = child.Changed:Connect(function(c)
 						if Core.ClientLoader == clientLoader and not clientLoader.Removing then
@@ -360,13 +359,13 @@ return function(Vargs, GetEnv)
 					end)
 				end
 
-				folder.DescendantAdded:Connect(function(d)
+				folder.DescendantAdded:Connect(function()
 					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
 						Core.MakeClient()
 					end
 				end)
 
-				folder.DescendantRemoving:Connect(function(d)
+				folder.DescendantRemoving:Connect(function()
 					if Core.ClientLoader == clientLoader and not clientLoader.Removing then
 						Core.MakeClient()
 					end
@@ -376,7 +375,7 @@ return function(Vargs, GetEnv)
 			end
 
 
-			local ok,err = pcall(function()
+			pcall(function()
 				folder.Parent = parentObj
 			end)
 
@@ -410,7 +409,7 @@ return function(Vargs, GetEnv)
 				container.Name = "\0";
 
 				local specialVal = service.New("StringValue")
-				specialVal.Value = Core.Name.."\\"..depsName
+				specialVal.Value = `{Core.Name}\\{depsName}`
 				specialVal.Name = "Special"
 				specialVal.Parent = folder
 
@@ -452,7 +451,7 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not ok then
-					p:Kick("\n[CLI-192385] Loading Error \n[HookClient Error: "..tostring(err).."]")
+					p:Kick(`\n[CLI-192385] Loading Error \n[HookClient Error: {tostring(err)}]`)
 					return false
 				else
 					return true
@@ -472,11 +471,10 @@ return function(Vargs, GetEnv)
 		end;
 
 		LoadExistingPlayer = function(p)
-			warn("Loading existing player: ".. tostring(p))
+			warn(`Loading existing player: {tostring(p)}`)
 
-			TrackTask("Thread: Setup Existing Player: ".. tostring(p), function()
+			TrackTask(`Thread: Setup Existing Player: {tostring(p)}`, function()
 				Process.PlayerAdded(p)
-				--Core.MakeClient(p:FindFirstChildOfClass("PlayerGui") or p:WaitForChild("PlayerGui", 120))
 			end)
 		end;
 
@@ -556,7 +554,7 @@ return function(Vargs, GetEnv)
 
 		Bytecode = function(str: string)
 			if Core.BytecodeCache[str] then return Core.BytecodeCache[str] end
-			local f, buff = Core.Loadstring(str)
+			local _, buff = Core.Loadstring(str)
 			Core.BytecodeCache[str] = buff
 			return buff
 		end;
@@ -566,12 +564,12 @@ return function(Vargs, GetEnv)
 				if scriptType == "Script" then Deps.ScriptBase:Clone()
 					elseif scriptType == "LocalScript" then Deps.LocalScriptBase:Clone()
 					else nil,
-				"Invalid script type '"..tostring(scriptType).."'"
+				`Invalid script type '{tostring(scriptType)}'`
 			)
 
 			local execCode = Functions.GetRandom()
 
-			scr.Name = "[Adonis] "..scriptType
+			scr.Name = `[Adonis] {scriptType}`
 
 			if allowCodes then
 				service.New("StringValue", {
@@ -597,7 +595,7 @@ return function(Vargs, GetEnv)
 			Core.PlayerData[key] = data
 		end;
 
-		DefaultPlayerData = function(p)
+		DefaultPlayerData = function()
 			return {
 				Donor = {
 					Cape = {
@@ -621,7 +619,7 @@ return function(Vargs, GetEnv)
 			local key = tostring(p.UserId)
 
 			if not Core.PlayerData[key] then
-				local PlayerData = Core.DefaultPlayerData(p)
+				local PlayerData = Core.DefaultPlayerData()
 
 				Core.PlayerData[key] = PlayerData
 
@@ -647,7 +645,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		ClearPlayer = function(p)
-			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData(p)
+			Core.PlayerData[tostring(p.UserId)] = Core.DefaultData()
 		end;
 
 		SavePlayerData = function(p, customData)
@@ -668,7 +666,7 @@ return function(Vargs, GetEnv)
 
 					Core.SetData(key, data)
 					AddLog(Logs.Script, {
-						Text = "Saved data for ".. p.Name;
+						Text = `Saved data for {p.Name}`;
 						Desc = "Player data was saved to the datastore";
 					})
 
@@ -677,26 +675,15 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		SaveAllPlayerData = function(queueWaitTime)
-			local TrackTask = service.TrackTask
+		SaveAllPlayerData = function()
+			TrackTask = service.TrackTask
 			for key,pdata in Core.PlayerData do
 				local id = tonumber(key);
 				local player = id and service.Players:GetPlayerByUserId(id);
 				if player and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval)  then
-					TrackTask(string.format("Save data for %s", player.Name), Core.SavePlayerData, player);
+					TrackTask(`Save data for {player.Name}`, Core.SavePlayerData, player);
 				end
 			end
-			--[[ --// OLD METHOD (Kept in case this messes anything up)
-			for i,p in service.Players:GetPlayers() do
-				local pdata = Core.PlayerData[tostring(p.UserId)];
-				--// Only save player's data if it has not been saved within the last INTERVAL (default 30s)
-				if pdata and (not pdata.LastDataSave or os.time() - pdata.LastDataSave >= Core.DS_AllPlayerDataSaveInterval) then
-					service.Queue("SavePlayerData", function()
-						Core.SavePlayerData(p)
-						task.wait(queueWaitTime or Core.DS_AllPlayerDataSaveQueueDelay)
-					end)
-				end
-			end--]]
 		end;
 		GetDataStore = function()
 			local ran,store = pcall(function()
@@ -718,7 +705,7 @@ return function(Vargs, GetEnv)
 
 		DataStoreEncode = function(key)
 			if Core.DS_RESET_SALTS[key] then
-				key = Core.DS_RESET_SALTS[key] .. key
+				key = `{Core.DS_RESET_SALTS[key]}{key}`
 			end
 
 			return Functions.Base64Encode(Remote.Encrypt(tostring(key), Settings.DataStoreKey))
@@ -734,7 +721,7 @@ return function(Vargs, GetEnv)
 					elseif reqTypeName == "Read" then Enum.DataStoreRequestType.GetAsync
 					elseif reqTypeName == "Update" then Enum.DataStoreRequestType.UpdateAsync
 					else nil,
-				"Invalid request type name '"..tostring(reqTypeName).."'"
+				`Invalid request type name '{tostring(reqTypeName)}'`
 			)
 
 			local reqPerMin = 60 + #service.Players:GetPlayers() * 10
@@ -750,7 +737,7 @@ return function(Vargs, GetEnv)
 
 		DS_WriteLimiter = function(reqTypeName: string, func, ...)
 			local vararg = table.pack(...)
-			return Queue("DataStoreWriteData_"..tostring(reqTypeName), function()
+			return Queue(`DataStoreWriteData_{tostring(reqTypeName)}`, function()
 				local gotDelay = Core.DS_GetRequestDelay(reqTypeName); --// Wait for budget; also return how long we should wait before the next request is allowed to go
 				func(unpack(vararg, 1, vararg.n))
 				task.wait(gotDelay)
@@ -760,25 +747,25 @@ return function(Vargs, GetEnv)
 		RemoveData = function(key)
 			local DataStore = Core.DataStore
 			if DataStore then
-				local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
+				local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
 					local ran, ret = Core.DS_WriteLimiter("Write", DataStore.RemoveAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = nil
 					else
-						logError("DataStore RemoveAsync Failed: ".. tostring(ret))
+						logError(`DataStore RemoveAsync Failed: {tostring(ret)}`)
 					end
 					task.wait(6)
 				end, 120, true)
 
 				if not ran2 then
-					warn("DataStore RemoveData Failed: ".. tostring(err2))
+					warn(`DataStore RemoveData Failed: {tostring(err2)}`)
 				end
 			end
 		end;
 
 		SetData = function(key: string, value: any?, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying SetData request for ".. key);
+				warn(`Retrying SetData request for {key}`);
 			end
 
 			local DataStore = Core.DataStore
@@ -786,19 +773,19 @@ return function(Vargs, GetEnv)
 				if value == nil then
 					return Core.RemoveData(key)
 				else
-					local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
+					local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
 						local ran, ret = Core.DS_WriteLimiter("Write", DataStore.SetAsync, DataStore, Core.DataStoreEncode(key), value)
 						if ran then
 							Core.DataCache[key] = value
 						else
-							logError("DataStore SetAsync Failed: ".. tostring(ret));
+							logError(`DataStore SetAsync Failed: {tostring(ret)}`);
 						end
 
 						task.wait(6)
 					end, 120, true)
 
 					if not ran2 then
-						logError("DataStore SetData Failed: ".. tostring(err2))
+						logError(`DataStore SetData Failed: {tostring(err2)}`)
 
 						--// Attempt 3 times, with slight delay between if failed
 						task.wait(1)
@@ -814,18 +801,18 @@ return function(Vargs, GetEnv)
 
 		UpdateData = function(key: string, callback: (currentData: any?)->any?, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying UpdateData request for ".. key)
+				warn(`Retrying UpdateData request for {key}`)
 			end
 
 			local DataStore = Core.DataStore
 			if DataStore then
 				local err = false
-				local ran2, err2 = Queue("DataStoreWriteData"..tostring(key), function()
+				local ran2, err2 = Queue(`DataStoreWriteData{tostring(key)}`, function()
 					local ran, ret = Core.DS_WriteLimiter("Update", DataStore.UpdateAsync, DataStore, Core.DataStoreEncode(key), callback)
 
 					if not ran then
 						err = ret
-						logError("DataStore UpdateAsync Failed: ".. tostring(ret))
+						logError(`DataStore UpdateAsync Failed: {tostring(ret)}`)
 						return error(ret)
 					end
 
@@ -833,7 +820,7 @@ return function(Vargs, GetEnv)
 				end, 120, true) --// 120 timeout, yield until this queued function runs and completes
 
 				if not ran2 then
-					logError("DataStore UpdateData Failed: ".. tostring(err2))
+					logError(`DataStore UpdateData Failed: {tostring(err2)}`)
 
 					--// Attempt 3 times, with slight delay between if failed
 					task.wait(1)
@@ -850,19 +837,18 @@ return function(Vargs, GetEnv)
 
 		GetData = function(key: string, repeatCount: number?)
 			if repeatCount then
-				warn("Retrying GetData request for ".. key)
+				warn(`Retrying GetData request for {key}`)
 			end
 
 			local DataStore = Core.DataStore
 			if DataStore then
 				local ran2, err2 = Queue("DataStoreReadData", function()
-					--wait(Core.DS_GetRequestDelay("Read")) -- TODO: re-implement this effectively and without an unnecessary delay
 					local ran, ret = pcall(DataStore.GetAsync, DataStore, Core.DataStoreEncode(key))
 					if ran then
 						Core.DataCache[key] = ret
 						return ret
 					else
-						logError("DataStore GetAsync Failed: ".. tostring(ret))
+						logError(`DataStore GetAsync Failed: {tostring(ret)}`)
 						if Core.DataCache[key] then
 							return Core.DataCache[key]
 						else
@@ -872,7 +858,7 @@ return function(Vargs, GetEnv)
 				end, 120, true)
 
 				if not ran2 then
-					logError("DataStore GetData Failed: ".. tostring(err2))
+					logError(`DataStore GetData Failed: {tostring(err2)}`)
 					--// Attempt 3 times, with slight delay between if failed
 					task.wait(1)
 					if not repeatCount then
@@ -913,7 +899,6 @@ return function(Vargs, GetEnv)
 					end
 
 					if not curTable then
-						--warn(tostring(ind) .." could not be found");
 						--// Not allowed or table is not found
 						return nil
 					end
@@ -958,7 +943,7 @@ return function(Vargs, GetEnv)
 			if not foundTable then
 				foundTable = {
 					TableName = tableName;
-					TableKey = "SAVEDTABLE_" .. tableName;
+					TableKey = `SAVEDTABLE_{tableName}`;
 				}
 
 				table.insert(tabs, foundTable)
@@ -1086,12 +1071,12 @@ return function(Vargs, GetEnv)
 
 				Core.CrossServer("LoadData", "TableUpdate", data)
 			else
-				error("Invalid data action type '"..tostring(data.Type).."'", 2)
+				error(`Invalid data action type '{tostring(data.Type)}'`, 2)
 			end
 
 			AddLog(Logs.Script, {
 				Text = "Saved setting change to datastore";
-				Desc = "A setting change was issued and saved ("..data.Type..")";
+				Desc = `A setting change was issued and saved ({data.Type})`;
 			})
 		end;
 
@@ -1152,18 +1137,18 @@ return function(Vargs, GetEnv)
 					end
 
 					AddLog("Script", {
-						Text = "Added value to " .. displayName,
-						Desc = "Added " .. tostring(data.Value) .. " to " .. displayName .. " from datastore",
+						Text = `Added value to {displayName}`,
+						Desc = `Added {tostring(data.Value)} to {displayName} in datastore`,
 					})
 
 					table.insert(realTable, data.Value)
-					service.Events["DataStoreAdd_" .. displayName]:Fire(data.Value)
+					service.Events[`DataStoreAdd_{displayName}`]:Fire(data.Value)
 				elseif realTable and data.Action == "Remove" then
 					for i, v in realTable do
 						if CheckMatch(v, data.Value) then
 							AddLog("Script", {
-								Text = "Removed value from " .. displayName,
-								Desc = "Removed " .. tostring(data.Value) .. " from " .. displayName .. " from datastore",
+								Text = `Removed value from {displayName}`,
+								Desc = `Removed {tostring(data.Value)} from {displayName} from datastore`,
 							})
 
 							table.remove(realTable, i)
@@ -1325,7 +1310,7 @@ return function(Vargs, GetEnv)
 								__index = function(tab,inde)
 									if targ[inde] ~= nil and API_Special[inde] == nil or API_Special[inde] == true then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was granted";
+											Text = `Access to {inde} was granted`;
 											Desc = `A server script was granted access to {inde}`;
 										})
 
@@ -1336,8 +1321,8 @@ return function(Vargs, GetEnv)
 										end
 									elseif API_Special[inde] == false then
 										AddLog(Logs.Script, {
-											Text = `Access to {inde} was denied";
-											Desc = `A server script attempted to access {inde} via _G.Adonis.Access";
+											Text = `Access to {inde} was denied`;
+											Desc = `A server script attempted to access {inde} via _G.Adonis.Access`;
 										})
 
 										error(`Access Denied: {inde}`)
