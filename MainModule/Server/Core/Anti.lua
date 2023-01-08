@@ -14,17 +14,13 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
+	local Admin, Anti, Core, Logs, Remote, Settings
 	local function Init()
-		Functions = server.Functions
 		Admin = server.Admin
 		Anti = server.Anti
 		Core = server.Core
-		HTTP = server.HTTP
 		Logs = server.Logs
 		Remote = server.Remote
-		Process = server.Process
-		Variables = server.Variables
 		Settings = server.Settings
 
 		--// Client check
@@ -76,7 +72,7 @@ return function(Vargs, GetEnv)
 			info = tostring(info) or "No Reason Given"
 
 			pcall(function()
-				service.UnWrap(p):Kick(":: Adonis ::\n" .. tostring(info))
+				service.UnWrap(p):Kick(`:: Adonis ::\n{tostring(info)}`)
 			end)
 
 			task.wait(1)
@@ -85,7 +81,7 @@ return function(Vargs, GetEnv)
 			pcall(service.Delete, p)
 
 			Logs.AddLog("Script", {
-				Text = "Server removed " .. tostring(p),
+				Text = `Server removed {tostring(p)}`,
 				Desc = info,
 			})
 		end,
@@ -107,23 +103,13 @@ return function(Vargs, GetEnv)
 						end
 
 						Logs.AddLog(Logs.Script, {
-							Text = "Character AE Detected " .. tostring(player),
-							Desc = "The Anti-Exploit character check detected player: "
-								.. tostring(player)
-								.. " action: "
-								.. tostring(action)
-								.. " reason: "
-								.. tostring(reason),
+							Text = `Character AE Detected {tostring(player)}`,
+							Desc = `The Anti-Exploit character check detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(reason)}`,
 							Player = player,
 						})
 
 						warn(
-							"Charactercheck detected player: "
-								.. tostring(player)
-								.. " action: "
-								.. tostring(action)
-								.. " reason: "
-								.. tostring(reason)
+							`Charactercheck detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(reason)}`
 						)
 					else
 						Anti.Detected(player, action, reason)
@@ -151,9 +137,8 @@ return function(Vargs, GetEnv)
 							end
 
 							Logs.AddLog(Logs.Script, {
-								Text = "AE: Hat joint deletion reset network ownership for player: "
-									.. tostring(player),
-								Desc = "The AE reset joint handle network ownership for player: " .. tostring(player),
+								Text = `AE: Hat joint deletion reset network ownership for player: {tostring(player)}`,
+								Desc = `The AE reset joint handle network ownership for player: {tostring(player)}`,
 								Player = player,
 							})
 						end)
@@ -180,7 +165,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 
-			local function onCharacterRemoving(character)
+			local function onCharacterRemoving()
 				charGood = false
 			end
 
@@ -240,8 +225,8 @@ return function(Vargs, GetEnv)
 						humanoid.Health = 0
 						humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 						Logs.AddLog(Logs.Script, {
-							Text = "AE: Humanoid came out of dead state for player: " .. tostring(player),
-							Desc = "AE: Humanoid came out of dead state for player: " .. tostring(player),
+							Text = `AE: Humanoid came out of dead state for player: {tostring(player)}`,
+							Desc = `AE: Humanoid came out of dead state for player: {tostring(player)}`,
 							Player = player,
 						})
 					end
@@ -298,8 +283,8 @@ return function(Vargs, GetEnv)
 								humanoid.Health = 0
 								humanoid:ChangeState(Enum.HumanoidStateType.Dead)
 								Logs.AddLog(Logs.Script, {
-									Text = "AE: Waist joint deleted by player: " .. tostring(player),
-									Desc = "AE: Waist joint deleted by player: " .. tostring(player),
+									Text = `AE: Waist joint deleted by player: {tostring(player)}`,
+									Desc = `AE: Waist joint deleted by player: {tostring(player)}`,
 									Player = player,
 								})
 							end
@@ -312,10 +297,10 @@ return function(Vargs, GetEnv)
 				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
 					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15
-							and character:WaitForChild("LowerTorso"):WaitForChild("Root")
+						and character:WaitForChild("LowerTorso"):WaitForChild("Root")
 						or humanoid.RigType == Enum.HumanoidRigType.R6
-							and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild(
-								"RootJoint"
+						and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild(
+							"RootJoint"
 							))
 
 					makeConnection(rootJoint.AncestryChanged)
@@ -342,7 +327,7 @@ return function(Vargs, GetEnv)
 					Desc = "Making sure all clients are active",
 				})
 
-				for ind, p in service.Players:GetPlayers() do
+				for _, p in service.Players:GetPlayers() do
 					if p and p:IsA("Player") then
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
@@ -351,7 +336,7 @@ return function(Vargs, GetEnv)
 								Anti.Detected(
 									p,
 									"Kick",
-									"Client Not Responding [>" .. Anti.ClientTimeoutLimit .. " seconds]"
+									`Client Not Responding [>{Anti.ClientTimeoutLimit} seconds]`
 								)
 							end
 						end
@@ -376,7 +361,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else
-						for i, user in userInfo do
+						for _, user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
@@ -387,23 +372,23 @@ return function(Vargs, GetEnv)
 				end)
 
 				if not success then
-					warn("Failed to check validity of player's name, reason: " .. tostring(err))
+					warn(`Failed to check validity of player's name, reason: {tostring(err)}`)
 				end
 			end
 		end,
 
 		CheckBackpack = function(p, obj)
-			local ran, err = pcall(function()
+			local ran = pcall(function()
 				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
 			end)
 			return if ran then ran else false
 		end,
 
 		Detected = function(player, action, info)
-			local info = string.gsub(tostring(info), "\n", "")
+			info = string.gsub(tostring(info), "\n", "")
 
 			if service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: " .. player.Name .. " " .. action .. " " .. info)
+				warn(`ANTI-EXPLOIT: {player.Name} {action} {info}`)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
@@ -435,21 +420,19 @@ return function(Vargs, GetEnv)
 			end
 
 			Logs.AddLog(Logs.Script, {
-				Text = "AE Detected " .. tostring(player),
-				Desc = "The Anti-Exploit system detected strange activity from " .. tostring(player),
+				Text = `AE Detected {tostring(player)}`,
+				Desc = `The Anti-Exploit system detected strange activity from {tostring(player)}`,
 				Player = player,
 			})
 
 			Logs.AddLog(Logs.Exploit, {
-				Text = "[Action: " .. tostring(action) .. " User: (" .. tostring(player) .. ")] " .. tostring(
-					string.sub(info, 1, 50)
-				) .. " (Mouse over for full info)",
+				Text = `[Action: {tostring(action)} User: ({tostring(player)})] {tostring(string.sub(info, 1, 50))} (Mouse over for full info)`,
 				Desc = tostring(info),
 				Player = player,
 			})
 
 			if Settings.AENotifs == true or Settings.ExploitNotifications == true then -- AENotifs for old loaders
-				local debounceIndex = tostring(action) .. tostring(player) .. tostring(info)
+				local debounceIndex = `{tostring(action)}{tostring(player)}{tostring(info)}`
 				if os.clock() < antiNotificationResetTick then
 					antiNotificationDebounce = {}
 					antiNotificationResetTick = os.clock() + 60
@@ -470,14 +453,11 @@ return function(Vargs, GetEnv)
 							Title = "Notification",
 							Icon = server.MatIcons["Notification important"],
 							Message = string.format(
-								"%s was detected for exploiting, action: %s info: %s  (See exploitlogs for full info)",
-								player.Name,
-								action,
-								string.sub(info, 1, 50)
+								`{player.Name} was detected for exploiting, action: {action} info: {string.sub(info, 1, 50)}  (See exploitlogs for full info)`
 							),
 							Time = 30,
 							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "exploitlogs')"
+								`client.Remote.Send('ProcessCommand','{Settings.Prefix}exploitlogs')`
 							),
 						})
 					end
