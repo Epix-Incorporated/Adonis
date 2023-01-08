@@ -8,8 +8,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
-
 	local window = client.UI.Make("Window", {
 		Name = "Aliases",
 		Title = "Alias Editor",
@@ -31,7 +29,7 @@ return function(data, env)
 
 	if window then
 		local bg = window:Add("ScrollingFrame", {
-			BackgroundColor3 = Color3.fromRGB(31, 31, 31):lerp(Color3.new(1, 1, 1), 0.2),
+			BackgroundColor3 = Color3.fromRGB(31, 31, 31):Lerp(Color3.new(1, 1, 1), 0.2),
 			Size = UDim2.new(1, -10, 1, -10),
 			Position = UDim2.new(0, 5, 0, 5),
 		})
@@ -109,7 +107,7 @@ return function(data, env)
 			Text = curArgName or "name",
 			Position = UDim2.new(0, 10, 0, 35),
 			Size = UDim2.new(1, -20, 0, 20),
-			TextChanged = function(newText, enter, box)
+			TextChanged = function(newText)
 				curArgName = newText
 			end,
 		})
@@ -118,7 +116,7 @@ return function(data, env)
 			Text = curArgDefault or "",
 			Position = UDim2.new(0, 10, 0, 90),
 			Size = UDim2.new(1, -20, 0, 20),
-			TextChanged = function(newText, enter, box)
+			TextChanged = function(newText)
 				curArgDefault = newText
 			end,
 		})
@@ -149,7 +147,7 @@ return function(data, env)
 
 			local i = 1
 			content:Add("TextLabel", {
-				Text = "  " .. "Alias" .. ": ",
+				Text = "  Alias: ",
 				ToolTip = "Set the alias Adonis should check for in chat",
 				BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 				Size = UDim2.new(1, -10, 0, 30),
@@ -161,7 +159,7 @@ return function(data, env)
 						Size = UDim2.new(0, 200, 1, 0),
 						Position = UDim2.new(1, -200, 0, 0),
 						BackgroundTransparency = 1,
-						TextChanged = not data.ExistingAlias and function(text, enter, new)
+						TextChanged = not data.ExistingAlias and function(text)
 							data.Alias = text
 						end or nil,
 					},
@@ -169,7 +167,7 @@ return function(data, env)
 			})
 			i = i + 1
 			content:Add("TextLabel", {
-				Text = "  " .. "Command" .. ": ",
+				Text = "  Command: ",
 				ToolTip = "Set the command(s) Adonis should execute when finding the alias",
 				BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 				Size = UDim2.new(1, -10, 0, 30),
@@ -181,7 +179,7 @@ return function(data, env)
 						Size = UDim2.new(0, 200, 1, 0),
 						Position = UDim2.new(1, -200, 0, 0),
 						BackgroundTransparency = 1,
-						TextChanged = function(text, enter, new)
+						TextChanged = function(text)
 							data.Command = text
 						end,
 					},
@@ -189,7 +187,7 @@ return function(data, env)
 			})
 			i = i + 1
 			content:Add("TextLabel", {
-				Text = "  " .. "Description" .. ": ",
+				Text = "  Description: ",
 				ToolTip = "What does the alias do?",
 				BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 				Size = UDim2.new(1, -10, 0, 30),
@@ -201,7 +199,7 @@ return function(data, env)
 						Size = UDim2.new(0, 200, 1, 0),
 						Position = UDim2.new(1, -200, 0, 0),
 						BackgroundTransparency = 1,
-						TextChanged = function(text, enter, new)
+						TextChanged = function(text)
 							data.Description = text
 						end,
 					},
@@ -213,7 +211,7 @@ return function(data, env)
 				BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 				Size = UDim2.new(1, -10, 0, 30),
 				Position = UDim2.new(0, 5, 0, (30 * (i - 1)) + 5),
-				OnClicked = function(button)
+				OnClicked = function()
 					argIndex = 0
 					showArgBox()
 				end,
@@ -221,11 +219,11 @@ return function(data, env)
 			for index, arg in ipairs(data.Args.Names) do
 				i = i + 1
 				content:Add("TextButton", {
-					Text = "Argument: " .. arg .. " | Default: " .. data.Args.Defaults[index],
+					Text = `Argument: {arg} | Default: {data.Args.Defaults[index]}`,
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, -10, 0, 30),
 					Position = UDim2.new(0, 5, 0, (30 * (i - 1)) + 5),
-					OnClicked = function(button)
+					OnClicked = function()
 						argIndex = index
 						showArgBox({ Name = arg, Default = data.Args.Defaults[index] })
 					end,
@@ -238,7 +236,7 @@ return function(data, env)
 				Text = "Cancel",
 				Position = UDim2.new(0, 5, 1, -25),
 				Size = UDim2.new(1 / 3, -8, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					window:Close()
 				end,
 			})
@@ -247,7 +245,7 @@ return function(data, env)
 				Text = "Remove",
 				Position = UDim2.new(1 / 3, 3, 1, -25),
 				Size = UDim2.new(1 / 3, -7, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if data.ExistingAlias then
 						client.Functions.RemoveAlias(data.Alias)
 						client.UI.Remove("UserPanel")
@@ -261,7 +259,7 @@ return function(data, env)
 				Text = "Save",
 				Position = UDim2.new(2 / 3, 3, 1, -25),
 				Size = UDim2.new(1 / 3, -8, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if data.Alias == "" or data.Command == "" then
 						client.UI.Make("Output", { Message = "A required field is missing!" })
 					else
@@ -275,7 +273,6 @@ return function(data, env)
 		end
 
 		draw()
-		gTable = window.gTable
 		window:Ready()
 	end
 end

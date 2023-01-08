@@ -26,12 +26,12 @@ return function(data, env)
 
 	function newEntry(obj, name, isBack, top, color)
 		local new = scroller:Add("TextLabel", {
-			Text = "  " .. tostring(name),
+			Text = `  {tostring(name)}`,
 			ToolTip = ("Class: %s | Children%s"):format(
-				obj.ClassName or "Unknown",
-				if #obj:GetChildren() ~= 0
-					then ": " .. #obj:GetChildren() .. " | Descendants: " .. #obj:GetDescendants()
-					else "/Descendants: 0"
+			obj.ClassName or "Unknown",
+			if #obj:GetChildren() ~= 0
+				then `: {#obj:GetChildren()} | Descendants: {#obj:GetDescendants()}`
+				else "/Descendants: 0"
 			),
 			TextXAlignment = "Left",
 			Size = UDim2.new(1, 0, 0, 26),
@@ -66,7 +66,7 @@ return function(data, env)
 		end
 
 		if not (obj.Parent == game and obj.Name:sub(1, 1):upper() == obj.Name:sub(1, 1)) then
-			local del = new:Add("TextButton", {
+			new:Add("TextButton", {
 				Text = "Delete",
 				Size = UDim2.new(0, 80, 1, 0),
 				Visible = not isBack,
@@ -75,8 +75,8 @@ return function(data, env)
 					curObject = curObject.Parent or game
 					client.Remote.Send("HandleExplore", obj, "Delete")
 					if pcall(function()
-						obj:Destroy()
-					end) then
+							obj:Destroy()
+						end) then
 						new.TextColor3 = Color3.fromRGB(255, 60, 60)
 						new.Text ..= " [Deleted]"
 						if open then
@@ -101,7 +101,7 @@ return function(data, env)
 		if obj == game then
 			navText.Text = game.Name
 		else
-			navText.Text = game.Name .. "." .. obj:GetFullName()
+			navText.Text = `{game.Name}.{obj:GetFullName()}`
 			newEntry(
 				obj.Parent or lastObject or game,
 				"Previous Parent (Go Up..)",
@@ -111,7 +111,7 @@ return function(data, env)
 			)
 		end
 
-		for i, v in ipairs(obj:GetChildren()) do
+		for _, v in ipairs(obj:GetChildren()) do
 			pcall(function()
 				if string.find(v.Name:lower(), filter:lower()) or string.find(v.ClassName:lower(), filter:lower()) then
 					newEntry(v, v.Name)
@@ -131,12 +131,14 @@ return function(data, env)
 			CanvasSize = UDim2.new(0, 0, 0, 20),
 			AutomaticCanvasSize = Enum.AutomaticSize.X,
 		})
+		
 		navText = nav:Add("TextLabel", {
 			TextXAlignment = "Left",
 			Text = game.Name,
 			Size = UDim2.new(0, 0, 0, 20),
 			AutomaticSize = Enum.AutomaticSize.X,
 		})
+		
 		navText:Add("UIPadding", {
 			PaddingLeft = UDim.new(0, 5),
 			PaddingRight = UDim.new(0, 5),
@@ -178,7 +180,6 @@ return function(data, env)
 		end)
 
 		getList(game)
-		gTable = window.gTable
 		window:Ready()
 	end
 end

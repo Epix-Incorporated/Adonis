@@ -5,13 +5,10 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local Owner = data.FromPlayer
 	local SessionKey = data.SessionKey
 	local SessionName = data.SessionName
 	local CanManageUsers = data.CanManageUsers
 
-	local debounce = false
-	local gTable
 	local newMessage
 
 	local window, chatlog, reply, playerList, send, layout, sessionEvent
@@ -140,7 +137,7 @@ return function(data, env)
 								Name = "Message",
 								Size = UDim2.new(1, 0, 0, 10),
 								Position = UDim2.new(0, 0, 0, 14),
-								Text = "   " .. (msg or "<font color='rgb(230,0,0)'>An error has occured</font>"),
+								Text = `   {msg or "<font color='rgb(230,0,0)'>An error has occured</font>"}`,
 								TextXAlignment = "Left",
 								TextYAlignment = "Top",
 								AutomaticSize = "Y",
@@ -181,11 +178,7 @@ return function(data, env)
 								Size = UDim2.new(1, -55, 0, 15),
 								Position = UDim2.new(0, 55, 0, 0),
 								Text = if pDisplayName
-									then pDisplayName == pName and ("@" .. pName) or string.format(
-										"%s (@%s)",
-										pDisplayName,
-										pName
-									)
+									then pDisplayName == pName and (`@{pName}`) or `{pDisplayName} (@{pName})`
 									else pName,
 								TextSize = "14",
 								TextXAlignment = "Left",
@@ -250,15 +243,14 @@ return function(data, env)
 		Size = UDim2.new(1, -105, 1, -45),
 		CanvasSize = UDim2.new(0, 0, 0, 0),
 		BackgroundTransparency = 0.9,
-		--AutomaticCanvasSize = "Y";
 	})
 
 	reply = window:Add("TextBox", {
-		Text = "", --"Enter reply";
+		Text = "",
 		PlaceholderText = "",
 		Size = UDim2.new(1, -70, 0, 30),
 		Position = UDim2.new(0, 5, 1, -35),
-		ClearTextOnFocus = false, --true;
+		ClearTextOnFocus = false,
 		TextScaled = true,
 	})
 
@@ -269,7 +261,7 @@ return function(data, env)
 		AutomaticCanvasSize = "Y",
 	})
 
-	local add = window:Add("TextButton", {
+	window:Add("TextButton", {
 		Text = "+",
 		Size = UDim2.new(0, 30, 0, 30),
 		Position = UDim2.new(1, -100, 1, -70),
@@ -282,7 +274,7 @@ return function(data, env)
 		end,
 	})
 
-	local remove = window:Add("TextButton", {
+	window:Add("TextButton", {
 		Text = "-",
 		Size = UDim2.new(0, 30, 0, 30),
 		Position = UDim2.new(1, -35, 1, -70),
@@ -337,7 +329,7 @@ return function(data, env)
 				PlayerName = p.Name,
 				PlayerDisplayName = p.DisplayName,
 				Message = data.Message,
-				Icon = p.Icon or 0, --// replace with user avatar later
+				Icon = p.Icon or 0, -- TODO: replace with user avatar later
 			})
 		end
 	end

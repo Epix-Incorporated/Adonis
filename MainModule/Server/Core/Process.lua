@@ -1,5 +1,3 @@
-type table = {[any]: any}
-
 --// Processing
 return function(Vargs, GetEnv)
 	local env = GetEnv(nil, {script = script})
@@ -8,8 +6,8 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server
 	local service = Vargs.Service
 
-	local Commands, Decrypt, AddLog, TrackTask, Pcall
-	local Functions, Admin, Anti, Core, Logs, Remote, Process, Variables, Settings, Defaults
+	local Commands, Decrypt, Encrypt, AddLog, TrackTask, Pcall
+	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings, Defaults
 	local logError = env.logError
 	local Routine = env.Routine
 	local function Init()
@@ -29,6 +27,7 @@ return function(Vargs, GetEnv)
 		Routine = Routine or env.Routine;
 		Commands = Remote.Commands
 		Decrypt = Remote.Decrypt
+		Encrypt = Remote.Encrypt
 		AddLog = Logs.AddLog
 		TrackTask = service.TrackTask
 		Pcall = server.Pcall
@@ -49,7 +48,7 @@ return function(Vargs, GetEnv)
 			if plr then
 				local reason = if type(data) == "table" and data.Reason then data.Reason
 					else "No reason provided"
-				pcall(plr.Kick, plr, "{Variables.BanMessage} | Reason: {reason}")
+				pcall(plr.Kick, plr, `{Variables.BanMessage} | Reason: {reason}`)
 				AddLog("Script", {
 					Text = `Applied ban on {plr.Name}`;
 					Desc = `Ban reason: {reason}`;
@@ -66,11 +65,10 @@ return function(Vargs, GetEnv)
 				local reason = if type(data) == "table" and data.Reason then data.Reason
 					else "No reason provided"
 
-
 				pcall(
 					plr.Kick,
 					plr,
-					`\nReason: {reason or "(No reason provided.)"}\nBanned until {service.FormatTime(data.EndTime, { WithWrittenDate = true })}`
+					`\n Reason: {(reason or "(No reason provided.")}\n Banned until {service.FormatTime(data.EndTime, { WithWrittenDate = true })}`
 				)
 				AddLog("Script", {
 					Text = `Applied TimeBan on {plr.Name}`;
@@ -83,7 +81,7 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Processing Module Initialized")
 	end;
 
-	local function RunAfterPlugins()
+	local function RunAfterPlugins(data)
 		local existingPlayers = service.Players:GetPlayers()
 
 		--// Events
@@ -92,7 +90,7 @@ return function(Vargs, GetEnv)
 
 		--// Load client onto existing players
 		if existingPlayers then
-			for _, p in existingPlayers do
+			for i, p in existingPlayers do
 				Core.LoadExistingPlayer(p)
 			end
 		end
@@ -122,7 +120,7 @@ return function(Vargs, GetEnv)
 		AddLog("Script", "Process Module RunAfterPlugins Finished")
 	end
 
-	local function newRateLimit(rateLimit, rateKey: any)
+	local function newRateLimit(rateLimit: table, rateKey: string|number|userdata|any)
 		-- Ratelimit: table
 		-- Ratekey: string or number
 
@@ -169,6 +167,7 @@ return function(Vargs, GetEnv)
 			local ratePassed: boolean? = rateLimit.Passed or rateLimit.passed
 
 			local canThrottle: boolean? = rateLimit.ThrottleEnabled
+			local throttleReset: number? = rateLimit.ThrottleReset
 			local throttleMax: number? = math.floor(math.abs(rateData.ThrottleMax or 1))
 
 			-- Ensure minimum requirement is followed
@@ -183,7 +182,8 @@ return function(Vargs, GetEnv)
 			end
 
 			-- Check cache
-			local rateCache = cacheLib[rateKey]
+			local rateCache: table = cacheLib[rateKey]
+			local throttleCache
 			if not rateCache then
 				rateCache = {
 					Rate = 0;
@@ -263,8 +263,9 @@ return function(Vargs, GetEnv)
 		};
 	}
 
-	local function RateLimit(p: Player, typ)
-		local isPlayer = type(p)=="userdata" and p:IsA("Player")
+	local unWrap = service.unWrap
+	local function RateLimit(p, typ)
+		local isPlayer = type(p)=="userdata" and p:IsA"Player"
 		if isPlayer then
 			local rateData = RateLimiter[typ]
 			assert(rateData, `No rate limit data available for the given type {typ}`)
@@ -290,7 +291,7 @@ return function(Vargs, GetEnv)
 			RateLog = 10;
 		};
 
-		Remote = function(p: Player, cliData, com, ...)
+		Remote = function(p, cliData, com, ...)
 			local key = tostring(p.UserId)
 			local keys = Remote.Clients[key]
 
@@ -301,7 +302,7 @@ return function(Vargs, GetEnv)
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
 				else
 					local args = {...}
-					local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
+					local rateLimitCheck, didThrottleRL, canThrottleRL, curRemoteRate = RateLimit(p, "Remote")
 
 					if keys then
 						keys.LastUpdate = os.time()
@@ -310,7 +311,7 @@ return function(Vargs, GetEnv)
 						if type(com) == "string" then
 							if com == `{keys.Special}GET_KEY` then
 								if keys.LoadingStatus == "WAITING_FOR_KEY" then
-									Remote.Fire(p, `{keys.Special}GET_KEY`, keys.Key)
+									Remote.Fire(p, `{keys.Special}GIVE_KEY`, keys.Key)
 									keys.LoadingStatus = "LOADING"
 									keys.RemoteReady = true
 
@@ -354,7 +355,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Command = function(p: Player, msg: string, opts, noYield: boolean)
+		Command = function(p, msg, opts, noYield)
 			opts = opts or {}
 
 			if #msg > Process.MsgStringLimit and type(p) == "userdata" and p:IsA("Player") and not Admin.CheckAdmin(p) then
@@ -421,7 +422,7 @@ return function(Vargs, GetEnv)
 						Remote.MakeGui(p, "Output", {
 							Message = denialMessage or (if Settings.SilentCommandDenials
 								then `'{msg}' is either not a valid command, or you do not have permission to run it.`
-								else `You do not have permission to run '{msg}'.`
+								else `You do not have permission to run '{msg}'.`)
 						})
 					end
 					return
@@ -448,7 +449,7 @@ return function(Vargs, GetEnv)
 
 				if opts.CrossServer or (not isSystem and not opts.DontLog) then
 					AddLog("Commands", {
-						Text = `((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
+						Text = `{((opts.CrossServer and "[CRS_SERVER] ") or "")}{p.Name}`;
 						Desc = `{matched}{Settings.SplitKey}{table.concat(args, Settings.SplitKey)}`;
 						Player = p;
 					})
@@ -510,8 +511,8 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CustomChat = function(p: Player, a, b: string, canCross: boolean)
-			local didPassRate, _, _, curRate, _ = RateLimit(p, "CustomChat")
+		CustomChat = function(p, a, b, canCross)
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "CustomChat")
 
 			if didPassRate and not Admin.IsMuted(p) then
 				if type(a) == "string" then
@@ -549,7 +550,7 @@ return function(Vargs, GetEnv)
 						DontError = true;
 						})
 					do
-						a = service.Filter(a, p, v)
+						local a = service.Filter(a, p, v)
 						if p.Name == v.Name and b ~= "Private" and b ~= "Ignore" and b ~= "UnIgnore" then
 							Remote.Send(v,"Handler","ChatHandler",p,a,b)
 						elseif b == "Global" then
@@ -575,14 +576,14 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Chat = function(p: Player, msg: string)
-			local didPassRate, _, _, curRate, _ = RateLimit(p, "Chat")
+		Chat = function(p, msg)
+			local didPassRate, didThrottle, canThrottle, curRate, maxRate = RateLimit(p, "Chat")
 			if didPassRate then
 				local isMuted = Admin.IsMuted(p);
 				if utf8.len(utf8.nfcnormalize(msg)) > Process.MaxChatCharacterLimit and not Admin.CheckAdmin(p) then
 					Anti.Detected(p, "Kick", "Chatted message over the maximum character limit")
 				elseif not isMuted then
-					msg = string.sub(msg, 1, Process.MsgStringLimit)
+					local msg = string.sub(msg, 1, Process.MsgStringLimit)
 					local filtered = service.LaxFilter(msg, p)
 
 					AddLog(Logs.Chats, {
@@ -611,7 +612,7 @@ return function(Vargs, GetEnv)
 						service.Events.PlayerChatted:Fire(p, msg)
 					end
 				elseif isMuted then
-					msg = string.sub(msg, 1, Process.MsgStringLimit);
+					local msg = string.sub(msg, 1, Process.MsgStringLimit);
 					local filtered = service.LaxFilter(msg, p)
 					AddLog(Logs.Chats, {
 						Text = `[MUTED] {p.Name}: {tostring(filtered)}`;
@@ -625,7 +626,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		PlayerAdded = function(p: Player)
+		PlayerAdded = function(p)
 			AddLog("Script", `Doing PlayerAdded Event for {p.Name}`)
 
 			local key = tostring(p.UserId)
@@ -670,7 +671,7 @@ return function(Vargs, GetEnv)
 					local listed = false
 
 					local CheckTable = Admin.CheckTable
-					for _, list in Variables.Whitelist.Lists do
+					for listName, list in Variables.Whitelist.Lists do
 						if CheckTable(p, list) then
 							listed = true
 							break;
@@ -707,7 +708,7 @@ return function(Vargs, GetEnv)
 
 				--// Get chats
 				p.Chatted:Connect(function(msg)
-					ran, err = TrackTask(`{p.Name} Chatted`, Process.Chat, p, msg)
+					local ran, err = TrackTask(`{p.Name}Chatted`, Process.Chat, p, msg)
 					if not ran then
 						logError(err);
 					end
@@ -715,7 +716,7 @@ return function(Vargs, GetEnv)
 
 				--// Character added
 				p.CharacterAdded:Connect(function(...)
-					ran, err = TrackTask(`{p.Name} CharacterAdded`, Process.CharacterAdded, p, ...)
+					local ran, err = TrackTask(`{p.Name}CharacterAdded`, Process.CharacterAdded, p, ...)
 					if not ran then
 						logError(err);
 					end
@@ -728,7 +729,6 @@ return function(Vargs, GetEnv)
 							Desc = `{tostring(keyData.LoadingStatus)}: Client failed to load in time (10 minutes?)`,
 							Player = p;
 						});
-						--Anti.Detected(p, "kick", "Client failed to load in time (10 minutes?)");
 					end
 				end)
 			elseif ran and err ~= "REMOVED" then
@@ -797,7 +797,7 @@ return function(Vargs, GetEnv)
 				TrackTask(`Thread: OnJoin_Cmd: {tostring(v)}`, Admin.RunCommandAsPlayer, v, p)
 				AddLog("Script", {
 					Text = `OnJoin: Executed {tostring(v)}`;
-					Desc = `Executed OnJoin command; {tostring(v)}`
+					Desc = `Executed OnJoin command; {tostring(v)}`;
 				})
 			end
 
@@ -917,6 +917,7 @@ return function(Vargs, GetEnv)
 				end
 
 				for v: Player in Variables.IncognitoPlayers do
+					--// Check if the Player still exists before doing incognito to prevent LoadCode spam.
 					if v == p or v.Parent == service.Players then
 						continue
 					end
@@ -935,7 +936,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		CharacterAdded = function(p: Player, char: Model, ...)
+		CharacterAdded = function(p, char, ...)
 			local key = tostring(p.UserId)
 			local keyData = Remote.Clients[key]
 
@@ -960,6 +961,7 @@ return function(Vargs, GetEnv)
 						Message = Variables.NotifMessage
 					})
 				end
+
 				if Settings.TopBarShift then
 					Remote.MakeGui(p, "TopBar")
 				end

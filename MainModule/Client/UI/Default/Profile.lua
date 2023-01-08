@@ -17,8 +17,8 @@ return function(data, env)
 	local player: Player = data.Target
 
 	local window = client.UI.Make("Window", {
-		Name = "Profile_" .. player.UserId,
-		Title = "Profile (@" .. player.Name .. ")",
+		Name = `Profile_{player.UserId}`,
+		Title = `Profile (@{player.Name})`,
 		Icon = client.MatIcons["Account circle"],
 		Size = { 400, 400 },
 		AllowMultiple = false,
@@ -96,13 +96,13 @@ return function(data, env)
 			{ "User ID", player.UserId, "The player's unique Roblox user ID" },
 			{
 				"Acc. Age",
-				player.AccountAge .. " days (" .. string.format("%.2f", player.AccountAge / 365) .. " years)",
+				`{player.AccountAge} days ({string.format("%.2f", player.AccountAge / 365)} years)`,
 				"How long the player has been registered on Roblox",
 			},
 		}) do
 			generaltab
 				:Add("TextLabel", {
-					Text = "  " .. v[1] .. ": ",
+					Text = `  {v[1]}: `,
 					ToolTip = v[3],
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, -135, 0, 30),
@@ -129,7 +129,7 @@ return function(data, env)
 		}) do
 			generaltab
 				:Add("TextLabel", {
-					Text = "  " .. v[1] .. ": ",
+					Text = `  {v[1]}: `,
 					ToolTip = v[3],
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, -10, 0, 30),
@@ -171,7 +171,6 @@ return function(data, env)
 				"rbxassetid://6878433601",
 				"User is an official developer of the Adonis admin system (see credit list)",
 			},
-			-- haha? {player.UserId == 644946329, "I invented this profile interface! [Expertcoderz]", "rbxthumb://type=AvatarHeadShot&id=644946329&w=48&h=48", "yes"},
 			{
 				player.UserId == 1237666 or player.UserId == 698712377,
 				"Adonis Creator [Sceleratis/Davey_Bones]",
@@ -240,7 +239,7 @@ return function(data, env)
 		local onlineCount = 0
 
 		Routine(function()
-			for item, pageNo in iterPageItems(friendPages) do
+			for item in iterPageItems(friendPages) do
 				table.insert(sortedFriends, item.Username)
 				friendInfoRef[item.Username] = {
 					id = item.Id,
@@ -258,7 +257,7 @@ return function(data, env)
 				Size = UDim2.new(1, -10, 0, 25),
 				Position = UDim2.new(0, 5, 0, 5),
 				BackgroundTransparency = 0.5,
-				PlaceholderText = ("Search %d friends (%d online)"):format(friendCount, onlineCount),
+				PlaceholderText = `Search {friendCount} friends ({onlineCount} online)`,
 				Text = "",
 				TextStrokeTransparency = 0.8,
 			})
@@ -290,11 +289,11 @@ return function(data, env)
 						if friendName == friendInfo.displayName then
 							entryText = friendName
 						else
-							entryText = friendInfo.displayName .. " (@" .. friendName .. ")"
+							entryText = `{friendInfo.displayName} (@{friendName})`
 						end
 						local entry = scroller:Add("TextLabel", {
-							Text = "             " .. entryText,
-							ToolTip = "User ID: " .. friendInfo.id,
+							Text = `             {entryText}`,
+							ToolTip = `User ID: {friendInfo.id}`,
 							BackgroundTransparency = ((i - 1) % 2 == 0 and 0) or 0.2,
 							Size = UDim2.new(1, 0, 0, 30),
 							Position = UDim2.new(0, 0, 0, (30 * (i - 1))),
@@ -358,11 +357,7 @@ return function(data, env)
 			Size = UDim2.new(1, -10, 0, 25),
 			Position = UDim2.new(0, 5, 0, 5),
 			BackgroundTransparency = 0.5,
-			PlaceholderText = ("Search %d group%s (%d owned)"):format(
-				groupCount,
-				groupCount ~= 1 and "s" or "",
-				ownCount
-			),
+			PlaceholderText = `Search {groupCount} group{groupCount ~= 1 and "s" or ""} ({ownCount} owned)`,
 			Text = "",
 			TextStrokeTransparency = 0.8,
 		})
@@ -392,13 +387,7 @@ return function(data, env)
 				then
 					local entry = scroller:Add("TextLabel", {
 						Text = "",
-						ToolTip = string.format(
-							"%sID: %d | Rank: %d%s",
-							groupInfo.IsPrimary and "Primary Group | " or "",
-							groupInfo.Id,
-							groupInfo.Rank,
-							groupInfo.Rank == 255 and " (Owner)" or ""
-						),
+						ToolTip = `{groupInfo.IsPrimary and "Primary Group | " or ""}ID: {groupInfo.Id} | Rank: {groupInfo.Rank}{groupInfo.Rank == 255 and " (Owner)" or ""}`
 						BackgroundTransparency = ((i - 1) % 2 == 0 and 0) or 0.2,
 						Size = UDim2.new(1, -10, 0, 30),
 						Position = UDim2.new(0, 5, 0, (30 * (i - 1))),
@@ -460,12 +449,10 @@ return function(data, env)
 				player.CameraMinZoomDistance,
 				"How close in studs the player can zoom in their camera",
 			},
-			-- NEEDS REFRESHABILITY {"Gameplay Paused", boolToStr(player.GameplayPaused), "Is the player's gameplay paused? (for content streaming)"},
-			-- NEEDS REFRESHABILITY {"Character Exists", boolToStr(player.Character), "Does the player currently have a character?"},
 			{
 				"Accelerometer Enabled",
 				boolToStr(data.GameData.AccelerometerEnabled),
-				"Whether the user’s device has an accelerometer",
+				"Whether the user's device has an accelerometer",
 			},
 			{
 				"Gamepad Enabled",
@@ -475,28 +462,27 @@ return function(data, env)
 			{
 				"Gyroscope Enabled",
 				boolToStr(data.GameData.GyroscopeEnabled),
-				"Whether the user’s device has a gyroscope",
+				"Whether the user's device has a gyroscope",
 			},
 			{
 				"Keyboard Enabled",
 				boolToStr(data.GameData.KeyboardEnabled),
-				"Whether the user’s device has a keyboard available",
+				"Whether the user's device has a keyboard available",
 			},
 			{
 				"Mouse Delta Sensitivity",
 				data.GameData.MouseDeltaSensitivity,
-				"The scale of the delta (change) output of the user’s Mouse",
+				"The scale of the delta (change) output of the user's Mouse",
 			},
 			{
 				"Mouse Enabled",
 				boolToStr(data.GameData.MouseEnabled),
-				"Whether the user’s device has a mouse available",
+				"Whether the user's device has a mouse available",
 			},
-			-- NEEDS REFRESHABILITY {"OnScreenKeyboardVisible", data.GameData.OnScreenKeyboardVisible, "Whether an on-screen keyboard is currently visible on the user’s screen"},
 			{
 				"Touch Enabled",
 				boolToStr(data.GameData.TouchEnabled),
-				"Whether the user’s current device has a touch-screen available",
+				"Whether the user's current device has a touch-screen available",
 			},
 			{ "VR Enabled", boolToStr(data.GameData.VREnabled), "Whether the user is using a virtual reality headset" },
 			{
@@ -508,9 +494,9 @@ return function(data, env)
 
 		local i = 1
 		for _, v in ipairs(gameplayDataToDisplay) do
-			local entry = gametab
+			gametab
 				:Add("TextLabel", {
-					Text = "  " .. v[1] .. ": ",
+					Text = `  {v[1]}: `,
 					ToolTip = v[3],
 					BackgroundTransparency = i % 2 == 0 and 0 or 0.2,
 					Size = UDim2.new(1, -10, 0, 25),
@@ -529,7 +515,7 @@ return function(data, env)
 
 		gametab:Add("TextButton", {
 			Text = "View Tools",
-			ToolTip = string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name),
+			ToolTip = `{data.CmdPrefix}viewtools{data.CmdSplitKey}{player.Name}`,
 			BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 			Size = UDim2.new(1, -10, 0, 30),
 			Position = UDim2.new(0, 5, 0, 25 * (i - 1) + 10),
@@ -539,9 +525,9 @@ return function(data, env)
 					self.AutoButtonColor = false
 					client.Remote.Send(
 						"ProcessCommand",
-						string.format("%sviewtools%s%s", data.CmdPrefix, data.CmdSplitKey, player.Name)
+						`{data.CmdPrefix}viewtools{data.CmdSplitKey}{player.Name}`
 					)
-					wait(2)
+					task.wait(2)
 					self.AutoButtonColor = true
 					self.Active = true
 				end

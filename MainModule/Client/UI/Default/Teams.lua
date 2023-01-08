@@ -115,7 +115,6 @@ return function(data, env)
 	end)
 	teamColor:GetPropertyChangedSignal("Text"):Connect(function()
 		teamColor.TextColor3 = BrickColor.new(teamColor.Text).Color
-		--teamColor.TextColor3 = BrickColor.new(teamColor.Text:sub(1, 1):upper()..teamColor.Text:sub(2):lower()).Color -- unfortunately we have BrickColors with names like "New Yeller"
 	end)
 
 	local function generate()

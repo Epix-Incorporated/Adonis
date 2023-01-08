@@ -12,7 +12,6 @@ return function(data, env)
 	local replyTicket = data.replyTicket
 	local player = data.Player
 
-	local gTable
 	local debounce = false
 
 	local window = UI.Make("Window", {
@@ -21,7 +20,7 @@ return function(data, env)
 		Size = { 300, 150 },
 	})
 
-	local label = window:Add("TextLabel", {
+	window:Add("TextLabel", {
 		Text = data.Message,
 		Size = UDim2.new(1, -10, 1, -40),
 		BackgroundTransparency = 1,
@@ -30,7 +29,7 @@ return function(data, env)
 	})
 
 	local reply = window:Add("TextBox", {
-		Text = "", --"Enter reply";
+		Text = "",
 		PlaceholderText = "Enter reply",
 		Size = UDim2.new(1, -65, 0, 30),
 		Position = UDim2.new(0, 5, 1, -35),
@@ -79,7 +78,7 @@ return function(data, env)
 	gTable = window.gTable
 	UI.Make("Notification", {
 		Title = "New Message",
-		Message = string.format("Message from %s (@%s)", player.DisplayName, player.Name),
+		Message = `Message from {player.DisplayName} (@{player.Name})`,
 		Icon = "rbxassetid://7501175708",
 		Time = false,
 		OnClick = function()

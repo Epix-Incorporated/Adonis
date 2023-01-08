@@ -21,7 +21,6 @@ return function(data, env)
 		Size = { 250, 230 },
 		MinSize = { 150, 230 },
 		MaxSize = { math.huge, 230 },
-		--Position = UDim2.new(0, 10, 1, -80);
 		SizeLocked = true,
 		OnClose = function()
 			if not returnColor then
@@ -36,7 +35,7 @@ return function(data, env)
 		BackgroundColor3 = color,
 	})
 
-	local okButton = window:Add("TextButton", {
+	window:Add("TextButton", {
 		Text = "Accept",
 		Size = UDim2.new(1, -10, 0, ySize - 5),
 		Position = UDim2.new(0, 5, 0, ySize * 7),
@@ -72,7 +71,7 @@ return function(data, env)
 		TextSize = 20,
 		Size = UDim2.new(1, -20, 0, ySize - 5),
 		Position = UDim2.new(0, 10, 0, ySize * 0),
-		TextChanged = function(newText, focusLost, enterPressed)
+		TextChanged = function(newText, focusLost)
 			if tonumber(newText) then
 				local doRet
 				newText = math.floor(tonumber(newText))
@@ -102,7 +101,7 @@ return function(data, env)
 		TextSize = 20,
 		Size = UDim2.new(1, -20, 0, ySize - 5),
 		Position = UDim2.new(0, 10, 0, ySize * 2),
-		TextChanged = function(newText, focusLost, enterPressed)
+		TextChanged = function(newText, focusLost)
 			if tonumber(newText) then
 				local doRet = false
 				newText = math.floor(tonumber(newText))
@@ -132,7 +131,7 @@ return function(data, env)
 		TextSize = 20,
 		Size = UDim2.new(1, -20, 0, ySize - 5),
 		Position = UDim2.new(0, 10, 0, ySize * 4),
-		TextChanged = function(newText, focusLost, enterPressed)
+		TextChanged = function(newText, focusLost)
 			if tonumber(newText) then
 				local doRet = false
 				newText = math.floor(tonumber(newText))

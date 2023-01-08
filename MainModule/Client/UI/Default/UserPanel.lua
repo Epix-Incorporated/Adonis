@@ -46,15 +46,12 @@ return function(data, env)
 
 	local client: table = env.client
 	local service: table = env.service
-	local gui = env.gui
 
 	local UI = client.UI
 	local Remote = client.Remote
 	local Variables = client.Variables
-	local Deps = client.Deps
 	local Functions = client.Functions
 
-	local gTable
 	local window = UI.Make("Window", {
 		Name = "UserPanel",
 		Title = "Adonis",
@@ -223,7 +220,7 @@ return function(data, env)
 										Remote.Send("SaveTableAdd", tabPath or setting, entryText.Text)
 										table.insert(tab, entryText.Text)
 									end
-									wait(0.5)
+									task.wait(0.5)
 									entryBox.Visible = false
 									inputBlock = false
 									showItems()
@@ -262,13 +259,13 @@ return function(data, env)
 					Text = "Remove",
 					Position = UDim2.new(0, 5, 1, -25),
 					Size = UDim2.new(0.5, -10, 0, 20),
-					OnClicked = function(button)
+					OnClicked = function()
 						if selected and not inputBlock then
 							inputBlock = true
 							Remote.Send("SaveTableRemove", tabPath or setting, selected.Value)
 							table.remove(tab, selected.Index)
 							showItems()
-							wait(0.5)
+							task.wait(0.5)
 							inputBlock = false
 						end
 					end,
@@ -474,7 +471,7 @@ return function(data, env)
 			local function updateStatus()
 				dStatus.Text = "Updating..."
 				dStatus.Text = Remote.Get("UpdateDonor", playerData.Donor)
-				wait(0.5)
+				task.wait(0.5)
 				dStatus.Text = "Donated"
 			end
 
@@ -632,12 +629,12 @@ return function(data, env)
 										Text = currentTexture,
 										Size = UDim2.new(1, -10, 0, 30),
 										Position = UDim2.new(0, 5, 0, 5),
-										TextChanged = function(text, enter, new)
+										TextChanged = function(text, _, new)
 											local lastVal = math.random()
 
 											lastChange = lastVal
 
-											delay(0.5, function()
+											task.delay(0.5, function()
 												if lastChange == lastVal then --// So we only do the update when they finish typing
 													local num = tonumber(text)
 													if num then
@@ -655,11 +652,10 @@ return function(data, env)
 										Text = "Select",
 										Size = UDim2.new(1, -10, 0, 30),
 										Position = UDim2.new(0, 5, 1, -35),
-										OnClick = function(new)
+										OnClick = function()
 											currentTexture = lastValid
 											donorData.Cape.Image = lastValid
 											textureButton.Text = lastValid
-											donePreview = true
 
 											pWindow:Close()
 											updateStatus()
@@ -801,9 +797,6 @@ return function(data, env)
 			local currentKey
 			local editOldKeybind
 			local keyInputHandler
-			local curCommandText = ""
-			local waitingForBind = false
-			local keyDebounce = false
 			local inputBlock = false
 			local commandBox
 			local keyBox
@@ -937,8 +930,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35),
 				Size = UDim2.new(1, -20, 0, 20),
 				ClearTextOnFocus = false,
-				TextChanged = function(newText, enter, box)
-					curCommandText = newText
+				TextChanged = function(newText)
 				end,
 			})
 
@@ -979,7 +971,7 @@ return function(data, env)
 				Text = "Remove",
 				Position = UDim2.new(0, 5, 1, -25),
 				Size = UDim2.new(1 / 3, -(15 / 3) - 1, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if selected and not inputBlock then
 						inputBlock = true
 						Functions.RemoveKeyBind(selected.Key)
@@ -1000,7 +992,7 @@ return function(data, env)
 				Text = "Edit",
 				Position = UDim2.new((1 / 3), 0, 1, -25),
 				Size = UDim2.new(1 / 3, -(15 / 3) + 4, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if selected and not inputBlock then
 						currentKey = nil
 						editOldKeybind = selected.Key
@@ -1040,15 +1032,10 @@ return function(data, env)
 
 		--// Alias tab (basically a copy-paste of keyTab stuff with edits don't hurt me their functionality is so similar and I'm lazy)
 		do
-			local doneKey
 			local selected
 			local orgTextTransparency, editButton, removeButton
 			local autoButtonColor = false
-			local currentAlias
 			local editOldAlias
-			local curCommandText = ""
-			local waitingForBind = false
-			local keyDebounce = false
 			local inputBlock = false
 			local commandBox
 			local aliasBox
@@ -1165,7 +1152,6 @@ return function(data, env)
 						BackgroundTransparency = 1,
 						OnClicked = function()
 							if not inputBlock then
-								doneKey = true
 								currentAlias = nil
 								editOldAlias = nil
 								inputBlock = false
@@ -1180,8 +1166,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35),
 				Size = UDim2.new(1, -20, 0, 20),
 				ClearTextOnFocus = false,
-				TextChanged = function(newText, enter, box)
-					curCommandText = newText
+				TextChanged = function()
 				end,
 			})
 
@@ -1200,7 +1185,7 @@ return function(data, env)
 				Text = "Remove",
 				Position = UDim2.new(0, 5, 1, -25),
 				Size = UDim2.new(1 / 3, -(15 / 3) - 1, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if selected and not inputBlock then
 						inputBlock = true
 						Functions.RemoveAlias(selected.Alias)
@@ -1221,7 +1206,7 @@ return function(data, env)
 				Text = "Edit",
 				Position = UDim2.new((1 / 3), 0, 1, -25),
 				Size = UDim2.new(1 / 3, -(15 / 3) + 4, 0, 20),
-				OnClicked = function(button)
+				OnClicked = function()
 					if selected and not inputBlock then
 						currentAlias = nil
 						editOldAlias = selected.Alias
@@ -1349,21 +1334,6 @@ return function(data, env)
 						toggle.Text = text
 					end,
 				},
-				--[[{ --// Not totally removing this as it may come back in a different capacity in the future ~ Scel
-					Text = "Privacy Mode: ";
-					Desc = "- Hide certain info from your profile";
-					Entry = "Boolean";
-					Setting = "PrivacyMode";
-					Value = Variables.PrivacyMode or false;
-					Function = function(enabled, toggle)
-						Variables.PrivacyMode = enabled
-
-						local text = toggle.Text
-						toggle.Text = "Saving.."
-						Remote.Get("UpdateClient","PrivacyMode", enabled)
-						toggle.Text = text
-					end
-				};--]]
 				{
 					Text = "Console Key: ",
 					Desc = "- Key used to open the console",
@@ -1381,7 +1351,7 @@ return function(data, env)
 							end)
 
 							repeat
-								wait()
+								task.wait()
 							until gotKey
 
 							Variables.CustomConsoleKey = gotKey
@@ -1425,9 +1395,6 @@ return function(data, env)
 			}
 
 			local num = 0
-			--[[local cliScroll = clientTab:Add("ScrollingFrame", {
-				BackgroundTransparency = 1;
-			});]]
 
 			for i, setData in ipairs(cliSettings) do
 				local label = clientTab:Add("TextLabel", {
@@ -1462,18 +1429,9 @@ return function(data, env)
 						Selected = setData.Value,
 						OnSelect = setData.Function,
 						Options = setData.Options,
-						--BackgroundColor3 = label.BackgroundColor3:lerp(Color3.new(1, 1, 1), 0.25);
 						BackgroundTransparency = 1,
 					})
 				end
-
-				--[[cliScroll:Add("TextLabel", {
-					Text = setData.Desc;
-					ToolTip = setData.Desc;
-					TextXAlignment = "Left";
-					Size = UDim2.new(1, -10, 0, 30);
-					Position = UDim2.new(0, 5, 0, (num+1)*30);
-				})--]]
 
 				num += 1
 			end
@@ -1485,7 +1443,6 @@ return function(data, env)
 		do
 			if settingsData then
 				local settings = settingsData.Settings
-				local ranks = settingsData.Ranks
 				local descs = settingsData.Descs
 				local order = settingsData.Order
 
@@ -1510,7 +1467,7 @@ return function(data, env)
 				})
 
 				local i = 1
-				for truei, setting in order do
+				for _, setting in order do
 					i += 1
 
 					local value = settings[setting]
@@ -1638,8 +1595,7 @@ return function(data, env)
 									Size = UDim2.new(0, 100, 1, 0),
 									Position = UDim2.new(1, -100, 0, 0),
 									BackgroundTransparency = 1,
-									OnToggle = function(enabled, button)
-										--warn("Setting ".. tostring(setting)..": ".. tostring(enabled))
+									OnToggle = function(enabled)
 										Remote.Send("SaveSetSetting", setting, enabled)
 									end,
 								},
@@ -1659,9 +1615,8 @@ return function(data, env)
 									Size = UDim2.new(0, 100, 1, 0),
 									Position = UDim2.new(1, -100, 0, 0),
 									BackgroundTransparency = 1,
-									TextChanged = function(text, enter, new)
+									TextChanged = function(text, enter)
 										if enter then
-											--warn("Setting "..tostring(setting)..": "..tostring(text))
 											Remote.Send("SaveSetSetting", setting, text)
 										end
 									end,
@@ -1677,7 +1632,6 @@ return function(data, env)
 			end
 		end
 
-		gTable = window.gTable
 		window:Ready()
 	end
 end

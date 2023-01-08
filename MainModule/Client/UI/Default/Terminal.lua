@@ -1,7 +1,7 @@
 client = nil
 service = nil
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -65,12 +65,10 @@ return function(data, env)
 					end
 				end
 
-				--scroller:GenerateList(termLines, nil, true)
 				textbox:CaptureFocus()
-				--textbox.Text = "Enter command"
 			end
 
-			wait(0.1)
+			task.wait(0.1)
 		end)
 	end)
 
@@ -80,7 +78,7 @@ return function(data, env)
 	window:Ready()
 
 	local last = 0
-	while gTable.Active and wait(0.5) do
+	while gTable.Active and task.wait(0.5) do
 		if #termLines > last then
 			last = #termLines
 			scroller:GenerateList(termLines, nil, true)

@@ -102,14 +102,11 @@ return function(data, env)
 			v.Text = (data.Sanitize and service.SanitizeString(v.Text)) or v.Text
 
 			if v.Duplicates then
-				v.Text = "(x" .. v.Duplicates .. ") " .. v.Text
+				v.Text = `(x{v.Duplicates }) {v.Text}`
 			end
 
 			if v.Time then
-				v.Text = "["
-					.. (typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time)
-					.. "] "
-					.. v.Text
+				v.Text = `[{(typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time)}] {v.Text}`
 			end
 		end
 
@@ -159,9 +156,9 @@ return function(data, env)
 				pageCounterLabel.Visible = true
 				if currentListTab then
 					local maxPages = math.ceil(#currentListTab / PageSize)
-					pageCounterLabel.Text = "Page: " .. PageCounter .. "/" .. maxPages
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`
 				else
-					pageCounterLabel.Text = "Page: " .. PageCounter
+					pageCounterLabel.Text = `Page: {PageCounter}`
 				end
 
 				if PageCounter > 1 then
@@ -209,10 +206,7 @@ return function(data, env)
 		ScrollBarThickness = 2,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 5, 0, 30),
-		Size = UDim2.new(1, -10, 1, -30), -- UDim2.new(1,-10,1,-60); when paging
-		--LabelProps = {
-		--	TextXAlignment = "Left";
-		--}
+		Size = UDim2.new(1, -10, 1, -30)
 	})
 
 	pageCounterLabel = window:Add("TextLabel", {
@@ -248,7 +242,7 @@ return function(data, env)
 					local maxPages = math.ceil(#currentListTab / PageSize)
 					PageCounter = math.clamp(PageCounter + 1, 1, maxPages)
 
-					pageCounterLabel.Text = "Page: " .. PageCounter .. "/" .. maxPages
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`
 
 					if PageCounter > 1 then
 						lastPageButton.Visible = true
@@ -300,7 +294,7 @@ return function(data, env)
 					local maxPages = math.ceil(#currentListTab / PageSize)
 					PageCounter = math.clamp(PageCounter - 1, 1, maxPages)
 
-					pageCounterLabel.Text = "Page: " .. PageCounter .. "/" .. maxPages
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`
 
 					if PageCounter == 1 then
 						lastPageButton.Visible = false
@@ -352,14 +346,13 @@ return function(data, env)
 		genList(Tab)
 	end)
 
-	--window:SetPosition(UDim2.new(0.25, 0, 0.5, -window.AbsoluteSize.Y/2))
 	gTable = window.gTable
 	window:Ready()
 	currentListTab = Tab
 	genList(Tab)
 
 	if Update and AutoUpdate then
-		while gTable.Active and wait(AutoUpdate) do
+		while gTable.Active and task.wait(AutoUpdate) do
 			window:Refresh()
 		end
 	end

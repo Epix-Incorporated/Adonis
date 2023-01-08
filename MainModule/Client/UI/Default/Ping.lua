@@ -1,6 +1,6 @@
 client, service = nil, nil
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -27,17 +27,15 @@ return function(data, env)
 			BackgroundTransparency = 1,
 			TextSize = 20,
 			Size = UDim2.new(1, 0, 1, 0),
-			Position = UDim2.new(0, 0, 0, 0),
-			--TextScaled = true;
-			--TextWrapped = true;
+			Position = UDim2.new(0, 0, 0, 0)
 		})
 
 		gTable = window.gTable
 		window:Ready()
 
 		repeat
-			label.Text = client.Remote.Ping() .. "ms"
-			wait(2)
+			label.Text = `{client.Remote.Ping()}ms`
+			task.wait(1)
 		until not pinging or not gTable.Active
 	end
 end

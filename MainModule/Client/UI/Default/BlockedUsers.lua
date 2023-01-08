@@ -1,7 +1,7 @@
 client = nil
 service = nil
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -57,13 +57,13 @@ return function(data, env)
 			local name = if type(person) == "number"
 				then service.Players:GetNameFromUserIdAsync(person)
 				elseif person.DisplayName == person.Username then person.Username
-				else string.format("%s (@%s)", person.DisplayName, person.Username)
+				else `{person.DisplayName} (@${person.Username})`
 			local userId = if type(person) == "number" then person else person.Id
 			local plr = service.Players:GetPlayerByUserId(userId)
 			if filter == "" or string.find(name:lower(), filter:lower()) then
 				local entry = scroller:Add("TextLabel", {
-					Text = "         " .. name,
-					ToolTip = "ID: " .. userId,
+					Text = `         {name}`,
+					ToolTip = `ID: {userId}`,
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, -10, 0, 30),
 					Position = UDim2.new(0, 5, 0, (30 * (i - 1))),
@@ -80,7 +80,7 @@ return function(data, env)
 						end,
 					})
 				end
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(
 							userId,
@@ -95,7 +95,7 @@ return function(data, env)
 			end
 		end
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
-		window:SetTitle("Blocked Users (" .. count .. ")")
+		window:SetTitle(`Blocked Users ({count})`)
 	end
 
 	function getData()

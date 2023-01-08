@@ -1,11 +1,10 @@
 client, service = nil, nil
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
 
-	local mouse = service.Players.LocalPlayer:GetMouse()
 	local hold = false
 
 	local window = client.UI.Make("Window", {
@@ -63,17 +62,17 @@ return function(data, env)
 		local pixel = pointer:Clone()
 		pixel.Name = "Pixel"
 		pixel.Parent = canvas
-		pixelCount.Text = "Pixels: " .. tostring(pixelCount.Text:sub(9) + 1)
+		pixelCount.Text = `Pixels: {tostring(pixelCount.Text:sub(9) + 1)}`
 	end)
 
-	local clearButton = topbar:Add("TextButton", {
+	topbar:Add("TextButton", {
 		Size = UDim2.new(0, 70, 1, -8),
 		Position = UDim2.new(1, -75, 0, 4),
 		Text = "Clear",
 		TextXAlignment = "Center",
 		OnClick = function()
 			local children = canvas:GetChildren()
-			for i, child in pairs(children) do
+			for _, child in pairs(children) do
 				if child.Name == "Pixel" then
 					child:Destroy()
 				end
@@ -111,7 +110,7 @@ return function(data, env)
 		},
 	})
 
-	local sizeControl = topbar:Add("TextLabel", {
+	topbar:Add("TextLabel", {
 		Text = "  Size: ",
 		BackgroundTransparency = 0,
 		Size = UDim2.new(0, 70, 1, -8),
@@ -126,7 +125,7 @@ return function(data, env)
 				BackgroundTransparency = 1,
 				TextXAlignment = "Right",
 				ClipsDescendants = true,
-				TextChanged = function(text, enter, new)
+				TextChanged = function(text)
 					if tonumber(text) then
 						if tonumber(text) < 100 then
 							pointer.Size = UDim2.new(0, text, 0, text)

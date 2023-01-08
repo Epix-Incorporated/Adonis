@@ -7,7 +7,7 @@ gTable = nil
 
 --// All global vars will be wiped/replaced except script
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -35,10 +35,6 @@ return function(data, env)
 		Image = client.HelpButtonImage,
 		ImageTransparency = 0.5,
 	})
-
-	--if UI.Get("Chat") then
-	--	toggle.Position = UDim2.new(1, -(45+40),1, -45)
-	--end
 
 	toggle.MouseButton1Down:Connect(function()
 		local found = UI.Get("UserPanel", nil, true)

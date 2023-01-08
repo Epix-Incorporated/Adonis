@@ -1,9 +1,7 @@
 client = nil
 service = nil
 
-return function(data, env)
-	local gTable
-
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -134,12 +132,12 @@ return function(data, env)
 					local fromOffset = UDim2.fromOffset
 
 					local Themes = { "Default" }
-					for i, v in ipairs(Deps.UI:GetChildren()) do
+					for _, v in ipairs(Deps.UI:GetChildren()) do
 						table.insert(Themes, v.Name)
 					end
 
 					local num = 0
-					for i, v in pairs(Themes) do
+					for _, v in pairs(Themes) do
 						local new = themeEnt:Clone()
 						new.Text = v
 						new.Position = fromOffset(0, 20 * num)
@@ -193,17 +191,9 @@ return function(data, env)
 			Text = "Client",
 		})
 
-		local gameTab = tabFrame:NewTab("Game", {
+		tabFrame:NewTab("Game", {
 			Text = "Game",
 		})
-
-		--[[local clientList = clientTab:Add
-		})("ScrollingFrame",{
-
-
-		local gameList = gameTab:Add("ScrollingFrame",{
-
-		})--]]
 
 		for i, v in next, cliSettings do
 			if v.Entry == "Boolean" then
@@ -220,7 +210,7 @@ return function(data, env)
 					Size = UDim2.new(0, 100, 0, 20),
 					Position = UDim2.new(1, -100, 0, 0),
 					Enabled = v.Value,
-					OnToggle = function(enabled, button)
+					OnToggle = function()
 						print("Toggled thinger")
 					end,
 				})
@@ -229,7 +219,6 @@ return function(data, env)
 
 		clientTab:ResizeCanvas(false, true)
 
-		gTable = window.gTable
 		window:Ready()
 	end
 end

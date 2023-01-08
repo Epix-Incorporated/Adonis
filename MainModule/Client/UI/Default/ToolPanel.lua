@@ -80,7 +80,6 @@ return function(data, env)
 					})
 				num += 1
 			end
-			--tab.Parent.Parent.Buttons[tab.Name].Text = string.format("Storage (%d)", num)
 			scroller:ResizeCanvas(false, true, false, false, 5, 0)
 		end
 		generateStorage()
@@ -158,7 +157,6 @@ return function(data, env)
 					})
 				num += 1
 			end
-			--tab.Parent.Parent.Buttons[tab.Name].Text = string.format("Added (%d)", num)
 			if num > 0 then
 				local clrBtn = scroller:Add("TextButton", {
 					Size = UDim2.new(1, -10, 0, 25),
@@ -182,7 +180,7 @@ return function(data, env)
 								end
 							end)
 							client.Remote.Send("ProcessCommand", data.Prefix .. "clearaddedtools")
-							wait(1)
+							task.wait(1)
 							if not refreshed then
 								refreshed = true
 								data = client.Remote.Get("UpdateList", "ToolList")
@@ -198,7 +196,7 @@ return function(data, env)
 		generateAdded()
 	end
 
-	spawn(function()
+	task.spawn(function()
 		local tab = tabFrame:NewTab("Inventories", {
 			Text = "Inventory Monitor",
 		})
@@ -316,7 +314,7 @@ return function(data, env)
 									selected.Name
 								)
 							)
-							wait(2)
+							task.wait(2)
 							if self then
 								self.Text = "Remove All Tools"
 								self.AutoButtonColor = true
@@ -438,7 +436,7 @@ return function(data, env)
 		end)
 	end)
 
-	spawn(function()
+	task.spawn(function()
 		local tab = tabFrame:NewTab("Gear", {
 			Text = "Insert Gear",
 		})
@@ -490,7 +488,7 @@ return function(data, env)
 								currentId
 							)
 						)
-						wait(2)
+						task.wait(2)
 						if self then
 							self.Text = "Spawn"
 							self.AutoButtonColor = true
@@ -581,7 +579,7 @@ return function(data, env)
 			})
 		end
 
-		local submit: TextButton = tab:Add("TextButton", {
+		tab:Add("TextButton", {
 			Text = ">",
 			Size = UDim2.new(0, 25, 0, 25),
 			Position = UDim2.new(1, -25, 0, 0),

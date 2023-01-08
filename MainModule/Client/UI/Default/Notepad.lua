@@ -52,7 +52,8 @@ return function(data, env)
 	for _, font in ipairs(Enum.Font:GetEnumItems()) do
 		table.insert(fonts, font.Name)
 	end
-	local fontSelector = topbar:Add("Dropdown", {
+	
+	topbar:Add("Dropdown", {
 		Size = UDim2.new(0, 140, 1, -8),
 		Position = UDim2.new(0, 5, 0, 4),
 		Text = "Font",
@@ -79,7 +80,7 @@ return function(data, env)
 				BackgroundTransparency = 1,
 				TextXAlignment = "Right",
 				ClipsDescendants = true,
-				TextChanged = function(text, enter, new)
+				TextChanged = function(text)
 					if tonumber(text) then
 						if tonumber(text) < 100 then
 							content.TextSize = text
@@ -95,6 +96,6 @@ return function(data, env)
 	window:Ready()
 
 	content:GetPropertyChangedSignal("Text"):Connect(function()
-		charCount.Text = tostring(#content.Text) .. " characters"
+		charCount.Text = `{tostring(#content.Text)} characters`
 	end)
 end

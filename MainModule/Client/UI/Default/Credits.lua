@@ -1,7 +1,7 @@
 client = nil
 service = nil
 
-return function(data, env)
+return function(_, env)
 	if env then
 		setfenv(1, env)
 	end
@@ -59,7 +59,7 @@ return function(data, env)
 					or (tab.Name == "GitHub" and credit.Text:sub(9, 8 + #filter):lower() == filter:lower())
 				then
 					scroller:Add("TextLabel", {
-						Text = "  " .. credit.Text .. " ",
+						Text = `  {credit.Text} `,
 						ToolTip = credit.Desc,
 						BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 						Size = UDim2.new(1, 0, 0, 26),

@@ -316,14 +316,14 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
-		end,
+		end;
 
 		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
 				return {}
 			end
 			return Admin.GetGroups(p.UserId)
-		end,
+		end;
 
 		GetPlayerGroup = function(p, group)
 			local groups = Admin.GetPlayerGroups(p)
@@ -335,7 +335,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end,
+		end;
 
 		GetGroups = function(uid, updateCache)
 			uid = tonumber(uid)
@@ -378,7 +378,7 @@ return function(Vargs, GetEnv)
 					return cloneTable((existCache and existCache.Groups) or {})
 				end
 			end
-		end,
+		end;
 
 		GetGroupLevel = function(uid, groupId)
 			groupId = tonumber(groupId)
@@ -394,7 +394,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return 0
-		end,
+		end;
 
 		CheckInGroup = function(uid, groupId)
 			local groups = Admin.GetGroups(uid) or {}
@@ -409,7 +409,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end,
+		end;
 
 		IsLax = function(str)
 			for _, v in { "plr", "user", "player", "brickcolor" } do
@@ -419,7 +419,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end,
+		end;
 
 		IsMuted = function(player)
 			local DoCheck = Admin.DoCheck
@@ -442,7 +442,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end,
+		end;
 
 		DoCheck = function(pObj, check, banCheck)
 			local pType = typeof(pObj)
@@ -519,7 +519,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return check == plr
-		end,
+		end;
 
 		LevelToList = function(lvl)
 			lvl = tonumber(lvl)
@@ -533,7 +533,7 @@ return function(Vargs, GetEnv)
 					return list.Users, listName, list
 				end
 			end
-		end,
+		end;
 
 		LevelToListName = function(lvl)
 			if lvl > 999 then
@@ -555,7 +555,7 @@ return function(Vargs, GetEnv)
 					return i
 				end
 			end
-		end,
+		end;
 
 		UpdateCachedLevel = function(p, data)
 			data = data or Core.GetPlayer(p)
@@ -581,7 +581,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return level, rank
-		end,
+		end;
 
 		GetLevel = function(p)
 			local data = Core.GetPlayer(p)
@@ -1438,7 +1438,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return permAllowed, nil
-		end,
+		end;
 
 		UpdateCooldown = function(pDat, cmd)
 			if pDat.Player == "SYSTEM" then
@@ -1492,7 +1492,7 @@ return function(Vargs, GetEnv)
 					crossCooldown_Cache[cmdFullName] = lastUsed
 				end
 			end
-		end,
+		end;
 
 		SearchCommands = function(p, search)
 			local checkPerm = Admin.CheckPermission
@@ -1510,7 +1510,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return tab
-		end,
+		end;
 
 		CheckAuthority = function(p, target, actionName, allowSelf)
 			if p == target then
@@ -1530,6 +1530,6 @@ return function(Vargs, GetEnv)
 
 			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, { p })
 			return false
-		end,
+		end;
 	}
 end

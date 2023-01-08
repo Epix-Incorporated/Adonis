@@ -82,9 +82,9 @@ return function(data, env)
 				or friend.DisplayName:sub(1, #filter):lower() == filter:lower()
 			then
 				local entry = scroller:Add("TextLabel", {
-					Text = "             " .. (if friend.UserName == friend.DisplayName
+					Text = `             {(if friend.UserName == friend.DisplayName
 						then friend.UserName
-						else friend.DisplayName .. " (@" .. friend.UserName .. ")"),
+						else `{friend.DisplayName} (@{friend.UserName})`)}`,
 					ToolTip = "Location: " .. friend.LastLocation,
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, 0, 0, 30),
@@ -92,13 +92,13 @@ return function(data, env)
 					TextXAlignment = "Left",
 				})
 				entry:Add("TextLabel", {
-					Text = " " .. locationTypeToStr(friend.LocationType) .. "  ",
+					Text = ` {locationTypeToStr(friend.LocationType)}  `,
 					BackgroundTransparency = 1,
 					Size = UDim2.new(0, 120, 1, 0),
 					Position = UDim2.new(1, -120, 0, 0),
 					TextXAlignment = "Right",
 				})
-				spawn(function()
+				task.spawn(function()
 					entry:Add("ImageLabel", {
 						Image = service.Players:GetUserThumbnailAsync(
 							friend.VisitorId,
@@ -114,7 +114,7 @@ return function(data, env)
 		end
 
 		scroller:ResizeCanvas(false, true, false, false, 5, 5)
-		window:SetTitle("Online Friends (" .. #friendDictionary .. ")")
+		window:SetTitle(`Online Friends ({#friendDictionary})`)
 	end
 
 	search:GetPropertyChangedSignal("Text"):Connect(generate)
@@ -123,17 +123,17 @@ return function(data, env)
 	window:Ready()
 
 	window
-		:AddTitleButton({
-			Text = "",
-			ToolTip = "Invite",
-			OnClick = function()
-				service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
-			end,
-		})
-		:Add("ImageLabel", {
-			Size = UDim2.new(0, 16, 0, 16),
-			Position = UDim2.new(0, 8, 0, 2),
-			Image = client.MatIcons.Send,
-			BackgroundTransparency = 1,
-		})
+	:AddTitleButton({
+		Text = "",
+		ToolTip = "Invite",
+		OnClick = function()
+			service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
+		end,
+	})
+	:Add("ImageLabel", {
+		Size = UDim2.new(0, 16, 0, 16),
+		Position = UDim2.new(0, 8, 0, 2),
+		Image = client.MatIcons.Send,
+		BackgroundTransparency = 1,
+	})
 end
