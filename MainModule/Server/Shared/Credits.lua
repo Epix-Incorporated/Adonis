@@ -60,8 +60,8 @@ return {
 		{Text = "@GitHub NoUserSet", 		Desc = "GitHub Contributor"};
 		{Text = "@GitHub xvarmkorv2",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Quantify_RBLX",	Desc = "GitHub Contributor"};
-		{Text = "@GitHub xhayper",		Desc = "GitHub Contributor"};
-		{Text = "@GitHub GGshor",		Desc = "GitHub Contributor"};
+		{Text = "@GitHub xhayper",			Desc = "GitHub Contributor"};
+		{Text = "@GitHub GGshor",			Desc = "GitHub Contributor"};
 		{Text = "@GitHub WideManHost",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub autodoorsdev",		Desc = "GitHub Contributor"};
 		{Text = "@GitHub Lethalitics",		Desc = "GitHub Contributor"};

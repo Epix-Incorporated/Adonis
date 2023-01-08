@@ -99,7 +99,7 @@ local oldReq = require
 local Folder = script.Parent
 local oldInstNew = Instance.new
 local isModule = function(module)
-	for ind, modu in pairs(server.Modules) do
+	for _, modu in pairs(server.Modules) do
 		if module == modu then
 			return true
 		end
@@ -114,12 +114,12 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn("::Adonis:: Error: "..tostring(plr)..": "..tostring(err))
+		warn(`::Adonis:: Error: {tostring(plr)}: {tostring(err)}`)
 	end
 
 	if server and server.Logs then
 		server.Logs.AddLog(server.Logs.Errors, {
-			Text = ((err and plr and tostring(plr) ..":") or "").. tostring(err),
+			Text = `{((err and plr and `{tostring(plr)}:`) or "")} {tostring(err)}`,
 			Desc = err,
 			Player = plr
 		})
@@ -181,7 +181,7 @@ end
 
 local function GetEnv(env, repl)
 	local scriptEnv = setmetatable({}, {
-		__index = function(tab, ind)
+		__index = function(_, ind)
 			return (locals[ind] or (env or origEnv)[ind])
 		end;
 
@@ -214,7 +214,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask("CoreModule: ".. tostring(module), plug, GetVargTable(), GetEnv)
+			local ran,err = service.TrackTask(`CoreModule: {tostring(module)}`, plug, GetVargTable(), GetEnv)
 			if not ran then
 				warn("Core Module encountered an error while loading:", module)
 				warn(err)
@@ -223,7 +223,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			end
 		elseif yield then
 			--Pcall(setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran,err = service.TrackTask("Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			local ran,err = service.TrackTask(`Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
@@ -232,7 +232,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			end
 		else
 			--service.Threads.RunTask("PLUGIN: "..tostring(module),setfenv(plug,GetEnv(getfenv(plug), envVars)))
-			local ran, err = service.TrackTask("Thread: Plugin: ".. tostring(module), (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			local ran, err = service.TrackTask(`Thread: Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
@@ -246,14 +246,14 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if server.Logs then
 		server.Logs.AddLog(server.Logs.Script,{
-			Text = "Loaded Module: "..tostring(module);
+			Text = `Loaded Module: {tostring(module)}`;
 			Desc = "Adonis loaded a core module or plugin";
 		})
 	end
 end;
 
 --// WIP
-local function LoadPackage(package, folder, runNow)
+local function LoadPackage(package, folder)
 	--// runNow - Run immediately after unpacking (default behavior is to just unpack (((only needed if loading after startup))))
 	--// runNow currently not used (limitations) so all packages must be present at server startup
 	local function unpackFolder(curFolder, unpackInto)
@@ -272,7 +272,7 @@ local function LoadPackage(package, folder, runNow)
 				end
 			end
 		else
-			warn("Missing parent to unpack into for ".. tostring(curFolder))
+			warn(`Missing parent to unpack into for {tostring(curFolder)}`)
 		end
 	end
 
@@ -288,7 +288,7 @@ local function CleanUp()
 	server.Model.Name = "Adonis_Loader"
 	server.Model.Parent = service.ServerScriptService
 	server.Running = false
-	
+
 	server.Logs.SaveCommandLogs()
 	server.Core.GAME_CLOSING = true;
 	server.Core.SaveAllPlayerData()
@@ -344,13 +344,13 @@ locals = {
 	Pcall = Pcall;
 };
 
-service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
+service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
 	local extra = {...}
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
-				Text = "Cached method doesn't match found method: "..tostring(extra[1]);
-				Desc = "Method: "..tostring(extra[1])
+				Text = `Cached method doesn't match found method: {tostring(extra[1])}`;
+				Desc = `Method: {tostring(extra[1])}`
 			})
 		end
 	elseif eType == "ServerError" then
@@ -487,7 +487,7 @@ end
 
 --// Init
 return service.NewProxy({
-	__call = function(tab, data)
+	__call = function(_, data)
 		local mutex = service.RunService:FindFirstChild("__Adonis_MODULE_MUTEX")
 		if mutex then
 			warn("\n-----------------------------------------------"
@@ -566,7 +566,6 @@ return service.NewProxy({
 		end
 
 		--// Copy client themes, plugins, and shared modules to the client folder
-		local packagesToRunWithPlugins = {}
 		local shared = service.New("Folder", {
 			Name = "Shared";
 			Parent = server.Client;
@@ -585,7 +584,7 @@ return service.NewProxy({
 		end
 
 		for _, pkg in pairs(data.Packages or {}) do
-			LoadPackage(pkg, Folder.Parent, false)
+			LoadPackage(pkg, Folder.Parent)
 		end
 
 		for setting, value in pairs(server.Defaults.Settings) do
@@ -615,7 +614,7 @@ return service.NewProxy({
 				__index = function(self, ind)
 					local materialIcon = MaterialIcons[ind]
 					if materialIcon then
-						self[ind] = "rbxassetid://"..materialIcon
+						self[ind] = `rbxassetid://{materialIcon}`
 						return self[ind]
 					end
 					return ""
@@ -626,8 +625,8 @@ return service.NewProxy({
 
 
 		--// Load services
-		for ind, serv in ipairs(SERVICES_WE_USE) do
-			local temp = service[serv]
+		for _, serv in ipairs(SERVICES_WE_USE) do
+			local _ = service[serv]
 		end
 
 		--// Load core modules
@@ -711,7 +710,7 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn("Loading Complete; Required by "..tostring(data.Loader:GetFullName()))
+			warn(`Loading Complete; Required by {tostring(data.Loader:GetFullName())}`)
 		else
 			warn("Loading Complete; No loader location provided")
 		end

@@ -13,11 +13,9 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local server = Vargs.Server;
-	local service = Vargs.Service;
 
-	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	local Commands, Logs, Remote =
+		server.Commands, server.Logs, server.Remote
 
 	Commands.TestError = {
 		Hidden = true;
@@ -48,7 +46,7 @@ return function(Vargs, GetEnv)
 		Args = {};
 		Description = "Test Big List";
 		AdminLevel = "Creators";
-		Function = function(plr: Player, args: {string})
+		Function = function(plr: Player)
 			local list = {}
 
 			for i = 1, 5000 do
@@ -88,7 +86,7 @@ return function(Vargs, GetEnv)
 		Description = "Remote Test";
 		Hidden = true;
 		AdminLevel = "Creators";
-		Function = function(plr: Player, args: {string})
+		Function = function(plr: Player)
 			local tack = time()
 			print(tack)
 			print(Remote.Get(plr,"Test"))
@@ -100,17 +98,17 @@ return function(Vargs, GetEnv)
 					{{Something = "hi"}};
 				}
 			}
-			local m, ret = Remote.Get(plr, "Test", tab)
+			local _, ret = Remote.Get(plr, "Test", tab)
 			if ret then
 				print(ret)
-				for i,v in next, ret do
-					print(i,v)
-					for i,v in next,v do
-						print(i,v)
-						for i,v in next,v do
-							print(i,v)
-							for i,v in next,v do
-								print(i,v)
+				for i1,v1 in pairs(ret) do
+					print(i1,v1)
+					for i2,v2 in pairs(v1) do
+						print(i2,v2)
+						for i3,v3 in pairs(v2) do
+							print(i3,v3)
+							for i4,v4 in pairs(v3) do
+								print(i4,v4)
 							end
 						end
 					end
@@ -123,7 +121,7 @@ return function(Vargs, GetEnv)
 			})
 			local testColor = Remote.GetGui(plr, "ColorPicker", {Color = Color3.new(1, 1, 1)})
 			print(testColor)
-			local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
+			local ans, _ = Remote.GetGui(plr, "YesNoPrompt", {
 				Icon = server.MatIcons["Bug report"];
 				Question = "Is this a test question?";
 			}), Remote.NewPlayerEvent(plr, "TestEvent", function(...)
@@ -131,8 +129,8 @@ return function(Vargs, GetEnv)
 				print(...)
 				print("THAT'D BE ALL")
 			end)
-			print("PLAYER ANSWER: "..tostring(ans))
-			wait(0.5)
+			print(`PLAYER ANSWER: {tostring(ans)}`)
+			task.wait(0.5)
 			print("SENDING REMOTE EVENT TEST")
 			Remote.Send(plr, "TestEvent", "TestEvent", "hi mom I went thru the interwebs")
 			print("SENT")

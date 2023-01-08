@@ -10,9 +10,8 @@ return function(Vargs, GetEnv)
 	local server = Vargs.Server;
 	local service = Vargs.Service;
 
-	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	local Functions, Commands, Core, HTTP =
+		server.Functions, server.Commands, server.Core, server.HTTP
 
 	--if true then return end --// fully disabled
 	service.TrackTask("Thread: WEBPANEL_JSON_UPDATE", function()
@@ -29,9 +28,7 @@ return function(Vargs, GetEnv)
 			task.wait(5)
 
 			local list = {};
-			local HTTP = service.HttpService;
-			local Encode = Functions.Base64Encode
-			local Decode = Functions.Base64Decode
+			local Encode = Functions.Base64Encode;
 
 			for i,cmd in Commands do
 				table.insert(list, {
@@ -65,8 +62,8 @@ return function(Vargs, GetEnv)
 
 			print("LAUNCHED TO WEBPANEL")
 			print("RESPONSE BELOW")
-			print("SUCCESS: ".. tostring(success).. "\n"..
-				"RESPONSE:\n"..(res and HTTP.JSONEncode(res)) or res)
+			print(`SUCCESS: {tostring(success)}\n`..
+				`RESPONSE:\n{(res and HTTP.JSONEncode(res)) or res}`)
 		end
 	end)
 end

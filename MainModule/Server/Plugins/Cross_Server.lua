@@ -16,8 +16,8 @@ return function(Vargs, GetEnv)
 	local service = Vargs.Service;
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions, server.Commands, server.Admin, server.Anti, server.Core, server.HTTP, server.Logs, server.Remote, server.Process, server.Variables, server.Deps
+	local Functions, Commands, Admin, Core, Logs, Remote, Process, Deps =
+		server.Functions, server.Commands, server.Admin, server.Core, server.Logs, server.Remote, server.Process, server.Deps
 
 	local ServerId = game.JobId;
 	local MsgService = service.MessagingService;
@@ -29,7 +29,7 @@ return function(Vargs, GetEnv)
 
 	--// Cross Server Commands
 	Core.CrossServerCommands = {
-		ServerChat = function(jobId, data)
+		ServerChat = function(_, data)
 			if data then
 				for _, v in ipairs(service.GetPlayers()) do
 					if Admin.GetLevel(v) > 0 then
@@ -39,7 +39,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		Ping = function(jobId, data)
+		Ping = function()
 			Core.CrossServer("Pong", {
 				JobId = game.JobId;
 				NumPlayers = #service.Players:GetPlayers();
@@ -50,19 +50,19 @@ return function(Vargs, GetEnv)
 			service.Events.ServerPingReplyReceived:Fire(jobId, data)
 		end;
 
-		NewRunCommand = function(jobId, plrData, comString)
+		NewRunCommand = function(_, plrData, comString)
 			Process.Command(Functions.GetFakePlayer(plrData), comString, {AdminLevel = plrData.AdminLevel, CrossServer = true})
 		end;
 
 		-- // Unused, unnecessary, at the very least it should use GetEnv, and yes even if GetEnv has an empty table you can still do GetEnv({}).GetEnv().server
 		-- If this ever were to be re-enabled it should use Core.Loadstring at all
-		--[[Loadstring = function(jobId, source) -- // Im honestly not even sure what to think of this one.
+		--[[Loadstring = function(_, source) -- // Im honestly not even sure what to think of this one.
 			Core.Loadstring(source, GetEnv{})()
 		end;]]
 
-		Message = function(jobId, fromPlayer, message, duration)
+		Message = function(_, fromPlayer, message, duration)
 			server.Functions.Message(
-				"Global Message from " .. (fromPlayer or "[Unknown]"),
+				`Global Message from {(fromPlayer or "[Unknown]")}`,
 				message,
 				service.GetPlayers(),
 				true,
@@ -70,21 +70,21 @@ return function(Vargs, GetEnv)
 			)
 		end;
 
-		RemovePlayer = function(jobId, name, BanMessage, reason)
+		RemovePlayer = function(_, name, BanMessage, reason)
 			--// probably should move this to userid
 			local player =	service.Players:FindFirstChild(name)
 			if player then
-				player:Kick(string.format("%s | Reason: %s", BanMessage, reason))
+				player:Kick(`{BanMessage} | Reason: {reason}`)
 			end
 		end;
 
-		DataStoreUpdate = function(jobId, key, data)
+		DataStoreUpdate = function(_, key, data)
 			if key and data then
 				Routine(Core.LoadData, key, data)
 			end
 		end;
 
-		UpdateSetting = function(jobId, setting, newValue)
+		UpdateSetting = function(_, setting, newValue)
 			if type(setting) == "string" then
 				Settings[setting] = if newValue == nil then require(Deps.DefaultSettings).Settings[setting] else newValue
 			end
@@ -94,11 +94,11 @@ return function(Vargs, GetEnv)
 			Core.LoadData(key, dat, jobId)
 		end;
 
-		Event = function(jobId, eventId, ...)
-			service.Events["CRSSRV:".. eventId]:Fire(...)
+		Event = function(_, eventId, ...)
+			service.Events[`CRSSRV:{eventId}`]:Fire(...)
 		end;
 
-		CrossServerVote = function(jobId, data)
+		CrossServerVote = function(_, data)
 			local question = data.Question
 			local answers = data.Answers
 			local voteKey = data.VoteKey
@@ -106,7 +106,7 @@ return function(Vargs, GetEnv)
 			local start = os.time()
 
 			Logs.AddLog("Commands", {
-				Text = "[CRS_SERVER] Vote initiated by "..data.Initiator,
+				Text = `[CRS_SERVER] Vote initiated by {data.Initiator}`,
 				Desc = question
 			})
 
@@ -120,10 +120,6 @@ return function(Vargs, GetEnv)
 			end
 		end;
 	}
-
-	local function CrossEvent(eventId)
-		return service.Events["CRSSRV".. eventId]
-	end
 
 	--// User Commands
 	Commands.CrossServer = {
@@ -158,9 +154,9 @@ return function(Vargs, GetEnv)
 		AdminLevel = "Admins";
 		CrossServerDenied = true;
 		IsCrossServer = true;
-		Function = function(plr: Player, args: {string})
+		Function = function(plr: Player)
 			local disced = false
-			local updateKey = "SERVERPING_".. math.random()
+			local updateKey = `SERVERPING_{math.random()}`
 			local replyList = {}
 			local listener = service.Events.ServerPingReplyReceived:Connect(function(jobId, data)
 				if jobId then
@@ -177,13 +173,13 @@ return function(Vargs, GetEnv)
 					totalServers += 1
 					totalPlayers = totalPlayers + (data.NumPlayers or 0)
 					table.insert(tab, {
-						Text = "Players: ".. (data.NumPlayers or 0) .. " | JobId: ".. jobId;
-						Desc = "JobId: ".. jobId;
+						Text = `Players: {(data.NumPlayers or 0) } | JobId: {jobId}`;
+						Desc = `JobId: {jobId}`;
 					})
 				end
 
 				table.insert(tab, 1, {
-					Text = "Total Servers: ".. totalServers .." | Total Players: ".. totalPlayers;
+					Text = `Total Servers: {totalServers} | Total Players: {totalPlayers}`;
 					Desc = "The total number of servers and players";
 				})
 
@@ -202,10 +198,6 @@ return function(Vargs, GetEnv)
 				doDisconnect()
 				error("CrossServer handler not ready (please try again later)")
 			else
-				local closeEvent = Remote.NewPlayerEvent(plr,updateKey, function()
-					doDisconnect()
-				end)
-
 				Logs.TempUpdaters[updateKey] = listUpdate;
 
 				Remote.MakeGui(plr, "List", {
@@ -213,11 +205,11 @@ return function(Vargs, GetEnv)
 					Tab = listUpdate(),
 					Update = "TempUpdate",
 					UpdateArgs = {{UpdateKey = updateKey}},
-					OnClose = "client.Remote.PlayerEvent('".. updateKey .."')",
+					OnClose = `client.Remote.PlayerEvent('{updateKey}')`,
 					AutoUpdate = 1,
 				})
 
-				delay(500, doDisconnect)
+				task.delay(500, doDisconnect)
 			end
 		end;
 	};
@@ -237,7 +229,7 @@ return function(Vargs, GetEnv)
 			local answers = args[1]
 			local anstab = {}
 			local responses = {}
-			local voteKey = "ADONISVOTE".. math.random()
+			local voteKey = `ADONISVOTE{math.random()}`
 			local startTime = os.time()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
@@ -248,9 +240,9 @@ return function(Vargs, GetEnv)
 				local results = {}
 				local total = #responses
 				local tab = {
-					"Question: "..question;
-					"Total Responses: "..total;
-					"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
+					`Question: {question}`;
+					`Total Responses: {total}`;
+					`Time Left: {math.max(0, 120 - (os.time()-startTime))}`;
 					--"Didn't Vote: "..#players-total;
 				}
 
@@ -271,8 +263,8 @@ return function(Vargs, GetEnv)
 					end
 
 					table.insert(tab, {
-						Text = ans.." | "..percent.."% - "..num.."/"..total,
-						Desc = "Number: "..num.."/"..total.." | Percent: "..percent
+						Text = `{ans} | {percent}% - {num}/{total}`,
+						Desc = `Number: {num}/{total} | Percent: {percent}`
 					})
 				end
 
@@ -307,7 +299,7 @@ return function(Vargs, GetEnv)
 				AutoUpdate = 1,
 			})
 
-			delay(120, function()
+			task.delay(120, function()
 				Logs.TempUpdaters[voteKey] = nil
 				msgSub:Disconnect()
 			end)
@@ -322,7 +314,7 @@ return function(Vargs, GetEnv)
 			counter += 1
 			if not lastTick then lastTick = os.time() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60
+				repeat task.wait() until os.time()-lastTick > 60
 			end
 
 			if os.time()-lastTick > 60 then
@@ -339,13 +331,13 @@ return function(Vargs, GetEnv)
 
 	Process.CrossServerMessage = function(msg)
 		local data = msg.Data
-		assert(data and type(data) == "table", "CrossServer: Invalid data type ".. type(data))
+		assert(data and type(data) == "table", `CrossServer: Invalid data type {type(data)}`)
 
 		local serverId, command = data[1], data[2]
 
 		Logs:AddLog("Script", {
-			Text = "Cross-server message received: "..(command or "[NO COMMAND]");
-			Desc = "Origin JobId: "..(serverId or "[MISSING]")
+			Text = `Cross-server message received: {command or "[NO COMMAND]"}`;
+			Desc = `Origin JobId: {(serverId or "[MISSING]")}`
 		})
 
 		if not (serverId and command) then return end
