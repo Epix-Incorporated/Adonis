@@ -244,9 +244,7 @@ return function(Vargs, env)
 							Message = "You are a head admin. Click to view commands.",
 							Time = 10,
 							Icon = "rbxassetid://7536784790",
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 						Functions.Hint(service.FormatPlayer(v) .. " is now a permanent head admin", { plr })
 					else
@@ -276,9 +274,7 @@ return function(Vargs, env)
 							Message = "You are a temp head admin. Click to view commands.",
 							Time = 10,
 							Icon = "rbxassetid://7536784790",
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 						Functions.Hint(service.FormatPlayer(v) .. " is now a temporary head admin", { plr })
 					else

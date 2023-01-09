@@ -203,9 +203,7 @@ return function(Vargs, env)
 							Message = "You are a temp administrator. Click to view commands.",
 							Time = 10,
 							Icon = server.MatIcons["Admin panel settings"],
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 						Functions.Hint(service.FormatPlayer(v, true) .. " is now a temporary admin", { plr })
 					else
@@ -239,9 +237,7 @@ return function(Vargs, env)
 							Message = "You are an administrator. Click to view commands.",
 							Time = 10,
 							Icon = server.MatIcons["Admin panel settings"],
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 						Functions.Hint(service.FormatPlayer(v, true) .. " is now a permanent admin", { plr })
 					else

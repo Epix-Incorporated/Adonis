@@ -159,12 +159,12 @@ local logError = function(plr, err)
 	end
 
 	if server.Core and server.Core.DebugMode then
-		warn(`::Adonis:: Error: {tostring(plr)}: {tostring(err)}`)
+		warn(`::Adonis:: Error: {plr}: {err}`)
 	end
 
 	if server and server.Logs then
 		server.Logs.AddLog(server.Logs.Errors, {
-			Text = `{((err and plr and `{tostring(plr)}:`) or "")} {tostring(err)}`,
+			Text = `{((err and plr and `{plr}:`) or "")} {err}`,
 			Desc = err,
 			Player = plr,
 		})
@@ -248,7 +248,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran, err = service.TrackTask(`CoreModule: {tostring(module)}`, plug, GetVargTable(), GetEnv)
+			local ran, err = service.TrackTask(`CoreModule: {module}`, plug, GetVargTable(), GetEnv)
 			if not ran then
 				warn("Core Module encountered an error while loading:", module)
 				warn(err)
@@ -257,7 +257,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			end
 		elseif yield then
 			local ran, err = service.TrackTask(
-				`Plugin: {tostring(module)}`,
+				`Plugin: {module}`,
 				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				GetVargTable()
 			)
@@ -269,7 +269,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 			end
 		else
 			local ran, err = service.TrackTask(
-				`Thread: Plugin: {tostring(module)}`,
+				`Thread: Plugin: {module}`,
 				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
 				GetVargTable()
 			)
@@ -286,7 +286,7 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 
 	if server.Logs then
 		server.Logs.AddLog(server.Logs.Script, {
-			Text = `Loaded Module: {tostring(module)}`,
+			Text = `Loaded Module: {module}`,
 			Desc = "Adonis loaded a core module or plugin",
 		})
 	end
@@ -310,7 +310,7 @@ local function LoadPackage(package, folder)
 				end
 			end
 		else
-			warn(`Missing parent to unpack into for {tostring(curFolder)}`)
+			warn(`Missing parent to unpack into for {curFolder}`)
 		end
 	end
 
@@ -376,8 +376,8 @@ service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
-				Text = `Cached method doesn't match found method: {tostring(extra[1])}`,
-				Desc = `Method: {tostring(extra[1])}`,
+				Text = `Cached method doesn't match found method: {extra[1]}`,
+				Desc = `Method: {extra[1]}`,
 			})
 		end
 	elseif eType == "ServerError" then
@@ -736,7 +736,7 @@ return service.NewProxy({
 		end
 
 		if data.Loader then
-			warn(`Loading Complete; Required by {tostring(data.Loader:GetFullName())}`)
+			warn(`Loading Complete; Required by {data.Loader:GetFullName()}`)
 		else
 			warn("Loading Complete; No loader location provided")
 		end

@@ -22,34 +22,6 @@ return function(Vargs, env)
 	local Routine = env.Routine
 
 	return {
-		--[[
-		--// Unfortunately not viable
-		Reboot = {
-			Prefix = ":";
-			Commands = {"rebootadonis", "reloadadonis"};
-			Args = {};
-			Description = "Attempts to force Adonis to reload";
-			AdminLevel = "Admins";
-			Function = function(plr: Player, args: {string}, data: {any})
-				local rebootHandler = server.Deps.RebootHandler:Clone();
-
-				if server.Runner then
-					rebootHandler.mParent.Value = service.UnWrap(server.ModelParent);
-					rebootHandler.Dropper.Value = service.UnWrap(server.Dropper);
-					rebootHandler.Runner.Value = service.UnWrap(server.Runner);
-					rebootHandler.Model.Value = service.UnWrap(server.Model);
-					rebootHandler.Mode.Value = "REBOOT";
-					task.wait(0.03)
-					rebootHandler.Parent = service.ServerScriptService;
-					rebootHandler.Disabled = false;
-					task.wait(0.03)
-					server.CleanUp();
-				else
-					error("Unable to reload: Runner missing");
-				end
-			end;
-		};--]]
-
 		SetRank = {
 			Prefix = Settings.Prefix,
 			Commands = { "setrank", "permrank", "permsetrank" },
@@ -137,11 +109,7 @@ return function(Vargs, env)
 
 				assert(
 					newLevel < senderLevel,
-					string.format(
-						"Rank level (%s) cannot be equal to or above your own level (%s)",
-						newLevel,
-						senderLevel
-					)
+					`Rank level ({newLevel}) cannot be equal to or above your own level ({senderLevel})`
 				)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -185,7 +153,7 @@ return function(Vargs, env)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if senderLevel > Admin.GetLevel(v) then
-						Admin.SetLevel(v, newLevel) --, args[3] == "true")
+						Admin.SetLevel(v, newLevel)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification",
 							Message = `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`,
@@ -228,16 +196,12 @@ return function(Vargs, env)
 							if senderLevel > targLevel then
 								Admin.RemoveAdmin(v, temp)
 								Functions.Hint(
-									string.format(
-										"Removed %s from rank %s",
-										service.FormatPlayer(v, true),
-										targRank or "[unknown rank]"
-									),
+									`Removed {service.FormatPlayer(v, true)} from rank {targRank or "[unknown rank]"}`,
 									{ plr }
 								)
 								Remote.MakeGui(v, "Notification", {
 									Title = "Notification",
-									Message = string.format("You are no longer a(n) %s", targRank or "admin"),
+									Message = `You are no longer a(n) {targRank or "admin"}`,
 									Icon = server.MatIcons["Remove moderator"],
 									Time = 10,
 								})
@@ -350,14 +314,12 @@ return function(Vargs, env)
 							Message = "You are a temp moderator. Click to view commands.",
 							Icon = server.MatIcons.Shield,
 							Time = 10,
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
-						Functions.Hint(service.FormatPlayer(v, true) .. " is now a temp moderator", { plr })
+						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temp moderator`, { plr })
 					else
 						Functions.Hint(
-							service.FormatPlayer(v, true) .. " is already the same admin level as you or higher",
+							`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`,
 							{ plr }
 						)
 					end
@@ -386,14 +348,12 @@ return function(Vargs, env)
 							Message = "You are a moderator. Click to view commands.",
 							Icon = server.MatIcons.Shield,
 							Time = 10,
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
-						Functions.Hint(service.FormatPlayer(v, true) .. " is now a moderator", { plr })
+						Functions.Hint(`{service.FormatPlayer(v, true)} is now a moderator`, { plr })
 					else
 						Functions.Hint(
-							service.FormatPlayer(v, true) .. " is already the same admin level as you or higher",
+							`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`,
 							{ plr }
 						)
 					end
@@ -414,7 +374,7 @@ return function(Vargs, env)
 						v,
 						"Function",
 						"ChatMessage",
-						string.format("[%s] %s", Settings.SystemTitle, service.Filter(args[1], plr, v)),
+						`[{Settings.SystemTitle}] {service.Filter(args[1], plr, v)}`,
 						Color3.fromRGB(255, 64, 77)
 					)
 				end
@@ -435,8 +395,8 @@ return function(Vargs, env)
 						v.Time ..= " [RESTART]"
 					end
 					tab[i] = {
-						Text = v.Time .. ": " .. v.User,
-						Desc = "Reason: " .. v.Reason,
+						Text = `{v.Time}: {v.User}`,
+						Desc = `Reason: {v.Reason}`,
 					}
 				end
 				return tab
@@ -492,8 +452,8 @@ return function(Vargs, env)
 						})
 						if #plrs > 0 then
 							for _, v in plrs do
-								table.insert(Variables.Whitelist.Lists.Settings, v.Name .. ":" .. v.UserId)
-								Functions.Hint("Added " .. service.FormatPlayer(v) .. " to the whitelist", { plr })
+								table.insert(Variables.Whitelist.Lists.Settings, `{v.Name}: {v.UserId}`)
+								Functions.Hint(`Added {service.FormatPlayer(v)} to the whitelist`, { plr })
 							end
 						else
 							table.insert(Variables.Whitelist.Lists.Settings, args[2])
@@ -506,7 +466,7 @@ return function(Vargs, env)
 						for i, v in Variables.Whitelist.Lists.Settings do
 							if string.sub(string.lower(v), 1, #args[2]) == string.lower(args[2]) then
 								table.remove(Variables.Whitelist.Lists.Settings, i)
-								Functions.Hint("Removed " .. tostring(v) .. " from the whitelist", { plr })
+								Functions.Hint(`Removed {v} from the whitelist`, { plr })
 							end
 						end
 					else
@@ -515,9 +475,9 @@ return function(Vargs, env)
 				elseif sub == "list" then
 					local Tab = {}
 					for Key, List in Variables.Whitelist.Lists do
-						local Prefix = Key == "Settings" and "" or "[" .. Key .. "] "
+						local Prefix = Key == "Settings" and "" or `[{Key}] `
 						for _, User in List do
-							table.insert(Tab, { Text = Prefix .. User, Desc = User })
+							table.insert(Tab, { Text = `{Prefix}{User}`, Desc = User })
 						end
 					end
 					Remote.MakeGui(plr, "List", { Title = "Whitelist List", Tab = Tab })
@@ -645,10 +605,7 @@ return function(Vargs, env)
 					then true
 					elseif args[3]:lower() == "off" or args[3]:lower() == "false" then false
 					else nil
-				assert(
-					enable ~= nil,
-					"Invalid state '" .. args[3] .. "'; please supply 'true' or 'false' (argument #3)"
-				)
+				assert(enable ~= nil, `Invalid state '{args[3]}'; please supply 'true' or 'false' (argument #3)`)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if string.lower(args[3]) == "on" or string.lower(args[3]) == "true" then
 						Remote.Send(v, "Function", "SetCoreGuiEnabled", args[2], true)
@@ -721,7 +678,7 @@ return function(Vargs, env)
 				}, true)
 				do
 					service.New("StringValue", {
-						Name = "__ADONIS_VARIABLES_" .. Variables.CodeName,
+						Name = `__ADONIS_VARIABLES_{Variables.CodeName}`,
 						Parent = F3X,
 					})
 
@@ -784,9 +741,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix,
 			Commands = { "addtool", "savetool", "maketool" },
 			Args = { "optional player", "optional new tool name" },
-			Description = "Saves the equipped tool to the storage so that it can be inserted using "
-				.. Settings.Prefix
-				.. "give",
+			Description = `Saves the equipped tool to the storage so that it can be inserted using {Settings.Prefix}give`,
 			AdminLevel = "Admins",
 			Function = function(plr: Player, args: { string })
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -798,7 +753,7 @@ return function(Vargs, env)
 						end
 						tool.Parent = service.UnWrap(Settings.Storage)
 						Variables.SavedTools[tool] = service.FormatPlayer(plr)
-						Functions.Hint("Added tool: " .. tool.Name, { plr })
+						Functions.Hint(`Added tool: {tool.Name}`, { plr })
 					elseif not args[1] then
 						error("You must have an equipped tool to add to the storage.")
 					end
@@ -810,7 +765,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix,
 			Commands = { "clraddedtools", "clearaddedtools", "clearsavedtools", "clrsavedtools" },
 			Args = {},
-			Description = "Removes any tools in the storage added using " .. Settings.Prefix .. "savetool",
+			Description = `Removes any tools in the storage added using {Settings.Prefix}savetool`,
 			AdminLevel = "Admins",
 			Function = function(plr: Player, args: { string })
 				local count = 0
@@ -819,7 +774,7 @@ return function(Vargs, env)
 					tool:Destroy()
 				end
 				table.clear(Variables.SavedTools)
-				Functions.Hint(string.format("Cleared %d saved tool%s.", count, count == 1 and "" or "s"), { plr })
+				Functions.Hint(`Cleared {count} saved tool{count == 1 and "" or "s"}.`, { plr })
 			end,
 		},
 
@@ -840,7 +795,7 @@ return function(Vargs, env)
 					AutoAssignable = false,
 				})
 				if Settings.CommandFeedback then
-					Functions.Hint(string.format("Created new team '%s' (%s)", teamName, teamColor.Name), { plr })
+					Functions.Hint(`Created new team '{teamName}' ({teamColor.Name})`, { plr })
 				end
 			end,
 		},
@@ -854,15 +809,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: { string })
 				for _, v in service.Teams:GetTeams() do
 					if string.sub(string.lower(v.Name), 1, #args[1]) == string.lower(args[1]) then
-						local ans = Remote.GetGui(
-							plr,
-							"YesNoPrompt",
-							{ Question = "Remove team: '" .. tostring(v.Name) .. "'?" }
-						)
+						local ans =
+							Remote.GetGui(plr, "YesNoPrompt", { Question = `Remove team: '{tostring(v.Name)}'?` })
 
 						if ans == "Yes" then
 							v:Destroy()
-							return Functions.Hint("Removed team " .. v.Name, { plr })
+							return Functions.Hint(`Removed team {v.Name}`, { plr })
 						else
 							return Functions.Hint("Cancelled team removal operation", { plr })
 						end
@@ -920,13 +872,13 @@ return function(Vargs, env)
 
 				task.wait()
 
-				Admin.RunCommand(Settings.Prefix .. "respawn", "all")
+				Admin.RunCommand(`{Settings.Prefix}respawn`, "all")
 				Variables.RestoringMap = false
 				Functions.Hint("Map Restore Complete.", service.Players:GetPlayers())
 
 				Logs:AddLog("Script", {
 					Text = "Map Restoration Complete",
-					Desc = plrName .. " has restored the map.",
+					Desc = `{plrName} has restored the map.`,
 				})
 			end,
 		},
@@ -957,8 +909,6 @@ return function(Vargs, env)
 
 				if string.lower(class) == "script" or string.lower(class) == "s" then
 					class = "Script"
-					--elseif string.lower(class) == "localscript" or string.lower(class) == "ls" then
-					--	class = "LocalScript"
 				else
 					class = "LocalScript"
 				end
@@ -985,9 +935,9 @@ return function(Vargs, env)
 					}
 
 					if args[4] then
-						Functions.Hint("Created " .. class .. " " .. name .. " and appended text", { plr })
+						Functions.Hint(`Created {class} {name} and appended text`, { plr })
 					else
-						Functions.Hint("Created " .. class .. " " .. name, { plr })
+						Functions.Hint(`Created {class} {name}`, { plr })
 					end
 				elseif action == "edit" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
@@ -996,18 +946,15 @@ return function(Vargs, env)
 						local tab = Core.GetScript(scr)
 						if scr and tab then
 							sb[class][name].Event = plr.Chatted:Connect(function(msg)
-								if string.sub(msg, 1, #(Settings.Prefix .. "sb")) ~= Settings.Prefix .. "sb" then
-									tab.Source ..= "\n" .. msg
-									Functions.Hint("Appended message to " .. class .. " " .. name, { plr })
+								if string.sub(msg, 1, #`{Settings.Prefix}sb`) ~= `{Settings.Prefix}sb` then
+									tab.Source ..= `\n{msg}`
+									Functions.Hint(`Appended message to {class} {name}`, { plr })
 								end
 							end)
-							Functions.Hint(
-								"Now editing " .. class .. " " .. name .. "; Chats will be appended",
-								{ plr }
-							)
+							Functions.Hint(`Now editing {class} {name}; Chats will be appended`, { plr })
 						end
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "close" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
@@ -1017,10 +964,10 @@ return function(Vargs, env)
 						if sb[class][name].Event then
 							sb[class][name].Event:Disconnect()
 							sb[class][name].Event = nil
-							Functions.Hint("No longer editing " .. class .. " " .. name, { plr })
+							Functions.Hint(`No longer editing {class} {name}`, { plr })
 						end
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "clear" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
@@ -1028,9 +975,9 @@ return function(Vargs, env)
 					local tab = Core.GetScript(scr)
 					if scr and tab then
 						tab.Source = " "
-						Functions.Hint("Cleared " .. class .. " " .. name, { plr })
+						Functions.Hint(`Cleared {class} {name}`, { plr })
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "remove" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
@@ -1045,7 +992,7 @@ return function(Vargs, env)
 						end
 						sb[class][name] = nil
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "append" then
 					assert(args[1] and args[2] and args[3] and args[4], "Missing arguments")
@@ -1053,11 +1000,11 @@ return function(Vargs, env)
 						local scr = sb[class][name].Script
 						local tab = Core.GetScript(scr)
 						if scr and tab then
-							tab.Source ..= "\n" .. args[4]
-							Functions.Hint("Appended message to " .. class .. " " .. name, { plr })
+							tab.Source ..= `\n{args[4]}`
+							Functions.Hint(`Appended message to {class} {name}`, { plr })
 						end
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "run" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
@@ -1070,32 +1017,26 @@ return function(Vargs, env)
 						sb[class][name].Script.Disabled = true
 						task.wait(0.03)
 						sb[class][name].Script.Disabled = false
-						Functions.Hint("Running " .. class .. " " .. name, { plr })
+						Functions.Hint(`Running {class} {name}`, { plr })
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "stop" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
 					if sb[class][name] then
 						sb[class][name].Script.Disabled = true
-						Functions.Hint("Stopped " .. class .. " " .. name, { plr })
+						Functions.Hint(`Stopped {class} {name}`, { plr })
 					else
-						error(class .. " " .. name .. " not found!")
+						error(`{class} {name} not found!`)
 					end
 				elseif action == "list" then
 					local tab = {}
 					for i, v in sb.Script do
-						table.insert(
-							tab,
-							{ Text = "Script: " .. tostring(i), Desc = "Running: " .. tostring(v.Script.Disabled) }
-						)
+						table.insert(tab, { Text = `Script: {i}`, Desc = `Running: {v.Script.Disabled}` })
 					end
 
 					for i, v in sb.LocalScript do
-						table.insert(
-							tab,
-							{ Text = "LocalScript: " .. tostring(i), Desc = "Running: " .. tostring(v.Script.Disabled) }
-						)
+						table.insert(tab, { Text = `LocalScript: {i}`, Desc = `Running: {v.Script.Disabled}` })
 					end
 
 					Remote.MakeGui(plr, "List", { Title = "SB Scripts", Table = tab })
@@ -1115,22 +1056,10 @@ return function(Vargs, env)
 				assert(Settings.CodeExecution, "CodeExecution config must be enabled for this command to work")
 				assert(args[1], "Missing Script code (argument #2)")
 
-				--[[Remote.RemoveGui(plr, "Prompt_MakeScript")
-				if
-					plr == false
-					or Remote.GetGui(plr, "YesNoPrompt", {
-						Name = "Prompt_MakeScript";
-						Size = {250, 200},
-						Title = "Script Confirmation";
-						Icon = server.MatIcons.Warning;
-						Question = "Are you sure you want to execute the code directly on the server? This action is irreversible and may potentially be dangerous; only run scripts that you trust!";
-						Delay = 2;
-					}) == "Yes"
-				then]]
 				local bytecode = Core.Bytecode(args[1])
 				assert(
 					string.find(bytecode, "\27Lua"),
-					"Script unable to be created; " .. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")
+					`Script unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`
 				)
 
 				local cl = Core.NewScript("Script", args[1], true)
@@ -1139,9 +1068,6 @@ return function(Vargs, env)
 				task.wait()
 				cl.Disabled = false
 				Functions.Hint("Ran Script", { plr })
-				--[[else
-					Functions.Hint("Operation cancelled", {plr})
-				end]]
 			end,
 		},
 
@@ -1158,12 +1084,12 @@ return function(Vargs, env)
 				local bytecode = Core.Bytecode(args[1])
 				assert(
 					string.find(bytecode, "\27Lua"),
-					"LocalScript unable to be created; " .. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")
+					`LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`
 				)
 
 				local cl = Core.NewScript(
 					"LocalScript",
-					"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; " .. args[1],
+					`script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[1]}`,
 					true
 				)
 				cl.Name = "[Adonis] LocalScript"
@@ -1188,12 +1114,12 @@ return function(Vargs, env)
 				local bytecode = Core.Bytecode(args[2])
 				assert(
 					string.find(bytecode, "\27Lua"),
-					"LocalScript unable to be created; " .. string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")
+					`LocalScript unable to be created; {string.gsub(bytecode, "Loadstring%.LuaX:%d+:", "")}`
 				)
 
 				local new = Core.NewScript(
 					"LocalScript",
-					"script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; " .. args[2],
+					`script.Parent = game:GetService('Players').LocalPlayer.PlayerScripts; {args[2]}`,
 					true
 				)
 				for i, v in service.GetPlayers(plr, args[1]) do
@@ -1203,7 +1129,7 @@ return function(Vargs, env)
 					cl.Parent = v:FindFirstChildOfClass("Backpack")
 					task.wait()
 					cl.Disabled = false
-					Functions.Hint("Ran LocalScript on " .. service.FormatPlayer(v), { plr })
+					Functions.Hint(`Ran LocalScript on {service.FormatPlayer(v)}`, { plr })
 				end
 			end,
 		},
@@ -1223,7 +1149,7 @@ return function(Vargs, env)
 						PlayerData.AdminNotes = {}
 					end
 					table.insert(PlayerData.AdminNotes, args[2])
-					Functions.Hint("Added " .. service.FormatPlayer(v) .. " Note " .. args[2], { plr })
+					Functions.Hint(`Added {service.FormatPlayer(v)} Note {args[2]}`, { plr })
 					Core.SavePlayer(v, PlayerData)
 				end
 			end,
@@ -1245,12 +1171,12 @@ return function(Vargs, env)
 						else
 							for k, m in PlayerData.AdminNotes do
 								if string.sub(string.lower(m), 1, #args[2]) == string.lower(args[2]) then
-									Functions.Hint("Removed " .. service.FormatPlayer(v) .. " Note " .. m, { plr })
+									Functions.Hint(`Removed {service.FormatPlayer(v)} Note {m}`, { plr })
 									table.remove(PlayerData.AdminNotes, k)
 								end
 							end
 						end
-						Core.SavePlayer(v, PlayerData) --v:SaveInstance("Admin Notes", notes)
+						Core.SavePlayer(v, PlayerData)
 					end
 				end
 			end,
@@ -1267,7 +1193,7 @@ return function(Vargs, env)
 					local PlayerData = Core.GetPlayer(v)
 					local notes = PlayerData.AdminNotes
 					if not notes then
-						Functions.Hint("No notes found on " .. service.FormatPlayer(v), { plr })
+						Functions.Hint(`No notes found on {service.FormatPlayer(v)}`, { plr })
 						continue
 					end
 					Remote.MakeGui(plr, "List", { Title = service.FormatPlayer(v), Table = notes })
@@ -1285,16 +1211,16 @@ return function(Vargs, env)
 				local num = tonumber(args[2]) or 9999
 
 				for _, v in service.GetPlayers(plr, args[1]) do
-					service.StopLoop(v.UserId .. "LOOPKILL")
+					service.StopLoop(`{v.UserId}LOOPKILL`)
 					local count = 0
-					Routine(service.StartLoop, v.UserId .. "LOOPKILL", 3, function()
+					Routine(service.StartLoop, `{v.UserId}LOOPKILL`, 3, function()
 						local hum = v.Character and v.Character:FindFirstChildOfClass("Humanoid")
 						if hum and hum.Health > 0 then
 							hum.Health = 0
 							count += 1
 						end
 						if count == num then
-							service.StopLoop(v.UserId .. "LOOPKILL")
+							service.StopLoop(`{v.UserId}LOOPKILL`)
 						end
 					end)
 				end
@@ -1309,7 +1235,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins",
 			Function = function(plr: Player, args: { string })
 				for _, v in service.GetPlayers(plr, args[1]) do
-					service.StopLoop(v.UserId .. "LOOPKILL")
+					service.StopLoop(`{v.UserId}LOOPKILL`)
 				end
 			end,
 		},
@@ -1469,7 +1395,7 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "server-ban", false) then
 						Admin.AddBan(v, reason, false, plr)
-						Functions.Hint("Server-banned " .. service.FormatPlayer(v, true), { plr })
+						Functions.Hint(`Server-banned {service.FormatPlayer(v, true)}`, { plr })
 					end
 				end
 			end,
@@ -1489,9 +1415,9 @@ return function(Vargs, env)
 					})
 				do
 					if Admin.RemoveBan(v.Name) then
-						Functions.Hint(service.FormatPlayer(v, true) .. " has been unbanned", { plr })
+						Functions.Hint(`{service.FormatPlayer(v, true)} has been unbanned`, { plr })
 					else
-						Functions.Hint(service.FormatPlayer(v, true) .. " is not currently banned", { plr })
+						Functions.Hint(`{service.FormatPlayer(v, true)} is not currently banned`, { plr })
 					end
 				end
 			end,
@@ -1516,8 +1442,7 @@ return function(Vargs, env)
 				local list = trello.getListObj(lists, { "Banlist", "Ban List", "Bans" })
 
 				local level = data.PlayerData.Level
-				local reason =
-					string.format("Administrator: %s\nReason: %s", service.FormatPlayer(plr), (args[2] or "N/A"))
+				local reason = `Administrator: {service.FormatPlayer(plr)}\nReason: {(args[2] or "N/A")}`
 
 				for _, v in
 					service.GetPlayers(plr, args[1], {
@@ -1526,20 +1451,15 @@ return function(Vargs, env)
 					})
 				do
 					if level > Admin.GetLevel(v) then
-						trello.makeCard(
-							list.id,
-							string.format("%s:%d", (v and tostring(v.Name) or tostring(v)), v.UserId),
-							reason
-						)
+						trello.makeCard(list.id, `{(v and tostring(v.Name) or tostring(v))}:{v.UserId}`, reason)
 
-						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
 						pcall(function()
 							v:Kick(reason)
 						end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
 							Icon = server.MatIcons.Gavel,
-							Message = "Trello-banned " .. service.FormatPlayer(v, true),
+							Message = `Trello-banned {service.FormatPlayer(v, true)}`,
 							Time = 5,
 						})
 					end
@@ -1565,7 +1485,6 @@ return function(Vargs, env)
 						Title = args[1],
 						Message = args[2],
 						Time = (#tostring(args[1]) / 19) + 2.5,
-						--service.Filter(args[1],plr, v);
 					})
 				end
 			end,
@@ -1636,7 +1555,7 @@ return function(Vargs, env)
 						Variables.DisguiseBindings[v.UserId].Rename:Disconnect()
 						Variables.DisguiseBindings[v.UserId].Rename = nil
 						ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-						ChatService:UnregisterProcessCommandsFunction("Disguise_" .. v.Name)
+						ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
 					end
 
 					Variables.DisguiseBindings[v.UserId] = {
@@ -1649,7 +1568,7 @@ return function(Vargs, env)
 					local disguiseSpeaker = ChatService:AddSpeaker(username)
 					disguiseSpeaker:JoinChannel("All")
 					ChatService:RegisterProcessCommandsFunction(
-						"Disguise_" .. v.Name,
+						`Disguise_{v.Name}`,
 						function(speaker, message, channelName)
 							if speaker == v.Name then
 								local filteredMessage = select(
@@ -1698,7 +1617,7 @@ return function(Vargs, env)
 						Variables.DisguiseBindings[v.UserId].Rename = nil
 						pcall(function()
 							ChatService:RemoveSpeaker(Variables.DisguiseBindings[v.UserId].TargetUsername)
-							ChatService:UnregisterProcessCommandsFunction("Disguise_" .. v.Name)
+							ChatService:UnregisterProcessCommandsFunction(`Disguise_{v.Name}`)
 						end)
 					end
 					Variables.DisguiseBindings[v.UserId] = nil
@@ -1721,7 +1640,7 @@ return function(Vargs, env)
 					if p.Parent == service.Players then
 						table.insert(tab, {
 							Text = service.FormatPlayer(p),
-							Desc = string.format("ID: %d | Went incognito at: %s", p.UserId, service.FormatTime(t)),
+							Desc = `ID: {p.UserId} | Went incognito at: {service.FormatTime(t)}`,
 						})
 					end
 				end

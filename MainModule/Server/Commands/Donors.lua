@@ -25,7 +25,7 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix,
 			Commands = { "cape", "donorcape" },
 			Args = {},
-			Description = "Get donor cape (remove using " .. Settings.PlayerPrefix .. "uncape)",
+			Description = `Get donor cape (remove using {Settings.PlayerPrefix}uncape)`,
 			Donors = true,
 			AdminLevel = "Donors",
 			Function = function(plr: Player, args: { string })
@@ -229,7 +229,7 @@ return function(Vargs, env)
 					Functions.RemoveParticle(torso, "DONOR_PARTICLE")
 					Functions.NewParticle(torso, "ParticleEmitter", {
 						Name = "DONOR_PARTICLE",
-						Texture = "rbxassetid://" .. Functions.GetTexture(args[1]),
+						Texture = `rbxassetid://{Functions.GetTexture(args[1])}`,
 						Size = NumberSequence.new({
 							NumberSequenceKeypoint.new(0, 0),
 							NumberSequenceKeypoint.new(0.1, 0.25, 0.25),
@@ -334,7 +334,7 @@ return function(Vargs, env)
 			Description = "Gives yourself the avatar item that belongs to <ID>",
 			Donors = true,
 			Function = function(plr: Player, args: { [number]: string }, data: {})
-				return Commands.AvatarItem.Function(plr, { "@" .. plr.Name, args[1] }, data)
+				return Commands.AvatarItem.Function(plr, { `@{plr.Name}`, args[1] }, data)
 			end,
 		},
 
@@ -364,13 +364,10 @@ return function(Vargs, env)
 				local hat = plr.Character:FindFirstChild(args[1])
 				if hat and hat:IsA("Accessory") then
 					hat:Destroy()
-					Functions.Hint(args[1] .. " has been removed.", { plr })
+					Functions.Hint(`{args[1]} has been removed.`, { plr })
 				else
 					Functions.Hint(
-						args[1]
-							.. " is not a valid accessory. Run `"
-							.. Settings.PlayerPrefix
-							.. "myhats` for a list of accessories you are wearing.",
+						`{args[1]} is not a valid accessory. Run \`{Settings.PlayerPrefix}myhats\` for a list of accessories you are wearing.`,
 						{ plr }
 					)
 				end
