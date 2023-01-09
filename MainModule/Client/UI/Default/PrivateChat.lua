@@ -178,7 +178,7 @@ return function(data, env)
 								Size = UDim2.new(1, -55, 0, 15),
 								Position = UDim2.new(0, 55, 0, 0),
 								Text = if pDisplayName
-									then pDisplayName == pName and (`@{pName}`) or `{pDisplayName} (@{pName})`
+									then pDisplayName == pName and `@{pName}` or `{pDisplayName} (@{pName})`
 									else pName,
 								TextSize = "14",
 								TextXAlignment = "Left",
@@ -360,6 +360,5 @@ return function(data, env)
 	end)
 
 	client.Remote.Send("Session", SessionKey, "GetPeerList")
-	gTable = window.gTable
 	window:Ready()
 end

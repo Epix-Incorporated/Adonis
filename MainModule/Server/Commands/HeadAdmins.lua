@@ -3,18 +3,8 @@ return function(Vargs, env)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
-		server.Functions,
-		server.Commands,
-		server.Admin,
-		server.Anti,
-		server.Core,
-		server.HTTP,
-		server.Logs,
-		server.Remote,
-		server.Process,
-		server.Variables,
-		server.Deps
+	local Functions, Admin, Core, HTTP, Logs, Remote, Variables =
+		server.Functions, server.Admin, server.Core, server.HTTP, server.Logs, server.Remote, server.Variables
 
 	if env then
 		setfenv(1, env)

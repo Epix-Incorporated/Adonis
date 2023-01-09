@@ -24,7 +24,7 @@ return function(data, env)
 		end,
 	})
 
-	local quesText = window:Add("TextLabel", {
+	window:Add("TextLabel", {
 		Text = question,
 		TextScaled = true,
 		TextWrapped = true,

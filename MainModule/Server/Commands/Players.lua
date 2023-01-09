@@ -3,16 +3,13 @@ return function(Vargs, env)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+	local Functions, Admin, Core, HTTP, Logs, Remote, Variables, Deps =
 		server.Functions,
-		server.Commands,
 		server.Admin,
-		server.Anti,
 		server.Core,
 		server.HTTP,
 		server.Logs,
 		server.Remote,
-		server.Process,
 		server.Variables,
 		server.Deps
 
@@ -21,8 +18,6 @@ return function(Vargs, env)
 	end
 
 	local Routine = env.Routine
-	local Pcall = env.Pcall
-	local cPcall = env.cPcall
 
 	return {
 		ViewCommands = {
@@ -1085,7 +1080,6 @@ return function(Vargs, env)
 			AdminLevel = "Players",
 			ListUpdater = function(plr: Player)
 				local elevated = Admin.CheckAdmin(plr)
-				local data = {}
 
 				local donorList = {}
 				for _, v in service.GetPlayers() do

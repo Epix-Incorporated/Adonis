@@ -3,11 +3,10 @@ return function(Vargs, env)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+	local Functions, Commands, Admin, Core, HTTP, Logs, Remote, Process, Variables, Deps =
 		server.Functions,
 		server.Commands,
 		server.Admin,
-		server.Anti,
 		server.Core,
 		server.HTTP,
 		server.Logs,
@@ -1666,8 +1665,7 @@ return function(Vargs, env)
 						BottomSurface = "Smooth",
 						Transparency = 1, --.9
 					})
-					--service.New("PointLight", cam)
-					local mesh = service.New("SpecialMesh", {
+					service.New("SpecialMesh", {
 						Parent = cam,
 						Scale = Vector3.new(1, 1, 1),
 						MeshType = "Sphere",
@@ -2942,9 +2940,8 @@ return function(Vargs, env)
 						brick.Transparency = 1
 						brick.Size = Vector3.new(5, 7, 5)
 						brick.CFrame = cf
-						--table.insert(Variables.Objects, mod)
 
-						local value = service.New("StringValue", {
+						service.New("StringValue", {
 							Name = "Player",
 							Value = v.Name,
 							Parent = mod,
@@ -6138,7 +6135,7 @@ return function(Vargs, env)
 					for i, v in workspace:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
-								local ans, event = Remote.GetGui(plr, "YesNoPrompt", {
+								local ans = Remote.GetGui(plr, "YesNoPrompt", {
 									Title = "Override paused track?",
 									Question = "There is currently a track paused, do you wish to override it?",
 								})
@@ -6217,12 +6214,12 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: { string }, noclip: boolean?)
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
-				local sVal = service.New("NumberValue", {
+				service.New("NumberValue", {
 					Name = "Speed",
 					Value = speed,
 					Parent = scr,
 				})
-				local NoclipVal = service.New("BoolValue", {
+				service.New("BoolValue", {
 					Name = "Noclip",
 					Value = noclip or false,
 					Parent = scr,
@@ -6527,7 +6524,6 @@ return function(Vargs, env)
 						end
 
 						local char = v.Character
-						local head = char:FindFirstChild("Head")
 						local mod = service.New("Model", char)
 						local cl = char.Head:Clone()
 						local hum = service.New("Humanoid", mod)
@@ -6600,7 +6596,7 @@ return function(Vargs, env)
 								end
 							elseif rigType == Enum.HumanoidRigType.R15 then
 								local rig = Deps.Assets.RigR15
-								local rigHumanoid = rig.Humanoid
+
 								local validParts = table.create(#Enum.BodyPartR15:GetEnumItems())
 								for _, x in Enum.BodyPartR15:GetEnumItems() do
 									validParts[x.Name] = x.Value

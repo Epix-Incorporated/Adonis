@@ -5,8 +5,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
-
 	local isMuted = false
 
 	local alarm = service.New("Sound", {
@@ -61,7 +59,6 @@ return function(data, env)
 
 		alarm.Parent = label
 		alarm:Play()
-		gTable = window.gTable
 		window:Ready()
 	end
 end

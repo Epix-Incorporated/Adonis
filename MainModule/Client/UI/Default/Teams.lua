@@ -75,7 +75,7 @@ return function(data, env)
 			client.Remote.Send("ProcessCommand", data.CmdPlayerPrefix .. "brickcolors")
 		end)
 
-	local createTeam = creator:Add("TextButton", {
+	creator:Add("TextButton", {
 		Class = "TextButton",
 		AnchorPoint = Vector2.new(1, 1),
 		BackgroundColor3 = Color3.fromRGB(45, 45, 45),

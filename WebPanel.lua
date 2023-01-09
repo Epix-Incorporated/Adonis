@@ -38,33 +38,39 @@ return function(Vargs)
 	local OverrideQueue = {}
 
 	local fakePlayer = service.Wrap(service.New("Folder"))
-	for i,v in {
-		Name = "Server";
-		DisplayName = "Server";
-		ToString = "Server";
-		ClassName = "Player";
-		AccountAge = 0;
-		CharacterAppearanceId = -1;
-		UserId = ownerId;
-		userId = ownerId;
-		Parent = service.Players;
-		Character = Instance.new("Model");
-		Backpack = Instance.new("Folder");
-		PlayerGui = Instance.new("Folder");
-		PlayerScripts = Instance.new("Folder");
-		Kick = function()
-			fakePlayer:Destroy()
-			fakePlayer:SetSpecial("Parent", nil)
-		end;
-		IsA = function(_, arg) if arg == "Player" then return true end end;
-	} do
+	for i, v in
+		{
+			Name = "Server",
+			DisplayName = "Server",
+			ToString = "Server",
+			ClassName = "Player",
+			AccountAge = 0,
+			CharacterAppearanceId = -1,
+			UserId = ownerId,
+			userId = ownerId,
+			Parent = service.Players,
+			Character = Instance.new("Model"),
+			Backpack = Instance.new("Folder"),
+			PlayerGui = Instance.new("Folder"),
+			PlayerScripts = Instance.new("Folder"),
+			Kick = function()
+				fakePlayer:Destroy()
+				fakePlayer:SetSpecial("Parent", nil)
+			end,
+			IsA = function(_, arg)
+				if arg == "Player" then
+					return true
+				end
+			end,
+		}
+	do
 		fakePlayer:SetSpecial(i, v)
 	end
 
 	local function CopyCommand(tbl)
 		local ret = {}
 		if tbl and type(tbl) == "table" then
-			for i,v in tbl do
+			for i, v in tbl do
 				if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
 					ret[i] = v
 				elseif typeof(v) == "table" then
@@ -84,16 +90,16 @@ return function(Vargs)
 	local function WebPanelCleanUp(notBindToClose)
 		if Variables.WebPanel_Initiated then
 			pcall(HttpService.RequestAsync, HttpService, {
-				Url = "https://robloxconnection.adonis.dev/remove";
-				Method = "DELETE";
+				Url = "https://robloxconnection.adonis.dev/remove",
+				Method = "DELETE",
 				Headers = {
 					["api-key"] = Settings.WebPanel_ApiKey,
-					["Content-Type"] = "application/json"
-				};
+					["Content-Type"] = "application/json",
+				},
 				Body = HttpService:JSONEncode({
-					["JobId"] = game.JobId
-				})
-			});
+					["JobId"] = game.JobId,
+				}),
+			})
 		end
 
 		if not notBindToClose then
@@ -120,10 +126,11 @@ return function(Vargs)
 			end
 		end
 
-		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
-		stats.MaxPlayers = game.Players.MaxPlayers
+		stats.PlayerCount = #game:GetService("Players"):GetPlayers() == 0 and #service.NetworkServer:GetChildren()
+			or #game:GetService("Players"):GetPlayers()
+		stats.MaxPlayers = game:GetService("Players").MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
-		stats.ServerSpeed = math.min(frames/60, 1) * 100
+		stats.ServerSpeed = math.min(frames / 60, 1) * 100
 		stats.Admins = admins
 		stats.JobId = game.JobId
 		stats.PrivateServer = game.PrivateServerOwnerId > 0
@@ -213,7 +220,7 @@ return function(Vargs)
 					local rawlevel = rawget(command, "AdminLevel")
 
 					if rawlevel and ind == "AdminLevel" and string.match(rawlevel, "^WebPanel.+") then
-						return {AdminLevel = string.sub(rawlevel, 9)}
+						return { AdminLevel = string.sub(rawlevel, 9) }
 					end
 				end,
 			})
@@ -229,7 +236,7 @@ return function(Vargs)
 
 			local index, command = Admin.GetCommand(`Settings.Prefix{i}`)
 			if not index or not command then
-				index,command = Admin.GetCommand(`Settings.PlayerPrefix{i}`)
+				index, command = Admin.GetCommand(`Settings.PlayerPrefix{i}`)
 			end
 
 			if index and command then
@@ -238,7 +245,7 @@ return function(Vargs)
 				-- The command being overridden was not found, add it to a queue for later
 				table.insert(OverrideQueue, {
 					name = i,
-					data = v
+					data = v,
 				})
 			end
 		end
@@ -248,34 +255,34 @@ return function(Vargs)
 	end
 
 	local function UpdateSettings(data)
-		WebPanel.Bans = data.Levels.Banlist or {};
-		WebPanel.Creators = data.Levels.Creators or {};
-		WebPanel.Admins = data.Levels.Admins or {};
-		WebPanel.Moderators = data.Levels.Moderators or {};
-		WebPanel.HeadAdmins = data.Levels.Owners or {};
-		WebPanel.Mutes = data.Levels.Mutelist or {};
-		WebPanel.Blacklist = data.Levels.Blacklist or {};
-		WebPanel.Whitelist = data.Levels.Whitelist or {};
-		WebPanel.CustomRanks = data.Levels.CustomRanks or {};
+		WebPanel.Bans = data.Levels.Banlist or {}
+		WebPanel.Creators = data.Levels.Creators or {}
+		WebPanel.Admins = data.Levels.Admins or {}
+		WebPanel.Moderators = data.Levels.Moderators or {}
+		WebPanel.HeadAdmins = data.Levels.Owners or {}
+		WebPanel.Mutes = data.Levels.Mutelist or {}
+		WebPanel.Blacklist = data.Levels.Blacklist or {}
+		WebPanel.Whitelist = data.Levels.Whitelist or {}
+		WebPanel.CustomRanks = data.Levels.CustomRanks or {}
 
 		Settings.Ranks["[WebPanel] Creators"] = {
-			Level = 900;
-			Users = WebPanel.Creators;
+			Level = 900,
+			Users = WebPanel.Creators,
 		}
 
 		Settings.Ranks["[WebPanel] HeadAdmins"] = {
-			Level = 300;
-			Users = WebPanel.HeadAdmins;
+			Level = 300,
+			Users = WebPanel.HeadAdmins,
 		}
 
 		Settings.Ranks["[WebPanel] Admins"] = {
-			Level = 200;
-			Users = WebPanel.Admins;
+			Level = 200,
+			Users = WebPanel.Admins,
 		}
 
 		Settings.Ranks["[WebPanel] Moderators"] = {
-			Level = 100;
-			Users = WebPanel.Moderators;
+			Level = 100,
+			Users = WebPanel.Moderators,
 		}
 
 		if Variables.MusicList then
@@ -288,14 +295,14 @@ return function(Vargs)
 			end
 
 			for _, music in data.Levels.Musiclist or {} do
-				if string.match(music, '^(.*):(.*)') then
-					local name, id = string.match(music, '^(.*):(.*)')
+				if string.match(music, "^(.*):(.*)") then
+					local name, id = string.match(music, "^(.*):(.*)")
 
 					if Variables.MusicList then
 						table.insert(Variables.MusicList, {
 							Name = name,
 							ID = tonumber(id),
-							WebPanel = true
+							WebPanel = true,
 						})
 					end
 				end
@@ -358,18 +365,18 @@ return function(Vargs)
 	-- Long polling to listen for any changes on the panel
 	while Settings.WebPanel_Enabled do
 		local success, res = pcall(HttpService.RequestAsync, HttpService, {
-			Url = "https://robloxconnection.adonis.dev/load";
-			Method = "POST";
+			Url = "https://robloxconnection.adonis.dev/load",
+			Method = "POST",
 			Headers = {
 				["api-key"] = Settings.WebPanel_ApiKey,
-				["Content-Type"] = "application/json"
-			};
+				["Content-Type"] = "application/json",
+			},
 			Body = HttpService:JSONEncode({
 				["custom-commands"] = Encode(HttpService:JSONEncode(GetCustomCommands())), -- For loading custom commands in command settings!
 				["server-stats"] = Encode(HttpService:JSONEncode(GetServerStats())),
 				["init"] = Variables.WebPanel_Initiated and "false" or "true",
-			})
-		});
+			}),
+		})
 
 		if success and res.Success then
 			local data = HttpService:JSONDecode(res.Body)
@@ -415,7 +422,10 @@ return function(Vargs)
 					end
 				end
 
-				if (v and v.server == game.JobId) or (service.RunService:IsStudio() and v and v.server == "Roblox Studio") then
+				if
+					(v and v.server == game.JobId)
+					or (service.RunService:IsStudio() and v and v.server == "Roblox Studio")
+				then
 					if v.action == "shutdown" then
 						Functions.Shutdown("[WebPanel] Server Shutdown")
 						WebPanelCleanUp(true)
@@ -431,7 +441,7 @@ return function(Vargs)
 							AdminLevel = 900,
 							DontLog = true,
 							IgnoreErrors = true,
-							RemoteExecution = true
+							RemoteExecution = true,
 						})
 					end
 				end
@@ -446,10 +456,13 @@ return function(Vargs)
 			if res == "HttpError: Timedout" then
 				local aliveSuccess, aliveCheck = pcall(HttpService.RequestAsync, HttpService, {
 					Url = "https://adonis.dev/",
-					Method = "GET"
+					Method = "GET",
 				})
 
-				if not aliveSuccess and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
+				if
+					not aliveSuccess and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200
+					or aliveCheck == "HttpError: Timedout"
+				then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
 					task.wait(30)
 				end

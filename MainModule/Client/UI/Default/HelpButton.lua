@@ -15,7 +15,7 @@ return function(_, env)
 	local UI = client.UI
 
 	local gui = service.New("ScreenGui", { ResetOnSpawn = false })
-	local gTable = UI.Register(gui)
+	gTable = UI.Register(gui)
 
 	if UI.Get("HelpButton", gui, true) then
 		gui:Destroy()

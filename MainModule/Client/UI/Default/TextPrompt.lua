@@ -5,7 +5,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
 	local answer
 
 	local window = client.UI.Make("Window", {
@@ -20,7 +19,7 @@ return function(data, env)
 		end,
 	})
 
-	local label = window:Add("TextLabel", {
+	window:Add("TextLabel", {
 		Text = data.Question,
 		Font = "SourceSans",
 		TextScaled = true,
@@ -44,7 +43,7 @@ return function(data, env)
 		end
 	end)
 
-	local submit = window:Add("TextButton", {
+	window:Add("TextButton", {
 		Text = ">",
 		Font = "Arial",
 		TextSize = 22,
@@ -56,7 +55,6 @@ return function(data, env)
 		end,
 	})
 
-	gTable = window.gTable
 	window:Ready()
 	repeat
 		task.wait()

@@ -1,3 +1,4 @@
+--!nocheck
 -- t: a runtime typechecker for Roblox
 
 local t = {}

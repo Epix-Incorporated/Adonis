@@ -123,17 +123,17 @@ return function(data, env)
 	window:Ready()
 
 	window
-	:AddTitleButton({
-		Text = "",
-		ToolTip = "Invite",
-		OnClick = function()
-			service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
-		end,
-	})
-	:Add("ImageLabel", {
-		Size = UDim2.new(0, 16, 0, 16),
-		Position = UDim2.new(0, 8, 0, 2),
-		Image = client.MatIcons.Send,
-		BackgroundTransparency = 1,
-	})
+		:AddTitleButton({
+			Text = "",
+			ToolTip = "Invite",
+			OnClick = function()
+				service.SocialService:PromptGameInvite(service.Players.LocalPlayer)
+			end,
+		})
+		:Add("ImageLabel", {
+			Size = UDim2.new(0, 16, 0, 16),
+			Position = UDim2.new(0, 8, 0, 2),
+			Image = client.MatIcons.Send,
+			BackgroundTransparency = 1,
+		})
 end

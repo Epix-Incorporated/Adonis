@@ -6,86 +6,87 @@ GetEnv = nil
 origEnv = nil
 logError = nil
 
-type Card = {id: string, name: string, desc: string, labels: {any}?}
-type List = {id: string, name: string, cards: {Card}}
+type Card = { id: string, name: string, desc: string, labels: { any }? }
+type List = { id: string, name: string, cards: { Card } }
 
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local server = Vargs.Server;
-	local service = Vargs.Service;
+	server = Vargs.Server
+	service = Vargs.Service
 
 	local Admin, HTTP, Logs, Variables, Settings
 	local function Init()
-		Admin = server.Admin;
-		HTTP = server.HTTP;
-		Logs = server.Logs;
-		Variables = server.Variables;
-		Settings = server.Settings;
+		Admin = server.Admin
+		HTTP = server.HTTP
+		Logs = server.Logs
+		Variables = server.Variables
+		Settings = server.Settings
 
 		if Settings.Trello_Enabled then
 			HTTP.Trello.API = require(server.Deps.TrelloAPI)(Settings.Trello_AppKey, Settings.Trello_Token)
 			service.StartLoop("TRELLO_UPDATER", Settings.HttpWait, HTTP.Trello.Update, true)
 		end
 
-		HTTP.Init = nil;
+		HTTP.Init = nil
 		Logs:AddLog("Script", "HTTP Module Initialized")
-	end;
+	end
 
 	server.HTTP = {
-		Init = Init;
+		Init = Init,
 		HttpEnabled = (function()
-			local success, res = pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
+			local success, res =
+				pcall(service.HttpService.GetAsync, service.HttpService, "https://google.com/robots.txt")
 			if not success and res:find("Http requests are not enabled.") then
 				return false
 			end
 			return true
-		end)();
-		LoadstringEnabled = pcall(loadstring, "");
+		end)(),
+		LoadstringEnabled = pcall(loadstring, ""),
 
 		CheckHttp = function()
 			return HTTP.HttpEnabled
-		end;
+		end,
 
 		WebPanel = {
-			Moderators = {};
-			Admins = {};
-			HeadAdmins = {};
-			Creators = {};
-			Mutes = {};
-			Bans = {};
-			Blacklist = {};
-			Whitelist = {};
-		};
+			Moderators = {},
+			Admins = {},
+			HeadAdmins = {},
+			Creators = {},
+			Mutes = {},
+			Bans = {},
+			Blacklist = {},
+			Whitelist = {},
+		},
 
 		Trello = {
-			PerformedCommands = {};
+			PerformedCommands = {},
 
-			Mutes = {};
-			Bans = {};
-			Music = {};
-			InsertList = {};
+			Mutes = {},
+			Bans = {},
+			Music = {},
+			InsertList = {},
 
 			Overrides = {
 				{
-					Lists = {"Banlist", "Ban List", "Bans"},
+					Lists = { "Banlist", "Ban List", "Bans" },
 					Process = function(card, data)
 						table.insert(data.Bans, {
 							Name = card.name,
-							Reason = card.desc
+							Reason = card.desc,
 						})
-					end
+					end,
 				},
 				{ -- // Was this really a good idea? Since when should databases run code
-					Lists = {"Commands", "Command List"},
+					Lists = { "Commands", "Command List" },
 					Process = function(card)
 						if not HTTP.Trello.PerformedCommands[tostring(card.id)] then
 							local cmd = card.name
 
 							if string.sub(cmd, 1, 1) == "$" then
 								local placeid = string.match(string.sub(cmd, 2), ".%d+")
-								cmd = string.sub(cmd, #placeid+2)
+								cmd = string.sub(cmd, #placeid + 2)
 								if tonumber(placeid) ~= game.PlaceId then
 									return
 								end
@@ -95,121 +96,136 @@ return function(Vargs, GetEnv)
 							HTTP.Trello.PerformedCommands[tostring(card.id)] = true
 
 							Logs.AddLog(Logs.Script, {
-								Text = "Trello command executed";
-								Desc = cmd;
+								Text = "Trello command executed",
+								Desc = cmd,
 							})
 
 							if Settings.Trello_Token ~= "" then
-								pcall(HTTP.Trello.API.makeComment, card.id, `Ran Command: {cmd}\nPlace ID: {game.PlaceId}\nServer Job Id: {game.JobId}\nServer Players: {#service.GetPlayers()}\nServer Time: {service.FormatTime()}}`)
+								pcall(
+									HTTP.Trello.API.makeComment,
+									card.id,
+									`Ran Command: {cmd}\nPlace ID: {game.PlaceId}\nServer Job Id: {game.JobId}\nServer Players: {#service.GetPlayers()}\nServer Time: {service.FormatTime()}}`
+								)
 							end
 						end
-					end
+					end,
 				},
 				{
-					Lists = {"Moderators", "Moderator List", "Moderatorlist", "Modlist", "Mod List", "Mods"},
+					Lists = { "Moderators", "Moderator List", "Moderatorlist", "Modlist", "Mod List", "Mods" },
 					Process = function(card, data)
 						table.insert(data.Ranks.Moderators, card.name)
-					end
+					end,
 				},
 				{
-					Lists = {"Admins", "Admin List", "Adminlist"},
+					Lists = { "Admins", "Admin List", "Adminlist" },
 					Process = function(card, data)
 						table.insert(data.Ranks.Admins, card.name)
-					end
+					end,
 				},
 				{
-					Lists = {"Owners", "HeadAdmins", "HeadAdmin List", "Owner List", "Ownerlist"},
+					Lists = { "Owners", "HeadAdmins", "HeadAdmin List", "Owner List", "Ownerlist" },
 					Process = function(card, data)
 						table.insert(data.Ranks.HeadAdmins, card.name)
-					end
+					end,
 				},
 				{
-					Lists = {"Creators", "Creator List", "Creatorlist", "Place Owners"},
+					Lists = { "Creators", "Creator List", "Creatorlist", "Place Owners" },
 					Process = function(card, data)
 						table.insert(data.Ranks.Creators, card.name)
-					end
+					end,
 				},
 				{
-					Lists = {"Music", "Music List", "Musiclist", "Songs"},
+					Lists = { "Music", "Music List", "Musiclist", "Songs" },
 					Process = function(card, data)
-						if string.match(card.name, '^(.*):(.*)') then
-							local name, id = string.match(card.name, '^(.*):(.*)')
+						if string.match(card.name, "^(.*):(.*)") then
+							local name, id = string.match(card.name, "^(.*):(.*)")
 							table.insert(data.Music, {
 								Name = name,
-								ID = tonumber(id)
+								ID = tonumber(id),
 							})
 						end
-					end
+					end,
 				},
 				{
-					Lists = {"InsertList", "Insert List", "Insertlist", "Inserts", "ModelList", "Model List", "Modellist", "Models"},
+					Lists = {
+						"InsertList",
+						"Insert List",
+						"Insertlist",
+						"Inserts",
+						"ModelList",
+						"Model List",
+						"Modellist",
+						"Models",
+					},
 					Process = function(card, data)
-						if string.match(card.name, '^(.*):(.*)') then
-							local name, id = string.match(card.name, '^(.*):(.*)')
+						if string.match(card.name, "^(.*):(.*)") then
+							local name, id = string.match(card.name, "^(.*):(.*)")
 							table.insert(data.InsertList, {
 								Name = name,
-								ID = tonumber(id)
+								ID = tonumber(id),
 							})
 						end
-					end
+					end,
 				},
 				{
-					Lists = {"Permissions", "Permission List", "Permlist"},
+					Lists = { "Permissions", "Permission List", "Permlist" },
 					Process = function(card)
 						local com, level = string.match(card.name, "^(.*):(.*)")
 						if com and level then
 							Admin.SetPermission(com, level)
 						end
-					end
+					end,
 				},
 				{
-					Lists = {"Mutelist", "Mute List"},
+					Lists = { "Mutelist", "Mute List" },
 					Process = function(card, data)
 						table.insert(data.Mutes, card.name)
-					end
+					end,
 				},
 				{
-					Lists = {"Blacklist"},
+					Lists = { "Blacklist" },
 					Process = function(card, data)
 						table.insert(data.Blacklist, card.name)
 					end,
 				},
 				{
-					Lists = {"Whitelist"},
+					Lists = { "Whitelist" },
 					Process = function(card, data)
 						table.insert(data.Whitelist, card.name)
 					end,
-				}
-			};
+				},
+			},
 
 			Update = function()
 				if not HTTP.Trello.API or not Settings.Trello_Enabled then
-					return;
+					return
 				end
 
 				if not HTTP.CheckHttp() then
 					warn("Unable to connect to Trello. Make sure HTTP Requests are enabled in Game Settings.")
-					return;
+					return
 				else
 					local data = {
-						Bans = {};
-						Mutes = {};
-						Music = {};
-						Whitelist = {};
-						Blacklist = {};
-						InsertList = {};
+						Bans = {},
+						Mutes = {},
+						Music = {},
+						Whitelist = {},
+						Blacklist = {},
+						InsertList = {},
 						Ranks = {
 							["Moderators"] = {},
 							["Admins"] = {},
 							["HeadAdmins"] = {},
-							["Creators"] = {}
-						};
+							["Creators"] = {},
+						},
 					}
 
 					local function grabData(board)
-						local lists: {List} = HTTP.Trello.API.getListsAndCards(board, true)
+						local lists: { List } = HTTP.Trello.API.getListsAndCards(board, true)
 						-- TODO: Change from the mean "L + ratio" error to a nice message
-						if #lists == 0 then error("L + ratio") end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
+						if #lists == 0 then
+							error("L + ratio")
+						end --TODO: Improve TrelloAPI error handling so we don't need to assume no lists = failed request
 
 						for _, list in lists do
 							local foundOverride = false
@@ -242,15 +258,17 @@ return function(Vargs, GetEnv)
 					local success = true
 					local boards = {
 						Settings.Trello_Primary,
-						unpack(Settings.Trello_Secondary)
+						unpack(Settings.Trello_Secondary),
 					}
-					for _,v in boards do
+					for _, v in boards do
 						if not v or service.Trim(v) == "" then
 							continue
 						end
 						local ran = pcall(grabData, v)
 						if not ran then
-							warn("Unable to reach Trello. Ensure your board IDs, Trello key, and token are all correct. If issue persists, try increasing HttpWait in your Adonis settings.")
+							warn(
+								"Unable to reach Trello. Ensure your board IDs, Trello key, and token are all correct. If issue persists, try increasing HttpWait in your Adonis settings."
+							)
 							success = false
 							break
 						end
@@ -276,10 +294,10 @@ return function(Vargs, GetEnv)
 						for rank, users in data.Ranks do
 							local name = `[Trello] {server.Functions.Trim(rank)}`
 							Settings.Ranks[name] = {
-								Level = Settings.Ranks[rank].Level or 1;
+								Level = Settings.Ranks[rank].Level or 1,
 								Users = users,
 								IsExternal = true,
-								Hidden = Settings.Trello_HideRanks;
+								Hidden = Settings.Trello_HideRanks,
 							}
 						end
 
@@ -293,13 +311,13 @@ return function(Vargs, GetEnv)
 							Admin.UpdateCachedLevel(v)
 						end
 
-						Logs.AddLog(Logs.Script,{
-							Text = "Updated Trello data";
-							Desc = "Data was retreived from Trello";
+						Logs.AddLog(Logs.Script, {
+							Text = "Updated Trello data",
+							Desc = "Data was retreived from Trello",
 						})
 					end
 				end
-			end;
+			end,
 
 			GetOverrideLists = function()
 				local lists = {}
@@ -314,7 +332,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 				return lists
-			end;
-		};
-	};
+			end,
+		},
+	}
 end

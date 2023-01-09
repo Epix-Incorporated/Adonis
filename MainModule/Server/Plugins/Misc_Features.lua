@@ -12,7 +12,7 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local server = Vargs.Server
+	server = Vargs.Server
 
 	local Settings = server.Settings
 	local Logs = server.Logs

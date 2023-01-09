@@ -5,22 +5,16 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local Name = data.Name
 	local Title = data.Title
 	local TitleButtons = data.TitleButtons or {}
 	local Icon = data.Icon
-	local Tabs = data.Tabs
 	local Tab = data.Table or data.Tab
 	local Update = data.Update
 	local UpdateArg = data.UpdateArg
 	local UpdateArgs = data.UpdateArgs
 	local AutoUpdate = data.AutoUpdate
-	local LoadTime = data.LoadTime
-	local gIndex = data.gIndex
 	local gTable = data.gTable
-	local Dots = data.Dots
 	local Size = data.Size
-	local Sanitize = data.Sanitize
 	local Stacking = data.Stacking
 	local PagesEnabled = (data.PagesEnabled ~= nil and data.PagesEnabled) or (data.PagesEnabled == nil and true)
 	local PageSize = data.PageSize or 100
@@ -42,7 +36,7 @@ return function(data, env)
 			return tab
 		end
 
-		local pageNum = pageNum or 1
+		pageNum = pageNum or 1
 		local startPos = (pageNum - 1) * PageSize
 		local endPos = pageNum * PageSize
 		local pageList = {}
@@ -102,11 +96,12 @@ return function(data, env)
 			v.Text = (data.Sanitize and service.SanitizeString(v.Text)) or v.Text
 
 			if v.Duplicates then
-				v.Text = `(x{v.Duplicates }) {v.Text}`
+				v.Text = `(x{v.Duplicates}) {v.Text}`
 			end
 
 			if v.Time then
-				v.Text = `[{(typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time)}] {v.Text}`
+				v.Text =
+					`[{(typeof(v.Time) == "number" and service.FormatTime(v.Time, TimeOptions) or v.Time)}] {v.Text}`
 			end
 		end
 
@@ -206,7 +201,7 @@ return function(data, env)
 		ScrollBarThickness = 2,
 		BackgroundTransparency = 1,
 		Position = UDim2.new(0, 5, 0, 30),
-		Size = UDim2.new(1, -10, 1, -30)
+		Size = UDim2.new(1, -10, 1, -30),
 	})
 
 	pageCounterLabel = window:Add("TextLabel", {

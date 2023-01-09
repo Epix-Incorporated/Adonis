@@ -27,7 +27,7 @@ return function(_, env)
 			BackgroundTransparency = 1,
 			TextSize = 20,
 			Size = UDim2.new(1, 0, 1, 0),
-			Position = UDim2.new(0, 0, 0, 0)
+			Position = UDim2.new(0, 0, 0, 0),
 		})
 
 		gTable = window.gTable

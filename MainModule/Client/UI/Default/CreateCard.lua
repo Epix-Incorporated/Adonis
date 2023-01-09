@@ -6,7 +6,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
 	local window = client.UI.Make("Window", {
 		Name = "CreateCard",
 		Title = "Create Card",
@@ -53,7 +52,7 @@ return function(data, env)
 		})
 
 		local done = false
-		local create = window:Add("TextButton", {
+		window:Add("TextButton", {
 			Text = "Create",
 			Size = UDim2.new(0, 70, 0, 30),
 			Position = UDim2.new(0, 10, 1, -40),
@@ -71,7 +70,6 @@ return function(data, env)
 			end,
 		})
 
-		gTable = window.gTable
 		window:Ready()
 	end
 end

@@ -1,5 +1,7 @@
 --// ACLI - Adonis Client Loading Initializer
-if true then return end --// #DISABLED
+if true then
+	return
+end --// #DISABLED
 
 local DebugMode = false
 local time = time
@@ -14,7 +16,6 @@ local tostring = tostring
 local script = script
 local spawn = task.spawn
 local wait = task.wait
-local time = time
 local finderEvent
 local realWarn = warn
 local foundClient = false
@@ -23,8 +24,7 @@ local player = game:GetService("Players").LocalPlayer
 local Kick = player.Kick
 local start = time()
 
-local function print(...)
-end
+local function print(...) end
 
 local function warn(str)
 	if DebugMode or player.UserId == 1237666 then
@@ -33,14 +33,28 @@ local function warn(str)
 end
 
 local function Kill(info)
-	if DebugMode then warn(info) return end
-	pcall(function() Kick(player, info) end)
+	if DebugMode then
+		warn(info)
+		return
+	end
+	pcall(function()
+		Kick(player, info)
+	end)
 	wait(1)
-	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
+	pcall(function()
+		while not DebugMode and wait() do
+			pcall(function()
+				while true do
+				end
+			end)
+		end
+	end)
 end
 
 local function Locked(obj)
-	return (not obj and true) or not pcall(function() return obj.GetFullName(obj) end)
+	return (not obj and true) or not pcall(function()
+		return obj.GetFullName(obj)
+	end)
 end
 
 local function callCheck(child)
@@ -61,34 +75,32 @@ local function callCheck(child)
 end
 
 local function doPcall(func, ...)
-	local ran,ret = pcall(func, ...)
+	local ran, ret = pcall(func, ...)
 	if ran then
-		return ran,ret
+		return ran, ret
 	else
 		warn(tostring(ret))
 		Kill(`ACLI: Error\n{tostring(ret)}`)
-		return ran,ret
+		return ran, ret
 	end
-end
-
-local function lockCheck(obj)
-	callCheck(obj)
-	obj.Changed:Connect(function(p)
-		warn("Child changed; Checking...")
-		callCheck(obj)
-	end)
 end
 
 local function loadingTime()
 	warn("LoadingTime Called")
-	setfenv(1,{})
+	setfenv(1, {})
 	warn(tostring(time() - start))
 end
 
 local function checkChild(child)
 	warn(`Checking child: {tostring(child and child.ClassName)} : {tostring(child and child:GetFullName())}`)
 	callCheck(child)
-	if child and not foundClient and not checkedChildren[child] and child:IsA("Folder") and child.Name == "Adonis_Client" then
+	if
+		child
+		and not foundClient
+		and not checkedChildren[child]
+		and child:IsA("Folder")
+		and child.Name == "Adonis_Client"
+	then
 		warn("Loading Folder...")
 		local nameVal
 		local origName
@@ -117,8 +129,8 @@ local function checkChild(child)
 		warn("Destroying parent...")
 		if container and container:IsA("ScreenGui") and container.Name == "Adonis_Container" then
 			spawn(function()
-				wait(0.5);
-				container:Destroy();
+				wait(0.5)
+				container:Destroy()
 			end)
 		end
 
@@ -127,14 +139,14 @@ local function checkChild(child)
 			local meta = require(clientModule)
 			warn(`Got metatable: {tostring(meta)}`)
 			if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
-				local _,ret = pcall(meta,{
+				local _, ret = pcall(meta, {
 					Module = clientModule,
 					Start = start,
 					Loader = script,
 					Name = origName,
 					LoadingTime = loadingTime,
 					CallCheck = callCheck,
-					Kill = Kill
+					Kill = Kill,
 				})
 
 				warn(`Got return: {tostring(ret)}`)
@@ -159,24 +171,29 @@ end
 
 local function scan(folder)
 	warn("Scanning for client...")
-	if not doPcall(function()
-			for _,child in folder:GetChildren() do
+	if
+		not doPcall(function()
+			for _, child in folder:GetChildren() do
 				if child.Name == "Adonis_Container" then
-					local client = child:FindFirstChildOfClass("Folder") or child:WaitForChild("Adonis_Client", 5);
+					local client = child:FindFirstChildOfClass("Folder") or child:WaitForChild("Adonis_Client", 5)
 					if client then
-						doPcall(checkChild, client);
+						doPcall(checkChild, client)
 					end
 				end
 			end
-		end) then warn("Scan failed?") Kick(player, "ACLI: Loading Error [Scan failed]"); end
+		end)
+	then
+		warn("Scan failed?")
+		Kick(player, "ACLI: Loading Error [Scan failed]")
+	end
 end
 
 --// Load client
 
 if _G.__CLIENTLOADER then
-	warn("ClientLoader already running;");
+	warn("ClientLoader already running;")
 else
-	_G.__CLIENTLOADER = true;
+	_G.__CLIENTLOADER = true
 
 	print("Debug: ACLI Loading?")
 	setfenv(1, {})
@@ -193,16 +210,16 @@ else
 
 	warn("Checking Services")
 
-	warn("Waiting for PlayerGui...");
-	local playerGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 600);
+	warn("Waiting for PlayerGui...")
+	local playerGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui", 600)
 
 	if not playerGui then
-		warn("PlayerGui not found after 10 minutes");
-		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)");
+		warn("PlayerGui not found after 10 minutes")
+		Kick(player, "ACLI: PlayerGui Never Appeared (Waited 10 Minutes)")
 	else
 		playerGui.Changed:Connect(function()
 			if playerGui.Name ~= "PlayerGui" then
-				playerGui.Name = "PlayerGui";
+				playerGui.Name = "PlayerGui"
 			end
 		end)
 	end
@@ -210,24 +227,24 @@ else
 	finderEvent = playerGui.ChildAdded:Connect(function(child)
 		warn("Child Added")
 		if not foundClient and child.Name == "Adonis_Container" then
-			local client = child:FindFirstChildOfClass("Folder");
-			doPcall(checkChild, client);
+			local client = child:FindFirstChildOfClass("Folder")
+			doPcall(checkChild, client)
 		end
 	end)
 
 	warn("Waiting and scanning (incase event fails)...")
 	repeat
-		scan(playerGui);
-		wait(5);
+		scan(playerGui)
+		wait(5)
 	until (time() - start > 600) or foundClient
 
-	warn(`Elapsed: {tostring(time() - start)}`);
-	warn(`Timeout: {tostring(time() - start > 600)}`);
-	warn(`Found Client: {tostring(foundClient)}`);
+	warn(`Elapsed: {tostring(time() - start)}`)
+	warn(`Timeout: {tostring(time() - start > 600)}`)
+	warn(`Found Client: {tostring(foundClient)}`)
 
-	warn("Disconnecting finder event...");
+	warn("Disconnecting finder event...")
 	if finderEvent then
-		finderEvent:Disconnect();
+		finderEvent:Disconnect()
 	end
 
 	warn("Checking if client found...")

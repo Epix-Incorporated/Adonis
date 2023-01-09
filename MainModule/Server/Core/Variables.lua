@@ -11,8 +11,8 @@ return function(Vargs, GetEnv)
 	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local server = Vargs.Server
-	local service = Vargs.Service
+	server = Vargs.Server
+	service = Vargs.Service
 
 	local Logs, Variables, Settings
 	local function Init()

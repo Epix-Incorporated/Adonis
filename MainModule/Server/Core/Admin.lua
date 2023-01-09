@@ -316,14 +316,14 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
-		end;
+		end,
 
 		GetPlayerGroups = function(p: Player)
 			if not p or p.Parent ~= service.Players then
 				return {}
 			end
 			return Admin.GetGroups(p.UserId)
-		end;
+		end,
 
 		GetPlayerGroup = function(p, group)
 			local groups = Admin.GetPlayerGroups(p)
@@ -335,7 +335,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		GetGroups = function(uid, updateCache)
 			uid = tonumber(uid)
@@ -378,7 +378,7 @@ return function(Vargs, GetEnv)
 					return cloneTable((existCache and existCache.Groups) or {})
 				end
 			end
-		end;
+		end,
 
 		GetGroupLevel = function(uid, groupId)
 			groupId = tonumber(groupId)
@@ -394,7 +394,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return 0
-		end;
+		end,
 
 		CheckInGroup = function(uid, groupId)
 			local groups = Admin.GetGroups(uid) or {}
@@ -409,7 +409,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end;
+		end,
 
 		IsLax = function(str)
 			for _, v in { "plr", "user", "player", "brickcolor" } do
@@ -419,7 +419,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end;
+		end,
 
 		IsMuted = function(player)
 			local DoCheck = Admin.DoCheck
@@ -442,7 +442,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		DoCheck = function(pObj, check, banCheck)
 			local pType = typeof(pObj)
@@ -519,7 +519,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return check == plr
-		end;
+		end,
 
 		LevelToList = function(lvl)
 			lvl = tonumber(lvl)
@@ -533,7 +533,7 @@ return function(Vargs, GetEnv)
 					return list.Users, listName, list
 				end
 			end
-		end;
+		end,
 
 		LevelToListName = function(lvl)
 			if lvl > 999 then
@@ -555,7 +555,7 @@ return function(Vargs, GetEnv)
 					return i
 				end
 			end
-		end;
+		end,
 
 		UpdateCachedLevel = function(p, data)
 			data = data or Core.GetPlayer(p)
@@ -581,7 +581,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return level, rank
-		end;
+		end,
 
 		GetLevel = function(p)
 			local data = Core.GetPlayer(p)
@@ -617,7 +617,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return level or 0, rank
-		end;
+		end,
 
 		GetUpdatedLevel = function(p, _)
 			local doCheck = Admin.DoCheck
@@ -661,7 +661,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return highestLevel, highestRank
-		end;
+		end,
 
 		IsPlaceOwner = function(p)
 			if type(p) == "userdata" and p:IsA("Player") then
@@ -679,11 +679,11 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
-		end;
+		end,
 
 		CheckAdmin = function(p)
 			return Admin.GetLevel(p) > 0
-		end;
+		end,
 
 		SetLevel = function(p, level, _, rankName)
 			local current = Admin.GetLevel(p)
@@ -703,7 +703,7 @@ return function(Vargs, GetEnv)
 			end
 
 			Admin.UpdateCachedLevel(p)
-		end;
+		end,
 
 		IsTempAdmin = function(p)
 			local DoCheck = Admin.DoCheck
@@ -712,7 +712,7 @@ return function(Vargs, GetEnv)
 					return true, i
 				end
 			end
-		end;
+		end,
 
 		RemoveAdmin = function(p, temp, override)
 			local _, rank = Admin.GetLevel(p)
@@ -759,7 +759,7 @@ return function(Vargs, GetEnv)
 			end
 
 			Admin.UpdateCachedLevel(p)
-		end;
+		end,
 
 		AddAdmin = function(p, level, temp)
 			local _, rank = Admin.GetLevel(p)
@@ -821,7 +821,7 @@ return function(Vargs, GetEnv)
 			end
 
 			Admin.UpdateCachedLevel(p)
-		end;
+		end,
 
 		CheckDonor = function(p)
 			local key = tostring(p.UserId)
@@ -847,7 +847,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		CheckBan = function(p)
 			local doCheck = Admin.DoCheck
@@ -892,7 +892,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		AddBan = function(p, reason, doSave, moderator)
 			local value = {
@@ -927,7 +927,7 @@ return function(Vargs, GetEnv)
 			end
 
 			service.Events.PlayerBanned:Fire(p, reason, doSave, moderator)
-		end;
+		end,
 
 		AddTimeBan = function(p: Player | { [string]: any }, duration: number, reason: string, moderator: Player?)
 			local value = {
@@ -961,7 +961,7 @@ return function(Vargs, GetEnv)
 			end
 
 			service.Events.PlayerBanned:Fire(p, reason, true, moderator)
-		end;
+		end,
 
 		DoBanCheck = function(name: string | number | Instance, check: string | { [string]: any })
 			local id = type(name) == "number" and name
@@ -995,7 +995,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return false
-		end;
+		end,
 
 		RemoveBan = function(name, doSave)
 			local ret
@@ -1013,7 +1013,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 			return ret
-		end;
+		end,
 
 		RemoveTimeBan = function(name: string | number | Instance)
 			local ret
@@ -1030,7 +1030,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 			return ret
-		end;
+		end,
 
 		RunCommand = function(coma: string, ...)
 			local _, com = Admin.GetCommand(coma)
@@ -1040,7 +1040,7 @@ return function(Vargs, GetEnv)
 
 				TrackTask(`Command: {coma}`, com.Function, false, args)
 			end
-		end;
+		end,
 
 		RunCommandAsPlayer = function(coma, plr, ...)
 			local _, com = Admin.GetCommand(coma)
@@ -1068,7 +1068,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 			end
-		end;
+		end,
 
 		RunCommandAsNonAdmin = function(coma, plr, ...)
 			local _, com = Admin.GetCommand(coma)
@@ -1095,7 +1095,7 @@ return function(Vargs, GetEnv)
 					})
 				end
 			end
-		end;
+		end,
 
 		CacheCommands = function()
 			local tempTable = {}
@@ -1114,7 +1114,7 @@ return function(Vargs, GetEnv)
 
 			Admin.PrefixCache = tempPrefix
 			Admin.CommandCache = tempTable
-		end;
+		end,
 
 		GetCommand = function(Command)
 			if Admin.PrefixCache[string.sub(Command, 1, 1)] or Variables.BlankPrefix then
@@ -1133,7 +1133,7 @@ return function(Vargs, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		FindCommands = function(Command)
 			local prefixChar = string.sub(Command, 1, 1)
@@ -1167,7 +1167,7 @@ return function(Vargs, GetEnv)
 
 				return foundCmds
 			end
-		end;
+		end,
 
 		SetPermission = function(comString, newLevel)
 			local cmds = Admin.FindCommands(comString)
@@ -1176,7 +1176,7 @@ return function(Vargs, GetEnv)
 					cmd.AdminLevel = newLevel
 				end
 			end
-		end;
+		end,
 
 		FormatCommandArguments = function(command)
 			local text = ""
@@ -1187,7 +1187,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 			return text
-		end;
+		end,
 
 		FormatCommand = function(command, cmdn)
 			local text = `{command.Prefix}{command.Commands[cmdn or 1]}`
@@ -1195,7 +1195,7 @@ return function(Vargs, GetEnv)
 				text ..= `{Settings.SplitKey}{Admin.FormatCommandArguments(command)}`
 			end
 			return text
-		end;
+		end,
 
 		FormatCommandAdminLevel = function(command)
 			local levels = if type(command.AdminLevel) == "table"
@@ -1216,7 +1216,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 			return permissionDesc
-		end;
+		end,
 
 		CheckTable = function(p, tab)
 			local doCheck = Admin.DoCheck
@@ -1225,7 +1225,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
-		end;
+		end,
 
 		--// Make it so you can't accidentally overwrite certain existing commands... resulting in being unable to add/edit/remove aliases (and other stuff)
 		CheckAliasBlacklist = function(alias)
@@ -1239,7 +1239,7 @@ return function(Vargs, GetEnv)
 				[":adonissettings"] = true,
 			}
 			return blacklist[alias]
-		end;
+		end,
 
 		GetArgs = function(msg, num, ...)
 			local args = Functions.Split(
@@ -1251,7 +1251,7 @@ return function(Vargs, GetEnv)
 				table.insert(args, v)
 			end
 			return args
-		end;
+		end,
 
 		AliasFormat = function(aliases, msg)
 			local CheckAliasBlacklist, EscapeSpecialCharacters =
@@ -1282,7 +1282,7 @@ return function(Vargs, GetEnv)
 			--end
 
 			return msg
-		end;
+		end,
 
 		StringToComLevel = function(str)
 			local strType = type(str)
@@ -1295,7 +1295,7 @@ return function(Vargs, GetEnv)
 
 			local lvl = Settings.Ranks[str]
 			return (lvl and lvl.Level) or tonumber(str)
-		end;
+		end,
 
 		CheckComLevel = function(plrAdminLevel, comLevel)
 			if type(comLevel) == "string" then
@@ -1310,7 +1310,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return type(comLevel) == "number" and plrAdminLevel >= comLevel
-		end;
+		end,
 
 		IsBlacklisted = function(p)
 			local CheckTable = Admin.CheckTable
@@ -1319,7 +1319,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 			end
-		end;
+		end,
 
 		CheckPermission = function(pDat, cmd, ignoreCooldown, opts)
 			opts = opts or {}
@@ -1438,7 +1438,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return permAllowed, nil
-		end;
+		end,
 
 		UpdateCooldown = function(pDat, cmd)
 			if pDat.Player == "SYSTEM" then
@@ -1492,7 +1492,7 @@ return function(Vargs, GetEnv)
 					crossCooldown_Cache[cmdFullName] = lastUsed
 				end
 			end
-		end;
+		end,
 
 		SearchCommands = function(p, search)
 			local checkPerm = Admin.CheckPermission
@@ -1510,7 +1510,7 @@ return function(Vargs, GetEnv)
 			end
 
 			return tab
-		end;
+		end,
 
 		CheckAuthority = function(p, target, actionName, allowSelf)
 			if p == target then
@@ -1530,6 +1530,6 @@ return function(Vargs, GetEnv)
 
 			Functions.Hint(`You don't have permission to {actionName} {service.FormatPlayer(target)}`, { p })
 			return false
-		end;
+		end,
 	}
 end

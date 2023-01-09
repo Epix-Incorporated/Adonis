@@ -9,10 +9,10 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local client = client
-	local service = client.Service
+	client = client
+	service = client.Service
 
-	local Routine = Routine
+	Routine = Routine
 
 	local player: Player = data.Target
 
@@ -387,7 +387,7 @@ return function(data, env)
 				then
 					local entry = scroller:Add("TextLabel", {
 						Text = "",
-						ToolTip = `{groupInfo.IsPrimary and "Primary Group | " or ""}ID: {groupInfo.Id} | Rank: {groupInfo.Rank}{groupInfo.Rank == 255 and " (Owner)" or ""}`
+						ToolTip = `{groupInfo.IsPrimary and "Primary Group | " or ""}ID: {groupInfo.Id} | Rank: {groupInfo.Rank}{groupInfo.Rank == 255 and " (Owner)" or ""}`,
 						BackgroundTransparency = ((i - 1) % 2 == 0 and 0) or 0.2,
 						Size = UDim2.new(1, -10, 0, 30),
 						Position = UDim2.new(0, 5, 0, (30 * (i - 1))),
@@ -523,10 +523,7 @@ return function(data, env)
 				if self.Active then
 					self.Active = false
 					self.AutoButtonColor = false
-					client.Remote.Send(
-						"ProcessCommand",
-						`{data.CmdPrefix}viewtools{data.CmdSplitKey}{player.Name}`
-					)
+					client.Remote.Send("ProcessCommand", `{data.CmdPrefix}viewtools{data.CmdSplitKey}{player.Name}`)
 					task.wait(2)
 					self.AutoButtonColor = true
 					self.Active = true

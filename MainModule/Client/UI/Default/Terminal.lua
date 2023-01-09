@@ -43,7 +43,6 @@ return function(_, env)
 
 	window:BindEvent(service.Events.TerminalLive, function(rData)
 		local data = rData.Data
-		local rType = rData.Type
 
 		out(data, termLines)
 	end)

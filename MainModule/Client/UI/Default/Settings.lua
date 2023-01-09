@@ -6,8 +6,8 @@ return function(_, env)
 		setfenv(1, env)
 	end
 
-	local client = env.client
-	local service = env.service
+	client = env.client
+	service = env.service
 	local gui = env.gui
 
 	local UI = client.UI

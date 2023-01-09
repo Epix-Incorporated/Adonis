@@ -6,7 +6,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
 	local answer
 
 	local done = false
@@ -56,10 +55,9 @@ return function(data, env)
 	frame.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
 	frame.CanvasPosition = Vector2.new(0, layout.AbsoluteContentSize.Y)
 
-	gTable = window.gTable
 	window:Ready()
 	repeat
-		wait()
+		task.wait()
 	until done == true
 	return answer
 end

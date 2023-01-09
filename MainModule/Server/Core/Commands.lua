@@ -85,7 +85,9 @@ return function(Vargs, GetEnv)
 				cmd.NonChattable = not cmd.Chattable
 				cmd.Chattable = nil
 				warn(
-					`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {tostring(cmd.NonChattable)}`
+					`Deprecated 'Chattable' property found in command {ind}; switched to NonChattable = {tostring(
+						cmd.NonChattable
+					)}`
 				)
 			end
 

@@ -9,39 +9,37 @@ logError = nil
 
 --// Processing
 return function(Vargs, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local getfenv, setfenv, rawequal, print, warn,  pcall,
-	unpack, string, tostring, Instance, require, table, type, UDim2 =
-		getfenv, setfenv, rawequal, print, warn,  pcall,
-	unpack, string, tostring, Instance, require, table, type, UDim2
+	local getfenv, setfenv, rawequal, print, warn, pcall, unpack, string, tostring, Instance, require, table, type, UDim2 =
+		getfenv, setfenv, rawequal, print, warn, pcall, unpack, string, tostring, Instance, require, table, type, UDim2
 
 	local UIFolder = client.UIFolder
 
-	local service = Vargs.Service
-	local client = Vargs.Client
+	service = Vargs.Service
+	client = Vargs.Client
 
 	GetEnv = env.GetEnv
 
 	local Anti, Functions, Remote, UI, Variables
 	local CloneTable, TrackTask
 	local function Init()
-		UI = client.UI;
-		Anti = client.Anti;
+		UI = client.UI
+		Anti = client.Anti
 		Variables = client.Variables
-		Functions = client.Functions;
-		Remote = client.Remote;
+		Functions = client.Functions
+		Remote = client.Remote
 
-		CloneTable = service.CloneTable;
-		TrackTask = service.TrackTask;
+		CloneTable = service.CloneTable
+		TrackTask = service.TrackTask
 
-		UI.Init = nil;
+		UI.Init = nil
 	end
 
 	local function RunLast()
-		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
-		UI.RunLast = nil;
+		UI.DefaultTheme = Remote.Get("Setting", "DefaultTheme")
+		UI.RunLast = nil
 	end
 
 	getfenv().client = nil
@@ -49,35 +47,41 @@ return function(Vargs, GetEnv)
 	getfenv().script = nil
 
 	client.UI = {
-		Init = Init;
-		RunLast = RunLast;
+		Init = Init,
+		RunLast = RunLast,
 		GetHolder = function()
 			if UI.Holder and UI.Holder.Parent == service.PlayerGui then
 				return UI.Holder
 			else
-				pcall(function()if UI.Holder then UI.Holder:Destroy()end end)
+				pcall(function()
+					if UI.Holder then
+						UI.Holder:Destroy()
+					end
+				end)
 				local new = service.New("ScreenGui", {
 					Name = Functions.GetRandom(),
 					Parent = service.PlayerGui,
-				});
+				})
 				UI.Holder = new
 				return UI.Holder
 			end
-		end;
+		end,
 
 		Prepare = function(gui)
-			if true then return gui end	--// Disabled
+			if true then
+				return gui
+			end --// Disabled
 
-			local gTable = UI.Get(gui,false,true)
+			local gTable = UI.Get(gui, false, true)
 			if gui:IsA("ScreenGui") or gui:IsA("GuiMain") then
 				local new = Instance.new("TextLabel")
 				new.BackgroundTransparency = 1
-				new.Size = UDim2.new(1,0,1,0)
+				new.Size = UDim2.new(1, 0, 1, 0)
 				new.Name = gui.Name
 				new.Active = true
 				new.Text = ""
 
-				for _,child in gui:GetChildren() do
+				for _, child in gui:GetChildren() do
 					child.Parent = new
 				end
 
@@ -91,7 +95,7 @@ return function(Vargs, GetEnv)
 			else
 				return gui
 			end
-		end;
+		end,
 
 		LoadModule = function(module, data, env2)
 			data = data or {}
@@ -100,14 +104,14 @@ return function(Vargs, GetEnv)
 			local newEnv = GetEnv(env2, {
 				script = module,
 				client = CloneTable(client),
-				service = CloneTable(service)
+				service = CloneTable(service),
 			})
 
 			if newEnv.service.Threads then
 				newEnv.service.Threads = CloneTable(service.Threads)
 			end
 
-			for i,v in newEnv.client do
+			for i, v in newEnv.client do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
 					newEnv.client[i] = CloneTable(v)
 				end
@@ -115,11 +119,7 @@ return function(Vargs, GetEnv)
 
 			if ran then
 				local rets = {
-					TrackTask(`UI: {module:GetFullName()}`,
-						setfenv(func, newEnv),
-						data,
-						newEnv
-					)
+					TrackTask(`UI: {module:GetFullName()}`, setfenv(func, newEnv), data, newEnv),
 				}
 
 				if rets[1] then
@@ -131,7 +131,7 @@ return function(Vargs, GetEnv)
 			else
 				warn("Error while loading module", module.Name, tostring(func))
 			end
-		end;
+		end,
 
 		GetNew = function(theme, name)
 			local foundConfigs = {}
@@ -152,12 +152,12 @@ return function(Vargs, GetEnv)
 					if foundGUI then
 						local config = foundGUI:FindFirstChild("Config")
 						table.insert(foundConfigs, {
-							Theme = theme2;
-							Folder = folder;
-							Name = name2;
-							Found = foundGUI;
-							Config = config;
-							isModule = foundGUI:IsA("ModuleScript");
+							Theme = theme2,
+							Folder = folder,
+							Name = name2,
+							Found = foundGUI,
+							Config = config,
+							isModule = foundGUI:IsA("ModuleScript"),
 						})
 
 						if config then
@@ -184,9 +184,9 @@ return function(Vargs, GetEnv)
 
 			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for _,v in foundConfigs do
+				for _, v in foundConfigs do
 					if v.Config then
-						for _,m in v.Config:GetChildren() do
+						for _, m in v.Config:GetChildren() do
 							if not endConfig[m.Name] then
 								if string.sub(m.Name, 1, 5) == "NoEnv" then
 									endConfig["Code"] = m
@@ -199,8 +199,8 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Load all config values into the new Config folder
-				for _,v in endConfig do
-					v:Clone().Parent = confFolder;
+				for _, v in endConfig do
+					v:Clone().Parent = confFolder
 				end
 
 				--// Find next module based theme GUI if code not found or first in sequence is module (in theme)
@@ -212,18 +212,20 @@ return function(Vargs, GetEnv)
 
 				--// Get rid of an old Config folder and throw the new combination Config folder in
 				local new = foundConfigs[1].Found:Clone()
-				local oldFolder = new:FindFirstChild'Config'
+				local oldFolder = new:FindFirstChild("Config")
 
-				if oldFolder then oldFolder:Destroy() end
+				if oldFolder then
+					oldFolder:Destroy()
+				end
 
 				confFolder.Parent = new
 				return new, foundConfigs[1].Folder, confFolder
 			end
-		end;
+		end,
 
 		Make = function(name, data, themeData)
 			data = data or {}
-			themeData = themeData or Variables.LastServerTheme or {Desktop = "Default"; Mobile = "Mobilius"}
+			themeData = themeData or Variables.LastServerTheme or { Desktop = "Default", Mobile = "Mobilius" }
 
 			local theme = Variables.CustomTheme or (service.IsMobile() and themeData.Mobile) or themeData.Desktop
 			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
@@ -249,7 +251,7 @@ return function(Vargs, GetEnv)
 
 				if isModule then
 					return UI.LoadModule(newGui, data, {
-						script = newGui;
+						script = newGui,
 					})
 				elseif conf and foundConf and foundConf ~= true then
 					local code = foundConf:FindFirstChild("Code") or foundConf:FindFirstChild("NoEnv-Code")
@@ -263,24 +265,29 @@ return function(Vargs, GetEnv)
 					local allowMult = mult and mult.Value or true
 					local found, num = UI.Get(name)
 
-					if not found or ((num and num>0) and allowMult) then
-						local gTable,gIndex = UI.Register(newGui)
+					if not found or ((num and num > 0) and allowMult) then
+						local gTable, gIndex = UI.Register(newGui)
 
 						if folder:IsA("ModuleScript") then
-							local newEnv = GetEnv{{
+							local newEnv = GetEnv({ {
 								script = folder,
-								gTable = gTable
-							}}
+								gTable = gTable,
+							} })
 
 							local _, func = pcall(require, folder)
 							local rets = {
-								pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv),
 							}
 
 							local _, ret = rets[1], rets[2]
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
-									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
+									code = (
+										ret:FindFirstChild("Config")
+										and (
+											ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code")
+										)
+									) or code
 
 									if not data.NoEnv and code then
 										data.NoEnv = string.sub(code.Name, 1, 5) == "NoEnv"
@@ -302,86 +309,95 @@ return function(Vargs, GetEnv)
 
 						if mod then
 							UI.LoadModule(mod, data, {
-								script = mod;
-								gTable = gTable;
-								Data = data;
-								GUI = newGui;
-								isModifier = true;
+								script = mod,
+								gTable = gTable,
+								Data = data,
+								GUI = newGui,
+								isModifier = true,
 							})
 						end
 
 						return UI.LoadModule(code, data, {
-							script = code;
-							gTable = gTable;
-							Data = data;
-							GUI = newGui;
-							Theme = theme;
-							ThemeFolder = folder;
-							isCode = true;
+							script = code,
+							gTable = gTable,
+							Data = data,
+							GUI = newGui,
+							Theme = theme,
+							ThemeFolder = folder,
+							isCode = true,
 						})
 					end
 				end
 			else
 				print("GUI", name, "not found")
 			end
-		end;
+		end,
 
-		Get = function(obj,ignore,returnOne)
+		Get = function(obj, ignore, returnOne)
 			local found = {}
 			local num = 0
 			if obj then
-				for ind,g in client.GUIs do
+				for ind, g in client.GUIs do
 					if g.Name ~= ignore and g.Object ~= ignore and g ~= ignore then
 						if type(obj) == "string" then
 							if g.Name == obj then
 								found[ind] = g
-								num = num+1
-								if returnOne then return g end
+								num = num + 1
+								if returnOne then
+									return g
+								end
 							end
 						elseif type(obj) == "userdata" then
 							if service.RawEqual(g.Object, obj) then
 								found[ind] = g
-								num = num+1
-								if returnOne then return g end
+								num = num + 1
+								if returnOne then
+									return g
+								end
 							end
 						elseif type(obj) == "boolean" and obj == true then
 							found[ind] = g
-							num = num+1
-							if returnOne then return g end
+							num = num + 1
+							if returnOne then
+								return g
+							end
 						end
 					end
 				end
 			end
-			if num<1 then
+			if num < 1 then
 				return false
 			else
-				return found,num
+				return found, num
 			end
-		end;
+		end,
 
 		Remove = function(name, ignore)
 			local gui = UI.Get(name, ignore)
 			if gui then
-				for _,v in gui do
+				for _, v in gui do
 					v.Destroy()
 				end
 			end
-		end;
+		end,
 
 		Register = function(gui, data)
 			local gIndex = Functions.GetRandom()
-			local gTable;gTable = {
+			local gTable
+			gTable = {
 				Object = gui,
-				Config = gui:FindFirstChild('Config');
+				Config = gui:FindFirstChild("Config"),
 				Name = gui.Name,
 				Events = {},
 				Class = gui.ClassName,
 				Index = gIndex,
 				Active = true,
 				Ready = function()
-					if gTable.Config then gTable.Config.Parent = nil end
-					local ran,err = pcall(function()
-						local obj = gTable.Object;
+					if gTable.Config then
+						gTable.Config.Parent = nil
+					end
+					local ran, err = pcall(function()
+						local obj = gTable.Object
 						if gTable.Class == "ScreenGui" or gTable.Class == "GuiMain" then
 							if obj.DisplayOrder == 0 then
 								obj.DisplayOrder = 90000
@@ -392,7 +408,7 @@ return function(Vargs, GetEnv)
 						else
 							obj.Parent = UI.GetHolder()
 						end
-					end);
+					end)
 
 					if ran then
 						gTable.Active = true
@@ -410,7 +426,7 @@ return function(Vargs, GetEnv)
 					local Events = gTable.Events
 					local disc = function()
 						origDisc(signal)
-						for i,v in Events do
+						for i, v in Events do
 							if v.Signal == signal then
 								table.remove(Events, i)
 							end
@@ -418,19 +434,20 @@ return function(Vargs, GetEnv)
 					end
 
 					table.insert(Events, {
-						Signal = signal;
-						Remove = disc
+						Signal = signal,
+						Remove = disc,
 					})
 
 					return {
-						Disconnect = disc;
-						disconnect = disc;
-						wait = service.CheckProperty(signal, "wait") and signal.wait
-					}, signal
+						Disconnect = disc,
+						disconnect = disc,
+						wait = service.CheckProperty(signal, "wait") and signal.wait,
+					},
+						signal
 				end,
 
 				ClearEvents = function()
-					for _,v in gTable.Events do
+					for _, v in gTable.Events do
 						v:Remove()
 					end
 				end,
@@ -456,8 +473,10 @@ return function(Vargs, GetEnv)
 					end
 				end,
 
-				Register = function(tab,new)
-					if not new then new = tab end
+				Register = function(tab, new)
+					if not new then
+						new = tab
+					end
 
 					new:SetSpecial("Destroy", gTable.Destroy)
 					gTable.Object = service.Wrap(new)
@@ -481,11 +500,11 @@ return function(Vargs, GetEnv)
 						end
 					end)
 					client.GUIs[gIndex] = gTable
-				end
+				end,
 			}
 
 			if data then
-				for i,v in data do
+				for i, v in data do
 					gTable[i] = v
 				end
 			end
@@ -493,8 +512,8 @@ return function(Vargs, GetEnv)
 			gui.Name = Functions.GetRandom()
 			gTable:Register(gui)
 
-			return gTable,gIndex
-		end
+			return gTable, gIndex
+		end,
 	}
 
 	client.UI.RegisterGui = client.UI.Register

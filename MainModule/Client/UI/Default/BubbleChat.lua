@@ -6,7 +6,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
 	local color = data.Color
 
 	if color == "off" then
@@ -55,7 +54,6 @@ return function(data, env)
 				end
 			end)
 
-			gTable = window.gTable
 			window:Ready()
 		end
 	end

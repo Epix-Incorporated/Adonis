@@ -18,13 +18,12 @@ local bGyro: AlignOrientation = part:WaitForChild("ADONIS_FLIGHT_GYRO")
 
 local speedVal = script:WaitForChild("Speed")
 local noclip = script:WaitForChild("Noclip")
-local Create = Instance.new
 local flying = true
 
 local keyTab = {}
 local dir = {}
 
-local antiLoop, humChanged, conn
+local antiLoop, conn
 local Check, getCF, dirToCom, Start, Stop, Toggle, HandleInput, listenConnection
 
 local RBXConnections = {}
@@ -158,10 +157,6 @@ end
 function Stop()
 	flying = false
 	human.PlatformStand = false
-
-	if humChanged then
-		humChanged:Disconnect()
-	end
 
 	if bPos then
 		bPos.MaxForce = 0

@@ -9,21 +9,37 @@ logError = nil
 
 --// Anti-Exploit
 return function(_, GetEnv)
-	local env = GetEnv(nil, {script = script})
+	local env = GetEnv(nil, { script = script })
 	setfenv(1, env)
 
-	local game, getfenv, workspace, getmetatable, setmetatable,
-	loadstring, coroutine, rawequal, typeof, math, warn, pcall,
-	xpcall, select, rawget, os, string,
-	tostring, tonumber, Instance, type, wait, Enum =
-	game, getfenv, workspace, getmetatable, setmetatable,
-	loadstring, coroutine, rawequal, typeof, math, warn, pcall,
-	xpcall, select, rawget, os, string,
-	tostring, tonumber, Instance, type, task.wait, Enum
+	local game, getfenv, workspace, getmetatable, setmetatable, loadstring, coroutine, rawequal, typeof, math, warn, pcall, xpcall, select, rawget, os, string, tostring, tonumber, Instance, type, wait, Enum =
+		game,
+		getfenv,
+		workspace,
+		getmetatable,
+		setmetatable,
+		loadstring,
+		coroutine,
+		rawequal,
+		typeof,
+		math,
+		warn,
+		pcall,
+		xpcall,
+		select,
+		rawget,
+		os,
+		string,
+		tostring,
+		tonumber,
+		Instance,
+		type,
+		task.wait,
+		Enum
 
 	local Anti, Variables
-	local service = service
-	local client = client
+	service = service
+	client = client
 	local Core = client.Core
 	local Remote = client.Remote
 	local Functions = client.Functions
@@ -37,10 +53,10 @@ return function(_, GetEnv)
 	local Kick = Player.Kick
 
 	local function Init()
-		Anti = client.Anti;
-		Variables = client.Variables;
+		Anti = client.Anti
+		Variables = client.Variables
 
-		Anti.Init = nil;
+		Anti.Init = nil
 	end
 
 	local function RunAfterLoaded()
@@ -50,11 +66,11 @@ return function(_, GetEnv)
 			end
 		end)
 
-		Anti.RunAfterLoaded = nil;
+		Anti.RunAfterLoaded = nil
 	end
 
 	local function RunLast()
-		Anti.RunLast = nil;
+		Anti.RunLast = nil
 	end
 
 	getfenv().client = nil
@@ -68,7 +84,7 @@ return function(_, GetEnv)
 			if action == "kick" then
 				if not isStudio then
 					if nocrash then
-						Player:Kick(info);
+						Player:Kick(info)
 					else
 						Disconnect(info)
 					end
@@ -78,7 +94,7 @@ return function(_, GetEnv)
 			end
 		end
 		return true
-	end;
+	end
 
 	do
 		local callStacks = {
@@ -86,7 +102,7 @@ return function(_, GetEnv)
 			indexInstance2 = {},
 			namecallInstance = {},
 			indexEnum = {},
-			eqEnum = {}
+			eqEnum = {},
 		}
 		local errorMessages = {}
 		local rawGame = service.UnWrap(game)
@@ -108,90 +124,103 @@ return function(_, GetEnv)
 		end
 
 		local detectors = {
-			indexInstance = {"kick", function()
-				local callstackInvalid = false
+			indexInstance = {
+				"kick",
+				function()
+					local callstackInvalid = false
 
-				local success, err = xpcall(function()
-					local _ = game.____________
-				end, function()
-					if callstackInvalid or checkStack("indexInstance1") then
-						callstackInvalid = true
+					local success, err = xpcall(function()
+						local _ = game.____________
+					end, function()
+						if callstackInvalid or checkStack("indexInstance1") then
+							callstackInvalid = true
+						end
+					end)
+					local success2, err2 = xpcall(function()
+						local _ = game[nil]
+					end, function()
+						if callstackInvalid or checkStack("indexInstance2") then
+							callstackInvalid = true
+						end
+					end)
+
+					if callstackInvalid or success or success2 then
+						return true
+					elseif not errorMessages["indexInstance"] then
+						errorMessages["indexInstance"] = { err, err2 }
 					end
-				end)
-				local success2, err2 = xpcall(function()
-					local _ = game[nil]
-				end, function()
-					if callstackInvalid or checkStack("indexInstance2") then
-						callstackInvalid = true
+
+					return errorMessages["indexInstance"][1] ~= err or errorMessages["indexInstance"][2] ~= err2
+				end,
+			},
+			namecallInstance = {
+				"kick",
+				function()
+					local callstackInvalid = false
+
+					local success, err = xpcall(function()
+						local _ = game:____________()
+					end, function()
+						if callstackInvalid or checkStack("namecallInstance") then
+							callstackInvalid = true
+						end
+					end)
+
+					if callstackInvalid or success then
+						return true
+					elseif not errorMessages["namecallInstance"] then
+						errorMessages["namecallInstance"] = err
 					end
-				end)
 
-				if callstackInvalid or success or success2 then
-					return true
-				elseif not errorMessages["indexInstance"] then
-					errorMessages["indexInstance"] = {err, err2}
-				end
+					return errorMessages["namecallInstance"] ~= err
+				end,
+			},
+			indexEnum = {
+				"kick",
+				function()
+					local callstackInvalid = false
 
-				return errorMessages["indexInstance"][1] ~= err or errorMessages["indexInstance"][2] ~= err2
-			end},
-			namecallInstance = {"kick", function()
-				local callstackInvalid = false
+					local success, err = xpcall(function()
+						local _ = Enum.HumanoidStateType.____________
+					end, function()
+						if callstackInvalid or checkStack("indexEnum1") then
+							callstackInvalid = true
+						end
+					end)
+					local success2, err2 = xpcall(function()
+						local _ = Enum.HumanoidStateType[nil]
+					end, function()
+						if callstackInvalid or checkStack("indexEnum2") then
+							callstackInvalid = true
+						end
+					end)
 
-				local success, err = xpcall(function()
-					local _ = game:____________()
-				end, function()
-					if callstackInvalid or checkStack("namecallInstance") then
-						callstackInvalid = true
+					if callstackInvalid or success or success2 then
+						return true
+					elseif not errorMessages["indexEnum"] then
+						errorMessages["indexEnum"] = { err, err2 }
 					end
-				end)
 
-				if callstackInvalid or success then
-					return true
-				elseif not errorMessages["namecallInstance"] then
-					errorMessages["namecallInstance"] = err
-				end
-
-				return errorMessages["namecallInstance"] ~= err
-			end},
-			indexEnum = {"kick", function()
-				local callstackInvalid = false
-
-				local success, err = xpcall(function()
-					local _ = Enum.HumanoidStateType.____________
-				end, function()
-					if callstackInvalid or checkStack("indexEnum1") then
-						callstackInvalid = true
-					end
-				end)
-				local success2, err2 = xpcall(function()
-					local c = Enum.HumanoidStateType[nil]
-				end, function()
-					if callstackInvalid or checkStack("indexEnum2") then
-						callstackInvalid = true
-					end
-				end)
-
-				if callstackInvalid or success or success2 then
-					return true
-				elseif not errorMessages["indexEnum"] then
-					errorMessages["indexEnum"] = {err, err2}
-				end
-
-				return errorMessages["indexEnum"][1] ~= err or errorMessages["indexEnum"][2] ~= err2
-			end},
-			eqEnum = {"kick", function()
-				return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
-			end},
+					return errorMessages["indexEnum"][1] ~= err or errorMessages["indexEnum"][2] ~= err2
+				end,
+			},
+			eqEnum = {
+				"kick",
+				function()
+					return not (Enum.HumanoidStateType.Running == Enum.HumanoidStateType.Running)
+				end,
+			},
 		}
 
 		Routine(function()
 			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
-					while true do end
+					while true do
+					end
 				end
 
 				for method, detector in detectors do
-					local action, callback = detector[1],  detector[2]
+					local action, callback = detector[1], detector[2]
 
 					local success, value = pcall(callback)
 					if not success or value ~= false and value ~= true then
@@ -218,8 +247,10 @@ return function(_, GetEnv)
 					end)
 
 					if
-						success or err ~= "Expected ':' not '.' calling member function Kick" or
-						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace.Name
+						success
+						or err ~= "Expected ':' not '.' calling member function Kick"
+						or success2
+						or string.match(err2, '^Kick is not a valid member of Workspace "(.+)"$') ~= workspace.Name
 					then
 						Detected("kick", "Anti kick found! Method 1")
 						warn(success, err, "|", success2, err2)
@@ -230,16 +261,20 @@ return function(_, GetEnv)
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
+								success, err = pcall(
+									LocalPlayer.Kick,
+									otherPlayer,
+									"If this message appears, report it to Adonis maintainers. #2"
+								)
 								success2, err2 = pcall(function()
 									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")
 								end)
 
 								if
-									success or
-									err ~= "Cannot kick a non-local Player from a LocalScript" or
-									success2 or
-									err2 ~= "Cannot kick a non-local Player from a LocalScript"
+									success
+									or err ~= "Cannot kick a non-local Player from a LocalScript"
+									or success2
+									or err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
 									Detected("kick", "Anti kick found! Method 2")
 									warn(success, err, "|", success2, err2)
@@ -256,7 +291,10 @@ return function(_, GetEnv)
 						Detected("kick", "Anti kick found! Method 3")
 					end
 					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
-					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+					if
+						success
+						or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS")
+					then
 						Detected("kick", "Anti FPS detection found!")
 					end
 				end)()
@@ -271,7 +309,7 @@ return function(_, GetEnv)
 					Detected("kill", "Speed exploiting")
 				end
 			end)
-		end;
+		end,
 
 		AntiAntiIdle = function(data)
 			local hasActivated = false
@@ -307,22 +345,22 @@ return function(_, GetEnv)
 				local clientReplicator = networkClient.ClientReplicator
 
 				if
-					#networkClient:GetChildren() == 1 and
-					#networkClient:GetDescendants() == 1 and
-					networkClient:GetChildren()[1] == clientReplicator and
-					networkClient:GetDescendants()[1] == clientReplicator and
-					networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
-					networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
-					networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
-					networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
-					clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
+					#networkClient:GetChildren() == 1
+					and #networkClient:GetDescendants() == 1
+					and networkClient:GetChildren()[1] == clientReplicator
+					and networkClient:GetDescendants()[1] == clientReplicator
+					and networkClient:FindFirstChild("ClientReplicator") == clientReplicator
+					and networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator
+					and networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator
+					and networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator
+					and clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
 				then
 					connection = networkClient.DescendantRemoving:Connect(function(object)
 						if
-							object == clientReplicator and
-							object.Parent == networkClient and
-							object:IsA("NetworkReplicator") and
-							object:GetPlayer() == service.UnWrap(Player)
+							object == clientReplicator
+							and object.Parent == networkClient
+							and object:IsA("NetworkReplicator")
+							and object:GetPlayer() == service.UnWrap(Player)
 						then
 							connection:Disconnect()
 							clientHasClosed = true
@@ -338,18 +376,21 @@ return function(_, GetEnv)
 					if type(time2) ~= "number" or not (time2 > 0) then
 						idleTamper("Invalid time data")
 					elseif time2 > 30 * 60 and isAntiAntiIdlecheck ~= false then
-						Detected("kick", `Anti-idle detected. {tostring(math.ceil(time2/60) - 20)} minutes above maximum possible Roblox value`)
+						Detected(
+							"kick",
+							`Anti-idle detected. {tostring(math.ceil(time2 / 60) - 20)} minutes above maximum possible Roblox value`
+						)
 					end
 				end)
 
 				if
-					type(connection) ~= "userdata" or
-					not rawequal(typeof(connection), "RBXScriptConnection") or
-					connection.Connected ~= true or
-					not rawequal(type(connection.Disconnect), "function") or
-					not rawequal(typeof(idledEvent), "RBXScriptSignal") or
-					not rawequal(type(idledEvent.Connect), "function") or
-					not rawequal(type(idledEvent.Wait), "function")
+					type(connection) ~= "userdata"
+					or not rawequal(typeof(connection), "RBXScriptConnection")
+					or connection.Connected ~= true
+					or not rawequal(type(connection.Disconnect), "function")
+					or not rawequal(typeof(idledEvent), "RBXScriptSignal")
+					or not rawequal(type(idledEvent.Connect), "function")
+					or not rawequal(type(idledEvent.Wait), "function")
 				then
 					idleTamper("Userdata disrepencies detected")
 				end
@@ -361,15 +402,16 @@ return function(_, GetEnv)
 					return
 				end
 			end
-		end;
+		end,
 
 		HumanoidState = function()
 			task.wait(1)
-			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2) or service.Player.Character:FindFirstChildOfClass("Humanoid")
+			local humanoid = service.Player.Character:WaitForChild("Humanoid", 2)
+				or service.Player.Character:FindFirstChildOfClass("Humanoid")
 			local event
 			local doing = true
 			if humanoid then
-				event = humanoid.StateChanged:Connect(function(_,new)
+				event = humanoid.StateChanged:Connect(function(_, new)
 					if not doing then
 						event:Disconnect()
 					end
@@ -382,8 +424,11 @@ return function(_, GetEnv)
 
 				while humanoid and humanoid.Parent and humanoid.Parent.Parent and doing and wait(0.1) do
 					if
-						not (Enum.HumanoidStateType.StrafingNoPhysics == Enum.HumanoidStateType.StrafingNoPhysics) or
-						not rawequal(Enum.HumanoidStateType.StrafingNoPhysics, Enum.HumanoidStateType.StrafingNoPhysics)
+						not (Enum.HumanoidStateType.StrafingNoPhysics == Enum.HumanoidStateType.StrafingNoPhysics)
+						or not rawequal(
+							Enum.HumanoidStateType.StrafingNoPhysics,
+							Enum.HumanoidStateType.StrafingNoPhysics
+						)
 					then
 						Detected("crash", "Enum tampering detected")
 					elseif rawequal(humanoid:GetState(), Enum.HumanoidStateType.StrafingNoPhysics) and doing then
@@ -392,27 +437,27 @@ return function(_, GetEnv)
 					end
 				end
 			end
-		end;
+		end,
 
 		MainDetection = function()
 			local lookFor = {
-				"current identity is [0789]";
-				"gui made by kujo";
-				"tetanus reloaded hooked";
-				"hookmetamethod";
-				"hookfunction";
-				"HttpGet";
-				"^Chunk %w+, at Line %d+";
-				"reviz admin";
-				"iy is already loaded";
-				"infinite yield is already loaded";
-				"infinite yield is already";
-				"iy_debug";
-				"returning json";
-				"shattervast";
-				"failed to parse json";
+				"current identity is [0789]",
+				"gui made by kujo",
+				"tetanus reloaded hooked",
+				"hookmetamethod",
+				"hookfunction",
+				"HttpGet",
+				"^Chunk %w+, at Line %d+",
+				"reviz admin",
+				"iy is already loaded",
+				"infinite yield is already loaded",
+				"infinite yield is already",
+				"iy_debug",
+				"returning json",
+				"shattervast",
+				"failed to parse json",
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
-				"getrawmetatable";
+				"getrawmetatable",
 			}
 
 			local soundIds = {
@@ -420,16 +465,25 @@ return function(_, GetEnv)
 			}
 
 			local function check(Message)
-				for _,v in lookFor do
-					if not string.find(string.lower(Message), "failed to load") and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
+				for _, v in lookFor do
+					if
+						not string.find(string.lower(Message), "failed to load")
+						and (string.find(string.lower(Message), string.lower(v)) or string.match(Message, v))
+					then
 						return true
 					end
 				end
 			end
 
 			local function soundIdCheck(Sound)
-				for _,v in soundIds do
-					if Sound.SoundId and (string.find(string.lower(tostring(Sound.SoundId)), tostring(v)) or Sound.SoundId == tostring(v)) then
+				for _, v in soundIds do
+					if
+						Sound.SoundId
+						and (
+							string.find(string.lower(tostring(Sound.SoundId)), tostring(v))
+							or Sound.SoundId == tostring(v)
+						)
+					then
 						return true
 					end
 				end
@@ -439,8 +493,22 @@ return function(_, GetEnv)
 			local function checkTool(t)
 				task.wait()
 
-				if t and (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
-					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
+				if
+					t
+					and (t:IsA("Tool") or t.ClassName == "HopperBin")
+					and not t:FindFirstChild(Variables.CodeName)
+					and service.Player:FindFirstChild("Backpack")
+					and t:IsDescendantOf(service.Player.Backpack)
+				then
+					if
+						t.ClassName == "HopperBin"
+						and (
+							rawequal(t.BinType, Enum.BinType.Grab)
+							or rawequal(t.BinType, Enum.BinType.Clone)
+							or rawequal(t.BinType, Enum.BinType.Hammer)
+							or rawequal(t.BinType, Enum.BinType.GameTool)
+						)
+					then
 						Detected("kick", `Building Tools detected; {tostring(t.BinType)}`)
 					end
 				end
@@ -483,7 +551,7 @@ return function(_, GetEnv)
 					local continue = false
 					if Script then
 						for i, v in tab do
-							if v.message == Message and tab[i+1] and tab[i+1].message == Trace then
+							if v.message == Message and tab[i + 1] and tab[i + 1].message == Trace then
 								continue = true
 							end
 						end
@@ -491,7 +559,12 @@ return function(_, GetEnv)
 						continue = true
 					end
 					if continue then
-						if string.match(Trace, "CoreGui") or string.match(Trace, "PlayerScripts") or string.match(Trace, "Animation_Scripts") or string.match(Trace, "^(%S*)%.(%S*)") then
+						if
+							string.match(Trace, "CoreGui")
+							or string.match(Trace, "PlayerScripts")
+							or string.match(Trace, "Animation_Scripts")
+							or string.match(Trace, "^(%S*)%.(%S*)")
+						then
 							return
 						else
 							Detected("log", "Traceless/Scriptless error")
@@ -508,7 +581,9 @@ return function(_, GetEnv)
 			local hasPrinted = false
 			service.StartLoop("Detection", 15, function()
 				--// Stuff
-				local ran,_ = pcall(function() service.ScriptContext.Name = "ScriptContext" end)
+				local ran, _ = pcall(function()
+					service.ScriptContext.Name = "ScriptContext"
+				end)
 				if not ran then
 					Detected("log", "ScriptContext error?")
 				end
@@ -518,7 +593,6 @@ return function(_, GetEnv)
 				local First = Logs[1]
 
 				if not hasPrinted and not First then
-					local startTime = os.clock()
 					client.OldPrint(" ")
 					for i = 1, 5 do
 						task.wait()
@@ -527,7 +601,6 @@ return function(_, GetEnv)
 					Logs = service.LogService:GetLogHistory()
 					First = Logs[1]
 					hasPrinted = true
-
 				else
 					if not First then
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
@@ -535,16 +608,17 @@ return function(_, GetEnv)
 				end
 
 				if
-					not rawequal(type(First), "table") or
-					not rawequal(type(First.message), "string") or
-					not rawequal(typeof(First.messageType), "EnumItem") or
-					not rawequal(type(First.timestamp), "number") or First.timestamp < tick() - os.clock() - 60 * 60 * 15
+					not rawequal(type(First), "table")
+					or not rawequal(type(First.message), "string")
+					or not rawequal(typeof(First.messageType), "EnumItem")
+					or not rawequal(type(First.timestamp), "number")
+					or First.timestamp < tick() - os.clock() - 60 * 60 * 15
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
 					for _, v in Logs do
 						if check(v.message) then
-							Detected("crash", "Exploit detected; "..v.message)
+							Detected("crash", "Exploit detected; " .. v.message)
 						end
 					end
 				end
@@ -577,12 +651,19 @@ return function(_, GetEnv)
 				end
 
 				local mt = {
-					__mode = "v"
+					__mode = "v",
 				}
 
 				-- // Detects certain anti-dex bypasses
 				local tbl = setmetatable({}, mt)
-				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
+				if
+					mt.__mode ~= "v"
+					or rawget(mt, "__mode") ~= "v"
+					or getmetatable(tbl) ~= mt
+					or getDictionaryLenght(mt) ~= 1
+					or "_" == "v"
+					or "v" ~= "v"
+				then
 					Detected("crash", "Anti-dex bypass found. Method 1")
 				else
 					local success, value = pcall(function()
@@ -594,29 +675,29 @@ return function(_, GetEnv)
 					end
 				end
 			end)
-		end
+		end,
 	}, false, true)
 
-	local Launch = function(mode,data)
+	local Launch = function(mode, data)
 		if Anti.Detectors[mode] and service.NetworkClient then
 			Anti.Detectors[mode](data)
 		end
-	end;
+	end
 
 	Anti = service.ReadOnly({
-		Init = Init;
-		RunLast = RunLast;
-		RunAfterLoaded = RunAfterLoaded;
-		Launch = Launch;
-		Detected = Detected;
-		Detectors = Detectors;
+		Init = Init,
+		RunLast = RunLast,
+		RunAfterLoaded = RunAfterLoaded,
+		Launch = Launch,
+		Detected = Detected,
+		Detectors = Detectors,
 
 		RLocked = function(obj)
 			return not pcall(function()
 				return obj.GetFullName(obj)
 			end)
-		end;
-	}, {["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true}, true)
+		end,
+	}, { ["Init"] = true, ["RunLast"] = true, ["RunAfterLoaded"] = true }, true)
 
 	client.Anti = Anti
 
@@ -626,19 +707,42 @@ return function(_, GetEnv)
 		local opcall = meta(pcall)
 		local oWait = meta(task.wait)
 
-		track("Thread: TableCheck", meta(function()
-			while oWait(1) do
-				local ran, core, remote, functions, anti, send, get, detected, disconnect, kill = coroutine.resume(coroutine.create(function()
-					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
-				end))
-				if not ran or core ~= Core or remote ~= Remote or functions ~= Functions or anti ~= Anti or send ~= Send or get ~= Get or detected ~= Detected or disconnect ~= Disconnect or kill ~= Kill then
-					opcall(Detected, "crash", "Tamper Protection 10042")
-					oWait(1)
-					opcall(Disconnect, "Adonis_10042")
-					opcall(Kill, "Adonis_10042")
-					opcall(Kick, Player, "Adonis_10042")
+		track(
+			"Thread: TableCheck",
+			meta(function()
+				while oWait(1) do
+					local ran, core, remote, functions, anti, send, get, detected, disconnect, kill =
+						coroutine.resume(coroutine.create(function()
+							return client.Core,
+								client.Remote,
+								client.Functions,
+								client.Anti,
+								client.Remote.Send,
+								client.Remote.Get,
+								client.Anti.Detected,
+								client.Disconnect,
+								client.Kill
+						end))
+					if
+						not ran
+						or core ~= Core
+						or remote ~= Remote
+						or functions ~= Functions
+						or anti ~= Anti
+						or send ~= Send
+						or get ~= Get
+						or detected ~= Detected
+						or disconnect ~= Disconnect
+						or kill ~= Kill
+					then
+						opcall(Detected, "crash", "Tamper Protection 10042")
+						oWait(1)
+						opcall(Disconnect, "Adonis_10042")
+						opcall(Kill, "Adonis_10042")
+						opcall(Kick, Player, "Adonis_10042")
+					end
 				end
-			end
-		end))
+			end)
+		)
 	end
 end

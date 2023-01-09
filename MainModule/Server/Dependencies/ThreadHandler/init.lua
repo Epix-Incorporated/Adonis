@@ -21,31 +21,38 @@ local runService = game:GetService("RunService")
 setfenv(1, {})
 
 local function getID()
-	threadID = threadID+1
+	threadID = threadID + 1
 	return threadID
 end
 
 this = {
-	Threads = threads;
+	Threads = threads,
 	NewThread = function(func, ...)
 		local scriptType = (runService:IsClient() and "LocalScript") or "Script"
 		local newThread = (scriptType == "LocalScript" and clientThread:Clone()) or serverThread:Clone()
-		local threadName =  `Adonis Thread {tostring(getID())}`
+		local threadName = `Adonis Thread {tostring(getID())}`
 		local newBind = instanceNew("BindableEvent")
 		local retBind = instanceNew("BindableEvent")
-		local sendArgs = {...}
+		local sendArgs = { ... }
 		local changeEvent
 
 		newBind.Name = "Event"
 		newBind.Parent = newThread
 		newThread.Name = threadName
-		newThread.Parent = (scriptType == "LocalScript" and (players.LocalPlayer:FindFirstChild("PlayerScripts") or players.LocalPlayer:FindFirstChild("PlayerGui") or players.LocalPlayer:WaitForChild("Backpack"))) or scriptService
+		newThread.Parent = (
+			scriptType == "LocalScript"
+			and (
+				players.LocalPlayer:FindFirstChild("PlayerScripts")
+				or players.LocalPlayer:FindFirstChild("PlayerGui")
+				or players.LocalPlayer:WaitForChild("Backpack")
+			)
+		) or scriptService
 		threads[newThread] = true
 
 		changeEvent = newThread.Changed:Connect(function(p)
 			if p == "Name" and newThread.Name == "__READY" and threads[newThread] then
 				newBind:Fire(function()
-					local returns = {pcall(func, unpack(sendArgs))}
+					local returns = { pcall(func, unpack(sendArgs)) }
 					threads[newThread] = nil
 					newThread.Disabled = true
 					newThread:Destroy()
@@ -60,15 +67,17 @@ this = {
 			end
 		end)
 
-		spawn(function() newThread.Disabled = false end)
+		spawn(function()
+			newThread.Disabled = false
+		end)
 		return retBind.Event:Wait()
-	end;
+	end,
 
 	EventThread = function(func)
 		return function(...)
-			return setfenv(this.NewThread,getfenv(func))(func, ...)
+			return setfenv(this.NewThread, getfenv(func))(func, ...)
 		end
-	end
+	end,
 }
 
 return this

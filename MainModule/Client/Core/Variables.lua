@@ -14,8 +14,8 @@ return function(Vargs, GetEnv)
 
 	local getfenv = getfenv
 
-	local service = Vargs.Service
-	local client = Vargs.Client
+	service = Vargs.Service
+	client = Vargs.Client
 
 	local Variables
 	local function Init()

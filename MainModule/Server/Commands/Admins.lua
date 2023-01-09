@@ -4,16 +4,14 @@ return function(Vargs, env)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+	local Functions, Commands, Admin, Core, HTTP, Logs, Remote, Variables, Deps =
 		server.Functions,
 		server.Commands,
 		server.Admin,
-		server.Anti,
 		server.Core,
 		server.HTTP,
 		server.Logs,
 		server.Remote,
-		server.Process,
 		server.Variables,
 		server.Deps
 
@@ -1051,7 +1049,7 @@ return function(Vargs, env)
 				elseif action == "close" then
 					assert(args[1] and args[2] and args[3], "Missing arguments")
 					local scr = sb[class][name].Script
-					local tab = Core.GetScript(scr)
+					local _ = Core.GetScript(scr)
 					if sb[class][name] then
 						if sb[class][name].Event then
 							sb[class][name].Event:Disconnect()
@@ -1606,22 +1604,6 @@ return function(Vargs, env)
 						Time = (#tostring(args[1]) / 19) + 2.5,
 						--service.Filter(args[1],plr, v);
 					})
-				end
-			end,
-		},
-
-		Nil = {
-			Prefix = Settings.Prefix,
-			Commands = { "nil" },
-			Args = { "player" },
-			Hidden = true,
-			Description = "Sends the target player(s) to nil, where they will not show up on the player list and not normally be able to interact with the game",
-			AdminLevel = "Admins",
-			Function = function(plr: Player, args: { string })
-				for _, v in service.GetPlayers(plr, args[1]) do
-					v.Character = nil
-					v.Parent = nil
-					Functions.Hint("Sent " .. service.FormatPlayer(v) .. " to nil", { plr })
 				end
 			end,
 		},

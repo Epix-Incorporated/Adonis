@@ -606,15 +606,12 @@ return function(data, env)
 							and function(textureButton)
 								service.Debounce("DonorStatusUpdate", function()
 									local lastValid = currentTexture
-									local donePreview = false
 									local pWindow = UI.Make("Window", {
 										Name = "CapeTexture",
 										Title = "Texture Preview",
 										Size = { 200, 250 },
 										Ready = true,
-										OnClose = function()
-											donePreview = true
-										end,
+										OnClose = function() end,
 									})
 
 									local img = pWindow:Add("ImageLabel", {
@@ -748,7 +745,7 @@ return function(data, env)
 				Size = UDim2.new(0, 60, 0, 20),
 				Position = UDim2.new(0, 5, 1, -50),
 				BackgroundTransparency = 0.7,
-				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.1),
+				BackgroundColor3 = Color3.new(0, 1, 0):Lerp(Color3.new(1, 0, 0), 0.1),
 				OnClick = function()
 					promptPurchase(true, 5212076)
 				end,
@@ -759,7 +756,7 @@ return function(data, env)
 				Size = UDim2.new(0, 60, 0, 20),
 				Position = UDim2.new(0.5, 5, 1, -50),
 				BackgroundTransparency = 0.5,
-				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.3),
+				BackgroundColor3 = Color3.new(0, 1, 0):Lerp(Color3.new(1, 0, 0), 0.3),
 				OnClick = function()
 					promptPurchase(true, 5212077)
 				end,
@@ -770,7 +767,7 @@ return function(data, env)
 				Size = UDim2.new(0, 60, 0, 20),
 				Position = UDim2.new(0, 5, 1, -25),
 				BackgroundTransparency = 0.5,
-				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.6),
+				BackgroundColor3 = Color3.new(0, 1, 0):Lerp(Color3.new(1, 0, 0), 0.6),
 				OnClick = function()
 					promptPurchase(true, 5212081)
 				end,
@@ -781,7 +778,7 @@ return function(data, env)
 				Size = UDim2.new(0, 60, 0, 20),
 				Position = UDim2.new(0.5, 5, 1, -25),
 				BackgroundTransparency = 0.5,
-				BackgroundColor3 = Color3.new(0, 1, 0):lerp(Color3.new(1, 0, 0), 0.9),
+				BackgroundColor3 = Color3.new(0, 1, 0):Lerp(Color3.new(1, 0, 0), 0.9),
 				OnClick = function()
 					promptPurchase(true, 5212082)
 				end,
@@ -930,8 +927,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35),
 				Size = UDim2.new(1, -20, 0, 20),
 				ClearTextOnFocus = false,
-				TextChanged = function(newText)
-				end,
+				TextChanged = function(newText) end,
 			})
 
 			keyBox = binderBox:Add("TextButton", {
@@ -1136,7 +1132,6 @@ return function(data, env)
 								end
 
 								Functions.AddAlias(alias, commandBox.Text)
-								currentAlias = nil
 							end
 
 							binderBox.Visible = false
@@ -1152,7 +1147,6 @@ return function(data, env)
 						BackgroundTransparency = 1,
 						OnClicked = function()
 							if not inputBlock then
-								currentAlias = nil
 								editOldAlias = nil
 								inputBlock = false
 								binderBox.Visible = false
@@ -1166,8 +1160,7 @@ return function(data, env)
 				Position = UDim2.new(0, 10, 0, 35),
 				Size = UDim2.new(1, -20, 0, 20),
 				ClearTextOnFocus = false,
-				TextChanged = function()
-				end,
+				TextChanged = function() end,
 			})
 
 			aliasBox = binderBox:Add("TextBox", {
@@ -1208,7 +1201,6 @@ return function(data, env)
 				Size = UDim2.new(1 / 3, -(15 / 3) + 4, 0, 20),
 				OnClicked = function()
 					if selected and not inputBlock then
-						currentAlias = nil
 						editOldAlias = selected.Alias
 						aliasBox.Text = editOldAlias
 						commandBox.Text = selected.Command
@@ -1232,7 +1224,6 @@ return function(data, env)
 				Size = UDim2.new(1 / 3, -(15 / 3), 0, 20),
 				OnClicked = function()
 					if not inputBlock then
-						currentAlias = nil
 						editOldAlias = nil
 						aliasBox.Text = ""
 						commandBox.Text = ""

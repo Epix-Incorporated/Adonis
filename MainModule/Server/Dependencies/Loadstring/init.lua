@@ -1,3 +1,4 @@
+--!nocheck
 --[[
 	Credit to einsteinK.
 	Credit to Stravant for LBI.

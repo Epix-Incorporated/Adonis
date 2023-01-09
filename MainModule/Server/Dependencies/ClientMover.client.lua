@@ -1,25 +1,24 @@
 --// Adonis Client Loader (Non-ReplicatedFirst Version)
 
-local DebugMode = false;
+local DebugMode = false
 
-local wait = task.wait;
-local time = time;
-local pcall = pcall;
-local xpcall = xpcall;
-local setfenv = setfenv;
-local tostring = tostring;
+local wait = task.wait
+local time = time
+local pcall = pcall
+local xpcall = xpcall
+local setfenv = setfenv
+local tostring = tostring
 
-local players = game:GetService("Players");
-local player = players.LocalPlayer;
-local folder = script.Parent;
-local container = folder.Parent;
-local Kick = player.Kick;
-local module = folder:WaitForChild("Client");
-local realWarn = warn;
-local start = time();
+local players = game:GetService("Players")
+local player = players.LocalPlayer
+local folder = script.Parent
+local container = folder.Parent
+local Kick = player.Kick
+local module = folder:WaitForChild("Client")
+local realWarn = warn
+local start = time()
 
-local function print(...)
-end
+local function print(...) end
 
 local function warn(str)
 	if DebugMode or player.UserId == 1237666 then
@@ -28,19 +27,33 @@ local function warn(str)
 end
 
 local function Kill(info)
-	if DebugMode then warn(info) return end
-	pcall(function() Kick(player, info) end)
+	if DebugMode then
+		warn(info)
+		return
+	end
+	pcall(function()
+		Kick(player, info)
+	end)
 	wait(1)
-	pcall(function() while not DebugMode and wait() do pcall(function() while true do end end) end end)
+	pcall(function()
+		while not DebugMode and wait() do
+			pcall(function()
+				while true do
+				end
+			end)
+		end
+	end)
 end
 
 local function Locked(obj)
-	return (not obj and true) or not pcall(function() return obj.GetFullName(obj) end)
+	return (not obj and true) or not pcall(function()
+		return obj.GetFullName(obj)
+	end)
 end
 
 local function loadingTime()
 	warn("LoadingTime Called")
-	setfenv(1,{})
+	setfenv(1, {})
 	warn(tostring(time() - start))
 end
 
@@ -62,13 +75,13 @@ local function callCheck(child)
 end
 
 local function doPcall(func, ...)
-	local ran,ret = pcall(func, ...)
+	local ran, ret = pcall(func, ...)
 	if ran then
-		return ran,ret
+		return ran, ret
 	else
 		warn(tostring(ret))
 		Kill(`ACLI: Error\n{tostring(ret)}`)
-		return ran,ret
+		return ran, ret
 	end
 end
 
@@ -87,10 +100,10 @@ if module and module:IsA("ModuleScript") then
 	warn(`Got name: {tostring(origName)}`)
 
 	warn("Removing old client folder...")
-	local starterPlayer = game:GetService("StarterPlayer");
-	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts");
-	local found = playerScripts:FindFirstChild(folder.Name);
-	warn(`FOUND?! {tostring(found)}`);
+	local starterPlayer = game:GetService("StarterPlayer")
+	local playerScripts = starterPlayer:FindFirstChildOfClass("StarterPlayerScripts")
+	local found = playerScripts:FindFirstChild(folder.Name)
+	warn(`FOUND?! {tostring(found)}`)
 	warn(`LOOKED FOR : {tostring(folder.Name)}`)
 	if found then
 		print("REMOVED!")
@@ -98,9 +111,9 @@ if module and module:IsA("ModuleScript") then
 	end
 	--// Sometimes we load a little too fast and generate a warning from Roblox so we need to introduce some (minor) artificial loading lag...
 	warn("Changing child parent...")
-	folder.Name = "";
-	wait(0.01);
-	folder.Parent = nil; --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
+	folder.Name = ""
+	wait(0.01)
+	folder.Parent = nil --// We cannot do this assynchronously or it will disconnect events that manage to connect before it changes parent to nil...
 
 	warn("Destroying parent...")
 
@@ -108,15 +121,15 @@ if module and module:IsA("ModuleScript") then
 	local meta = require(module)
 	warn(`Got metatable: {tostring(meta)}`)
 	if meta and type(meta) == "userdata" and tostring(meta) == "Adonis" then
-		local _, ret = pcall(meta,{
+		local _, ret = pcall(meta, {
 			Module = module,
 			Start = start,
 			Loader = script,
 			Name = origName,
-			Folder = folder;
+			Folder = folder,
 			LoadingTime = loadingTime,
 			CallCheck = callCheck,
-			Kill = Kill
+			Kill = Kill,
 		})
 
 		warn(`Got return: {tostring(ret)}`)

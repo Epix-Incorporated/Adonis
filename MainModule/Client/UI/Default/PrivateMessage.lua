@@ -75,7 +75,6 @@ return function(data, env)
 	send.BackgroundColor3 = send.BackgroundColor3:lerp(Color3.new(0, 0, 0), 0.1)
 	reply.FocusLost:Connect(sendIt)
 
-	gTable = window.gTable
 	UI.Make("Notification", {
 		Title = "New Message",
 		Message = `Message from {player.DisplayName} (@{player.Name})`,

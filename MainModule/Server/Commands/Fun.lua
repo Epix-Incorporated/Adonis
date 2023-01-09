@@ -3,16 +3,11 @@ return function(Vargs, env)
 	local service = Vargs.Service
 
 	local Settings = server.Settings
-	local Functions, Commands, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Deps =
+	local Functions, Admin, Core, Remote, Variables, Deps =
 		server.Functions,
-		server.Commands,
 		server.Admin,
-		server.Anti,
 		server.Core,
-		server.HTTP,
-		server.Logs,
 		server.Remote,
-		server.Process,
 		server.Variables,
 		server.Deps
 
@@ -21,7 +16,6 @@ return function(Vargs, env)
 	end
 
 	local Routine = env.Routine
-	local Pcall = env.Pcall
 	local cPcall = env.cPcall
 
 	return {
@@ -835,7 +829,6 @@ return function(Vargs, env)
 					WoodPlanks = 528,
 					Neon = 288,
 				}
-				local enumMats = Enum.Material:GetEnumItems()
 
 				local chosenMat = args[2] or "Plastic"
 
@@ -1271,10 +1264,6 @@ return function(Vargs, env)
 						local particles = light.ParticleEmitter
 						local primary = ufo.Primary
 						local bay = ufo.Bay
-
-						local hum = light.Humming
-						local leaving = light.Leaving
-						local idle = light.Idle
 						local beamSound = light.Beam
 
 						local origBeamTrans = beam.Transparency
@@ -1619,8 +1608,6 @@ return function(Vargs, env)
 							return true
 						end
 
-						local driver = van.Driver
-						local grabber = van.Clown
 						local primary = van.Primary
 						local door = van.Door
 						local tPos = torso.CFrame
@@ -1738,7 +1725,6 @@ return function(Vargs, env)
 			Function = function(plr, args)
 				local hats = {}
 				local tempHats = {}
-				local run = true
 				local hat = service.Insert(24112667):GetChildren()[1]
 				--
 				local scr = Deps.Assets.Quacker:Clone()
@@ -2819,7 +2805,7 @@ return function(Vargs, env)
 							hole.Size = Vector3.new(10, 1, 10)
 							hole.CFrame = torso.CFrame * CFrame.new(0, -3.3, -3)
 							hole.BrickColor = BrickColor.new("Really black")
-							local holeM = service.New("CylinderMesh", hole)
+							service.New("CylinderMesh", hole)
 							torso.Anchored = true
 							local foot = torso.CFrame * CFrame.new(0, -3, 0)
 							for i = 1, 10 do
@@ -3045,13 +3031,10 @@ return function(Vargs, env)
 								plr.Character:FindFirstChild("Torso") or plr.Character:FindFirstChild("UpperTorso"),
 								CFrame.Angles(0, math.rad(90), 0),
 								CFrame.Angles(0, math.rad(-90), 0)
-							local head = char:FindFirstChild("Head")
-
 							torso.Transparency = 1
 
 							for _, v in torso:GetChildren() do
 								if v:IsA("Motor6D") then
-									local lc0 =
 										service.New("CFrameValue", { Name = "LastC0", Value = v.C0, Parent = v })
 								end
 							end
@@ -3071,15 +3054,14 @@ return function(Vargs, env)
 							})
 
 							local attachment = service.New("Attachment", { Parent = st })
-							local bf = service.New(
+							service.New(
 								"VectorForce",
 								{ Force = Vector3.new(0, 2e3, 0), Parent = st, Attachment0 = attachment }
 							)
 
 							st.CFrame = torso.CFrame
 							st.Parent = char
-
-							local weld = service.New(
+ service.New(
 								"Weld",
 								{ Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, 0.5, 0) }
 							)
@@ -3471,10 +3453,10 @@ return function(Vargs, env)
 						end
 					end
 
-					local sound = sound:Clone()
-					local decal1 = decal1:Clone()
-					local decal2 = decal2:Clone()
-					local mesh = mesh:Clone()
+					sound = sound:Clone()
+					decal1 = decal1:Clone()
+					decal2 = decal2:Clone()
+					mesh = mesh:Clone()
 
 					Admin.RunCommand(Settings.Prefix .. "removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix .. "invisible", v.Name)
@@ -3728,9 +3710,6 @@ return function(Vargs, env)
 										p1.Anchored = true
 										v.Part0 = nil
 									end
-								elseif v:IsA("CharacterMesh") then
-									local bp = tostring(v.BodyPart):match("%w+.%w+.(%w+)")
-									local msh = service.New("SpecialMesh")
 								elseif v:IsA("SpecialMesh") and v.Parent ~= char.Head then
 									v.Scale = Vector3.new(v.Scale.X, v.Scale.Y, num)
 								end
@@ -3854,31 +3833,31 @@ return function(Vargs, env)
 							weld.C0 = v.Character.HumanoidRootPart.CFrame
 							head.FormFactor = "Custom"
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
+							weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0 = v.Character.HumanoidRootPart
 							weld.Part1 = head
 							weld.C0 = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 1.5, 0)
 							larm.FormFactor = "Custom"
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
+							weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0 = v.Character.HumanoidRootPart
 							weld.Part1 = larm
 							weld.C0 = v.Character.HumanoidRootPart.CFrame * CFrame.new(-1, 0, 0)
 							rarm.FormFactor = "Custom"
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
+							weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0 = v.Character.HumanoidRootPart
 							weld.Part1 = rarm
 							weld.C0 = v.Character.HumanoidRootPart.CFrame * CFrame.new(1, 0, 0)
 							lleg.FormFactor = "Custom"
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
+							weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0 = v.Character.HumanoidRootPart
 							weld.Part1 = lleg
 							weld.C0 = v.Character.HumanoidRootPart.CFrame * CFrame.new(-1, -1.5, 0)
 							rleg.FormFactor = "Custom"
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
-							local weld = service.New("Weld", v.Character.HumanoidRootPart)
+							weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0 = v.Character.HumanoidRootPart
 							weld.Part1 = rleg
 							weld.C0 = v.Character.HumanoidRootPart.CFrame * CFrame.new(1, -1.5, 0)
@@ -4800,7 +4779,7 @@ return function(Vargs, env)
 									if walkAnimation then
 										walkAnimation.AnimationId = "rbxassetid://" .. animId
 									else
-										local walkAnimation = Instance.new("Animation")
+										walkAnimation = Instance.new("Animation")
 										walkAnimation.Name = "WalkAnim" -- Name actually doesn't matter, but I just name it like the default one.
 										walkAnimation.AnimationId = "rbxassetid://" .. animId
 										walkAnimation.Parent = v2
@@ -4858,7 +4837,7 @@ return function(Vargs, env)
 									if runAnimation then
 										runAnimation.AnimationId = "rbxassetid://" .. animId
 									else
-										local runAnimation = Instance.new("Animation")
+										runAnimation = Instance.new("Animation")
 										runAnimation.Name = "RunAnim"
 										runAnimation.AnimationId = "rbxassetid://" .. animId
 										runAnimation.Parent = v2
@@ -4916,7 +4895,7 @@ return function(Vargs, env)
 									if jumpAnimation then
 										jumpAnimation.AnimationId = "rbxassetid://" .. animId
 									else
-										local jumpAnimation = Instance.new("Animation")
+										jumpAnimation = Instance.new("Animation")
 										jumpAnimation.Name = "JumpAnim"
 										jumpAnimation.AnimationId = "rbxassetid://" .. animId
 										jumpAnimation.Parent = v2
@@ -4974,7 +4953,7 @@ return function(Vargs, env)
 									if fallAnimation then
 										fallAnimation.AnimationId = "rbxassetid://" .. animId
 									else
-										local fallAnimation = Instance.new("Animation")
+										fallAnimation = Instance.new("Animation")
 										fallAnimation.Name = "FallAnim"
 										fallAnimation.AnimationId = "rbxassetid://" .. animId
 										fallAnimation.Parent = v2
@@ -5232,7 +5211,7 @@ return function(Vargs, env)
 
 				for i, v in service.GetPlayers(plr, args[1]:lower()) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						local vel = vel:Clone()
+						vel = vel:Clone()
 						vel.Parent = v.Character.HumanoidRootPart
 						local new = scr:Clone()
 						new.Parent = v.Character.HumanoidRootPart

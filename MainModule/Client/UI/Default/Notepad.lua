@@ -52,7 +52,7 @@ return function(data, env)
 	for _, font in ipairs(Enum.Font:GetEnumItems()) do
 		table.insert(fonts, font.Name)
 	end
-	
+
 	topbar:Add("Dropdown", {
 		Size = UDim2.new(0, 140, 1, -8),
 		Position = UDim2.new(0, 5, 0, 4),
@@ -65,7 +65,7 @@ return function(data, env)
 		end,
 	})
 
-	local sizeControl = topbar:Add("TextLabel", {
+	topbar:Add("TextLabel", {
 		Text = "  Size: ",
 		BackgroundTransparency = 0,
 		Size = UDim2.new(0, 80, 1, -8),

@@ -2,7 +2,7 @@
 -- Adonis Server --
 -------------------
 --!nocheck
-																																																																																						  --[[
+--[[
 This module is part of Adonis 1.0 and contains lots of old code;
 future updates will generally only be made to fix bugs, typos or functionality-affecting problems.
 
@@ -11,23 +11,23 @@ on our GitHub repository here: https://github.com/Epix-Incorporated/Adonis/issue
 																																																																																						]]
 
 --// Module LoadOrder List; Core modules need to be loaded in a specific order; If you create new "Core" modules make sure you add them here or they won't load
-local CORE_LOADING_ORDER = table.freeze {
+local CORE_LOADING_ORDER = table.freeze({
 	--// Nearly all modules rely on these to function
-	"Logs";
-	"Variables";
-	"Functions";
+	"Logs",
+	"Variables",
+	"Functions",
 
 	--// Core functionality
-	"Core";
-	"Remote";
-	"Process";
+	"Core",
+	"Remote",
+	"Process",
 
 	--// Misc
-	"Admin";
-	"HTTP";
-	"Anti";
-	"Commands";
-}
+	"Admin",
+	"HTTP",
+	"Anti",
+	"Commands",
+})
 
 --// Todo:
 --//   Fix a loooootttttttt of bugged commands
@@ -39,55 +39,100 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   "Hi." - Me
 
 --// Holiday roooaaAaaoooAaaooOod
-local _G, game, script, getfenv, setfenv, workspace,
-getmetatable, setmetatable, loadstring, coroutine,
-rawequal, typeof, print, math, warn, error,  pcall,
-xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, require, table, type, wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, delay, task, assert =
-	_G, game, script, getfenv, setfenv, workspace,
-getmetatable, setmetatable, loadstring, coroutine,
-rawequal, typeof, print, math, warn, error,  pcall,
-xpcall, select, rawset, rawget, ipairs, pairs,
-next, Rect, Axes, os, time, Faces, table.unpack, string, Color3,
-newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-Vector3int16, require, table, type, task.wait,
-Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, task.defer, task.delay, task, function(cond, errMsg) return cond or error(errMsg or "assertion failed!", 2) end;
+local _G, game, script, getfenv, setfenv, workspace, getmetatable, setmetatable, loadstring, coroutine, rawequal, typeof, print, math, warn, error, pcall, xpcall, select, rawset, rawget, ipairs, pairs, next, Rect, Axes, os, time, Faces, unpack, string, Color3, newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor, NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint, NumberSequenceKeypoint, PhysicalProperties, Region3int16, Vector3int16, require, table, type, wait, Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, spawn, task, assert =
+	_G,
+	game,
+	script,
+	getfenv,
+	setfenv,
+	workspace,
+	getmetatable,
+	setmetatable,
+	loadstring,
+	coroutine,
+	rawequal,
+	typeof,
+	print,
+	math,
+	warn,
+	error,
+	pcall,
+	xpcall,
+	select,
+	rawset,
+	rawget,
+	ipairs,
+	pairs,
+	next,
+	Rect,
+	Axes,
+	os,
+	time,
+	Faces,
+	table.unpack,
+	string,
+	Color3,
+	newproxy,
+	tostring,
+	tonumber,
+	Instance,
+	TweenInfo,
+	BrickColor,
+	NumberRange,
+	ColorSequence,
+	NumberSequence,
+	ColorSequenceKeypoint,
+	NumberSequenceKeypoint,
+	PhysicalProperties,
+	Region3int16,
+	Vector3int16,
+	require,
+	table,
+	type,
+	task.wait,
+	Enum,
+	UDim,
+	UDim2,
+	Vector2,
+	Vector3,
+	Region3,
+	CFrame,
+	Ray,
+	task.defer,
+	task,
+	function(cond, errMsg)
+		return cond or error(errMsg or "assertion failed!", 2)
+	end
 
-local SERVICES_WE_USE = table.freeze {
-	"Workspace";
-	"Players";
-	"Lighting";
-	"ServerStorage";
-	"ReplicatedStorage";
-	"JointsService";
-	"ReplicatedFirst";
-	"ScriptContext";
-	"ServerScriptService";
-	"LogService";
-	"Teams";
-	"SoundService";
-	"StarterGui";
-	"StarterPack";
-	"StarterPlayer";
-	"GroupService";
-	"MarketplaceService";
-	"MarketplaceService";
-	"TestService";
-	"HttpService";
-	"RunService";
-	"InsertService";
-	"NetworkServer";
-}
+local SERVICES_WE_USE = table.freeze({
+	"Workspace",
+	"Players",
+	"Lighting",
+	"ServerStorage",
+	"ReplicatedStorage",
+	"JointsService",
+	"ReplicatedFirst",
+	"ScriptContext",
+	"ServerScriptService",
+	"LogService",
+	"Teams",
+	"SoundService",
+	"StarterGui",
+	"StarterPack",
+	"StarterPlayer",
+	"GroupService",
+	"MarketplaceService",
+	"MarketplaceService",
+	"TestService",
+	"HttpService",
+	"RunService",
+	"InsertService",
+	"NetworkServer",
+})
 
 local unique = {}
-local origEnv = getfenv(); setfenv(1,setmetatable({}, {__metatable = unique}))
+local origEnv = getfenv()
+setfenv(1, setmetatable({}, { __metatable = unique }))
 local locals = {}
 local server = {}
 local service = {}
@@ -109,8 +154,8 @@ end
 
 local logError = function(plr, err)
 	if type(plr) == "string" and not err then
-		err = plr;
-		plr = nil;
+		err = plr
+		plr = nil
 	end
 
 	if server.Core and server.Core.DebugMode then
@@ -121,16 +166,16 @@ local logError = function(plr, err)
 		server.Logs.AddLog(server.Logs.Errors, {
 			Text = `{((err and plr and `{tostring(plr)}:`) or "")} {tostring(err)}`,
 			Desc = err,
-			Player = plr
+			Player = plr,
 		})
 	end
 end
 
-local print = function(...)
+print = function(...)
 	print(":: Adonis ::", ...)
 end
 
-local warn = function(...)
+warn = function(...)
 	warn(":: Adonis ::", ...)
 end
 
@@ -138,7 +183,7 @@ local function CloneTable(tab, recursive)
 	local clone = table.clone(tab)
 
 	if recursive then
-		for i,v in pairs(clone) do
+		for i, v in pairs(clone) do
 			if type(v) == "table" then
 				clone[i] = CloneTable(v, recursive)
 			end
@@ -172,9 +217,9 @@ local function GetEnv(env, repl)
 	local scriptEnv = setmetatable({}, {
 		__index = function(_, ind)
 			return (locals[ind] or (env or origEnv)[ind])
-		end;
+		end,
 
-		__metatable = unique;
+		__metatable = unique,
 	})
 	if repl and type(repl) == "table" then
 		for ind, val in pairs(repl) do
@@ -186,45 +231,53 @@ end
 
 local function GetVargTable()
 	return {
-		Server = server;
-		Service = service;
+		Server = server,
+		Service = service,
 	}
 end
 
 local function LoadModule(module, yield, envVars, noEnv, isCore)
 	noEnv = false --// Seems to make loading take longer when true (?)
 	local isFunc = type(module) == "function"
-	module = (isFunc and service.New("ModuleScript", {Name = "Non-Module Loaded"})) or module
+	module = (isFunc and service.New("ModuleScript", { Name = "Non-Module Loaded" })) or module
 	local plug = (isFunc and module) or require(module)
 
 	if server.Modules and type(module) ~= "function" then
-		table.insert(server.Modules,module)
+		table.insert(server.Modules, module)
 	end
 
 	if type(plug) == "function" then
 		if isCore then
-			local ran,err = service.TrackTask(`CoreModule: {tostring(module)}`, plug, GetVargTable(), GetEnv)
+			local ran, err = service.TrackTask(`CoreModule: {tostring(module)}`, plug, GetVargTable(), GetEnv)
 			if not ran then
 				warn("Core Module encountered an error while loading:", module)
 				warn(err)
 			else
-				return err;
+				return err
 			end
 		elseif yield then
-			local ran,err = service.TrackTask(`Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			local ran, err = service.TrackTask(
+				`Plugin: {tostring(module)}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				GetVargTable()
+			)
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
 			else
-				return err;
+				return err
 			end
 		else
-			local ran, err = service.TrackTask(`Thread: Plugin: {tostring(module)}`, (noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)), GetVargTable())
+			local ran, err = service.TrackTask(
+				`Thread: Plugin: {tostring(module)}`,
+				(noEnv and plug) or setfenv(plug, GetEnv(getfenv(plug), envVars)),
+				GetVargTable()
+			)
 			if not ran then
 				warn("Plugin Module encountered an error while loading:", module)
 				warn(err)
 			else
-				return err;
+				return err
 			end
 		end
 	else
@@ -232,12 +285,12 @@ local function LoadModule(module, yield, envVars, noEnv, isCore)
 	end
 
 	if server.Logs then
-		server.Logs.AddLog(server.Logs.Script,{
-			Text = `Loaded Module: {tostring(module)}`;
-			Desc = "Adonis loaded a core module or plugin";
+		server.Logs.AddLog(server.Logs.Script, {
+			Text = `Loaded Module: {tostring(module)}`,
+			Desc = "Adonis loaded a core module or plugin",
 		})
 	end
-end;
+end
 
 --// WIP
 local function LoadPackage(package, folder)
@@ -262,7 +315,7 @@ local function LoadPackage(package, folder)
 	end
 
 	unpackFolder(package, folder)
-end;
+end
 
 local function CleanUp()
 	warn("Beginning Adonis cleanup & shutdown process...")
@@ -272,7 +325,7 @@ local function CleanUp()
 	server.Running = false
 
 	server.Logs.SaveCommandLogs()
-	server.Core.GAME_CLOSING = true;
+	server.Core.GAME_CLOSING = true
 	server.Core.SaveAllPlayerData()
 
 	pcall(service.Threads.StopAll)
@@ -289,42 +342,42 @@ local function CleanUp()
 	end
 
 	warn("Unloading complete")
-end;
+end
 
 server = {
-	Running = true;
-	Modules = {};
-	Pcall = Pcall;
-	cPcall = cPcall;
-	Routine = Routine;
-	LogError = logError;
-	ErrorLogs = ErrorLogs;
-	ServerStartTime = os.time();
-	CommandCache = {};
-};
+	Running = true,
+	Modules = {},
+	Pcall = Pcall,
+	cPcall = cPcall,
+	Routine = Routine,
+	LogError = logError,
+	ErrorLogs = ErrorLogs,
+	ServerStartTime = os.time(),
+	CommandCache = {},
+}
 
 locals = {
-	server = server;
-	CodeName = "";
-	Settings = server.Settings;
-	HookedEvents = HookedEvents;
-	ErrorLogs = ErrorLogs;
-	logError = logError;
-	origEnv = origEnv;
-	Routine = Routine;
-	Folder = Folder;
-	GetEnv = GetEnv;
-	cPcall = cPcall;
-	Pcall = Pcall;
-};
+	server = server,
+	CodeName = "",
+	Settings = server.Settings,
+	HookedEvents = HookedEvents,
+	ErrorLogs = ErrorLogs,
+	logError = logError,
+	origEnv = origEnv,
+	Routine = Routine,
+	Folder = Folder,
+	GetEnv = GetEnv,
+	cPcall = cPcall,
+	Pcall = Pcall,
+}
 
 service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
-	local extra = {...}
+	local extra = { ... }
 	if eType == "MethodError" then
 		if server and server.Logs and server.Logs.AddLog then
 			server.Logs.AddLog("Script", {
-				Text = `Cached method doesn't match found method: {tostring(extra[1])}`;
-				Desc = `Method: {tostring(extra[1])}`
+				Text = `Cached method doesn't match found method: {tostring(extra[1])}`,
+				Desc = `Method: {tostring(extra[1])}`,
 			})
 		end
 	elseif eType == "ServerError" then
@@ -333,10 +386,19 @@ service = require(Folder.Shared.Service)(function(eType, msg, _, ...)
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
-	if not isModule(c) and c ~= server.Loader and c ~= server.Dropper and c ~= server.Runner and c ~= server.Model and c ~= script and c ~= Folder and parent == nil then
+	if
+		not isModule(c)
+		and c ~= server.Loader
+		and c ~= server.Dropper
+		and c ~= server.Runner
+		and c ~= server.Model
+		and c ~= script
+		and c ~= Folder
+		and parent == nil
+	then
 		tab.UnHook()
 	end
-end, ServiceSpecific, GetEnv(nil, {server = server}))
+end, ServiceSpecific, GetEnv(nil, { server = server }))
 
 --// Localize
 os = service.Localize(os)
@@ -371,7 +433,7 @@ task = service.Localize(task)
 Instance = {
 	new = function(obj, parent)
 		return oldInstNew(obj, service.UnWrap(parent))
-	end
+	end,
 }
 
 function require(obj)
@@ -379,79 +441,78 @@ function require(obj)
 end
 rawequal = service.RawEqual
 server.Folder = Folder
-server.Deps = Folder.Dependencies;
-server.CommandModules = Folder.Commands;
-server.Client = Folder.Parent.Client;
-server.Dependencies = Folder.Dependencies;
-server.PluginsFolder = Folder.Plugins;
+server.Deps = Folder.Dependencies
+server.CommandModules = Folder.Commands
+server.Client = Folder.Parent.Client
+server.Dependencies = Folder.Dependencies
+server.PluginsFolder = Folder.Plugins
 server.Service = service
 
 --// Setting things up
 for ind, loc in pairs({
-	_G = _G;
-	game = game;
-	spawn = spawn;
-	script = script;
-	getfenv = getfenv;
-	setfenv = setfenv;
-	workspace = workspace;
-	getmetatable = getmetatable;
-	setmetatable = setmetatable;
-	loadstring = loadstring;
-	coroutine = coroutine;
-	rawequal = rawequal;
-	typeof = typeof;
-	print = print;
-	math = math;
-	warn = warn;
-	error = error;
-	assert = assert;
-	pcall = pcall;
-	xpcall = xpcall;
-	select = select;
-	rawset = rawset;
-	rawget = rawget;
-	ipairs = ipairs;
-	pairs = pairs;
-	next = next;
-	Rect = Rect;
-	Axes = Axes;
-	os = os;
-	time = time;
-	Faces = Faces;
-	unpack = unpack;
-	string = string;
-	Color3 = Color3;
-	newproxy = newproxy;
-	tostring = tostring;
-	tonumber = tonumber;
-	Instance = Instance;
-	TweenInfo = TweenInfo;
-	BrickColor = BrickColor;
-	NumberRange = NumberRange;
-	ColorSequence = ColorSequence;
-	NumberSequence = NumberSequence;
-	ColorSequenceKeypoint = ColorSequenceKeypoint;
-	NumberSequenceKeypoint = NumberSequenceKeypoint;
-	PhysicalProperties = PhysicalProperties;
-	Region3int16 = Region3int16;
-	Vector3int16 = Vector3int16;
-	require = require;
-	table = table;
-	type = type;
-	wait = wait;
-	Enum = Enum;
-	UDim = UDim;
-	UDim2 = UDim2;
-	Vector2 = Vector2;
-	Vector3 = Vector3;
-	Region3 = Region3;
-	CFrame = CFrame;
-	Ray = Ray;
-	task = task;
-	service = service
-	})
-do
+	_G = _G,
+	game = game,
+	spawn = spawn,
+	script = script,
+	getfenv = getfenv,
+	setfenv = setfenv,
+	workspace = workspace,
+	getmetatable = getmetatable,
+	setmetatable = setmetatable,
+	loadstring = loadstring,
+	coroutine = coroutine,
+	rawequal = rawequal,
+	typeof = typeof,
+	print = print,
+	math = math,
+	warn = warn,
+	error = error,
+	assert = assert,
+	pcall = pcall,
+	xpcall = xpcall,
+	select = select,
+	rawset = rawset,
+	rawget = rawget,
+	ipairs = ipairs,
+	pairs = pairs,
+	next = next,
+	Rect = Rect,
+	Axes = Axes,
+	os = os,
+	time = time,
+	Faces = Faces,
+	unpack = unpack,
+	string = string,
+	Color3 = Color3,
+	newproxy = newproxy,
+	tostring = tostring,
+	tonumber = tonumber,
+	Instance = Instance,
+	TweenInfo = TweenInfo,
+	BrickColor = BrickColor,
+	NumberRange = NumberRange,
+	ColorSequence = ColorSequence,
+	NumberSequence = NumberSequence,
+	ColorSequenceKeypoint = ColorSequenceKeypoint,
+	NumberSequenceKeypoint = NumberSequenceKeypoint,
+	PhysicalProperties = PhysicalProperties,
+	Region3int16 = Region3int16,
+	Vector3int16 = Vector3int16,
+	require = require,
+	table = table,
+	type = type,
+	wait = wait,
+	Enum = Enum,
+	UDim = UDim,
+	UDim2 = UDim2,
+	Vector2 = Vector2,
+	Vector3 = Vector3,
+	Region3 = Region3,
+	CFrame = CFrame,
+	Ray = Ray,
+	task = task,
+	service = service,
+}) do
 	locals[ind] = loc
 end
 
@@ -460,13 +521,15 @@ return service.NewProxy({
 	__call = function(_, data)
 		local mutex = service.RunService:FindFirstChild("__Adonis_MODULE_MUTEX")
 		if mutex then
-			warn("\n-----------------------------------------------"
-				.."\nAdonis server-side is already running! Aborting..."
-				.."\n-----------------------------------------------")
+			warn(
+				"\n-----------------------------------------------"
+					.. "\nAdonis server-side is already running! Aborting..."
+					.. "\n-----------------------------------------------"
+			)
 			script:Destroy()
 			return "FAILED"
 		else
-			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
+			mutex = service.New("StringValue", { Name = "__Adonis_MODULE_MUTEX", Value = "Running" })
 			local mutexBackup = mutex:Clone()
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
@@ -492,7 +555,7 @@ return service.NewProxy({
 		end
 
 		--// Begin Script Loading
-		setfenv(1, setmetatable({}, {__metatable = unique}))
+		setfenv(1, setmetatable({}, { __metatable = unique }))
 		data = service.Wrap(data or {})
 
 		if not (data and data.Loader) then
@@ -513,7 +576,7 @@ return service.NewProxy({
 		server.Order = data.Order or setTab.Order or {}
 		server.Data = data or {}
 		server.Model = data.Model or service.New("Model")
-		server.ModelParent = data.ModelParent or service.ServerScriptService;
+		server.ModelParent = data.ModelParent or service.ServerScriptService
 		server.Dropper = data.Dropper or service.New("Script")
 		server.Loader = data.Loader or service.New("Script")
 		server.Runner = data.Runner or service.New("Script")
@@ -537,8 +600,8 @@ return service.NewProxy({
 
 		--// Copy client themes, plugins, and shared modules to the client folder
 		local shared = service.New("Folder", {
-			Name = "Shared";
-			Parent = server.Client;
+			Name = "Shared",
+			Parent = server.Client,
 		})
 
 		for _, module in ipairs(Folder.Shared:GetChildren()) do
@@ -588,10 +651,9 @@ return service.NewProxy({
 					end
 					return ""
 				end,
-				__metatable = "Adonis_MatIcons"
+				__metatable = "Adonis_MatIcons",
 			})
 		end
-
 
 		--// Load services
 		for _, serv in ipairs(SERVICES_WE_USE) do
@@ -652,11 +714,11 @@ return service.NewProxy({
 
 		--// Load Plugins; enforced NoEnv policy, make sure your plugins has the 2nd argument defined!
 		for _, module in ipairs(server.PluginsFolder:GetChildren()) do
-			LoadModule(module, false, {script = module}, true, true) --noenv
+			LoadModule(module, false, { script = module }, true, true) --noenv
 		end
 
 		for _, module in pairs(data.ServerPlugins or {}) do
-			LoadModule(module, false, {script = module})
+			LoadModule(module, false, { script = module })
 		end
 
 		--// We need to do some stuff *after* plugins are loaded (in case we need to be able to account for stuff they may have changed before doing something, such as determining the max length of remote commands)
@@ -681,18 +743,20 @@ return service.NewProxy({
 
 		if server.Logs then
 			server.Logs.AddLog(server.Logs.Script, {
-				Text = "Finished Loading";
-				Desc = "Adonis has finished loading";
+				Text = "Finished Loading",
+				Desc = "Adonis has finished loading",
 			})
 		else
-			warn("SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)");
+			warn(
+				"SERVER.LOGS TABLE IS MISSING. THIS SHOULDN'T HAPPEN! SOMETHING WENT WRONG WHILE LOADING CORE MODULES(?)"
+			)
 		end
-		service.Events.ServerInitialized:Fire();
+		service.Events.ServerInitialized:Fire()
 
 		return "SUCCESS"
-	end;
+	end,
 	__tostring = function()
 		return "Adonis"
-	end;
-	__metatable = "Adonis";
+	end,
+	__metatable = "Adonis",
 })

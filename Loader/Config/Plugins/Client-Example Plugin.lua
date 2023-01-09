@@ -1,8 +1,8 @@
 return function(Vargs)
-	local client, service = Vargs.Client, Vargs.Service
-
 	--Acts the same as a server plugin but with client functions instead of server.
 	--[[
+	local client, service = Vargs.Client, Vargs.Service
+
 	local window = client.UI.Make("Window",{
 		Title = "Changing DataStore";
 		Size = {700,300};
@@ -12,6 +12,5 @@ return function(Vargs)
 	window:Add("ImageLabel",{
 		Image = "rbxassetid://531490964";
 	})
-	
 	--]]
 end

@@ -57,33 +57,33 @@ return function(data, env)
 
 	if data.Refreshables.WorkspaceInfo then
 		window
-		:AddTitleButton({
-			Text = "",
-			ToolTip = "Advanced stats",
-			OnClick = function()
-				client.Remote.Send("ProcessCommand", `{data.CmdPrefix}perfstats`)
-			end,
-		})
-		:Add("ImageLabel", {
-			Size = UDim2.new(0, 18, 0, 18),
-			Position = UDim2.new(0, 6, 0, 1),
-			Image = client.MatIcons.Leaderboard,
-			BackgroundTransparency = 1,
-		})
+			:AddTitleButton({
+				Text = "",
+				ToolTip = "Advanced stats",
+				OnClick = function()
+					client.Remote.Send("ProcessCommand", `{data.CmdPrefix}perfstats`)
+				end,
+			})
+			:Add("ImageLabel", {
+				Size = UDim2.new(0, 18, 0, 18),
+				Position = UDim2.new(0, 6, 0, 1),
+				Image = client.MatIcons.Leaderboard,
+				BackgroundTransparency = 1,
+			})
 		window
-		:AddTitleButton({
-			Text = "",
-			ToolTip = "Game explorer",
-			OnClick = function()
-				client.Remote.Send("ProcessCommand", `{data.CmdPrefix}explorer`)
-			end,
-		})
-		:Add("ImageLabel", {
-			Size = UDim2.new(0, 18, 0, 18),
-			Position = UDim2.new(0, 6, 0, 1),
-			Image = client.MatIcons.Folder,
-			BackgroundTransparency = 1,
-		})
+			:AddTitleButton({
+				Text = "",
+				ToolTip = "Game explorer",
+				OnClick = function()
+					client.Remote.Send("ProcessCommand", `{data.CmdPrefix}explorer`)
+				end,
+			})
+			:Add("ImageLabel", {
+				Size = UDim2.new(0, 18, 0, 18),
+				Position = UDim2.new(0, 6, 0, 1),
+				Image = client.MatIcons.Folder,
+				BackgroundTransparency = 1,
+			})
 	end
 
 	do
@@ -128,7 +128,7 @@ return function(data, env)
 			table.insert(entries, 10, { "Private Server ID", data.PrivateServerId })
 			table.insert(entries, 11, {
 				"Private Server Owner",
-				`{(service.Players:GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]")} ({data.PrivateServerOwnerId})`
+				`{(service.Players:GetNameFromUserIdAsync(data.PrivateServerOwnerId) or "[Unknown Username]")} ({data.PrivateServerOwnerId})`,
 			})
 		end
 
@@ -138,24 +138,24 @@ return function(data, env)
 			if type(v) == "table" then
 				i += 1
 				displays[v[1]] = overviewtab
-				:Add("TextLabel", {
-					Text = `  {v[1]}:`,
-					ToolTip = v[3],
-					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
-					Size = UDim2.new(1, -10, 0, 30),
-					Position = UDim2.new(0, 5, 0, currentPos + 5),
-					TextXAlignment = "Left",
-				})
-				:Add("TextLabel", {
-					Text = v[2],
-					BackgroundTransparency = 1,
-					AnchorPoint = Vector2.new(1, 0),
-					Size = UDim2.new(1, -150, 1, 0),
-					Position = UDim2.new(1, -5, 0, 0),
-					TextXAlignment = "Right",
-					TextEditable = false,
-					ClearTextOnFocus = false,
-				})
+					:Add("TextLabel", {
+						Text = `  {v[1]}:`,
+						ToolTip = v[3],
+						BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+						Size = UDim2.new(1, -10, 0, 30),
+						Position = UDim2.new(0, 5, 0, currentPos + 5),
+						TextXAlignment = "Left",
+					})
+					:Add("TextLabel", {
+						Text = v[2],
+						BackgroundTransparency = 1,
+						AnchorPoint = Vector2.new(1, 0),
+						Size = UDim2.new(1, -150, 1, 0),
+						Position = UDim2.new(1, -5, 0, 0),
+						TextXAlignment = "Right",
+						TextEditable = false,
+						ClearTextOnFocus = false,
+					})
 				currentPos += 30
 			else
 				currentPos += 10
@@ -171,7 +171,8 @@ return function(data, env)
 					break
 				end
 				displays["Server Speed"].Text = math.round(service.Workspace:GetRealPhysicsFPS())
-				displays["Server Age"].Text = `{string.format(timeNow - data.ServerStartTime, "%.1f")}s ({math.round((timeNow - data.ServerStartTime) / 60)} min)`
+				displays["Server Age"].Text =
+					`{string.format(timeNow - data.ServerStartTime, "%.1f")}s ({math.round((timeNow - data.ServerStartTime) / 60)} min)`
 			end
 		end)
 	end
@@ -189,7 +190,7 @@ return function(data, env)
 					{ "Zipcode", serii.zipcode or "[Error]" },
 					{ "IP Address", serii.query or "[Error]" },
 					{ "Coordinates", serii.coords or "[Error]" },
-					}) do
+				}) do
 					table.insert(entries, v)
 				end
 			else
@@ -202,21 +203,21 @@ return function(data, env)
 			local i = 1
 			for _, v in ipairs(entries) do
 				locationtab
-				:Add("TextLabel", {
-					Text = `  {v[1]}:`,
-					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
-					Size = UDim2.new(1, -10, 0, 30),
-					Position = UDim2.new(0, 5, 0, (30 * (i - 1)) + 5),
-					TextXAlignment = "Left",
-				})
-				:Add("TextLabel", {
-					Text = v[2],
-					BackgroundTransparency = 1,
-					AnchorPoint = Vector2.new(1, 0),
-					Size = UDim2.new(1, -150, 1, 0),
-					Position = UDim2.new(1, -5, 0, 0),
-					TextXAlignment = "Right",
-				})
+					:Add("TextLabel", {
+						Text = `  {v[1]}:`,
+						BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+						Size = UDim2.new(1, -10, 0, 30),
+						Position = UDim2.new(0, 5, 0, (30 * (i - 1)) + 5),
+						TextXAlignment = "Left",
+					})
+					:Add("TextLabel", {
+						Text = v[2],
+						BackgroundTransparency = 1,
+						AnchorPoint = Vector2.new(1, 0),
+						Size = UDim2.new(1, -150, 1, 0),
+						Position = UDim2.new(1, -5, 0, 0),
+						TextXAlignment = "Right",
+					})
 				i += 1
 			end
 
@@ -316,7 +317,7 @@ return function(data, env)
 				if
 					not (
 						playerName:sub(1, #filter):lower() == filter:lower()
-							or (player.DisplayName:sub(1, #filter):lower() == filter:lower())
+						or (player.DisplayName:sub(1, #filter):lower() == filter:lower())
 					)
 				then
 					continue
@@ -329,10 +330,7 @@ return function(data, env)
 					Position = UDim2.new(0, 0, 0, (30 * (i - 1)) + 5),
 					TextXAlignment = "Left",
 					OnClicked = function()
-						client.Remote.Send(
-							"ProcessCommand",
-							`{data.CmdPlayerPrefix}profile{data.SplitKey}{playerName}`
-						)
+						client.Remote.Send("ProcessCommand", `{data.CmdPlayerPrefix}profile{data.SplitKey}{playerName}`)
 						window:Close()
 					end,
 				})
@@ -390,7 +388,8 @@ return function(data, env)
 				})
 			end
 			scroller:ResizeCanvas(false, true, false, false, 5, 5)
-			search.PlaceholderText = `Players: {playerCount}{(data.Refreshables.Admins and ` | Admins: {adminCount}` or "")} | Donors: {#data.Refreshables.Donors}`
+			search.PlaceholderText =
+				`Players: {playerCount}{(data.Refreshables.Admins and ` | Admins: {adminCount}` or "")} | Donors: {#data.Refreshables.Donors}`
 		end
 
 		search:GetPropertyChangedSignal("Text"):Connect(function()
@@ -417,26 +416,26 @@ return function(data, env)
 				{ "HTTP Service Enabled", boolToStr(workspaceInfo.HttpEnabled) },
 				{ "Loadstring Enabled", boolToStr(workspaceInfo.LoadstringEnabled) },
 				"",
-				}) do
+			}) do
 				if type(v) == "table" then
 					i += 1
 					workspacetab
-					:Add("TextLabel", {
-						Text = `  {v[1]}:`,
-						ToolTip = v[3],
-						BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
-						Size = UDim2.new(1, -10, 0, 25),
-						Position = UDim2.new(0, 5, 0, currentPos + 5),
-						TextXAlignment = "Left",
-					})
-					:Add("TextLabel", {
-						Text = v[2],
-						BackgroundTransparency = 1,
-						AnchorPoint = Vector2.new(1, 0),
-						Size = UDim2.new(1, -150, 1, 0),
-						Position = UDim2.new(1, -5, 0, 0),
-						TextXAlignment = "Right",
-					})
+						:Add("TextLabel", {
+							Text = `  {v[1]}:`,
+							ToolTip = v[3],
+							BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
+							Size = UDim2.new(1, -10, 0, 25),
+							Position = UDim2.new(0, 5, 0, currentPos + 5),
+							TextXAlignment = "Left",
+						})
+						:Add("TextLabel", {
+							Text = v[2],
+							BackgroundTransparency = 1,
+							AnchorPoint = Vector2.new(1, 0),
+							Size = UDim2.new(1, -150, 1, 0),
+							Position = UDim2.new(1, -5, 0, 0),
+							TextXAlignment = "Right",
+						})
 					currentPos += 25
 				else
 					currentPos += 10

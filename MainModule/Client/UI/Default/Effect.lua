@@ -15,8 +15,7 @@ return function(data, env)
 
 	local gui = service.New("ScreenGui")
 	local mode = data.Mode
-	local gTable = client.UI.Register(gui, { Name = "Effect" })
-	local BindEvent = gTable.BindEvent
+	gTable = client.UI.Register(gui, { Name = "Effect" })
 
 	client.UI.Remove("Effect", gui)
 	gTable:Ready()
@@ -40,7 +39,7 @@ return function(data, env)
 				local result = workspace:Raycast(ray.Origin, ray.Direction * distance)
 
 				if result then
-					local part, endPoint = result.Instance, result.Position
+					local part = result.Instance
 					pixel.Pixel.BackgroundColor3 = if part and part.Transparency < 1
 						then part.BrickColor.Color
 						else Color3.fromRGB(105, 170, 255)
@@ -109,7 +108,6 @@ return function(data, env)
 
 		bg.BackgroundTransparency = 0
 	elseif mode == "Trippy" then
-		local v = service.Player
 		local bg = Instance.new("Frame")
 
 		bg.BackgroundColor3 = Color3.new(0, 0, 0)

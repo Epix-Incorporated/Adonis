@@ -104,7 +104,9 @@ return function(Vargs, GetEnv)
 
 						Logs.AddLog(Logs.Script, {
 							Text = `Character AE Detected {tostring(player)}`,
-							Desc = `The Anti-Exploit character check detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(reason)}`,
+							Desc = `The Anti-Exploit character check detected player: {tostring(player)} action: {tostring(action)} reason: {tostring(
+								reason
+							)}`,
 							Player = player,
 						})
 
@@ -297,10 +299,10 @@ return function(Vargs, GetEnv)
 				if Settings.AntiRootJointDeletion or Settings.AntiParanoid then
 					local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 					local rootJoint = humanoid.RigType == Enum.HumanoidRigType.R15
-						and character:WaitForChild("LowerTorso"):WaitForChild("Root")
+							and character:WaitForChild("LowerTorso"):WaitForChild("Root")
 						or humanoid.RigType == Enum.HumanoidRigType.R6
-						and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild(
-							"RootJoint"
+							and (humanoidRootPart:FindFirstChild("Root Hip") or humanoidRootPart:WaitForChild(
+								"RootJoint"
 							))
 
 					makeConnection(rootJoint.AncestryChanged)
@@ -333,11 +335,7 @@ return function(Vargs, GetEnv)
 						local client = Remote.Clients[key]
 						if client and client.LastUpdate and client.PlayerLoaded then
 							if os.time() - client.LastUpdate > Anti.ClientTimeoutLimit then
-								Anti.Detected(
-									p,
-									"Kick",
-									`Client Not Responding [>{Anti.ClientTimeoutLimit} seconds]`
-								)
+								Anti.Detected(p, "Kick", `Client Not Responding [>{Anti.ClientTimeoutLimit} seconds]`)
 							end
 						end
 					end

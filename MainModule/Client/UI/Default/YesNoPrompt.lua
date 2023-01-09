@@ -5,7 +5,6 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable
 	local answer
 	local startTick = os.clock()
 
@@ -22,7 +21,7 @@ return function(data, env)
 		end,
 	})
 
-	local label = window:Add("TextLabel", {
+	window:Add("TextLabel", {
 		Text = data.Question,
 		Font = Enum.Font.SourceSans,
 		TextScaled = true,
@@ -67,14 +66,13 @@ return function(data, env)
 		window:Close()
 	end)
 
-	gTable = window.gTable
 	window:Ready()
 
 	if data.Delay then
 		yes.BackgroundColor3 = Color3.fromRGB(38, 100, 28)
 
 		repeat
-			yes.Text = string.format("%s", math.ceil(startTick + data.Delay - os.clock()))
+			yes.Text = `{math.ceil(startTick + data.Delay - os.clock())}`
 			task.wait(1)
 		until os.clock() > startTick + data.Delay
 

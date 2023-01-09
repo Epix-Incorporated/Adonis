@@ -6,7 +6,7 @@ return function(data, env)
 		setfenv(1, env)
 	end
 
-	local gTable, window, commslog, layout
+	local window, commslog, layout
 	local messageObjs = {}
 
 	local function newMessage(Type, Title, Message, Icon, Time, Function)
@@ -151,6 +151,5 @@ return function(data, env)
 		newMessage(v.Type, v.Title, v.Message, v.Icon, v.Time, v.Function)
 	end)
 
-	gTable = window.gTable
 	window:Ready()
 end
