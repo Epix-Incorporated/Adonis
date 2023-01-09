@@ -12,17 +12,17 @@
 
 local print = function(...)
 	for _, v in { ... } do
-		warn("[Adonis TrelloAPI]: INFO: " .. tostring(v))
+		warn(`[Adonis TrelloAPI]: INFO: {v}`)
 	end
 end
 local error = function(...)
 	for _, v in { ... } do
-		warn("[Adonis TrelloAPI]: ERROR: " .. tostring(v))
+		warn(`[Adonis TrelloAPI]: ERROR: {v}`)
 	end
 end
 local warn = function(...)
 	for _, v in { ... } do
-		warn("[Adonis TrelloAPI]: WARN: " .. tostring(v))
+		warn(`[Adonis TrelloAPI]: WARN: {v}`)
 	end
 end
 

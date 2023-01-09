@@ -39,7 +39,7 @@ return function(data, env)
 
 	for i, ans in answers do
 		ansList:Add("TextButton", {
-			Text = i .. ". " .. ans,
+			Text = `{i}. {ans}`,
 			Size = UDim2.new(1, -10, 0, 25),
 			Position = UDim2.new(0, 5, 0, 25 * (i - 1)),
 			TextXAlignment = "Left",

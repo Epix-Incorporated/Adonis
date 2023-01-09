@@ -100,8 +100,7 @@ else
 		end
 		if not moduleId then
 			error(
-				"Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in "
-					.. model.Parent:GetFullName()
+				`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`
 			)
 		end
 	end

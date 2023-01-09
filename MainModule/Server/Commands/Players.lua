@@ -1229,10 +1229,7 @@ return function(Vargs, env)
 
 					local enemies = getPageItems(service.GroupService:GetEnemiesAsync(groupId))
 					table.insert(tab, {
-						Text = string.format(
-							"――― Enemies (%d): ―――――――――――――――――",
-							#enemies
-						),
+						Text = `――― Enemies ({#enemies}): ―――――――――――――――――`,
 					})
 					if #enemies > 0 then
 						local names, refs = {}, {}
@@ -1244,10 +1241,10 @@ return function(Vargs, env)
 						for _, name in names do
 							local grp = refs[name]
 							table.insert(tab, {
-								Text = string.format("[#%d] %s", grp.Id, name),
-								Desc = "Owner: " .. if grp.Owner
-									then string.format("%s [%d]", grp.Owner.Name or "???", grp.Owner.Id)
-									else "[No Owner]",
+								Text = `[#{grp.Id}] {name}`,
+								Desc = `Owner: {if grp.Owner
+									then `{grp.Owner.Name or "???"} [{grp.Owner.Id}]`
+									else "[No Owner]"}`,
 							})
 						end
 					else
@@ -1290,7 +1287,7 @@ return function(Vargs, env)
 				local cmd, ind
 				for i, v in Admin.SearchCommands(plr, "all") do
 					for _, p in ipairs(v.Commands) do
-						if (v.Prefix or "") .. string.lower(p) == (v.Prefix or "") .. string.lower("music") then
+						if `{(v.Prefix or "")}{string.lower(p) == (v.Prefix or "")}{string.lower("music")}` then
 							cmd, ind = v, i
 							break
 						end
@@ -1321,7 +1318,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: { string })
 				local list = {}
 				for code, name in require(server.Shared.CountryRegionCodes) do
-					table.insert(list, code .. " - " .. name)
+					table.insert(list, `{code} - {name}`)
 				end
 				table.sort(list)
 				Remote.MakeGui(plr, "List", {

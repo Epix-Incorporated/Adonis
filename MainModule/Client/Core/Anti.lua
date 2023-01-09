@@ -618,7 +618,7 @@ return function(_, GetEnv)
 				else
 					for _, v in Logs do
 						if check(v.message) then
-							Detected("crash", "Exploit detected; " .. v.message)
+							Detected("crash", `Exploit detected; {v.message}`)
 						end
 					end
 				end

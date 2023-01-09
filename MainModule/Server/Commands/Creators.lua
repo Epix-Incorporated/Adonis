@@ -4,11 +4,7 @@ return function(Vargs, env)
 
 	local Settings = server.Settings
 	local Functions, Admin, Core, Remote, Process =
-		server.Functions,
-		server.Admin,
-		server.Core,
-		server.Remote,
-		server.Process
+		server.Functions, server.Admin, server.Core, server.Remote, server.Process
 
 	if env then
 		setfenv(1, env)
@@ -201,8 +197,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: { string })
 				local amount = assert(tonumber(args[2]), "Invalid/no amount provided (argument #2 must be a number)")
 				for _, v in service.GetPlayers(plr, args[1]) do
-					local ran =
-						pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
+					local ran = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
 					if ran and service.PointsService:GetAwardablePoints() >= amount then
 						Functions.Hint("Gave " .. amount .. " points to " .. service.FormatPlayer(v), { plr })
 					elseif service.PointsService:GetAwardablePoints() < amount then

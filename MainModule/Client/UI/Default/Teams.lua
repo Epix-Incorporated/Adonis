@@ -72,7 +72,7 @@ return function(data, env)
 			ImageTransparency = 0.2,
 		}).MouseButton1Down
 		:Connect(function()
-			client.Remote.Send("ProcessCommand", data.CmdPlayerPrefix .. "brickcolors")
+			client.Remote.Send("ProcessCommand", `{data.CmdPlayerPrefix}brickcolors`)
 		end)
 
 	creator:Add("TextButton", {
@@ -153,7 +153,7 @@ return function(data, env)
 						TextXAlignment = "Left",
 						TextYAlignment = "Center",
 						Text = team.Name,
-						ToolTip = "[Auto-Assignable]: " .. tostring(team.AutoAssignable),
+						ToolTip = `[Auto-Assignable]: {team.AutoAssignable}`,
 						ZIndex = 13,
 					},
 					{
@@ -209,7 +209,7 @@ return function(data, env)
 			})
 		end
 		scroller:ResizeCanvas(false, true, false, false, 5, 0)
-		window:SetTitle("Teams (" .. count .. ")")
+		window:SetTitle(`Teams ({count})`)
 	end
 
 	service.Teams.ChildAdded:Connect(generate)

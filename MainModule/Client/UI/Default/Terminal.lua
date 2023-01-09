@@ -53,7 +53,7 @@ return function(_, env)
 				local com = textbox.Text
 				local ret
 				textbox.Text = ""
-				out(">" .. com, termLines)
+				out(`>{com}`, termLines)
 				ret = client.Remote.Get("Terminal", com, {
 					Time = time(),
 				})

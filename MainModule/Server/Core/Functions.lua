@@ -496,7 +496,7 @@ return function(Vargs, GetEnv)
 		ArgsToString = function(args)
 			local str = ""
 			for i, arg in args do
-				str ..= `Arg{tostring(i)}: {tostring(arg)}; `
+				str ..= `Arg{i}: {arg}; `
 			end
 			return str:sub(1, -3)
 		end,

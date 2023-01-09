@@ -45,7 +45,7 @@ return function(data, env)
 						Position = UDim2.fromOffset(5, num * 30),
 						BackgroundTransparency = 1,
 						TextXAlignment = "Left",
-						Text = "  " .. toolName,
+						Text = `  {toolName}`,
 					})
 					:Add("TextButton", {
 						Size = UDim2.new(0, 80, 1, -4),
@@ -67,13 +67,7 @@ return function(data, env)
 								end)
 								client.Remote.Send(
 									"ProcessCommand",
-									data.Prefix
-										.. "give"
-										.. data.SplitKey
-										.. data.SpecialPrefix
-										.. "me"
-										.. data.SplitKey
-										.. toolName
+									`{data.Prefix}give{data.SplitKey}{data.SpecialPrefix}me{data.SplitKey}{toolName}`
 								)
 							end
 						end,
@@ -89,21 +83,19 @@ return function(data, env)
 		local tab = tabFrame:NewTab("Added", {
 			Text = "Added",
 		})
-		tab:Add("TextLabel", {
-			Size = UDim2.new(1, -10, 0, 50),
-			Position = UDim2.fromOffset(5, 5),
-			TextWrapped = true,
-			Text = "Here is a list of tools saved in the server via the "
-				.. data.Prefix
-				.. "addtool command. They can be distributed normally using "
-				.. data.Prefix
-				.. "give.",
-		}):Add("UIPadding", {
-			PaddingLeft = UDim.new(0, 5),
-			PaddingRight = UDim.new(0, 5),
-			PaddingTop = UDim.new(0, 5),
-			PaddingBottom = UDim.new(0, 5),
-		})
+		tab
+			:Add("TextLabel", {
+				Size = UDim2.new(1, -10, 0, 50),
+				Position = UDim2.fromOffset(5, 5),
+				TextWrapped = true,
+				Text = `Here is a list of tools saved in the server via the {data.Prefix} addtool command. They can be distributed normally using {data.Prefix}give.`,
+			})
+			:Add("UIPadding", {
+				PaddingLeft = UDim.new(0, 5),
+				PaddingRight = UDim.new(0, 5),
+				PaddingTop = UDim.new(0, 5),
+				PaddingBottom = UDim.new(0, 5),
+			})
 
 		local scroller = tab:Add("ScrollingFrame", {
 			Size = UDim2.new(1, -10, 1, -65),
@@ -121,8 +113,8 @@ return function(data, env)
 						Position = UDim2.fromOffset(5, num * 30),
 						BackgroundTransparency = 1,
 						TextXAlignment = "Left",
-						Text = "  " .. v.ToolName,
-						ToolTip = "Added by: " .. v.AddedBy,
+						Text = `  {v.ToolName}`,
+						ToolTip = `Added by: {v.AddedBy}`,
 					})
 					:Add("TextButton", {
 						Size = UDim2.new(0, 80, 1, -4),
@@ -144,13 +136,7 @@ return function(data, env)
 								end)
 								client.Remote.Send(
 									"ProcessCommand",
-									data.Prefix
-										.. "give"
-										.. data.SplitKey
-										.. data.SpecialPrefix
-										.. "me"
-										.. data.SplitKey
-										.. v.ToolName
+									`{data.Prefix}give{data.SplitKey}{data.SpecialPrefix}me{data.SplitKey}{v.ToolName}`
 								)
 							end
 						end,
@@ -161,7 +147,7 @@ return function(data, env)
 				local clrBtn = scroller:Add("TextButton", {
 					Size = UDim2.new(1, -10, 0, 25),
 					Position = UDim2.fromOffset(5, num * 30 + 5),
-					Text = string.format("Clear %d saved tool%s", num, num == 1 and "" or "s"),
+					Text = `Clear {num} saved tool{num == 1 and "" or "s"}`,
 					OnClick = function(self)
 						if self.Active then
 							self.Active = false
@@ -179,7 +165,7 @@ return function(data, env)
 									generateAdded()
 								end
 							end)
-							client.Remote.Send("ProcessCommand", data.Prefix .. "clearaddedtools")
+							client.Remote.Send("ProcessCommand", `{data.Prefix}clearaddedtools`)
 							task.wait(1)
 							if not refreshed then
 								refreshed = true
@@ -250,47 +236,35 @@ return function(data, env)
 			local i = 0
 			for _, v: Tool in ipairs(tools) do
 				if v and v:IsA("BackpackItem") then
-					inv
-						:Add("TextLabel", {
-							Text = " " .. v.Name,
-							ToolTip = "Class: "
-								.. v.ClassName
-								.. (v.ToolTip ~= "" and (" | ToolTip: " .. v.ToolTip) or ""),
-							TextXAlignment = "Left",
-							TextColor3 = v.Parent == char and Color3.fromRGB(170, 255, 255) or Color3.new(1, 1, 1),
-							Size = UDim2.new(1, -10, 0, 26),
-							Position = UDim2.new(0, 5, 0, i * 26),
-							BackgroundTransparency = 1,
-						})
-						:Add("ImageButton", {
-							Image = client.MatIcons.Clear,
-							Size = UDim2.new(0, 20, 0, 20),
-							Position = UDim2.new(1, -20, 0, 3),
-							OnClick = function(self)
-								if self.Active then
-									self.Active = false
-									self.AutoButtonColor = false
-									self.Image = client.MatIcons["Hourglass empty"]
-									client.Remote.Send(
-										"ProcessCommand",
-										string.format(
-											"%sremovetool%s%s%s%s%s",
-											data.Prefix,
-											data.SplitKey,
-											data.SpecialPrefix,
-											selected.Name,
-											data.SplitKey,
-											v.Name
-										)
-									)
-									if self then
-										self.Image = client.MatIcons.Clear
-										self.AutoButtonColor = true
-										self.Active = true
-									end
+					inv:Add("TextLabel", {
+						Text = ` {v.Name}`,
+						ToolTip = `"Class: {v.ClassName}{(v.ToolTip ~= "" and ` | ToolTip: {v.ToolTip}` or "")}`,
+						TextXAlignment = "Left",
+						TextColor3 = v.Parent == char and Color3.fromRGB(170, 255, 255) or Color3.new(1, 1, 1),
+						Size = UDim2.new(1, -10, 0, 26),
+						Position = UDim2.new(0, 5, 0, i * 26),
+						BackgroundTransparency = 1,
+					}):Add("ImageButton", {
+						Image = client.MatIcons.Clear,
+						Size = UDim2.new(0, 20, 0, 20),
+						Position = UDim2.new(1, -20, 0, 3),
+						OnClick = function(self)
+							if self.Active then
+								self.Active = false
+								self.AutoButtonColor = false
+								self.Image = client.MatIcons["Hourglass empty"]
+								client.Remote.Send(
+									"ProcessCommand",
+									`{data.Prefix}removetool{data.SplitKey}{data.SpecialPrefix}{selected.Name}{data.SplitKey}{v.Name}`
+								)
+								if self then
+									self.Image = client.MatIcons.Clear
+									self.AutoButtonColor = true
+									self.Active = true
 								end
-							end,
-						})
+							end
+						end,
+					})
 					i += 1
 				end
 			end
@@ -306,13 +280,7 @@ return function(data, env)
 							self.Text = ". . ."
 							client.Remote.Send(
 								"ProcessCommand",
-								string.format(
-									"%sremovetools%s%s%s",
-									data.Prefix,
-									data.SplitKey,
-									data.SpecialPrefix,
-									selected.Name
-								)
+								`{data.Prefix}removetools{data.SplitKey}{data.SpecialPrefix}{selected.Name}`
 							)
 							task.wait(2)
 							if self then
@@ -341,7 +309,7 @@ return function(data, env)
 			local backpack = plr:FindFirstChildOfClass("Backpack")
 			local entry = plrs:Add("TextButton", {
 				Size = UDim2.new(1, 0, 0, 35),
-				Text = "  " .. plr.Name,
+				Text = `  {plr.Name}`,
 				ToolTip = service.FormatPlayer(plr),
 				TextXAlignment = "Left",
 				OnClick = function(self)
@@ -546,7 +514,7 @@ return function(data, env)
 			}) do
 				tab:Add("TextLabel", {
 					Name = "Info",
-					Text = "  " .. v[1] .. ": ",
+					Text = `  {v[1]}: `,
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, -135, 0, 30),
 					Position = UDim2.new(0, 0, 0, (30 * (i - 1)) + 30),

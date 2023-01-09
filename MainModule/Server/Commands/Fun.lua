@@ -4,12 +4,7 @@ return function(Vargs, env)
 
 	local Settings = server.Settings
 	local Functions, Admin, Core, Remote, Variables, Deps =
-		server.Functions,
-		server.Admin,
-		server.Core,
-		server.Remote,
-		server.Variables,
-		server.Deps
+		server.Functions, server.Admin, server.Core, server.Remote, server.Variables, server.Deps
 
 	if env then
 		setfenv(1, env)
@@ -3035,7 +3030,7 @@ return function(Vargs, env)
 
 							for _, v in torso:GetChildren() do
 								if v:IsA("Motor6D") then
-										service.New("CFrameValue", { Name = "LastC0", Value = v.C0, Parent = v })
+									service.New("CFrameValue", { Name = "LastC0", Value = v.C0, Parent = v })
 								end
 							end
 
@@ -3061,10 +3056,7 @@ return function(Vargs, env)
 
 							st.CFrame = torso.CFrame
 							st.Parent = char
- service.New(
-								"Weld",
-								{ Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, 0.5, 0) }
-							)
+							service.New("Weld", { Parent = st, Part0 = torso, Part1 = st, C1 = CFrame.new(0, 0.5, 0) })
 
 							for _, v in char:GetDescendants() do
 								if v:IsA("BasePart") then

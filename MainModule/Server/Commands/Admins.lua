@@ -70,18 +70,14 @@ return function(Vargs, env)
 						end
 					end
 				end
-				assert(newRank, "No rank named '" .. rankName .. "' exists")
+				assert(newRank, `No rank named '{rankName}' exists`)
 
 				local newLevel = newRank.Level
 				local senderLevel = data.PlayerData.Level
 
 				assert(
 					newLevel < senderLevel,
-					string.format(
-						"Rank level (%s) cannot be equal to or above your own level (%s)",
-						newLevel,
-						senderLevel
-					)
+					`Rank level ({newLevel}) cannot be equal to or above your own level ({senderLevel})`
 				)
 
 				for _, p in Functions.GetPlayers(plr, args[1], { NoFakePlayer = false }) do
@@ -89,35 +85,24 @@ return function(Vargs, env)
 						Admin.AddAdmin(p, rankName)
 						Remote.MakeGui(p, "Notification", {
 							Title = "Notification",
-							Message = string.format(
-								"You are %s%s. Click to view commands.",
-								if string.lower(string.sub(rankName, 1, 3)) == "the"
-									then ""
-									elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(
-										string.sub(rankName, 1, 3)
-									) ~= "uni" then "an "
-									else "a ",
-								rankName
-							),
+							Message = `You are {if string.lower(string.sub(rankName, 1, 3)) == "the"
+								then ""
+								elseif string.match(rankName, "^[AEIOUaeiou]") and string.lower(
+									string.sub(rankName, 1, 3)
+								) ~= "uni" then "an "
+								else "a "}{rankName}. Click to view commands.`,
 							Icon = server.MatIcons.Shield,
 							Time = 10,
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 
 						Functions.Hint(
-							service.FormatPlayer(p, true)
-								.. " is now rank "
-								.. rankName
-								.. " (Permission Level: "
-								.. newLevel
-								.. ")",
+							`{service.FormatPlayer(p, true)} is now rank {rankName} (Permission Level: {newLevel})`,
 							{ plr }
 						)
 					else
 						Functions.Hint(
-							"You do not have permission to set the rank of " .. service.FormatPlayer(p, true),
+							`You do not have permission to set the rank of {service.FormatPlayer(p, true)}`,
 							{ plr }
 						)
 					end
@@ -129,7 +114,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix,
 			Commands = { "settemprank", "temprank", "tempsetrank" },
 			Args = { "player", "rank" },
-			Description = "Identical to " .. Settings.Prefix .. "setrank, but doesn't save",
+			Description = `Identical to '{Settings.Prefix}setrank', but doesn't save`,
 			AdminLevel = "Admins",
 			Function = function(plr: Player, args: { string }, data: { any })
 				assert(args[1], "Missing target player (argument #1)")
@@ -145,7 +130,7 @@ return function(Vargs, env)
 						end
 					end
 				end
-				assert(newRank, "No rank named '" .. rankName .. "' exists")
+				assert(newRank, `No rank named '{rankName}' exists`)
 
 				local newLevel = newRank.Level
 				local senderLevel = data.PlayerData.Level
@@ -164,25 +149,18 @@ return function(Vargs, env)
 						Admin.AddAdmin(v, rankName, true)
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification",
-							Message = "You are a temp " .. rankName .. ". Click to view commands.",
+							Message = `You are a temp {rankName}. Click to view commands.`,
 							Icon = server.MatIcons.Shield,
 							Time = 10,
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
 						Functions.Hint(
-							service.FormatPlayer(v, true)
-								.. " is now rank "
-								.. rankName
-								.. " (Permission Level: "
-								.. newLevel
-								.. ")",
+							`{service.FormatPlayer(v, true)} is now rank {rankName} (Permission Level: {newLevel})`,
 							{ plr }
 						)
 					else
 						Functions.Hint(
-							"You do not have permission to set the rank of " .. service.FormatPlayer(v, true),
+							`You do not have permission to set the rank of {service.FormatPlayer(v, true)}`,
 							{ plr }
 						)
 					end
@@ -202,7 +180,7 @@ return function(Vargs, env)
 
 				assert(
 					newLevel < senderLevel,
-					"Level cannot be equal to or above your own permission level (" .. senderLevel .. ")"
+					`Level cannot be equal to or above your own permission level ({senderLevel})`
 				)
 
 				for _, v in service.GetPlayers(plr, args[1]) do
@@ -210,23 +188,15 @@ return function(Vargs, env)
 						Admin.SetLevel(v, newLevel) --, args[3] == "true")
 						Remote.MakeGui(v, "Notification", {
 							Title = "Notification",
-							Message = "Your admin permission level was set to "
-								.. newLevel
-								.. " for this server only. Click to view commands.",
+							Message = `Your admin permission level was set to {newLevel} for this server only. Click to view commands.`,
 							Icon = server.MatIcons.Shield,
 							Time = 10,
-							OnClick = Core.Bytecode(
-								"client.Remote.Send('ProcessCommand','" .. Settings.Prefix .. "cmds')"
-							),
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`),
 						})
-						Functions.Hint(
-							service.FormatPlayer(v, true) .. " is now permission level " .. newLevel,
-							{ plr }
-						)
+						Functions.Hint(`{service.FormatPlayer(v, true)} is now permission level {newLevel}`, { plr })
 					else
 						Functions.Hint(
-							"You do not have permission to set the permission level of "
-								.. service.FormatPlayer(v, true),
+							`You do not have permission to set the permission level of {service.FormatPlayer(v, true)}`,
 							{ plr }
 						)
 					end
@@ -273,15 +243,13 @@ return function(Vargs, env)
 								})
 							else
 								Functions.Hint(
-									"You do not have permission to remove "
-										.. service.FormatPlayer(v, true)
-										.. "'s rank",
+									`You do not have permission to remove {service.FormatPlayer(v, true)}'s rank`,
 									{ plr }
 								)
 							end
 						else
 							Functions.Hint(
-								service.FormatPlayer(v, true) .. " does not already have any rank to remove",
+								`{service.FormatPlayer(v, true)} does not already have any rank to remove`,
 								{ plr }
 							)
 						end
@@ -302,7 +270,7 @@ return function(Vargs, env)
 						if
 							not (
 								user:lower() == target:lower()
-								or user:lower():match("^" .. target:lower() .. ":")
+								or user:lower():match(`^{target:lower()}:`)
 								or Admin.DoCheck(target, user)
 							)
 						then
@@ -310,7 +278,7 @@ return function(Vargs, env)
 						end
 						if
 							Remote.GetGui(plr, "YesNoPrompt", {
-								Question = "Remove '" .. tostring(user) .. "' from '" .. rankName .. "'?",
+								Question = `Remove '{tostring(user)}' from '{rankName}'?`,
 							}) == "Yes"
 						then
 							table.remove(rankData.Users, i)
@@ -320,17 +288,14 @@ return function(Vargs, env)
 									Table = { "Settings", "Ranks", rankName, "Users" },
 									Value = user,
 								})
-								Functions.Hint("Removed entry '" .. tostring(user) .. "'' from " .. rankName, { plr })
-								Logs:AddLog(
-									"Script",
-									string.format("%s removed %s from %s", tostring(plr), tostring(user), rankName)
-								)
+								Functions.Hint(`Removed entry '{tostring(user)}' from {rankName}`, { plr })
+								Logs:AddLog("Script", `{tostring(plr)} removed {tostring(user)} from {rankName}`)
 							end
 						end
 						userFound = true
 					end
 				end
-				assert(userFound, "No table entries matching '" .. args[1] .. "' were found")
+				assert(userFound, `No table entries matching '{args[1]}' were found`)
 			end,
 		},
 
@@ -348,7 +313,7 @@ return function(Vargs, env)
 					if targetLevel > 0 then
 						if senderLevel > targetLevel then
 							Admin.RemoveAdmin(v, true)
-							Functions.Hint("Removed " .. service.FormatPlayer(v) .. "'s admin powers", { plr })
+							Functions.Hint(`Removed {service.FormatPlayer(v)}'s admin powers`, { plr })
 							Remote.MakeGui(v, "Notification", {
 								Title = "Notification",
 								Message = "Your admin powers have been temporarily removed",
@@ -357,14 +322,12 @@ return function(Vargs, env)
 							})
 						else
 							Functions.Hint(
-								"You do not have permission to remove "
-									.. service.FormatPlayer(v, true)
-									.. "'s admin powers",
+								`You do not have permission to remove {service.FormatPlayer(v, true)}'s admin powers`,
 								{ plr }
 							)
 						end
 					else
-						Functions.Hint(service.FormatPlayer(v, true) .. " is not an admin", { plr })
+						Functions.Hint(`{service.FormatPlayer(v, true)} is not an admin`, { plr })
 					end
 				end
 			end,

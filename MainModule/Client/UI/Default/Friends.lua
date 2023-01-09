@@ -85,7 +85,7 @@ return function(data, env)
 					Text = `             {(if friend.UserName == friend.DisplayName
 						then friend.UserName
 						else `{friend.DisplayName} (@{friend.UserName})`)}`,
-					ToolTip = "Location: " .. friend.LastLocation,
+					ToolTip = `Location: {friend.LastLocation}`,
 					BackgroundTransparency = (i % 2 == 0 and 0) or 0.2,
 					Size = UDim2.new(1, 0, 0, 30),
 					LayoutOrder = i,
