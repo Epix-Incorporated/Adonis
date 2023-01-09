@@ -63,6 +63,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
+	local kickedPlayers = setmetatable({}, {__mode = "v"})
 
 	server.Anti = {
 		Init = Init;
@@ -357,11 +358,15 @@ return function(Vargs, GetEnv)
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
-			if service.RunService:IsStudio() then
+			if table.find(kickedPlayers, player) then
+				player:Kick(":: Adonis ::\n"..info)
+				return
+			elseif service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
+						table.insert(kickedPlayers, player)
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -372,6 +377,7 @@ return function(Vargs, GetEnv)
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
+						table.insert(kickedPlayers, player)
 						Remote.Send(player, "Function", "Kill")
 						task.wait(5)
 						pcall(function()
