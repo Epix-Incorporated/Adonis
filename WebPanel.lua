@@ -475,11 +475,11 @@ return function(Vargs)
 				continue
 			end
 
-			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
-
 			if code ~= 520 and code ~= 524 then
-				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
-				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, res.StatusCode)
+
+				Logs:AddLog("Script", errorMessage)
+				Logs:AddLog("Errors", errorMessage)
 				break
 			elseif code == 520 then
 				task.wait(5) --After the server restarts we want to make sure that it has time to inititate everything

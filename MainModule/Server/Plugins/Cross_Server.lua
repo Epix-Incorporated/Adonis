@@ -103,7 +103,7 @@ return function(Vargs, GetEnv)
 			local answers = data.Answers
 			local voteKey = data.VoteKey
 
-			local start = os.time()
+			local start = os.clock()
 
 			Logs.AddLog("Commands", {
 				Text = "[CRS_SERVER] Vote initiated by "..data.Initiator,
@@ -113,7 +113,7 @@ return function(Vargs, GetEnv)
 			for _, v in service.GetPlayers() do
 				Routine(function()
 					local response = Remote.GetGui(v, "Vote", {Question = question, Answers = answers})
-					if response and os.time() - start <= 120 then
+					if response and os.clock() - start <= 120 then
 						MsgService:PublishAsync(voteKey, {PlrInfo = {Name = v.Name, UserId = v.UserId}, Response = response})
 					end
 				end)
@@ -238,7 +238,7 @@ return function(Vargs, GetEnv)
 			local anstab = {}
 			local responses = {}
 			local voteKey = "ADONISVOTE".. math.random()
-			local startTime = os.time()
+			local startTime = os.clock()
 
 			local msgSub = MsgService:SubscribeAsync(voteKey, function(data)
 				table.insert(responses, data.Data.Response)
@@ -250,7 +250,7 @@ return function(Vargs, GetEnv)
 				local tab = {
 					"Question: "..question;
 					"Total Responses: "..total;
-					"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
+					"Time Left: ".. math.max(0, 120 - (os.clock()-startTime));
 					--"Didn't Vote: "..#players-total;
 				}
 
@@ -320,13 +320,13 @@ return function(Vargs, GetEnv)
 		service.Queue("CrossServerMessageQueue", function()
 			--// rate limiting
 			counter += 1
-			if not lastTick then lastTick = os.time() end
+			if not lastTick then lastTick = os.clock() end
 			if counter >= 150 + 60 * #service.Players:GetPlayers()  then
-				repeat wait() until os.time()-lastTick > 60
+				repeat task.wait() until os.clock()-lastTick > 60
 			end
 
-			if os.time()-lastTick > 60 then
-				lastTick = os.time()
+			if os.clock()-lastTick > 60 then
+				lastTick = os.clock()
 				counter = 1
 			end
 

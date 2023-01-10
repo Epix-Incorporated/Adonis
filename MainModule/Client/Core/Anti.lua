@@ -228,6 +228,13 @@ return function(Vargs, GetEnv)
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
 					local workspace = service.UnWrap(workspace)
+					local nilPlayers = setmetatable({}, {__mode = "v"})
+
+					service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
+						if child:IsA("Player") then
+							table.insert(nilPlayers, child)
+						end
+					end)
 
 					local success, err = pcall(function()
 						LocalPlayer.Kick(workspace, "If this appears, you have a glitch. Method 1")
@@ -245,10 +252,12 @@ return function(Vargs, GetEnv)
 					end
 
 					if #service.Players:GetPlayers() > 1 then
+						local unwrappedPlayers = service.Players
+
 						for _, v in service.Players:GetPlayers() do
 							local otherPlayer = service.UnWrap(v)
 
-							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
+							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
 								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
 								local success2, err2 = pcall(function()
 									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")

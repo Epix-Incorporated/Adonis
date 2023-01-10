@@ -13,7 +13,7 @@
 ExistingSounds = {}
 Player = game:GetService("Players").LocalPlayer
 Gui = script:WaitForChild("PianoGui")
-Humanoid = Player.Character.Humanoid
+Humanoid = Player.Character:FindFirstChildOfClass("Humanoid")
 Tools = Instance.new("Folder",game:service("ReplicatedStorage"))
 PlayingEnabled = false
 PianoSounds = {
