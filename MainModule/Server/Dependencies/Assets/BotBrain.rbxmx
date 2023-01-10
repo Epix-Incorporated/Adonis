@@ -13,17 +13,19 @@
 			<ProtectedString name="Source"><![CDATA[local char = script.Parent
 local event = script.Event
 
-local pathService = game:GetService("PathfindingService")
-local players = game:GetService("Players")
+local PathfindingService = game:GetService("PathfindingService")
+local Players = game:GetService("Players")
+local Debris = game:GetService("Debris")
 
-local hum = char.Humanoid
-local head = char.Head
+local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid")
+local head = char:FindFirstChild("Head")
 local torso = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") 
 local larm = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftLowerArm")
 local rarm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightLowerArm")
 local lleg = char:FindFirstChild("Left Leg") or char:FindFirstChild("LeftLowerLeg")
 local rleg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightLowerLeg")
 
+local getPath, validTarget
 local path = {}
 local current
 local currentInd = 0
@@ -47,13 +49,21 @@ local props = {
 	LastCompute = tick();
 }
 
-function setProp(prop, value)
+local function tagHumanoid(humanoid, attacker)
+	local creatorTag = Instance.new("ObjectValue")
+	creatorTag.Name = "creator"
+	creatorTag.Value = attacker
+	Debris:AddItem(creatorTag, 2)
+	creatorTag.Parent = humanoid
+end
+
+local function setProp(prop, value)
 	if props[prop] then
 		props[prop] = value
 	end
 end
 
-function getCFrame()
+local function getCFrame()
 	local humanoidRootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
 	if humanoidRootPart ~= nil and humanoidRootPart:IsA("BasePart") then
 		return humanoidRootPart.CFrame
@@ -62,7 +72,7 @@ function getCFrame()
 	end
 end
 
-function jumpCheck()
+local function jumpCheck()
 	local cframe = getCFrame()
 	local targ = (props.Target and props.Target.Parent and (props.Target:FindFirstChild("HumanoidRootPart") or props.Target:FindFirstChild("Torso") or props.Target:FindFirstChild("UpperTorso")))
 	if targ and (targ.Position-cframe.Position).Magnitude < 1 then
@@ -79,7 +89,7 @@ function jumpCheck()
 	end
 end
 
-function findTarget()
+local function findTarget()
 	local closest
 	local prevDist = props.Distance
 	for i,v in workspace:GetChildren() do
@@ -96,7 +106,7 @@ function findTarget()
 	return closest
 end
 
-function canSee(targCFrame)
+local function canSee(targCFrame)
 	local myPos = getCFrame().Position
 	local targetPos = targCFrame.Position
 	
@@ -113,10 +123,10 @@ function canSee(targCFrame)
 	end
 end
 
-function validTarget(v)
+validTarget = function(v)
 	local targ = v or props.Target
 	local isBot = targ:FindFirstChild("isBot")
-	local isPlayer = game:GetService("Players"):GetPlayerFromCharacter(targ)
+	local isPlayer = Players:GetPlayerFromCharacter(targ)
 	local canHurt = (not isBot and not isPlayer) or (isBot and props.AttackBots and (isBot.Value ~= props.SpecialKey or isBot.Value == "null")) or (isPlayer and not (props.Friendly and (isPlayer == props.Creator or isPlayer.TeamColor == props.TeamColor)))
 	if targ and targ ~= char and canHurt then
 		local targetHumanoid = targ:FindFirstChildOfClass("Humanoid")
@@ -130,22 +140,23 @@ function validTarget(v)
 	end
 end
 
-function doAttack(v)
+local function doAttack(v)
 	if props.Attack and not props.isDead and v == props.Target and validTarget(v) then
-		local hum = v:FindFirstChildOfClass("Humanoid")
-		if hum then
-			hum:TakeDamage(props.Damage)
+		local foundHumanoid = v:FindFirstChildOfClass("Humanoid")
+		if foundHumanoid then
+			tagHumanoid(foundHumanoid, hum)
+			foundHumanoid:TakeDamage(props.Damage)
 		end
 	end
 end
 
-function checkPath()
+local function checkPath()
 	if props.AutoCompute or tick() - props.LastCompute > 1 then
 		getPath()
 	end
 end
 
-function getPath()
+getPath = function()
 	local targetPos
 	
 	if props.Target and props.Target.Parent then
@@ -171,7 +182,7 @@ function getPath()
 			props.Computing = true
 			props.AutoCompute = false
 			
-			local pathf = pathService:ComputeSmoothPathAsync(
+			local pathf = PathfindingService:ComputeSmoothPathAsync(
 				getCFrame().Position,
 				targetPos.Position,
 				500
@@ -187,7 +198,7 @@ function getPath()
 	end
 end
 
-function walkPath()
+local function walkPath()
 	local myPos = getCFrame().Position
 	
 	local coord = path[currentInd]
@@ -195,7 +206,7 @@ function walkPath()
 		current = coord
 		currentInd = currentInd+1
 		
-		if hum ~= nil and hum:IsA'Humanoid' then
+		if hum ~= nil and hum:IsA("Humanoid") then
 			hum:MoveTo(current)
 			
 			jumpCheck()
@@ -216,7 +227,7 @@ function walkPath()
 	end
 end
 
-function updateBot()
+local function updateBot()
 	local targ = findTarget()
 	if targ and props.Swarm then
 		props.Target = targ
@@ -228,7 +239,7 @@ function updateBot()
 	task.wait(1/30)
 end
 
-function init()
+local function init()
 	local str = Instance.new("StringValue",char)
 	str.Name = "isBot"
 	str.Value = props.SpecialKey
@@ -252,7 +263,7 @@ end
 
 function doToucher(part)
 	part.Touched:Connect(function(hit)
-		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChild("Humanoid") then
+		if hit and hit:IsA("Part") or hit:IsA("BasePart") and hit.Parent:IsA("Model") and hit.Parent:FindFirstChildOfClass("Humanoid") then
 			doAttack(hit.Parent)
 		end
 	end)
