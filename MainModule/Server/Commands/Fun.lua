@@ -1284,12 +1284,19 @@ return function(Vargs, env)
 								p.CameraMaxZoomDistance = 0.5
 
 								local gui = Instance.new("ScreenGui")
+								gui.IgnoreGuiInset = true
+								gui.ScreenInsets = Enum.ScreenInsets.None
+								gui.ResetOnSpawn = false
+								gui.AutoLocalize = false
+								gui.SelectionGroup = false
 								gui.Parent = service.ReplicatedStorage
 								local bg = Instance.new("Frame")
+								bg.Selectable = false
+								bg.AnchorPoint = Vector2.new(0.5, 0.5)
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
-								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Position = UDim2.new(0, 0, 0, 0)
 								bg.Parent = gui
 								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
 								task.wait(0.5)
@@ -1554,9 +1561,14 @@ return function(Vargs, env)
 						local gui = service.New("ScreenGui", {
 							Parent = service.ReplicatedStorage;
 							IgnoreGuiInset = true;
+							AutoLocalize = false;
+							ScreenInsets = Enum.ScreenInsets.None;
+							ResetOnSpawn = false;
+							SelectionGroup = false;
 						})
 						local bg = service.New("Frame", {
 							Parent = gui;
+							Selectable = false;
 							BackgroundTransparency = 0;
 							BackgroundColor3 = Color3.new(0, 0, 0);
 							Size = UDim2.fromScale(1, 1);
