@@ -6610,7 +6610,7 @@ return function(Vargs, env)
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2]) and math.min(tonumber(args[2]), 50) or 1
+				local num = tonumber(args[2]) and math.min(math.max(tonumber(args[2]), 1), 50) or 1
 				local health = tonumber(args[6]) or 100
 				local speed = tonumber(args[7]) or 16
 				local damage = tonumber(args[8]) or 5
