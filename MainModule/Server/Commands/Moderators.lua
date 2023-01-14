@@ -6606,7 +6606,7 @@ return function(Vargs, env)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot", "trainingbot"};
-			Args = {"player", "num", "walk", "attack", "friendly", "health", "speed", "damage"};
+			Args = {"player", "num (max: 50)", "walk", "attack", "friendly", "health", "speed", "damage"};
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
