@@ -37,7 +37,7 @@ return function(Vargs, GetEnv)
 
 		TrackTask("Thread: ChatServiceHandler", function()
 			--// Support for TextChatService
-			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
 				local function onNewTextchannel(textchannel)
 					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 						if
