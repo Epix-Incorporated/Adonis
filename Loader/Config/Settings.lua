@@ -314,6 +314,7 @@ settings.ChatCommands = true			-- If false you will not be able to run commands 
 settings.CreatorPowers = true			-- Gives me creator level admin; This is strictly used for debugging; I can't debug without full access to the script
 settings.CodeExecution = true			-- Enables the use of code execution in Adonis; Scripting related (such as :s) and a few other commands require this
 settings.SilentCommandDenials = false	-- If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command
+settings.OverrideChatCallbacks = true		-- If the TextChatService ShouldDeliverCallbacks of all channels are overriden by Adonis on load. Required for muting
 
 settings.BanMessage = "Banned"				-- Message shown to banned users upon kick
 settings.LockMessage = "Not Whitelisted"	-- Message shown to people when they are kicked while the game is :slocked
@@ -428,6 +429,7 @@ descs.CommandFeedback = [[ Should players be notified when commands with non-obv
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
 descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
+descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overriden by Adonis on load. Required for muting ]]
 
 descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
@@ -567,6 +569,7 @@ order = {
 	"CreatorPowers";
 	"CodeExecution";
 	"SilentCommandDenials";
+	"OverrideChatCallbacks";
 	" ";
 	"BanMessage";
 	"LockMessage";
