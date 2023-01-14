@@ -3065,7 +3065,7 @@ return function(Vargs, env)
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
 						head.Transparency = 1
-						for _, c in hHead:GetChildren() do
+						for _, c in head:GetChildren() do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
