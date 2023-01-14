@@ -2516,7 +2516,7 @@ return function(Vargs, env)
 							s.Color = BrickColor.new(0, 0, 0)
 							v.Transparency = 1
 							m.Head.Transparency = 0
-							if head:FindFirstChild("Mesh") then
+							if m.head:FindFirstChild("Mesh") then
 								m.Head.Mesh:Remove()
 							end
 							local b = service.New("SpecialMesh")
@@ -3058,13 +3058,14 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					local headMesh = character.Head:FindFirstChild("Mesh")
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
 					if headMesh then
-						character.Head.Transparency = 0.9
+						head.Transparency = 0.9
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
-						character.Head.Transparency = 1
-						for _, c in character.Head:GetChildren() do
+						head.Transparency = 1
+						for _, c in hHead:GetChildren() do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
@@ -3207,11 +3208,11 @@ return function(Vargs, env)
 					local head = v.Character:FindFirstChild("Head")
 					local headMesh = head:FindFirstChild("Mesh")
 					if headMesh then
-						character.Head.Transparency = 0.9
+						head.Transparency = 0.9
 						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
 					else
-						character.Head.Transparency = 1
-						for _, c in character.Head:GetChildren() do
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
 							if c:IsA("Decal") then
 								c.Transparency = 1
 							elseif c:IsA("LayerCollector") then
