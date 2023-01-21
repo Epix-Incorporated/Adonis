@@ -479,7 +479,7 @@ return function(Vargs, env)
 					Variables.ZaWarudoDebounce = true
 					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://676242549"
 						audio.Volume = 0.5
 						audio:Play()
@@ -497,7 +497,7 @@ return function(Vargs, env)
 							old:Destroy()
 						end
 
-						local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
+						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
 						if audio then
 							audio:Stop()
 							audio:Destroy()
@@ -508,7 +508,7 @@ return function(Vargs, env)
 						Variables.ZaWarudo = false
 						audio:Destroy()
 					else
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
 						audio:Play()
@@ -529,7 +529,7 @@ return function(Vargs, env)
 						end
 
 						audio:Destroy()
-						local clock = service.New("Sound", workspace)
+						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
 						clock.SoundId = "rbxassetid://160189066"
 						clock.Looped = true
