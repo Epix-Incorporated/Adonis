@@ -483,11 +483,11 @@ return function(Vargs, GetEnv)
 				end
 				if canUseGlobalBroadcast then
 					if not server.Functions.AudioLib then
-						local audioLibFolder = workspace:FindFirstChild("ADONIS_AUDIOLIB")
+						local audioLibFolder = service.SoundService:FindFirstChild("ADONIS_AUDIOLIB")
 						if not audioLibFolder then
 							audioLibFolder = service.New("Folder")
 							audioLibFolder.Name = "ADONIS_AUDIOLIB"
-							audioLibFolder.Parent = workspace
+							audioLibFolder.Parent = service.SoundService
 						end
 						server.Functions.AudioLib = require(server.Shared.AudioLib).new(audioLibFolder)
 					end
