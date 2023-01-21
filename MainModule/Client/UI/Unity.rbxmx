@@ -10855,7 +10855,7 @@ end
 function module.new(Frame, BarCount)
 
 	-- Determine settings
-	local BAR_COUNT = math.clamp(typeof(BarCount) == "number" and BarCount or 41, 11,601)
+	local BAR_COUNT = math.clamp(type(BarCount) == "number" and BarCount or 41, 11,601)
 	local SAMPLE_HZ = math.clamp(BAR_COUNT/2,10,500)
 
 	if BAR_COUNT%2==0 then
