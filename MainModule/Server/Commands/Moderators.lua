@@ -5377,7 +5377,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
@@ -5398,7 +5398,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
@@ -5420,7 +5420,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local pitch = args[1]
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Pitch=v.Pitch+tonumber(string.sub(args[1], 2))
@@ -5444,7 +5444,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Volume=v.Volume+tonumber(string.sub(args[1], 2))
@@ -5492,7 +5492,7 @@ return function(Vargs, env)
 
 					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					s.Looped = false
 					s.Archivable = false
 
@@ -5578,7 +5578,7 @@ return function(Vargs, env)
 						Functions.Hint(name, service.GetPlayers())
 					end
 
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
@@ -5602,11 +5602,11 @@ return function(Vargs, env)
 					s.Pitch = pitch
 					s.Looped = looped
 					s.Archivable = false
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
@@ -5622,7 +5622,7 @@ return function(Vargs, env)
 			Description = "Stop the currently playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						v:Destroy()
 					end
