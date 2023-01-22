@@ -113,6 +113,8 @@ return function(Vargs, GetEnv)
 			OnJoin = true;
 
 			CustomRanks = true;
+			Ranks = true;
+			Commands = true;
 		};
 
 		Returnables = {
@@ -236,6 +238,8 @@ return function(Vargs, GetEnv)
 						OnJoin = true;
 
 						CustomRanks = true; -- Not supported yet
+						Ranks = true;
+						Commands = true;
 					}
 
 					for setting in sets.Settings do
