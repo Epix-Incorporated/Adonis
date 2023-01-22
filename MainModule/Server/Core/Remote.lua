@@ -91,6 +91,7 @@ return function(Vargs, GetEnv)
 			DataStore = true;
 			DataStoreKey = true;
 			DataStoreEnabled = true;
+			LocalDatastore = true;
 
 			LoadAdminsFromDS = true;
 
@@ -102,6 +103,9 @@ return function(Vargs, GetEnv)
 			G_Access_Key = true;
 			G_Access_Perms = true;
 			Allowed_API_Calls = true;
+
+			WebPanel_ApiKey = true;
+			WebPanel_Enabled = true;
 
 			OnStartup = true;
 			OnSpawn = true;
@@ -209,6 +213,7 @@ return function(Vargs, GetEnv)
 						DataStore = true;
 						DataStoreKey = true;
 						DataStoreEnabled = true;
+						LocalDatastore = true;
 
 						--Trello_Enabled = true;
 						--Trello_PrimaryBoard = true;
@@ -221,6 +226,9 @@ return function(Vargs, GetEnv)
 						G_Access_Key = true;
 						G_Access_Perms = true;
 						Allowed_API_Calls = true;
+
+						WebPanel_ApiKey = true;
+						WebPanel_Enabled = true;
 
 						OnStartup = true;
 						OnSpawn = true;
