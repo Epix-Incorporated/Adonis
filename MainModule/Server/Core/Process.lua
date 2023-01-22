@@ -287,6 +287,7 @@ return function(Vargs, GetEnv)
 		newRateLimit = newRateLimit;
 		MsgStringLimit = 500; --// Max message string length to prevent long length chat spam server crashing (chat & command bar); Anything over will be truncated;
 		MaxChatCharacterLimit = 250; --// Roblox chat character limit; The actual limit of the Roblox chat's textbox is 200 characters; I'm paranoid so I added 50 characters; Users should not be able to send a message larger than that;
+		RemoteMaxArgCount = 5; --// The maximum argument count Adonis will take from Remote (alter if your script requires more arguments)
 		RateLimits = {
 			Remote = 0.01;
 			Command = 0.1;
@@ -310,7 +311,7 @@ return function(Vargs, GetEnv)
 					--elseif cliData and keys and cliData.Module ~= keys.Module then
 					--	Anti.Detected(p, "Kick", "Invalid Client Module (r10006)")
 				else
-					if keys then
+					if keys and select("#", ...) <= Process.RemoteMaxArgCount then
 						local args = {...}
 						local rateLimitCheck, _, _, curRemoteRate = RateLimit(p, "Remote")
 
@@ -339,7 +340,7 @@ return function(Vargs, GetEnv)
 								local command = (cliData.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
 
 								AddLog("RemoteFires", {
-									Text = string.format("%s fired %s; Arg1: %s", tostring(p), comString, service.MaxLen(tostring(args[1]), 50));
+									Text = string.format("%s fired %s; Arg1: %s", p.Name, comString, service.MaxLen(tostring(args[1]), 50));
 									Desc = string.format("Player fired remote command %s; %s", comString, Functions.ArgsToString(args));
 									Player = p;
 								})
@@ -349,7 +350,7 @@ return function(Vargs, GetEnv)
 									if not rets[1] then
 										logError(p, comString .. ": ".. tostring(rets[2]))
 									else
-										return {unpack(rets, 2)}
+										return {table.unpack(rets, 2)}
 									end
 								else
 									Anti.Detected(p, "Kick", "Invalid Remote Data (r10004)")

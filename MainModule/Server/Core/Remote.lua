@@ -1310,7 +1310,7 @@ return function(Vargs, GetEnv)
 		end;
 
 		FadeAudio = function(p: Player, audioId: number, inVol: number?, playbackSpeed: number?, looped: boolean?, incWait: number?)
-				Remote.Send(p, "Function", "FadeAudio", audioId, inVol, playbackSpeed, looped, incWait)
+			Remote.Send(p, "Function", "FadeAudio", audioId, inVol, playbackSpeed, looped, incWait)
 		end;
 
 		StopAllAudio = function(p: Player)

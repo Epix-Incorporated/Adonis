@@ -173,7 +173,7 @@ return function(Vargs, env)
 				local senderLevel = data.PlayerData.Level
 
 				local userFound = false
-				if not target:find(":") then
+				if not string.find(target, ":") then
 					for _, v in service.GetPlayers(plr, target, {
 						DontError = true;
 						NoFakePlayer = true;

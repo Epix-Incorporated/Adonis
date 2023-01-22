@@ -635,8 +635,7 @@ return function(Vargs, GetEnv)
 				end)
 				if ran then
 					Detected("crash", "RobloxLocked usable")
-				end
-				if test then
+				elseif test then
 					--// Cleanup
 					pcall(service.Delete, test)
 				end

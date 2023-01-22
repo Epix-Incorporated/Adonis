@@ -1239,7 +1239,7 @@ return function(Vargs, GetEnv)
 								if data then
 									--// TODO: Possibly find a better way to "batch" TableUpdates to prevent script exhaustion
 									for i = 1, #data do
-										task.defer(LoadData, "TableUpdate", data[i])
+										LoadData("TableUpdate", data[i])
 									end
 								end
 							elseif tData.Table and tData.Action then
