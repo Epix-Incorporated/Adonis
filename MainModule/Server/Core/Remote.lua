@@ -88,6 +88,7 @@ return function(Vargs, GetEnv)
 			Trello_Token = true;
 			Trello_AppKey = true;
 
+			HideScript = true;  -- Changing in-game will do nothing; Not able to be saved
 			DataStore = true;
 			DataStoreKey = true;
 			DataStoreEnabled = true;
