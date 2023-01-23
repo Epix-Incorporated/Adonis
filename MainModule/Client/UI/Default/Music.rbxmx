@@ -954,7 +954,7 @@ end
 function module.new(Frame, BarCount)
 
 	-- Determine settings
-	local BAR_COUNT = math.clamp(typeof(BarCount) == "number" and BarCount or 41, 11,601)
+	local BAR_COUNT = math.clamp(type(BarCount) == "number" and BarCount or 41, 11,601)
 	local SAMPLE_HZ = math.clamp(BAR_COUNT/2,10,500)
 
 	if BAR_COUNT%2==0 then
@@ -1289,7 +1289,7 @@ function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTwee
 	assert(typeof(moveTweenInfo) == "TweenInfo", "MoveTweenInfo must be a TweenInfo object!")
 
 	padding = padding or 5
-	assert(typeof(padding) == "number", "Padding variable must be a number!")
+	assert(type(padding) == "number", "Padding variable must be a number!")
 
 	local self = setmetatable({}, Slider)
 

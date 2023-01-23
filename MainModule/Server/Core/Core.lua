@@ -178,6 +178,7 @@ return function(Vargs, GetEnv)
 
 			CustomRanks = true;
 			Ranks = true;
+			Commands = true;
 
 			--// Not gonna let malicious stuff set DS_Blacklist to {} or anything!
 			DS_BLACKLIST = true;
