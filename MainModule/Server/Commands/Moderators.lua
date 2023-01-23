@@ -5708,7 +5708,7 @@ return function(Vargs, env)
 		Fly = {
 			Prefix = Settings.Prefix;
 			Commands = {"fly", "flight"};
-			Args = {"player", "speed", "noclip"};
+			Args = {"player", "speed", "noclip? (default: true)"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
@@ -5721,7 +5721,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes") or args[3] == nil and false;
+					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes");
 					Parent = scr;
 				})
 				
