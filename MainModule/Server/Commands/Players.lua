@@ -1125,27 +1125,23 @@ return function(Vargs, env)
 			Prefix = Settings.PlayerPrefix;
 			Commands = {"buyitem", "buyasset"};
 			Args = {"id"};
-			Description = "Prompts the localplayer to buy the product belonging to the ID you supply";
+			Description = "Prompts yourself to buy the asset belonging to the ID supplied";
 			AdminLevel = "Players";
 			Function = function(plr: Player, args: {string})
-				local assetId = assert(tonumber(args[1]), "Pro")
-				local success, value = pcall(service.MarketPlace.PlayerOwnsAsset, service.MarketPlace, plr, assetId)
-
-				if success and value or not success then
-					local connection
-					connection = service.MarketPlace.PromptProductPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
-						if boughtAssetId == assetId then
-							connection:Disconnect()
-							Remote.MakeGui(plr, "Notification", {
-								Title = "Adonis purchase";
-								Message = (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId));
-								Time = 10;
-							})
-						end
-					end)
-
-					service.MarketPlace:PromptPurchase(plr, assetId, false)
-				end
+				local assetId = assert(tonumber(args[1]), "Missing asset ID (argument #1)")
+				local success, assetAlreadyOwned = pcall(service.MarketplaceService.PlayerOwnsAsset, service.MarketplaceService, plr, assetId)
+				assert(not (success and assetAlreadyOwned), "You already own the asset!")
+				local connection; connection = service.MarketplaceService.PromptPurchaseFinished:Connect(function(_, boughtAssetId, isPurchased)
+					if boughtAssetId == assetId then
+						connection:Disconnect()
+						Remote.MakeGui(plr, "Notification", {
+							Title = "Adonis purchase";
+							Message = (isPurchased and string.format("Asset %d was purchased successfully!", assetId) or string.format("Asset %d was not bought", assetId));
+							Time = 10;
+						})
+					end
+				end)
+				service.MarketplaceService:PromptPurchase(plr, assetId, false)
 			end
 		};
 	};
