@@ -36,13 +36,14 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 
 		TrackTask("Thread: ChatServiceHandler", function()
-			--// Support for TextChatService
+
+			--// Support for modern TextChatService
 			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
 				local function onNewTextchannel(textchannel)
 					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
 						if
-							chatMessage.Status == Enum.TextChatMessageStatus.Success or
-							chatMessage.Status == Enum.TextChatMessageStatus.Sending
+							chatMessage.Status == Enum.TextChatMessageStatus.Success
+							or chatMessage.Status == Enum.TextChatMessageStatus.Sending
 						then
 							local player = service.Players:GetPlayerByUserId(textSource.UserId)
 							local slowCache = Admin.SlowCache
@@ -51,7 +52,7 @@ return function(Vargs, GetEnv)
 								return true
 							end
 
-							-- // Hide chat command CMDs
+							-- // Hide chat commands?
 							if Admin.DoHideChatCmd(player, chatMessage.Text) then
 								return false
 							end
@@ -85,7 +86,7 @@ return function(Vargs, GetEnv)
 				end
 
 				local function onTextChannelsAdded(textChannels)
-					for _, v in ipairs(textChannels:GetChildren()) do
+					for _, v in textChannels:GetChildren() do
 						if v:IsA("TextChannel") then
 							task.spawn(onNewTextchannel, v)
 						end
@@ -109,10 +110,9 @@ return function(Vargs, GetEnv)
 				end)
 			end
 
+			--// Support for legacy Lua chat system
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService()
-
-			--// Support for lua chat service
 			if chatService then
 				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
 					local speaker = chatService:GetSpeaker(speakerName)
