@@ -19,7 +19,7 @@ Maintainers may manage PR labels or edit PR titles and descriptions where benefi
 
 **A:** **Title:** The title of a PR should be in the present tense, and equivalent to a concise statement describing what was added, changed or removed by the PR: "Add XXX setting"; "Add :somenewcommand"; "Fix for :somecommand not doing XXX"; "Fix for :somecommand to account for XXX"; ":somecommand now does XXX"; "Add confirmation prompt for :somecommand"9
 
-A short explanation/clarification may be appended to the title, and should be included in the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
+A short explanation/clarification may be appended to the title, and should be included if the PR involves making a change with a rationale that users may not understand: "Add confirmation prompt for :somecommand to prevent XXX"
 
 Note that Adonis commands are _always_ referenced by their prefix and common usage name (":somecommand"/":somecmd"), and not anything else including their internal index ("SomeCommand"). This is to ensure consistency and easy comprehension by normal Adonis users.
 
