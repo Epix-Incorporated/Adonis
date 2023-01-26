@@ -26,7 +26,7 @@ Adonis is a community-maintained server moderation and management system created
 
 📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw) or read the unofficial setup guide [here](https://devforum.roblox.com/t/1535122).**
 
-If you get stuck, feel free to ask for assistance in our [Discord server](https://discord.gg/H5RvTP3).
+If you get stuck, feel free to ask for assistance on our [Discord server](https://discord.gg/H5RvTP3).
 
 ### Method 1 (recommended): Official Roblox Model
 
@@ -44,12 +44,12 @@ If you get stuck, feel free to ask for assistance in our [Discord server](https:
 
 1. Download the repository to your computer's file system.
 2. Install and use a plugin like [Rojo](https://rojo.space/) to compile Adonis into a `rbxmx` file.
-    If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build a `rbxmx`.
+    If using Rojo, you can run `rojo build /path/to/adonis -o Adonis.rbxmx` to build an `rbxmx`.
 3. Import the compiled model file into Studio.
 
 ℹ️ **Note:** By default, loaders compiled from the repository have [`DebugMode`](#🔧-debug-mode) enabled.
 
-**⚠️ Method 3 compiles the _bleeding edge_ version of Adonis, which may be not fully tested and highly unstable.**
+**⚠️ Method 3 compiles the _bleeding edge_ version of Adonis, which may be not fully tested and is highly unstable.**
 
 ### ⚙️ Configuring Adonis
 
@@ -59,7 +59,7 @@ You may then edit the Settings module to configure Adonis to suit your game. Ins
 
 ### 🔧 Debug Mode
 
-The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in  releases have `DebugMode` enabled.**
+The Adonis loader provides a `DebugMode` option which will load a local copy of the `MainModule` rather than fetching the latest version. This could be useful if you are a contributor working on the `MainModule`, or want to maintain a custom version for your game. Debug mode expects the `MainModule` to share the same parent with the loader model (e.g. both should be in `ServerScriptService`). **By default, snapshots provided in releases have `DebugMode` enabled.**
 
 #### Toggling debug mode
 
@@ -88,7 +88,7 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 
 ## ⭐ Contributing
 
-The purpose of this repository is to allow others to contribute and make improvements to Adonis. Even if you've never contributed on GitHub before, we would appreciate any contributions that you can provide.
+The purpose of this repository is to allow others to contribute and make improvements to Adonis. Even if you've never contributed to GitHub before, we would appreciate any contributions that you can provide.
 
 ### 📜 Contributing Guide
 
@@ -101,3 +101,4 @@ Adonis is available under the terms of the MIT license. Read more details about 
 ### Thank you to our contributors
 
 [![contributors](https://contributors-img.web.app/image?repo=Epix-Incorporated/Adonis)](https://github.com/Epix-Incorporated/Adonis/graphs/contributors)
+
