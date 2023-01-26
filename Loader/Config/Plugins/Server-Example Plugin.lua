@@ -6,7 +6,7 @@
 
 	You can use the MakePluginEvent to use the script instead of setting up an event.
 	PlayerChatted will get chats from the custom chat and nil players.
-	PlayerJoined will fire after the player finishes the initial loading
+	PlayerJoined will fire after the player finishes initial loading
 	CharacterAdded will also fire after the player is loaded, it does not use the CharacterAdded event.
 
 	service.Events.PlayerChatted(function(plr, msg)
