@@ -137,12 +137,12 @@ local descs = {};			--// Contains settings descriptions
 			Card format refers to how card names should look
 
 
-			MAKE SURE YOU SET settings.DataStoreKey TO SOMETHING RANDOM.
+			MAKE SURE YOU SET settings.DataStoreKey TO ANYTHING RANDOM.
 																																																																									--]]
 
 settings.HideScript = true						 -- When the game starts the Adonis_Loader model will be hidden so other scripts cannot access the settings module; Disable if your game uses AssetService:SavePlaceAsync()
 settings.DataStore = "Adonis_1"					 -- DataStore the script will use for saving data; Changing this will lose any saved data
-settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO SOMETHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
+settings.DataStoreKey = "CHANGE_THIS"			 -- CHANGE THIS TO ANYTHING RANDOM! Key used to encrypt all datastore entries; Changing this will lose any saved data
 settings.DataStoreEnabled = true				 -- Disable if you don't want to load settings and admins from the datastore; PlayerData will still save
 settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
@@ -237,7 +237,7 @@ settings.PlayerPrefix = "!"			-- The ! in !donate; Mainly used for commands that
 settings.SpecialPrefix = ""			-- Used for things like "all", "me" and "others" (If changed to ! you would do :kill !me)
 settings.SplitKey = " "				-- The space in :kill me (eg if you change it to / :kill me would be :kill/me)
 settings.BatchKey = "|"				-- :kill me | :ff bob | :explode scel
-settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in user-panel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
+settings.ConsoleKeyCode = "Quote"	-- Keybind to open the console; Rebindable per player in userpanel; KeyCodes: https://developer.roblox.com/en-us/api-reference/enum/KeyCode
 
 --// Easily add new custom commands below (without needing to create a plugin module)
 --// You can also use this to overwrite existing commands if you know the command's index (found in the command's respective module within the Adonis MainModule)
