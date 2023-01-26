@@ -17,7 +17,7 @@ Older versions of Adonis are not maintained/updated; hence, we do *not* recommen
 Be sure to include the following info in your report:
 * When the vulnerability was discovered or first known;
 * What is the potential impact (consequence) of the vulnerability; and
-* how the vulnerability may be exploited.
+* How the vulnerability may be exploited.
 
 Adonis Maintainers will investigate each vulnerability report and provide a fix at the earliest possible opportunity where necessary.
 
