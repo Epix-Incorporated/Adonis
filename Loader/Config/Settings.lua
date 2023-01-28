@@ -369,7 +369,7 @@ descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be 
 descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 descs.Storage = [[ Where things like tools are stored ]]
-descs.RecursiveTools = [[ Whether tools that are included in subcontainers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders) ]]
+descs.RecursiveTools = [[ Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 descs.Theme = [[ UI theme; ]]
 descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
@@ -427,7 +427,7 @@ descs.FunCommands = [[ Are fun commands enabled? ]]
 descs.PlayerCommands = [[ Are players commands enabled? ]]
 descs.CommandFeedback = [[ Should players be notified when commands with non-obvious effects are run on them? ]]
 descs.CrossServerCommands = [[ Are commands which affect more than one server enabled? ]]
-descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead you MUST use the console or you will be unable to run commands ]]
+descs.ChatCommands = [[ If false you will not be able to run commands via the chat; Instead, you MUST use the console or you will be unable to run commands ]]
 descs.SilentCommandDenials = [[ If true, there will be no differences between the error messages shown when a user enters an invalid command and when they have insufficient permissions for the command ]]
 descs.OverrideChatCallbacks = [[ If the TextChatService ShouldDeliverCallbacks of all channels are overridden by Adonis on load. Required for muting ]]
 
@@ -435,7 +435,7 @@ descs.BanMessage = [[ Message shown to banned users ]]
 descs.LockMessage = [[ Message shown to people when they are kicked while the game is :slocked ]]
 descs.SystemTitle = [[ Title to display in :sm ]]
 
-descs.CreatorPowers = [[ When true gives me place owner admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
+descs.CreatorPowers = [[ Gives me creator-level admin; This is strictly used for debugging; I can't debug without access to the script and specific owner commands ]]
 descs.MaxLogs = [[ Maximum logs to save before deleting the oldest; Too high can lag the game ]]
 descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
