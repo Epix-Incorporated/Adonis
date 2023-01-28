@@ -3013,12 +3013,11 @@ return function(data, env)
 		local label = point:FindFirstChild("Label")
 
 		if label then
-			--| No more UICorners if there is a one exist!
-			if not point:FindFirstChildWhichIsA("UICorner") then
-				local rounder = service.New("UICorner",{
+			if not point:FindFirstChildOfClass("UICorner") then
+				service.New("UICorner", {
 					CornerRadius = UDim.new(0, 5);
 					Parent = point;
-				});
+				})
 			end
 
 			ent.MouseLeave:Connect(function(x,y)
@@ -3144,12 +3143,12 @@ return function(data, env)
 
 
 		local instancefinally = create("TextButton", data)
-		local uiCorner = instancefinally:FindFirstChildWhichIsA("UICorner")
+		local uiCorner = instancefinally:FindFirstChildOfClass("UICorner")
 		if not uiCorner then
-			local rounder = service.New("UICorner",{
+			service.New("UICorner", {
 				CornerRadius = UDim.new(0.2, 0);
 				Parent = instancefinally;
-			});
+			})
 		else
 			uiCorner.CornerRadius = UDim.new(0.2, 0)
 		end
