@@ -147,7 +147,7 @@ settings.DataStoreEnabled = true				 -- Disable if you don't want to load settin
 settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers
 
 settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
-settings.RecursiveTools = false					 -- Whether tools are included in sub-containers within settings.Storage is available via the :give command (useful if your tools are organized into multiple folders)
+settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
 settings.Theme = "Default"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
@@ -285,8 +285,8 @@ settings.Trello_AppKey = ""				-- Your Trello AppKey						  	Link: https://trell
 settings.Trello_Token = ""				-- Trello token (DON'T SHARE WITH ANYONE!)    Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE
 settings.Trello_HideRanks = false		-- If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins)
 
-settings.G_API = true					-- If true allows other server scripts to access certain functions described in the API module through _G.Adonis
-settings.G_Access = false				-- If enabled allow other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
+settings.G_API = true					-- If true, allows other server scripts to access certain functions described in the API module through _G.Adonis
+settings.G_Access = false				-- If enabled, allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player)
 settings.G_Access_Key = "Example_Key"	-- Key required to use the _G access API; Example_Key will not work for obvious reasons
 settings.G_Access_Perms = "Read" 		-- Access perms
 settings.Allowed_API_Calls = {
@@ -369,7 +369,7 @@ descs.DataStoreEnabled = [[ Disable if you don't want settings and admins to be 
 descs.LocalDatastore = [[ If this is turned on, a mock DataStore will forcibly be used instead and shall never save across servers ]]
 
 descs.Storage = [[ Where things like tools are stored ]]
-descs.RecursiveTools = [[ Whether tools included in subcontainers within settings.Storage are available via the :give command (useful if your tools are organized into multiple folders) ]]
+descs.RecursiveTools = [[ Whether tools that are included in subcontainers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders) ]]
 
 descs.Theme = [[ UI theme; ]]
 descs.MobileTheme = [[ Theme to use on mobile devices; Mobile themes are optimized for smaller screens; Some GUIs are disabled ]]
@@ -417,8 +417,8 @@ descs.Trello_AppKey = [[ Your Trello AppKey; Link: https://trello.com/app-key ]]
 descs.Trello_Token = [[ Trello token (DON'T SHARE WITH ANYONE!); Link: https://trello.com/1/connect?name=Trello_API_Module&response_type=token&expires=never&scope=read,write&key=YOUR_APP_KEY_HERE ]]
 descs.Trello_HideRanks = [[ If true, Trello-assigned ranks won't be shown in the admins list UI (accessed via :admins) ]]
 
-descs.G_API = [[ If true allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
-descs.G_Access = [[ If enabled allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player) ]]
+descs.G_API = [[ If true, allows other server scripts to access certain functions described in the API module through _G.Adonis ]]
+descs.G_Access = [[ If enabled, allows other scripts to access Adonis using _G.Adonis.Access; Scripts will still be able to do things like _G.Adonis.CheckAdmin(player) ]]
 descs.G_Access_Key = [[ Key required to use the _G access API; Example_Key will not work for obvious reasons ]]
 descs.G_Access_Perms = [[ Access perms level ]]
 descs.Allowed_API_Calls = [[ Allowed calls ]]
