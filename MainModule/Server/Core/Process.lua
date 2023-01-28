@@ -1018,9 +1018,6 @@ return function(Vargs, GetEnv)
 						Message = Variables.NotifMessage
 					})
 				end
-				if Settings.TopBarShift then
-					Remote.MakeGui(p, "TopBar")
-				end
 
 				--if Settings.CustomChat then
 				--	MakeGui(p, "Chat")
