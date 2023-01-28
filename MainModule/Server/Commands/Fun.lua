@@ -3190,10 +3190,14 @@ return function(Vargs, env)
 
 				cl.Name = "Animator"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
-						if p:IsA("Decal") or p:IsA("Sound") then
-							p:Destroy()
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if not humRootPart then
+						continue
+					end
+					for _, c in humRootPart:GetChildren() do
+						if c:IsA("Decal") or c:IsA("Sound") then
+							c:Destroy()
 						end
 					end
 
@@ -3224,11 +3228,10 @@ return function(Vargs, env)
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
 
-					local primaryPart = v.Character.HumanoidRootPart or v.Character.PrimaryPart
-					decal1.Parent = primaryPart
-					decal2.Parent = primaryPart
-					sound.Parent = primaryPart
-					mesh.Parent = primaryPart
+					decal1.Parent = humRootPart
+					decal2.Parent = humRootPart
+					sound.Parent = humRootPart
+					mesh.Parent = humRootPart
 
 					decal1.Animator.Disabled = false
 					decal2.Animator.Disabled = false
