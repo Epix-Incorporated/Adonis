@@ -1,8 +1,8 @@
-wait()
+task.wait()
 local players = game:GetService("Players")
 local localplayer = players.LocalPlayer
 local torso = localplayer.Character.HumanoidRootPart 
-local hum = localplayer.Character.Humanoid
+local hum = localplayer.Character:FindFirstChildOfClass("Humanoid")
 local mouse = localplayer:GetMouse()
 local enabled = script.Enabled
 local running = true

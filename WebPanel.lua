@@ -71,9 +71,9 @@ return function(Vargs)
 		local ret = {}
 		if tbl and type(tbl) == "table" then
 			for i,v in tbl do
-				if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
+				if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
 					ret[i] = v
-				elseif typeof(v) == "table" then
+				elseif type(v) == "table" then
 					ret[i] = CopyCommand(v)
 				end
 			end
@@ -408,10 +408,10 @@ return function(Vargs)
 
 			--// Handle queue items
 			for _, v in data.Queue do
-				if typeof(v.action) ~= "string" then
+				if type(v.action) ~= "string" then
 					v.action = tostring(v.action)
 				end
-				if typeof(v.server) ~= "string" then
+				if type(v.server) ~= "string" then
 					v.server = tostring(v.server)
 				end
 
@@ -438,7 +438,7 @@ return function(Vargs)
 						Functions.Shutdown("[WebPanel] Server Shutdown")
 						WebPanelCleanUp(true)
 					elseif v.action == "remoteexecute" then
-						if typeof(v.command) ~= "string" then
+						if type(v.command) ~= "string" then
 							v.command = tostring(v.command)
 						end
 
@@ -467,7 +467,7 @@ return function(Vargs)
 					Method = "GET"
 				})
 
-				if not aliveSuccess and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
+				if not aliveSuccess and type(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
 					task.wait(30)
 				end
@@ -475,11 +475,11 @@ return function(Vargs)
 				continue
 			end
 
-			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
-
 			if code ~= 520 and code ~= 524 then
-				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
-				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, res.StatusCode)
+
+				Logs:AddLog("Script", errorMessage)
+				Logs:AddLog("Errors", errorMessage)
 				break
 			elseif code == 520 then
 				task.wait(5) --After the server restarts we want to make sure that it has time to inititate everything

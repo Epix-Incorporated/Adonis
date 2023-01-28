@@ -424,10 +424,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		Remove = function(name, ignore)
-			local gui = UI.Get(name, ignore)
-			if gui then
-				for i,v in gui do
-					v.Destroy()
+			if name == "Chat" and client.Handlers.RemoveCustomChat then
+				client.Handlers.RemoveCustomChat()
+			else
+				local gui = UI.Get(name, ignore)
+				if gui then
+					for i,v in gui do
+						v.Destroy()
+					end
 				end
 			end
 		end;

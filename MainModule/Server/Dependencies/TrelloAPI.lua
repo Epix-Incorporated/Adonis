@@ -30,7 +30,7 @@ local RateLimit = function()
 	end
 	Requests += 1
 	task.delay(WaitTime/2, function()
-		if #Queue == 0 then
+		if next(Queue) == nil then
 			Requests = 0
 		end
 	end)

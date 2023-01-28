@@ -331,7 +331,7 @@ return function(Vargs, env)
 						)
 						model.Name = targetName
 
-						local hum = model:WaitForChild("Humanoid")
+						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
 						hum:WaitForChild("BodyHeightScale").Value /= 2
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
@@ -479,7 +479,7 @@ return function(Vargs, env)
 					Variables.ZaWarudoDebounce = true
 					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://676242549"
 						audio.Volume = 0.5
 						audio:Play()
@@ -497,7 +497,7 @@ return function(Vargs, env)
 							old:Destroy()
 						end
 
-						local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
+						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
 						if audio then
 							audio:Stop()
 							audio:Destroy()
@@ -508,7 +508,7 @@ return function(Vargs, env)
 						Variables.ZaWarudo = false
 						audio:Destroy()
 					else
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
 						audio:Play()
@@ -529,7 +529,7 @@ return function(Vargs, env)
 						end
 
 						audio:Destroy()
-						local clock = service.New("Sound", workspace)
+						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
 						clock.SoundId = "rbxassetid://160189066"
 						clock.Looped = true
@@ -1284,12 +1284,19 @@ return function(Vargs, env)
 								p.CameraMaxZoomDistance = 0.5
 
 								local gui = Instance.new("ScreenGui")
+								gui.IgnoreGuiInset = true
+								gui.ScreenInsets = Enum.ScreenInsets.None
+								gui.ResetOnSpawn = false
+								gui.AutoLocalize = false
+								gui.SelectionGroup = false
 								gui.Parent = service.ReplicatedStorage
 								local bg = Instance.new("Frame")
+								bg.Selectable = false
+								bg.AnchorPoint = Vector2.new(0.5, 0.5)
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
-								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Position = UDim2.new(0, 0, 0, 0)
 								bg.Parent = gui
 								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
 								task.wait(0.5)
@@ -1554,9 +1561,14 @@ return function(Vargs, env)
 						local gui = service.New("ScreenGui", {
 							Parent = service.ReplicatedStorage;
 							IgnoreGuiInset = true;
+							AutoLocalize = false;
+							ScreenInsets = Enum.ScreenInsets.None;
+							ResetOnSpawn = false;
+							SelectionGroup = false;
 						})
 						local bg = service.New("Frame", {
 							Parent = gui;
+							Selectable = false;
 							BackgroundTransparency = 0;
 							BackgroundColor3 = Color3.new(0, 0, 0);
 							Size = UDim2.fromScale(1, 1);
@@ -2146,7 +2158,7 @@ return function(Vargs, env)
 						Routine(function()
 							repeat
 								task.wait(0.15)
-								v.Character.Humanoid.Health = v.Character.Humanoid.Health-1
+								v.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(1)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2216,7 +2228,7 @@ return function(Vargs, env)
 						local lleg = v.Character:FindFirstChild("Left Leg")
 						local rleg = v.Character:FindFirstChild("Right Leg")
 						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChild("Humanoid")
+						local hum=v.Character:FindFirstChildOfClass("Humanoid")
 						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
@@ -2237,7 +2249,7 @@ return function(Vargs, env)
 							coroutine.wrap(function() wait(10) run = false end)()
 							repeat
 								task.wait(1)
-								hum.Health = hum.Health-5
+								hum:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
 								torso.BrickColor = tor
@@ -2681,27 +2693,26 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
+				local spinGryoAttachment = service.New("Attachment")
+				spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
+				local spinGryo = service.New("AlignOrientation")
+				spinGryo.Name = "ADONIS_SPIN_GYRO"
+				spinGryo.MaxTorque = math.huge
+				spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
-								q:Destroy()
-							end
+						local humanoidRootPart = v.Character.HumanoidRootPart
+						for _, q in humanoidRootPart:GetChildren() do
+						if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
+							q:Destroy()
 						end
-						local spinGryoAttachment: Attachment = service.New("Attachment")
-						local spinGryo: AlignOrientation = service.New("AlignOrientation")
-
-						spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
-						spinGryoAttachment.Parent = v.Character.HumanoidRootPart
-
-						spinGryo.Name = "ADONIS_SPIN_GYRO"
+						end
+						spinGryoAttachment.Parent = humanoidRootPart
 						spinGryo.Attachment0 = spinGryoAttachment
-						spinGryo.MaxTorque = math.huge
-						spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
-						spinGryo.CFrame = v.Character.HumanoidRootPart.CFrame
-						spinGryo.Parent = v.Character.HumanoidRootPart
+						spinGryo.CFrame = humanoidRootPart.CFrame
+						spinGryo.Parent = humanoidRootPart
 						local new = scr:Clone()
-						new.Parent = v.Character.HumanoidRootPart
+						new.Parent = humanoidRootPart
 						new.Disabled = false
 					end
 				end
@@ -4935,8 +4946,8 @@ return function(Vargs, env)
 							end
 						end
 
-						v1hum:ApplyDescription(v2desc)
-						v2hum:ApplyDescription(v1desc)
+						v1hum:ApplyDescription(v2desc, Enum.AssetTypeVerification.Always)
+						v2hum:ApplyDescription(v1desc, Enum.AssetTypeVerification.Always)
 
 						v1.Character:PivotTo(v2pos)
 						v2.Character:PivotTo(v1pos)

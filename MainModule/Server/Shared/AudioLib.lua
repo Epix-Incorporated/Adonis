@@ -1,4 +1,5 @@
 local AudioLib = {}
+local SoundService = game:GetService("SoundService")
 
 function AudioLib.new(container)
 	local self = {}
@@ -18,20 +19,20 @@ function AudioLib.new(container)
 	self.Playlist = {}
 	self.Shuffle = false
 
-    --// Retrieve the sound used for playing all music
+	--// Retrieve the sound used for playing all music
 	function self:GetSound()
 		return self.Sound
 	end
 
-    --// Loops through a table of properties used to overwrite those of an existing instance.
+	--// Loops through a table of properties used to overwrite those of an existing instance.
 	function self:UpdateSound(data)
-		for property,value in data do
+		for property, value in data do
 			self.Sound[property] = value
 		end
 		return self.Sound
 	end
 
-    --// Loads the next song in the playlist
+	--// Loads the next song in the playlist
 	function self:SoundEnded()
 		if #self.Playlist > 0 then
 			local index = table.find(self.Playlist, self.Sound.SoundId)
@@ -43,7 +44,7 @@ function AudioLib.new(container)
 		end
 	end
 
-	local container = workspace:FindFirstChild(container.Name)
+	local container = SoundService:FindFirstChild(container.Name)
 	self.Sound = container:FindFirstChild("AudioLib_Sound")
 	if not self.Sound then
 		self.Sound = Instance.new("Sound")
