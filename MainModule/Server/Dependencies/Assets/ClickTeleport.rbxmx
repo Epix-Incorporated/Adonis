@@ -27,19 +27,19 @@ if not humanoid then tool:Destroy() return end
 tool.Name = mode.." "..target.Name
 
 local function onButton1Down(mouse)
-	if not target.Character or not target.Character:FindFirstChildOfClass("Humanoid") then return end
-
-	if mode == "Teleport" then
+	if not target.Character or not target.Character:FindFirstChildOfClass("Humanoid") then
+		return
+	elseif mode == "Teleport" then
 		local rootPart = humanoid.RootPart
 		if not rootPart then return end
 		local FlightPos, FlightGyro = rootPart:FindFirstChild("ADONIS_FLIGHT_POSITION"), rootPart:FindFirstChild("ADONIS_FLIGHT_GYRO")
-		local pos=mouse.Hit.p
+		local pos = mouse.Hit.p
 
 		if FlightPos and FlightGyro then  
 			FlightPos.Position = rootPart.Position
 			FlightGyro.CFrame = rootPart.CFrame
 		end
-	
+
 		task.wait()
 		rootPart:PivotTo(CFrame.new(Vector3.new(pos.x, pos.y + 4, pos.z)))
 
@@ -57,7 +57,7 @@ local function rotate()
 	if not rootPart then return end
 
 	repeat
-		rootPart:PivotTo(CFrame.new(rootPart.Position,Vector3.new(mouse.Hit.p.X, rootPart.Position.Y, mouse.Hit.p.Z)))
+		rootPart:PivotTo(CFrame.new(rootPart.Position, Vector3.new(mouse.Hit.p.X, rootPart.Position.Y, mouse.Hit.p.Z)))
 		task.wait()
 	until not holding or not use
 end
@@ -65,10 +65,9 @@ end
 local function onEquipped(mouse)
 	use = true
 	mouse.Icon = "rbxasset://textures//ArrowCursor.png"
-	mouse.Button1Down:Connect(function() onButton1Down(mouse) end)
 end
 
-UserInputService.InputBegan:Connect(function(InputObject,gpe)
+UserInputService.InputBegan:Connect(function(InputObject, gpe)
 	if InputObject.UserInputType == Enum.UserInputType.Keyboard and not gpe then
 		if InputObject.KeyCode == Enum.KeyCode.R then
 			holding = true
@@ -87,6 +86,7 @@ UserInputService.InputEnded:Connect(function(InputObject)
 	end
 end)
 
+tool.Activated:Connect(function() if use then onButton1Down(mouse) end end)
 tool.Equipped:Connect(onEquipped)
 tool.Unequipped:Connect(function() use, holding = false, false end)
 humanoid.Died:Connect(function() tool:Destroy() end)]]></ProtectedString>
