@@ -9,7 +9,8 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">ClickTeleport</string>
 			<string name="ScriptGuid">{BDAA343E-7C81-459C-A2DB-06B5F4C8C90A}</string>
-			<ProtectedString name="Source"><![CDATA[local Players = game:GetService("Players")
+			<ProtectedString name="Source"><![CDATA[task.wait()
+local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local mode = script.Mode.Value--"Teleport"
 local name = script.Target.Value
