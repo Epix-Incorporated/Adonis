@@ -664,7 +664,7 @@ return function(Vargs, GetEnv)
 			local pData = customData or Core.PlayerData[key]
 
 			if Core.DataStore then
-				if pData then
+				if pData and p.UserId > 0 then
 					local data = service.CloneTable(pData)
 
 					--// Temporary junk that will be removed on save.
