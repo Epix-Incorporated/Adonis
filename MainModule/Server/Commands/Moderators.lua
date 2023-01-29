@@ -695,7 +695,6 @@ return function(Vargs, env)
 									Name = "Adonis_Water";
 									Anchored = true;
 									CanCollide = false;
-									FormFactor = "Custom";
 									TopSurface = "Smooth";
 									BottomSurface = "Smooth";
 									Size = Vector3.new(0.2, 0.2, 0.2);
@@ -1472,7 +1471,6 @@ return function(Vargs, env)
 						BrickColor = BrickColor.new("Really black");
 						CanCollide = false;
 						Locked = true;
-						FormFactor = "Custom";
 						Size = Vector3.new(1, 1, 1);
 						TopSurface = "Smooth";
 						BottomSurface = "Smooth";
