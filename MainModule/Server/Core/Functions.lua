@@ -1461,6 +1461,15 @@ return function(Vargs, GetEnv)
 			end
 			plr.Character = newCharacterModel
 
+			-- // Clone StarterCharacterScripts to new character
+			if service.StarterPlayer:FindFirstChild("StarterCharacterScripts") then
+				for _, v in ipairs(service.StarterPlayer:FindFirstChild("StarterCharacterScripts"):GetChildren()) do
+					if v.Archivable == true then
+						v:Clone().Parent = newCharacterModel
+					end
+				end
+			end
+
 			newCharacterModel:PivotTo(oldCFrame)
 			newCharacterModel.Parent = workspace
 
