@@ -675,7 +675,7 @@ return function(Vargs, GetEnv)
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
-					if not service.TableFuzzyEq(data, Core.DefaultPlayerData(p)) then
+					if not functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) then
 						Core.SetData(key, data)
 						AddLog(Logs.Script, {
 							Text = "Saved data for ".. p.Name;
