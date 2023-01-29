@@ -260,7 +260,7 @@ local settings = {
 			Hidden = false;
 				-- Whether this rank is hidden in the list if empty.
 			Users = {
-				"roblox"-- Add users here
+				-- Add users here
 			}
 		};
 
@@ -269,7 +269,7 @@ local settings = {
 			Hidden = false;
 				-- Whether this rank is hidden in the list if empty.
 			Users = {
-				"techally"-- Add users here
+				-- Add users here
 			}
 		}
 
