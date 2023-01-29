@@ -1,7 +1,6 @@
 ---
 name: Request a feature
-about: Suggest an idea for a new feature, or a way to improve an existing feature
-  within Adonis
+about: Suggest an idea for a new feature, or a way to improve an existing Adonis feature.
 title: ''
 labels: "✨ enhancement"
 assignees: ''
