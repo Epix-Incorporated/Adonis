@@ -634,7 +634,7 @@ return function(Vargs, GetEnv)
 
 				Core.PlayerData[key] = PlayerData
 
-				if Core.DataStore then
+				if Core.DataStore and p.UserId > 0 then
 					local data = Core.GetData(key)
 					if type(data) == "table" then
 						data.AdminNotes = if data.AdminNotes then Functions.DSKeyNormalize(data.AdminNotes, true) else {}
