@@ -78,7 +78,6 @@ local SERVICES_WE_USE = table.freeze {
 	"StarterPlayer";
 	"GroupService";
 	"MarketplaceService";
-	"MarketplaceService";
 	"TestService";
 	"HttpService";
 	"RunService";
