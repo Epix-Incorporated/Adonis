@@ -37,6 +37,7 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	Your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
@@ -77,7 +78,6 @@ local SERVICES_WE_USE = table.freeze {
 	"StarterPack";
 	"StarterPlayer";
 	"GroupService";
-	"MarketplaceService";
 	"MarketplaceService";
 	"TestService";
 	"HttpService";
