@@ -37,6 +37,7 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
