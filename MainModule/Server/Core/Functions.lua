@@ -1464,7 +1464,7 @@ return function(Vargs, GetEnv)
 			-- Clone StarterCharacterScripts to new character
 			if service.StarterPlayer:FindFirstChild("StarterCharacterScripts") then
 				for _, v in service.StarterPlayer:FindFirstChild("StarterCharacterScripts"):GetChildren() do
-					if v.Archivable == true then
+					if v.Archivable then
 						v:Clone().Parent = newCharacterModel
 					end
 				end
