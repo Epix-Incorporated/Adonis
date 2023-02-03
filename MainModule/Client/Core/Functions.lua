@@ -309,7 +309,7 @@ return function(Vargs, GetEnv)
 					else
 						rot -= math.rad(speed*dt)
 					end
-					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
+					cam.CFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
 			end
@@ -1108,7 +1108,7 @@ return function(Vargs, GetEnv)
 				pa.Anchored = true
 				pa.Size = Vector3.new(100,100,0)
 				while pa and pa.Parent and task.wait(1/40) do
-					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
+					pa.CFrame = workspace.CurrentCamera.CFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
 				for _, v in workspace.CurrentCamera:GetChildren() do
