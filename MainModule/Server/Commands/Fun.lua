@@ -1659,7 +1659,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
-					--local tornado = deps.Tornado:clone()
+					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
 					local cl = Core.NewScript("Script",[[
@@ -1999,7 +1999,7 @@ return function(Vargs, env)
 									end)
 									--]]
 							task.wait(5)
-							BodyVelocity:remove()
+							BodyVelocity:Destroy()
 							if knownchar.Parent then
 								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
@@ -2528,7 +2528,7 @@ return function(Vargs, env)
 							v.Transparency = 1
 							m.Head.Transparency = 0
 							if m.head:FindFirstChild("Mesh") then
-								m.Head.Mesh:Remove()
+								m.Head.Mesh:Destroy()
 							end
 							local b = service.New("SpecialMesh")
 							b.Parent = m.Head
@@ -2639,13 +2639,13 @@ return function(Vargs, env)
 						part1.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 15, 0)
 						part1.Rotation = Vector3.new(0.359, 1.4, -14.361)
 						task.wait()
-						local part2 = part1:clone()
+						local part2 = part1:Clone()
 						part2.Parent = zeus
 						part2.Size = Vector3.new(1, 7.48, 2)
 						part2.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 7.5, 0)
 						part2.Rotation = Vector3.new(77.514, -75.232, 78.051)
 						task.wait()
-						local part3 = part1:clone()
+						local part3 = part1:Clone()
 						part3.Parent = zeus
 						part3.Size = Vector3.new(1.86, 7.56, 1)
 						part3.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 1, 0)
@@ -3040,7 +3040,7 @@ return function(Vargs, env)
 				decal1.Face = "Left"
 				decal1.Texture = "http://www.roblox.com/asset/?id=332277963"
 				decal1.Name = "Nyan"
-				local decal2=decal1:clone()
+				local decal2=decal1:Clone()
 				decal2.Face = "Right"
 				decal2.Texture = "http://www.roblox.com/asset/?id=332288373"
 
@@ -3378,7 +3378,7 @@ return function(Vargs, env)
 							Rotation = NumberRange.new(0, 359);
 							RotSpeed = NumberRange.new(-90, 90);
 							Rate = 11;
-							VelocitySpread = 180;
+							SpreadAngle = Vector2.new(-180, 180);
 							Color = ColorSequence.new(startc, endc);
 						})
 					end
