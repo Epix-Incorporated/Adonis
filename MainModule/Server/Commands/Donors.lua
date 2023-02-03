@@ -244,7 +244,7 @@ return function(Vargs, env)
 						Rotation = NumberRange.new(0,359);
 						RotSpeed = NumberRange.new(-90,90);
 						Rate = 11;
-						VelocitySpread = 180;
+						SpreadAngle = Vector2.new(-180, 180);
 						Color = ColorSequence.new(startc,endc);
 					})
 				end
