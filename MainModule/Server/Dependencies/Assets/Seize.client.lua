@@ -1,15 +1,15 @@
-local char = script.Parent.Parent
-local torso = script.Parent
-local hum = char:FindFirstChildOfClass("Humanoid")
-local origvel = torso.Velocity
-local origrot = torso.RotVelocity
+local root = script.Parent
+local humanoid = script.Parent.Parent:FindFirstChildOfClass("Humanoid")
+local origvel = torso.AssemblyLinearVelocity
+local origrot = torso.AssemblyAngularVelocity
+
 repeat
 	task.wait(0.1)
-	hum.PlatformStand = true
-	torso.Velocity = Vector3.new(math.random(-10,10),-5,math.random(-10,10))
-	torso.RotVelocity = Vector3.new(math.random(-5,5),math.random(-5,5),math.random(-5,5))
-until not torso or not hum
+	humanoid.PlatformStand = true
+	root.AssemblyLinearVelocity = Vector3.new(math.random(-10, 10), -5, math.random(-10, 10))
+	root.AssemblyAngularVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
+until not root or not hum
 
-hum.PlatformStand = false
-torso.Velocity = origvel
-torso.RotVelocity = origrot
+humanoid.PlatformStand = false
+root.AssemblyLinearVelocity = origvel
+root.AssemblyAngularVelocity = origrot
