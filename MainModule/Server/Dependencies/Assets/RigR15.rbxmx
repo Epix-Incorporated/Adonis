@@ -4994,17 +4994,17 @@ function onSwimming(speed)
 end
 
 function animateTool()
-	if (toolAnim == "None") then
+	if toolAnim == "None" then
 		playToolAnimation("toolnone", toolTransitionTime, Humanoid, Enum.AnimationPriority.Idle)
 		return
 	end
 
-	if (toolAnim == "Slash") then
+	if toolAnim == "Slash" then
 		playToolAnimation("toolslash", 0, Humanoid, Enum.AnimationPriority.Action)
 		return
 	end
 
-	if (toolAnim == "Lunge") then
+	if toolAnim == "Lunge" then
 		playToolAnimation("toollunge", 0, Humanoid, Enum.AnimationPriority.Action)
 		return
 	end
@@ -5012,7 +5012,7 @@ end
 
 function getToolAnim(tool)
 	for _, c in ipairs(tool:GetChildren()) do
-		if c.Name == "toolanim" and c.className == "StringValue" then
+		if c.Name == "toolanim" and c.ClassName == "StringValue" then
 			return c
 		end
 	end
