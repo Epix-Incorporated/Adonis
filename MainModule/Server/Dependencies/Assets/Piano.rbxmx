@@ -318,7 +318,7 @@ function PlayNoteSound(note, source, range, sounds)
 	
 	if source then
 		local a = 1/range^2
-		local distance = (workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
+		local distance = (workspace.CurrentCamera.CFrame.p - source).Magnitude
 		local volume = -a*distance^2 + 1
 		if volume < 0.05 then
 			audio:remove()
@@ -344,7 +344,7 @@ Camera = workspace.CurrentCamera
 function SetCamera(cframe)
 	Camera.CameraType = Enum.CameraType.Scriptable
 	Camera:Interpolate(cframe, cframe + cframe.lookVector, .5)
-	--Camera.CoordinateFrame = cframe
+	--Camera.CFrame = cframe
 end
 function ReturnCamera()
 	Camera.CameraType = Enum.CameraType.Custom
