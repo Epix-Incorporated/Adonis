@@ -4603,8 +4603,6 @@ local animNames = {
 -- Existance in this list signifies that it is an emote, the value indicates if it is a looping emote
 local emoteNames = { wave = false, point = false, dance = true, dance2 = true, dance3 = true, laugh = false, cheer = false}
 
-math.randomseed(tick())
-
 function configureAnimationSet(name, fileList)
 	if (animTable[name] ~= nil) then
 		for _, connection in pairs(animTable[name].connections) do
@@ -5109,8 +5107,8 @@ pose = "Standing"
 
 -- loop to handle timed state transitions and tool animations
 while Character.Parent ~= nil do
-	local _, currentGameTime = wait(0.1)
-	stepAnimate(currentGameTime)
+	task.wait(0.1)
+	stepAnimate(os.clock())
 end
 
 ]]></ProtectedString>
