@@ -1987,8 +1987,8 @@ playAnimation("idle", 0.1, Humanoid)
 pose = "Standing"
 
 while Figure.Parent ~= nil do
-	local _, time = wait(0.1)
-	move(time)
+	task.wait(0.1)
+	move(os.clock())
 end
 
 
