@@ -221,12 +221,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		ForEach = function(tab, func)
-			for i,v in tab do
-				func(tab, i, v)
-			end
-		end;
-
 		WrapEventArgs = function(tab)
 			local Wrap = service.Wrap
 
@@ -1385,7 +1379,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		OrigRawEqual = rawequal;
-		ForEach = function(tab, func) for i,v in tab do func(tab,i,v) end return tab end;
 		HasItem = function(obj, prop) return pcall(function() return obj[prop] end) end;
 		IsDestroyed = function(object)
 			if type(object) == "userdata" and service.HasItem(object, "Parent") then
