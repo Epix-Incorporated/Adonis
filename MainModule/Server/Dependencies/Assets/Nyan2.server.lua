@@ -16,6 +16,6 @@ local textures = {
 while true do
 	for _, v in ipairs(textures) do
 		script.Parent.Texture = "http://www.roblox.com/asset/?id="..v
-		wait(0.1)
+		task.wait(0.1)
 	end
 end
