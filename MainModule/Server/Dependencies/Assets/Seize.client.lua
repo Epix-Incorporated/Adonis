@@ -8,7 +8,7 @@ repeat
 	humanoid.PlatformStand = true
 	root.AssemblyLinearVelocity = Vector3.new(math.random(-10, 10), -5, math.random(-10, 10))
 	root.AssemblyAngularVelocity = Vector3.new(math.random(-5, 5), math.random(-5, 5), math.random(-5, 5))
-until not root or not hum
+until not root or not humanoid
 
 humanoid.PlatformStand = false
 root.AssemblyLinearVelocity = origvel
