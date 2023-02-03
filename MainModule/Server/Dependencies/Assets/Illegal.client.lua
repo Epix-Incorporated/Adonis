@@ -96,10 +96,10 @@ bg.cframe = torso.CFrame
 bg.Parent = torso
 
 coroutine.wrap(function()
-	repeat wait(1/44)
+	repeat task.wait(1/44)
 		bg.cframe = bg.cframe * CFrame.Angles(0,math.rad(30),0)
 	until stop or not bg or bg.Parent ~= torso
 end)()
 
-wait(20)
+task.wait(20)
 startspaz = true
