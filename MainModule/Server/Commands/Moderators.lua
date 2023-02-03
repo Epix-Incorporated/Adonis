@@ -2129,7 +2129,7 @@ return function(Vargs, env)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
 					if Dropper then
-						local piano = Deps.Assets.Piano:clone()
+						local piano = Deps.Assets.Piano:Clone()
 						piano.Parent = Dropper
 						piano.Disabled = false
 					end
