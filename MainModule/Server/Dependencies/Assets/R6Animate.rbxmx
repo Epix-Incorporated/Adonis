@@ -86,8 +86,6 @@ local animNames = {
 -- Existance in this list signifies that it is an emote, the value indicates if it is a looping emote
 local emoteNames = { wave = false, point = false, dance = true, laugh = false, cheer = false}
 
-math.randomseed(tick())
-
 -- Setup animation objects
 for name, fileList in pairs(animNames) do 
 	animTable[name] = {}
@@ -480,8 +478,8 @@ playAnimation("idle", 0.1, Humanoid)
 pose = "Standing"
 
 while Figure.Parent~=nil do
-	local _, time = wait(0.1)
-	move(time)
+	task.wait(0.1)
+	move(os.clock())
 end
 
 
