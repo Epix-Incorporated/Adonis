@@ -1,7 +1,7 @@
 local root = script.Parent
 local humanoid = script.Parent.Parent:FindFirstChildOfClass("Humanoid")
-local origvel = torso.AssemblyLinearVelocity
-local origrot = torso.AssemblyAngularVelocity
+local origvel = root.AssemblyLinearVelocity
+local origrot = root.AssemblyAngularVelocity
 
 repeat
 	task.wait(0.1)
