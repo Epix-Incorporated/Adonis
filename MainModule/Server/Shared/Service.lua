@@ -1202,9 +1202,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return 0
 		end,
 
-		MaxLen = function(message,length)
-			if #message>length then
-				return message:sub(1,length).."..."
+		MaxLen = function(message, length)
+			if string.len(message) > length then
+				return string.sub(message, 1, length).."..."
 			else
 				return message
 			end
