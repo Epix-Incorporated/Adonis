@@ -53,7 +53,7 @@ do
 		task.wait(10)
 
 		if not triggered1 or not triggered2 then
-			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(success1).." "..tostring(success2)) end, function(err) loadingDetected(err) end)
+			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(triggered1).." "..tostring(triggered2)) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
