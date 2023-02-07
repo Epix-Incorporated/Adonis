@@ -35,7 +35,7 @@ do
 			while true do end
 		end
 
-		success1 = true
+		triggered1 = true
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 
 	task_spawn(xpcall, function()
@@ -46,13 +46,13 @@ do
 			while true do end
 		end
 
-		success1 = true
+		triggered2 = true
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 
 	task_spawn(xpcall, function()
 		task.wait(10)
 
-		if not success1 or not success2 then
+		if not triggered1 or not triggered2 then
 			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(success1).." "..tostring(success2)) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
