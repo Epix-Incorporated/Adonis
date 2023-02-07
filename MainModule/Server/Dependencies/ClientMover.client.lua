@@ -12,7 +12,7 @@ local tostring = tostring;
 -- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
 do
 	local game = game
-	local task_spawn, xpcall, require = task.spawn, xpcall, require
+	local task_spawn, xpcall, require, task_wait = task.spawn, xpcall, require, task.spawn
 	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
 	local localPlayer = Players.LocalPlayer
 	local triggered1, triggered2 = false, false
@@ -50,7 +50,7 @@ do
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 
 	task_spawn(xpcall, function()
-		task.wait(10)
+		task_wait(10)
 
 		if not triggered1 or not triggered2 then
 			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(triggered1).." "..tostring(triggered2)) end, function(err) loadingDetected(err) end)
