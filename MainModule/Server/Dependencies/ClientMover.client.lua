@@ -9,6 +9,56 @@ local xpcall = xpcall;
 local setfenv = setfenv;
 local tostring = tostring;
 
+-- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
+do
+	local game = game
+	local task_spawn, xpcall, require = task.spawn, xpcall, require
+	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
+	local localPlayer = Players.LocalPlayer
+	local triggered1, triggered2 = false, false
+
+	local function loadingDetected(reason)
+		if localPlayer then
+			localPlayer:Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
+		else
+			Players.LocalPlayer:Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
+		end
+
+		while true do end
+	end
+
+	task_spawn(xpcall, function()
+		local exampleService = game:GetService("Workspace") or game:GetService("ReplicatedStorage")
+
+		if not exampleService then
+			task_spawn(xpcall, function() loadingDetected("Service not returning") end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+
+		success1 = true
+	end, function(err) task_spawn(loadingDetected, err) while true do end end)
+
+	task_spawn(xpcall, function()
+		local success, err = pcall(require, game)
+
+		if success or not string.match(err, "^Attempted to call require with invalid argument%(s%)%.$") then
+			task_spawn(xpcall, function() loadingDetected("Require load fail. "..tostring(err)) end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+
+		success1 = true
+	end, function(err) task_spawn(loadingDetected, err) while true do end end)
+
+	task_spawn(xpcall, function()
+		task.wait(10)
+
+		if not success1 or not success2 then
+			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(success1).." "..tostring(success2)) end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+	end, function(err) task_spawn(loadingDetected, err) while true do end end)
+end
+
 local players = game:GetService("Players");
 local player = players.LocalPlayer;
 local folder = script.Parent;
