@@ -30,9 +30,9 @@ return function(Vargs, GetEnv)
 		Variables.BanMessage = Settings.BanMessage
 		Variables.LockMessage = Settings.LockMessage
 
-		for _, v in ipairs(Settings.MusicList or {}) do table.insert(Variables.MusicList, v) end
-		for _, v in ipairs(Settings.InsertList or {}) do table.insert(Variables.InsertList, v) end
-		for _, v in ipairs(Settings.CapeList or {}) do table.insert(Variables.Capes, v) end
+		for _, v in Settings.MusicList or {} do table.insert(Variables.MusicList, v) end
+		for _, v in Settings.InsertList or {} do table.insert(Variables.InsertList, v) end
+		for _, v in Settings.CapeList or {} do table.insert(Variables.Capes, v) end
 
 		Variables.Init = nil
 		Logs:AddLog("Script", "Variables Module Initialized")
@@ -58,7 +58,7 @@ return function(Vargs, GetEnv)
 		CachedDonors = {},
 		BanMessage = "Banned",
 		LockMessage = "Not Whitelisted",
-		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items, numbers are gamepasses
+		DonorPass = {1348327, 1990427, 1911740, 167686, 98593, "6878510605", 5212082, 5212081}, --// Strings are items; numbers are gamepasses
 		WebPanel_Initiated = false,
 		LightingSettings = {
 			Ambient = Lighting.Ambient,
@@ -152,6 +152,7 @@ return function(Vargs, GetEnv)
 			{Name = "wish", 				ID = 7023670701},
 			{Name = "samemistake", 				ID = 7024101188},
 			{Name = "whereibelong", 			ID = 7028527348},
+			{Name = "rainingtacos", 			ID = 142376088},
 		};
 
 		InsertList = {};
@@ -198,4 +199,3 @@ return function(Vargs, GetEnv)
 		};
 	}
 end
-

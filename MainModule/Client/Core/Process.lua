@@ -116,9 +116,9 @@ return function(Vargs, GetEnv)
 			RateLog = 10;
 		};
 
-		Remote = function(data,com,...)
+		Remote = function(data, com, ...)
 			local args = {...}
-			Remote.Received = Remote.Received+1
+			Remote.Received += 1
 			if type(com) == "string" then
 				if com == client.DepsName.."GIVE_KEY" then
 					if not Core.Key then
@@ -128,8 +128,6 @@ return function(Vargs, GetEnv)
 						log("~! Call Finish_Loading()")
 						client.Finish_Loading()
 					end
-				elseif Remote.UnEncrypted[com] then
-					return {Remote.UnEncrypted[com](...)}
 				elseif Core.Key then
 					local comString = Remote.Decrypt(com,Core.Key)
 					local command = (data.Mode == "Get" and Remote.Returnables[comString]) or Remote.Commands[comString]
@@ -171,13 +169,13 @@ return function(Vargs, GetEnv)
 		CharacterAdded = function(...)
 			service.Events.CharacterAdded:Fire(...)
 
-			wait();
+			task.wait()
 			UI.GetHolder()
 		end;
 
 		CharacterRemoving = function()
 			if Variables.UIKeepAlive then
-				for ind,g in next,client.GUIs do
+				for ind,g in client.GUIs do
 					if g.Class == "ScreenGui" or g.Class == "GuiMain" or g.Class == "TextLabel" then
 						if not (g.Object:IsA("ScreenGui") and not g.Object.ResetOnSpawn) and g.CanKeepAlive then
 							g.KeepAlive = true
@@ -196,11 +194,11 @@ return function(Vargs, GetEnv)
 			end
 
 			if Variables.ChatEnabled then
-				service.StarterGui:SetCoreGuiEnabled("Chat",true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 			end
 
 			if Variables.PlayerListEnabled then
-				service.StarterGui:SetCoreGuiEnabled('PlayerList',true)
+				service.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
 			end
 
 			local textbox = service.UserInputService:GetFocusedTextBox()

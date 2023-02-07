@@ -42,7 +42,7 @@ return function(data, env)
 	local audioLib = nil
 	local controlPositionSlider = nil
 	local progressupdatewait = 0.05
-
+	local canUseGlobal = data.GlobalPerms
 
 	-- The audio visulaiser at the top of the menu.
 
@@ -250,65 +250,68 @@ return function(data, env)
 		end
 	})
 
-	local globalButton = window:AddTitleButton({
-		Text = "";
-		OnClick = function()
-			audioLib("UpdateSound", {
-				Playing = false;
-				TimePosition = 0;
-			})
-			if isGlobal then
-				gImg.Image = "rbxassetid://8318256297"
-				isGlobal = false
-				task.spawn(client.UI.Make, "Notification",{
-					Title = "Global Audio";
-					Icon = "rbxassetid://7541916144";
-					Message = "Only you can hear your music";
-					Time = 3;
-				})
+	local globalButton = nil
 
-				audioLib = localAudioLibFunction
+	if canUseGlobal then
+		globalButton = window:AddTitleButton({
+			Text = "";
+			OnClick = function()
 				audioLib("UpdateSound", {
 					Playing = false;
 					TimePosition = 0;
 				})
-				visualiser:LinkToSound(audioLib("GetSound"))
-				progressupdatewait = 0.05
+				if isGlobal then
+					gImg.Image = "rbxassetid://8318256297"
+					isGlobal = false
+					task.spawn(client.UI.Make, "Notification",{
+						Title = "Global Audio";
+						Icon = "rbxassetid://7541916144";
+						Message = "Only you can hear your music";
+						Time = 3;
+					})
 
-			else
-				--updateAudio({Global = true})
-				gImg.Image = "rbxassetid://8318257291";
-				isGlobal = true
-				task.spawn(client.UI.Make, "Notification",{
-					Title = "Global Audio";
-					Icon = "rbxassetid://7541916144";
-					Message = "Everyone can hear your music";
-					Time = 3;
-				})
-				audioLib = function(func, args)
-					return client.Remote.Get("AudioLib", {func, args})
+					audioLib = localAudioLibFunction
+					audioLib("UpdateSound", {
+						Playing = false;
+						TimePosition = 0;
+					})
+					visualiser:LinkToSound(audioLib("GetSound"))
+					progressupdatewait = 0.05
+
+				else
+					--updateAudio({Global = true})
+					gImg.Image = "rbxassetid://8318257291";
+					isGlobal = true
+					task.spawn(client.UI.Make, "Notification",{
+						Title = "Global Audio";
+						Icon = "rbxassetid://7541916144";
+						Message = "Everyone can hear your music";
+						Time = 3;
+					})
+					audioLib = function(func, args)
+						return client.Remote.Get("AudioLib", {func, args})
+					end
+					audioLib("UpdateSound", {
+						Playing = false;
+						TimePosition = 0;
+					})
+					visualiser:LinkToSound(audioLib("GetSound"))
+					progressupdatewait = 2
 				end
-				audioLib("UpdateSound", {
-					Playing = false;
-					TimePosition = 0;
-				})
-				visualiser:LinkToSound(audioLib("GetSound"))
-				progressupdatewait = 2
 			end
-		end
-	})
+		})
+		gImg = globalButton:Add("ImageLabel", {
+			Size = UDim2.new(1, 0, 1 ,0);
+			Position = UDim2.new(0, 0, 0, 0);
+			Image = "rbxassetid://8318256297";
+			BackgroundTransparency = 1;
+		})
+	end
 
 	sImg = muteButton:Add("ImageLabel", {
 		Size = UDim2.new(1, 0, 1 ,0);
 		Position = UDim2.new(0, 0, 0, 0);
 		Image = "rbxassetid://1638551696";
-		BackgroundTransparency = 1;
-	})
-
-	gImg = globalButton:Add("ImageLabel", {
-		Size = UDim2.new(1, 0, 1 ,0);
-		Position = UDim2.new(0, 0, 0, 0);
-		Image = "rbxassetid://8318256297";
 		BackgroundTransparency = 1;
 	})
 
@@ -951,7 +954,7 @@ end
 function module.new(Frame, BarCount)
 
 	-- Determine settings
-	local BAR_COUNT = math.clamp(typeof(BarCount) == "number" and BarCount or 41, 11,601)
+	local BAR_COUNT = math.clamp(type(BarCount) == "number" and BarCount or 41, 11,601)
 	local SAMPLE_HZ = math.clamp(BAR_COUNT/2,10,500)
 
 	if BAR_COUNT%2==0 then
@@ -1286,7 +1289,7 @@ function Slider.new(holder: any, configuration: sliderConfigDictionary, moveTwee
 	assert(typeof(moveTweenInfo) == "TweenInfo", "MoveTweenInfo must be a TweenInfo object!")
 
 	padding = padding or 5
-	assert(typeof(padding) == "number", "Padding variable must be a number!")
+	assert(type(padding) == "number", "Padding variable must be a number!")
 
 	local self = setmetatable({}, Slider)
 

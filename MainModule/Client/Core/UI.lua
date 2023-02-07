@@ -13,25 +13,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
 		_G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local UIFolder = client.UIFolder
 
@@ -91,8 +91,8 @@ return function(Vargs, GetEnv)
 				RunAfterLoaded = true;
 				RunAfterPlugins = true;
 			}, true)--]]
-			UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
-			UI.RunLast = nil;
+		UI.DefaultTheme = Remote.Get("Setting","DefaultTheme");
+		UI.RunLast = nil;
 	end
 
 	getfenv().client = nil
@@ -128,7 +128,7 @@ return function(Vargs, GetEnv)
 				new.Active = true
 				new.Text = ""
 
-				for ind,child in ipairs(gui:GetChildren()) do
+				for ind,child in gui:GetChildren() do
 					child.Parent = new
 				end
 
@@ -153,18 +153,29 @@ return function(Vargs, GetEnv)
 				client = CloneTable(client),
 				service = CloneTable(service)
 			})
-			newEnv.service.Threads = CloneTable(service.Threads)
 
-			for i,v in pairs(newEnv.client) do
+			if newEnv.service.Threads then
+				newEnv.service.Threads = CloneTable(service.Threads)
+			end
+
+			for i,v in newEnv.client do
 				if type(v) == "table" and i ~= "Variables" and i ~= "Handlers" then
 					newEnv.client[i] = CloneTable(v)
 				end
 			end
 
 			if ran then
+				--// Temporarily disabled NoEnv; it seems to be causing some issues(?)
+				--// ~ Expertcoderz
+
+				--[[if (data.isModifier and not data.modNoEnv) or (not data.isModifier and data.isCode and not data.NoEnv) then
+					setfenv(func, env)
+				end]]
+
 				local rets = {
 					TrackTask("UI: ".. module:GetFullName(),
-						if data.modNoEnv or data.NoEnv then func else setfenv(func,newEnv),
+						--func,
+						setfenv(func, newEnv),
 						data,
 						newEnv
 					)
@@ -233,9 +244,9 @@ return function(Vargs, GetEnv)
 
 			if #foundConfigs > 0 then
 				--// Combine all configs found in order  to build full config (in order of closest from target gui to furthest)
-				for i,v in pairs(foundConfigs) do
+				for i,v in foundConfigs do
 					if v.Config then
-						for k,m in ipairs(v.Config:GetChildren()) do
+						for k,m in v.Config:GetChildren() do
 							if not endConfig[m.Name] then
 								if string.sub(m.Name, 1, 5) == "NoEnv" then
 									endConfig["Code"] = m
@@ -248,7 +259,7 @@ return function(Vargs, GetEnv)
 				end
 
 				--// Load all config values into the new Config folder
-				for i,v in pairs(endConfig) do
+				for i,v in endConfig do
 					v:Clone().Parent = confFolder;
 				end
 
@@ -278,8 +289,10 @@ return function(Vargs, GetEnv)
 			local folder = UIFolder:FindFirstChild(theme) or UIFolder.Default
 
 			--// Check for any childs with 'NoEnv' and trigger NoEnv
+			--// Enforce NoEnv to ensure theme is using it.
 			if not data.NoEnv and folder:FindFirstChild("NoEnv") then
 				data.NoEnv = true
+				data.modNoEnv = true
 			end
 
 			--// folder2
@@ -290,7 +303,7 @@ return function(Vargs, GetEnv)
 				local conf = newGui:FindFirstChild("Config")
 				local mod = conf and (conf:FindFirstChild("Modifier") or conf:FindFirstChild("NoEnv-Modifier"))
 
-				if mod and (not data.modNoEnv) then
+				if mod and not data.modNoEnv then
 					data.modNoEnv = string.sub(mod.Name, 1, 5) == "NoEnv"
 				end
 
@@ -301,8 +314,8 @@ return function(Vargs, GetEnv)
 				elseif conf and foundConf and foundConf ~= true then
 					local code = foundConf:FindFirstChild("Code") or foundConf:FindFirstChild("NoEnv-Code")
 
-					if not data.NoEnv then
-						data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
+					if not data.NoEnv and code then
+						data.NoEnv = string.sub(code.Name, 1, 5) == "NoEnv"
 					end
 
 					local mult = foundConf.AllowMultiple
@@ -324,14 +337,18 @@ return function(Vargs, GetEnv)
 
 							local ran, func = pcall(require, folder)
 							local rets = {
-								if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
+								--// NoEnv temporarily disabled ~ Expertcoderz
+								--[[if folderNoEnv then pcall(func, newGui, gTable, data, newEnv) else]] pcall(setfenv(func, newEnv), newGui, gTable, data, newEnv)
 							}
 
 							local ran, ret = rets[1], rets[2]
 							if ret ~= nil then
 								if type(ret) == "userdata" and Anti.GetClassName(ret) == "ScreenGui" then
 									code = (ret:FindFirstChild("Config") and (ret.Config:FindFirstChild("Code") or ret.Config:FindFirstChild("NoEnv-Code"))) or code
-									data.NoEnv = code and string.sub(code.Name, 1, 5) == "NoEnv"
+
+									if not data.NoEnv and code then
+										data.NoEnv = string.sub(code.Name, 1, 5) == "NoEnv"
+									end
 								else
 									return ret
 								end
@@ -353,6 +370,7 @@ return function(Vargs, GetEnv)
 								gTable = gTable;
 								Data = data;
 								GUI = newGui;
+								isModifier = true;
 							})
 						end
 
@@ -363,6 +381,7 @@ return function(Vargs, GetEnv)
 							GUI = newGui;
 							Theme = theme;
 							ThemeFolder = folder;
+							isCode = true;
 						})
 					end
 				end
@@ -375,7 +394,7 @@ return function(Vargs, GetEnv)
 			local found = {}
 			local num = 0
 			if obj then
-				for ind,g in pairs(client.GUIs) do
+				for ind,g in client.GUIs do
 					if g.Name ~= ignore and g.Object ~= ignore and g ~= ignore then
 						if type(obj) == "string" then
 							if g.Name == obj then
@@ -405,10 +424,14 @@ return function(Vargs, GetEnv)
 		end;
 
 		Remove = function(name, ignore)
-			local gui = UI.Get(name, ignore)
-			if gui then
-				for i,v in pairs(gui) do
-					v.Destroy()
+			if name == "Chat" and client.Handlers.RemoveCustomChat then
+				client.Handlers.RemoveCustomChat()
+			else
+				local gui = UI.Get(name, ignore)
+				if gui then
+					for i,v in gui do
+						v.Destroy()
+					end
 				end
 			end
 		end;
@@ -455,7 +478,7 @@ return function(Vargs, GetEnv)
 					local Events = gTable.Events
 					local disc = function()
 						origDisc(signal)
-						for i,v in pairs(Events) do
+						for i,v in Events do
 							if v.Signal == signal then
 								table.remove(Events, i)
 							end
@@ -475,7 +498,7 @@ return function(Vargs, GetEnv)
 				end,
 
 				ClearEvents = function()
-					for i,v in pairs(gTable.Events) do
+					for i,v in gTable.Events do
 						v:Remove()
 					end
 				end,
@@ -513,13 +536,13 @@ return function(Vargs, GetEnv)
 					end
 
 					gTable.AncestryEvent = new.AncestryChanged:Connect(function(c, parent)
-						if client.GUIs[gIndex] then
-							if rawequal(c, gTable.Object) and gTable.Class == "TextLabel" and parent == service.PlayerGui then
-								wait()
+						if client.GUIs[gIndex] and rawequal(c, gTable.Object) then
+							if gTable.Class == "TextLabel" and parent == service.PlayerGui then
+								task.wait()
 								gTable.Object.Parent = UI.GetHolder()
-							elseif rawequal(c, gTable.Object) and parent == nil and not gTable.KeepAlive then
+							elseif parent == nil and not gTable.KeepAlive then
 								gTable:Destroy()
-							elseif rawequal(c, gTable.Object) and parent ~= nil then
+							elseif parent ~= nil then
 								gTable.Active = true
 								client.GUIs[gIndex] = gTable
 							end
@@ -530,7 +553,7 @@ return function(Vargs, GetEnv)
 			}
 
 			if data then
-				for i,v in pairs(data) do
+				for i,v in data do
 					gTable[i] = v
 				end
 			end
@@ -542,8 +565,8 @@ return function(Vargs, GetEnv)
 		end
 	}
 
-	client.UI.RegisterGui 	= client.UI.Register
-	client.UI.GetGui 		= client.UI.Get
-	client.UI.PrepareGui 	= client.UI.Prepare
-	client.UI.MakeGui 		= client.UI.Make
+	client.UI.RegisterGui = client.UI.Register
+	client.UI.GetGui = client.UI.Get
+	client.UI.PrepareGui = client.UI.Prepare
+	client.UI.MakeGui = client.UI.Make
 end

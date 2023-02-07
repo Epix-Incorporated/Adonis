@@ -44,8 +44,9 @@ return function(Vargs)
 	local OverrideQueue = {}
 
 	local fakePlayer = service.Wrap(service.New("Folder"))
-	for i,v in pairs({
+	for i,v in {
 		Name = "Server";
+		DisplayName = "Server";
 		ToString = "Server";
 		ClassName = "Player";
 		AccountAge = 0;
@@ -62,17 +63,17 @@ return function(Vargs)
 			fakePlayer:SetSpecial("Parent", nil)
 		end;
 		IsA = function(_, arg) if arg == "Player" then return true end end;
-	}) do
+	} do
 		fakePlayer:SetSpecial(i, v)
 	end
 
 	local function CopyCommand(tbl)
 		local ret = {}
 		if tbl and type(tbl) == "table" then
-			for i,v in pairs(tbl) do
-				if typeof(v) == "string" or typeof(v) == "number" or typeof(v) == "boolean" then
+			for i,v in tbl do
+				if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
 					ret[i] = v
-				elseif typeof(v) == "table" then
+				elseif type(v) == "table" then
 					ret[i] = CopyCommand(v)
 				end
 			end
@@ -102,7 +103,7 @@ return function(Vargs)
 		end
 
 		if not notBindToClose then
-			wait(4)
+			task.wait(4)
 		end
 	end
 
@@ -119,7 +120,7 @@ return function(Vargs)
 		local stats = {}
 
 		local admins = {}
-		for _, v in pairs(service.NetworkServer:GetChildren()) do
+		for _, v in service.NetworkServer:GetChildren() do
 			if v:IsA("NetworkReplicator") and v:GetPlayer() and Admin.CheckAdmin(v:GetPlayer(), false) then
 				table.insert(admins, v:GetPlayer().Name)
 			end
@@ -128,7 +129,7 @@ return function(Vargs)
 		stats.PlayerCount = #game.Players:GetPlayers() == 0 and #service.NetworkServer:GetChildren() or #game.Players:GetPlayers()
 		stats.MaxPlayers = game.Players.MaxPlayers
 		stats.ServerStartTime = server.ServerStartTime
-		stats.ServerSpeed = math.min(frames/60, 1)*100
+		stats.ServerSpeed = math.min(frames/60, 1) * 100
 		stats.Admins = admins
 		stats.JobId = game.JobId
 		stats.PrivateServer = game.PrivateServerOwnerId > 0
@@ -151,11 +152,11 @@ return function(Vargs)
 			local aliases = rawget(command, "Commands")
 			local newaliases = {}
 
-			for _, alias in pairs(aliases) do
+			for _, alias in aliases do
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
 			end
 
-			for _, alias in ipairs(CachedAliases[index]) do
+			for _, alias in CachedAliases[index] do
 				table.insert(newaliases, alias)
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
 			end
@@ -165,7 +166,7 @@ return function(Vargs)
 	end
 
 	local function ResetCommands()
-		for index, command in pairs(Commands) do
+		for index, command in Commands do
 			if type(command) == "table" then
 				if command.Disabled == "WebPanel" then
 					command.Disabled = nil
@@ -184,14 +185,14 @@ return function(Vargs)
 		local newaliases = {}
 
 		-- Remove old aliases from command cache
-		for _, alias in pairs(aliases) do
+		for _, alias in aliases do
 			if command.Prefix then
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = nil
 			end
 		end
 
 		if CachedAliases[index] then
-			for _, alias in ipairs(CachedAliases[index]) do
+			for _, alias in CachedAliases[index] do
 				if not table.find(v.aliases, "-"..alias) then
 					table.insert(newaliases, alias)
 
@@ -201,7 +202,7 @@ return function(Vargs)
 				end
 			end
 		end
-		for _, alias in ipairs(v.aliases) do
+		for _, alias in v.aliases do
 			if string.sub(alias, 1, 1) ~= "-" then
 				table.insert(newaliases, alias)
 				Admin.CommandCache[string.lower(command.Prefix..alias)] = index
@@ -229,7 +230,7 @@ return function(Vargs)
 
 	local function UpdateCommands(data)
 		local didrun = false
-		for i,v in pairs(data.CommandOverrides) do
+		for i, v in data.CommandOverrides do
 			didrun = true
 
 			local index, command = Admin.GetCommand(Settings.Prefix..i)
@@ -292,15 +293,15 @@ return function(Vargs)
 				end
 			end
 
-			for _, music in pairs(data.Levels.Musiclist or {}) do
+			for _, music in data.Levels.Musiclist or {} do
 				if string.match(music, '^(.*):(.*)') then
-					local a,b = string.match(music, '^(.*):(.*)')
+					local name, id = string.match(music, '^(.*):(.*)')
 
 					if Variables.MusicList then
 						table.insert(Variables.MusicList, {
-							Name = a,
-							ID = tonumber(b),
-							WebPanel=true
+							Name = name,
+							ID = tonumber(id),
+							WebPanel = true
 						})
 					end
 				end
@@ -309,12 +310,12 @@ return function(Vargs)
 	end
 
 	do -- Create a cache of the default admin levels for all commands
-		for name, command in pairs(Commands) do
+		for name, command in Commands do
 			if type(command) == "table" then
 				CachedDefaultLevels[name] = rawget(command, "AdminLevel")
 
 				local aliases = {}
-				for _, cmd in pairs(rawget(command, "Commands")) do
+				for _, cmd in rawget(command, "Commands") do
 					table.insert(aliases, cmd)
 				end
 
@@ -338,7 +339,7 @@ return function(Vargs)
 				FoundCustomCommands[ind] = CopyCommand(val)
 				CachedDefaultLevels[ind] = rawget(val, "AdminLevel")
 				local aliases = {}
-				for _, cmd in pairs(rawget(val, "Commands")) do
+				for _, cmd in rawget(val, "Commands") do
 					table.insert(aliases, cmd)
 				end
 				CachedAliases[ind] = aliases
@@ -346,7 +347,7 @@ return function(Vargs)
 				-- Handle panel overrides where no matching command was found
 				local command = Commands[ind]
 
-				for _, v in pairs(OverrideQueue) do
+				for _, v in OverrideQueue do
 					if command.Commands and table.find(command.Commands, v.name) then
 						UpdateCommand(ind, val, v.data)
 						break
@@ -406,11 +407,11 @@ return function(Vargs)
 			end
 
 			--// Handle queue items
-			for _, v in pairs(data.Queue) do
-				if typeof(v.action) ~= "string" then
+			for _, v in data.Queue do
+				if type(v.action) ~= "string" then
 					v.action = tostring(v.action)
 				end
-				if typeof(v.server) ~= "string" then
+				if type(v.server) ~= "string" then
 					v.server = tostring(v.server)
 				end
 
@@ -423,7 +424,7 @@ return function(Vargs)
 				elseif v.action == "updatesettings" then
 					UpdateSettings(data)
 
-					for _, p in pairs(service.GetPlayers()) do
+					for _, p in service.GetPlayers() do
 						if Admin.CheckBan(p) then
 							Admin.AddBan(p, false)
 						else
@@ -437,7 +438,7 @@ return function(Vargs)
 						Functions.Shutdown("[WebPanel] Server Shutdown")
 						WebPanelCleanUp(true)
 					elseif v.action == "remoteexecute" then
-						if typeof(v.command) ~= "string" then
+						if type(v.command) ~= "string" then
 							v.command = tostring(v.command)
 						end
 
@@ -457,7 +458,7 @@ return function(Vargs)
 			if not Variables.WebPanel_Initiated then
 				Logs:AddLog("Script", "WebPanel Initialization Complete")
 				Variables.WebPanel_Initiated = true
-				wait(3)
+				task.wait(3)
 			end
 		else
 			if res == "HttpError: Timedout" then
@@ -466,25 +467,25 @@ return function(Vargs)
 					Method = "GET"
 				})
 
-				if not aliveSuccess and typeof(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
+				if not aliveSuccess and type(aliveCheck) == "table" and aliveCheck.StatusCode ~= 200 or aliveCheck == "HttpError: Timedout" then
 					Logs:AddLog("Script", "WebPanel Site did not respond, stalling for 30 seconds.")
-					wait(30)
+					task.wait(30)
 				end
 
 				continue
 			end
 
-			local code, msg = tostring(res.StatusCode), tostring(res.StatusMessage)
-
 			if code ~= 520 and code ~= 524 then
-				Logs:AddLog("Script", "WebPanel Polling Error: "..msg.." ("..code..")")
-				Logs:AddLog("Errors", "WebPanel Polling Error: "..msg.." ("..code..")")
+				local errorMessage = string.format("WebPanel Polling Error: %* (%*)", res.StatusMessage, res.StatusCode)
+
+				Logs:AddLog("Script", errorMessage)
+				Logs:AddLog("Errors", errorMessage)
 				break
 			elseif code == 520 then
-				wait(5) --After the server restarts we want to make sure that it has time to inititate everything
+				task.wait(5) --After the server restarts we want to make sure that it has time to inititate everything
 			end
 		end
 
-		wait()
+		task.wait()
 	end
 end

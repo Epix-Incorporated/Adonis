@@ -3,7 +3,7 @@
 -----------------------
 
 --[[
-	Follow development on our GitHub: https://github.com/Sceleratis/Adonis/
+	Follow development on our GitHub: https://github.com/Epix-Incorporated/Adonis/
 	Distributed under the MIT license.
 
 	Please do not redistribute without proper credits.

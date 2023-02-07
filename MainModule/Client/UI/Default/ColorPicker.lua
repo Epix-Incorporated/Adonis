@@ -9,6 +9,7 @@ return function(data, env)
 	local red, green, blue = color.r, color.g, color.b
 	local redSlider, greenSlider, blueSlider
 	local redBox, greenBox, blueBox
+	local redGradient, greenGradient, blueGradient
 	local ySize = 25
 	local returnColor
 	local gTable
@@ -52,15 +53,15 @@ return function(data, env)
 		colorBox.BackgroundColor3 = color
 		
 		redBox:SetValue(math.floor(red*255))
-		redSlider.SliderBar.ImageColor3 = Color3.new(0,0,0):lerp(Color3.new(1,0,0), red)
+		redGradient.Color = ColorSequence.new(Color3.new(0,green,blue),Color3.new(1,green,blue))
 		redSlider:SetValue(red)
 		
 		greenBox:SetValue(math.floor(green*255))
-		greenSlider.SliderBar.ImageColor3 = Color3.new(0,0,0):lerp(Color3.new(0,1,0), green)
+		greenGradient.Color = ColorSequence.new(Color3.new(red,0,blue),Color3.new(red,1,blue))
 		greenSlider:SetValue(green)
 		
 		blueBox:SetValue(math.floor(blue*255))
-		blueSlider.SliderBar.ImageColor3 = Color3.new(0,0,0):lerp(Color3.new(0,0,1), blue)
+		blueGradient.Color = ColorSequence.new(Color3.new(red,green,0),Color3.new(red,green,1))
 		blueSlider:SetValue(blue)
 	end
 	
@@ -178,13 +179,17 @@ return function(data, env)
 		end
 	})
 	
+	redGradient = service.New("UIGradient", redSlider.SliderBar)
+	greenGradient = service.New("UIGradient", greenSlider.SliderBar)
+	blueGradient = service.New("UIGradient", blueSlider.SliderBar)
+	
 	updateColors()
 	gTable = window.gTable
 	window:ResizeCanvas()
 	window:Ready()
 	
 	repeat
-		wait()
+		task.wait()
 	until returnColor or not gTable.Active
 	
 	return returnColor

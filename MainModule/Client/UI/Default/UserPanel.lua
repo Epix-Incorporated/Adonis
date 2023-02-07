@@ -26,7 +26,7 @@ local canEditTables = {
 local function tabToString(tab)
 	if type(tab) == "table" then
 		local str = ""
-		for i, v in pairs(tab) do
+		for i, v in tab do
 			if #str > 0 then
 				str ..= "; "
 			end
@@ -809,7 +809,7 @@ return function(data, env)
 				selected = nil
 				binds:ClearAllChildren();
 
-				for i,v in pairs(Variables.KeyBinds) do
+				for i,v in Variables.KeyBinds do
 					binds:Add("TextButton", {
 						Text = "Key: ".. string.upper(keyCodeToName(i)) .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -1045,7 +1045,7 @@ return function(data, env)
 				selected = nil
 				aliases:ClearAllChildren();
 
-				for i, v in pairs(Variables.Aliases) do
+				for i, v in Variables.Aliases do
 					aliases:Add("TextButton", {
 						Text = "Alias: ".. i .." | Command: "..v;
 						Size = UDim2.new(1, 0, 0, 25);
@@ -1240,7 +1240,7 @@ return function(data, env)
 			local cliSettings = {
 				{
 					Text = "Keybinds: ";
-					Desc = "- Enabled/Disables Keybinds";
+					Desc = "- Enables/Disables Keybinds";
 					Entry = "Boolean";
 					Value = Variables.KeybindsEnabled;
 					Function = function(enabled, toggle)
@@ -1485,7 +1485,7 @@ return function(data, env)
 				})
 
 				local i = 1
-				for truei, setting in pairs(order) do
+				for truei, setting in order do
 					i += 1
 
 					local value = settings[setting]
@@ -1514,7 +1514,7 @@ return function(data, env)
 					elseif type(value) == "table" then
 						if setting == "Ranks" then
 							i -= 1
-							for rank, data in pairs(value) do
+							for rank, data in value do
 								i += 1
 								if string.match(rank, "^[WebPanel]") or string.match(rank, "^[Trello]") or data.Level >= 900 then --// TODO: pull the associated level (Creators) and use it for comparison instead of a hardcoded '900'
 									gameTab:Add("TextLabel", {

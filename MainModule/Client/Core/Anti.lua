@@ -13,25 +13,25 @@ return function(Vargs, GetEnv)
 	setfenv(1, env)
 
 	local _G, game, script, getfenv, setfenv, workspace,
-		getmetatable, setmetatable, loadstring, coroutine,
-		rawequal, typeof, print, math, warn, error,  pcall,
-		xpcall, select, rawset, rawget, ipairs, pairs,
-		next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-		newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-		NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-		NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-		Vector3int16, require, table, type, wait,
-		Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
-			_G, game, script, getfenv, setfenv, workspace,
-			getmetatable, setmetatable, loadstring, coroutine,
-			rawequal, typeof, print, math, warn, error,  pcall,
-			xpcall, select, rawset, rawget, ipairs, pairs,
-			next, Rect, Axes, os, time, Faces, unpack, string, Color3,
-			newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
-			NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
-			NumberSequenceKeypoint, PhysicalProperties, Region3int16,
-			Vector3int16, require, table, type, wait,
-			Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay =
+		_G, game, script, getfenv, setfenv, workspace,
+	getmetatable, setmetatable, loadstring, coroutine,
+	rawequal, typeof, print, math, warn, error,  pcall,
+	xpcall, select, rawset, rawget, ipairs, pairs,
+	next, Rect, Axes, os, time, Faces, unpack, string, Color3,
+	newproxy, tostring, tonumber, Instance, TweenInfo, BrickColor,
+	NumberRange, ColorSequence, NumberSequence, ColorSequenceKeypoint,
+	NumberSequenceKeypoint, PhysicalProperties, Region3int16,
+	Vector3int16, require, table, type, wait,
+	Enum, UDim, UDim2, Vector2, Vector3, Region3, CFrame, Ray, delay
 
 	local Anti, Process, UI, Variables
 	local script = script
@@ -79,7 +79,7 @@ return function(Vargs, GetEnv)
 	local Detected = function(action, info, nocrash)
 		if NetworkClient and action ~= "_" then
 			pcall(Send, "Detected", action, info)
-			wait(0.5)
+			task.wait(0.5)
 			if action == "kick" then
 				if not isStudio then
 					if nocrash then
@@ -392,18 +392,18 @@ return function(Vargs, GetEnv)
 		}
 
 		Routine(function()
-			while wait(5) do
+			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
 
-				for method, detector in pairs(detectors) do
+				for method, detector in detectors do
 					local action, callback = detector[1],  detector[2]
 
 					local success, value = pcall(callback)
 					if not success or value ~= false and value ~= true then
 						Detected("crash", "Tamper Protection 906287")
-						wait(1)
+						task.wait(1)
 						pcall(Disconnect, "Adonis_906287")
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
@@ -416,6 +416,13 @@ return function(Vargs, GetEnv)
 				task.spawn(xpcall, function()
 					local LocalPlayer = service.UnWrap(Player)
 					local workspace = service.UnWrap(workspace)
+					local nilPlayers = setmetatable({}, {__mode = "v"})
+
+					service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
+						if child:IsA("Player") then
+							table.insert(nilPlayers, child)
+						end
+					end)
 
 					local success, err = pcall(function()
 						LocalPlayer.Kick(workspace, "If this message appears, report it to Adonis maintainers. 0x1")
@@ -433,11 +440,13 @@ return function(Vargs, GetEnv)
 					end
 
 					if #service.Players:GetPlayers() > 1 then
-						for _, v in ipairs(service.Players:GetPlayers()) do
+						local unwrappedPlayers = service.Players
+
+						for _, v in service.Players:GetPlayers() do
 							local otherPlayer = service.UnWrap(v)
 
-							if otherPlayer and otherPlayer.Parent and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. 0x3")
+							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
 								local success2, err2 = pcall(function()
 									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. 0x4")
 								end)
@@ -521,7 +530,7 @@ return function(Vargs, GetEnv)
 		local meta = service.MetaFunc
 		local track = meta(service.TrackTask)
 		local opcall = meta(pcall)
-		local oWait = meta(wait)
+		local oWait = meta(task.wait)
 		local time = meta(time)
 
 		track("Thread: TableCheck", meta(function()

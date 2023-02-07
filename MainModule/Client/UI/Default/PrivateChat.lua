@@ -30,9 +30,9 @@ return function(data, env)
 
 	local function promptAddUser()
 		local list = {}
-		for _,v in pairs(service.Players:GetPlayers()) do
+		for _,v in service.Players:GetPlayers() do
 			local good = true;
-			for _, peer in next,peerList do
+			for _, peer in peerList do
 				if peer.UserId == v.UserId then
 					good = false;
 					break;
@@ -69,7 +69,7 @@ return function(data, env)
 			SortOrder = "LayoutOrder";
 		})
 
-		for i,peer in next,peers do
+		for i,peer in peers do
 			local pBut = playerList:Add("TextButton", {
 				Text = service.FormatPlayer(peer);
 				Size = UDim2.new(1, 0, 0, 25);

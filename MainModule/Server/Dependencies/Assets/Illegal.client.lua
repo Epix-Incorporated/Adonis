@@ -38,7 +38,7 @@ Color=Enum.ChatColor.Blue
 }}
 
 local head = script.Parent.Parent.Head
-local hum = script.Parent.Parent.Humanoid
+local hum = script.Parent.Parent:FindFirstChildOfClass("Humanoid")
 local torso = script.Parent
 local chat = game:GetService("Chat")
 local val = Instance.new('StringValue')
@@ -76,7 +76,7 @@ coroutine.wrap(function()
 repeat
 wait(0.1)
 workspace.CurrentCamera.FieldOfView = math.random(20,80)
-hum.Health = hum.Health-0.5
+hum.Health:TakeDamage(0.5)
 if startspaz then
 hum.PlatformStand = true
 torso.Velocity = Vector3.new(math.random(-10,10),-5,math.random(-10,10))

@@ -40,6 +40,7 @@ return function(Vargs, GetEnv)
 	end
 
 	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
+	local kickedPlayers = setmetatable({}, {__mode = "v"})
 
 	server.Anti = {
 		Init = Init;
@@ -70,7 +71,7 @@ return function(Vargs, GetEnv)
 					Desc = "Making sure all clients are active";
 				})
 
-				for ind,p in ipairs(service.Players:GetPlayers()) do
+				for ind,p in service.Players:GetPlayers() do
 					if p and p:IsA("Player") then
 						local key = tostring(p.UserId)
 						local client = Remote.Clients[key]
@@ -99,7 +100,7 @@ return function(Vargs, GetEnv)
 							return true
 						end
 					else
-						for i,user in next,userInfo do
+						for i,user in userInfo do
 							if user.Id == p.UserId then
 								if p.Name ~= user.Username or p.DisplayName ~= user.DisplayName then
 									return true
@@ -114,7 +115,7 @@ return function(Vargs, GetEnv)
 				end
 			end
 		end;
-		
+
 		CheckBackpack = function(p, obj)
 			local ran, err = pcall(function()
 				return p:WaitForChild("Backpack", 60):FindFirstChild(obj)
@@ -125,11 +126,15 @@ return function(Vargs, GetEnv)
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
-			if service.RunService:IsStudio() then
+			if table.find(kickedPlayers, player) then
+				player:Kick(":: Adonis ::\n"..info)
+				return
+			elseif service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
+						table.insert(kickedPlayers, player)
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -140,6 +145,7 @@ return function(Vargs, GetEnv)
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
+						table.insert(kickedPlayers, player)
 						Remote.Send(player, "Function", "Kill")
 						task.wait(5)
 						pcall(function()
@@ -185,7 +191,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 
-				for _, plr in ipairs(service.Players:GetPlayers()) do
+				for _, plr in service.Players:GetPlayers() do
 					if Admin.GetLevel(plr) >= Settings.Ranks.Moderators.Level then
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification",
