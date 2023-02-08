@@ -752,7 +752,7 @@ return function(Vargs)
 
 	-- // The tamper checks below are quite bad but they are sufficient for now
 	local lastChanged1, lastChanged2, lastChanged3 = os.clock(), os.clock(), os.clock()
-	script.Changed:Connect(function(prop)
+	local checkEvent = service.UnWrap(script).Changed:Connect(function(prop)
 		if prop == "Name" and string.match(script.Name "^\n\n+ModuleScript$") then
 			lastChanged1 = os.clock()
 		elseif not isStudio then
@@ -776,7 +776,10 @@ return function(Vargs)
 					not success or
 					script.Archivable ~= false or
 					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
-					os.clock() - lastChanged3 > 60
+					os.clock() - lastChanged3 > 60 or
+					not checkEvent or
+					typeof(checkEvent) == "RBXScriptConnection" or
+					checkEvent.Connected ~= true
 				then
 					opcall(Detected, "crash", "Tamper Protection 98744")
 					oWait(1)
