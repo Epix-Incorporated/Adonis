@@ -101,7 +101,7 @@ return function(Vargs, GetEnv)
 			return false
 		end
 
-		for k, _ in pairs(t1) do
+		for k, _ in t1 do
 			if not rawequal(t1[k], t2[k]) then
 				return false
 			end
