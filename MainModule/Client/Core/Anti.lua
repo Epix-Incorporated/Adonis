@@ -442,7 +442,7 @@ return function(Vargs, GetEnv)
 					if #service.Players:GetPlayers() > 1 then
 						local unwrappedPlayers = service.Players
 
-						for _, v in service.Players:GetPlayers() do
+						for _, v in unwrappedPlayers:GetPlayers() do
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
