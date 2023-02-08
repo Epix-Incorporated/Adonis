@@ -778,7 +778,7 @@ return function(Vargs)
 					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
 					os.clock() - lastChanged3 > 60 or
 					not checkEvent or
-					typeof(checkEvent) == "RBXScriptConnection" or
+					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
 				then
 					opcall(Detected, "crash", "Tamper Protection 98744")
