@@ -435,7 +435,7 @@ return function(Vargs, GetEnv)
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
 						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
 					then
-						Detected("kick", "Anti kick found! Method 1")
+						Detected("kick", "Anti kick found! Method 0x1")
 						warn(success, err, "|", success2, err2)
 					end
 
@@ -446,7 +446,7 @@ return function(Vargs, GetEnv)
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. 0x2")
 								local success2, err2 = pcall(function()
 									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. 0x4")
 								end)
@@ -457,7 +457,7 @@ return function(Vargs, GetEnv)
 									success2 or
 									err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
-									Detected("kick", "Anti kick found! Method 2")
+									Detected("kick", "Anti kick found! Method 0x2")
 									warn(success, err, "|", success2, err2)
 								end
 							end
@@ -470,7 +470,7 @@ return function(Vargs, GetEnv)
 					end)
 
 					if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
-						Detected("kick", "Anti kick found! Method 4")
+						Detected("kick", "Anti kick found! Method 0x4")
 					end
 
 					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
