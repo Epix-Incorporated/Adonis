@@ -299,7 +299,15 @@ return function(Vargs)
 				"failed to parse json";
 				"newcclosure", -- // Kicks all non chad exploits which do not support newcclosure like jjsploit
 				"getrawmetatable";
+				"setrawmetatable";
+				"getnamecallmethod";
+				"setnamecallmethod";
 				"setfflag";
+				"Kill by Avexus#1234 initialized";
+				--"FilteringEnabled Kill"; -- // Disabled due to potentially having false flags
+				"Couldn't find target with input:";
+				"Found target with input:";
+				"Couldn't find the target's root part. :[";
 			}
 
 			local soundIds = {
