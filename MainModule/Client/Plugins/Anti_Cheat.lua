@@ -280,8 +280,6 @@ return function(Vargs)
 			local findService = service.DataModel.FindService
 			local lastLogOutput = os.clock()
 			local spoofedHumanoidCheck = Instance.new("Humanoid")
-			local remoEventCheck = Instance.new("RemoteEvent")
-			local remFuncCheck = Instance.new("RemoteFunction")
 
 			local lookFor = {
 				"current identity is [0789]";
@@ -476,71 +474,6 @@ return function(Vargs)
 						end
 					end
 				end
-
-				-- // GetLogHistory hook detection
-				do
-					local success, err = pcall(function()
-						rawLogService:getlogHistory())
-					end)
-					local success2, err2 = pcall(function()
-						rawLogService.GetLogHistory(workspace)
-					end)
-					local success3, err3 = pcall(function()
-						workspace:GetLogHistory()
-					end)
-
-					if
-						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawLogService:GetFullName() or
-						success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
-						success3 or string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
-					then
-						Detected("kick", "GetLogHistory function hooks detected")
-					end
-				end
-
-				-- // RemoteEvent hook detection
-				do
-					local success, err = pcall(function()
-						remEventCheck:fireserver())
-					end)
-					local success2, err2 = pcall(function()
-						remEventCheck.FireServer(workspace)
-					end)
-					local success3, err3 = pcall(function()
-						workspace:FireServer()
-					end)
-
-					if
-						success or string.match(err, "^%a+ is not a valid member of RemoteEvent \"(.+)\"$") ~= remEventCheck:GetFullName() or
-						success2 or err2 ~= "Expected ':' not '.' calling member function FireServer" or
-						success3 or string.match(err3, "^FireServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
-					then
-						Detected("kick", "FireServer function hooks detected")
-					end
-				end
-				pcall(remEventCheck.FireServer, remEventCheck, proxyDetector)
-
-				-- // RemoteFunction hook detection
-				do
-					local success, err = pcall(function()
-						remFuncCheck:invokeserver())
-					end)
-					local success2, err2 = pcall(function()
-						remFuncCheck.InvokeServer(workspace)
-					end)
-					local success3, err3 = pcall(function()
-						workspace:InvokeServer()
-					end)
-
-					if
-						success or string.match(err, "^%a+ is not a valid member of RemoteFunction \"(.+)\"$") ~= remFuncCheck:GetFullName() or
-						success2 or err2 ~= "Expected ':' not '.' calling member function InvokeServer" or
-						success3 or string.match(err3, "^InvokeServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
-					then
-						Detected("kick", "InvokeServer function hooks detected")
-					end
-				end
-				pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
 
 				--// Check Loadstring
 				local ran, _ = pcall(function()
