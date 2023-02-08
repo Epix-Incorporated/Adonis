@@ -392,6 +392,10 @@ return function(Vargs, GetEnv)
 		}
 
 		Routine(function()
+			local remoEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
+			local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
+			local rawLogService = service.UnWrap(service.LogService)
+
 			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
@@ -491,6 +495,98 @@ return function(Vargs, GetEnv)
 					task.wait(4)
 					if not hasCompleted then
 						Detected("kick", "Anti kick found! Method 3")
+					end
+				end, function()
+					Detected("crash", "Tamper Protection 1897")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_1897")
+					pcall(Kill, "Adonis_1897")
+					pcall(Kick, Player, "Adonis_1897")
+				end)
+
+				local hasCompleted = false
+				task.spawn(xpcall, function()
+					local workspace = service.UnWrap(workspace)
+
+					-- // GetLogHistory hook detection
+					do
+						local workspace
+						local success, err = pcall(function()
+							rawLogService:getlogHistory())
+						end)
+						local success2, err2 = pcall(function()
+							rawLogService.GetLogHistory(workspace)
+						end)
+						local success3, err3 = pcall(function()
+							workspace:GetLogHistory()
+						end)
+
+						if
+							success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawLogService:GetFullName() or
+							success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
+							success3 or string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+						then
+							Detected("kick", "GetLogHistory function hooks detected")
+						end
+					end
+
+					-- // RemoteEvent hook detection
+					do
+						local success, err = pcall(function()
+							remEventCheck:fireserver())
+						end)
+						local success2, err2 = pcall(function()
+							remEventCheck.FireServer(workspace)
+						end)
+						local success3, err3 = pcall(function()
+							workspace:FireServer()
+						end)
+
+						if
+							success or string.match(err, "^%a+ is not a valid member of RemoteEvent \"(.+)\"$") ~= remEventCheck:GetFullName() or
+							success2 or err2 ~= "Expected ':' not '.' calling member function FireServer" or
+							success3 or string.match(err3, "^FireServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+						then
+							Detected("kick", "FireServer function hooks detected")
+						end
+					end
+					pcall(remEventCheck.FireServer, remEventCheck, proxyDetector)
+
+					-- // RemoteFunction hook detection
+					do
+						local success, err = pcall(function()
+							remFuncCheck:invokeserver())
+						end)
+						local success2, err2 = pcall(function()
+							remFuncCheck.InvokeServer(workspace)
+						end)
+						local success3, err3 = pcall(function()
+							workspace:InvokeServer()
+						end)
+
+						if
+							success or string.match(err, "^%a+ is not a valid member of RemoteFunction \"(.+)\"$") ~= remFuncCheck:GetFullName() or
+							success2 or err2 ~= "Expected ':' not '.' calling member function InvokeServer" or
+							success3 or string.match(err3, "^InvokeServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+						then
+							Detected("kick", "InvokeServer function hooks detected")
+						end
+					end
+					pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
+
+					hasCompleted = true
+				end, function()
+					Detected("crash", "Tamper Protection 1897")
+					task.wait(1)
+					pcall(Disconnect, "Adonis_1897")
+					pcall(Kill, "Adonis_1897")
+					pcall(Kick, Player, "Adonis_1897")
+				end)
+
+				task.spawn(xpcall, function()
+					task.wait(4)
+					if not hasCompleted then
+						Detected("kick", "Remote and/or logservice spoofcheck failed")
 					end
 				end, function()
 					Detected("crash", "Tamper Protection 1897")
