@@ -522,7 +522,7 @@ return function(Vargs)
 
 				-- // Checks disallowed content URLs in the CoreGui
 				xpcall(function()
-					if isStudio or service.GuiService.MenuIsOpen then
+					if isStudio then
 						return
 					end
 
@@ -556,32 +556,36 @@ return function(Vargs)
 					local workspace = service.UnWrap(workspace)
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
-					rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
-						if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
-							activated = true
-						elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
-							local isItemIcon = false
+					local toolUrls = getToolUrls()
 
-							for _, v in ipairs(getToolUrls()) do
-								if string.find(url, v, 1, true) then
-									isItemIcon = true
-									break
+					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize or Player:GetNetworkPing() >= 750) then
+						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
+								activated = true
+							elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
+								local isItemIcon = false
+
+								for _, v in ipairs(toolUrls) do
+									if string.find(url, v, 1, true) then
+										isItemIcon = true
+										break
+									end
 								end
-							end
 
-							if isItemIcon == true then
-								return
-							end
+								if isItemIcon == true then
+									return
+								end
 
-							hasDetected = true
-							Detected("Kick", "Disallowed content URL detected in CoreGui")
+								hasDetected = true
+								Detected("Kick", "Disallowed content URL detected in CoreGui")
+							end
+						end)
+
+						tempDecal:Destroy()
+						task.wait(6)
+						if not activated then -- // Checks for anti-coregui detetection bypasses
+							Detected("kick", "Coregui detection bypass found")
 						end
-					end)
-
-					tempDecal:Destroy()
-					task.wait(6)
-					if not activated then -- // Checks for anti-coregui detetection bypasses
-						Detected("kick", "Coregui detection bypass found")
 					end
 
 					local success, err = pcall(function()
