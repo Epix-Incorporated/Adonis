@@ -558,7 +558,7 @@ return function(Vargs)
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
 					local toolUrls = getToolUrls()
 
-					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize or Player:GetNetworkPing() >= 750) then
+					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
 						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
 							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
 								activated = true
