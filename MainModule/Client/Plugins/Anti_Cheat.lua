@@ -316,7 +316,7 @@ return function(Vargs)
 
 			local function checkServ()
 				if not pcall(function()
-					if not isStudio and (--[[findService(game, "ServerStorage") or findService(game, "ServerScriptService")  or]] findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
+					if not isStudio and (findService(game, "VirtualUser") or findService(game, "VirtualInputManager")) then
 						Detected("crash", "Disallowed Services Detected")
 					end
 				end) then
