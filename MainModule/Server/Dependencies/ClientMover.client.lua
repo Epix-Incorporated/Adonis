@@ -15,7 +15,7 @@ do
 	local task_spawn, xpcall, require, task_wait = task.spawn, xpcall, require, task.spawn
 	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
 	local localPlayer = Players.LocalPlayer
-	local triggered1, triggered2 = false, false
+	local triggered = false
 
 	local function loadingDetected(reason)
 		if localPlayer then
@@ -29,31 +29,26 @@ do
 
 	task_spawn(xpcall, function()
 		local exampleService = game:GetService("Workspace") or game:GetService("ReplicatedStorage")
+		local success, err = pcall(require, game)
 
 		if not exampleService then
 			task_spawn(xpcall, function() loadingDetected("Service not returning") end, function(err) loadingDetected(err) end)
 			while true do end
 		end
 
-		triggered1 = true
-	end, function(err) task_spawn(loadingDetected, err) while true do end end)
-
-	task_spawn(xpcall, function()
-		local success, err = pcall(require, game)
-
 		if success or not string.match(err, "^Attempted to call require with invalid argument%(s%)%.$") then
 			task_spawn(xpcall, function() loadingDetected("Require load fail. "..tostring(err)) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
 
-		triggered2 = true
+		triggered = true
 	end, function(err) task_spawn(loadingDetected, err) while true do end end)
 
 	task_spawn(xpcall, function()
 		task_wait()
 		task_wait()
 
-		if not triggered1 or not triggered2 then
+		if not triggered then
 			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(triggered1).." "..tostring(triggered2)) end, function(err) loadingDetected(err) end)
 			while true do end
 		end
