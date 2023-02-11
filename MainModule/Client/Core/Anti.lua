@@ -395,8 +395,15 @@ return function(Vargs, GetEnv)
 			local remoEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
 			local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
 			local rawLogService = service.UnWrap(service.LogService)
+			local nilPlayers = setmetatable({}, {__mode = "v"})
 
-			while task.wait(5) do
+			service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
+				if child:IsA("Player") then
+					table.insert(nilPlayers, child)
+				end
+			end)
+
+			while true do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
@@ -420,13 +427,6 @@ return function(Vargs, GetEnv)
 				task.spawn(xpcall, function()
 					local LocalPlayer = service.UnWrap(Player)
 					local workspace = service.UnWrap(workspace)
-					local nilPlayers = setmetatable({}, {__mode = "v"})
-
-					service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
-						if child:IsA("Player") then
-							table.insert(nilPlayers, child)
-						end
-					end)
 
 					local success, err = pcall(function()
 						LocalPlayer.Kick(workspace, "If this message appears, report it to Adonis maintainers. 0x1")
@@ -595,6 +595,8 @@ return function(Vargs, GetEnv)
 					pcall(Kill, "Adonis_1897")
 					pcall(Kick, Player, "Adonis_1897")
 				end)
+
+				task.wait(5)
 			end
 		end)
 	end
