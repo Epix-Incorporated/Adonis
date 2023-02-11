@@ -494,7 +494,7 @@ return function(Vargs, GetEnv)
 				task.spawn(xpcall, function()
 					task.wait(4)
 					if not hasCompleted then
-						Detected("kick", "Anti kick found! Method 3")
+						Detected("kick", "Anti kick found! Method 0x3")
 					end
 				end, function()
 					Detected("crash", "Tamper Protection 1897")
