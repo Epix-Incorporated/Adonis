@@ -12,18 +12,14 @@ local tostring = tostring;
 -- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
 do
 	local game = game
-	local task_spawn, xpcall, require, task_wait = task.spawn, xpcall, require, task.spawn
+	local task_spawn, xpcall, require, task_wait
+		= task.spawn, xpcall, require, task.wait
 	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
 	local localPlayer = Players.LocalPlayer
 	local triggered = false
 
 	local function loadingDetected(reason)
-		if localPlayer then
-			localPlayer:Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
-		else
-			Players.LocalPlayer:Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
-		end
-
+		(localPlayer or Players.LocalPlayer):Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
 		while true do end
 	end
 
