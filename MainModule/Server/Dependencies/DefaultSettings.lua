@@ -351,10 +351,12 @@ settings.AntiRootJointDeletion = false		-- Attempts to detect paranoid and kills
 settings.AntiHumanoidDeletion = false -- (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player
 settings.AntiMultiTool = false -- Prevents multitool and because of that many other exploits
 settings.AntiGod = false -- If a player does not respawn when they should have they get respawned
+settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
+
 settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
 settings.AntiAntiIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
-settings.ProtectHats = false 				-- Prevents hats from being un-welded from their characters through unnormal means
+settings.ExploitGuiDetection = false 		-- (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you)
 
 ---------------------
 -- END OF SETTINGS --
@@ -499,10 +501,12 @@ descs.AntiRootJointDeletion = [[ Attempts to detect paranoid and kills the playe
 descs.AntiHumanoidDeletion = [[ (Very important) Prevents invalid humanoid deletion. Un-does the deletion and kills the player ]]
 descs.AntiMultiTool = [[ Prevents multitool and because of that many other exploits ]]
 descs.AntiGod = [[ If a player does not respawn when they should have they get respawned ]]
+descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
+
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
 descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
-descs.ProtectHats = [[ Prevents hats from being un-welded from their characters through unnormal means. ]]
+descs.ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 
 order = {
 	"HideScript";
@@ -609,10 +613,12 @@ order = {
 	"AntiHumanoidDeletion";
 	"AntiMultiTool";
 	"AntiGod";
+	"ProtectHats";
+	" ";
 	"AntiSpeed";
 	"AntiBuildingTools";
 	"AntiAntiIdle";
-	"ProtectHats";
+	"ExploitGuiDetection";
 }
 
 return {Settings = settings, Descriptions = descs, Order = order}
