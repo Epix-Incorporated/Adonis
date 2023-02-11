@@ -275,6 +275,104 @@ return function(Vargs)
 			end
 		end;
 
+		AntiCoreGui = function()
+			-- // Checks disallowed content URLs in the CoreGui
+			service.StartLoop("AntiCoreGui", 15, function()
+				xpcall(function()
+					if isStudio then
+						return
+					end
+
+					local function getCoreUrls()
+						local coreUrls = {}
+						local backpack = Player:FindFirstChildOfClass("Backpack")
+						local character = Player.Character
+						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
+
+						if character then
+							for _, v in ipairs(character:GetChildren()) do
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
+								end
+							end
+						end
+
+						if backpack then
+							for _, v in ipairs(backpack:GetChildren()) do
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
+								end
+							end
+						end
+
+						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
+							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
+						end
+
+						return coreUrls
+					end
+
+					local hasDetected = false
+					local activated = false
+					local rawContentProvider = service.UnWrap(service.ContentProvider)
+					local workspace = service.UnWrap(workspace)
+					local tempDecal = service.UnWrap(Instance.new("Decal"))
+					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
+					local coreUrls = getCoreUrls()
+
+					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
+						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
+							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
+								activated = true
+							elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
+								local isItemIcon = false
+
+								for _, v in ipairs(coreUrls) do
+									if string.find(url, v, 1, true) then
+										isItemIcon = true
+										break
+									end
+								end
+
+								if isItemIcon == true then
+									return
+								end
+
+								hasDetected = true
+								Detected("Kick", "Disallowed content URL detected in CoreGui")
+							end
+						end)
+
+						tempDecal:Destroy()
+						task.wait(6)
+						if not activated then -- // Checks for anti-coregui detetection bypasses
+							Detected("kick", "Coregui detection bypass found")
+						end
+					end
+
+					local success, err = pcall(function()
+						rawContentProvider:preloadasync({tempDecal})
+					end)
+					local success2, err2 = pcall(function()
+						rawContentProvider.PreloadAsync(workspace, {tempDecal})
+					end)
+					local success3, err3 = pcall(function()
+						workspace:PreloadAsync({tempDecal})
+					end)
+
+					if
+						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
+						success2 or err2 ~= "Expected ':' not '.' calling member function PreloadAsync" or
+						success3 or string.match(err3, "^PreloadAsync is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+					then
+						Detected("kick", "Content provider spoofing detected")
+					end
+				end, function()
+					Detected("kick", "Tamper Protection 456754")
+				end)
+			end
+		end
+
 		MainDetection = function()
 			local game = service.DataModel
 			local findService = service.DataModel.FindService
@@ -527,100 +625,6 @@ return function(Vargs)
 						Detected("crash", "Anti-dex bypass found. Method 0x2")
 					end
 				end
-
-				-- // Checks disallowed content URLs in the CoreGui
-				xpcall(function()
-					if isStudio then
-						return
-					end
-
-					local function getCoreUrls()
-						local coreUrls = {}
-						local backpack = service.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
-						local character = service.Players.LocalPlayer.Character
-						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
-
-						if character then
-							for _, v in ipairs(character:GetChildren()) do
-								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
-									table.insert(coreUrls, service.Trim(v.TextureId))
-								end
-							end
-						end
-
-						if backpack then
-							for _, v in ipairs(backpack:GetChildren()) do
-								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
-									table.insert(coreUrls, service.Trim(v.TextureId))
-								end
-							end
-						end
-
-						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
-							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
-						end
-
-						return coreUrls
-					end
-
-					local hasDetected = false
-					local activated = false
-					local rawContentProvider = service.UnWrap(service.ContentProvider)
-					local workspace = service.UnWrap(workspace)
-					local tempDecal = service.UnWrap(Instance.new("Decal"))
-					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
-					local coreUrls = getCoreUrls()
-
-					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
-						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
-							if url == "rbxasset://textures/face.png" and status == Enum.AssetFetchStatus.Success then
-								activated = true
-							elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
-								local isItemIcon = false
-
-								for _, v in ipairs(coreUrls) do
-									if string.find(url, v, 1, true) then
-										isItemIcon = true
-										break
-									end
-								end
-
-								if isItemIcon == true then
-									return
-								end
-
-								hasDetected = true
-								Detected("Kick", "Disallowed content URL detected in CoreGui")
-							end
-						end)
-
-						tempDecal:Destroy()
-						task.wait(6)
-						if not activated then -- // Checks for anti-coregui detetection bypasses
-							Detected("kick", "Coregui detection bypass found")
-						end
-					end
-
-					local success, err = pcall(function()
-						rawContentProvider:preloadasync({tempDecal})
-					end)
-					local success2, err2 = pcall(function()
-						rawContentProvider.PreloadAsync(workspace, {tempDecal})
-					end)
-					local success3, err3 = pcall(function()
-						workspace:PreloadAsync({tempDecal})
-					end)
-
-					if
-						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
-						success2 or err2 ~= "Expected ':' not '.' calling member function PreloadAsync" or
-						success3 or string.match(err3, "^PreloadAsync is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
-					then
-						Detected("kick", "Content provider spoofing detected")
-					end
-				end, function()
-					Detected("kick", "Tamper Protection 456754")
-				end)
 
 				-- // GetFocusedTextBox detection
 				xpcall(function()
