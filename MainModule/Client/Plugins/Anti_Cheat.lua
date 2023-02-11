@@ -307,7 +307,7 @@ return function(Vargs)
 				--"FilteringEnabled Kill"; -- // Disabled due to potentially having false flags
 				"Couldn't find target with input:";
 				"Found target with input:";
-				"Couldn't find the target's root part. :[";
+				"Couldn't find the target's root part%. :[";
 			}
 
 			local soundIds = {
@@ -517,14 +517,14 @@ return function(Vargs)
 				-- // Detects certain anti-dex bypasses
 				local tbl = setmetatable({}, mt)
 				if mt.__mode ~= "v" or rawget(mt, "__mode") ~= "v" or getmetatable(tbl) ~= mt or getDictionaryLenght(mt) ~= 1 or "_" == "v" or "v" ~= "v" then
-					Detected("crash", "Anti-dex bypass found. Method 1")
+					Detected("crash", "Anti-dex bypass found. Method 0x1")
 				else
 					local success, value = pcall(function()
 						return setmetatable(tbl, mt)
 					end)
 
 					if not success or value ~= tbl or not service.OrigRawEqual(value, tbl) then
-						Detected("crash", "Anti-dex bypass found. Method 2")
+						Detected("crash", "Anti-dex bypass found. Method 0x2")
 					end
 				end
 
@@ -534,28 +534,33 @@ return function(Vargs)
 						return
 					end
 
-					local function getToolUrls()
-						local toolIcons = {}
+					local function getCoreUrls()
+						local coreUrls = {}
 						local backpack = service.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
 						local character = service.Players.LocalPlayer.Character
+						local screenshotHud = service.GuiService:FindFirstChildOfClass("ScreenshotHud")
 
 						if character then
 							for _, v in ipairs(character:GetChildren()) do
-								if v:IsA("BackpackItem") and v.TextureId ~= "" then
-									table.insert(toolIcons, v.TextureId)
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
 								end
 							end
 						end
 
 						if backpack then
 							for _, v in ipairs(backpack:GetChildren()) do
-								if v:IsA("BackpackItem") and v.TextureId ~= "" then
-									table.insert(toolIcons, v.TextureId)
+								if v:IsA("BackpackItem") and service.Trim(v.TextureId) ~= "" then
+									table.insert(coreUrls, service.Trim(v.TextureId))
 								end
 							end
 						end
 
-						return toolIcons
+						if screenshotHud and service.Trim(screenshotHud.CameraButtonIcon) ~= "" then
+							table.insert(coreUrls, service.Trim(screenshotHud.CameraButtonIcon))
+						end
+
+						return coreUrls
 					end
 
 					local hasDetected = false
@@ -564,7 +569,7 @@ return function(Vargs)
 					local workspace = service.UnWrap(workspace)
 					local tempDecal = service.UnWrap(Instance.new("Decal"))
 					tempDecal.Texture = "rbxasset://textures/face.png" -- Its a local asset and it's probably likely to never get removed, so it will never fail to load, unless the users PC is corrupted
-					local toolUrls = getToolUrls()
+					local coreUrls = getCoreUrls()
 
 					if not (service.GuiService.MenuIsOpen or service.ContentProvider.RequestQueueSize >= 50 or Player:GetNetworkPing() >= 750) then
 						rawContentProvider.PreloadAsync(rawContentProvider, {tempDecal, tempDecal, tempDecal, service.UnWrap(service.CoreGui), tempDecal}, function(url, status)
@@ -573,7 +578,7 @@ return function(Vargs)
 							elseif not hasDetected and (string.match(url, "^rbxassetid://") or string.match(url, "^http://www%.roblox%.com/asset/%?id=")) then
 								local isItemIcon = false
 
-								for _, v in ipairs(toolUrls) do
+								for _, v in ipairs(coreUrls) do
 									if string.find(url, v, 1, true) then
 										isItemIcon = true
 										break
@@ -625,8 +630,18 @@ return function(Vargs)
 
 					local textbox = service.UserInputService:GetFocusedTextBox()
 					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
+					local textChatService = service.TextChatService
+					local chatBarConfig = textChatService and textChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
 
-					if textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen then
+					if
+						textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen and not (
+							service.Chat.LoadDefaultChat and
+							textChatService and
+							textChatService.ChatVersion == Enum.ChatVersion.TextChatService and
+							chatBarConfig and
+							chatBarConfig.Enabled
+						)
+					then
 						Detected("Kick", "Invalid CoreGui Textbox has been selected")
 					end
 				end, function()
@@ -669,7 +684,7 @@ return function(Vargs)
 						spoofedHumanoidCheck.WalkSpeed ~= newWalkSpeed or
 						spoofedHumanoidCheck.JumpPower ~= newJumpPower
 					then
-						Detected("kick", "Humanoid tampering detected. Method 1")
+						Detected("kick", "Humanoid tampering detected. Method 0x1")
 					end
 					
 					task.spawn(function()
@@ -679,7 +694,7 @@ return function(Vargs)
 						connection3:Disconnect()
 
 						if eventCount < 4 then
-							Detected("kick", "Humanoid tampering detected. Method 2")
+							Detected("kick", "Humanoid tampering detected. Method 0x2")
 						end
 					end)
 				end, function()
