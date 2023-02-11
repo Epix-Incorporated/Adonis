@@ -391,19 +391,19 @@ return function(Vargs, GetEnv)
 			end},
 		}
 
-		Routine(function()
-			local remoEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
-			local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
-			local rawLogService = service.UnWrap(service.LogService)
-			local nilPlayers = setmetatable({}, {__mode = "v"})
+		local remoEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
+		local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
+		local rawLogService = service.UnWrap(service.LogService)
+		local nilPlayers = setmetatable({}, {__mode = "v"})
 
-			service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
-				if child:IsA("Player") then
-					table.insert(nilPlayers, child)
-				end
-			end)
+		service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
+			if child:IsA("Player") then
+				table.insert(nilPlayers, child)
+			end
+		end)
 
-			while true do
+		while true do
+			Routine(function()
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
@@ -595,10 +595,10 @@ return function(Vargs, GetEnv)
 					pcall(Kill, "Adonis_1897")
 					pcall(Kick, Player, "Adonis_1897")
 				end)
+			end)
 
-				task.wait(5)
-			end
-		end)
+			task.wait(5)
+		end
 	end
 
 	local Launch = function(mode,data)
