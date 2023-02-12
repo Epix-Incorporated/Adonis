@@ -37,6 +37,7 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	Your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
@@ -77,7 +78,6 @@ local SERVICES_WE_USE = table.freeze {
 	"StarterPack";
 	"StarterPlayer";
 	"GroupService";
-	"MarketplaceService";
 	"MarketplaceService";
 	"TestService";
 	"HttpService";
@@ -587,7 +587,6 @@ return service.NewProxy({
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
-		server.Threading = require(server.Deps.ThreadHandler)
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		do

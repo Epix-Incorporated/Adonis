@@ -824,6 +824,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Hidden = true;
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local sb = Variables.ScriptBuilder[tostring(plr.UserId)]

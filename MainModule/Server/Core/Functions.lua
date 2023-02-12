@@ -1393,7 +1393,9 @@ return function(Vargs, GetEnv)
 				return true
 			elseif type(check) == "table" and type(match) == "table" then
 				for k, v in match do
-					if check[k] ~= v then
+					if type(v) == "table" and not Functions.LaxCheckMatch(check[k], v) then
+						return false
+					elseif check[k] ~= v then
 						return false
 					end
 				end
@@ -1460,6 +1462,15 @@ return function(Vargs, GetEnv)
 				plr.Character = nil
 			end
 			plr.Character = newCharacterModel
+
+			-- Clone StarterCharacterScripts to new character
+			if service.StarterPlayer:FindFirstChild("StarterCharacterScripts") then
+				for _, v in service.StarterPlayer:FindFirstChild("StarterCharacterScripts"):GetChildren() do
+					if v.Archivable then
+						v:Clone().Parent = newCharacterModel
+					end
+				end
+			end
 
 			newCharacterModel:PivotTo(oldCFrame)
 			newCharacterModel.Parent = workspace

@@ -2178,6 +2178,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				service.StopLoop("ChickenSpam")
+				Functions.CleanWorkspace()
 				for _, v in Variables.Objects do
 					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
@@ -2472,8 +2473,10 @@ return function(Vargs, env)
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local newArgs = { "me", args[2] or "2", "true" }
+
 				for i, p in service.GetPlayers(plr, args[1]) do
-					Commands.Fly.Function(p, args, true)
+					Commands.Fly.Function(p, newArgs)
 				end
 			end
 		};
@@ -5377,7 +5380,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
@@ -5398,7 +5401,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
@@ -5420,7 +5423,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local pitch = args[1]
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Pitch=v.Pitch+tonumber(string.sub(args[1], 2))
@@ -5444,7 +5447,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Volume=v.Volume+tonumber(string.sub(args[1], 2))
@@ -5492,7 +5495,7 @@ return function(Vargs, env)
 
 					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					s.Looped = false
 					s.Archivable = false
 
@@ -5578,7 +5581,7 @@ return function(Vargs, env)
 						Functions.Hint(name, service.GetPlayers())
 					end
 
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
@@ -5602,11 +5605,11 @@ return function(Vargs, env)
 					s.Pitch = pitch
 					s.Looped = looped
 					s.Archivable = false
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
@@ -5622,7 +5625,7 @@ return function(Vargs, env)
 			Description = "Stop the currently playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						v:Destroy()
 					end
@@ -5650,10 +5653,10 @@ return function(Vargs, env)
 		Fly = {
 			Prefix = Settings.Prefix;
 			Commands = {"fly", "flight"};
-			Args = {"player", "speed"};
+			Args = {"player", "speed", "noclip? (default: true)"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, noclip: boolean?)
+			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
@@ -5663,7 +5666,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes");
 					Parent = scr;
 				})
 				
@@ -6606,11 +6609,11 @@ return function(Vargs, env)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot", "trainingbot"};
-			Args = {"player", "num", "walk", "attack", "friendly", "health", "speed", "damage"};
+			Args = {"player", "num (max: 50)", "walk", "attack", "friendly", "health", "speed", "damage"};
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2]) and math.min(tonumber(args[2]), 50) or 1
+				local num = tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, 50) or 1
 				local health = tonumber(args[6]) or 100
 				local speed = tonumber(args[7]) or 16
 				local damage = tonumber(args[8]) or 5
