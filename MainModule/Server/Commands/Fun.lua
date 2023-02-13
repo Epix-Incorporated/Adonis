@@ -666,7 +666,7 @@ return function(Vargs, env)
 			Fun = true;
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local scr = Core.NewScript("LocalScript",[[
+				local scr = Core.NewScript("Script",[[
 					repeat
 						task.wait(0.1)
 						local char = script.Parent.Parent
