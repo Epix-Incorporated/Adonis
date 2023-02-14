@@ -892,6 +892,34 @@ return function(Vargs, env)
 				end
 			end
 		};
+		
+		RemoveLayeredClothings = {
+			Prefix = Settings.Prefix;
+			Commands = {"removelayeredclothings"};
+			Args = {"player"};
+			Description = "Remvoes layered clothings from their HumanoidDescription.";
+			AdminLevel = "Moderators";
+			Function = function(plr: Player, args: {string})
+				for _, p in service.GetPlayers(plr, args[1]) do
+					local humanoid: Humanoid? = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						local humanoidDesc: HumanoidDescription = humanoid:GetAppliedDescription()
+						local accessoryBlob = humanoidDesc:GetAccessories(false)
+						
+						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
+							local blobItem = accessoryBlob[i]
+							
+							if (blobItem.IsLayered) then
+								table.remove(accessoryBlob, i)
+							end
+						end
+						
+						humanoidDesc:SetAccessories(accessoryBlob, false)
+						humanoid:ApplyDescription(humanoidDesc, Enum.AssetTypeVerification.Always)
+					end
+				end
+			end
+		};
 
 		PrivateChat = {
 			Prefix = Settings.Prefix;
