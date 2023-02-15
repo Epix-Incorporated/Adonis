@@ -927,7 +927,6 @@ return function(Vargs, GetEnv)
 
 			-- ////////// Compatability for older plugins (before sender and image ares were introduced)
 			if sender ~= nil and typeof(sender) ~= 'Instance' and typeof(sender) ~= 'userdata' and typeof(sender) ~= 'table' then
-				-- error('COMPAT')
 				title = sender
 				message = title
 				players = message
@@ -942,9 +941,6 @@ return function(Vargs, GetEnv)
 
 			if sender and (image == 'HeadShot') then
 				image = `rbxthumb://type=AvatarHeadShot&id={sender.UserId}&w=48&h=48`
-				-- error('SET IMG', image)
-			else
-				-- error('INVALID IMG', image)
 			end
 
 			for _, v in players do
