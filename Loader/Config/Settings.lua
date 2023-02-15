@@ -149,7 +149,7 @@ settings.LocalDatastore = false				 -- If this is turned on, a mock DataStore wi
 settings.Storage = game:GetService("ServerStorage") -- Where things like tools are stored
 settings.RecursiveTools = false					 -- Whether tools that are included in sub-containers within settings.Storage will be available via the :give command (useful if your tools are organized into multiple folders)
 
-settings.Theme = "Default"				-- UI theme;
+settings.Theme = "Modern"				-- UI theme;
 settings.MobileTheme = "Mobilius"		-- Theme to use on mobile devices; Some UI elements are disabled
 settings.DefaultTheme = "Default" -- Theme to be used as a replacement for "Default". The new replacement theme can still use "Default" as its Base_Theme however any other theme that references "Default" as its redirects to this theme.
 
