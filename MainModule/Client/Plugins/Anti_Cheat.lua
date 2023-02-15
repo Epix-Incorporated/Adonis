@@ -214,7 +214,7 @@ return function(Vargs)
 				connection = idledEvent:Connect(function(time)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
-					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
+					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
 						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 					end
 				end)
@@ -231,7 +231,7 @@ return function(Vargs)
 					idleTamper("Userdata disrepencies detected")
 				end
 
-				task.wait(200)
+				task.wait(200 + math.random() * 5)
 				connection:Disconnect()
 
 				if clientHasClosed then
