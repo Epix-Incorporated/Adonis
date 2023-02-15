@@ -675,7 +675,7 @@ return function(Vargs, GetEnv)
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
-					if not functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) then
+					if not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) then
 						Core.SetData(key, data)
 						AddLog(Logs.Script, {
 							Text = "Saved data for ".. p.Name;
