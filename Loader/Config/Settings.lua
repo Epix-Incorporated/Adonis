@@ -355,7 +355,7 @@ settings.ProtectHats = false 				-- Prevents hats from being un-welded from thei
 
 settings.AntiSpeed = true 			-- (Client-Sided) Attempts to detect speed exploits
 settings.AntiBuildingTools = false	-- (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client
-settings.AntiAntiIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit
+settings.AntiAntiIdle = false 		-- (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games
 settings.ExploitGuiDetection = false 		-- (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you)
 
 ---------------------
@@ -505,7 +505,7 @@ descs.ProtectHats = [[ Prevents hats from being un-welded from their characters 
 
 descs.AntiSpeed = [[ (Client-Sided) Attempts to detect speed exploits ]]
 descs.AntiBuildingTools = [[ (Client-Sided) Attempts to detect any HopperBin(s)/Building Tools added to the client ]]
-descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit ]]
+descs.AntiAntiIdle = [[ (Client-Sided) Kick the player if they are using an anti-idle exploit. Highly useful for grinding/farming games ]]
 descs.ExploitGuiDetection = [[ (Client-Sided) If any exploit GUIs are found in the CoreGui the exploiter gets kicked (If you use StarterGui:SetCore("SendNotification") with an image this will kick you) ]]
 
 order = {
