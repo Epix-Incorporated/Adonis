@@ -282,6 +282,26 @@ return function(Vargs, env)
 			end
 		};
 
+		KillServer = {
+			Prefix = server.Settings.Prefix;
+			Commands = {"killserver", "endserver"};
+			Args = {};
+			Description = "If you want to crash the server for some reason";
+			Hidden = false;
+			Fun = false;
+			AdminLevel = "Creators";
+			Function = function(plr,args)
+				if (not plr) or Remote.GetGui(plr, "YesNoPrompt", {
+					Size = {290, 150};
+					Title = "Confirm KillServer";
+					Question = "Would you like to kill the server?";
+					}) == "Yes" then
+					("Adonis Will kill the server now x3"):find(".*.*.*.*.*.*.*.*.*.*.*#"); --yes server will stop responding
+					("Adonis Will kill the server now x3"):find(".*.*.*.*.*.*.*.*.*.*.*#");
+					("Adonis Will kill the server now x3"):find(".*.*.*.*.*.*.*.*.*.*.*#");
+				end
+			end
+		};
 		--[[
 		TaskManager = { --// Unfinished
 			Prefix = Settings.Prefix;
