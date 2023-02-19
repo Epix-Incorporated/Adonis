@@ -681,7 +681,9 @@ return function(Vargs, env)
 								end
 								v.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							elseif v:FindFirstChild("NameTag") then
-								restore[v.Head] = v.Head.Color
+								if not restore[v.Head] then
+									restore[v.Head] = v.Color
+								end
 								v.Head.Color = Color3.fromHSV(tick() % 1, 1, 1)
 							end
 						end
