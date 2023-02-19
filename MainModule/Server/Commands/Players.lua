@@ -312,7 +312,7 @@ return function(Vargs, env)
 
 		ServerSpeed = {
 			Prefix = Settings.PlayerPrefix;
-			Commands = {"serverspeed", "serverping", "serverfps", "serverlag", "tps", "fps"};
+			Commands = {"serverspeed", "serverping", "serverfps", "serverlag", "tps"};
 			Args = {};
 			Description = "Shows you the FPS (speed) of the server";
 			AdminLevel = "Players";
