@@ -566,10 +566,10 @@ return function(Vargs, GetEnv)
 							warn = function(...) local args, str = table.pack(...), "" for i = 1, args.n do str ..= (i > 1 and " " or "") .. tostring(args[i]) end Remote.Terminal.LiveOutput(p, "WARN: "..str) end;
 							error = function(reason, level)
 								if level ~= nil and type(level) ~= "number" then
-									oError(string.format(":: %s :: bad argument #2 to 'error' (number expected, got %s)", AppName, type(level)), 2)
+									oError(string.format("bad argument #2 to 'error' (number expected, got %s)", type(level)), 2)
 								end
 
-								Remote.Terminal.LiveOutput(p, "LUA_ERROR: "..tostring(reason))
+								Remote.Terminal.LiveOutput(p, "LUA_DEMAND_ERROR: "..tostring(reason))
 								oError("Adonis terminal error: "..tostring(reason), (level or 1) + 1)
 							end;
 						})
