@@ -175,6 +175,7 @@ return function(Vargs, env)
 				local userFound = false
 				if not target:find(":") then
 					for _, v in service.GetPlayers(plr, target, {
+						UseFakePlayer = true;
 						DontError = true;
 						})
 					do
