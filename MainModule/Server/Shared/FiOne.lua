@@ -995,25 +995,27 @@ local function exec_lua_func(exst)
 				local base = A + 3
 				local vals
 
+				-- === Luau compatibility - General iteration begin ===
 				-- // ccuser44 added support for generic iteration
-				-- (PLEASE DON'T USE GENERIC ITERATION! This is only for easy compatibility!)
-				if type(func) == "table" and not index and not state then
+				-- (Please don't use general iteration in vanilla Lua code)
+				if not index and not state and type(func) == "table" then
 					-- Hacky check to see if __metatable is locked
 					local canGetMt = pcall(getmetatable, func)
 					local isMtLocked = canGetMt and not pcall(setmetatable, func, getmetatable(func)) or not canGetMt
 					local metatable = canGetMt and getmetatable(func)
 
 					if not (table.isfrozen and table.isfrozen(func)) and isMtLocked and not metatable then
-						warn("[FiOne]: The table has a metatable buts it's hidden, __iter and __close won't work in forloop.")
+						warn("[FiOne]: The table has a metatable buts it's hidden, __iter and __call won't work in forloop.")
 					end
 
-					if type(metatable) == "table" and rawget(metatable, "__close") then
-						-- Edge case where the table has a __close methamethod
+					if type(metatable) == "table" and rawget(metatable, "__call") then
+						-- Edge case where the table has a __call methamethod
 					else
 						func, state, index = (type(metatable) == "table" and rawget(metatable, "__iter") or next), func, nil
 						stack[A], stack[A + 1], stack[A + 2] = func, state, index
 					end
 				end
+				-- === Luau compatibility - General iteration end ===
 
 				stack[base + 2] = index
 				stack[base + 1] = state
