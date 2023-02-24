@@ -1008,9 +1008,7 @@ local function exec_lua_func(exst)
 						warn("[FiOne]: The table has a metatable buts it's hidden, __iter and __call won't work in forloop.")
 					end
 
-					if type(metatable) == "table" and rawget(metatable, "__call") then
-						-- Edge case where the table has a __call methamethod
-					else
+					if not (type(metatable) == "table" and rawget(metatable, "__call")) then
 						func, state, index = (type(metatable) == "table" and rawget(metatable, "__iter") or next), func, nil
 						stack[A], stack[A + 1], stack[A + 2] = func, state, index
 					end
