@@ -3,7 +3,7 @@
 # 📜 Adonis Contribution Guidelines
 *Updated on 2022-06-25 18:35 UTC by Expertcoderz*
 
-<img src="https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png">
+![Logo of Epix Incorporated](https://user-images.githubusercontent.com/81153405/175760639-fc3b2352-8066-48cc-b2e6-2ea0ad69e33e.png")
 
 Adonis is an ever-expanding, frequently updated, slightly complicated, system. To keep Adonis functional and somewhat readable rather than a tangled mess, here are some guidelines in the form of an FAQ to consider before submitting a pull request:
 
@@ -65,11 +65,11 @@ Once in a while after changes are merged, some quick testing will be done by a m
 
 **A:** After your contribution is accepted, post your Discord & ROBLOX usernames into the discussion thread (<https://github.com/Sceleratis/Adonis/discussions/433>). You will be given the "GitHub Contributor" role in the Discord server and the "Contributors" rank in the ROBLOX group (Epix Incorporated) by a maintainer, assuming you are a member of the server and group respectively.
 
-ROBLOX group: https://www.roblox.com/groups/886423
+ROBLOX group: <https://www.roblox.com/groups/886423>
 
-Discord server: https://discord.com/invite/H5RvTP3
+Discord server: <https://discord.com/invite/H5RvTP3>
 
-<hr>
+---
 
 ### That's all, folks!
 
