@@ -21,6 +21,6 @@ Be sure to include the following info in your report:
 
 Adonis Maintainers will investigate each vulnerability report and provide a fix at the earliest possible opportunity where necessary.
 
-<hr>
+---
 
-<sub>Notice anything wrong with this page? Submit an issue [here](https://github.com/Sceleratis/Adonis/issues/new/choose) or discuss it in our official [Discord server](https://discord.com/invite/H5RvTP3).</sub>
+<sub>Notice anything wrong with this page? [Submit an issue](https://github.com/Epix-Incorporated/Adonis/issues/new/choose) or discuss it in our official [Discord server](https://discord.com/invite/H5RvTP3).</sub>
