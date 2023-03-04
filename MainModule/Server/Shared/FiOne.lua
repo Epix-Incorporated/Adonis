@@ -1088,5 +1088,5 @@ function wrap_lua_func(state, env, upvals)
 end
 
 return function(BCode, Env)
-	return wrap_lua_func(stm_lua_bytecode(BCode), Env or getfenv(0))
+	return wrap_lua_func(stm_lua_bytecode(BCode), Env or {})
 end

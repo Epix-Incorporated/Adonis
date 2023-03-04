@@ -15,12 +15,12 @@ Older versions of Adonis are not maintained/updated; hence, we do *not* recommen
 👉 **If the vulnerability is relatively minor and can be safely discussed in public**, create a bug report [on GitHub](https://github.com/Epix-Incorporated/Adonis/issues/new/choose) or in our Discord server.
 
 Be sure to include the following info in your report:
-* when the vulnerability was discovered or first known;
-* what is the potential impact (consequence) of the vulnerability; and
-* how the vulnerability may be exploited.
+* When the vulnerability was discovered or first known;
+* What is the potential impact (consequence) of the vulnerability; and
+* How the vulnerability may be exploited.
 
 Adonis Maintainers will investigate each vulnerability report and provide a fix at the earliest possible opportunity where necessary.
 
-<hr>
+---
 
-<sub>Notice anything wrong with this page? Submit an issue [here](https://github.com/Sceleratis/Adonis/issues/new/choose) or discuss it in our official [Discord server](https://discord.com/invite/H5RvTP3).</sub>
+<sub>Notice anything wrong with this page? [Submit an issue](https://github.com/Epix-Incorporated/Adonis/issues/new/choose) or discuss it in our official [Discord server](https://discord.com/invite/H5RvTP3).</sub>

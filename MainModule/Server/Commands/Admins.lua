@@ -175,6 +175,7 @@ return function(Vargs, env)
 				local userFound = false
 				if not target:find(":") then
 					for _, v in service.GetPlayers(plr, target, {
+						UseFakePlayer = true;
 						DontError = true;
 						})
 					do
@@ -373,12 +374,14 @@ return function(Vargs, env)
 			Description = "Enables/disables server lock";
 			AdminLevel = "Admins";
 			Function = function(plr: Player, args: {string})
-				if not args[1] or (args[1] and (string.lower(args[1]) == "on" or string.lower(args[1]) == "true")) then
+				local arg = args[1] and string.lower(args[1])
+
+				if (not arg and Variables.ServerLock ~= true) or arg == "on" or arg == "true" then
 					Variables.ServerLock = true
-					Functions.Hint("Server Locked", {plr})
-				elseif string.lower(args[1]) == "off" or string.lower(args[1]) == "false" then
+					Functions.Hint("Server Locked", service.Players:GetPlayers())
+				elseif Variables.ServerLock == true or arg == "off" or arg == "false" then
 					Variables.ServerLock = false
-					Functions.Hint("Server Unlocked", {plr})
+					Functions.Hint("Server Unlocked", service.Players:GetPlayers())
 				end
 			end
 		};
@@ -821,6 +824,7 @@ return function(Vargs, env)
 			AdminLevel = "Admins";
 			Hidden = true;
 			NoFilter = true;
+			CrossServerDenied = true;
 			Function = function(plr: Player, args: {string})
 				assert(Settings.CodeExecution, "CodeExecution must be enabled for this command to work")
 				local sb = Variables.ScriptBuilder[tostring(plr.UserId)]
@@ -1104,7 +1108,7 @@ return function(Vargs, env)
 								end
 							end
 						end
-						Core.SavePlayer(v, PlayerData)--v:SaveInstance("Admin Notes", notes)
+						Core.SavePlayer(v, PlayerData)
 					end
 				end
 			end
@@ -1376,7 +1380,6 @@ return function(Vargs, env)
 							reason
 						)
 
-						--Functions.Hint("Trello banned ".. (v and tostring(v.Name) or tostring(v)), {plr})
 						pcall(function() v:Kick(reason) end)
 						Remote.MakeGui(plr, "Notification", {
 							Title = "Notification";

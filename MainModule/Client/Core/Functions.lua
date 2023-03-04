@@ -248,8 +248,8 @@ return function(Vargs, GetEnv)
 			local CurrentCamera = workspace.CurrentCamera
 
 			if ob=='reset' then
-				CurrentCamera.CameraType = 'Custom'
-				CurrentCamera.CameraSubject = service.Player.Character.Humanoid
+				CurrentCamera.CameraType = Enum.CameraType.Custom
+				CurrentCamera.CameraSubject = service.Player.Character:FindFirstChildOfClass("Humanoid")
 				CurrentCamera.FieldOfView = 70
 			else
 				CurrentCamera.CameraSubject = ob
@@ -309,7 +309,7 @@ return function(Vargs, GetEnv)
 					else
 						rot -= math.rad(speed*dt)
 					end
-					cam.CoordinateFrame *= CFrame.Angles(0, 0.00, rot)
+					cam.CFrame *= CFrame.Angles(0, 0.00, rot)
 					last = time()
 				end)
 			end
@@ -1095,7 +1095,7 @@ return function(Vargs, GetEnv)
 			end
 		end;
 
-		BrickBlur = function(on,trans,color)
+		BrickBlur = function(on, trans, color)
 			local exists = service.LocalContainer():FindFirstChild("ADONIS_WINDOW_FUNC_BLUR")
 			if exists then exists:Destroy() end
 			if on then
@@ -1106,10 +1106,9 @@ return function(Vargs, GetEnv)
 				pa.Transparency = trans or 0.5
 				pa.CanCollide = false
 				pa.Anchored = true
-				pa.FormFactor = "Custom"
-				pa.Size=Vector3.new(100,100,0)
+				pa.Size = Vector3.new(100,100,0)
 				while pa and pa.Parent and task.wait(1/40) do
-					pa.CFrame = workspace.CurrentCamera.CoordinateFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
+					pa.CFrame = workspace.CurrentCamera.CFrame*CFrame.new(0,0,-2.5)*CFrame.Angles(12.6,0,0)
 				end
 			else
 				for _, v in workspace.CurrentCamera:GetChildren() do
@@ -1132,7 +1131,9 @@ return function(Vargs, GetEnv)
 			Variables.localSounds[tostring(audioId)] = sound
 			sound:Play()
 			task.wait(1)
-			repeat task.wait(0.1) until not sound.IsPlaying
+			if sound.IsPlaying == true then
+				sound.Ended:Wait()
+			end
 			sound:Destroy()
 			Variables.localSounds[tostring(audioId)] = nil
 		end;
@@ -1214,7 +1215,7 @@ return function(Vargs, GetEnv)
 				p.CanCollide = false
 				p.TopSurface = 0
 				p.BottomSurface = 0
-				if type(color)=="table" then
+				if type(color) == "table" then
 					color = Color3.new(color[1],color[2],color[3])
 				end
 				p.BrickColor = BrickColor.new(color) or BrickColor.new("White")
@@ -1227,7 +1228,6 @@ return function(Vargs, GetEnv)
 					dec.Texture = "http://www.roblox.com/asset/?id="..decal
 					dec.Transparency=0
 				end
-				p.formFactor = "Custom"
 				p.Size = Vector3.new(.2,.2,.2)
 				local msh = service.New("BlockMesh", p)
 				msh.Scale = Vector3.new(9,17.5,.5)

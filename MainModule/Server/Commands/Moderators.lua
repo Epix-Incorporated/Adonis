@@ -180,11 +180,6 @@ return function(Vargs, env)
 						Time = math.round(num);
 					})
 				end
-				--for i = num, 1, -1 do
-				--Functions.Message("Countdown", tostring(i), service.Players:GetPlayers(), false, 1.1)
-				--Functions.Message(" ", i, false, service.Players:GetPlayers(), 0.8)
-				--wait(1)
-				--end
 			end
 		};
 
@@ -700,7 +695,6 @@ return function(Vargs, env)
 									Name = "Adonis_Water";
 									Anchored = true;
 									CanCollide = false;
-									FormFactor = "Custom";
 									TopSurface = "Smooth";
 									BottomSurface = "Smooth";
 									Size = Vector3.new(0.2, 0.2, 0.2);
@@ -1477,7 +1471,6 @@ return function(Vargs, env)
 						BrickColor = BrickColor.new("Really black");
 						CanCollide = false;
 						Locked = true;
-						FormFactor = "Custom";
 						Size = Vector3.new(1, 1, 1);
 						TopSurface = "Smooth";
 						BottomSurface = "Smooth";
@@ -2031,7 +2024,7 @@ return function(Vargs, env)
 				local responses = {}
 				local voteKey = "ADONISVOTE".. math.random();
 				local players = service.GetPlayers(plr, args[1])
-				local startTime = os.time();
+				local startTime = os.clock();
 
 				local function voteUpdate()
 					local total = #responses
@@ -2041,15 +2034,15 @@ return function(Vargs, env)
 						"Question: "..question;
 						"Total Responses: "..total;
 						"Didn't Vote: "..#players-total;
-						"Time Left: ".. math.max(0, 120 - (os.time()-startTime));
+						"Time Left: ".. math.max(0, 120 - (os.clock()-startTime));
 					}
 
-					for i, v in responses do
+					for _, v in responses do
 						if not results[v] then results[v] = 0 end
 						results[v] += 1
 					end
 
-					for i, v in anstab do
+					for _, v in anstab do
 						local ans = v
 						local num = results[v]
 						local percent
@@ -2094,57 +2087,6 @@ return function(Vargs, env)
 				})
 
 				delay(120, function() Logs.TempUpdaters[voteKey] = nil end)
-				--[[
-				if not answers then
-					anstab = {"Yes", "No"}
-				else
-					for ans in answers:gmatch("([^,]+)") do
-						table.insert(anstab, ans)
-					end
-				end
-
-				local responses = {}
-				local players = service.GetPlayers(plr, args[1])
-
-				for i, v in players do
-					Routine(function()
-						local response = Remote.GetGui(v, "Vote", {Question = question; Answers = anstab;})
-						if response then
-							table.insert(responses, response)
-						end
-					end)
-				end
-
-				local t = 0
-				repeat wait(0.1) t=t+0.1 until t>=60 or #responses>=#players
-
-				local results = {}
-
-				for i, v in responses do
-					if not results[v] then results[v] = 0 end
-					results[v] = results[v]+1
-				end
-
-				local total = #responses
-				local tab = {
-					"Question: "..question;
-					"Total Responses: "..total;
-					"Didn't Vote: "..#players-total;
-				}
-				for i, v in anstab do
-					local ans = v
-					local num = results[v]
-					local percent
-					if not num then
-						num = 0
-						percent = 0
-					else
-						percent = math.floor((num/total)*100)
-					end
-
-					table.insert(tab, {Text=ans.." | "..percent.."% - "..num.."/"..total, Desc="Number: "..num.."/"..total.." | Percent: "..percent})
-				end
-				Remote.MakeGui(plr, "List", {Title = "Results"; Tab = tab;})--]]
 			end
 		};
 
@@ -2187,7 +2129,7 @@ return function(Vargs, env)
 				for i, v in service.GetPlayers(plr, args[1]) do
 					local Dropper = v:FindFirstChildOfClass("PlayerGui") or v:FindFirstChildOfClass("Backpack")
 					if Dropper then
-						local piano = Deps.Assets.Piano:clone()
+						local piano = Deps.Assets.Piano:Clone()
 						piano.Parent = Dropper
 						piano.Disabled = false
 					end
@@ -2234,6 +2176,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				service.StopLoop("ChickenSpam")
+				Functions.CleanWorkspace()
 				for _, v in Variables.Objects do
 					if v.ClassName == "Script" or v.ClassName == "LocalScript" then
 						v.Disabled = true
@@ -2528,8 +2471,10 @@ return function(Vargs, env)
 			Description = "Flying noclip";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
+				local newArgs = { "me", args[2] or "2", "true" }
+
 				for i, p in service.GetPlayers(plr, args[1]) do
-					Commands.Fly.Function(p, args, true)
+					Commands.Fly.Function(p, newArgs)
 				end
 			end
 		};
@@ -3503,7 +3448,7 @@ return function(Vargs, env)
 
 
 							-- Check if partInput is a table
-							if typeof(partInput) == "table" then
+							if type(partInput) == "table" then
 								local hash = {}
 
 								-- Check for duplicates
@@ -5433,7 +5378,7 @@ return function(Vargs, env)
 			Description = "Pauses the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == false then
 							v:Pause()
@@ -5454,7 +5399,7 @@ return function(Vargs, env)
 			Description = "Resumes the current playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string}, data: {})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if v.IsPaused == true then
 							v:Resume()
@@ -5476,7 +5421,7 @@ return function(Vargs, env)
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
 				local pitch = args[1]
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Pitch=v.Pitch+tonumber(string.sub(args[1], 2))
@@ -5500,7 +5445,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local volume = tonumber(args[1])
 				assert(volume, "Volume must be a valid number")
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						if string.sub(args[1], 1, 1) == "+" then
 							v.Volume=v.Volume+tonumber(string.sub(args[1], 2))
@@ -5548,7 +5493,7 @@ return function(Vargs, env)
 
 					local s = service.New("Sound")
 					s.Name = "ADONIS_SOUND"
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					s.Looped = false
 					s.Archivable = false
 
@@ -5634,7 +5579,7 @@ return function(Vargs, env)
 						Functions.Hint(name, service.GetPlayers())
 					end
 
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							if v.IsPaused == true then
 								local ans,event = Remote.GetGui(plr, "YesNoPrompt", {
@@ -5658,11 +5603,11 @@ return function(Vargs, env)
 					s.Pitch = pitch
 					s.Looped = looped
 					s.Archivable = false
-					s.Parent = workspace
+					s.Parent = service.SoundService
 					wait(0.5)
 					s:Play()
 				elseif id == "off" or id == "0" then
-					for i, v in workspace:GetChildren() do
+					for i, v in service.SoundService:GetChildren() do
 						if v.ClassName == "Sound" and v.Name == "ADONIS_SOUND" then
 							v:Destroy()
 						end
@@ -5678,7 +5623,7 @@ return function(Vargs, env)
 			Description = "Stop the currently playing song";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				for i, v in workspace:GetChildren() do
+				for i, v in service.SoundService:GetChildren() do
 					if v.Name=="ADONIS_SOUND" then
 						v:Destroy()
 					end
@@ -5706,10 +5651,10 @@ return function(Vargs, env)
 		Fly = {
 			Prefix = Settings.Prefix;
 			Commands = {"fly", "flight"};
-			Args = {"player", "speed"};
+			Args = {"player", "speed", "noclip? (default: true)"};
 			Description = "Lets the target player(s) fly";
 			AdminLevel = "Moderators";
-			Function = function(plr: Player, args: {string}, noclip: boolean?)
+			Function = function(plr: Player, args: {string})
 				local speed = tonumber(args[2]) or 2
 				local scr = Deps.Assets.Fly:Clone()
 				local sVal = service.New("NumberValue", {
@@ -5719,7 +5664,7 @@ return function(Vargs, env)
 				})
 				local NoclipVal = service.New("BoolValue", {
 					Name = "Noclip";
-					Value = noclip or false;
+					Value = args[3] and (string.lower(args[3]) == "true" or string.lower(args[3]) == "yes");
 					Parent = scr;
 				})
 				
@@ -6662,11 +6607,11 @@ return function(Vargs, env)
 		Bots = {
 			Prefix = Settings.Prefix;
 			Commands = {"bot", "trainingbot"};
-			Args = {"player", "num", "walk", "attack", "friendly", "health", "speed", "damage"};
+			Args = {"player", "num (max: 50)", "walk", "attack", "friendly", "health", "speed", "damage"};
 			Description = "AI bots made for training; ':bot scel 5 true true'";
 			AdminLevel = "Moderators";
 			Function = function(plr: Player, args: {string})
-				local num = tonumber(args[2]) and math.min(tonumber(args[2]), 50) or 1
+				local num = tonumber(args[2]) and math.clamp(tonumber(args[2]), 1, 50) or 1
 				local health = tonumber(args[6]) or 100
 				local speed = tonumber(args[7]) or 16
 				local damage = tonumber(args[8]) or 5

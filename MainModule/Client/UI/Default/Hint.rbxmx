@@ -268,9 +268,8 @@ return function(data, env)
 	
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
-	local topbar = client.UI.Get("TopBar")
-	
-	container.Position = UDim2.new(0,0,0,((notif and 30) or 0) + ((topbar and 40) or 0) - 35)
+	container.IgnoreGuiInset, container.ClipToDeviceSafeArea = not client.Variables.TopBarShift, true
+	container.Position = UDim2.new(0, 0, 0, (notif and 30 or 0))
 	
 	local children = container:GetChildren()
 	

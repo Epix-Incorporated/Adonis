@@ -36,9 +36,83 @@ return function(Vargs, GetEnv)
 		AddLog = Logs.AddLog;
 
 		TrackTask("Thread: ChatServiceHandler", function()
+
+			--// Support for modern TextChatService
+			if service.TextChatService and service.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService and Settings.OverrideChatCallbacks then
+				local function onNewTextchannel(textchannel)
+					textchannel.ShouldDeliverCallback = function(chatMessage, textSource)
+						if
+							chatMessage.Status == Enum.TextChatMessageStatus.Success
+							or chatMessage.Status == Enum.TextChatMessageStatus.Sending
+						then
+							local player = service.Players:GetPlayerByUserId(textSource.UserId)
+							local slowCache = Admin.SlowCache
+
+							if not player then
+								return true
+							end
+
+							-- // Hide chat commands?
+							if Admin.DoHideChatCmd(player, chatMessage.Text) then
+								return false
+							end
+
+							-- // Mute handler
+							if Admin.IsMuted(player) then
+								Remote.MakeGui(player, "Notification", {
+									Title = "You are muted!";
+									Message = "You are muted and cannot talk in the chat right now.";
+									Time = 10;
+								})
+
+								return false
+							elseif Admin.SlowMode and not Admin.CheckAdmin(player) and slowCache[player] and os.time() - slowCache[player] < Admin.SlowMode then
+								Remote.MakeGui(player, "Notification", {
+									Title = "You are chatting too fast!";
+									Message = string.format("[Adonis] :: Slow mode enabled! (%g second(s) remaining)", Admin.SlowMode - (os.time() - slowCache[player]));
+									Time = 10;
+								})
+
+								return false
+							end
+
+							if Admin.SlowMode then
+								slowCache[player] = os.time()
+							end
+						end
+
+						return true
+					end
+				end
+
+				local function onTextChannelsAdded(textChannels)
+					for _, v in textChannels:GetChildren() do
+						if v:IsA("TextChannel") then
+							task.spawn(onNewTextchannel, v)
+						end
+					end
+
+					textChannels.ChildAdded:Connect(function(child)
+						if child:IsA("TextChannel") then
+							task.spawn(onNewTextchannel, child)
+						end
+					end)
+				end
+
+				if service.TextChatService:FindFirstChild("TextChannels") then
+					task.spawn(pcall, onTextChannelsAdded, service.TextChatService:FindFirstChild("TextChannels"))
+				end
+
+				service.TextChatService.ChildAdded:Connect(function(child)
+					if child.Name == "TextChannels" then
+						task.spawn(onTextChannelsAdded, child)
+					end
+				end)
+			end
+
+			--// Support for legacy Lua chat system
 			--// ChatService mute handler (credit to Coasterteam)
 			local chatService = Functions.GetChatService()
-
 			if chatService then
 				chatService:RegisterProcessCommandsFunction("ADONIS_CMD", function(speakerName, message)
 					local speaker = chatService:GetSpeaker(speakerName)
@@ -477,7 +551,7 @@ return function(Vargs, GetEnv)
 					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
-					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
+					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
 						return true
 					end
 
@@ -650,7 +724,7 @@ return function(Vargs, GetEnv)
 					return true
 				end
 
-				if p.UserId == -1 then --// To account for player emulators in multi-client Studio tests
+				if p.UserId == -1 and Variables.IsStudio then --// To account for player emulators in multi-client Studio tests
 					return true
 				end
 			end
@@ -939,7 +1013,7 @@ return function(Vargs, GetEnv)
 				if cName then
 					if string.lower(cName) == string.lower(name) then
 						return true
-					elseif id and cId and id == cId then
+					elseif id and cId and id == tonumber(cId) then
 						return true
 					end
 				else

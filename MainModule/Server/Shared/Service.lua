@@ -20,7 +20,7 @@ local methods = setmetatable({}, {
 					RealMethods[class][index] = obj[index]
 				end
 
-				if RealMethods[class][index] ~= obj[index] then --or pcall(function() return coroutine.create(obj[index]) end) then
+				if RealMethods[class][index] ~= obj[index] then
 					if ErrorHandler then
 						ErrorHandler("MethodError", debug.traceback() .. " || Cached method doesn't match found method: "..tostring(index), "Method: "..tostring(index), index)
 					end
@@ -221,12 +221,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 
-		ForEach = function(tab, func)
-			for i,v in tab do
-				func(tab, i, v)
-			end
-		end;
-
 		WrapEventArgs = function(tab)
 			local Wrap = service.Wrap
 
@@ -261,17 +255,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 				local WrapArgs = service.WrapEventArgs
 				local UnWrapArgs = service.UnWrapEventArgs
 				local event = Wrap(service.New("BindableEvent"), main)
-
-				--// Unused
-				--[[
-				local hooks = {}
-
-				event.Event:Connect(function(...)
-					for i,v in hooks do
-						return v.Function(...)
-					end
-				end)
-				]]
 
 				event:SetSpecial("Wait", function(i, timeout)
 					local special = math.random()
@@ -1219,9 +1202,9 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			return 0
 		end,
 
-		MaxLen = function(message,length)
-			if #message>length then
-				return message:sub(1,length).."..."
+		MaxLen = function(message, length)
+			if string.len(message) > length then
+				return string.sub(message, 1, length).."..."
 			else
 				return message
 			end
@@ -1396,7 +1379,6 @@ return function(errorHandler, eventChecker, fenceSpecific, env)
 			end
 		end;
 		OrigRawEqual = rawequal;
-		ForEach = function(tab, func) for i,v in tab do func(tab,i,v) end return tab end;
 		HasItem = function(obj, prop) return pcall(function() return obj[prop] end) end;
 		IsDestroyed = function(object)
 			if type(object) == "userdata" and service.HasItem(object, "Parent") then

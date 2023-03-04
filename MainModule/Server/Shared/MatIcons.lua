@@ -1,8 +1,9 @@
 --[[
 	════════════════════════════════════════════
-	Material Icons Collection for ROBLOX
+	Material Icons Collection for Roblox
 		Uploaded painstakingly by @Expertcoderz
-		Sourced from:
+		Images are licensed under Apache 2.0 license
+		Sourced from Google LLC:
 			https://fonts.google.com/icons
 			('Sharp' style, white colored)
 	════════════════════════════════════════════

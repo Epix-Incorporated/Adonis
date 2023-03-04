@@ -331,7 +331,7 @@ return function(Vargs, env)
 						)
 						model.Name = targetName
 
-						local hum = model:WaitForChild("Humanoid")
+						local hum = model:FindFirstChildOfClass("Humanoid") or model:WaitForChild("Humanoid")
 						hum:WaitForChild("BodyHeightScale").Value /= 2
 						hum:WaitForChild("BodyDepthScale").Value /= 2
 						hum:WaitForChild("BodyWidthScale").Value /= 2
@@ -479,7 +479,7 @@ return function(Vargs, env)
 					Variables.ZaWarudoDebounce = true
 					task.delay(10, function() Variables.ZaWarudoDebounce = false end)
 					if Variables.ZaWarudo then
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://676242549"
 						audio.Volume = 0.5
 						audio:Play()
@@ -497,7 +497,7 @@ return function(Vargs, env)
 							old:Destroy()
 						end
 
-						local audio = workspace:FindFirstChild("ADONIS_CLOCK_AUDIO")
+						local audio = service.SoundService:FindFirstChild("ADONIS_CLOCK_AUDIO")
 						if audio then
 							audio:Stop()
 							audio:Destroy()
@@ -508,7 +508,7 @@ return function(Vargs, env)
 						Variables.ZaWarudo = false
 						audio:Destroy()
 					else
-						local audio = service.New("Sound", workspace)
+						local audio = service.New("Sound", service.SoundService)
 						audio.SoundId = "rbxassetid://274698941"
 						audio.Volume = 10
 						audio:Play()
@@ -529,7 +529,7 @@ return function(Vargs, env)
 						end
 
 						audio:Destroy()
-						local clock = service.New("Sound", workspace)
+						local clock = service.New("Sound", service.SoundService)
 						clock.Name = "ADONIS_CLOCK_AUDIO"
 						clock.SoundId = "rbxassetid://160189066"
 						clock.Looped = true
@@ -1284,12 +1284,19 @@ return function(Vargs, env)
 								p.CameraMaxZoomDistance = 0.5
 
 								local gui = Instance.new("ScreenGui")
+								gui.IgnoreGuiInset = true
+								gui.ClipToDeviceSafeArea = true
+								gui.ResetOnSpawn = false
+								gui.AutoLocalize = false
+								gui.SelectionGroup = false
 								gui.Parent = service.ReplicatedStorage
 								local bg = Instance.new("Frame")
+								bg.Selectable = false
+								bg.AnchorPoint = Vector2.new(0.5, 0.5)
 								bg.BackgroundTransparency = 0
 								bg.BackgroundColor3 = Color3.new(0, 0, 0)
 								bg.Size = UDim2.new(2, 0, 2, 0)
-								bg.Position = UDim2.new(-0.5, 0,-0.5, 0)
+								bg.Position = UDim2.new(0, 0, 0, 0)
 								bg.Parent = gui
 								if p and p.Parent == service.Players then service.TeleportService:Teleport(6806826116, p, nil, bg) end
 								task.wait(0.5)
@@ -1554,9 +1561,14 @@ return function(Vargs, env)
 						local gui = service.New("ScreenGui", {
 							Parent = service.ReplicatedStorage;
 							IgnoreGuiInset = true;
+							AutoLocalize = false;
+							ClipToDeviceSafeArea = true;
+							ResetOnSpawn = false;
+							SelectionGroup = false;
 						})
 						local bg = service.New("Frame", {
 							Parent = gui;
+							Selectable = false;
 							BackgroundTransparency = 0;
 							BackgroundColor3 = Color3.new(0, 0, 0);
 							Size = UDim2.fromScale(1, 1);
@@ -1647,7 +1659,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
-					--local tornado = deps.Tornado:clone()
+					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
 					local cl = Core.NewScript("Script",[[
@@ -1750,7 +1762,6 @@ return function(Vargs, env)
 							Name = "ADONIS_NUKE";
 							Anchored = true;
 							CanCollide = false;
-							formFactor = "Symmetric";
 							Shape = "Ball";
 							Size = Vector3.new(1, 1, 1);
 							Position = human.Position;
@@ -1988,7 +1999,7 @@ return function(Vargs, env)
 									end)
 									--]]
 							task.wait(5)
-							BodyVelocity:remove()
+							BodyVelocity:Destroy()
 							if knownchar.Parent then
 								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
@@ -2146,7 +2157,7 @@ return function(Vargs, env)
 						Routine(function()
 							repeat
 								task.wait(0.15)
-								v.Character.Humanoid.Health = v.Character.Humanoid.Health-1
+								v.Character:FindFirstChildOfClass("Humanoid"):TakeDamage(1)
 								local p = service.New("Part", v.Character)
 								p.CanCollide = false
 								local color = math.random(1, 3)
@@ -2216,7 +2227,7 @@ return function(Vargs, env)
 						local lleg = v.Character:FindFirstChild("Left Leg")
 						local rleg = v.Character:FindFirstChild("Right Leg")
 						local head = v.Character:FindFirstChild("Head")
-						local hum=v.Character:FindFirstChild("Humanoid")
+						local hum=v.Character:FindFirstChildOfClass("Humanoid")
 						if torso and larm and rarm and lleg and rleg and head and hum and not v.Character:FindFirstChild("Adonis_Poisoned") then
 							local poisoned = service.New("BoolValue", v.Character)
 							poisoned.Name = "Adonis_Poisoned"
@@ -2237,7 +2248,7 @@ return function(Vargs, env)
 							coroutine.wrap(function() wait(10) run = false end)()
 							repeat
 								task.wait(1)
-								hum.Health = hum.Health-5
+								hum:TakeDamage(5)
 							until (not poisoned) or (not poisoned.Parent) or (not run)
 							if poisoned and poisoned.Parent then
 								torso.BrickColor = tor
@@ -2516,7 +2527,9 @@ return function(Vargs, env)
 							s.Color = BrickColor.new(0, 0, 0)
 							v.Transparency = 1
 							m.Head.Transparency = 0
-							m.Head.Mesh:Remove()
+							if m.head:FindFirstChild("Mesh") then
+								m.Head.Mesh:Destroy()
+							end
 							local b = service.New("SpecialMesh")
 							b.Parent = m.Head
 							b.MeshType = "Sphere"
@@ -2543,7 +2556,6 @@ return function(Vargs, env)
 							local hole = service.New("Part", player.Character)
 							hole.Anchored = true
 							hole.CanCollide = false
-							hole.formFactor = Enum.FormFactor.Custom
 							hole.Size = Vector3.new(10, 1, 10)
 							hole.CFrame = torso.CFrame * CFrame.new(0,-3.3,-3)
 							hole.BrickColor = BrickColor.new("Really black")
@@ -2627,13 +2639,13 @@ return function(Vargs, env)
 						part1.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 15, 0)
 						part1.Rotation = Vector3.new(0.359, 1.4, -14.361)
 						task.wait()
-						local part2 = part1:clone()
+						local part2 = part1:Clone()
 						part2.Parent = zeus
 						part2.Size = Vector3.new(1, 7.48, 2)
 						part2.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 7.5, 0)
 						part2.Rotation = Vector3.new(77.514, -75.232, 78.051)
 						task.wait()
-						local part3 = part1:clone()
+						local part3 = part1:Clone()
 						part3.Parent = zeus
 						part3.Size = Vector3.new(1.86, 7.56, 1)
 						part3.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 1, 0)
@@ -2681,27 +2693,26 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				local scr = Deps.Assets.Spinner:Clone()
 				scr.Name = "SPINNER"
+				local spinGryoAttachment = service.New("Attachment")
+				spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
+				local spinGryo = service.New("AlignOrientation")
+				spinGryo.Name = "ADONIS_SPIN_GYRO"
+				spinGryo.MaxTorque = math.huge
+				spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
 				for _, v in service.GetPlayers(plr, args[1]) do
 					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						for _, q in v.Character.HumanoidRootPart:GetChildren() do
-							if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
-								q:Destroy()
-							end
+						local humanoidRootPart = v.Character.HumanoidRootPart
+						for _, q in humanoidRootPart:GetChildren() do
+						if q.Name == "SPINNER" or q.Name == "ADONIS_SPIN_GYRO" or q.Name == "ADONIS_SPIN_GYRO_ATTACHMENT" then
+							q:Destroy()
 						end
-						local spinGryoAttachment: Attachment = service.New("Attachment")
-						local spinGryo: AlignOrientation = service.New("AlignOrientation")
-
-						spinGryoAttachment.Name = "ADONIS_SPIN_GYRO_ATTACHMENT"
-						spinGryoAttachment.Parent = v.Character.HumanoidRootPart
-
-						spinGryo.Name = "ADONIS_SPIN_GYRO"
+						end
+						spinGryoAttachment.Parent = humanoidRootPart
 						spinGryo.Attachment0 = spinGryoAttachment
-						spinGryo.MaxTorque = math.huge
-						spinGryo.Mode = Enum.OrientationAlignmentMode.OneAttachment
-						spinGryo.CFrame = v.Character.HumanoidRootPart.CFrame
-						spinGryo.Parent = v.Character.HumanoidRootPart
+						spinGryo.CFrame = humanoidRootPart.CFrame
+						spinGryo.Parent = humanoidRootPart
 						local new = scr:Clone()
-						new.Parent = v.Character.HumanoidRootPart
+						new.Parent = humanoidRootPart
 						new.Disabled = false
 					end
 				end
@@ -2771,7 +2782,6 @@ return function(Vargs, env)
 							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
 							local st = service.New("Seat", {
 								Name = "Adonis_Torso",
-								FormFactor = 0,
 								TopSurface = 0,
 								BottomSurface = 0,
 								Size = Vector3.new(3, 1, 4),
@@ -3030,7 +3040,7 @@ return function(Vargs, env)
 				decal1.Face = "Left"
 				decal1.Texture = "http://www.roblox.com/asset/?id=332277963"
 				decal1.Name = "Nyan"
-				local decal2=decal1:clone()
+				local decal2=decal1:Clone()
 				decal2.Face = "Right"
 				decal2.Texture = "http://www.roblox.com/asset/?id=332288373"
 
@@ -3056,8 +3066,21 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					c2:Clone().Parent = decal2
@@ -3116,8 +3139,21 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
@@ -3162,10 +3198,14 @@ return function(Vargs, env)
 
 				cl.Name = "Animator"
 
-				for i, v in service.GetPlayers(plr, args[1]) do
-					for k, p in v.Character.HumanoidRootPart:GetChildren() do
-						if p:IsA("Decal") or p:IsA("Sound") then
-							p:Destroy()
+				for _, v in service.GetPlayers(plr, args[1]) do
+					local humRootPart = v.Character and v.Character:FindFirstChild("HumanoidRootPart")
+					if not humRootPart then
+						continue
+					end
+					for _, c in humRootPart:GetChildren() do
+						if c:IsA("Decal") or c:IsA("Sound") then
+							c:Destroy()
 						end
 					end
 
@@ -3177,16 +3217,29 @@ return function(Vargs, env)
 					Admin.RunCommand(Settings.Prefix.."removehats", v.Name)
 					Admin.RunCommand(Settings.Prefix.."invisible", v.Name)
 
-					v.Character.Head.Transparency = 0.9
-					v.Character.Head.Mesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					local head = v.Character:FindFirstChild("Head")
+					local headMesh = head:FindFirstChild("Mesh")
+					if headMesh then
+						head.Transparency = 0.9
+						headMesh.Scale = Vector3.new(0.01, 0.01, 0.01)
+					else
+						head.Transparency = 1
+						for _, c in head:GetChildren() do
+							if c:IsA("Decal") then
+								c.Transparency = 1
+							elseif c:IsA("LayerCollector") then
+								c.Enabled = false
+							end
+						end
+					end
 
 					cl:Clone().Parent = decal1
 					cl:Clone().Parent = decal2
 
-					decal1.Parent = v.Character.HumanoidRootPart
-					decal2.Parent = v.Character.HumanoidRootPart
-					sound.Parent = v.Character.HumanoidRootPart
-					mesh.Parent = v.Character.HumanoidRootPart
+					decal1.Parent = humRootPart
+					decal2.Parent = humRootPart
+					sound.Parent = humRootPart
+					mesh.Parent = humRootPart
 
 					decal1.Animator.Disabled = false
 					decal2.Animator.Disabled = false
@@ -3325,7 +3378,7 @@ return function(Vargs, env)
 							Rotation = NumberRange.new(0, 359);
 							RotSpeed = NumberRange.new(-90, 90);
 							Rate = 11;
-							VelocitySpread = 180;
+							SpreadAngle = Vector2.new(-180, 180);
 							Color = ColorSequence.new(startc, endc);
 						})
 					end
@@ -3383,7 +3436,6 @@ return function(Vargs, env)
 									v.C1 = CFrame.new(unpack(c1))
 
 									if p1.Name ~= "Head" and p1.Name ~= "Torso" then
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 									elseif p1.Name ~= "Torso" then
 										p1.Anchored = true
@@ -3394,7 +3446,6 @@ return function(Vargs, env)
 											end
 										end
 
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 
 										for _, m in p1:GetChildren() do
@@ -3430,7 +3481,6 @@ return function(Vargs, env)
 
 						size(char)
 
-						torso.formFactor = 3
 						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
 
 						for i, v in welds do
@@ -3532,37 +3582,31 @@ return function(Vargs, env)
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
-							torso.FormFactor = "Custom"
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=v.Character.HumanoidRootPart
 							weld.C0=v.Character.HumanoidRootPart.CFrame
-							head.FormFactor = "Custom"
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=head
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0)
-							larm.FormFactor = "Custom"
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=larm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0)
-							rarm.FormFactor = "Custom"
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=rarm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0)
-							lleg.FormFactor = "Custom"
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=lleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5, 0)
-							rleg.FormFactor = "Custom"
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
@@ -4198,7 +4242,6 @@ return function(Vargs, env)
 							--ice.CanCollide = false
 							ice.TopSurface = "Smooth"
 							ice.BottomSurface = "Smooth"
-							ice.FormFactor = "Custom"
 							ice.Size = Vector3.new(5, 6, 5)
 							ice.Transparency = 0.3
 							ice.CFrame = v.Character.HumanoidRootPart.CFrame

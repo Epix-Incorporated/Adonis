@@ -37,6 +37,7 @@ local CORE_LOADING_ORDER = table.freeze {
 --//   Say hi to people reading the script
 --//   ...
 --//   "Hi." - Me
+--//	Your mom
 
 --// Holiday roooaaAaaoooAaaooOod
 local _G, game, script, getfenv, setfenv, workspace,
@@ -77,7 +78,6 @@ local SERVICES_WE_USE = table.freeze {
 	"StarterPack";
 	"StarterPlayer";
 	"GroupService";
-	"MarketplaceService";
 	"MarketplaceService";
 	"TestService";
 	"HttpService";
@@ -126,7 +126,6 @@ local logError = function(plr, err)
 	end
 end
 
---local message = function(...) local Str = "" game:GetService("TestService"):Message(Str) end
 local print = function(...)
 	print(":: Adonis ::", ...)
 end
@@ -134,16 +133,6 @@ end
 local warn = function(...)
 	warn(":: Adonis ::", ...)
 end
-
---[[
-local require = function(mod, ...)
-	if mod and tonumber(mod) then
-		warn("Requiring Module by ID; Expand for module URL > ", {URL = "https://www.roblox.com/library/".. moduleId})
-	end
-
-	return require(mod, ...)
-end
---]]
 
 local function CloneTable(tab, recursive)
 	local clone = table.clone(tab)
@@ -308,12 +297,6 @@ local function CleanUp()
 		pcall(server.Core.DisconnectEvent)
 	end
 
-	--[[delay(0, function()
-		for i,v in next,server do
-			server[i] = nil; --// Try to break it to prevent any potential hanging issues; Not very graceful...
-		end
-	--end)--]]
-
 	warn("Unloading complete")
 end;
 
@@ -354,10 +337,8 @@ service = require(Folder.Shared.Service)(function(eType, msg, desc, ...)
 			})
 		end
 	elseif eType == "ServerError" then
-		--print("Server error")
 		logError("Server", msg)
 	elseif eType == "TaskError" then
-		--print("Task error")
 		logError("Task", msg)
 	end
 end, function(c, parent, tab)
@@ -606,7 +587,6 @@ return service.NewProxy({
 
 		--// Require some dependencies
 		server.Typechecker = require(server.Shared.Typechecker)
-		server.Threading = require(server.Deps.ThreadHandler)
 		server.Changelog = require(server.Shared.Changelog)
 		server.Credits = require(server.Shared.Credits)
 		do
