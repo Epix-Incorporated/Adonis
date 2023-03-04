@@ -1285,7 +1285,7 @@ return function(Vargs, env)
 
 								local gui = Instance.new("ScreenGui")
 								gui.IgnoreGuiInset = true
-								gui.ScreenInsets = Enum.ScreenInsets.None
+								gui.ClipToDeviceSafeArea = true
 								gui.ResetOnSpawn = false
 								gui.AutoLocalize = false
 								gui.SelectionGroup = false
@@ -1562,7 +1562,7 @@ return function(Vargs, env)
 							Parent = service.ReplicatedStorage;
 							IgnoreGuiInset = true;
 							AutoLocalize = false;
-							ScreenInsets = Enum.ScreenInsets.None;
+							ClipToDeviceSafeArea = true;
 							ResetOnSpawn = false;
 							SelectionGroup = false;
 						})
