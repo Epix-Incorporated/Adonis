@@ -551,7 +551,7 @@ return function(Vargs, GetEnv)
 					return gamepassId and service.CheckPassOwnership(plr, gamepassId)
 				else
 					local username, userId = string.match(check, "^(.*):(.*)")
-					if username and userId and (plr.UserId == userId or string.lower(plr.Name) == string.lower(username)) then
+					if username and userId and (plr.UserId == tonumber(userId) or string.lower(plr.Name) == string.lower(username)) then
 						return true
 					end
 
@@ -1013,7 +1013,7 @@ return function(Vargs, GetEnv)
 				if cName then
 					if string.lower(cName) == string.lower(name) then
 						return true
-					elseif id and cId and id == cId then
+					elseif id and cId and id == tonumber(cId) then
 						return true
 					end
 				else
