@@ -1659,7 +1659,7 @@ return function(Vargs, env)
 					p.Anchored = true
 					p.CanCollide = false
 					p.Archivable = false
-					--local tornado = deps.Tornado:clone()
+					--local tornado = deps.Tornado:Clone()
 					--tornado.Parent = p
 					--tornado.Disabled = false
 					local cl = Core.NewScript("Script",[[
@@ -1762,7 +1762,6 @@ return function(Vargs, env)
 							Name = "ADONIS_NUKE";
 							Anchored = true;
 							CanCollide = false;
-							formFactor = "Symmetric";
 							Shape = "Ball";
 							Size = Vector3.new(1, 1, 1);
 							Position = human.Position;
@@ -2000,7 +1999,7 @@ return function(Vargs, env)
 									end)
 									--]]
 							task.wait(5)
-							BodyVelocity:remove()
+							BodyVelocity:Destroy()
 							if knownchar.Parent then
 								service.New("Explosion", workspace.Terrain).Position = knownchar.HumanoidRootPart.Position
 								knownchar:BreakJoints()
@@ -2529,7 +2528,7 @@ return function(Vargs, env)
 							v.Transparency = 1
 							m.Head.Transparency = 0
 							if m.head:FindFirstChild("Mesh") then
-								m.Head.Mesh:Remove()
+								m.Head.Mesh:Destroy()
 							end
 							local b = service.New("SpecialMesh")
 							b.Parent = m.Head
@@ -2557,7 +2556,6 @@ return function(Vargs, env)
 							local hole = service.New("Part", player.Character)
 							hole.Anchored = true
 							hole.CanCollide = false
-							hole.formFactor = Enum.FormFactor.Custom
 							hole.Size = Vector3.new(10, 1, 10)
 							hole.CFrame = torso.CFrame * CFrame.new(0,-3.3,-3)
 							hole.BrickColor = BrickColor.new("Really black")
@@ -2641,13 +2639,13 @@ return function(Vargs, env)
 						part1.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 15, 0)
 						part1.Rotation = Vector3.new(0.359, 1.4, -14.361)
 						task.wait()
-						local part2 = part1:clone()
+						local part2 = part1:Clone()
 						part2.Parent = zeus
 						part2.Size = Vector3.new(1, 7.48, 2)
 						part2.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 7.5, 0)
 						part2.Rotation = Vector3.new(77.514, -75.232, 78.051)
 						task.wait()
-						local part3 = part1:clone()
+						local part3 = part1:Clone()
 						part3.Parent = zeus
 						part3.Size = Vector3.new(1.86, 7.56, 1)
 						part3.CFrame = char.HumanoidRootPart.CFrame*CFrame.new(0, 1, 0)
@@ -2784,7 +2782,6 @@ return function(Vargs, env)
 							torso["Left Hip"].C0 = CFrame.new(-1.5, -1, 1.5) * ca2
 							local st = service.New("Seat", {
 								Name = "Adonis_Torso",
-								FormFactor = 0,
 								TopSurface = 0,
 								BottomSurface = 0,
 								Size = Vector3.new(3, 1, 4),
@@ -3043,7 +3040,7 @@ return function(Vargs, env)
 				decal1.Face = "Left"
 				decal1.Texture = "http://www.roblox.com/asset/?id=332277963"
 				decal1.Name = "Nyan"
-				local decal2=decal1:clone()
+				local decal2=decal1:Clone()
 				decal2.Face = "Right"
 				decal2.Texture = "http://www.roblox.com/asset/?id=332288373"
 
@@ -3381,7 +3378,7 @@ return function(Vargs, env)
 							Rotation = NumberRange.new(0, 359);
 							RotSpeed = NumberRange.new(-90, 90);
 							Rate = 11;
-							VelocitySpread = 180;
+							SpreadAngle = Vector2.new(-180, 180);
 							Color = ColorSequence.new(startc, endc);
 						})
 					end
@@ -3439,7 +3436,6 @@ return function(Vargs, env)
 									v.C1 = CFrame.new(unpack(c1))
 
 									if p1.Name ~= "Head" and p1.Name ~= "Torso" then
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 									elseif p1.Name ~= "Torso" then
 										p1.Anchored = true
@@ -3450,7 +3446,6 @@ return function(Vargs, env)
 											end
 										end
 
-										p1.formFactor = 3
 										p1.Size = Vector3.new(p1.Size.X, p1.Size.Y, num)
 
 										for _, m in p1:GetChildren() do
@@ -3486,7 +3481,6 @@ return function(Vargs, env)
 
 						size(char)
 
-						torso.formFactor = 3
 						torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, num)
 
 						for i, v in welds do
@@ -3588,37 +3582,31 @@ return function(Vargs, env)
 							for _, v in v.Character:GetChildren() do
 								if v:IsA("Part") then v.Anchored = true end
 							end
-							torso.FormFactor = "Custom"
 							torso.Size = Vector3.new(torso.Size.X, torso.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=v.Character.HumanoidRootPart
 							weld.C0=v.Character.HumanoidRootPart.CFrame
-							head.FormFactor = "Custom"
 							head.Size = Vector3.new(head.Size.X, head.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=head
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(0, 1.5, 0)
-							larm.FormFactor = "Custom"
 							larm.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=larm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1, 0, 0)
-							rarm.FormFactor = "Custom"
 							rarm.Size = Vector3.new(rarm.Size.X, rarm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=rarm
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(1, 0, 0)
-							lleg.FormFactor = "Custom"
 							lleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
 							weld.Part1=lleg
 							weld.C0=v.Character.HumanoidRootPart.CFrame*CFrame.new(-1,-1.5, 0)
-							rleg.FormFactor = "Custom"
 							rleg.Size = Vector3.new(larm.Size.X, larm.Size.Y, tonumber(args[2]) or 0.1)
 							local weld = service.New("Weld", v.Character.HumanoidRootPart)
 							weld.Part0=v.Character.HumanoidRootPart
@@ -4254,7 +4242,6 @@ return function(Vargs, env)
 							--ice.CanCollide = false
 							ice.TopSurface = "Smooth"
 							ice.BottomSurface = "Smooth"
-							ice.FormFactor = "Custom"
 							ice.Size = Vector3.new(5, 6, 5)
 							ice.Transparency = 0.3
 							ice.CFrame = v.Character.HumanoidRootPart.CFrame

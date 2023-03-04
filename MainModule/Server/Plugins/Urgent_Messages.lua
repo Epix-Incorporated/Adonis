@@ -42,13 +42,13 @@ return function(Vargs, GetEnv)
 
 		if lastMessage < MessageVersion and os.time()-MessageDate <= MessageDuration then
 			if MessageAdminType == "Players" then
-				return true;
+				return true
 			elseif MessageAdminType == "Donors" then
 				if Admin.CheckDonor(p) then
-					return true;
+					return true
 				end
 			elseif type(MessageAdminType) == "number" and Admin.GetLevel(p) >= MessageAdminType then
-				return true;
+				return true
 			end
 		end
 	end

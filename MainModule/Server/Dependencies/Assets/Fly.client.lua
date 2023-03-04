@@ -115,12 +115,12 @@ function Start()
 			end
 
 			if dir.Forward then
-				new += camera.CoordinateFrame.LookVector * curSpeed
+				new += camera.CFrame.LookVector * curSpeed
 				curSpeed += speedInc
 			end
 
 			if dir.Backward then
-				new -= camera.CoordinateFrame.LookVector * curSpeed
+				new -= camera.CFrame.LookVector * curSpeed
 				curSpeed += speedInc
 			end
 
