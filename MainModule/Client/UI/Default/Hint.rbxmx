@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Frame" referent="RBX4C1462BEE56E488C80687F578ECBAE5D">
+	<Item class="Frame" referent="RBXB0FD0627BE754C9B87F5BC70AE95055B">
 		<Properties>
 			<bool name="Active">false</bool>
 			<Vector2 name="AnchorPoint">
@@ -42,7 +42,13 @@
 			<Ref name="RootLocalizationTable">null</Ref>
 			<float name="Rotation">0</float>
 			<bool name="Selectable">false</bool>
+			<token name="SelectionBehaviorDown">0</token>
+			<token name="SelectionBehaviorLeft">0</token>
+			<token name="SelectionBehaviorRight">0</token>
+			<token name="SelectionBehaviorUp">0</token>
+			<bool name="SelectionGroup">false</bool>
 			<Ref name="SelectionImageObject">null</Ref>
+			<int name="SelectionOrder">0</int>
 			<UDim2 name="Size">
 				<XS>1</XS>
 				<XO>0</XO>
@@ -56,7 +62,7 @@
 			<bool name="Visible">true</bool>
 			<int name="ZIndex">1</int>
 		</Properties>
-		<Item class="Frame" referent="RBX66A76A13DE3345DF87044394A41C0DA1">
+		<Item class="Frame" referent="RBX58492D1C0AAB4241B60E696929759435">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -96,7 +102,13 @@
 				<Ref name="RootLocalizationTable">null</Ref>
 				<float name="Rotation">0</float>
 				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
 				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
 				<UDim2 name="Size">
 					<XS>1</XS>
 					<XO>0</XO>
@@ -110,7 +122,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="TextLabel" referent="RBXEDD69E8087124B44A1FF063FB3079076">
+			<Item class="TextLabel" referent="RBX6C0DEC3DA4114F3181183D50887C476A">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -135,7 +147,12 @@
 					<int name="BorderSizePixel">1</int>
 					<bool name="ClipsDescendants">false</bool>
 					<bool name="Draggable">false</bool>
-					<token name="Font">3</token>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+						<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+					</Font>
 					<int name="LayoutOrder">0</int>
 					<float name="LineHeight">1</float>
 					<int name="MaxVisibleGraphemes">-1</int>
@@ -154,7 +171,13 @@
 					<Ref name="RootLocalizationTable">null</Ref>
 					<float name="Rotation">0</float>
 					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
 					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
 					<UDim2 name="Size">
 						<XS>1</XS>
 						<XO>-10</XO>
@@ -188,19 +211,19 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="Folder" referent="RBX0436791F738C4378A07EE52792EAF4EC">
+		<Item class="Folder" referent="RBXC079424ED638453BB870AE430F8575A5">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">Config</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="ModuleScript" referent="RBX60F4336A15F94FA1BA321D030DB76158">
+			<Item class="ModuleScript" referent="RBXFA5B001A4FD048888AD4DD1CDE6DE822">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Code</string>
-					<string name="ScriptGuid">{934968C2-F3D4-468E-9A04-F2C76AA7760A}</string>
+					<string name="ScriptGuid">{1D358F41-32FF-42A8-9687-F4BC53D2B01C}</string>
 					<ProtectedString name="Source"><![CDATA[client = nil
 cPcall = nil
 Pcall = nil
@@ -237,6 +260,10 @@ return function(data, env)
 	local container = client.UI.Get("HintHolder",nil,true)
 	if not container then 
 		local holder = service.New("ScreenGui")
+		holder.IgnoreGuiInset = not client.Variables.TopBarShift
+		holder.ClipToDeviceSafeArea = true
+		
+		
 		local hTable = client.UI.Register(holder)
 		local frame = service.New("ScrollingFrame", holder)
 		client.UI.Prepare(holder)
@@ -268,7 +295,11 @@ return function(data, env)
 	
 	--// First things first account for notif :)
 	local notif = client.UI.Get("Notif")
-	container.IgnoreGuiInset, container.ClipToDeviceSafeArea = not client.Variables.TopBarShift, true
+	
+	if (container:IsA("ScreenGui")) then
+		container.IgnoreGuiInset, container.ClipToDeviceSafeArea = not client.Variables.TopBarShift, true
+	end
+	
 	container.Position = UDim2.new(0, 0, 0, (notif and 30 or 0))
 	
 	local children = container:GetChildren()
@@ -316,7 +347,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBXFBCFE2A585B7468BA4B30F65CDEC9EEC">
+			<Item class="BoolValue" referent="RBXC5C715F7D5494505BC95AA730AC37B5C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">AllowMultiple</string>
@@ -325,7 +356,7 @@ end]]></ProtectedString>
 					<bool name="Value">true</bool>
 				</Properties>
 			</Item>
-			<Item class="BoolValue" referent="RBX5346EA9F08684D4E9B7DCC065A147285">
+			<Item class="BoolValue" referent="RBX9BECA5A00F6C4D0E92519E35FC90E647">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">CanKeepAlive</string>
