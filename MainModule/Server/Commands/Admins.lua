@@ -172,11 +172,12 @@ return function(Vargs, env)
 				local target = assert(args[1], "Missing target user (argument #1)")
 				local temp = args[2] and args[2]:lower() == "true"
 				local senderLevel = data.PlayerData.Level
-
 				local userFound = false
+
 				if not target:find(":") then
 					for _, v in service.GetPlayers(plr, target, {
-						DontError = true;
+							UseFakePlayer = true;
+							DontError = true;
 						})
 					do
 						userFound = true
