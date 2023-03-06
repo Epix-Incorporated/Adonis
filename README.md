@@ -96,7 +96,7 @@ Read the [contributing guide](https://github.com/Epix-Incorporated/Adonis/blob/m
 
 ### ⚖️ License
 
-Adonis is available under the terms of the MIT license. Read more details about the license [here](https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE).
+Adonis is available under the terms of [the MIT license](https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE).
 
 ### Thank you to our contributors
 

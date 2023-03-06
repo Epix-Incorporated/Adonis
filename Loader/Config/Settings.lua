@@ -324,7 +324,7 @@ settings.MaxLogs = 5000			-- Maximum logs to save before deleting the oldest
 settings.SaveCommandLogs = true	-- If command logs are saved to the datastores
 settings.Notification = true	-- Whether or not to show the "You're an admin" and "Updated" notifications
 settings.SongHint = true		-- Display a hint with the current song name and ID when a song is played via :music
-settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region.
+settings.TopBarShift = false	-- By default hints and notifications will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region.
 settings.Messages = {}			-- A list of notification messages to show HeadAdmins and above on join
 settings.AutoClean = false		-- Will auto clean workspace of things like hats and tools
 settings.AutoCleanDelay = 60	-- Time between auto cleans
@@ -443,7 +443,7 @@ descs.SaveCommandLogs = [[ If command logs are saved to the datastores ]]
 descs.Notification = [[ Whether or not to show the "You're an admin" and "Updated" notifications ]]
 descs.CodeExecution = [[ Enables the use of code execution in Adonis; Scripting related and a few other commands require this ]]
 descs.SongHint = [[ Display a hint with the current song name and ID when a song is played via :music ]]
-descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window, this is achieved by offsetting them by -35 into the transparent region where Roblox buttons menu/chat/leaderstat buttons are. Set this to true if you don't want hints/notifications to appear in that region. ]]
+descs.TopBarShift = [[ By default hints and notifs will appear from the top edge of the window. Set this to true if you don't want hints/notifications to appear in that region. ]]
 
 descs.Messages = [[ A list of notification messages to show HeadAdmins and above on join ]]
 

@@ -634,7 +634,7 @@ return function(Vargs, GetEnv)
 
 				Core.PlayerData[key] = PlayerData
 
-				if Core.DataStore then
+				if Core.DataStore and p.UserId > 0 then
 					local data = Core.GetData(key)
 					if type(data) == "table" then
 						data.AdminNotes = if data.AdminNotes then Functions.DSKeyNormalize(data.AdminNotes, true) else {}
@@ -664,7 +664,7 @@ return function(Vargs, GetEnv)
 			local pData = customData or Core.PlayerData[key]
 
 			if Core.DataStore then
-				if pData then
+				if pData and p.UserId > 0 then
 					local data = service.CloneTable(pData)
 
 					--// Temporary junk that will be removed on save.
@@ -675,11 +675,18 @@ return function(Vargs, GetEnv)
 					data.AdminNotes = Functions.DSKeyNormalize(data.AdminNotes)
 					data.Warnings = Functions.DSKeyNormalize(data.Warnings)
 
-					Core.SetData(key, data)
-					AddLog(Logs.Script, {
-						Text = "Saved data for ".. p.Name;
-						Desc = "Player data was saved to the datastore";
-					})
+					if not Functions.LaxCheckMatch(Core.DefaultPlayerData(p), data) then
+						Core.SetData(key, data)
+						AddLog(Logs.Script, {
+							Text = "Saved data for ".. p.Name;
+							Desc = "Player data was saved to the datastore";
+						})
+					else
+						AddLog(Logs.Script, {
+							Text = "Didn't save default data for ".. p.Name;
+							Desc = "Player data was not saved to the datastore due to it having default values";
+						})
+					end
 
 					pData.LastDataSave = os.time()
 				end

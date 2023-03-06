@@ -9,7 +9,7 @@
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Piano</string>
 			<string name="ScriptGuid">{38BE1E96-4280-4914-BAED-94753E9321C1}</string>
-			<ProtectedString name="Source"><![CDATA[wait(0.5)
+			<ProtectedString name="Source"><![CDATA[task.wait(0.5)
 ExistingSounds = {}
 Player = game:GetService("Players").LocalPlayer
 Gui = script:WaitForChild("PianoGui")
@@ -38,7 +38,7 @@ function Activate()
 	SetSounds(PianoSounds)
 	--Player.Character.Torso.Anchored=true
 	--Humanoid.PlatformStand=true
-	for i,v in pairs(Player.Backpack:GetChildren()) do
+	for _, v in ipairs(Player.Backpack:GetChildren()) do
 		v.Parent=Tools
 	end
 end
@@ -56,12 +56,12 @@ function Deactivate()
 			v:Destroy()
 		end
 	end
-	for i,v in pairs(Tools:GetChildren()) do
+	for _, v in ipairs(Tools:GetChildren()) do
 		v.Parent=Player.Backpack
 	end
 	Tools:Destroy()
 	Gui.Parent=script
-	wait(0.5)
+	task.wait(0.5)
 	script:Destroy()
 end
 
@@ -188,7 +188,7 @@ function HighlightPianoKey(note)
 	else
 		keyGui.BackgroundColor3 = Color3.new(200/255, 200/255, 200/255)
 	end
-	delay(.5, function() RestorePianoKey(note) end)
+	task.delay(.5, function() RestorePianoKey(note) end)
 end
 
 function RestorePianoKey(note)
@@ -318,10 +318,10 @@ function PlayNoteSound(note, source, range, sounds)
 	
 	if source then
 		local a = 1/range^2
-		local distance = (workspace.CurrentCamera.CoordinateFrame.p - source).Magnitude
+		local distance = (workspace.CurrentCamera.CFrame.p - source).Magnitude
 		local volume = -a*distance^2 + 1
 		if volume < 0.05 then
-			audio:remove()
+			audio:Destroy()
 			return
 		end
 		audio.Volume = volume
@@ -335,7 +335,7 @@ function PlayNoteSound(note, source, range, sounds)
 		ExistingSounds[10] = nil
 	end
 	
-	delay(4, function() audio:Stop() audio:remove() end ) -- remove the audio in 4 seconds, enough time for it to play
+	task.delay(4, function() audio:Stop() audio:Destroy() end ) -- remove the audio in 4 seconds, enough time for it to play
 end
 
 Camera = workspace.CurrentCamera
@@ -344,7 +344,7 @@ Camera = workspace.CurrentCamera
 function SetCamera(cframe)
 	Camera.CameraType = Enum.CameraType.Scriptable
 	Camera:Interpolate(cframe, cframe + cframe.lookVector, .5)
-	--Camera.CoordinateFrame = cframe
+	--Camera.CFrame = cframe
 end
 function ReturnCamera()
 	Camera.CameraType = Enum.CameraType.Custom

@@ -9,6 +9,48 @@ local xpcall = xpcall;
 local setfenv = setfenv;
 local tostring = tostring;
 
+-- This stops all of the public Adonis bypasses. Though they would still be detected in time but it may be better to kick them before load??
+do
+	local game = game
+	local task_spawn, xpcall, require, task_wait
+		= task.spawn, xpcall, require, task.wait
+	local Players =  game:FindFirstChildWhichIsA("Players") or game:FindService("Players")
+	local localPlayer = Players.LocalPlayer
+	local triggered = false
+
+	local function loadingDetected(reason)
+		(localPlayer or Players.LocalPlayer):Kick(":: Adonis Loader - Security ::\n"..tostring(reason))
+		while true do end
+	end
+
+	task_spawn(xpcall, function()
+		local exampleService = game:GetService("Workspace") or game:GetService("ReplicatedStorage")
+		local success, err = pcall(require, game)
+
+		if not exampleService then
+			task_spawn(xpcall, function() loadingDetected("Service not returning") end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+
+		if success or not string.match(err, "^Attempted to call require with invalid argument%(s%)%.$") then
+			task_spawn(xpcall, function() loadingDetected("Require load fail. "..tostring(err)) end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+
+		triggered = true
+	end, function(err) task_spawn(loadingDetected, err) while true do end end)
+
+	task_spawn(xpcall, function()
+		task_wait()
+		task_wait()
+
+		if not triggered then
+			task_spawn(xpcall, function() loadingDetected("Loading detectors failed to load"..tostring(triggered)) end, function(err) loadingDetected(err) end)
+			while true do end
+		end
+	end, function(err) task_spawn(loadingDetected, err) while true do end end)
+end
+
 local players = game:GetService("Players");
 local player = players.LocalPlayer;
 local folder = script.Parent;

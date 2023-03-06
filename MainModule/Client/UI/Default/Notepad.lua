@@ -39,7 +39,7 @@ return function(data, env)
 		BackgroundColor3 = Color3.new(1, 1, 1);
 		TextColor3 = Color3.new(0,0,0);
 		Font = "Code";
-		FontSize = "Size18";
+		TextSize = 18;
 		TextXAlignment = "Left";
 		TextYAlignment = "Top";
 		TextWrapped = true;
