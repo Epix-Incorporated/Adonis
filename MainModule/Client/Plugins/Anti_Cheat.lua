@@ -361,9 +361,9 @@ return function(Vargs)
 					end)
 
 					if
-						success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawContentProvider:GetFullName() or
+						success or (string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") or "") ~= rawContentProvider:GetFullName() or
 						success2 or err2 ~= "Expected ':' not '.' calling member function PreloadAsync" or
-						success3 or string.match(err3, "^PreloadAsync is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+						success3 or (string.match(err3, "^PreloadAsync is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 					then
 						Detected("kick", "Content provider spoofing detected")
 					end
