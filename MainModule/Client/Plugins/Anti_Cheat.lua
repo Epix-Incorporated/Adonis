@@ -367,6 +367,28 @@ return function(Vargs)
 					then
 						Detected("kick", "Content provider spoofing detected")
 					end
+					
+					-- // GetFocusedTextBox detection
+					if isStudio then
+						return
+					end
+
+					local textbox = service.UserInputService:GetFocusedTextBox()
+					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
+					local textChatService = service.TextChatService
+					local chatBarConfig = textChatService and textChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
+
+					if
+						textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen and not (
+							service.Chat.LoadDefaultChat and
+							textChatService and
+							textChatService.ChatVersion == Enum.ChatVersion.TextChatService and
+							chatBarConfig and
+							chatBarConfig.Enabled
+						)
+					then
+						Detected("Kick", "Invalid CoreGui Textbox has been selected")
+					end
 				end, function()
 					Detected("kick", "Tamper Protection 456754")
 				end)
@@ -402,7 +424,7 @@ return function(Vargs)
 				"setnamecallmethod";
 				"setfflag";
 				"Kill by Avexus#1234 initialized";
-				--"FilteringEnabled Kill"; -- // Disabled due to potentially having false flags
+				--"FilteringEnabled Kill"; -- // Disabled due to potential of having false flags
 				"Couldn't find target with input:";
 				"Found target with input:";
 				"Couldn't find the target's root part%. :[";
@@ -625,32 +647,6 @@ return function(Vargs)
 						Detected("crash", "Anti-dex bypass found. Method 0x2")
 					end
 				end
-
-				-- // GetFocusedTextBox detection
-				xpcall(function()
-					if isStudio then
-						return
-					end
-
-					local textbox = service.UserInputService:GetFocusedTextBox()
-					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
-					local textChatService = service.TextChatService
-					local chatBarConfig = textChatService and textChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
-
-					if
-						textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen and not (
-							service.Chat.LoadDefaultChat and
-							textChatService and
-							textChatService.ChatVersion == Enum.ChatVersion.TextChatService and
-							chatBarConfig and
-							chatBarConfig.Enabled
-						)
-					then
-						Detected("Kick", "Invalid CoreGui Textbox has been selected")
-					end
-				end, function()
-					Detected("kick", "Tamper Protection 356745234")
-				end)
 
 				-- // Anti RAKNET based DoS detection
 				xpcall(function()
