@@ -437,7 +437,7 @@ return function(Vargs, GetEnv)
 
 					if
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
-						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+						success2 or (string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 					then
 						Detected("kick", "Anti kick found! Method 0x1")
 						warn(success, err, "|", success2, err2)
@@ -473,7 +473,7 @@ return function(Vargs, GetEnv)
 						LocalPlayer:KicK("If this message appears, report it to Adonis maintainers. 0x5")
 					end)
 
-					if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
+					if success or (string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") or "") ~= LocalPlayer:GetFullName() then
 						Detected("kick", "Anti kick found! Method 0x4")
 					end
 
@@ -522,9 +522,9 @@ return function(Vargs, GetEnv)
 						end)
 
 						if
-							success or string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") ~= rawLogService:GetFullName() or
+							success or (string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") or "") ~= rawLogService:GetFullName() or
 							success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
-							success3 or string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+							success3 or (string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 						then
 							Detected("kick", "GetLogHistory function hooks detected")
 						end
@@ -543,9 +543,9 @@ return function(Vargs, GetEnv)
 						end)
 
 						if
-							success or string.match(err, "^%a+ is not a valid member of RemoteEvent \"(.+)\"$") ~= remEventCheck:GetFullName() or
+							success or (string.match(err, "^%a+ is not a valid member of RemoteEvent \"(.+)\"$") or "") ~= remEventCheck:GetFullName() or
 							success2 or err2 ~= "Expected ':' not '.' calling member function FireServer" or
-							success3 or string.match(err3, "^FireServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+							success3 or (string.match(err3, "^FireServer is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 						then
 							Detected("kick", "FireServer function hooks detected")
 						end
@@ -565,9 +565,9 @@ return function(Vargs, GetEnv)
 						end)
 
 						if
-							success or string.match(err, "^%a+ is not a valid member of RemoteFunction \"(.+)\"$") ~= remFuncCheck:GetFullName() or
+							success or (string.match(err, "^%a+ is not a valid member of RemoteFunction \"(.+)\"$") or "") ~= remFuncCheck:GetFullName() or
 							success2 or err2 ~= "Expected ':' not '.' calling member function InvokeServer" or
-							success3 or string.match(err3, "^InvokeServer is not a valid member of Workspace \"(.+)\"$") ~= workspace:GetFullName()
+							success3 or (string.match(err3, "^InvokeServer is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 						then
 							Detected("kick", "InvokeServer function hooks detected")
 						end
