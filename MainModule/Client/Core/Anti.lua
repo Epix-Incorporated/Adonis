@@ -204,6 +204,14 @@ return function(Vargs, GetEnv)
 		}
 
 		Routine(function()
+			local nilPlayers = setmetatable({}, {__mode = "v"})
+
+			service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
+				if child:IsA("Player") then
+					table.insert(nilPlayers, child)
+				end
+			end)
+
 			while task.wait(5) do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
@@ -228,26 +236,19 @@ return function(Vargs, GetEnv)
 				coroutine.wrap(function()
 					local LocalPlayer = service.UnWrap(Player)
 					local workspace = service.UnWrap(workspace)
-					local nilPlayers = setmetatable({}, {__mode = "v"})
-
-					service.UnWrap(service.Players).ChildRemoved:Connect(function(child)
-						if child:IsA("Player") then
-							table.insert(nilPlayers, child)
-						end
-					end)
 
 					local success, err = pcall(function()
-						LocalPlayer.Kick(workspace, "If this appears, you have a glitch. Method 1")
+						LocalPlayer.Kick(workspace, "If this message appears, report it to Adonis maintainers. 0x1")
 					end)
 					local success2, err2 = pcall(function()
-						workspace:Kick("If this message appears, report it to Adonis maintainers. #1")
+						workspace:Kick("If this message appears, report it to Adonis maintainers. 0x2")
 					end)
 
 					if
 						success or err ~= "Expected ':' not '.' calling member function Kick" or
-						success2 or string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") ~= workspace.Name
+						success2 or (string.match(err2, "^Kick is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 					then
-						Detected("kick", "Anti kick found! Method 1")
+						Detected("kick", "Anti kick found! Method 0x1")
 						warn(success, err, "|", success2, err2)
 					end
 
@@ -258,9 +259,9 @@ return function(Vargs, GetEnv)
 							local otherPlayer = service.UnWrap(v)
 
 							if otherPlayer and not table.find(nilPlayers, otherPlayer) and otherPlayer.Parent == unwrappedPlayers and otherPlayer ~= LocalPlayer then
-								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. #2")
+								local success, err = pcall(LocalPlayer.Kick, otherPlayer, "If this message appears, report it to Adonis maintainers. 0x4")
 								local success2, err2 = pcall(function()
-									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. #3")
+									otherPlayer:Kick("If this message appears, report it to Adonis maintainers. 0x4")
 								end)
 
 								if
@@ -269,23 +270,34 @@ return function(Vargs, GetEnv)
 									success2 or
 									err2 ~= "Cannot kick a non-local Player from a LocalScript"
 								then
-									Detected("kick", "Anti kick found! Method 2")
+									Detected("kick", "Anti kick found! Method 0x2")
 									warn(success, err, "|", success2, err2)
 								end
 							end
 						end
 					end
+
+					 -- // Detects Kaids antikick
+					local success, err = pcall(function()
+						LocalPlayer:KicK("If this message appears, report it to Adonis maintainers. 0x5")
+					end)
+
+					if success or string.match(err, "^%a+ is not a valid member of Player \"(.+)\"$") ~= LocalPlayer:GetFullName() then
+						Detected("kick", "Anti kick found! Method 0x4")
+					end
+
+					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
+					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
+						Detected("kick", "Anti FPS detection found!")
+					end
+
 					hasCompleted = true
 				end)()
 
 				coroutine.wrap(function()
 					task.wait(4)
 					if not hasCompleted then
-						Detected("kick", "Anti kick found! Method 3")
-					end
-					local success, err = pcall(service.UnWrap(workspace).GetRealPhysicsFPS, rawGame)
-					if success or not string.match(err, "Expected ':' not '.' calling member function GetRealPhysicsFPS") then
-						Detected("kick", "Anti FPS detection found!")
+						Detected("kick", "Anti kick found! Method 0x3")
 					end
 				end)()
 			end
@@ -365,7 +377,7 @@ return function(Vargs, GetEnv)
 				connection = idledEvent:Connect(function(time)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
-					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
+					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false and not clientHasClosed then
 						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
 					end
 				end)
@@ -382,7 +394,7 @@ return function(Vargs, GetEnv)
 					idleTamper("Userdata disrepencies detected")
 				end
 
-				task.wait(200)
+				task.wait(200 + math.random() * 5)
 				connection:Disconnect()
 
 				if clientHasClosed then
