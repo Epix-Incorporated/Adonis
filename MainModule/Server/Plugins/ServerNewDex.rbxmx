@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXAEA8C624775E4063A61B3F394D831905">
+	<Item class="ModuleScript" referent="RBXFA7C577F24D846B5B861156AA40D43A5">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
@@ -53,7 +53,7 @@
 			Event.OnServerInvoke = (function(Plr: Player, Action, ...)
 				local pData = ServerNewDex.Authorized[Plr];
 				if not pData then
-					Plr:Kick("Unauthorized NewDex Event")
+					Anti.Detected(Plr, "kick", "Unauthorized NewDex Event");
 				else
 					local args = {...};
 					local Suppliments = args[1];
@@ -168,7 +168,7 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="LocalScript" referent="RBX33BCF0D53601451E87EA919C3E376FD6">
+		<Item class="LocalScript" referent="RBX0E256C0DD65847169BCBA5F7D48D112E">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="Disabled">false</bool>
@@ -1283,14 +1283,14 @@ Main.Init()
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="Folder" referent="RBX6F238B1362124CD9B9DD30CF3994D781">
+			<Item class="Folder" referent="RBXB6E4E7D67F164D0B8B03D4F087352E74">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Modules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX5CB9C85F433744159927654AD8CE69BE">
+				<Item class="ModuleScript" referent="RBX23165DB880C1469BA464F7E533FFC824">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -3569,7 +3569,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX6E275FAFF20E49A0A103EFBA07BE1981">
+				<Item class="ModuleScript" referent="RBXCDC261B284F6441B8C6CB5256B205506">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -9340,7 +9340,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX1A9126E887A94FE0BCA752C4479D6EB7">
+				<Item class="ModuleScript" referent="RBX08C2308988924A58987B26D11FC83017">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -11272,7 +11272,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ModuleScript" referent="RBXCDA80E4AFDBE44F28DE15954F5AE9699">
+			<Item class="ModuleScript" referent="RBX2EA644F0E4D64E12B7CD6EFAE55C875F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -11283,7 +11283,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX32F8A9B487F74C20AAEC6E4A4B176C72">
+			<Item class="ModuleScript" referent="RBX8BF42B2B44F24F19BBF08706F3E5EF2C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -11295,7 +11295,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ModuleScript" referent="RBXD2E41940165D4782AAE6EFCD7F450323">
+		<Item class="ModuleScript" referent="RBXCF7BEB3BFBC24A9792ED3C3FF6C3A41C">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
