@@ -106462,22 +106462,28 @@ while RbxApi == nil do
 	wait()
 end
 
+--[[
 explorerFilter.Changed:connect(function(prop)
 	if prop == "Text" then
 		Selection.Finding = true
 		rawUpdateList()
 	end
 end)
+]] -- literally just free lag
 
-explorerFilter.FocusLost:connect(function()
-	if explorerFilter.Text == "" then
-		if Selection.Found[1] then
-			scrollBar:ScrollTo(NodeLookup[Selection.Found[1]].Index)
-		end
-
-		Selection.Finding = false
-		Selection.Found = {}
+explorerFilter.FocusLost:connect(function(EnterPressed)
+	if (EnterPressed) then
+		rawUpdateList()
 	end
+	
+	--if explorerFilter.Text == "" then
+	--	if Selection.Found[1] then
+	--		scrollBar:ScrollTo(NodeLookup[Selection.Found[1]].Index)
+	--	end
+
+	--	Selection.Finding = false
+	--	Selection.Found = {}
+	--end
 end)
 
 CurrentInsertObjectWindow = CreateInsertObjectMenu(
