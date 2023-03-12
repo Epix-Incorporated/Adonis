@@ -2,7 +2,7 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBXFA7C577F24D846B5B861156AA40D43A5">
+	<Item class="ModuleScript" referent="RBX949E936F4419412FB68F1BA32373CA9D">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
@@ -77,15 +77,18 @@
 						local new = obj:Clone();
 						table.insert(pData.Clipboard, new)
 
-						return new;
+						return new; -- It seems like this returns nil to the client, if the parent is nil.
 					elseif Action == "Paste" and args[1] then
 						local parent = args[1];
+						local pastedObjects = {}
 
 						for i,v in pairs(pData.Clipboard) do
-							v:Clone().Parent = parent;
+							local cloned = v:Clone()
+							cloned.Parent = parent;
+							table.insert(pastedObjects, cloned)
 						end
 
-						return true;
+						return pastedObjects;
 					elseif Action == "SetProperty" and args[1] and args[2] then
 						local obj = args[1];
 						local prop = args[2];
@@ -168,7 +171,7 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="LocalScript" referent="RBX0E256C0DD65847169BCBA5F7D48D112E">
+		<Item class="LocalScript" referent="RBX79C365294E4640039EA46EE2BC162EA2">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="Disabled">false</bool>
@@ -1283,14 +1286,14 @@ Main.Init()
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="Folder" referent="RBXB6E4E7D67F164D0B8B03D4F087352E74">
+			<Item class="Folder" referent="RBXD0A728D9EA62466781D42FBF5284FEF3">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">Modules</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBX23165DB880C1469BA464F7E533FFC824">
+				<Item class="ModuleScript" referent="RBXD7748DC151BF4AE4831FC3FA0B9419D4">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -1584,10 +1587,10 @@ local function main()
 			if not renamingNode then return end
 
 			pcall(function() renamingNode.Obj.Name = renameBox.Text end)
-			
+
 			-- ADONIS
 			Dex_RemoteEvent:InvokeServer("SetProperty", renamingNode.Obj, "Name", renameBox.Text)
-			
+
 			renamingNode = nil
 			Explorer.Refresh()
 		end)
@@ -1822,7 +1825,7 @@ local function main()
 								local n = sList[i]
 								pcall(function()
 									n.Obj.Parent = newPar
-									
+
 									-- ADONIS
 									Dex_RemoteEvent:InvokeServer("SetProperty", n.Obj, "Parent", newPar)
 								end)
@@ -2217,17 +2220,25 @@ local function main()
 			local destroy,clone = game.Destroy,game.Clone
 			local sList,newClipboard = selection.List,{}
 			Dex_RemoteEvent:InvokeServer("ClearClipboard") -- ADONIS
-			
+
 			local count = 1
 			for i = 1,#sList do
 				local inst = sList[i].Obj
-				local s,cloned = pcall(clone,inst)
+
+				-- ADONIS
+				Dex_RemoteEvent:InvokeServer("Copy", inst)
+				if (inst) then -- Improvise
+					newClipboard[count] = inst
+					count = count + 1
+				end
+
+				--[[local s,cloned = pcall(clone,inst)
 				if s and cloned then
 					newClipboard[count] = cloned
 					count = count + 1
 				end
-				pcall(destroy,inst)
-				
+				pcall(destroy,inst)]]
+
 				-- ADONIS
 				Dex_RemoteEvent:InvokeServer("Destroy", inst)
 			end
@@ -2239,15 +2250,15 @@ local function main()
 			local clone = game.Clone
 			local sList,newClipboard = selection.List,{}
 			Dex_RemoteEvent:InvokeServer("ClearClipboard") -- ADONIS
-			
+
 			local count = 1
 			for i = 1,#sList do
 				local inst = sList[i].Obj
 				local s,cloned = pcall(clone,inst)
-				
+
 				-- ADONIS
 				Dex_RemoteEvent:InvokeServer("Copy", inst)
-				
+
 				if s and cloned then
 					newClipboard[count] = cloned
 					count = count + 1
@@ -2264,17 +2275,26 @@ local function main()
 				local node = sList[i]
 				local inst = node.Obj
 				Explorer.MakeNodeVisible(node,true)
-				for c = 1,#clipboard do
-					-- ADONIS
-					Dex_RemoteEvent:InvokeServer("Paste", clipboard[c])
-					
+
+				-- ADONIS
+				local pastedObjects = Dex_RemoteEvent:InvokeServer("Paste", inst)
+
+				-- Select the pasted objects.
+				for k,v in ipairs(pastedObjects) do
+					local cloned = v
+
+					local clonedNode = nodes[cloned]
+					if clonedNode then newSelection[count] = clonedNode count = count + 1 end
+				end
+
+				--[[for c = 1,#clipboard do
 					local cloned = clipboard[c]:Clone()
 					if cloned then
 						cloned.Parent = inst
 						local clonedNode = nodes[cloned]
 						if clonedNode then newSelection[count] = clonedNode count = count + 1 end
 					end
-				end
+				end]]
 			end
 			selection:SetTable(newSelection)
 
@@ -2293,15 +2313,21 @@ local function main()
 				local inst = node.Obj
 				local instPar = node.Parent and node.Parent.Obj
 				Explorer.MakeNodeVisible(node)
-				local s,cloned = pcall(clone,inst)
+
+				-- ADONIS
+				local cloned = Dex_RemoteEvent:InvokeServer("Duplicate", inst, instPar)
+
+				if (cloned) then
+					local clonedNode = nodes[cloned]
+					if clonedNode then newSelection[count] = clonedNode count = count + 1 end
+				end
+
+				--[[local s,cloned = pcall(clone,inst)
 				if s and cloned then
 					cloned.Parent = instPar
 					local clonedNode = nodes[cloned]
 					if clonedNode then newSelection[count] = clonedNode count = count + 1 end
-				end
-				
-				-- ADONIS
-				Dex_RemoteEvent:InvokeServer("Duplicate", inst)
+				end]]
 			end
 
 			selection:SetTable(newSelection)
@@ -2315,7 +2341,7 @@ local function main()
 			local sList = selection.List
 			for i = 1,#sList do
 				pcall(destroy,sList[i].Obj)
-				
+
 				-- ADONIS
 				Dex_RemoteEvent:InvokeServer("Destroy", sList[i].Obj)
 			end
@@ -2337,7 +2363,7 @@ local function main()
 			local model = Dex_RemoteEvent:InvokeServer("InstanceNew", "Model", sList[#sList].Obj.Parent) or Instance.new("Model",sList[#sList].Obj.Parent)
 			for i = 1,#sList do
 				pcall(function() sList[i].Obj.Parent = model end)
-				
+
 				Dex_RemoteEvent:InvokeServer("SetProperty", sList[i].Obj, "Parent", model)
 			end
 
@@ -2367,7 +2393,7 @@ local function main()
 
 				for i = 1,#ch do
 					pcall(function() ch[i].Obj.Parent = par end)
-					
+
 					Dex_RemoteEvent:InvokeServer("SetProperty", ch[i].Obj, "Parent", par or workspace)
 				end
 
@@ -2782,7 +2808,7 @@ local function main()
 				local obj = node.Obj
 				Explorer.MakeNodeVisible(node,true)
 				--pcall(instNew,className,obj)
-				
+
 				Dex_RemoteEvent:InvokeServer("InstanceNew", className, obj)
 			end
 		end
@@ -3569,7 +3595,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBXCDC261B284F6441B8C6CB5256B205506">
+				<Item class="ModuleScript" referent="RBX14DF2FF186BE444699354A5D76A020CA">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -9340,7 +9366,7 @@ end]]></ProtectedString>
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX08C2308988924A58987B26D11FC83017">
+				<Item class="ModuleScript" referent="RBX835227AC62694A229CCC764919FF8DC7">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
@@ -11272,7 +11298,7 @@ end]]></ProtectedString>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ModuleScript" referent="RBX2EA644F0E4D64E12B7CD6EFAE55C875F">
+			<Item class="ModuleScript" referent="RBX6A9985AC6859425F96890CE7AD9DCB3C">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -11283,7 +11309,7 @@ end]]></ProtectedString>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX8BF42B2B44F24F19BBF08706F3E5EF2C">
+			<Item class="ModuleScript" referent="RBX490A35AAB3AE476FB6C0EAB13DF09CB1">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
@@ -11295,7 +11321,7 @@ end]]></ProtectedString>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="ModuleScript" referent="RBXCF7BEB3BFBC24A9792ED3C3FF6C3A41C">
+		<Item class="ModuleScript" referent="RBX0A744481DC004008BC1CC29B0A5575DC">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
