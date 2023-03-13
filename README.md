@@ -1,21 +1,16 @@
 <div align="center">
-    <img src="https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260"/>
-    <div>&nbsp;</div>
-    <a href="https://www.roblox.com/library/7510622625/">
-        <img src="https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white"/>
-    </a>
-    <a href="https://www.roblox.com/library/8612978896/">
-        <img src="https://img.shields.io/badge/roblox-nightly-blueviolet?logo=roblox"/>
-    </a>
-    <a href="https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/Epix-Incorporated/Adonis"/>
-    </a>
-    <a href="https://github.com/Epix-Incorporated/Adonis/releases">
-        <img src="https://img.shields.io/github/v/release/Epix-Incorporated/Adonis?label=version"/>
-    </a>
-    <a href="https://dvr.cx/discord">
-        <img src="https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white"/>
-    </a>
+
+![The Epix-Incorporated logo](https://images-ext-2.discordapp.net/external/aIBRjVfZJAGn2awfso3GY3kadhMQlVupqLEwnKGD3OE/https/repository-images.githubusercontent.com/55325103/2bed6800-bfef-11eb-835b-99b981918623?width=300&height=260)
+
+<div>&nbsp;</div>
+
+[![Roblox model](https://img.shields.io/static/v1?label=roblox&message=model&color=blue&logo=roblox&logoColor=white)](https://www.roblox.com/library/7510622625/ "The offical Adonis admin model.")
+[![Roblox nightly](https://img.shields.io/badge/roblox-nightly-blueviolet?logo=roblox)](https://www.roblox.com/library/8612978896/ "The beta testing source code modulescript.")
+[![LICENSE](https://img.shields.io/github/license/Epix-Incorporated/Adonis)](https://github.com/Epix-Incorporated/Adonis/blob/master/LICENSE "The legal LICENSE governing the usage of the admin system.")
+[![releases](https://img.shields.io/github/v/release/Epix-Incorporated/Adonis?label=version)](https://github.com/Epix-Incorporated/Adonis/releases "Downloadable versions of the admin system.")
+[![Discord server](https://img.shields.io/discord/81902207070380032?label=discord&logo=discord&logoColor=white)](https://dvr.cx/discord "A Discord server where people can discuss Adonis related stuff and talk.")
+[![Lint](https://github.com/Epix-Incorporated/Adonis/workflows/lint/badge.svg)](https://github.com/Epix-Incorporated/Adonis/actions/workflows/lint.yml "Allows to check if the code of the admin system is valid without errors.")
+
 </div>
 
 ---
@@ -24,7 +19,7 @@ Adonis is a community-maintained server moderation and management system created
 
 ## ✨ Installation
 
-📢 **New to Adonis? Take a look at our official quick start video [here](https://youtu.be/1f9x9gdxLjw) or read the unofficial setup guide [here](https://devforum.roblox.com/t/1535122).**
+📢 **New to Adonis? Take a look at our official [quick start video]](https://youtu.be/1f9x9gdxLjw) or read [the unofficial setup guide](https://devforum.roblox.com/t/1535122).**
 
 If you get stuck, feel free to ask for assistance on our [Discord server](https://discord.gg/H5RvTP3).
 
@@ -63,8 +58,8 @@ The Adonis loader provides a `DebugMode` option which will load a local copy of 
 
 #### Toggling debug mode
 
-* Open `Adonis_Loader` > `Loader` > `Loader`
-* Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
+1. Open `Adonis_Loader` > `Loader` > `Loader`
+2. Change `DebugMode` at the end of the `data` table to the desired value (e.g. `DebugMode = false`)
 
 * Official Adonis Loader: <https://www.roblox.com/library/7510622625/Adonis-Admin-Loader-Epix-Incorporated>
 * Official MainModule: <https://www.roblox.com/library/7510592873/Adonis-MainModule>
