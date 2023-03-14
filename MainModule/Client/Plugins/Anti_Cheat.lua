@@ -733,7 +733,7 @@ return function(Vargs)
 	-- // The tamper checks below are quite bad but they are sufficient for now
 	local lastChanged1, lastChanged2, lastChanged3 = os.clock(), os.clock(), os.clock()
 	local checkEvent = service.UnWrap(script).Changed:Connect(function(prop)
-		if prop == "Name" and string.match(script.Name "^\n\n+ModuleScript$") then
+		if prop == "Name" and string.match(script.Name, "^\n\n+ModuleScript$") then
 			lastChanged1 = os.clock()
 		elseif not isStudio then
 			Detected("kick", "Tamper Protection 324435")
