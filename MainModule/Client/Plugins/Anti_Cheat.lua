@@ -200,7 +200,6 @@ return function(Vargs)
 					networkClient:FindFirstChild("ClientReplicator") == clientReplicator and
 					networkClient:FindFirstChildOfClass("ClientReplicator") == clientReplicator and
 					networkClient:FindFirstChildWhichIsA("ClientReplicator") == clientReplicator and
-					networkClient:FindFirstDescendant("ClientReplicator") == clientReplicator and
 					clientReplicator:FindFirstAncestor("NetworkClient") == networkClient
 				then
 					connection = networkClient.DescendantRemoving:Connect(function(object)
