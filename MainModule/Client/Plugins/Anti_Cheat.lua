@@ -58,13 +58,17 @@ return function(Vargs)
 	getfenv().service = nil
 	getfenv().script = nil
 	script.Parent = nil
-	local function compareTables(t1, t2)
+	local compareTables
+	compareTables = function(t1, t2)
 		if service.CountTable(t1) ~= service.CountTable(t2) then
 			return false
 		end
 
 		for k, _ in pairs(t1) do
-			if not rawequal(t1[k], t2[k]) then
+			local val1, val2 = t1[k], t2[k]
+			local isTable = type(val1) == "table"
+
+			if isTable and not compareTables(val1, val2) or not isTable and not rawequal(val1, val2) then
 				return false
 			end
 		end
