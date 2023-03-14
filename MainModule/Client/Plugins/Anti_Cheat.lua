@@ -441,7 +441,11 @@ return function(Vargs)
 
 			local function check(Message)
 				for _,v in pairs(lookFor) do
-					if not string.find(string.lower(Message), "failed to load", 1, true) and (string.match(string.lower(Message), string.lower(v)) or string.match(Message, v)) then
+					if
+						not string.find(string.lower(Message), "failed to load", 1, true) and
+						not string.find(string.lower(Message), "meshcontentprovider failed to process", 1, true) and
+						(string.match(string.lower(Message), string.lower(v)) or string.match(Message, v))
+					then
 						return true
 					end
 				end
