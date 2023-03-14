@@ -391,7 +391,7 @@ return function(Vargs, GetEnv)
 			end},
 		}
 
-		local remoEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
+		local remEventCheck = service.UnWrap(Instance.new("RemoteEvent"))
 		local remFuncCheck = service.UnWrap(Instance.new("RemoteFunction"))
 		local rawLogService = service.UnWrap(service.LogService)
 		local nilPlayers = setmetatable({}, {__mode = "v"})
@@ -510,9 +510,8 @@ return function(Vargs, GetEnv)
 
 					-- // GetLogHistory hook detection
 					do
-						local workspace
 						local success, err = pcall(function()
-							rawLogService:getlogHistory())
+							rawLogService:getlogHistory()
 						end)
 						local success2, err2 = pcall(function()
 							rawLogService.GetLogHistory(workspace)
@@ -533,7 +532,7 @@ return function(Vargs, GetEnv)
 					-- // RemoteEvent hook detection
 					do
 						local success, err = pcall(function()
-							remEventCheck:fireserver())
+							remEventCheck:fireserver()
 						end)
 						local success2, err2 = pcall(function()
 							remEventCheck.FireServer(workspace)
@@ -555,7 +554,7 @@ return function(Vargs, GetEnv)
 					-- // RemoteFunction hook detection
 					do
 						local success, err = pcall(function()
-							remFuncCheck:invokeserver())
+							remFuncCheck:invokeserver()
 						end)
 						local success2, err2 = pcall(function()
 							remFuncCheck.InvokeServer(workspace)
