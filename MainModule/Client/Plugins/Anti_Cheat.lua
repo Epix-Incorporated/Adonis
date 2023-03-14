@@ -581,7 +581,7 @@ return function(Vargs)
 					First = Logs[1]
 					hasPrinted = true
 
-					if (lastLogOutput + 3) > startTime then
+					if (lastLogOutput + 3) < startTime then
 						Detected("kick", "Log event not outputting to console")
 					end
 				else
