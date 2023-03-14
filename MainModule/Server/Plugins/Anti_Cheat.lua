@@ -32,7 +32,6 @@ return function(Vargs, GetEnv)
 	end
 
 	local function RunAfterPlugins(data)
-		Anti.RunAfterPlugins = nil;
 		Logs:AddLog("Script", "Anti Plugin Module RunAfterPlugins Finished");
 
 		local function onPlayerAdded(player)
@@ -45,7 +44,7 @@ return function(Vargs, GetEnv)
 			end
 		end
 
-		if settings.Detection == false then
+		if Settings.Detection == false then
 			Logs:AddLog("Script", "Didn't load Adonis protection systems due to settings.Detection being set to false.")
 			return
 		end
