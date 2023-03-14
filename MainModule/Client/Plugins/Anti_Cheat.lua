@@ -383,13 +383,13 @@ return function(Vargs)
 					local chatBarConfig = textChatService and textChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
 
 					if
-						textbox and Anti.RLocked(textbox) and not (success and value) and not service.GuiService.MenuIsOpen and not (
+						textbox and Anti.RLocked(textbox) and not ((success and value) or service.GuiService.MenuIsOpen or (
 							service.Chat.LoadDefaultChat and
 							textChatService and
 							textChatService.ChatVersion == Enum.ChatVersion.TextChatService and
 							chatBarConfig and
 							chatBarConfig.Enabled
-						)
+						))
 					then
 						Detected("Kick", "Invalid CoreGui Textbox has been selected")
 					end
