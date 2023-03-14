@@ -402,8 +402,8 @@ return function(Vargs, GetEnv)
 			end
 		end)
 
-		while true do
-			Routine(function()
+		Routine(function()
+			while true do
 				if not Detected("_", "_", true) then -- detects the current bypass
 					while true do end
 				end
@@ -594,10 +594,10 @@ return function(Vargs, GetEnv)
 					pcall(Kill, "Adonis_1897")
 					pcall(Kick, Player, "Adonis_1897")
 				end)
-			end)
 
-			task.wait(5)
-		end
+				task.wait(5)
+			end
+		end)
 	end
 
 	local Launch = function(mode,data)
