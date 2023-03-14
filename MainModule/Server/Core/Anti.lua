@@ -127,10 +127,10 @@ return function(Vargs, GetEnv)
 			local info = string.gsub(tostring(info), "\n", "")
 
 			if table.find(kickedPlayers, player) then
-				player:Kick(":: Adonis Anti Cheat ::\n"..info)
+				player:Kick(":: Adonis Anti Cheat ::\n".. info)
 				return
 			elseif service.RunService:IsStudio() then
-				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
+				warn("ANTI-EXPLOIT: ".. player.Name .." ".. action .." ".. info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
