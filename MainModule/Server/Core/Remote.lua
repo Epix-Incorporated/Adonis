@@ -958,7 +958,7 @@ return function(Vargs, GetEnv)
 			end;
 
 			PrivateMessage = function(p: Player,args: {[number]: any})
-				if not type(args[1]) == "string" then return end
+				if type(args[1]) ~= "string" then return end
 
 				--	'Reply from '..localplayer.Name,player,localplayer,ReplyBox.Text
 				local target = Variables.PMtickets[args[1]]
@@ -974,7 +974,7 @@ return function(Vargs, GetEnv)
 
 					local replyTicket = Functions.GetRandom()
 					Variables.PMtickets[replyTicket] = p
-					Remote.MakeGui(target,"PrivateMessage",{
+					Remote.MakeGui(target, "PrivateMessage", {
 						Title = title;
 						Player = p;
 						Message = service.Filter(message, p, target);
