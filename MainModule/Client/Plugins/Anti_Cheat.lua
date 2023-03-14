@@ -721,6 +721,25 @@ return function(Vargs)
 				if gcinfo() ~= collectgarbage("count") then
 					Detected("kick", "GC spoofing detected")
 				end
+
+				xpcall(function()
+					local strings = {
+						"Loaded press z to", "press x to respawn", "Fe Invisible Fling By",
+						"Diemiers#4209", "Respawning dont spam"
+					}
+
+					for _, object in ipairs(workspace:GetChildren()) do
+						if object:IsA("Message") then
+							local text = object.Text
+
+							for _, v in ipairs(strings) do
+								if string.find(text, v, 1, true) then
+									Detected("kick", "Invisible FE fling GUI detected")
+								end
+							end
+						end
+					end
+				end, warn)
 			end)
 		end
 	}
