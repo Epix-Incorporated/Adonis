@@ -755,7 +755,7 @@ return function(Vargs)
 				if
 					not success or
 					script.Archivable ~= false or
-					not isStudio and (not string.match(script.Name "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
+					not isStudio and (not string.match(script.Name, "^\n\n+ModuleScript$") or os.clock() - lastChanged1 > 60) or
 					os.clock() - lastChanged3 > 60 or
 					not checkEvent or
 					typeof(checkEvent) ~= "RBXScriptConnection" or
