@@ -521,7 +521,7 @@ return function(Vargs, GetEnv)
 						end)
 
 						if
-							success or (string.match(err, "^%a+ is not a valid member of ContentProvider \"(.+)\"$") or "") ~= rawLogService:GetFullName() or
+							success or (string.match(err, "^%a+ is not a valid member of LogService \"(.+)\"$") or "") ~= rawLogService:GetFullName() or
 							success2 or err2 ~= "Expected ':' not '.' calling member function GetLogHistory" or
 							success3 or (string.match(err3, "^GetLogHistory is not a valid member of Workspace \"(.+)\"$") or "") ~= workspace:GetFullName()
 						then
@@ -571,7 +571,7 @@ return function(Vargs, GetEnv)
 							Detected("kick", "InvokeServer function hooks detected")
 						end
 					end
-					pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
+					--pcall(remFuncCheck.InvokeServer, remFuncCheck, proxyDetector)
 
 					hasCompleted = true
 				end, function()
@@ -606,13 +606,21 @@ return function(Vargs, GetEnv)
 		end
 	end;
 
+	local rawDetectors = {}
+
 	Anti = service.ReadOnly({
 		Init = Init;
 		RunLast = RunLast;
 		RunAfterLoaded = RunAfterLoaded;
 		Launch = Launch;
 		Detected = Detected;
-		Detectors = {};
+		Detectors = service.ReadOnly(setmetatable({}, { __index = rawDetectors }), false, true);
+
+		AddDetector = function(name, callback)
+			if not rawDetectors[name] then
+				rawDetectors[name] = callback
+			end
+		end,
 
 		RLocked = function(obj)
 			return not pcall(function()
