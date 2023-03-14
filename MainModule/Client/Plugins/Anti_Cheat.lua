@@ -1,9 +1,13 @@
+--!nolint DeprecatedGlobal
+--# selene: allow(deprecated)
 script.Archivable = false
 task.spawn(function()
 	if not game:GetService("RunService"):IsStudio() then
 		script.Name = "\n\n\n\n\n\n\n\nModuleScript"
 	end
 end)
+
+GetEnv = nil
 
 return function(Vargs)
 	local client, service = Vargs.Client, Vargs.Service
@@ -48,6 +52,7 @@ return function(Vargs)
 	local Anti = client.Anti;
 	local Variables = client.Variables;
 	local Process = client.Process;
+	local Detected = Anti.Detected;
 
 	getfenv().client = nil
 	getfenv().service = nil
@@ -276,13 +281,13 @@ return function(Vargs)
 		end;
 
 		AntiCoreGui = function()
+			if isStudio then
+				return
+			end
+
 			-- // Checks disallowed content URLs in the CoreGui
 			service.StartLoop("AntiCoreGui", 15, function()
 				xpcall(function()
-					if isStudio then
-						return
-					end
-
 					local function getCoreUrls()
 						local coreUrls = {}
 						local backpack = Player:FindFirstChildOfClass("Backpack")
@@ -369,10 +374,6 @@ return function(Vargs)
 					end
 					
 					-- // GetFocusedTextBox detection
-					if isStudio then
-						return
-					end
-
 					local textbox = service.UserInputService:GetFocusedTextBox()
 					local success, value = pcall(service.StarterGui.GetCore, service.StarterGui, "DeveloperConsoleVisible")
 					local textChatService = service.TextChatService
@@ -392,8 +393,8 @@ return function(Vargs)
 				end, function()
 					Detected("kick", "Tamper Protection 456754")
 				end)
-			end
-		end
+			end)
+		end,
 
 		MainDetection = function()
 			local game = service.DataModel
@@ -592,7 +593,7 @@ return function(Vargs)
 					not rawequal(typeof(First.messageType), "EnumItem") or
 					not rawequal(type(First.timestamp), "number") or
 					First.timestamp < tick() - os.clock() - 60 * 60 * 5 or
-					First.timestamp > tick() + 60 * 60 * 24 * 7 * 4 * 5 or -- If the timestamp is five months in the future, it's safe to say its invalid
+					First.timestamp > tick() + 60 * 60 * 24 * 7 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
 				then
 					Detected("kick", "Bypass detected 5435345")
 				else
@@ -760,7 +761,7 @@ return function(Vargs)
 				if
 					not isStudio and math.abs(os.clock() - lastChanged1) > 60 or
 					math.abs(os.clock() - lastChanged2) > 60 or
-					math.abs(os.clock() - lastChanged3) > 60 or
+					math.abs(os.clock() - lastChanged3) > 60
 				then
 					opcall(Detected, "crash", "Tamper Protection 178945")
 					oWait(1)
