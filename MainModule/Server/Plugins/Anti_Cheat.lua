@@ -57,7 +57,7 @@ return function(Vargs, GetEnv)
 			return
 		end
 
-		for _, v in ipairs(service.Players:GetPlayers()) do
+		for _, v in service.Players:GetPlayers() do
 			task.spawn(onPlayerAdded, v)
 		end
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
@@ -195,7 +195,7 @@ return function(Vargs, GetEnv)
 				end
 			end)
 
-			if game:GetService("Players").CharacterAutoLoads and Settings.AntiGod == true then
+			if service.Players.CharacterAutoLoads and Settings.AntiGod == true then
 				local connection
 
 				connection = humanoid.Died:Connect(function()
@@ -205,7 +205,7 @@ return function(Vargs, GetEnv)
 
 					connection:Disconnect()
 
-					task.wait(game:GetService("Players").RespawnTime + 1.5)
+					task.wait(service.Players.RespawnTime + 1.5)
 
 					if workspace:IsAncestorOf(humanoid) then
 						Detected(player, "log", "Player took too long to respawn. Respawning manually")
@@ -235,7 +235,7 @@ return function(Vargs, GetEnv)
 							return
 						end
 
-						for _, v in ipairs(connections) do
+						for _, v in connections do
 							v:Disconnect()
 						end
 
