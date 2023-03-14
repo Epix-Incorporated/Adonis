@@ -673,6 +673,7 @@ return function(Vargs)
 				-- // Anti humanoid data spoof
 				xpcall(function()
 					local eventCount = 0
+					local oldWalkSpeed, oldJumpPower = spoofedHumanoidCheck.WalkSpeed, spoofedHumanoidCheck.JumpPower
 					local newWalkSpeed, newJumpPower = math.random(1, 100), math.random(1, 100)
 					local connection1, connection2, connection3
 
@@ -695,7 +696,15 @@ return function(Vargs)
 					then
 						Detected("kick", "Humanoid tampering detected. Method 0x1")
 					end
-					
+
+					if newWalkSpeed == oldWalkSpeed then
+						eventCount += 2
+					end
+
+					if newJumpPower == oldJumpPower then
+						eventCount += 2
+					end
+
 					task.spawn(function()
 						task.wait(5)
 						connection1:Disconnect()
@@ -703,7 +712,7 @@ return function(Vargs)
 						connection3:Disconnect()
 
 						if eventCount < 4 then
-							Detected("kick", "Humanoid tampering detected. Method 0x2")
+							Detected("kick", "Humanoid tampering detected. Method 0x2. Count: "..tostring(eventCount))
 						end
 					end)
 				end, function()
