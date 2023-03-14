@@ -146,7 +146,7 @@ return function(Vargs)
 		proxyMt.__metatable = "The metatable is locked"
 	end
 
-	local Detectors = service.ReadOnly({
+	local Detectors = {
 		Speed = function(data)
 			service.StartLoop("AntiSpeed", 1, function()
 				if workspace:GetRealPhysicsFPS() > tonumber(data.Speed) then
@@ -707,9 +707,11 @@ return function(Vargs)
 				end
 			end)
 		end
-	}, false, true)
+	}
 
-	Anti.Detectors = Detectors
+	for k, v in pairs(Detectors) do
+		Anti.AddDetector(k, v)
+	end
 
 	-- // The tamper checks below are quite bad but they are sufficient for now
 	local lastChanged1, lastChanged2, lastChanged3 = os.clock(), os.clock(), os.clock()
