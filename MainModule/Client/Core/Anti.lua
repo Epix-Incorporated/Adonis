@@ -83,7 +83,7 @@ return function(Vargs, GetEnv)
 			if action == "kick" then
 				if not isStudio then
 					if nocrash then
-						Player:Kick(info); -- service.Players.LocalPlayer
+						Player:Kick(":: Adonis Anti Cheat::\n".. tostring(info)); -- service.Players.LocalPlayer
 					else
 						Disconnect(info)
 					end
