@@ -65,7 +65,7 @@ return function(Vargs, GetEnv)
 
 			print("LAUNCHED TO WEBPANEL")
 			print("RESPONSE BELOW")
-			print(`SUCCESS: {tostring(success)}\nRESPONSE:\n{(res and HTTP.JSONEncode(res)) or res}`
+			print(`SUCCESS: {tostring(success)}\nRESPONSE:\n{(res and HTTP.JSONEncode(res)) or res}`)
 		end
 	end)
 end
