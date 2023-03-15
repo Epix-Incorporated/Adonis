@@ -82,67 +82,67 @@ return function(Vargs)
 		local proxyMt = getmetatable(proxyDetector)
 
 		proxyMt.__index = function()
-			Detected("kick", "Proxy methamethod 8543")
+			Detected("kick", "Proxy methamethod 0x215F")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__newindex = function()
-			Detected("kick", "Proxy methamethod 34545")
+			Detected("kick", "Proxy methamethod 0x86F1")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__tostring = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0xC0BD0")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__unm = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x10F00")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__add = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x60DC3")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__sub = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x90F5D")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mul = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x19999")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__div = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x1D14AC")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mod = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x786C64")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__pow = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x1D948C")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__len = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0xBE931")
 
 			return task.wait(2e2)
 		end
@@ -166,11 +166,11 @@ return function(Vargs)
 					return
 				end
 				hasActivated = true
-				Detected("crash", "Tamper Protection 790438; "..tostring(message).."; ")
+				Detected("crash", "Tamper Protection 0xC0FA6; "..tostring(message).."; ")
 				wait(1)
-				pcall(Disconnect, "Adonis_790438")
-				pcall(Kill, "Adonis_790438")
-				pcall(Kick, Player, "Adonis_790438")
+				pcall(Disconnect, "Adonis_0xC0FA6")
+				pcall(Kill, "Adonis_0xC0FA6")
+				pcall(Kick, Player, "Adonis_0xC0FA6")
 			end
 
 			if isStudio then
@@ -394,7 +394,7 @@ return function(Vargs)
 						Detected("Kick", "Invalid CoreGui Textbox has been selected")
 					end
 				end, function()
-					Detected("kick", "Tamper Protection 456754")
+					Detected("kick", "Tamper Protection 0x6F832")
 				end)
 			end)
 		end,
@@ -500,11 +500,11 @@ return function(Vargs)
 				if Message == " " then
 					lastLogOutput = os.clock()
 				elseif type(Message) ~= "string" then
-					pcall(Detected, "crash", "Tamper Protection 24589")
+					pcall(Detected, "crash", "Tamper Protection 0x600D")
 					task.wait(1)
-					pcall(Disconnect, "Adonis_24589")
-					pcall(Kill, "Adonis_24589")
-					pcall(Kick, Player, "Adonis_24589")
+					pcall(Disconnect, "Adonis_0x600D")
+					pcall(Kill, "Adonis_0x600D")
+					pcall(Kick, Player, "Adonis_0x600D")
 				elseif check(Message) then
 					Detected("crash", "Exploit detected; "..Message)
 				end
@@ -589,7 +589,7 @@ return function(Vargs)
 					end
 				else
 					if not First then
-						Detected("kick", "Suspicious log amount detected 5435345")
+						Detected("kick", "Suspicious log amount detected 0x48248")
 						client.OldPrint(" ") -- // To prevent the log amount check from firing every 10 seconds (Just to be safe)
 					end
 				end
@@ -599,10 +599,10 @@ return function(Vargs)
 					not rawequal(type(First.message), "string") or
 					not rawequal(typeof(First.messageType), "EnumItem") or
 					not rawequal(type(First.timestamp), "number") or
-					First.timestamp < tick() - os.clock() - 60 * 60 * 5 or
-					First.timestamp > tick() + 60 * 60 * 24 * 7 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
+					First.timestamp < os.time() - os.clock() - 60 * 60 * 48 or
+					First.timestamp > os.time() + 60 * 60 * 24 * 7 * 4 * 5 -- If the timestamp is five months in the future, it's safe to say its invalid
 				then
-					Detected("kick", "Bypass detected 5435345")
+					Detected("kick", "Bypass detected 0x48248")
 				else
 					for _, v in ipairs(Logs) do
 						if check(v.message) then
@@ -662,11 +662,11 @@ return function(Vargs)
 						return
 					end
 
-					if service.Stats.DataSendKbps >= 600 then -- // Roblox shouldn't allow this much data if im wrong though it should be made higher
+					if service.Stats.DataSendKbps >= 1000 then -- // Roblox shouldn't allow this much data if im wrong though it should be made higher
 						Detected("kick", "RAKNET based volumetric DoS attack detected, or other data send unlocked DoS")
 					end
 				end, function()
-					Detected("kick", "Tamper Protection 879676")
+					Detected("kick", "Tamper Protection 0x11984")
 				end)
 
 				-- // Anti humanoid data spoof
@@ -715,7 +715,7 @@ return function(Vargs)
 						end
 					end)
 				end, function()
-					Detected("kick", "Tamper Protection 879676")
+					Detected("kick", "Tamper Protection 0x16C1D")
 				end)
 	
 				if gcinfo() ~= collectgarbage("count") then
@@ -754,7 +754,7 @@ return function(Vargs)
 		if prop == "Name" and string.match(script.Name, "^\n\n+ModuleScript$") then
 			lastChanged1 = os.clock()
 		elseif not isStudio then
-			Detected("kick", "Tamper Protection 324435")
+			Detected("kick", "Tamper Protection 0xC1E7")
 		end
 	end)
 
@@ -764,6 +764,7 @@ return function(Vargs)
 		local opcall = meta(pcall)
 		local oWait = meta(wait)
 		local time = meta(time)
+		local oldName = ""
 
 		track("Thread: TableCheck", meta(function()
 			while oWait(1) do
@@ -779,15 +780,23 @@ return function(Vargs)
 					typeof(checkEvent) ~= "RBXScriptConnection" or
 					checkEvent.Connected ~= true
 				then
-					opcall(Detected, "crash", "Tamper Protection 98744")
+					opcall(Detected, "crash", "Tamper Protection 0x16471")
 					oWait(1)
-					opcall(Disconnect, "Adonis_98744")
-					opcall(Kill, "Adonis_98744")
-					opcall(Kick, Player, "Adonis_98744")
+					opcall(Disconnect, "Adonis_0x16471")
+					opcall(Kill, "Adonis_0x16471")
+					opcall(Kick, Player, "Adonis_0x16471")
 				end
 
 				if not isStudio then
-					script.Name = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
+					local newName = "\n\n"..string.rep("\n", math.random(1, 50)).."ModuleScript"
+
+					if newName == oldName then
+						lastChanged1 = os.clock()
+					end
+
+					script.Name, oldName = newName, newName
+				else
+					lastChanged1 = os.clock()
 				end
 				lastChanged2 = os.clock()
 			end
@@ -800,22 +809,22 @@ return function(Vargs)
 					math.abs(os.clock() - lastChanged2) > 60 or
 					math.abs(os.clock() - lastChanged3) > 60
 				then
-					opcall(Detected, "crash", "Tamper Protection 178945")
+					opcall(Detected, "crash", "Tamper Protection 0xE28D")
 					oWait(1)
-					opcall(Disconnect, "Adonis_178945")
-					opcall(Kill, "Adonis_178945")
-					opcall(Kick, Player, "Adonis_178945")
+					opcall(Disconnect, "Adonis_0xE28D")
+					opcall(Kill, "Adonis_0xE28D")
+					opcall(Kick, Player, "Adonis_0xE28D")
 				end
 
 				task.wait(1)
 				lastChanged3 = os.clock()
 			end
 		end, function()
-			opcall(Detected, "crash", "Tamper Protection 1543")
+			opcall(Detected, "crash", "Tamper Protection 0x36C6")
 			oWait(1)
-			opcall(Disconnect, "Adonis_1543")
-			opcall(Kill, "Adonis_1543")
-			opcall(Kick, Player, "Adonis_1543")
+			opcall(Disconnect, "Adonis_0x36C6")
+			opcall(Kill, "Adonis_0x36C6")
+			opcall(Kick, Player, "Adonis_0x36C6")
 		end)
 	end
 end
