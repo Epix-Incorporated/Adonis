@@ -1247,14 +1247,6 @@ return function(Vargs, GetEnv)
 			return ret
 		end;
 
-		CountTable = function(tab)
-			local num = 0
-			for i in tab do
-				num += 1
-			end
-			return num
-		end;
-
 		IsValidTexture = function(id)
 			local id = tonumber(id)
 			local ran, info = pcall(function() return service.MarketPlace:GetProductInfo(id) end)
@@ -1277,10 +1269,6 @@ return function(Vargs, GetEnv)
 
 		Trim = function(str)
 			return string.match(str, "^%s*(.-)%s*$")
-		end;
-
-		Round = function(num)
-			return math.floor(num + 0.5)
 		end;
 
 		RoundToPlace = function(num, places)
@@ -1383,7 +1371,7 @@ return function(Vargs, GetEnv)
 					num += 1
 				end
 
-				return good and num == Functions.CountTable(match)
+				return good and num == service.CountTable(match)
 			end
 			return false
 		end;
