@@ -38,9 +38,9 @@ return function(Vargs, env)
 							Name = username
 						}, reason, true, plr)
 
-						Functions.Hint("Direct-banned "..(if getNameSuccess then "@"..username else "'"..username.."'").." from the game", {plr})
+						Functions.Hint(`Direct-banned {if getNameSuccess then `@{username}` else `'{username}'`} from the game`, {plr})
 					else
-						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
+						Functions.Hint(`No user named '{i}' exists! (Please try again if you think this is an internal error)`, {plr})
 					end
 				end
 			end
@@ -60,7 +60,7 @@ return function(Vargs, env)
 						Core.DoSave({
 							Type = "TableRemove";
 							Table = "Banned";
-							Value = i..":"..UserId;
+							Value = `{i}:{UserId}`;
 						})
 
 						local getNameSuccess, actualName = pcall(service.Players.GetNameFromUserIdAsync, service.Players, UserId)
@@ -68,13 +68,13 @@ return function(Vargs, env)
 							Core.DoSave({
 								Type = "TableRemove";
 								Table = "Banned";
-								Value = i..":"..actualName;
+								Value = `{i}:{actualName}`;
 							})
 						end
 
-						Functions.Hint((if getNameSuccess then "@"..actualName else "'"..i.."'").." has been unbanned from the game", {plr})
+						Functions.Hint(`{if getNameSuccess then `@{actualName}` else `'{i}'`} has been unbanned from the game`, {plr})
 					else
-						Functions.Hint("No user named '"..i.."' exists! (Please try again if you think this is an internal error)", {plr})
+						Functions.Hint(`No user named '{i}' exists! (Please try again if you think this is an internal error)`, {plr})
 					end
 				end
 			end
@@ -95,10 +95,10 @@ return function(Vargs, env)
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
 					Title = "Force-teleport all users?";
 					Icon = server.MatIcons.Warning;
-					Question = "Would you really like to force all game-players to teleport to place '".. placeId.."'?";
+					Question = `Would you really like to force all game-players to teleport to place '{placeId}'?`;
 				})
 				if ans == "Yes" then
-					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, Settings.Prefix.."forceplace all "..placeId) then
+					if not Core.CrossServer("NewRunCommand", {Name = plr.Name; UserId = plr.UserId, AdminLevel = Admin.GetLevel(plr)}, `{Settings.Prefix}forceplace all {placeId}`) then
 						error("CrossServer handler not ready; please try again later")
 					end
 				else
@@ -147,20 +147,20 @@ return function(Vargs, env)
 				for _, v in service.GetPlayers(plr, args[1]) do
 					local ran, failed = pcall(service.PointsService.AwardPoints, service.PointsService, v.UserId, amount)
 					if ran and service.PointsService:GetAwardablePoints() >= amount then
-						Functions.Hint("Gave "..amount.." points to "..service.FormatPlayer(v), {plr})
+						Functions.Hint(`Gave {amount} points to {service.FormatPlayer(v)}`, {plr})
 					elseif service.PointsService:GetAwardablePoints() < amount then
-						Functions.Hint("You don't have "..amount.." points to give to "..service.FormatPlayer(v), {plr})
+						Functions.Hint(`You don't have {amount} points to give to {service.FormatPlayer(v)}`, {plr})
 					else
-						Functions.Hint("(Unknown Error) Failed to give "..amount.." points to "..service.FormatPlayer(v), {plr})
+						Functions.Hint(`(Unknown Error) Failed to give {amount} points to {service.FormatPlayer(v)}`, {plr})
 					end
-					Functions.Hint("Available Player Points: "..service.PointsService:GetAwardablePoints(), {plr})
+					Functions.Hint(`Available Player Points: {service.PointsService:GetAwardablePoints()}`, {plr})
 				end
 			end
 		};
 
 		Settings = {
 			Prefix = "";
-			Commands = {":adonissettings", Settings.Prefix.. "settings", Settings.Prefix.. "adonissettings"};
+			Commands = {":adonissettings", `{Settings.Prefix}settings`, `{Settings.Prefix}adonissettings`};
 			Args = {};
 			Description = "Opens the Adonis settings management interface";
 			AdminLevel = "Creators";
@@ -186,11 +186,11 @@ return function(Vargs, env)
 							Message = "You are a head admin. Click to view commands.";
 							Time = 10;
 							Icon = "rbxassetid://7536784790";
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a permanent head admin", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is now a permanent head admin`, {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
 					end
 				end
 			end
@@ -213,11 +213,11 @@ return function(Vargs, env)
 							Message = "You are a temp head admin. Click to view commands.";
 							Time = 10;
 							Icon = "rbxassetid://7536784790";
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
 						})
-						Functions.Hint(service.FormatPlayer(v).." is now a temporary head admin", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is now a temporary head admin`, {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is already the same admin level as you or higher`, {plr})
 					end
 				end
 			end
@@ -251,8 +251,8 @@ return function(Vargs, env)
 				end, function() return "[Unknown User]" end))
 
 				local ans = Remote.GetGui(plr, "YesNoPrompt", {
-					Question = "Clearing all PlayerData for "..username.." will erase all warns, notes, bans, and other data associated with them, such as theme preference.\n Are you sure you want to erase "..username.."'s PlayerData? This action is irreversible.";
-					Title = "Clear PlayerData for "..username.."?";
+					Question = `Clearing all PlayerData for {username} will erase all warns, notes, bans, and other data associated with them, such as theme preference.\n Are you sure you want to erase {username}'s PlayerData? This action is irreversible.`;
+					Title = `Clear PlayerData for {username}?`;
 					Icon = server.MatIcons.Info;
 					Size = {300, 200};
 				})
@@ -274,7 +274,7 @@ return function(Vargs, env)
 
 		Terminal = {
 			Prefix = "";
-			Commands = {Settings.Prefix.."terminal", Settings.Prefix.."console", ":terminal", ":console"};
+			Commands = {`{Settings.Prefix}terminal`, `{Settings.Prefix}console`, ":terminal", ":console"};
 			Description = "Opens the debug terminal";
 			AdminLevel = "Creators";
 			Function = function(plr: Player, args: {string})

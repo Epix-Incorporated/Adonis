@@ -112,7 +112,7 @@ local function canSee(targCFrame)
 	
 	local rayParams = RaycastParams.new()
 	rayParams.FilterDescendantsInstances = {char, props.Target}
-	rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
 	
 	local result = workspace:Raycast(myPos, (targetPos - myPos).Unit, rayParams)
 	

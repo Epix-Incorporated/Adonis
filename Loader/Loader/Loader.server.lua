@@ -96,7 +96,7 @@ else
 			end
 		end
 		if not moduleId then
-			error("Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in "..model.Parent:GetFullName())
+			error(`Adonis DebugMode is enabled but no ModuleScript named 'MainModule' is found in {model.Parent:GetFullName()}`)
 		end
 	end
 	local success, setTab = pcall(require, settingsModule)
@@ -130,7 +130,7 @@ else
 			table.insert(data.ServerPlugins, module)
 			
 		else
-			warn("[DEVELOPER ERROR] Unknown Plugin Type for "..tostring(module).."; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'")
+			warn(`[DEVELOPER ERROR] Unknown Plugin Type for {tostring(module)}; Plugin name should either start with 'Server:', 'Server-', 'Client:', or 'Client-'`)
 		end
 	end
 
@@ -139,7 +139,7 @@ else
 	end
 
 	if tonumber(moduleId) then
-		warn("Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/".. moduleId)
+		warn(`Requiring Adonis MainModule; Model URL: https://www.roblox.com/library/{moduleId}`)
 	end
 
 	local module = require(moduleId)

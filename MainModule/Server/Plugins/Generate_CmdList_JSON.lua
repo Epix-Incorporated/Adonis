@@ -46,7 +46,7 @@ return function(Vargs, GetEnv)
 			end
 
 			--warn("COMMANDS LIST JSON: ");
-			--print("\n\n".. HTTP:JSONEncode(list) .."\n\n");
+			--print(`\n\n{HTTP:JSONEncode(list)}\n\n`);
 			--print("ENCODED")
 			--// LAUNCH IT
 			print("LAUNCHING")
@@ -65,8 +65,7 @@ return function(Vargs, GetEnv)
 
 			print("LAUNCHED TO WEBPANEL")
 			print("RESPONSE BELOW")
-			print("SUCCESS: ".. tostring(success).. "\n"..
-				"RESPONSE:\n"..(res and HTTP.JSONEncode(res)) or res)
+			print(`SUCCESS: {tostring(success)}\nRESPONSE:\n{(res and HTTP.JSONEncode(res)) or res}`
 		end
 	end)
 end

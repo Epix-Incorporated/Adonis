@@ -1544,7 +1544,7 @@ return function(data, env)
 			if options then
 				for i,v in pairs(options) do
 					local button = scroller:Add("TextButton", {
-						Text = "  ".. tostring(v);
+						Text = `  {tostring(v)}`;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						ZIndex = menu.ZIndex;
@@ -1732,7 +1732,7 @@ return function(data, env)
 					local label
 					if v.TextSelectable or entProps.TextSelectable then
 						label = create("TextBox",{
-							Text = " "..tostring(text);
+							Text = ` {tostring(text)}`;
 							ToolTip = desc;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;
@@ -1748,7 +1748,7 @@ return function(data, env)
 						})
 					else
 						label = create("TextLabel",{
-							Text = " "..tostring(text);
+							Text = ` {tostring(text)}`;
 							ToolTip = desc;
 							Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 							Visible = true;

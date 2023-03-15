@@ -262,7 +262,7 @@ return function(data, env)
 				local custom = specialPeople[tostring(p.UserId)]
 				if image then
 					if custom then
-						image.Image = 'http://www.roblox.com/asset/?id='..custom
+						image.Image = `http://www.roblox.com/asset/?id={custom}`
 						image.Visible = true
 					elseif p.UserId==game.CreatorId then
 						image.Image = 'rbxasset://textures/ui/icon_placeowner.png'

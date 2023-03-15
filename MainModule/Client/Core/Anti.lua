@@ -220,7 +220,7 @@ return function(Vargs, GetEnv)
 						pcall(Kill, "Adonis_906287")
 						pcall(Kick, Player, "Adonis_906287")
 					elseif value then
-						Detected(action, method.." detector detected")
+						Detected(action, `{method} detector detected`)
 					end
 				end
 
@@ -308,7 +308,7 @@ return function(Vargs, GetEnv)
 					return
 				end
 				hasActivated = true
-				Detected("crash", "Tamper Protection 790438; "..tostring(message).."; ")
+				Detected("crash", `Tamper Protection 790438; {tostring(message)};`)
 				task.wait(1)
 				pcall(Disconnect, "Adonis_790438")
 				pcall(Kill, "Adonis_790438")
@@ -366,7 +366,7 @@ return function(Vargs, GetEnv)
 					if type(time) ~= "number" or not (time > 0) then
 						idleTamper("Invalid time data")
 					elseif time > 30 * 60 and isAntiAntiIdlecheck ~= false then
-						Detected("kick", "Anti-idle detected. "..tostring(math.ceil(time/60) - 20).." minutes above maximum possible Roblox value")
+						Detected("kick", `Anti-idle detected. {tostring(math.ceil(time/60) - 20)} minutes above maximum possible Roblox value`)
 					end
 				end)
 
@@ -489,7 +489,7 @@ return function(Vargs, GetEnv)
 
 				if t and (t:IsA("Tool") or t.ClassName == "HopperBin") and not t:FindFirstChild(Variables.CodeName) and service.Player:FindFirstChild("Backpack") and t:IsDescendantOf(service.Player.Backpack) then
 					if t.ClassName == "HopperBin" and (rawequal(t.BinType, Enum.BinType.Grab) or rawequal(t.BinType, Enum.BinType.Clone) or rawequal(t.BinType, Enum.BinType.Hammer) or rawequal(t.BinType, Enum.BinType.GameTool)) then
-						Detected("kick", "Building Tools detected; "..tostring(t.BinType))
+						Detected("kick", `Building Tools detected; {tostring(t.BinType)}`)
 					end
 				end
 			end
@@ -501,11 +501,11 @@ return function(Vargs, GetEnv)
 			service.PolicyService.ChildAdded:Connect(function(child)
 				if child:IsA("Sound") then
 					if soundIdCheck(child) then
-						Detected("crash", "CMDx Detected; "..tostring(child))
+						Detected("crash", `CMDx Detected; {tostring(child)}`)
 					else
 						task.wait()
 						if soundIdCheck(child) then
-							Detected("crash", "CMDx Detected; "..tostring(child))
+							Detected("crash", `CMDx Detected; {tostring(child)}`)
 						end
 					end
 				end
@@ -521,20 +521,20 @@ return function(Vargs, GetEnv)
 					pcall(Kill, "Adonis_24589")
 					pcall(Kick, Player, "Adonis_24589")
 				elseif check(Message) then
-					Detected("crash", "Exploit detected; "..Message)
+					Detected("crash", `Exploit detected; {Message}`)
 				end
 			end)
 
 			--[[
 			service.ScriptContext.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) ~= "CoreScript" then
-					Detected("kick","Non-CoreScript Detected; "..tostring(child))
+					Detected("kick", `Non-CoreScript Detected; {tostring(child)}`)
 				end
 			end)
 
 			service.ReplicatedFirst.ChildAdded:Connect(function(child)
 				if Anti.GetClassName(child) == "LocalScript" then
-					Detected("kick", "Localscript Detected; "..tostring(child))
+					Detected("kick", `Localscript Detected; {tostring(child)}`)
 				end
 			end)
 			]]
@@ -545,7 +545,7 @@ return function(Vargs, GetEnv)
 				if Script and Script == "tpircsnaisyle" then
 					Detected("kick", "Elysian Detected")
 				elseif check(Message) or check(Trace) or check(Script) then
-					Detected("crash", "Exploit detected; "..Message.." "..Trace.." "..Script)
+					Detected("crash", `Exploit detected; {Message} {Trace} {Script}`)
 				elseif not Script or (not Trace or Trace == "") then
 					local tab = service.LogService:GetLogHistory()
 					local continue = false
@@ -616,7 +616,7 @@ return function(Vargs, GetEnv)
 				else
 					for _, v in Logs do
 						if check(v.message) then
-							Detected("crash", "Exploit detected; "..v.message)
+							Detected("crash", `Exploit detected; {v.message}`)
 						end
 					end
 				end
@@ -642,7 +642,7 @@ return function(Vargs, GetEnv)
 				--[=[for _, v in {"SentinelSpy", "ScriptDumper", "VehicleNoclip", "Strong Stand"} do -- recursive findfirstchild check that yeets some stuff; --[["Sentinel",]]
 					local object = Player and Player.Name ~= v and service.UnWrap(game).FindFirstChild(service.UnWrap(game), v, true)            -- ill update the list periodically
 					if object then
-						Detected("kick", "Malicious Object?: " .. v)
+						Detected("kick", `Malicious Object?: {v}`)
 					end
 				end]=]
 

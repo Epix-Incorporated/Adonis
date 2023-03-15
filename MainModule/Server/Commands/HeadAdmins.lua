@@ -13,7 +13,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"timeban", "tempban", "tban", "temporaryban"};
 			Args = {"player", "number<s/m/h/d>", "reason"};
-			Description = "Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
+			Description = `Bans the target player(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string}, data: {})
@@ -37,7 +37,7 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "time-ban", false) then
 						Admin.AddTimeBan(v, duration, reason, plr)
-						Functions.Hint("Time-banned "..service.FormatPlayer(v, true).." for ".. args[2], {plr})
+						Functions.Hint(`Time-banned {service.FormatPlayer(v, true)} for {args[2]}`, {plr})
 					end
 				end
 			end
@@ -47,7 +47,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"directtimeban", "directtimedban", "directtempban", "directtban", "directtemporaryban"};
 			Args = {"username(s)", "number<s/m/h/d>", "reason"};
-			Description = "Bans the target user(s) from the game for the supplied amount of time; data-persistent; undo using "..Settings.Prefix.."untimeban";
+			Description = `Bans the target user(s) from the game for the supplied amount of time; data-persistent; undo using {Settings.Prefix}untimeban`;
 			Filter = true;
 			AdminLevel = "HeadAdmins";
 			Hidden = true;
@@ -78,11 +78,11 @@ return function(Vargs, env)
 						Admin.AddTimeBan({UserId = UserId, Name = if getNameSuccess then actualName else i}, duration, reason, plr)
 
 						Functions.Hint(
-							"Time-banned "..(if getNameSuccess then "@"..actualName else "'"..i.."'").." for "..args[2],
+							`Time-banned {if getNameSuccess then `@{actualName}` else `'{i}'`} for {args[2]}`,
 							{plr}
 						)
 					else
-						Functions.Hint("No user named '"..i.."' exists (Please try again if you think this is an internal error)", {plr})
+						Functions.Hint(`No user named '{i}' exists (Please try again if you think this is an internal error)`, {plr})
 					end
 				end
 			end
@@ -102,8 +102,8 @@ return function(Vargs, env)
 				do
 					Functions.Hint(
 						if Admin.RemoveTimeBan(v.Name)
-							then service.FormatPlayer(v, true).." has been un-time-banned"
-							else service.FormatPlayer(v, true).." is not currently time-banned",
+							then `{service.FormatPlayer(v, true)} has been un-time-banned`
+							else `{service.FormatPlayer(v, true)} is not currently time-banned`,
 						{plr}
 					)
 				end
@@ -127,9 +127,9 @@ return function(Vargs, env)
 				do
 					if Admin.CheckAuthority(plr, v, "game-ban", false) then
 						Admin.AddBan(v, reason, true, plr)
-						Functions.Hint("Game-banned "..service.FormatPlayer(v, true), {plr})
+						Functions.Hint(`Game-banned {service.FormatPlayer(v, true)}`, {plr})
 					else
-						Functions.Hint("Unable to game-ban "..service.FormatPlayer(v, true).." (insufficient permission level)", {plr})
+						Functions.Hint(`Unable to game-ban {service.FormatPlayer(v, true)} (insufficient permission level)`, {plr})
 					end
 				end
 			end
@@ -149,8 +149,8 @@ return function(Vargs, env)
 				do
 					Functions.Hint(
 						if Admin.RemoveBan(v.Name, true)
-							then service.FormatPlayer(v, true).." has been unbanned from the game"
-							else service.FormatPlayer(v, true).." is not currently banned",
+							then `{service.FormatPlayer(v, true)} has been unbanned from the game`
+							else `{service.FormatPlayer(v, true)} is not currently banned`,
 						{plr}
 					)
 				end
@@ -174,11 +174,11 @@ return function(Vargs, env)
 							Message = "You are a temp administrator. Click to view commands.";
 							Time = 10;
 							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
 						})
-						Functions.Hint(service.FormatPlayer(v, true).." is now a temporary admin", {plr})
+						Functions.Hint(`{service.FormatPlayer(v, true)} is now a temporary admin`, {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v, true).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
 					end
 				end
 			end
@@ -204,11 +204,11 @@ return function(Vargs, env)
 							Message = "You are an administrator. Click to view commands.";
 							Time = 10;
 							Icon = server.MatIcons["Admin panel settings"];
-							OnClick = Core.Bytecode("client.Remote.Send('ProcessCommand','"..Settings.Prefix.."cmds')");
+							OnClick = Core.Bytecode(`client.Remote.Send('ProcessCommand','{Settings.Prefix}cmds')`);
 						})
-						Functions.Hint(service.FormatPlayer(v, true).." is now a permanent admin", {plr})
+						Functions.Hint(`{service.FormatPlayer(v, true)} is now a permanent admin`, {plr})
 					else
-						Functions.Hint(service.FormatPlayer(v, true).." is already the same admin level as you or higher", {plr})
+						Functions.Hint(`{service.FormatPlayer(v, true)} is already the same admin level as you or higher`, {plr})
 					end
 				end
 			end
@@ -260,7 +260,7 @@ return function(Vargs, env)
 				if not Settings.Trello_Enabled or trello == nil then return Functions.Hint('Trello has not been configured in settings', {plr}) end
 
 				local list = trello.Boards.MakeList(Settings.Trello_Primary, args[1])
-				Functions.Hint("Made list "..list.name, {plr})
+				Functions.Hint(`Made list {list.name}`, {plr})
 			end
 		};
 
@@ -368,7 +368,7 @@ return function(Vargs, env)
 
 				Logs.AddLog(Logs.Script, {
 					Text = "Backup Complete";
-					Desc = plr_name.." has successfully backed up the map.";
+					Desc = `{plr_name} has successfully backed up the map.`;
 				})
 			end
 		};
@@ -377,7 +377,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"explore", "explorer"};
 			Args = {};
-			Description = "Lets you explore the game, kinda like a file browser (alternative to "..Settings.Prefix.."dex)";
+			Description = `Lets you explore the game, kinda like a file browser (alternative to {Settings.Prefix}dex)`;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
 				Remote.MakeGui(plr, "Explorer")
@@ -401,7 +401,7 @@ return function(Vargs, env)
 			Prefix = Settings.Prefix;
 			Commands = {"forcerejoin"};
 			Args = {"player"};
-			Description = "Forces target player(s) to rejoin the server; same as them running "..Settings.PlayerPrefix.."rejoin";
+			Description = `Forces target player(s) to rejoin the server; same as them running {Settings.PlayerPrefix}rejoin`;
 			NoStudio = true;
 			AdminLevel = "HeadAdmins";
 			Function = function(plr: Player, args: {string})
@@ -426,7 +426,7 @@ return function(Vargs, env)
 
 				if
 					Remote.GetGui(plr, "YesNoPrompt", {
-						Question = "Shutdown all running servers for the reason '"..tostring(args[1]).."'?";
+						Question = `Shutdown all running servers for the reason '{tostring(args[1])}'?`;
 						Title = "Global Shutdown";
 					}) == "Yes"
 				then
@@ -438,7 +438,7 @@ return function(Vargs, env)
 								UserId = plr.UserId,
 								AdminLevel = Admin.GetLevel(plr)
 							},
-							Settings.Prefix.."shutdown "..args[1] .. "\n\n\n[GLOBAL SHUTDOWN]"
+							`{Settings.Prefix}shutdown {args[1]}\n\n\n[GLOBAL SHUTDOWN]`
 						),
 						"An error has occured"
 					)
@@ -497,7 +497,7 @@ return function(Vargs, env)
 			Function = function(plr: Player, args: {string})
 				for _, v: Player in service.GetPlayers(plr, args[1]) do
 					if Variables.IncognitoPlayers[v] then
-						Functions.Hint(service.FormatPlayer(v).." is already incognito.", {plr})
+						Functions.Hint(`{service.FormatPlayer(v)} is already incognito.`, {plr})
 						continue
 					end
 					Variables.IncognitoPlayers[v] = os.time()

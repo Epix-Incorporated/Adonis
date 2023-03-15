@@ -162,7 +162,7 @@ return function(data, env)
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
+				img.Image = `rbxassetid://{textures[i]}`
 				task.wait(0.1)
 			end
 		end
@@ -216,7 +216,7 @@ return function(data, env)
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
+				img.Image = `rbxassetid://{textures[i]}`
 				task.wait(0.1)
 			end
 		end
@@ -271,7 +271,7 @@ return function(data, env)
 
 		while gui and gui.Parent do
 			for i=1,#textures do
-				img.Image = "rbxassetid://"..textures[i]
+				img.Image = `rbxassetid://{textures[i]}`
 				task.wait(0.13)
 			end
 		end
@@ -303,7 +303,7 @@ return function(data, env)
 		bg.Parent = gui
 	elseif mode == "ScreenImage" then
 		local bg = Instance.new("ImageLabel")
-		bg.Image="rbxassetid://"..data.Image
+		bg.Image=`rbxassetid://{data.Image}`
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
@@ -312,7 +312,7 @@ return function(data, env)
 		bg.Parent = gui
 	elseif mode == "ScreenVideo" then
 		local bg = Instance.new("VideoFrame")
-		bg.Video="rbxassetid://"..data.Video
+		bg.Video=`rbxassetid://{data.Video}`
 		bg.BackgroundColor3 = Color3.new(0,0,0)
 		bg.BackgroundTransparency = 0
 		bg.Size = UDim2.new(1,0,1,0)
