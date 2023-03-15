@@ -477,7 +477,7 @@ return service.NewProxy({
 			script:Destroy()
 			return "FAILED"
 		else
-			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Value = "Running"})
+			mutex = service.New("StringValue", {Name = "__Adonis_MODULE_MUTEX", Archivable = false, Value = "Running"})
 			local mutexBackup = mutex:Clone()
 			local function makePersistent(m)
 				local connection1, connection2 = nil, nil
