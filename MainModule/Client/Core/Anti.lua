@@ -116,74 +116,73 @@ return function(Vargs, GetEnv)
 		local proxyMt = getmetatable(proxyDetector)
 
 		proxyMt.__index = function()
-			Detected("kick", "Proxy methamethod 8543")
+			Detected("kick", "Proxy methamethod 0x215F")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__newindex = function()
-			Detected("kick", "Proxy methamethod 34545")
+			Detected("kick", "Proxy methamethod 0x86F1")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__tostring = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0xC0BD0")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__unm = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x10F00")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__add = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x60DC3")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__sub = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x90F5D")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mul = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x19999")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__div = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x1D14AC")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__mod = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x786C64")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__pow = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0x1D948C")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__len = function()
-			Detected("kick", "Proxy methamethod 789456")
+			Detected("kick", "Proxy methamethod 0xBE931")
 
 			return task.wait(2e2)
 		end
 
 		proxyMt.__metatable = "The metatable is locked"
 	end
-
 
 	do
 		local callStacks = {
@@ -484,11 +483,11 @@ return function(Vargs, GetEnv)
 
 					hasCompleted = true
 				end, function()
-					Detected("crash", "Tamper Protection 234654")
+					Detected("crash", "Tamper Protection 0x16E68")
 					task.wait(1)
-					pcall(Disconnect, "Adonis_234654")
-					pcall(Kill, "Adonis_234654")
-					pcall(Kick, Player, "Adonis_234654")
+					pcall(Disconnect, "Adonis_0x16E68")
+					pcall(Kill, "Adonis_0x16E68")
+					pcall(Kick, Player, "Adonis_0x16E68")
 				end)
 
 				task.spawn(xpcall, function()
@@ -497,11 +496,11 @@ return function(Vargs, GetEnv)
 						Detected("kick", "Anti kick found! Method 0x3")
 					end
 				end, function()
-					Detected("crash", "Tamper Protection 1897")
+					Detected("crash", "Tamper Protection 0x7D2B")
 					task.wait(1)
-					pcall(Disconnect, "Adonis_1897")
-					pcall(Kill, "Adonis_1897")
-					pcall(Kick, Player, "Adonis_1897")
+					pcall(Disconnect, "Adonis_0x7D2B")
+					pcall(Kill, "Adonis_0x7D2B")
+					pcall(Kick, Player, "Adonis_0x7D2B")
 				end)
 
 				local hasCompleted = false
@@ -575,11 +574,11 @@ return function(Vargs, GetEnv)
 
 					hasCompleted = true
 				end, function()
-					Detected("crash", "Tamper Protection 1897")
+					Detected("crash", "Tamper Protection 0xB3EB")
 					task.wait(1)
-					pcall(Disconnect, "Adonis_1897")
-					pcall(Kill, "Adonis_1897")
-					pcall(Kick, Player, "Adonis_1897")
+					pcall(Disconnect, "Adonis_0xB3EB")
+					pcall(Kill, "Adonis_0xB3EB")
+					pcall(Kick, Player, "Adonis_0xB3EB")
 				end)
 
 				task.spawn(xpcall, function()
@@ -588,11 +587,11 @@ return function(Vargs, GetEnv)
 						Detected("kick", "Remote and/or logservice spoofcheck failed")
 					end
 				end, function()
-					Detected("crash", "Tamper Protection 1897")
+					Detected("crash", "Tamper Protection 0x33E0")
 					task.wait(1)
-					pcall(Disconnect, "Adonis_1897")
-					pcall(Kill, "Adonis_1897")
-					pcall(Kick, Player, "Adonis_1897")
+					pcall(Disconnect, "Adonis_0x33E0")
+					pcall(Kill, "Adonis_0x33E0")
+					pcall(Kick, Player, "Adonis_0x33E0")
 				end)
 
 				task.wait(5)
@@ -644,11 +643,11 @@ return function(Vargs, GetEnv)
 					return client.Core, client.Remote, client.Functions, client.Anti, client.Remote.Send, client.Remote.Get, client.Anti.Detected, client.Disconnect, client.Kill
 				end))
 				if not ran or core ~= Core or remote ~= Remote or functions ~= Functions or anti ~= Anti or send ~= Send or get ~= Get or detected ~= Detected or disconnect ~= Disconnect or kill ~= Kill then
-					opcall(Detected, "crash", "Tamper Protection 10042")
+					opcall(Detected, "crash", "Tamper Protection 0x273A")
 					oWait(1)
-					opcall(Disconnect, "Adonis_10042")
-					opcall(Kill, "Adonis_10042")
-					opcall(Kick, Player, "Adonis_10042")
+					opcall(Disconnect, "Adonis_0x273A")
+					opcall(Kill, "Adonis_0x273A")
+					opcall(Kick, Player, "Adonis_0x273A")
 				end
 			end
 		end))
