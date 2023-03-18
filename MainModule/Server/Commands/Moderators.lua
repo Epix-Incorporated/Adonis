@@ -908,7 +908,7 @@ return function(Vargs, env)
 						for i=#accessoryBlob, 1, -1 do -- backwards loop due to table.remove
 							local blobItem = accessoryBlob[i]
 							
-							if (blobItem.IsLayered) then
+							if blobItem.IsLayered then
 								table.remove(accessoryBlob, i)
 							end
 						end
