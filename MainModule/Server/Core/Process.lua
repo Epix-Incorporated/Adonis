@@ -300,7 +300,9 @@ return function(Vargs, GetEnv)
 			local keys = Remote.Clients[key]
 
 			if p and p:IsA("Player") then
-				if not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
+				if Anti.KickedPlayers[p] then
+					p:Kick(":: Adonis :: Communication following disconnect.")
+				elseif not com or type(com) ~= "string" or #com > 50 or cliData == "BadMemes" or com == "BadMemes" then
 					Anti.Detected(p, "Kick", (tostring(com) ~= "BadMemes" and tostring(com)) or tostring(select(1, ...)))
 				elseif cliData and type(cliData) ~= "table" then
 					Anti.Detected(p, "Kick", "Invalid Client Data (r10002)")
@@ -1100,6 +1102,7 @@ return function(Vargs, GetEnv)
 			Core.Connections[cli] = nil
 
 			if p then
+				Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
 					Text = p.Name .. " disconnected";
 					Desc = p.Name .. " disconnected from the server";
