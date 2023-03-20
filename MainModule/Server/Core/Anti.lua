@@ -13,6 +13,8 @@ return function(Vargs, GetEnv)
 
 	local server = Vargs.Server;
 	local service = Vargs.Service;
+	local antiNotificationDebounce = {}
+	local antiNotificationResetTick = os.clock() + 60
 
 	local Functions, Admin, Anti, Core, HTTP, Logs, Remote, Process, Variables, Settings
 	local function Init()
@@ -62,13 +64,13 @@ return function(Vargs, GetEnv)
 		service.Players.PlayerAdded:Connect(onPlayerAdded)
 	end
 
-	local antiNotificationDebounce, antiNotificationResetTick = {}, os.clock() + 60
-
 	server.Anti = {
 		Init = Init;
 		RunAfterPlugins = RunAfterPlugins;
 		ClientTimeoutLimit = 300; --// ... Five minutes without communication seems long enough right?
 		SpoofCheckCache = {};
+		KickedPlayers = setmetatable({}, {__mode = "k"});
+
 		RemovePlayer = function(p, info)
 			info = tostring(info) or "No Reason Given"
 
@@ -357,11 +359,16 @@ return function(Vargs, GetEnv)
 		Detected = function(player, action, info)
 			local info = string.gsub(tostring(info), "\n", "")
 
-			if service.RunService:IsStudio() then
+			if Anti.KickedPlayers[player] then
+				player:Kick(":: Adonis ::\n"..info)
+				return
+			elseif service.RunService:IsStudio() then
 				warn("ANTI-EXPLOIT: "..player.Name.." "..action.." "..info)
 			elseif service.NetworkServer then
 				if player then
 					if string.lower(action) == "kick" then
+						Anti.KickedPlayers[player] = true
+
 						Anti.RemovePlayer(player, info)
 					elseif string.lower(action) == "kill" then
 						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -372,6 +379,8 @@ return function(Vargs, GetEnv)
 						end
 						player.Character:BreakJoints()
 					elseif string.lower(action) == "crash" then
+						Anti.KickedPlayers[player] = true
+
 						Remote.Send(player, "Function", "Kill")
 						task.wait(5)
 						pcall(function()
