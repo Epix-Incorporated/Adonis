@@ -190,6 +190,14 @@ return function(Vargs, GetEnv)
 			AdminLevel = true;
 			LastLevelUpdate = true;
 		};
+		
+		UpdatePlayerConnection = function(p)
+			for i, cli in next,service.NetworkServer:GetChildren() do
+				if cli:GetPlayer() == p then
+					Core.Connections[cli] = p
+				end
+			end
+		end;
 
 		DisconnectEvent = function()
 			if Core.RemoteEvent and not Core.FixingEvent then
