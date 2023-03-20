@@ -689,6 +689,7 @@ return function(Vargs, GetEnv)
 				--Module = Core.MockClientKeys and Core.MockClientKeys.Module;
 			}
 
+			Core.UpdatePlayerConnection(p)
 			Core.PlayerData[key] = nil
 			Remote.Clients[key] = keyData
 
