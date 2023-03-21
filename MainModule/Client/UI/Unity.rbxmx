@@ -194,7 +194,7 @@ return function(data, env)
 
 	task.spawn(function()
 		local sound = Instance.new("Sound",service.LocalContainer())
-		sound.SoundId = 'rbxassetid://'.."203785584"--client.NotificationSound
+		sound.SoundId = 'rbxassetid://203785584'--client.NotificationSound
 		sound.Volume = 0.2
 		sound:Play()
 		wait(0.5)
@@ -3572,7 +3572,7 @@ return function(data, env)
 			if options then
 				for i,v in next,options do
 					local button = scroller:Add("TextButton", {
-						Text = "  ".. tostring(v);
+						Text = `  {v}`;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, 30*(i-1));
 						ZIndex = menu.ZIndex;
@@ -3732,7 +3732,7 @@ return function(data, env)
 					end
 
 					local label = create("TextLabel",{
-						Text = " "..tostring(text);
+						Text = ` {text}`;
 						ToolTip = desc;
 						Size = UDim2.new(1,-5,0,(entProps.ySize or 20));
 						Visible = true;
@@ -8302,11 +8302,11 @@ return function(data, env)
 					local nt4
 					local hour=t4:match("%d+")
 					if tonumber(hour)>12 or tonumber(hour)<1 then
-						nt4=math.abs(tonumber(hour)-12)..t4:match(":%d+").." PM"
+						nt4=`{math.abs(tonumber(hour)-12)}{t4:match(":%d+")} PM`
 					else
-						nt4=t4.." AM"
+						nt4=`{t4} AM`
 					end
-					bar.Text=t4.." / "..nt4
+					bar.Text=`{t4} / {nt4}`
 				until not wait(1)
 			end)
 		else
@@ -8853,17 +8853,17 @@ return function(data, env)
 	if not tim then
 		local _,time = message:gsub(" ","")
 		time = math.clamp(time/2,4,11)+1
-		Left.Text = '['..time..']'
+		Left.Text = `[{time}]`
 		for i=time,1,-1 do
 			if not Left then break end
-			Left.Text = '['..i..']'
+			Left.Text = `[{i}]`
 			wait(1)
 		end
 	else
-		Left.Text = '['..tim..']'
+		Left.Text = `[{tim}]`
 		for i=tim,1,-1 do
 			if not Left then break end
-			Left.Text = '['..i..']'
+			Left.Text = `[{i}]`
 			wait(1)
 		end
 	end
@@ -9365,8 +9365,7 @@ return function(data, env)
 	toggle.ZIndex = 67
 	toggle1.Size = UDim2.new(0, 40, 0, 40)
 		toggle.Image =
-			"https://www.roblox.com/headshot-thumbnail/image?userId=" ..
-			localplayer.UserId .. "&width=420&height=420&format=png"
+			`https://www.roblox.com/headshot-thumbnail/image?userId={localplayer.UserId}&width=420&height=420&format=png`
 
 
 
@@ -10062,7 +10061,7 @@ return function(data, env)
 		if c == 'Text' and text.Text ~= '' and open then
 			if string.sub(text.Text, string.len(text.Text)) == "	" then
 				if players:FindFirstChild("Entry 0") then
-					text.Text = (string.sub(text.Text, 1, (string.len(text.Text) - 1))..players["Entry 0"].Text).." "
+					text.Text = `{string.sub(text.Text, 1, (string.len(text.Text) - 1))}{players["Entry 0"].Text} `
 				elseif scroll:FindFirstChild("Entry 0") then
 					text.Text = string.split(scroll["Entry 0"].Text, "<")[1]
 				else
@@ -10075,18 +10074,18 @@ return function(data, env)
 			players:ClearAllChildren()
 
 			local nText = text.Text
-			if string.match(nText,".*"..batchKey.."([^']+)") then
-				nText = string.match(nText,".*"..batchKey.."([^']+)")
+			if string.match(nText,`.*{batchKey}([^']+)`) then
+				nText = string.match(nText,`.*{batchKey}([^']+)`)
 				nText = string.match(nText,"^%s*(.-)%s*$")
 			end
 
 			local pNum = 0
-			local pMatch = string.match(nText,".+"..splitKey.."(.*)$")
+			local pMatch = string.match(nText,`.+{splitKey}(.*)$`)
 			for i,v in next,service.Players:GetPlayers() do
-				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,splitKey.."$") then
+				if (pMatch and string.sub(string.lower(tostring(v)),1,#pMatch) == string.lower(pMatch)) or string.match(nText,`{splitKey}$`) then
 					local new = entry:Clone()
 					new.Text = tostring(v)
-					new.Name = "Entry "..pNum
+					new.Name = `Entry {pNum}`
 					new.TextXAlignment = "Right"
 					new.Visible = true
 					new.Parent = players
@@ -10103,7 +10102,7 @@ return function(data, env)
 
 			local num = 0
 			for i,v in next,commands do
-				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),"^(.-)"..splitKey) or string.lower(nText), 1, true) then
+				if string.sub(string.lower(v),1,#nText) == string.lower(nText) or string.find(string.lower(v), string.match(string.lower(nText),`^(.-){splitKey}`) or string.lower(nText), 1, true) then
 					if not scrollOpen then
 						scrollOpenTween:Play();
 						--frame.Size = UDim2.new(1,0,0,140)
@@ -10115,7 +10114,7 @@ return function(data, env)
 					b.Visible = true
 					b.Parent = scroll
 					b.Text = v
-					b.Name = "Entry "..num
+					b.Name = `Entry {num}`
 					b.Position = UDim2.new(0,0,0,20*num)
 					b.Activated:Connect(function()
 						text.Text = b.Text:gsub("<.->", "")
@@ -10323,15 +10322,15 @@ return function(data, env)
 
 		for i,v in next,(list  or {}) do
 			if type(v) == "table" then
-				loading.Text = "Loading tracks ("..i.."/"..#list..")";
+				loading.Text = `Loading tracks ({i}/{#list})`;
 				local success, product_info = pcall(function()
 					return service.MarketplaceService:GetProductInfo(v.ID, Enum.InfoType.Asset)
 				end)
 				if product_info.AssetTypeId == 3 then
 					table.insert(availableSongLists[tab.Name], v)
 					frame:Add("TextButton", {
-						Text = "  " .. (num + 1) .. ") " .. (success and product_info.Name or "[ERROR] "..v.Name);
-						ToolTip = "Name: ".. v.Name .." | ID: "..v.ID;
+						Text = `  {num + 1)}) {success and product_info.Name or `[ERROR] {v.Name}`}`;
+						ToolTip = `Name: {v.Name} | ID: {v.ID}`;
 						Size = UDim2.new(1, 0, 0, 25);
 						Position = UDim2.new(0, 0, 0, num*25);
 						BackgroundTransparency = (num%2 == 0 and 0) or 0.2;
@@ -10343,7 +10342,7 @@ return function(data, env)
 							button.BackgroundTransparency = 0.5
 
 							soundInstance:Stop()
-							soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. v.ID;
+							soundInstance.SoundId = `http://www.roblox.com/asset/?id={v.ID}`;
 							soundInstance:Play()
 
 							heading.Text = success and product_info.Name or v.Name
@@ -10367,12 +10366,12 @@ return function(data, env)
 					local toPlay = activeSongList[(rnum)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -10384,12 +10383,12 @@ return function(data, env)
 					local toPlay = activeSongList[(selected.Index +1)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -10584,7 +10583,7 @@ return function(data, env)
 				TextChanged = function(text, enter, new)
 					if enter then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. text;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={text}`;
 						soundInstance:Play()
 					end
 				end
@@ -10661,12 +10660,12 @@ return function(data, env)
 					local toPlay = activeSongList[(rnum)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -10678,12 +10677,12 @@ return function(data, env)
 					local toPlay = activeSongList[(selected.Index -1)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -10731,12 +10730,12 @@ return function(data, env)
 					local toPlay = activeSongList[(rnum)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -10748,12 +10747,12 @@ return function(data, env)
 					local toPlay = activeSongList[(selected.Index +1)]
 					if toPlay then
 						soundInstance:Stop()
-						soundInstance.SoundId = "http://www.roblox.com/asset/?id=" .. toPlay.ID;
+						soundInstance.SoundId = `http://www.roblox.com/asset/?id={toPlay.ID}`;
 						soundInstance:Play()
 						local success, product_info = pcall(function()
 							return service.MarketplaceService:GetProductInfo(toPlay.ID, Enum.InfoType.Asset)
 						end)
-						heading.Text = success and product_info.Name or "[ERROR] "..toPlay.Name
+						heading.Text = success and product_info.Name or `[ERROR] {toPlay.Name}`
 						selected = {
 							ID = toPlay.ID,
 							Name = toPlay.Name,
@@ -11351,11 +11350,11 @@ return function(data, env)
 			v.Text = (data.Sanitize and service.SanitizeString(v.Text)) or v.Text
 
 			if v.Duplicates then
-				v.Text = "(x"..v.Duplicates..") "..v.Text
+				v.Text = `(x{v.Duplicates}) {v.Text}`
 			end
 
 			if v.Time then
-				v.Text = "["..(type(v.Time) == "number" and service.FormatTime(v.Time) or v.Time).."] "..v.Text
+				v.Text = `[{type(v.Time) == "number" and service.FormatTime(v.Time) or v.Time}] {v.Text}`
 			end
 		end
 
@@ -11398,9 +11397,9 @@ return function(data, env)
 				--pageCounterLabel.TextTruncate = Enum.TextTruncate.None
 				if currentListTab then
 					local maxPages = math.ceil(#currentListTab/PageSize);
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`;
 				else
-					pageCounterLabel.Text = "Page: ".. PageCounter;
+					pageCounterLabel.Text = `Page: {PageCounter}`;
 				end
 
 				if PageCounter > 1 then
@@ -11488,7 +11487,7 @@ return function(data, env)
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter+1, 1, maxPages);
 
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`;
 
 					if PageCounter > 1 then
 						lastPageButton.Visible = true;
@@ -11539,7 +11538,7 @@ return function(data, env)
 					local maxPages = math.ceil(#currentListTab/PageSize);
 					PageCounter = math.clamp(PageCounter-1, 1, maxPages);
 
-					pageCounterLabel.Text = "Page: ".. PageCounter.."/"..maxPages;
+					pageCounterLabel.Text = `Page: {PageCounter}/{maxPages}`;
 
 					if PageCounter == 1 then
 						lastPageButton.Visible = false;
@@ -11701,18 +11700,18 @@ return function(data, env)
 					if friendName == friendInfo[friendName].displayName then
 						entryText = friendName
 					else
-						entryText = friendInfo[friendName].displayName.." (@"..friendName..")"
+						entryText = `{friendInfo[friendName].displayName} (@{friendName})`
 					end
 					local entry = scroller:Add("TextLabel", {
-						Text = "             "..entryText;
-						ToolTip = "Location: "..friendInfo[friendName].lastLocation;
+						Text = `             {entryText}`;
+						ToolTip = `Location: {friendInfo[friendName].lastLocation}`;
 						BackgroundTransparency = (i%2 == 0 and 0) or 0.2;
 						Size = UDim2.new(1, -10, 0, 30);
 						Position = UDim2.new(0, 5, 0, (30*(i-1)));
 						TextXAlignment = "Left";
 					})
 					entry:Add("TextLabel", {
-						Text = " "..locationTypeToStr(friendInfo[friendName].locationType).."  ";
+						Text = ` {locationTypeToStr(friendInfo[friendName].locationType)}  `;
 						BackgroundTransparency = 1;
 						Size = UDim2.new(0, 120, 1, 0);
 						Position = UDim2.new(1, -120, 0, 0);
@@ -11730,7 +11729,7 @@ return function(data, env)
 				end
 			end
 			scroller:ResizeCanvas(false, true, false, false, 5, 5)
-			window:SetTitle("Online Friends ("..friendCount..")")
+			window:SetTitle(`Online Friends ({friendCount})`)
 		end
 
 		search.FocusLost:Connect(generate)
