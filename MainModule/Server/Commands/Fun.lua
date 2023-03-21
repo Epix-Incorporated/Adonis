@@ -1782,7 +1782,7 @@ return function(Vargs, env)
 
 				for _, v in Functions.GetPlayers(plr, args[1]) do
 					if player.Character and player.Character.PrimaryPart then
-						task.spawn(Functions.NuclearExplode, nuclearExplode, player.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
+						task.spawn(Functions.NuclearExplode, player.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
 					end
 				end
 			end
