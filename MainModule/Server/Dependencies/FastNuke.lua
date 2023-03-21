@@ -260,7 +260,7 @@ local function explode(position: Vector3, explosionSize: number, nolighting: boo
 	explosionParams.FilterDescendantsInstances = nukeIgnore
 	local clouds, shockwave = {}, {}
 	local container = Instance.new("Model")
-	container.Name = "NUCLEAREXPLOSION"
+	container.Name = "ADONIS_NUCLEAREXPLOSION"
 	container.Archivable = false
 	container.Parent = workspace
 	table.insert(nukeIgnore, container)
