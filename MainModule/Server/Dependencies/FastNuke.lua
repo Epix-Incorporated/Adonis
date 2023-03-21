@@ -3,6 +3,7 @@
 	Name: Fast nuke script
 	Description: This script allows you to create a nuclear explosion
 	License: MIT
+	Source: github/ccuser44/Fast-nuclear-explosion
 ]]
 
 local Lighting = game:GetService("Lighting")
