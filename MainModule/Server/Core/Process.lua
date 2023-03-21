@@ -1084,13 +1084,13 @@ return function(Vargs, GetEnv)
 
 				AddLog("Script", {
 					Text = p.Name .. " connected";
-					Desc = p.Name .. " successfully established a connection with the server";
+					Desc = p.Name .. " has successfully established a RakPeer connection with the server.";
 					Player = p;
 				})
 			else
 				AddLog("Script", {
 					Text = "<UNKNOWN> connected";
-					Desc = "An unknown user successfully established a connection with the server";
+					Desc = "An unknown user without a player instance successfully established a RakPeer connection with the server.";
 				})
 			end
 
@@ -1106,13 +1106,13 @@ return function(Vargs, GetEnv)
 				Anti.KickedPlayers[p] = nil
 				AddLog("Script", {
 					Text = p.Name .. " disconnected";
-					Desc = p.Name .. " disconnected from the server";
+					Desc = p.Name .. " has disconnected a RakPeer connection with the server.";
 					Player = p;
 				})
 			else
 				AddLog("Script", {
 					Text = "<UNKNOWN> disconnected";
-					Desc = "An unknown user disconnected from the server";
+					Desc = "An unknown user without a player instance has disconnected a RakPeer connection with the server.";
 				})
 			end
 
