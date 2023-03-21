@@ -1781,8 +1781,8 @@ return function(Vargs, env)
 				local size = tonumber(args[2]) or 100
 
 				for _, v in Functions.GetPlayers(plr, args[1]) do
-					if player.Character and player.Character.PrimaryPart then
-						task.spawn(Functions.NuclearExplode, player.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
+					if v.Character and v.Character.PrimaryPart then
+						task.spawn(Functions.NuclearExplode, v.Character.PrimaryPart.Position, size, false, service.UnWrap(v))
 					end
 				end
 			end
